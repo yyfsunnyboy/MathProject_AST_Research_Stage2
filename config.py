@@ -60,10 +60,8 @@ class Config:
     # 格式：'角色': {'provider': '供應商', 'model': '模型名稱'}
     MODEL_ROLES = {
         'architect': {
-            #'provider': 'local',
-            #'model': 'phi4-mini', 
             'provider': 'google',
-            'model': 'gemini-2.5-flash',
+            'model': 'gemini-2.5-flash', 
             'temperature': 0.7, # 稍微高一點，讓它能歸納出不同的題型變化
             'max_tokens': 1500,  # 足夠寫出詳細的設計圖
         },        

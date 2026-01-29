@@ -1,0 +1,162 @@
+[
+  {
+    "rank": 1,
+    "skill_id": "gh_AcuteAngleTrigonometricRatios",
+    "skill_name": "銳角三角比",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 5
+  },
+  {
+    "rank": 2,
+    "skill_id": "gh_AngleBetweenTwoLines",
+    "skill_name": "兩直線的夾角",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 2
+  },
+  {
+    "rank": 3,
+    "skill_id": "gh_AngleOfInclination",
+    "skill_name": "直線的斜角",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 3
+  },
+  {
+    "rank": 4,
+    "skill_id": "gh_ArcLengthAndAreaOfASector",
+    "skill_name": "扇形的弧長與面積",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 5
+  },
+  {
+    "rank": 5,
+    "skill_id": "gh_AreaBetweenCurves",
+    "skill_name": "曲線間的面積",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 15
+  },
+  {
+    "rank": 6,
+    "skill_id": "gh_AreaRatioOfLinearTransformations",
+    "skill_name": "線性變換的面積比",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 2
+  },
+  {
+    "rank": 7,
+    "skill_id": "gh_ComplexPlane",
+    "skill_name": "複數平面",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 4
+  },
+  {
+    "rank": 8,
+    "skill_id": "gh_ConversionBetweenRectangularAndPolarCoordinates",
+    "skill_name": "直角坐標與極坐標的轉換",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 3
+  },
+  {
+    "rank": 9,
+    "skill_id": "gh_DistancesRelatedToLines",
+    "skill_name": "與直線相關的距離",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 24
+  },
+  {
+    "rank": 10,
+    "skill_id": "gh_ExponentialFunctionsAndTheirGraphs",
+    "skill_name": "指數函數及其圖形",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 4
+  },
+  {
+    "rank": 11,
+    "skill_id": "gh_FunctionLimits",
+    "skill_name": "函數的極限",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 4
+  },
+  {
+    "rank": 12,
+    "skill_id": "gh_GeometricApplicationsOfEllipse",
+    "skill_name": "橢圓的幾何應用",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 20
+  },
+  {
+    "rank": 13,
+    "skill_id": "gh_GeometricDefinitionOfParabola",
+    "skill_name": "拋物線的幾何定義",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 3
+  },
+  {
+    "rank": 14,
+    "skill_id": "gh_GlobalAndLocalFeatures",
+    "skill_name": "乙.廣域特徵與局部特徵",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 10
+  },
+  {
+    "rank": 15,
+    "skill_id": "gh_GraphsOfCubicFunctions",
+    "skill_name": "甲.三次函數的圖形",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 7
+  },
+  {
+    "rank": 16,
+    "skill_id": "gh_HeronsFormula",
+    "skill_name": "海龍公式",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 3
+  },
+  {
+    "rank": 17,
+    "skill_id": "gh_ImportantLinearTransformations",
+    "skill_name": "重要的線性變換",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 6
+  },
+  {
+    "rank": 18,
+    "skill_id": "gh_JudgingTheRelationshipOfCircleAndLine",
+    "skill_name": "甲. 圓與直線關係的判定",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 6
+  },
+  {
+    "rank": 19,
+    "skill_id": "gh_LeastSquaresMethodAndRegressionLine",
+    "skill_name": "最小平方法與迴歸直線",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 17
+  },
+  {
+    "rank": 20,
+    "skill_id": "gh_LineSlope",
+    "skill_name": "甲 直線的斜率",
+    "category": "visualization",
+    "priority": "HIGH",
+    "example_count": 2
+  }
+]

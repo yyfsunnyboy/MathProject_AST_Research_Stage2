@@ -1,0 +1,44 @@
+【最終確認的 20 支技能】
+====================================================================================================
+
+【ALGEBRA】(5 個)
+----------------------------------------------------------------------------------------------------
+jh_數學1下_DrawingGraphsOfTwoVariableLinearEquations, 12, 752
+jh_數學1下_RectangularCoordinatePlaneAndCoordinateRepresentation, 12, 301
+jh_數學2上_PolynomialDivision, 11, 737
+jh_數學2上_PolynomialAdditionAndSubtraction, 10, 647
+jh_數學2上_PolynomialMultiplication, 9, 685
+
+【APPLICATIONS】(1 個)
+----------------------------------------------------------------------------------------------------
+jh_數學2上_WordProblems, 11, 414
+
+【ARITHMETIC_BASIC】(5 個)
+----------------------------------------------------------------------------------------------------
+jh_數學1上_IntegerAdditionOperation, 11, 424
+jh_數學1上_CommonDivisibilityRules, 10, 511
+jh_數學1上_FractionAdditionAndSubtraction, 8, 504
+jh_數學1上_FractionMultiplication, 4, 545
+jh_數學1上_FractionDivision, 3, 469
+
+【FACTORIZATION】(1 個)
+----------------------------------------------------------------------------------------------------
+jh_數學2上_FactorizationByMultiplicationFormulas, 4, 571
+
+【FUNCTIONS_SEQUENCES】(5 個)
+----------------------------------------------------------------------------------------------------
+jh_數學2下_FunctionGraph, 43, 794
+jh_數學2下_FunctionValue, 23, 638
+jh_數學2下_NthTermOfGeometricSequence, 15, 603
+jh_數學2下_GeometricSequence, 12, 488
+jh_數學2下_GeometricMean, 11, 678
+
+【OTHER】(1 個)
+----------------------------------------------------------------------------------------------------
+jh_數學2上_FourArithmeticOperationsOfIntegers, 0, 0
+
+【RADICAL_POWERS】(2 個)
+----------------------------------------------------------------------------------------------------
+jh_數學2上_FourOperationsOfRadicals, 14, 864
+jh_數學2上_BasicPropertiesOfRadicalOperations, 13, 780
+

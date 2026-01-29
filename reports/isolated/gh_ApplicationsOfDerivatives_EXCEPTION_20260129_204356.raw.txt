@@ -1,0 +1,89 @@
+```
+def generate(level=1, **kwargs):
+    import random
+    
+    # Step 1: Generate necessary variables according to MASTER_SPEC entities and constraints
+    func_factor1_coeff = random.choice([-1, 1])
+    while (func_factor1_coeff == 0) or (func_factor1_coeff * tangent_x0 + func_factor1_const == 0):
+        func_factor1_coeff = random.choice([-1, 1])
+    
+    func_factor1_const = random.randint(-5, 5)
+    while func_factor1_const == 0:
+        func_factor1_const = random.randint(-5, 5)
+    
+    func_factor2_coeff = random.randint(-3, 3)
+    while (func_factor2_coeff == 0) or (func_factor2_coeff * tangent_x0 + func_factor2_const in [0, 1, -1]):
+        func_factor2_coeff = random.randint(-3, 3)
+    
+    func_factor2_const = random.randint(-5, 5)
+    while func_factor2_const == 0:
+        func_factor2_const = random.randint(-5, 5)
+    
+    func_factor2_power = random.choice([2, 3])
+    
+    tangent_x0 = random.randint(-2, 2)
+    while (tangent_x0 == 0) or ((func_factor2_coeff * tangent_x0 + func_factor2_const) in [0, 1, -1]):
+        tangent_x0 = random.randint(-2, 2)
+    
+    # Step 2: Execute calculations according to MASTER_SPEC construction
+    term1_value = func_factor1_coeff * tangent_x0 + func_factor1_const
+    term2_value = (func_factor2_coeff * tangent_x0 + func_factor2_const) ** func_factor2_power
+    
+    tangent_y0 = term1_value * term2_value
+    
+    # Calculate derivative f'(x)
+    m = func_factor1_coeff * term2_value + func_factor2_coeff * func_factor2_power * term1_value * (func_factor2_coeff * tangent_x0 + func_factor2_const) ** (func_factor2_power - 1)
+    
+    b_intercept = tangent_y0 - m * tangent_x0
+    
+    # Step 3: Build question LaTeX using fmt_num and op_latex
+    def fmt_polynomial_term(coeff, var_name, const):
+        if coeff == 1:
+            term = f"{var_name}"
+        elif coeff == -1:
+            term = f"-{var_name}"
+        else:
+            term = f"{fmt_num(coeff)}{op_latex['*']}{var_name}"
+        
+        if const > 0:
+            term += f" {op_latex['+']} {fmt_num(const)}"
+        elif const < 0:
+            term += f" {op_latex['-']} {-const}"
+        
+        return term
+    
+    term1_str = fmt_polynomial_term(func_factor1_coeff, 'x', func_factor1_const)
+    term2_str = fmt_polynomial_term(func_factor2_coeff, 'x', func_factor2_const)
+    
+    func_expr = f"({term1_str})({term2_str})^{fmt_num(func_factor2_power)}"
+    f_x_latex = f"f(x) = {func_expr}"
+    
+    point_latex = f"P({fmt_num(tangent_x0)}, {fmt_num(tangent_y0)})"
+    
+    q = f"在函數 ${f_x_latex}$ 的圖形上，求以點 ${point_latex}$ 為切點的切線方程式。"
+    q = clean_latex_output(q)
+    
+    # Step 4: Format answer as plain numbers
+    if m == 1:
+        slope_str = "x"
+    elif m == -1:
+        slope_str = "-x"
+    else:
+        slope_str = f"{m}x"
+    
+    if b_intercept > 0:
+        intercept_str = f"+ {b_intercept}"
+    elif b_intercept < 0:
+        intercept_str = f"- {-b_intercept}"
+    else:
+        intercept_str = ""
+    
+    answer = f"y={slope_str}{intercept_str}"
+    
+    # Step 5: Return standard format
+    return {
+        'question_text': q,
+        'correct_answer': str(m) + " " + str(b_intercept),
+        'answer': str(m) + " " + str(b_intercept),
+        'mode': 1
+    }

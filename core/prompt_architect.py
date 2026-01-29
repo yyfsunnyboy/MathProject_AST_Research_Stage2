@@ -98,23 +98,37 @@ templates: [一個或多個可變模板]
         🔴 **核心原則**：
         - 中文字和文字敘述必須在 LaTeX ($...$) 外面
         - 數學式子必須在 LaTeX ($...$) 裡面
-        - 使用 fmt_num() 格式化所有數字
+        - 使用 fmt_num() 格式化所有數字（包括係數和變數）
         - 使用 op_latex 字典映射運算符（* → \\times, / → \\div）
-        - 使用 clean_latex_output() 自動包裝（僅呼叫一次）
+        - 使用 clean_latex_output() 自動包裝**最後一次**（僅呼叫一次）
+        
+        **實作三部曲**：
+        1. 構造中文敘述：使用占位符 {} 預留位置
+        2. 構造 LaTeX 式子：用 fmt_num() 和 op_latex 格式化
+        3. 組合：將式子插入敘述，最後呼叫 clean_latex_output(q)
         
         **標準模式**：
         1. 純數學式（無中文）：
-           "使用 fmt_num 格式化數字，用 op_latex 映射運算符，最後用 clean_latex_output 包裝"
-           範例：fmt_num(a) + fmt_num(b) → clean_latex_output() → $a + b$
+           expr = fmt_num(a) + op_latex['*'] + fmt_num(b)  # 產生 "a \\times b"
+           q = f"計算 {expr} 的值"
+           q = clean_latex_output(q)  # 最後才呼叫，產生 "計算 $a \\times b$ 的值"
         
-        2. 中文 + 數學式：
-           "先用 clean_latex_output 包裝數學式，再拼接中文"
-           範例：數學式 clean_latex_output() → $a + b$ → "計算 $a + b$ 的值"
+        2. 複雜中文 + 數學式（推薦用於導數、多項式等）：
+           poly_str = fmt_num(a) + f"x{op_latex['*']}2" + op_latex['+'] + fmt_num(b) + "x" + op_latex['+'] + fmt_num(c)
+           q = f"已知 $f(x) = {poly_str}$，求 $f'(x)$ 的值。"
+           q = clean_latex_output(q)  # 自動補 $ $
         
-        **禁止**：
-        - 將中文包在 $ $ 內（matplotlib 無法渲染中文）
-        - 重複呼叫 clean_latex_output()
-        - 手動添加 $ 符號後又呼叫 clean_latex_output()
+        3. 帶入特定點求值：
+           poly_at_x0 = f"({})**2 + {}".format(fmt_num(a), fmt_num(b))  # 先用括號確保順序
+           q = f"在點 $P({fmt_num(x0)}, {fmt_num(y0)})$ 處，求 $y = {poly_at_x0}$ 的導數。"
+           q = clean_latex_output(q)
+        
+        **禁止（會導致失敗）**：
+        - ❌ 將中文包在 $ $ 內（matplotlib 無法渲染中文）
+        - ❌ 重複呼叫 clean_latex_output()（會產生多層 $ $）
+        - ❌ 先手動添加 $ 符號後又呼叫 clean_latex_output()（會產生 $...$...$）
+        - ❌ 在 clean_latex_output() 前用 str.replace 修改字符串（會破壞結構）
+        - ❌ 不用 fmt_num()，直接用 str(a)（無法正確處理負數和分數）
         
       answer_display: |
         答案格式化規則（純數字，不使用 LaTeX）

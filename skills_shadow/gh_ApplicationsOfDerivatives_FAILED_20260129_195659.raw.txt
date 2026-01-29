@@ -1,0 +1,87 @@
+```python
+def generate(level=1, **kwargs):
+    import random
+    
+    # Step 1: Generate necessary variables according to MASTER_SPEC
+    a = random.choice([-2, -1, 1, 2])
+    b = random.randint(-5, 5)
+    c = random.choice([1, 2, 3])
+    d = random.randint(-5, 5)
+    n = random.choice([2, 3])
+    
+    while True:
+        x0 = random.randint(-2, 2)
+        if (c * x0 + d) != 0 and (a * x0 + b) != 0:
+            break
+    
+    # Step 2: Execute calculations according to MASTER_SPEC
+    y0 = (a * x0 + b) * (c * x0 + d)**n
+    
+    term1 = (c * x0 + d)**(n - 1)
+    term2 = (a * c + a * n * c) * x0 + (a * d + b * n * c)
+    slope = term1 * term2
+    
+    while slope == 0:
+        # Regenerate variables if slope is zero
+        a = random.choice([-2, -1, 1, 2])
+        b = random.randint(-5, 5)
+        c = random.choice([1, 2, 3])
+        d = random.randint(-5, 5)
+        n = random.choice([2, 3])
+        
+        while True:
+            x0 = random.randint(-2, 2)
+            if (c * x0 + d) != 0 and (a * x0 + b) != 0:
+                break
+        
+        y0 = (a * x0 + b) * (c * x0 + d)**n
+        term1 = (c * x0 + d)**(n - 1)
+        term2 = (a * c + a * n * c) * x0 + (a * d + b * n * c)
+        slope = term1 * term2
+    
+    y_intercept = y0 - slope * x0
+    
+    # Step 3: Construct question LaTeX using fmt_num and op_latex
+    term1_x = "" if a == 1 else fmt_num(a)
+    term1_b = "" if b == 0 else (op_latex['+'] + fmt_num(abs(b)) if b > 0 else op_latex['-'] + fmt_num(abs(b)))
+    if b == 0 and a == 0: 
+        term1_x = fmt_num(0) # Avoid (0)()
+    elif b == 0: 
+        term1_x = f"{term1_x}x"
+    else: 
+        term1_x = f"{term1_x}x{term1_b}"
+    
+    term2_x = "" if c == 1 else fmt_num(c)
+    term2_d = "" if d == 0 else (op_latex['+'] + fmt_num(abs(d)) if d > 0 else op_latex['-'] + fmt_num(abs(d)))
+    if d == 0 and c == 0: 
+        term2_x = fmt_num(0) # Avoid (0)()
+    elif d == 0: 
+        term2_x = f"{term2_x}x"
+    else: 
+        term2_x = f"{term2_x}x{term2_d}"
+    
+    fx_str = f"({term1_x})({term2_x}){op_latex['^']}{fmt_num(n)}"
+    point_str = f"P({fmt_num(x0)}, {fmt_num(y0)})"
+    q = f"在函數 $f(x) = {fx_str}$ 的圖形上，求以點 ${point_str}$ 為切點的切線方程式。"
+    q = clean_latex_output(q)
+    
+    # Step 4: Format answer as plain number
+    slope_str = ""
+    if slope == 1:
+        slope_str = "x"
+    elif slope == -1:
+        slope_str = "-x"
+    else:
+        slope_str = f"{slope}x"
+        
+    intercept_str = ""
+    if y_intercept > 0:
+        intercept_str = f" + {y_intercept}"
+    elif y_intercept < 0:
+        intercept_str = f" - {abs(y_intercept)}"
+    
+    answer_str = f"y = {slope_str}{intercept_str}"
+    
+    # Step 5: Return the question and answer
+    return q, answer_str
+```

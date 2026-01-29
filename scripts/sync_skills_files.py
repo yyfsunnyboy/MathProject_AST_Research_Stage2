@@ -271,22 +271,20 @@ def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class,
                                 f.write(patched_content)
                             tqdm.write(f"   🔧 {skill_id}: Patched missing functions.")
                         
-                        # 2. [Versioned Storage Strategy] (Research Last Will)
+                        # 2. [Unified Storage Strategy] 統一命名，無論成功失敗
+                        # 所有檔案統一格式：gh_ApplicationsOfDerivatives_14B_Ab{1,2,3}.py
+                        # 評分程式統一讀取並測試，自動檢測品質
                         
-                        if is_failed:
-                            # 💥 [科研遺書機制]: 失敗也要存
-                            file_name = f"{skill_id}_{model_size_class}_Ab{ablation_id}_FAILED.py"
-                            tqdm.write(f"   💾 保存壞標本: {file_name}")
-                        else:
-                            file_name = f"{skill_id}_{model_size_class}_Ab{ablation_id}.py"
-
+                        file_name = f"{skill_id}_{model_size_class}_Ab{ablation_id}.py"
                         file_path = os.path.join(SKILLS_DIR, file_name)
                         
+                        # 複製原始檔案內容（包含完整標頭）
                         with open(file_path, "w", encoding="utf-8") as f:
                             f.write(patched_content)
-                            
-                        if not is_failed:
-                            tqdm.write(f"   📦 Isolated Save: {file_name}")
+                        
+                        # 輸出狀態信息
+                        status_msg = "❌ 驗證失敗" if is_failed else "✅ 驗證通過"
+                        tqdm.write(f"   📦 已保存: {file_name} ({status_msg})")
 
                 except Exception as e:
                      tqdm.write(f"   ❌ {skill_id} Patching/Saving Error: {e}")
@@ -415,12 +413,14 @@ if __name__ == "__main__":
         
         list_to_process = []
         run_full_pipeline = False
+        skip_architect = False  # [NEW] 控制是否跳過 Architect 階段
         
         # 判斷處理清單
         if mode == '1':
             list_to_process = sorted(list(to_create))
         elif mode == '2':
             list_to_process = sorted(list(target_skill_ids)) # 強制範圍內全跑
+            skip_architect = True  # [NEW] mode 2 跳過 Architect
         elif mode == '3':
             list_to_process = sorted(list(target_skill_ids.intersection(to_create))) # 範圍內且缺失
         elif mode == '4':
@@ -443,62 +443,122 @@ if __name__ == "__main__":
         if mode in ['1', '2', '3', '4']:
             print("\n" + "="*60)
             print("🧪 [實驗變因控制] 請選擇本次生成的 Ablation 層級:")
-            print("   1: Bare (Baseline)    -> 簡單 Prompt + 無修復 (測試原生能力)")
-            print("   2: Engineered (Prompt) -> V15.1 Spec + 無修復 (測試提示工程貢獻)")
-            print("   3: Full Healing (Sys)  -> V15.1 Spec + Regex/AST 修復 (測試系統全能力)")
+            print("   [0] 綜合評估  -> 連續執行 AB1/AB2/AB3 (完整對標)")
+            print("   [1] Bare      -> 簡單 Prompt + 無修復 (測試原生能力)")
+            print("   [2] Engineered -> V15.1 Spec + 無修復 (測試提示工程貢獻)")
+            print("   [3] Full Healing -> V15.1 Spec + Regex/AST 修復 (測試系統全能力)")
             print("="*60)
             
-            ab_input = input("   👉 輸入 Ablation ID (1/2/3, 預設 3): ").strip()
-            ablation_id = int(ab_input) if ab_input in ['1', '2', '3'] else 3
+            ab_input = input("   👉 輸入 Ablation ID (0/1/2/3, 預設 3): ").strip()
             
-            # 對應實驗描述，方便日誌紀錄
-            ab_desc = {1: "Bare", 2: "Engineered-Only", 3: "Full-Healing"}
-            print(f"✅ 已設定實驗組別：{ab_desc[ablation_id]}")
+            # 支援新的 0 選項（執行全部）
+            if ab_input == '0':
+                print("✅ 已設定實驗模式：綜合評估 (AB1 + AB2 + AB3)")
+                
+                # [CRITICAL LOGIC] 判斷是否需要重新生成 Coding Prompt
+                # 規則 1: 若前一個選擇是 [2]（Overwrite All），則跳過 Architect（已有 Prompt）
+                # 規則 2: 若前一個選擇是 [4]（Full Pipeline），則執行 Architect（生成新 Prompt）
+                should_run_architect = not skip_architect
+                
+                if should_run_architect:
+                    print("\n📋 [Coding Prompt 策略] 根據前一個選項 [4]，將重新生成標準規格書...")
+                else:
+                    print("\n📋 [Coding Prompt 策略] 根據前一個選項 [2]，將跳過 Architect，使用資料庫中最新的 Prompt...")
+                
+                # 連續執行三個 Ablation ID
+                for ablation_id in [1, 2, 3]:
+                    ab_desc = {1: "Bare", 2: "Engineered-Only", 3: "Full-Healing"}
+                    print(f"\n⏳ 正在執行 AB{ablation_id} ({ab_desc[ablation_id]})...")
+                    
+                    # 使用相同的 Model Size Class 和其他配置執行三次
+                    model_size_class = '14b'
+                    prompt_level = ab_desc[ablation_id]
+                    
+                    # 呼叫執行管道
+                    for skill_id in list_to_process:
+                        if should_run_architect and ablation_id == 1:
+                            # 只在第一次 Ablation 時生成 Prompt（使用 run_expert_pipeline 包含 Architect）
+                            run_expert_pipeline(
+                                skill_ids=[skill_id],
+                                arch_model=arch_model,
+                                current_model=current_model,
+                                ablation_id=ablation_id,
+                                model_size_class=model_size_class,
+                                prompt_level=prompt_level
+                            )
+                        else:
+                            # 跳過 Architect 階段，只執行 Coder 階段
+                            # 直接使用資料庫中最新的該 skill_id 的 Prompt
+                            execute_coder_phase(
+                                [skill_id],
+                                current_model,
+                                ablation_id,
+                                model_size_class,
+                                prompt_level
+                            )
+                    
+                    print(f"✅ AB{ablation_id} 執行完成\n")
+                
+                print("="*60)
+                print("🎉 綜合評估完成！已生成三個版本（針對每個技能）：")
+                for skill_id in list_to_process:
+                    print(f"   📄 {skill_id}_{model_size_class}_Ab1.py (Bare)")
+                    print(f"   📄 {skill_id}_{model_size_class}_Ab2.py (Engineered)")
+                    print(f"   📄 {skill_id}_{model_size_class}_Ab3.py (Full Healing)")
+                print("="*60)
+            else:
+                # 單一 Ablation 模式
+                ablation_id = int(ab_input) if ab_input in ['1', '2', '3'] else 3
+                ab_desc = {1: "Bare", 2: "Engineered-Only", 3: "Full-Healing"}
+                print(f"✅ 已設定實驗組別：{ab_desc[ablation_id]}")
 
-            # --- [UI Improvement] Model Size Class Selection ---
-            print("\n" + "="*60)
-            print("📏 [實驗變因控制] 請選擇 Model Size Class:")
-            print("   1: Cloud     -> 大型模型 (如 Gemini, GPT-4)")
-            print("   2: Local 14B -> 中型模型 (如 Qwen 2.5-14B)")
-            print("   3: Edge 7B   -> 小型模型 (如 Llama 3-8B, Phi-3)")
-            print("="*60)
-            
-            size_map = {'1': 'Cloud', '2': '14B', '3': '7B'}
-            ms_input = input("   👉 輸入選項 (1/2/3, 預設 1): ").strip()
-            # 預設為 'Cloud'
-            model_size_class = size_map.get(ms_input, 'Cloud')
-            print(f"✅ 已設定模型量級：{model_size_class}")
-            
-            prompt_level = ab_desc[ablation_id] # Update prompt_level to match description
+                # --- [UI Improvement] Model Size Class Selection ---
+                print("\n" + "="*60)
+                print("📏 [實驗變因控制] 請選擇 Model Size Class:")
+                print("   1: Cloud     -> 大型模型 (如 Gemini, GPT-4)")
+                print("   2: Local 14B -> 中型模型 (如 Qwen 2.5-14B)")
+                print("   3: Edge 7B   -> 小型模型 (如 Llama 3-8B, Phi-3)")
+                print("="*60)
+                
+                size_map = {'1': 'Cloud', '2': '14B', '3': '7B'}
+                ms_input = input("   👉 輸入選項 (1/2/3, 預設 1): ").strip()
+                # 預設為 'Cloud'
+                model_size_class = size_map.get(ms_input, 'Cloud')
+                print(f"✅ 已設定模型量級：{model_size_class}")
+                
+                prompt_level = ab_desc[ablation_id] # Update prompt_level to match description
 
         if not list_to_process:
             print("✅ 沒有需要處理的檔案。")
             sys.exit(0)
 
-        # Confirm
-        count = len(list_to_process)
-        print(f"\n⚠️  [注意] 準備開始")
-        print(f"   數量: {count} 題")
-        confirm = input("   確定要繼續嗎? (y/n): ").strip().lower()
-        if confirm != 'y':
-            sys.exit(0)
+        # [0] 模式已在上面執行，這裡只處理單一 Ablation 模式
+        if ab_input != '0':
+            # Confirm
+            count = len(list_to_process)
+            print(f"\n⚠️  [注意] 準備開始")
+            print(f"   數量: {count} 題")
+            confirm = input("   確定要繼續嗎? (y/n): ").strip().lower()
+            if confirm != 'y':
+                sys.exit(0)
 
-        # Execution
-        if run_full_pipeline:
-            run_expert_pipeline(
-                list_to_process, 
-                arch_model, 
-                current_model,
-                ablation_id,
-                model_size_class,
-                prompt_level
-            )
-        else:
-            # Code Gen Only (Phase 2)
-            execute_coder_phase(
-                list_to_process, 
-                current_model, 
-                ablation_id, 
-                model_size_class, 
-                prompt_level
-            )
+            # Execution
+            if run_full_pipeline:
+                # Mode 4: 執行完整流程（包含 Architect）
+                run_expert_pipeline(
+                    list_to_process, 
+                    arch_model, 
+                    current_model,
+                    ablation_id,
+                    model_size_class,
+                    prompt_level
+                )
+            else:
+                # Mode 1/2/3: 只執行 Coder 階段（跳過 Architect）
+                execute_coder_phase(
+                    list_to_process, 
+                    current_model, 
+                    ablation_id, 
+                    model_size_class, 
+                    prompt_level
+                )

@@ -50,30 +50,54 @@ def get_skill_menu():
 # ==========================================
 def render_latex_to_buffer(latex_str):
     """
-    將 LaTeX 字串渲染為圖片 Buffer。
-    用於在 Excel 中顯示數學式。
+    將題目字串渲染為圖片 Buffer。
+    [V47.24 Fix] 在純文本渲染前，把 LaTeX 的 ^{n} 轉換成 Unicode 上標
     """
     try:
-        # 設定繪圖參數：無框線、透明背景
-        # figsize=(寬, 高) -> 單位是英吋，配合 Excel 儲存格大小
-        fig = plt.figure(figsize=(3, 0.8), dpi=100) 
-        fig.patch.set_alpha(0) # 背景透明
+        # 設定 matplotlib 使用支持中文的字體
+        plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+        plt.rcParams['axes.unicode_minus'] = False
         
-        # 處理文字：Matplotlib 需要 $ 包裹才能渲染 MathText
-        text_val = latex_str if '$' in latex_str else f"${latex_str}$"
+        # 簡單：直接去掉 $...$，用純文本渲染
+        text_version = latex_str.replace('$', '').strip()
         
-        # 繪製文字
-        plt.text(0.5, 0.5, text_val, size=14, ha='center', va='center')
-        plt.axis('off') # 關閉座標軸
+        # [V47.24] 把 ^{2}, ^{3} 等 LaTeX 上標轉換成 Unicode 上標，方便在圖片中顯示
+        # 支持 2, 3, 4, 5 次方
+        superscript_map = {
+            '^{2}': '²',
+            '^{3}': '³',
+            '^{4}': '⁴',
+            '^{5}': '⁵',
+        }
+        for latex_sup, unicode_sup in superscript_map.items():
+            text_version = text_version.replace(latex_sup, unicode_sup)
+        
+        if not text_version:
+            return None
+        
+        # 創建圖片
+        fig = plt.figure(figsize=(13, 1.2), dpi=100)
+        fig.patch.set_alpha(0)
+        ax = fig.add_subplot(111)
+        
+        # 直接渲染純文本，用中文字體
+        ax.text(0.05, 0.5, text_version, 
+                fontsize=10, ha='left', va='center',
+                transform=ax.transAxes, wrap=True)
+        
+        ax.axis('off')
+        ax.set_xlim(0, 1)
+        ax.set_ylim(0, 1)
         
         # 存入 Buffer
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1)
+        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1, dpi=100)
         plt.close(fig)
+        
         buf.seek(0)
         return buf
     except Exception as e:
-        # 若渲染失敗(例如語法錯誤)，回傳 None，Excel 該格會留空
+        print(f"⚠️ 渲染失敗 [{latex_str[:40]}...]: {str(e)}")
         return None
 
 # ==========================================
@@ -256,10 +280,16 @@ if __name__ == "__main__":
         print(f"   [{i}] {name}")
         
     try:
-        choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
-        if 1 <= choice <= len(skills):
-            run_research_samples(skills[choice-1])
+        # 自動選擇 gh_ApplicationsOfDerivatives_14B_Ab3 (如果存在)
+        target_skill = "gh_ApplicationsOfDerivatives_14B_Ab3"
+        if target_skill in skills:
+            print(f"\n自動選擇: {target_skill}")
+            run_research_samples(target_skill)
         else:
-            print("❌ 超出範圍。")
+            choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
+            if 1 <= choice <= len(skills):
+                run_research_samples(skills[choice-1])
+            else:
+                print("❌ 超出範圍。")
     except ValueError:
         print("❌ 請輸入數字。")

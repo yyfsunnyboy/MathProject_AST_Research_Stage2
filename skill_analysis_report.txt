@@ -1,0 +1,811 @@
+詳細技能分析報告
+====================================================================================================
+
+
+【algebra】(3個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_RootsOfNthDegreeEquations
+  行數: 601
+  複雜度: 3
+  import數: 4
+  助手函數: 11
+  特性: polynomial, probability, statistics
+
+gh_RootsOfQuadraticEquations
+  行數: 481
+  複雜度: 3
+  import數: 5
+  助手函數: 10
+  特性: probability
+
+gh_CauchySchwarzInequality
+  行數: 444
+  複雜度: 3
+  import數: 3
+  助手函數: 6
+  特性: probability, statistics
+
+【analytic_geometry】(25個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_PolynomialInequalities
+  行數: 931
+  複雜度: 3
+  import數: 5
+  助手函數: 13
+  特性: polynomial, probability
+
+gh_LineEquations
+  行數: 565
+  複雜度: 3
+  import數: 3
+  助手函數: 18
+  特性: probability, statistics
+
+gh_ParallelAndPerpendicularLines
+  行數: 546
+  複雜度: 3
+  import數: 4
+  助手函數: 8
+  特性: probability
+
+gh_LeastSquaresMethodAndRegressionLine
+  行數: 524
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability, statistics
+
+gh_GeometricMeaningOfLinearEquations
+  行數: 497
+  複雜度: 3
+  import數: 4
+  助手函數: 10
+  特性: probability
+
+gh_RelationshipBetweenLinesAndPlanes
+  行數: 447
+  複雜度: 3
+  import數: 3
+  助手函數: 14
+  特性: probability
+
+gh_EquationOfALine
+  行數: 421
+  複雜度: 3
+  import數: 4
+  助手函數: 5
+  特性: probability
+
+gh_PlaneEquation
+  行數: 418
+  複雜度: 3
+  import數: 4
+  助手函數: 12
+  特性: probability
+
+gh_DistancesRelatedToLines
+  行數: 384
+  複雜度: 3
+  import數: 3
+  助手函數: 22
+  特性: probability
+
+gh_PointDivisionFormulaOnNumberLine
+  行數: 364
+  複雜度: 3
+  import數: 2
+  助手函數: 9
+  特性: probability
+
+【calculus】(6個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_ApplicationsOfDerivatives
+  行數: 758
+  複雜度: 3
+  import數: 4
+  助手函數: 21
+  特性: polynomial, derivative, probability
+
+gh_AntiderivativeOfPolynomialFunctions
+  行數: 340
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: polynomial, integration, derivative, probability
+
+gh_FundamentalTheoremOfCalculus
+  行數: 302
+  複雜度: 3
+  import數: 2
+  助手函數: 8
+  特性: polynomial, integration, derivative, probability
+
+gh_AntiderivativeOfPolynomialFunction
+  行數: 282
+  複雜度: 3
+  import數: 2
+  助手函數: 7
+  特性: polynomial, integration, derivative, probability
+
+gh_DefiniteIntegralAndArea
+  行數: 255
+  複雜度: 3
+  import數: 3
+  助手函數: 6
+  特性: polynomial, integration, derivative, probability
+
+gh_DefiniteIntegral
+  行數: 204
+  複雜度: 3
+  import數: 3
+  助手函數: 7
+  特性: integration, probability
+
+【complex_numbers】(5個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_PolarFormOfComplexNumbers
+  行數: 550
+  複雜度: 3
+  import數: 5
+  助手函數: 15
+  特性: probability
+
+gh_ComplexNumbers
+  行數: 414
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+gh_ConversionBetweenRectangularAndPolarCoordinates
+  行數: 396
+  複雜度: 3
+  import數: 4
+  助手函數: 7
+  特性: probability, trigonometry
+
+gh_ComplexPlane
+  行數: 352
+  複雜度: 3
+  import數: 7
+  助手函數: 9
+  特性: probability, statistics
+
+gh_NthRootsOfComplexNumbers
+  行數: 222
+  複雜度: 2
+  import數: 4
+  助手函數: 4
+  特性: probability
+
+【conic_sections】(15個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_JudgingTheRelationshipOfCircleAndLine
+  行數: 606
+  複雜度: 3
+  import數: 4
+  助手函數: 10
+  特性: probability
+
+gh_GeometricApplicationsOfEllipse
+  行數: 526
+  複雜度: 3
+  import數: 4
+  助手函數: 15
+  特性: probability, trigonometry
+
+gh_TangentLinesOfACircle
+  行數: 409
+  複雜度: 3
+  import數: 4
+  助手函數: 8
+  特性: probability
+
+gh_StandardFormOfHyperbola
+  行數: 407
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability, statistics
+
+gh_GeometricDefinitionOfEllipse
+  行數: 393
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+gh_GeneralFormOfACircle
+  行數: 360
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability
+
+gh_PointAndCircleRelationship
+  行數: 356
+  複雜度: 3
+  import數: 3
+  助手函數: 6
+  特性: probability
+
+gh_EllipseEquationCenteredAtOrigin
+  行數: 326
+  複雜度: 3
+  import數: 4
+  助手函數: 11
+  特性: derivative, probability
+
+gh_StandardFormOfACircle
+  行數: 291
+  複雜度: 2
+  import數: 4
+  助手函數: 9
+  特性: probability
+
+gh_StandardFormOfParabola
+  行數: 278
+  複雜度: 3
+  import數: 2
+  助手函數: 6
+  特性: derivative, probability, statistics
+
+【data_analysis】(3個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_DataScalingAndShifting
+  行數: 444
+  複雜度: 3
+  import數: 4
+  助手函數: 7
+  特性: probability, statistics
+
+gh_MatricesAndDataTables
+  行數: 256
+  複雜度: 2
+  import數: 3
+  助手函數: 7
+  特性: matrix, probability
+
+gh_CorrelationCoefficient
+  行數: 133
+  複雜度: 1
+  import數: 3
+  助手函數: 2
+
+【functions】(17個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_ArithmeticOperationsOfPolynomials
+  行數: 649
+  複雜度: 3
+  import數: 4
+  助手函數: 18
+  特性: polynomial, probability
+
+gh_ApplicationsOfExponentialFunctions
+  行數: 612
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability
+
+gh_FunctionConcept
+  行數: 479
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: polynomial, probability
+
+gh_CommonLogarithms
+  行數: 443
+  複雜度: 3
+  import數: 3
+  助手函數: 12
+  特性: probability, statistics
+
+gh_CommonLogarithmsAndScientificNotation
+  行數: 434
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: derivative, probability
+
+gh_ApplicationsOfLogarithmicFunctions
+  行數: 366
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: derivative, probability
+
+gh_GraphsOfCubicFunctions
+  行數: 366
+  複雜度: 3
+  import數: 8
+  助手函數: 7
+  特性: probability, statistics
+
+gh_PolynomialFunctionGraphs
+  行數: 345
+  複雜度: 3
+  import數: 6
+  助手函數: 4
+  特性: polynomial, statistics
+
+gh_TangentFunctionGraph
+  行數: 338
+  複雜度: 3
+  import數: 3
+  助手函數: 7
+  特性: probability
+
+gh_LogarithmicFunctionsAndTheirGraphs
+  行數: 337
+  複雜度: 3
+  import數: 3
+  助手函數: 8
+  特性: probability
+
+【junior_high】(414個技能)
+----------------------------------------------------------------------------------------------------
+
+jh_數學2下_TriangleCongruenceProperties
+  行數: 416
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability
+
+jh_數學1上_OperationsOfLinearExpressionsInOneVariable
+  行數: 413
+  複雜度: 3
+  import數: 3
+  助手函數: 13
+  特性: probability
+
+jh_數學2上_RelativeAndCumulativeRelativeFrequencyDistributionAndLineChart
+  行數: 385
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+jh_數學1下_MeanMedianAndMode
+  行數: 377
+  複雜度: 3
+  import數: 1
+  助手函數: 15
+  特性: probability
+
+jh_數學2上_FourOperationsOfRadicals
+  行數: 359
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability
+
+jh_數學2上_BasicPropertiesOfRadicalOperations
+  行數: 348
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+jh_數學2下_TriangleInteriorAndExteriorAngles
+  行數: 348
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: probability
+
+jh_數學2上_PolynomialDivision
+  行數: 347
+  複雜度: 3
+  import數: 3
+  助手函數: 13
+  特性: polynomial, probability
+
+jh_數學2下_MeaningAndPropertiesOfParallelograms
+  行數: 347
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability
+
+jh_數學3上_ParallelLinesProportionalSegmentsProperty
+  行數: 336
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: probability
+
+【linear_algebra】(22個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_VectorDotProduct
+  行數: 514
+  複雜度: 3
+  import數: 4
+  助手函數: 13
+  特性: probability
+
+gh_MatrixMeaningAndEquality
+  行數: 485
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: matrix, probability
+
+gh_CrossProductOfSpaceVectors
+  行數: 454
+  複雜度: 3
+  import數: 4
+  助手函數: 19
+  特性: probability
+
+gh_VectorSectionFormula
+  行數: 450
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: derivative, probability
+
+gh_InverseOfSecondOrderMatrix
+  行數: 431
+  複雜度: 3
+  import數: 3
+  助手函數: 12
+  特性: matrix, probability, statistics
+
+gh_MatrixMultiplication
+  行數: 425
+  複雜度: 3
+  import數: 3
+  助手函數: 14
+  特性: matrix, probability
+
+gh_MatrixAdditionSubtractionScalarMultiplication
+  行數: 419
+  複雜度: 3
+  import數: 3
+  助手函數: 15
+  特性: matrix, probability
+
+gh_ImportantLinearTransformations
+  行數: 407
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: matrix, probability
+
+gh_ScalarMultiplicationOfVectors
+  行數: 394
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability
+
+gh_LinearCombinationOfVectors
+  行數: 365
+  複雜度: 3
+  import數: 3
+  助手函數: 7
+  特性: probability
+
+【misc】(484個技能)
+----------------------------------------------------------------------------------------------------
+
+abs_val_eq
+  行數: 170
+  複雜度: 2
+  import數: 1
+  助手函數: 3
+
+num_line_basic
+  行數: 163
+  複雜度: 2
+  import數: 1
+  助手函數: 2
+
+space_line_relations
+  行數: 163
+  複雜度: 2
+  import數: 5
+  助手函數: 13
+
+dist_formula_1d
+  行數: 130
+  複雜度: 1
+  import數: 3
+  助手函數: 2
+
+point_slope_form
+  行數: 115
+  複雜度: 1
+  import數: 2
+  助手函數: 3
+
+vertex_max_min
+  行數: 110
+  複雜度: 1
+  import數: 1
+  助手函數: 4
+
+completing_square
+  行數: 98
+  複雜度: 1
+  import數: 1
+  助手函數: 4
+
+linear_func_type
+  行數: 85
+  複雜度: 1
+  import數: 1
+  助手函數: 2
+
+quad_ineq_discriminant
+  行數: 85
+  複雜度: 3
+  import數: 2
+  助手函數: 2
+  特性: polynomial
+
+inequality_graph
+  行數: 84
+  複雜度: 1
+  import數: 1
+  助手函數: 3
+
+【other_gh】(49個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_RealExponentsAndLaws
+  行數: 714
+  複雜度: 3
+  import數: 3
+  助手函數: 12
+  特性: derivative, probability
+
+gh_UsingSuperpositionToFindExtrema
+  行數: 656
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability
+
+gh_OperationsOfRadicalsAndFractions
+  行數: 619
+  複雜度: 3
+  import數: 4
+  助手函數: 15
+  特性: probability
+
+gh_ComprehensiveExercises
+  行數: 586
+  複雜度: 3
+  import數: 3
+  助手函數: 14
+  特性: probability, statistics
+
+gh_UnitExercises
+  行數: 566
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: matrix, probability
+
+gh_MultiplicationFormulas
+  行數: 508
+  複雜度: 3
+  import數: 3
+  助手函數: 13
+  特性: polynomial, probability
+
+gh_FactorTheorem
+  行數: 501
+  複雜度: 3
+  import數: 2
+  助手函數: 10
+  特性: polynomial, probability
+
+gh_GaussianElimination
+  行數: 492
+  複雜度: 3
+  import數: 2
+  助手函數: 6
+  特性: matrix, probability
+
+gh_RationalExponentsAndLaws
+  行數: 447
+  複雜度: 3
+  import數: 3
+  助手函數: 11
+  特性: probability
+
+gh_CountingPrinciples
+  行數: 444
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+【probability_statistics】(11個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_ConditionalProbability
+  行數: 486
+  複雜度: 3
+  import數: 2
+  助手函數: 7
+  特性: probability, statistics
+
+gh_ExpectedValueVarianceAndStandardDeviationOfRandomVariables
+  行數: 430
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability
+
+gh_BayesTheorem
+  行數: 299
+  複雜度: 2
+  import數: 3
+  助手函數: 4
+  特性: probability
+
+gh_BinomialDistribution
+  行數: 248
+  複雜度: 2
+  import數: 3
+  助手函數: 2
+  特性: probability
+
+gh_PropertiesOfProbability
+  行數: 244
+  複雜度: 3
+  import數: 2
+  助手函數: 8
+  特性: derivative, probability
+
+gh_GeometricDistribution
+  行數: 237
+  複雜度: 2
+  import數: 3
+  助手函數: 7
+  特性: probability
+
+gh_DefinitionOfClassicalProbability
+  行數: 229
+  複雜度: 2
+  import數: 3
+  助手函數: 8
+  特性: probability
+
+gh_PropertiesOfGeometricDistribution
+  行數: 228
+  複雜度: 2
+  import數: 3
+  助手函數: 7
+  特性: probability, statistics
+
+gh_ReviewOfProbability
+  行數: 201
+  複雜度: 2
+  import數: 3
+  助手函數: 6
+  特性: probability, statistics
+
+gh_PropertiesOfBinomialDistribution
+  行數: 169
+  複雜度: 2
+  import數: 4
+  助手函數: 4
+
+【sequences_series】(4個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_Sequence
+  行數: 586
+  複雜度: 3
+  import數: 3
+  助手函數: 8
+  特性: probability
+
+gh_CommonSeriesSummationFormulas
+  行數: 398
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+gh_BinomialTheorem
+  行數: 268
+  複雜度: 2
+  import數: 3
+  助手函數: 7
+  特性: probability
+
+gh_Series
+  行數: 196
+  複雜度: 2
+  import數: 3
+  助手函數: 7
+  特性: probability
+
+【trigonometry】(17個技能)
+----------------------------------------------------------------------------------------------------
+
+gh_BasicTrigonometricIdentities
+  行數: 566
+  複雜度: 3
+  import數: 3
+  助手函數: 12
+  特性: probability, trigonometry
+
+gh_SineAndCosineFunctionGraphs
+  行數: 541
+  複雜度: 3
+  import數: 3
+  助手函數: 9
+  特性: probability, trigonometry
+
+gh_TrigonometricRatiosOfGeneralizedAngles
+  行數: 510
+  複雜度: 3
+  import數: 4
+  助手函數: 9
+  特性: probability, trigonometry
+
+gh_DefinitionOfRadianMeasure
+  行數: 483
+  複雜度: 3
+  import數: 3
+  助手函數: 10
+  特性: probability
+
+gh_SineRule
+  行數: 474
+  複雜度: 3
+  import數: 3
+  助手函數: 8
+  特性: probability, statistics
+
+gh_SineAndCosineFunctionSuperposition
+  行數: 338
+  複雜度: 3
+  import數: 4
+  助手函數: 6
+  特性: probability
+
+gh_TrigonometricRatiosInRadians
+  行數: 313
+  複雜度: 3
+  import數: 3
+  助手函數: 8
+  特性: polynomial, probability, trigonometry
+
+gh_TriangleInequality
+  行數: 304
+  複雜度: 3
+  import數: 4
+  助手函數: 6
+  特性: probability
+
+gh_AngleOfInclination
+  行數: 298
+  複雜度: 2
+  import數: 3
+  助手函數: 6
+  特性: probability
+
+gh_AcuteAngleTrigonometricRatios
+  行數: 286
+  複雜度: 2
+  import數: 4
+  助手函數: 10
+  特性: probability
