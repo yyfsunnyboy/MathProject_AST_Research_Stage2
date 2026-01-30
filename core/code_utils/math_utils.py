@@ -322,3 +322,78 @@ def check(user_answer, correct_answer):
         return {"correct": True, "result": "正確"}
 
     return {"correct": False, "result": f"正確答案: {correct_answer}"}
+
+
+# ==============================================================================
+# [V10.0 新增] 多項式處理工具 - 防止 LLM 幻覺函數
+# ==============================================================================
+
+def build_polynomial_text(coeffs):
+    """
+    將係數列表轉換為多項式文字表示
+    
+    Args:
+        coeffs: 係數列表，從高次項到常數項 [a_n, a_{n-1}, ..., a_1, a_0]
+                例如 [2, 0, -3, 1] 表示 2x³ - 3x + 1
+    
+    Returns:
+        str: 多項式的 LaTeX 格式字串
+    
+    Examples:
+        >>> build_polynomial_text([2, 0, -3, 1])
+        '2x^{3} - 3x + 1'
+        >>> build_polynomial_text([1, -2])
+        'x - 2'
+    """
+    if not coeffs:
+        return "0"
+    
+    # 移除前導零
+    while len(coeffs) > 1 and coeffs[0] == 0:
+        coeffs = coeffs[1:]
+    
+    if all(c == 0 for c in coeffs):
+        return "0"
+    
+    terms = []
+    n = len(coeffs) - 1  # 最高次數
+    
+    for i, coef in enumerate(coeffs):
+        if coef == 0:
+            continue
+        
+        power = n - i
+        
+        # 處理係數
+        if power == 0:
+            # 常數項
+            terms.append(str(coef))
+        elif power == 1:
+            # 一次項
+            if coef == 1:
+                terms.append("x")
+            elif coef == -1:
+                terms.append("-x")
+            else:
+                terms.append(f"{coef}x")
+        else:
+            # 高次項
+            if coef == 1:
+                terms.append(f"x^{{{power}}}")
+            elif coef == -1:
+                terms.append(f"-x^{{{power}}}")
+            else:
+                terms.append(f"{coef}x^{{{power}}}")
+    
+    if not terms:
+        return "0"
+    
+    # 組合項目，處理正負號
+    result = terms[0]
+    for term in terms[1:]:
+        if term.startswith('-'):
+            result += f" - {term[1:]}"
+        else:
+            result += f" + {term}"
+    
+    return result

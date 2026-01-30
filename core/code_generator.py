@@ -73,7 +73,8 @@ try:
         clamp_fraction, safe_pow, factorial_bounded, nCr, nPr,
         rational_gauss_solve, normalize_angle,
         fmt_set, fmt_interval, fmt_vec,
-        get_base_root, path_in_root, ensure_dir
+        get_base_root, path_in_root, ensure_dir,
+        build_polynomial_text  # V10.0 新增：防止幻覺函數
     )
     from core.healers import RegexHealer, ASTHealer
     from core.validators import SyntaxValidator, DynamicSampler
@@ -1006,6 +1007,22 @@ class ASTHealer(ast.NodeTransformer):
 
     def visit_Call(self, node):
         self.generic_visit(node)
+        
+        # 0. [V10.0 新增] 檢測並處理幻覺函數 (Hallucinated Functions)
+        # 常見的 LLM 幻覺函數包括：build_polynomial_text, format_polynomial, poly_to_latex 等
+        hallucinated_funcs = [
+            'build_polynomial_text', 'format_polynomial', 'poly_to_latex',
+            'build_expression', 'format_expression', 'latex_polynomial',
+            'polynomial_text', 'expr_to_latex', 'build_latex'
+        ]
+        
+        if isinstance(node.func, ast.Name) and node.func.id in hallucinated_funcs:
+            self.fixes += 1
+            print(f"🔴 [AST Healer] 偵測到幻覺函數: {node.func.id}() -> 重定向到 build_polynomial_text()")
+            
+            # 將幻覺函數調用轉換為調用真實的 build_polynomial_text
+            node.func.id = 'build_polynomial_text'
+            return node
         
         # 1. 攔截 eval/exec/safe_eval (轉接或標準化為 safe_eval)
         # 或者直接攔截 safe_eval (如果 AI 已經學會用 safe_eval 但用錯了參數)
