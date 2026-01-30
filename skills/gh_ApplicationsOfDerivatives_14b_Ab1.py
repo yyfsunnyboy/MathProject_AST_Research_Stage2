@@ -1,9 +1,9 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: qwen2.5-coder:14b | Strategy: V44.9 Hybrid-Healing
+# Model: gemini-2.5-flash | Strategy: V44.9 Hybrid-Healing
 # Ablation ID: 1 | Healer: OFF
-# Performance: 24.59s | Tokens: In=3442, Out=814
-# Created At: 2026-01-29 20:22:31
+# Performance: 33.77s | Tokens: In=3303, Out=1973
+# Created At: 2026-01-29 23:54:44
 # Fix Status: [Markdown-Cleaned] | Fixes: Markdown=1, Regex=0, AST=0
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -402,97 +402,166 @@ op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
 
 
 import random
+import math
+
+# 以下工具函數已預先定義，在此處不再重複定義。
+# def fmt_num(x): ...
+# op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
+# def clean_latex_output(q_str): ...
+
+def fmt_polynomial(coeffs):
+    """
+    將多項式係數列表格式化為 LaTeX 或純文本字符串。
+    處理規則:
+    - [c0, c1, ..., cn] -> cn x^n + ... + c1 x + c0
+    - 處理 1x^n 為 x^n，-1x^n 為 -x^n。
+    - 處理 x^1 為 x。
+    - 處理 x^0 為常數。
+    - 正確處理符號 + 和 -。
+    - 忽略係數為零的項，除非多項式本身為零（此時顯示 "0"）。
+    """
+    # 移除末尾的零係數，但如果只有常數項且為零，則保留
+    actual_degree = len(coeffs) - 1
+    while actual_degree > 0 and coeffs[actual_degree] == 0:
+        actual_degree -= 1
+    
+    # 如果所有係數都是零，則返回 "0"
+    if actual_degree == 0 and coeffs[0] == 0:
+        return "0"
+
+    terms = []
+    for i in range(actual_degree, -1, -1):
+        coeff = coeffs[i]
+        if coeff == 0:
+            continue
+
+        abs_coeff = abs(coeff)
+        sign_str = "+" if coeff > 0 else "-"
+
+        # 處理第一個項的符號，如果是正號則不顯示
+        if not terms and sign_str == "+":
+            sign_str = ""
+
+        term_val_str = ""
+        if i == 0:  # 常數項
+            term_val_str = str(abs_coeff)
+        elif i == 1:  # x 項
+            if abs_coeff == 1:
+                term_val_str = "x"
+            else:
+                term_val_str = f"{abs_coeff}x"
+        else:  # x^n 項 (n > 1)
+            if abs_coeff == 1:
+                term_val_str = f"x^{i}"
+            else:
+                term_val_str = f"{abs_coeff}x^{i}"
+        
+        terms.append(f"{sign_str}{term_val_str}")
+    
+    # 拼接所有項，並在運算符周圍添加空格以提高可讀性
+    result = "".join(terms)
+    result = result.replace('+', ' + ').replace('-', ' - ')
+    result = result.strip()
+    
+    # 清理潛在的多餘空格
+    result = ' '.join(result.split())
+
+    return result
 
 def generate(level=1, **kwargs):
     while True:
-        a = random.choice([-2, -1, 1, 2])
-        c = random.choice([-2, -1, 1, 2])
-        n = random.randint(2, 3)
-        x0 = random.randint(-3, 3)
+        # 1. 根據 MASTER_SPEC 生成 degree
+        degree = random.choice([3, 4, 5])
+
+        # 2. 根據 MASTER_SPEC 生成 polynomial_coeffs
+        polynomial_coeffs = [0] * (degree + 1)
         
-        val1_target = random.choice([-2, -1, 1, 2])
-        b = val1_target - a * x0
-        if not (-5 <= b <= 5):
+        # 確保最高次項係數非零
+        polynomial_coeffs[degree] = random.choice([c for c in range(-10, 11) if c != 0])
+        
+        # 生成其他係數
+        for i in range(degree):
+            polynomial_coeffs[i] = random.randint(-10, 10)
+        
+        # 確保至少有 3 個非零係數
+        non_zero_count = sum(1 for c in polynomial_coeffs if c != 0)
+        if non_zero_count < 3:
+            continue # 不符合條件，重新生成多項式
+
+        # 3. 根據 MASTER_SPEC 生成 derivative_order_1 和 derivative_order_2
+        possible_orders = [i for i in range(1, degree + 1)]
+        if len(possible_orders) < 2: # 理論上 degree >= 3 不會發生
             continue
+        derivative_order_1, derivative_order_2 = random.sample(possible_orders, 2)
         
-        val2_target = random.choice([-2, -1, 1, 2])
-        d = val2_target - c * x0
-        if not (-5 <= d <= 5):
-            continue
-        
-        # Calculate f(x) and its derivative
-        def f(x):
-            return (a * x + b) * ((c * x + d) ** n)
-        
-        def df(x):
-            u = a * x + b
-            v = (c * x + d) ** n
-            du_dx = a
-            dv_dx = n * c * (c * x + d) ** (n - 1)
-            return du_dx * v + u * dv_dx
-        
-        y0 = f(x0)
-        m = df(x0)
-        
-        if m == 0:
-            continue
-        
-        k = y0 - m * x0
-        
-        # Format the question
-        term1 = format_linear_term(a, b)
-        term2 = f"({format_linear_term(c, d)})^{fmt_num(n)}"
-        func_str = f"{term1}{term2}"
-        point_str = f"P({fmt_num(x0)}, {fmt_num(y0)})"
-        q = f"在函數 $f(x) = {func_str}$ 的圖形上，求以點 ${point_str}$ 為切點的切線方程式。"
-        question_output = clean_latex_output(q)
-        
-        # Format the answer
-        if m == 1:
-            if k > 0:
-                ans_str = f"y=x+{k}"
-            elif k < 0:
-                ans_str = f"y=x-{abs(k)}"
-            else:
-                ans_str = "y=x"
-        elif m == -1:
-            if k > 0:
-                ans_str = f"y=-x+{k}"
-            elif k < 0:
-                ans_str = f"y=-x-{abs(k)}"
-            else:
-                ans_str = "y=-x"
+        # 4. 迭代計算 f(x) 的各階導數
+        derivative_coeffs_map = {}
+        current_coeffs = list(polynomial_coeffs)
+
+        max_order_needed = max(derivative_order_1, derivative_order_2)
+
+        for order in range(1, max_order_needed + 1):
+            next_coeffs = []
+            # 微分規則: (c_j * x^j)' = c_j * j * x^(j-1)
+            # 因此，x^(j-1) 的新係數來自於原 x^j 項的係數 c_j 乘以 j
+            for j in range(1, len(current_coeffs)): # 從 x^1 項 (索引 1) 開始
+                next_coeffs.append(current_coeffs[j] * j)
+            
+            # 處理微分後多項式為常數項或零的情況
+            if not next_coeffs: # 例如，對常數項微分，結果為 0
+                next_coeffs = [0]
+            
+            current_coeffs = next_coeffs
+            derivative_coeffs_map[order] = current_coeffs[:] # 儲存係數的副本
+
+        f_prime1_coeffs = derivative_coeffs_map.get(derivative_order_1, [0])
+        f_prime2_coeffs = derivative_coeffs_map.get(derivative_order_2, [0])
+
+        # 5. 驗證所有中間和最終係數的絕對值在指定範圍內，且導數結果不全為零
+        # 係數絕對值不超過 1000
+        if any(abs(c) > 1000 for c in f_prime1_coeffs) or \
+           any(abs(c) > 1000 for c in f_prime2_coeffs):
+            continue # 係數過大，重新生成
+
+        # 導數結果不能全為零 (即不能是 [0])
+        if all(c == 0 for c in f_prime1_coeffs) or all(c == 0 for c in f_prime2_coeffs):
+             continue # 導數結果為零多項式，重新生成
+
+        # 所有驗證通過，跳出循環
+        break
+
+    # 6. 格式化問題字串 (question_text)
+    f_x_latex = fmt_polynomial(polynomial_coeffs)
+
+    def get_derivative_symbol_latex(order):
+        if order == 1:
+            return "f'(x)"
+        elif order == 2:
+            return "f''(x)"
         else:
-            if k > 0:
-                ans_str = f"y={m}x+{k}"
-            elif k < 0:
-                ans_str = f"y={m}x-{abs(k)}"
-            else:
-                ans_str = f"y={m}x"
-        
-        return {'question_text': question_output, 'answer': ans_str, 'mode': 1}
+            return f"f^{{({order})}}(x)"
 
-def format_linear_term(coeff, constant):
-    if coeff == 0:
-        return ""
-    elif coeff == 1:
-        return "x" if constant == 0 else f"x + {constant}"
-    elif coeff == -1:
-        return "-x" if constant == 0 else f"-x + {constant}"
-    else:
-        return f"{coeff}x" if constant == 0 else f"{coeff}x + {constant}"
+    prime1_symbol_latex = get_derivative_symbol_latex(derivative_order_1)
+    prime2_symbol_latex = get_derivative_symbol_latex(derivative_order_2)
 
-def fmt_num(number):
-    if number < 0:
-        return f"({number})"
-    return str(number)
+    q_str = f"已知 $f(x) = {f_x_latex}$，求 ${prime1_symbol_latex}$ 與 ${prime2_symbol_latex}$。"
+    question_text = clean_latex_output(q_str)
 
-op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
+    # 7. 格式化答案字串 (answer)
+    f_prime1_ans_text = fmt_polynomial(f_prime1_coeffs)
+    f_prime2_ans_text = fmt_polynomial(f_prime2_coeffs)
 
-def clean_latex_output(text):
-    # This function is a placeholder for the actual implementation
-    # which would handle LaTeX formatting and cleaning.
-    return text
+    def get_derivative_symbol_ans(order):
+        if order == 1:
+            return "f'(x)"
+        elif order == 2:
+            return "f''(x)"
+        else:
+            return f"f^({order})(x)" # 純文本輸出，指數括號不需要內層花括號
 
-# Example usage:
-# print(generate())
+    prime1_symbol_ans = get_derivative_symbol_ans(derivative_order_1)
+    prime2_symbol_ans = get_derivative_symbol_ans(derivative_order_2)
+
+    answer_text = f"{prime1_symbol_ans} = {f_prime1_ans_text}\n{prime2_symbol_ans} = {f_prime2_ans_text}"
+
+    return {'question_text': question_text, 'answer': answer_text, 'mode': 1}

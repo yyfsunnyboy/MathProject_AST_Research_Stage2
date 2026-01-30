@@ -66,7 +66,7 @@ from config import Config
 # 注意：舊函數定義仍保留在本檔案中作為臨時實現
 # 後續將逐步完全遷移到新模組
 try:
-    from core.utils import (
+    from core.code_utils import (
         safe_choice, to_latex, fmt_num, safe_eval,
         is_prime, gcd, lcm, get_factors,
         clean_latex_output, check,

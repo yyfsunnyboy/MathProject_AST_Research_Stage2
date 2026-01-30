@@ -55,8 +55,10 @@ def render_latex_to_buffer(latex_str):
     """
     try:
         # 設定 matplotlib 使用支持中文的字體
-        plt.rcParams['font.sans-serif'] = ['SimHei', 'Microsoft YaHei', 'DejaVu Sans']
+        # [V1.7] 改用較美觀的字體組合：微軟正黑體 > 標楷體 > 黑體
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'Microsoft JhengHei', 'KaiTi', 'SimHei']
         plt.rcParams['axes.unicode_minus'] = False
+        plt.rcParams['font.size'] = 11  # 稍微加大預設字體
         
         # 簡單：直接去掉 $...$，用純文本渲染
         text_version = latex_str.replace('$', '').strip()
@@ -68,6 +70,10 @@ def render_latex_to_buffer(latex_str):
             '^{3}': '³',
             '^{4}': '⁴',
             '^{5}': '⁵',
+            '^{6}': '⁶',
+            '^{7}': '⁷',
+            '^{8}': '⁸',
+            '^{9}': '⁹',
         }
         for latex_sup, unicode_sup in superscript_map.items():
             text_version = text_version.replace(latex_sup, unicode_sup)
@@ -75,23 +81,25 @@ def render_latex_to_buffer(latex_str):
         if not text_version:
             return None
         
-        # 創建圖片
-        fig = plt.figure(figsize=(13, 1.2), dpi=100)
+        # 創建圖片 - 提高解析度
+        fig = plt.figure(figsize=(14, 1.5), dpi=120)  # 更寬、更高、更清晰
         fig.patch.set_alpha(0)
         ax = fig.add_subplot(111)
         
         # 直接渲染純文本，用中文字體
         ax.text(0.05, 0.5, text_version, 
-                fontsize=10, ha='left', va='center',
-                transform=ax.transAxes, wrap=True)
+                fontsize=12,  # 加大字體
+                ha='left', va='center',
+                transform=ax.transAxes, wrap=True,
+                fontfamily='sans-serif')  # 明確指定字體家族
         
         ax.axis('off')
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
         
-        # 存入 Buffer
+        # 存入 Buffer - 提高輸出品質
         buf = io.BytesIO()
-        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.1, dpi=100)
+        plt.savefig(buf, format='png', bbox_inches='tight', pad_inches=0.15, dpi=120)  # 提高 DPI
         plt.close(fig)
         
         buf.seek(0)

@@ -48,11 +48,11 @@ def test_function_signature():
 def test_utils_import():
     """測試工具函數導入"""
     try:
-        from core.utils import safe_choice, to_latex, fmt_num
-        print("✅ Utils 模組導入成功")
+        from core.code_utils import safe_choice, to_latex, fmt_num
+        print("✅ Code Utils 模組導入成功")
         return True
     except Exception as e:
-        print(f"⚠️ Utils 模組導入失敗（預期，尚未建立）: {e}")
+        print(f"⚠️ Code Utils 模組導入失敗: {e}")
         return False
 
 def test_healers_import():

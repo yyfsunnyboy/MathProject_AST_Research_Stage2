@@ -68,7 +68,7 @@ class Config:
         # 1. 工程師：專門寫 Code (精準、強迫症)
         'coder': {
             # 'provider': 'google',        # <--- 改用 Gemini 擔任工程師
-            # 'model': 'gemini-2.5-flash'
+            # 'model': 'gemini-2.5-flash',
 
             'provider': 'local',  
             'model': 'qwen2.5-coder:14b',             

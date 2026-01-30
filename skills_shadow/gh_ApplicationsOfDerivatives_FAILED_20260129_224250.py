@@ -1,11 +1,11 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: gemini-2.5-flash | Strategy: V44.9 Hybrid-Healing
+# Model: qwen2.5-coder:14b | Strategy: V44.9 Hybrid-Healing
 # Ablation ID: 2 | Healer: OFF
-# Performance: 42.17s | Tokens: In=6867, Out=2187
-# Created At: 2026-01-29 23:55:26
-# Fix Status: [Clean Pass] | Fixes: Regex=0, AST=0
-# Verification: Internal Logic Check = PASSED
+# Performance: 26.62s | Tokens: In=6840, Out=830
+# Created At: 2026-01-29 22:42:50
+# Fix Status: [Markdown-Cleaned] | Fixes: Markdown=1, Regex=0, AST=0
+# Verification: Internal Logic Check = FAILED
 # ==============================================================================
 
 
@@ -401,224 +401,98 @@ op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
 # ---------------------------------------------------------
 
 
+```
 def generate(level=1, **kwargs):
     import random
-    import math
-    from fractions import Fraction
-
-    # Helper to format polynomial for LaTeX
-    def _fmt_polynomial_latex(coeffs):
-        if not coeffs:
-            return "0"
-        
-        # Remove trailing zeros (e.g., [1, 2, 0, 0] -> [1, 2])
-        # But preserve [0] for the zero polynomial
-        # Use a copy to avoid modifying original list outside this function
-        display_coeffs = list(coeffs) 
-        while len(display_coeffs) > 1 and display_coeffs[-1] == 0:
-            display_coeffs.pop()
-
-        if not display_coeffs: # This means the original was [0,0,0] or similar
-            return "0"
-
-        terms = []
-        degree = len(display_coeffs) - 1
-
-        for i in range(degree, -1, -1):
-            coeff = display_coeffs[i]
-            if coeff == 0:
-                continue
-
-            coeff_abs = abs(coeff)
-            sign = '+' if coeff > 0 else '-'
-            
-            # Handle the sign for the first term
-            if not terms and sign == '+':
-                sign = '' # No '+' for the very first term if positive
-
-            term_str = ''
-            if i == 0: # Constant term
-                term_str = f"{fmt_num(coeff_abs)}"
-            elif i == 1: # x term
-                if coeff_abs == 1:
-                    term_str = "x"
-                else:
-                    term_str = f"{fmt_num(coeff_abs)}x"
-            else: # x^n term (n > 1)
-                if coeff_abs == 1:
-                    term_str = f"x^{{{i}}}" # triple brace for LaTeX superscript
-                else:
-                    term_str = f"{fmt_num(coeff_abs)}x^{{{i}}}"
-
-            terms.append(f"{sign}{term_str}")
-
-        if not terms:
-            return "0"
-        
-        # Join terms, removing any leading '+' if it slipped through
-        result = "".join(terms).lstrip('+')
-        return result if result else "0" # Ensure "0" if all terms were zero
-
-    # Helper to format polynomial for plain text answer
-    def _fmt_polynomial_text(coeffs):
-        if not coeffs:
-            return "0"
-        
-        display_coeffs = list(coeffs)
-        while len(display_coeffs) > 1 and display_coeffs[-1] == 0:
-            display_coeffs.pop()
-
-        if not display_coeffs:
-            return "0"
-
-        terms = []
-        degree = len(display_coeffs) - 1
-
-        for i in range(degree, -1, -1):
-            coeff = display_coeffs[i]
-            if coeff == 0:
-                continue
-
-            coeff_abs = abs(coeff)
-            sign = '+' if coeff > 0 else '-'
-            
-            if not terms and sign == '+':
-                sign = ''
-
-            term_str = ''
-            if i == 0:
-                term_str = f"{coeff_abs}"
-            elif i == 1:
-                if coeff_abs == 1:
-                    term_str = "x"
-                else:
-                    term_str = f"{coeff_abs}x"
-            else:
-                if coeff_abs == 1:
-                    term_str = f"x^{i}"
-                else:
-                    term_str = f"{coeff_abs}x^{i}"
-
-            terms.append(f"{sign}{term_str}")
-
-        result = "".join(terms).lstrip('+')
-        return result if result else "0"
-
-    # Helper for derivative symbol
-    def _get_derivative_symbol(order, is_latex=True):
-        if is_latex:
-            if order == 1:
-                return "f'(x)"
-            elif order == 2:
-                return "f''(x)"
-            else:
-                return f"f^{{({order})}}(x)" # triple brace for LaTeX superscript
-        else: # Plain text
-            if order == 1:
-                return "f'(x)"
-            elif order == 2:
-                return "f''(x)"
-            else:
-                return f"f^({order})(x)"
-
+    
+    # Step 1: Generate necessary variables according to MASTER_SPEC
+    degree = random.randint(3, 5)
+    
+    polynomial_coeffs = []
+    while len([c for c in polynomial_coeffs if c != 0]) < 3:
+        polynomial_coeffs = [random.randint(-10, 10) for _ in range(degree + 1)]
+        polynomial_coeffs[degree] = random.choice([-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+    
+    derivative_order_1 = random.randint(1, degree)
     while True:
-        # 1. Generate degree and polynomial_coeffs
-        degree = random.choice([3, 4, 5])
-        polynomial_coeffs = [0] * (degree + 1)
-        
-        # Ensure highest degree coefficient is non-zero
-        polynomial_coeffs[degree] = random.randint(-10, 10)
-        while polynomial_coeffs[degree] == 0:
-            polynomial_coeffs[degree] = random.randint(-10, 10)
-        
-        # Generate other coefficients
-        for i in range(degree):
-            polynomial_coeffs[i] = random.randint(-10, 10)
-            
-        # Ensure at least 3 non-zero coefficients
-        non_zero_count = sum(1 for c in polynomial_coeffs if c != 0)
-        if non_zero_count < 3:
-            continue # Regenerate polynomial if not enough non-zero terms
-
-        # 2. Generate derivative_order_1 and derivative_order_2
-        derivative_order_1 = random.randint(1, degree)
         derivative_order_2 = random.randint(1, degree)
-        while derivative_order_2 == derivative_order_1:
-            derivative_order_2 = random.randint(1, degree)
-
-        # 3. Calculate derivatives
-        current_coeffs = list(polynomial_coeffs) # Start with original coeffs
-        
-        f_prime1_coeffs = None
-        f_prime2_coeffs = None
-        
-        max_order = max(derivative_order_1, derivative_order_2)
-        
-        # Flag to indicate if coefficients exceeded limits
-        coeff_limit_exceeded = False
-
-        # Iterate differentiation
-        for k in range(1, max_order + 1):
-            next_coeffs = []
-            # Differentiate: c_j * x^j becomes (c_j * j) * x^(j-1)
-            # The new list starts from x^0 term (derived from x^1)
-            for j in range(1, len(current_coeffs)): # Start from c1 (x^1 term)
-                coeff = current_coeffs[j] * j
-                if abs(coeff) > 1000: # Check coefficient boundary
-                    coeff_limit_exceeded = True
-                    break # Break inner loop
-                next_coeffs.append(coeff)
-            
-            if coeff_limit_exceeded:
-                break # Break outer loop, will trigger regeneration
-            
-            current_coeffs = next_coeffs
-            
-            # Record the coefficients for the requested orders
-            if k == derivative_order_1:
-                f_prime1_coeffs = list(current_coeffs)
-            if k == derivative_order_2:
-                f_prime2_coeffs = list(current_coeffs)
-        
-        # Check if any coefficients exceeded limits during differentiation
-        if coeff_limit_exceeded:
-            continue # Regeneration needed due to boundary violation
-
-        # Ensure derivative results were actually calculated and not None
-        if f_prime1_coeffs is None or f_prime2_coeffs is None:
-            continue # This should ideally not happen if max_order is reached and no limit exceeded
-
-        # Ensure derivative results are not all zeros (e.g. asking for 3rd derivative of x^2)
-        # A polynomial `[0]` means it's the zero polynomial.
-        if not f_prime1_coeffs or all(c == 0 for c in f_prime1_coeffs):
-            continue
-        if not f_prime2_coeffs or all(c == 0 for c in f_prime2_coeffs):
-            continue
-
-        # All checks passed, break the regeneration loop
-        break
-
-    # 4. Format question text
-    f_x_latex = _fmt_polynomial_latex(polynomial_coeffs)
+        if derivative_order_2 != derivative_order_1:
+            break
     
-    prime1_symbol_latex = _get_derivative_symbol(derivative_order_1, is_latex=True)
-    prime2_symbol_latex = _get_derivative_symbol(derivative_order_2, is_latex=True)
+    # Step 2: Execute calculations according to MASTER_SPEC
+    def fmt_polynomial(coeffs):
+        terms = []
+        for i in range(len(coeffs)):
+            coeff = coeffs[i]
+            if coeff == 0:
+                continue
+            term = ""
+            if abs(coeff) != 1 or i == 0:
+                term += str(abs(coeff))
+            if i > 0:
+                term += "x"
+                if i > 1:
+                    term += f"^{{{i}}}"
+            terms.append(term)
+        return " + ".join(terms) if terms else "0"
     
-    q = f"已知 $f(x) = {f_x_latex}$，求 ${prime1_symbol_latex}$ 與 ${prime2_symbol_latex}$。"
+    def differentiate(coeffs):
+        new_coeffs = []
+        for i in range(len(coeffs) - 1):
+            new_coeffs.append(coeffs[i] * (len(coeffs) - 1 - i))
+        return new_coeffs
+    
+    f_prime1_coeffs = polynomial_coeffs
+    for _ in range(derivative_order_1):
+        f_prime1_coeffs = differentiate(f_prime1_coeffs)
+    
+    f_prime2_coeffs = polynomial_coeffs
+    for _ in range(derivative_order_2):
+        f_prime2_coeffs = differentiate(f_prime2_coeffs)
+    
+    # Step 3: Build question LaTeX using fmt_num and op_latex
+    f_x_latex = fmt_polynomial(polynomial_coeffs)
+    
+    def derivative_symbol(order):
+        if order == 1:
+            return "f'(x)"
+        elif order == 2:
+            return "f''(x)"
+        else:
+            return f"f^{({order})}(x)"
+    
+    prime1_symbol = derivative_symbol(derivative_order_1)
+    prime2_symbol = derivative_symbol(derivative_order_2)
+    
+    q = f"已知 $f(x) = {f_x_latex}$，求 ${prime1_symbol}$ 與 ${prime2_symbol}$。"
     q = clean_latex_output(q)
-
-    # 5. Format answer text
-    f_prime1_text = _fmt_polynomial_text(f_prime1_coeffs)
-    f_prime2_text = _fmt_polynomial_text(f_prime2_coeffs)
-
-    prime1_symbol_text = _get_derivative_symbol(derivative_order_1, is_latex=False)
-    prime2_symbol_text = _get_derivative_symbol(derivative_order_2, is_latex=False)
-
-    a = f"{prime1_symbol_text} = {f_prime1_text}\n{prime2_symbol_text} = {f_prime2_text}"
-
+    
+    # Step 4: Format answer as plain text
+    def fmt_polynomial_plain(coeffs):
+        terms = []
+        for i in range(len(coeffs)):
+            coeff = coeffs[i]
+            if coeff == 0:
+                continue
+            term = ""
+            if abs(coeff) != 1 or i == 0:
+                term += str(abs(coeff))
+            if i > 0:
+                term += "x"
+                if i > 1:
+                    term += f"^{i}"
+            terms.append(term)
+        return " + ".join(terms) if terms else "0"
+    
+    f_prime1_latex = fmt_polynomial_plain(f_prime1_coeffs)
+    f_prime2_latex = fmt_polynomial_plain(f_prime2_coeffs)
+    
+    ans = f"{prime1_symbol} = {f_prime1_latex}\n{prime2_symbol} = {f_prime2_latex}"
+    
+    # Step 5: Return standard format
     return {
         'question_text': q,
-        'correct_answer': a,
-        'answer': a,
+        'correct_answer': ans,
+        'answer': ans,
         'mode': 1
     }
