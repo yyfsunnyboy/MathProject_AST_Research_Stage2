@@ -1,9 +1,18 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: core/code_generator.py
-# Version: V9.2.0 (Scientific Standard Edition)
-# Last Updated: 2026-01-27
+# Version: V10.0.0 (Modular Refactored Edition) 🎯
+# Last Updated: 2026-01-30
 # Author: Math AI Research Team (Advisor & Student)
+#
+# [Refactoring Status]:
+#   ✅ V10.0 重構: 將 3008 行代碼拆分成模組化架構
+#   📦 新模組:
+#      - core.utils (math_utils, latex_utils, file_utils)
+#      - core.healers (regex_healer, ast_healer)
+#      - core.validators (syntax_validator, dynamic_sampler)
+#      - core.prompts (prompt_builder)
+#   🔒 向後相容: auto_generate_skill_code() 簽名保持不變
 #
 # [Description]:
 #   本程式是「自動出題系統」的核心引擎 (Core Engine)，也是本次科展實驗的
@@ -52,6 +61,30 @@ from pyflakes.reporter import Reporter
 from core.ai_wrapper import get_ai_client
 from models import db, SkillGenCodePrompt
 from config import Config
+
+# 🎯 [V10.0 Refactor] 新模組引入（向後相容）
+# 注意：舊函數定義仍保留在本檔案中作為臨時實現
+# 後續將逐步完全遷移到新模組
+try:
+    from core.utils import (
+        safe_choice, to_latex, fmt_num, safe_eval,
+        is_prime, gcd, lcm, get_factors,
+        clean_latex_output, check,
+        clamp_fraction, safe_pow, factorial_bounded, nCr, nPr,
+        rational_gauss_solve, normalize_angle,
+        fmt_set, fmt_interval, fmt_vec,
+        get_base_root, path_in_root, ensure_dir
+    )
+    from core.healers import RegexHealer, ASTHealer
+    from core.validators import SyntaxValidator, DynamicSampler
+    from core.prompts import PromptBuilder
+    
+    REFACTOR_MODULES_AVAILABLE = True
+except ImportError as e:
+    # 降級：如果新模組不可用，使用舊函數
+    REFACTOR_MODULES_AVAILABLE = False
+    import warnings
+    warnings.warn(f"Refactored modules not available: {e}. Using legacy functions.")
 
 # v0.1 Architect Support (optional, try to import)
 try:
@@ -2796,13 +2829,16 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
                 print(f"🔧 [{skill_id}] fmt_num(list) 後置修復: 改為 polynomial_to_string() ({n} 處)")
             
             # F.11 [Post-AST Fix] 修復多項式格式化函數實現
-            # 問題：LLM 生成的 polynomial_to_string 使用 str(Fraction) 和錯誤的指數格式
+            # 問題：LLM 生成的 polynomial_to_string/fmt_polynomial 使用 str(Fraction) 和錯誤的指數格式
             # 解決：替換整個函數實現為正確的 LaTeX 版本
-            if 'def polynomial_to_string' in clean_code:
-                print(f"📍 [DEBUG F.11] 觸發條件滿足：clean_code 包含 'def polynomial_to_string'")
+            # [V47.10] 支援多種函數名稱變體：polynomial_to_string, fmt_polynomial, polynomial_to_latex
+            poly_func_match = re.search(r'def ((?:fmt_)?polynomial(?:_(?:to_)?(?:string|latex))?)\s*\(', clean_code)
+            if poly_func_match:
+                poly_func_name = poly_func_match.group(1)
+                print(f"📍 [DEBUG F.11] 觸發條件滿足：找到多項式函數 '{poly_func_name}'")
                 # 定義正確的函數實現（不含縮排，稍後添加）
                 correct_impl_lines = [
-                    'def polynomial_to_string(coeffs, variable=\'x\'):',
+                    f'def {poly_func_name}(coeffs, variable=\'x\'):',
                     '    """正確的 LaTeX 多項式格式化函數"""',
                     '    terms = []',
                     '    degree = len(coeffs) - 1',
@@ -2820,9 +2856,9 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
                     '                terms.append(f"{fmt_num(coeff, op=True)}{variable}")',
                     '        else:',
                     '            if abs(coeff) == 1:',
-                    '                terms.append(f" {\'+\' if coeff > 0 else \'-\'} {variable}^{{{{{power}}}}}")',
+                    '                terms.append(f" {\'+\' if coeff > 0 else \'-\'} {variable}^{{{power}}}")',
                     '            else:',
-                    '                terms.append(f"{fmt_num(coeff, op=True)}{variable}^{{{{{power}}}}}")',
+                    '                terms.append(f"{fmt_num(coeff, op=True)}{variable}^{{{power}}}")',
                     '    result = \'\'.join(terms)',
                     '    if result.startswith(\' + \'):',
                     '        result = result[3:]',
@@ -2839,8 +2875,8 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
                 replaced = False
                 
                 for line in lines:
-                    # 檢測函數定義開始
-                    match = re.match(r'^(\s+)def polynomial_to_string\s*\(', line)
+                    # 檢測函數定義開始（使用動態函數名）
+                    match = re.match(rf'^(\s+)def {re.escape(poly_func_name)}\s*\(', line)
                     if match:
                         skip_mode = True
                         func_indent = match.group(1)  # 保存縮排字串
@@ -2868,18 +2904,19 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
                 if replaced:
                     clean_code = '\n'.join(new_lines)
                     qwen_fixes += 1
-                    print(f"🔧 [{skill_id}] 替換 polynomial_to_string 為正確的 LaTeX 實現")
+                    print(f"🔧 [{skill_id}] 替換 {poly_func_name} 為正確的 LaTeX 實現")
                 else:
-                    print(f"⚠️ [DEBUG F.11] 替換失敗：找不到匹配的函數定義")
+                    print(f"⚠️ [DEBUG F.11] 替換失敗：找不到匹配的函數定義 '{poly_func_name}'")
             
             # F.12 [Post-AST Fix] 修復多項式題目的 clean_latex_output 誤用
-            # 問題：包含 polynomial_to_string 結果的題目不應再呼叫 clean_latex_output
+            # 問題：包含多項式格式化結果的題目不應再呼叫 clean_latex_output
             # 因為會將 "5x^{3} + 2x" 拆成 "$5x$ ^{ $3$ } $+ 2x$"
             # 解決：直接移除這類呼叫，並確保數學式已用 $ 包裹
             
-            # 模式 1：移除對包含 poly_str 變數的 clean_latex_output 呼叫
+            # [V47.10] 支援多種變數名稱：poly_str, f_x_latex, polynomial_str 等
+            # 模式：移除對包含多項式變數的 clean_latex_output 呼叫
             clean_code, n = re.subn(
-                r"(\n\s*)(q\s*=\s*f['\"][^'\"]*\{poly_str[_a-z0-9]*\}[^'\"]*['\"])\s*\n\s*q\s*=\s*clean_latex_output\s*\(\s*q\s*\)",
+                r"(\n\s*)(q\s*=\s*f['\"][^'\"]*\{(?:poly_str|f_x_latex|polynomial_str)[_a-z0-9]*\}[^'\"]*['\"])\s*\n\s*q\s*=\s*clean_latex_output\s*\(\s*q\s*\)",
                 r"\1\2  # 多項式已格式化，不需 clean_latex_output",
                 clean_code
             )
@@ -2888,9 +2925,9 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
                 print(f"🔧 [{skill_id}] 移除多項式題目的 clean_latex_output 呼叫 ({n} 處)")
                 
                 # 補充：確保題目中的數學式有 $ 包裹
-                # 將 f'已知 f(x) = {poly_str_f}，求...' 改為 f'已知 $f(x) = {poly_str_f}$，求...'
+                # 將 f'已知 f(x) = {f_x_latex}，求...' 改為 f'已知 $f(x) = {f_x_latex}$，求...'
                 clean_code = re.sub(
-                    r"(f['\"][^'\"]*)(f\(x\)\s*=\s*\{poly_str[_a-z0-9]*\})([^'\$\"]*['\"])",
+                    r"(f['\"][^'\"]*)(f\(x\)\s*=\s*\{(?:poly_str|f_x_latex|polynomial_str)[_a-z0-9]*\})([^'\$\"]*['\"])",
                     r"\1$\2$\3",
                     clean_code
                 )
