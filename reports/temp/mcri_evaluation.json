@@ -1,0 +1,179 @@
+[
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab1.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab1.py",
+    "ablation_id": 1,
+    "healer_enabled": false,
+    "level1_executability": 40,
+    "level2_interface": 30,
+    "level3_robustness": 20,
+    "level4_safety": 0,
+    "mcri_score": 90,
+    "details": {
+      "level1": {
+        "scores": {
+          "format_purity": 10,
+          "core_ast": 15,
+          "import_check": 5,
+          "runtime_exec": 10
+        },
+        "details": {
+          "format_purity": "✓ 格式純淨（原始代碼可直接解析）",
+          "core_ast": "✓ 核心邏輯正確（標準化後可解析）",
+          "import_check": "✓ 無禁用套件 (檢查了 6 個)",
+          "runtime_exec": "✓ 定義階段執行成功"
+        }
+      },
+      "level2": {
+        "scores": {
+          "function_def": 10,
+          "return_type": 10,
+          "required_keys": 10
+        },
+        "details": {
+          "function_def": "✓ 找到函數: generate() (參數: level, kwargs)",
+          "return_type": "✓ 回傳型別正確 (dict)",
+          "required_keys": "✓ 必要鍵值完整 (找到 4/4)"
+        }
+      },
+      "level3": {
+        "scores": {
+          "dynamic_sampling": 10,
+          "answer_consistency": 10
+        },
+        "details": {
+          "dynamic_sampling": "✓ 3 次採樣全部成功",
+          "answer_consistency": "✓ 答案一致性: 100%"
+        }
+      },
+      "level4": {
+        "scores": {
+          "forbidden_funcs": 0,
+          "latex_format": 0
+        },
+        "details": {
+          "forbidden_funcs": "✗ 使用禁運函數: eval",
+          "latex_format": "✗ LaTeX 品質差：包含未替換的模板變數"
+        }
+      }
+    }
+  },
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab2.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab2.py",
+    "ablation_id": 2,
+    "healer_enabled": false,
+    "level1_executability": 30,
+    "level2_interface": 0,
+    "level3_robustness": 0,
+    "level4_safety": 0,
+    "mcri_score": 30,
+    "details": {
+      "level1": {
+        "scores": {
+          "format_purity": 0,
+          "core_ast": 15,
+          "import_check": 5,
+          "runtime_exec": 10
+        },
+        "details": {
+          "format_purity": "✗ 格式錯誤: Line 404 - invalid syntax",
+          "core_ast": "✓ 核心邏輯正確（標準化後可解析）",
+          "import_check": "✓ 無禁用套件 (檢查了 6 個)",
+          "runtime_exec": "✓ 定義階段執行成功"
+        }
+      },
+      "level2": {
+        "scores": {
+          "function_def": 0,
+          "return_type": 0,
+          "required_keys": 0
+        },
+        "details": {
+          "function_def": "✗ 無法執行，跳過介面檢查",
+          "return_type": "✗ 無法執行",
+          "required_keys": "✗ 無法執行"
+        }
+      },
+      "level3": {
+        "scores": {
+          "dynamic_sampling": 0,
+          "answer_consistency": 0
+        },
+        "details": {
+          "dynamic_sampling": "✗ 無法執行",
+          "answer_consistency": "✗ 無法執行"
+        }
+      },
+      "level4": {
+        "scores": {
+          "forbidden_funcs": 0,
+          "latex_format": 0
+        },
+        "details": {
+          "forbidden_funcs": "✗ 無法檢查（AST 解析失敗）",
+          "latex_format": "✗ LaTeX 品質差：包含未替換的模板變數"
+        }
+      }
+    }
+  },
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab3.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab3.py",
+    "ablation_id": 3,
+    "healer_enabled": true,
+    "level1_executability": 40,
+    "level2_interface": 30,
+    "level3_robustness": 20,
+    "level4_safety": 3,
+    "mcri_score": 93,
+    "details": {
+      "level1": {
+        "scores": {
+          "format_purity": 10,
+          "core_ast": 15,
+          "import_check": 5,
+          "runtime_exec": 10
+        },
+        "details": {
+          "format_purity": "✓ 格式純淨（原始代碼可直接解析）",
+          "core_ast": "✓ 核心邏輯正確（標準化後可解析）",
+          "import_check": "✓ 無禁用套件 (檢查了 6 個)",
+          "runtime_exec": "✓ 定義階段執行成功"
+        }
+      },
+      "level2": {
+        "scores": {
+          "function_def": 10,
+          "return_type": 10,
+          "required_keys": 10
+        },
+        "details": {
+          "function_def": "✓ 找到函數: generate() (參數: level, kwargs)",
+          "return_type": "✓ 回傳型別正確 (dict)",
+          "required_keys": "✓ 必要鍵值完整 (找到 4/4)"
+        }
+      },
+      "level3": {
+        "scores": {
+          "dynamic_sampling": 10,
+          "answer_consistency": 10
+        },
+        "details": {
+          "dynamic_sampling": "✓ 3 次採樣全部成功",
+          "answer_consistency": "✓ 答案一致性: 100%"
+        }
+      },
+      "level4": {
+        "scores": {
+          "forbidden_funcs": 0,
+          "latex_format": 3
+        },
+        "details": {
+          "forbidden_funcs": "✗ 使用禁運函數: eval",
+          "latex_format": "△ 有 $ 但缺少 \\ 指令"
+        }
+      }
+    }
+  }
+]

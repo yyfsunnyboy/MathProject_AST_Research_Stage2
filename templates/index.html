@@ -499,6 +499,24 @@
             /* 公式左右留白 */
         }
 
+        /* [修復] 確保 MathJax 上標/下標正常顯示 */
+        mjx-container svg {
+            vertical-align: middle;
+        }
+
+        /* [修復] 確保數學字體清晰 */
+        mjx-math, mjx-mtext {
+            font-family: "STIX Two Math", "Latin Modern Math", "Cambria Math", "Times New Roman", serif !important;
+        }
+
+        /* [增強] 題目文字使用更清晰的字體 */
+        #question-text {
+            font-family: "Microsoft JhengHei UI", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+            font-size: 1.25em;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
+        }
+
         /* 萬一 AI 還是偷用了 code，我們強制把它變醜的樣式拿掉 */
         .bot-message code {
             background-color: transparent !important;
