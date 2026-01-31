@@ -12,5 +12,6 @@
 
 from .syntax_validator import SyntaxValidator
 from .dynamic_sampler import DynamicSampler
+from .code_validator import validate_python_code, categorize_error
 
-__all__ = ['SyntaxValidator', 'DynamicSampler']
+__all__ = ['SyntaxValidator', 'DynamicSampler', 'validate_python_code', 'categorize_error']

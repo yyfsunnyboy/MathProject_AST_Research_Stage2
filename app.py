@@ -120,8 +120,9 @@ def create_app():
     app.register_blueprint(core_bp)
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
     
-    print("--- 目前系統註冊的所有路由清單 ---")
-    print(app.url_map)
+    # [隱藏路由清單輸出] 暫時註解掉以減少干擾
+    # print("--- 目前系統註冊的所有路由清單 ---")
+    # print(app.url_map)
 
     # === 路由定義 ===
     # 將所有路由定義移至工廠函式內部

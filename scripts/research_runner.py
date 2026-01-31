@@ -17,6 +17,7 @@ import importlib.util
 import glob
 import io
 import base64
+import re
 import pandas as pd
 from tqdm import tqdm
 import matplotlib.pyplot as plt
@@ -51,47 +52,30 @@ def get_skill_menu():
 def render_latex_to_buffer(latex_str):
     """
     將題目字串渲染為圖片 Buffer。
-    [V47.24 Fix] 在純文本渲染前，把 LaTeX 的 ^{n} 轉換成 Unicode 上標
+    [V2.2] 使用 matplotlib mathtext 真正渲染 LaTeX 數學式，修復重疊問題
     """
     try:
         # 設定 matplotlib 使用支持中文的字體
-        # [V1.7] 改用較美觀的字體組合：微軟正黑體 > 標楷體 > 黑體
-        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei', 'Microsoft JhengHei', 'KaiTi', 'SimHei']
+        plt.rcParams['font.sans-serif'] = ['Microsoft YaHei UI', 'Microsoft JhengHei', 'SimHei']
         plt.rcParams['axes.unicode_minus'] = False
-        plt.rcParams['font.size'] = 11  # 稍微加大預設字體
+        plt.rcParams['mathtext.fontset'] = 'stix'  # 使用 STIX 數學字體
+        plt.rcParams['mathtext.default'] = 'regular'
         
-        # 簡單：直接去掉 $...$，用純文本渲染
-        text_version = latex_str.replace('$', '').strip()
-        
-        # [V47.24] 把 ^{2}, ^{3} 等 LaTeX 上標轉換成 Unicode 上標，方便在圖片中顯示
-        # 支持 2, 3, 4, 5 次方
-        superscript_map = {
-            '^{2}': '²',
-            '^{3}': '³',
-            '^{4}': '⁴',
-            '^{5}': '⁵',
-            '^{6}': '⁶',
-            '^{7}': '⁷',
-            '^{8}': '⁸',
-            '^{9}': '⁹',
-        }
-        for latex_sup, unicode_sup in superscript_map.items():
-            text_version = text_version.replace(latex_sup, unicode_sup)
-        
-        if not text_version:
+        if not latex_str:
             return None
         
         # 創建圖片 - 提高解析度
-        fig = plt.figure(figsize=(14, 1.5), dpi=120)  # 更寬、更高、更清晰
+        fig = plt.figure(figsize=(18, 2.8), dpi=150)
         fig.patch.set_alpha(0)
         ax = fig.add_subplot(111)
         
-        # 直接渲染純文本，用中文字體
-        ax.text(0.05, 0.5, text_version, 
-                fontsize=12,  # 加大字體
-                ha='left', va='center',
-                transform=ax.transAxes, wrap=True,
-                fontfamily='sans-serif')  # 明確指定字體家族
+        # 簡化方案：直接一次性渲染整個字串（matplotlib 會自動處理 $ 包裹的數學式）
+        # 統一使用 15pt 字體避免大小不一致
+        ax.text(0.02, 0.5, latex_str,
+               fontsize=15,
+               ha='left', va='center',
+               transform=ax.transAxes,
+               wrap=False)
         
         ax.axis('off')
         ax.set_xlim(0, 1)
@@ -130,7 +114,8 @@ def export_to_excel(skill_id, ablation_id=3):
     conn.close()
 
     tag_timestamp = time.strftime('%Y%m%d_%H%M')
-    base_id = skill_id.replace(f"_Ab{ablation_id}", "") 
+    # 使用正则表达式移除所有 _Ab\d+ 标记（避免重复）
+    base_id = re.sub(r'_Ab\d+', '', skill_id)
     file_name = f"{base_id}_Ab{ablation_id}_{tag_timestamp}.xlsx"
     file_path = os.path.join(REPORTS_DIR, file_name)
 
@@ -205,10 +190,15 @@ def export_to_excel(skill_id, ablation_id=3):
 # ==========================================
 # 4. 核心採樣流程 (保持不變)
 # ==========================================
-def run_research_samples(skill_id, n_samples=20, ablation_id=3):
+def run_research_samples(skill_id, n_samples=20, ablation_id=None):
     """
     [科研目標]: 採集 20 道題目數據，分析 14B 模型的出題品質。
     """
+    # 自動從 skill_id 推斷 ablation_id（例如：gh_ApplicationsOfDerivatives_Cloud_Ab1 -> 1）
+    if ablation_id is None:
+        match = re.search(r'_Ab(\d+)', skill_id)
+        ablation_id = int(match.group(1)) if match else 3
+    
     skill_file = os.path.join(SKILLS_DIR, f"{skill_id}.py")
     
     spec = importlib.util.spec_from_file_location(skill_id, skill_file)
@@ -288,16 +278,10 @@ if __name__ == "__main__":
         print(f"   [{i}] {name}")
         
     try:
-        # 自動選擇 gh_ApplicationsOfDerivatives_14B_Ab3 (如果存在)
-        target_skill = "gh_ApplicationsOfDerivatives_14B_Ab3"
-        if target_skill in skills:
-            print(f"\n自動選擇: {target_skill}")
-            run_research_samples(target_skill)
+        choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
+        if 1 <= choice <= len(skills):
+            run_research_samples(skills[choice-1])
         else:
-            choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
-            if 1 <= choice <= len(skills):
-                run_research_samples(skills[choice-1])
-            else:
-                print("❌ 超出範圍。")
+            print("❌ 超出範圍。")
     except ValueError:
         print("❌ 請輸入數字。")

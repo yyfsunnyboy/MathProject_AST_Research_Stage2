@@ -1,16 +1,15 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: gemini-2.5-flash | Strategy: V44.9 Hybrid-Healing
-# Ablation ID: 2 | Healer: OFF
-# Performance: 42.17s | Tokens: In=6867, Out=2187
-# Created At: 2026-01-29 23:55:26
-# Fix Status: [Clean Pass] | Fixes: Regex=0, AST=0
+# Model: qwen2.5-coder:14b | Strategy: V47.5 Unified-Cleanup + Advanced-Healer
+# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
+# Performance: 20.93s | Tokens: In=7330, Out=603
+# Created At: 2026-01-31 18:09:16
+# Fix Status: [Basic Cleanup] | Fixes: Basic=2, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
 # [INJECTED UTILS]
-
 import random
 from random import randint, choice
 import math
@@ -19,7 +18,8 @@ import re
 import ast
 import operator
 
-# [Research Standard Utils]
+# ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
+op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
 
 def safe_choice(seq):
     """
@@ -102,7 +102,49 @@ def fmt_num(num, signed=False, op=False):
         
     return latex_val
 
-# [AST Healer Inject] 安全運算核心
+def fmt_term(coeff, power, var='x'):
+    """
+    [Standard Utils] 格式化單一多項式項目
+    例如: fmt_term(-1, 2, 'x') -> "-x^2"
+          fmt_term(3, 1, 'x') -> "3x"
+          fmt_term(-2, 0, 'x') -> "-2"
+    
+    Args:
+        coeff: 係數（整數或分數）
+        power: 次方數
+        var: 變數名稱（預設 'x'）
+        
+    Returns:
+        str: LaTeX 格式的項目字串
+    """
+    if coeff == 0: 
+        return ""
+    
+    # 符號部分
+    sign = ""
+    if coeff < 0: 
+        sign = "-"
+    
+    abs_c = abs(coeff)
+    
+    # 係數部分
+    c_str = ""
+    if abs_c != 1 or power == 0:
+        c_str = fmt_num(abs_c)
+    
+    # 變數部分
+    v_str = ""
+    if power == 1:
+        v_str = var
+    elif power > 1:
+        v_str = f"{var}^{{{power}}}"  # 使用 LaTeX 標準格式
+        
+    return f"{sign}{c_str}{v_str}"
+
+# ==============================================================================
+# 安全運算
+# ==============================================================================
+
 def safe_eval(expr_str):
     """
     [AST Healer 專用] 安全的數學表達式解析器
@@ -155,7 +197,10 @@ def safe_eval(expr_str):
     except Exception as e:
         return 0
 
-# [數論工具箱]
+# ==============================================================================
+# 數論工具
+# ==============================================================================
+
 def is_prime(n):
     if n <= 1: return False
     if n <= 3: return True
@@ -166,8 +211,11 @@ def is_prime(n):
         i += 6
     return True
 
-def gcd(a, b): return math.gcd(int(a), int(b))
-def lcm(a, b): return abs(int(a) * int(b)) // math.gcd(int(a), int(b))
+def gcd(a, b): 
+    return math.gcd(int(a), int(b))
+
+def lcm(a, b): 
+    return abs(int(a) * int(b)) // math.gcd(int(a), int(b))
 
 def get_factors(n):
     n = abs(n)
@@ -178,122 +226,9 @@ def get_factors(n):
             factors.add(n // i)
     return sorted(list(factors))
 
-def clean_latex_output(q_str):
-    """
-    [V47.7 Fix] LaTeX 格式清洗器 - 尊重預先包裝的 $...$ 塊
-    
-    邏輯：
-    1. 提取已經包裝的 $...$ 塊，暫時保留
-    2. 對剩餘的純文本進行中文/數學分離
-    3. 合併結果
-    """
-    if not isinstance(q_str, str): 
-        return str(q_str)
-    
-    import re
-    
-    # 第一步：提取所有已經包裝的 $...$ 塊
-    latex_blocks = []
-    def placeholder_replacer(match):
-        latex_blocks.append(match.group(1))
-        return f"__LATEX_BLOCK_{len(latex_blocks)-1}__"
-    
-    # 提取 $...$ 塊
-    temp_str = re.sub(r'\$([^$]*)\$', placeholder_replacer, q_str)
-    
-    # 第二步：對剩餘的純文本進行處理
-    clean_q = temp_str.strip()
-    
-    # 修復運算符：* -> \times, / -> \div（只在非 LaTeX 塊中）
-    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*\*\s*(?!_)', r' \\times ', clean_q)
-    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*/\s*(?![{}])', r' \\div ', clean_q)
-    
-    # 修復雙重括號 ((...)) -> (...)
-    clean_q = re.sub(r'\(\(([^()]+)\)\)', r'(\1)', clean_q)
-    
-    # 移除多餘空白
-    clean_q = re.sub(r'\s+', ' ', clean_q).strip()
-    
-    # 第三步：智能分離中文與數學式（僅對非 LaTeX 塊的部分）
-    has_chinese = bool(re.search(r'[\u4e00-\u9fff]', clean_q))
-    
-    if has_chinese:
-        # 分離中文和數學
-        math_pattern = r'(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+(?:\s+(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+)*'
-        
-        parts = []
-        last_end = 0
-        
-        for match in re.finditer(math_pattern, clean_q):
-            start, end = match.span()
-            
-            # 添加之前的文本（中文部分）
-            if start > last_end:
-                text_part = clean_q[last_end:start].strip()
-                if text_part:
-                    parts.append(text_part)
-            
-            # 添加數學部分（需要包裹 $）
-            math_part = match.group().strip()
-            if math_part:
-                parts.append(f'${math_part}$')
-            
-            last_end = end
-        
-        # 添加剩餘的文本
-        if last_end < len(clean_q):
-            text_part = clean_q[last_end:].strip()
-            if text_part:
-                parts.append(text_part)
-        
-        # 合併
-        result = ' '.join(parts)
-        result = re.sub(r'\s+', ' ', result).strip()
-        
-        # 清理連續的 $ 符號
-        result = re.sub(r'\$\s+\$', ' ', result)
-    else:
-        # 沒有中文：直接包裹整個表達式
-        result = f"${clean_q}$"
-    
-    # 第四步：恢復 LaTeX 塊
-    for i, block in enumerate(latex_blocks):
-        result = result.replace(f"__LATEX_BLOCK_{i}__", f"${block}$")
-    
-    return result
-
-
-def check(user_answer, correct_answer):
-    """
-    [V45.7 Smart Validator]
-    """
-    if not user_answer: return {"correct": False, "result": "未作答"}
-    
-    def parse_value(val_str):
-        s = str(val_str).strip().replace(" ", "").replace("$", "").replace("\\", "")
-        s = s.replace("times", "*").replace("div", "/")
-        try:
-            s = re.sub(r'frac\{(\d+)\}\{(\d+)\}', r'(\1/\2)', s)
-            s = re.sub(r'(?<=\d)\(', r'*(', s)  # NEW [V47.3]: 將 "3(1/2)" 轉為 "3*(1/2)" 避免 eval 視為函式呼叫
-            return float(eval(s))
-        except:
-            return None
-
-    val_u = parse_value(user_answer)
-    val_c = parse_value(correct_answer)
-
-    if val_u is not None and val_c is not None:
-        if math.isclose(val_u, val_c, rel_tol=1e-7):
-            return {"correct": True, "result": "正確"}
-    
-    u_clean = str(user_answer).strip().replace(" ", "")
-    c_clean = str(correct_answer).strip().replace(" ", "")
-    if u_clean == c_clean:
-        return {"correct": True, "result": "正確"}
-
-    return {"correct": False, "result": f"正確答案: {correct_answer}"}
-
-# [V47.4 跨領域工具組]
+# ==============================================================================
+# 跨領域工具組
+# ==============================================================================
 
 def clamp_fraction(fr, max_den=1000, max_num=100000):
     """防止分數爆炸：限制分子分母"""
@@ -393,232 +328,437 @@ def fmt_vec(*coords):
     inner = ", ".join(fmt_num(x) for x in coords)
     return "\\langle " + inner + " \\rangle"
 
-# ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
-op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
+# ==============================================================================
+# 答案驗證
+# ==============================================================================
+
+def check(user_answer, correct_answer):
+    """
+    [V45.7 Smart Validator]
+    """
+    if not user_answer: return {"correct": False, "result": "未作答"}
+    
+    def parse_value(val_str):
+        s = str(val_str).strip().replace(" ", "").replace("$", "").replace("\\", "")
+        s = s.replace("times", "*").replace("div", "/")
+        try:
+            s = re.sub(r'frac\{(\d+)\}\{(\d+)\}', r'(\1/\2)', s)
+            s = re.sub(r'(?<=\d)\(', r'*(', s)  # NEW [V47.3]: 將 "3(1/2)" 轉為 "3*(1/2)" 避免 eval 視為函式呼叫
+            return float(eval(s))
+        except:
+            return None
+
+    val_u = parse_value(user_answer)
+    val_c = parse_value(correct_answer)
+
+    if val_u is not None and val_c is not None:
+        if math.isclose(val_u, val_c, rel_tol=1e-7):
+            return {"correct": True, "result": "正確"}
+    
+    u_clean = str(user_answer).strip().replace(" ", "")
+    c_clean = str(correct_answer).strip().replace(" ", "")
+    if u_clean == c_clean:
+        return {"correct": True, "result": "正確"}
+
+    return {"correct": False, "result": f"正確答案: {correct_answer}"}
+
+
+# ==============================================================================
+# [V10.0 新增] 多項式處理工具 - 防止 LLM 幻覺函數
+# ==============================================================================
+
+def build_polynomial_text(coeffs):
+    """
+    將係數列表轉換為多項式文字表示
+    
+    Args:
+        coeffs: 係數列表，從高次項到常數項 [a_n, a_{n-1}, ..., a_1, a_0]
+                例如 [2, 0, -3, 1] 表示 2x³ - 3x + 1
+    
+    Returns:
+        str: 多項式的 LaTeX 格式字串
+    
+    Examples:
+        >>> build_polynomial_text([2, 0, -3, 1])
+        '2x^{3} - 3x + 1'
+        >>> build_polynomial_text([1, -2])
+        'x - 2'
+    """
+    if not coeffs:
+        return "0"
+    
+    # 移除前導零
+    while len(coeffs) > 1 and coeffs[0] == 0:
+        coeffs = coeffs[1:]
+    
+    if all(c == 0 for c in coeffs):
+        return "0"
+    
+    terms = []
+    n = len(coeffs) - 1  # 最高次數
+    
+    for i, coef in enumerate(coeffs):
+        if coef == 0:
+            continue
+        
+        power = n - i
+        
+        # 處理係數
+        if power == 0:
+            # 常數項
+            terms.append(str(coef))
+        elif power == 1:
+            # 一次項
+            if coef == 1:
+                terms.append("x")
+            elif coef == -1:
+                terms.append("-x")
+            else:
+                terms.append(f"{coef}x")
+        else:
+            # 高次項
+            if coef == 1:
+                terms.append(f"x^{{{power}}}")
+            elif coef == -1:
+                terms.append(f"-x^{{{power}}}")
+            else:
+                terms.append(f"{coef}x^{{{power}}}")
+    
+    if not terms:
+        return "0"
+    
+    # 組合項目，處理正負號
+    result = terms[0]
+    for term in terms[1:]:
+        if term.startswith('-'):
+            result += f" - {term[1:]}"
+        else:
+            result += f" + {term}"
+    
+    return result
+
+def clean_latex_output(q_str):
+    """
+    [V47.7 Fix] LaTeX 格式清洗器 - 尊重預先包裝的 $...$ 塊
+    
+    邏輯：
+    1. 提取已經包裝的 $...$ 塊，暫時保留
+    2. 對剩餘的純文本進行中文/數學分離
+    3. 合併結果
+    """
+    if not isinstance(q_str, str): 
+        return str(q_str)
+    
+    # 第一步：提取所有已經包裝的 $...$ 塊
+    latex_blocks = []
+    def placeholder_replacer(match):
+        latex_blocks.append(match.group(1))
+        return f"__LATEX_BLOCK_{len(latex_blocks)-1}__"
+    
+    # 提取 $...$ 塊
+    temp_str = re.sub(r'\$([^$]*)\$', placeholder_replacer, q_str)
+    
+    # 第二步：對剩餘的純文本進行處理
+    clean_q = temp_str.strip()
+    
+    # 修復運算符：* -> \times, / -> \div（只在非 LaTeX 塊中）
+    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*\*\s*(?!_)', r' \\times ', clean_q)
+    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*/\s*(?![{}])', r' \\div ', clean_q)
+    
+    # 修復雙重括號 ((...)) -> (...)
+    clean_q = re.sub(r'\(\(([^()]+)\)\)', r'(\1)', clean_q)
+    
+    # 移除多餘空白
+    clean_q = re.sub(r'\s+', ' ', clean_q).strip()
+    
+    # 第三步：智能分離中文與數學式（僅對非 LaTeX 塊的部分）
+    has_chinese = bool(re.search(r'[\u4e00-\u9fff]', clean_q))
+    
+    if has_chinese:
+        # 分離中文和數學
+        math_pattern = r'(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+(?:\s+(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+)*'
+        
+        parts = []
+        last_end = 0
+        
+        for match in re.finditer(math_pattern, clean_q):
+            start, end = match.span()
+            
+            # 添加之前的文本（中文部分）
+            if start > last_end:
+                text_part = clean_q[last_end:start].strip()
+                if text_part:
+                    parts.append(text_part)
+            
+            # 添加數學部分（需要包裹 $）
+            math_part = match.group().strip()
+            if math_part:
+                parts.append(f'${math_part}$')
+            
+            last_end = end
+        
+        # 添加剩餘的文本
+        if last_end < len(clean_q):
+            text_part = clean_q[last_end:].strip()
+            if text_part:
+                parts.append(text_part)
+        
+        # 合併
+        result = ' '.join(parts)
+        result = re.sub(r'\s+', ' ', result).strip()
+        
+        # 清理連續的 $ 符號
+        result = re.sub(r'\$\s+\$', ' ', result)
+    else:
+        # 沒有中文：直接包裹整個表達式
+        result = f"${clean_q}$"
+    
+    # 第四步：恢復 LaTeX 塊
+    for i, block in enumerate(latex_blocks):
+        result = result.replace(f"__LATEX_BLOCK_{i}__", f"${block}$")
+    
+    return result
+
+def get_base_root():
+    """
+    優先用 Flask current_app.root_path；若不可用，回退到 core/ 的上一層（專案根）
+    """
+    try:
+        from flask import has_app_context, current_app
+        if has_app_context():
+            return current_app.root_path
+    except Exception:
+        pass
+    # fallback: project root = parent of core/
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+
+def path_in_root(*parts):
+    """構建專案根目錄下的路徑"""
+    return os.path.join(get_base_root(), *parts)
+
+def ensure_dir(p):
+    """確保目錄存在"""
+    os.makedirs(p, exist_ok=True)
+    return p
+
+
+# [DOMAIN HELPERS - Auto-Injected for gh_ApplicationsOfDerivatives]
+
+# ===== 多項式標準函數庫 =====
+
+def _poly_to_latex(terms):
+    '''
+    將多項式內部表示轉換為 LaTeX 字符串
+    參數: terms = [(coeff, exp), ...] 例如 [(3, 2), (-5, 0)] → 3x² - 5
+    返回: LaTeX 字符串（不含 $ 符號）
+    '''
+    if not terms:
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else (' + ' if c > 0 else ' - ')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{{{e}}}' if coeff_str else f'x^{{{e}}}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
+
+def _poly_to_plain(terms):
+    '''
+    將多項式內部表示轉換為純文本字符串
+    參數: terms = [(coeff, exp), ...]
+    返回: 純文本字符串，例如 "3x^2-5"（無空格）
+    '''
+    if not terms:
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else ('+' if c > 0 else '-')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{e}' if coeff_str else f'x^{e}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
+
+def _differentiate_poly(terms, order=1):
+    '''
+    對多項式求導 order 次
+    參數:
+        terms: [(coeff, exp), ...]
+        order: 求導次數
+    返回: 導數的內部表示 [(new_coeff, new_exp), ...]
+    '''
+    result = list(terms)
+    for _ in range(order):
+        new_terms = []
+        for c, e in result:
+            if e > 0:
+                new_c = c * e
+                if abs(new_c) > 10000:  # [Fix] 放寬限制，避免合理係數被拒絕
+                    raise ValueError(f"Coefficient {new_c} exceeds limit")
+                new_terms.append((new_c, e - 1))
+        result = new_terms
+    return result
+
+def _deriv_symbol_latex(order):
+    '''生成導數符號（LaTeX）: f'(x), f''(x), f^{(n)}(x)'''
+    if order == 1:
+        return "f'(x)"
+    elif order == 2:
+        return "f''(x)"
+    else:
+        return f"f^{{({order})}}(x)"
+
+def _deriv_symbol_plain(order):
+    '''生成導數符號（純文本）: f'(x), f''(x), f^(n)(x)'''
+    if order == 1:
+        return "f'(x)"
+    elif order == 2:
+        return "f''(x)"
+    else:
+        return f"f^({order})(x)"
+
+# ===== 🔴 CRITICAL: 題目組裝規範（必須遵守）=====
+# 
+# 當使用多項式函數時，請按以下方式組裝題目：
+# 
+# ✅ 正確範例（手動添加 $ 符號，**不要** 使用 clean_latex_output）：
+#   poly_str = _poly_to_latex(terms)        # 返回: "3x^{2} - 5x + 2"
+#   deriv_sym = _deriv_symbol_latex(1)      # 返回: "f'(x)"
+#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
+#   # ⚠️ 直接使用 q，不要調用 clean_latex_output(q)！
+#   return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+# 
+# ❌ 錯誤範例（會破壞 LaTeX 格式）：
+#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
+#   return {'question_text': clean_latex_output(q), ...}  # ❌ 不要這樣做！
+#   # 錯誤結果：$x$ ^{ $4$ } $- 6x$ ^{ $3$ }（每個符號都被錯誤地獨立包裝）
+# 
+# 原因：clean_latex_output() 適用於簡單運算（如 "3 + 5"），
+#      但多項式函數已經返回正確的 LaTeX 格式（如 x^{4}），
+#      再次呼叫會導致過度處理，將 x^{4} 拆分成 $x$ ^{ $4$ }
+
+
+
+# ===== 微積分標準函數庫 =====
+# (多項式微分已在 POLYNOMIAL_HELPERS 中定義)
+
+def _find_critical_points(coeffs):
+    '''
+    找多項式的臨界點（一階導數為 0 的點）
+    參數: coeffs = [a_n, a_{n-1}, ..., a_0] (降冪排列)
+    返回: 臨界點列表
+    '''
+    # 實現求導 + 解方程
+    pass
+
+def _evaluate_poly(coeffs, x):
+    '''計算多項式在 x 點的值'''
+    result = 0
+    for i, c in enumerate(coeffs):
+        result += c * (x ** (len(coeffs) - 1 - i))
+    return result
+
 
 
 # [AI GENERATED CODE]
 # ---------------------------------------------------------
 
 
+import random
+
 def generate(level=1, **kwargs):
-    import random
-    import math
-    from fractions import Fraction
-
-    # Helper to format polynomial for LaTeX
-    def _fmt_polynomial_latex(coeffs):
-        if not coeffs:
-            return "0"
-        
-        # Remove trailing zeros (e.g., [1, 2, 0, 0] -> [1, 2])
-        # But preserve [0] for the zero polynomial
-        # Use a copy to avoid modifying original list outside this function
-        display_coeffs = list(coeffs) 
-        while len(display_coeffs) > 1 and display_coeffs[-1] == 0:
-            display_coeffs.pop()
-
-        if not display_coeffs: # This means the original was [0,0,0] or similar
-            return "0"
-
-        terms = []
-        degree = len(display_coeffs) - 1
-
-        for i in range(degree, -1, -1):
-            coeff = display_coeffs[i]
-            if coeff == 0:
-                continue
-
-            coeff_abs = abs(coeff)
-            sign = '+' if coeff > 0 else '-'
-            
-            # Handle the sign for the first term
-            if not terms and sign == '+':
-                sign = '' # No '+' for the very first term if positive
-
-            term_str = ''
-            if i == 0: # Constant term
-                term_str = f"{fmt_num(coeff_abs)}"
-            elif i == 1: # x term
-                if coeff_abs == 1:
-                    term_str = "x"
-                else:
-                    term_str = f"{fmt_num(coeff_abs)}x"
-            else: # x^n term (n > 1)
-                if coeff_abs == 1:
-                    term_str = f"x^{{{i}}}" # triple brace for LaTeX superscript
-                else:
-                    term_str = f"{fmt_num(coeff_abs)}x^{{{i}}}"
-
-            terms.append(f"{sign}{term_str}")
-
-        if not terms:
-            return "0"
-        
-        # Join terms, removing any leading '+' if it slipped through
-        result = "".join(terms).lstrip('+')
-        return result if result else "0" # Ensure "0" if all terms were zero
-
-    # Helper to format polynomial for plain text answer
-    def _fmt_polynomial_text(coeffs):
-        if not coeffs:
-            return "0"
-        
-        display_coeffs = list(coeffs)
-        while len(display_coeffs) > 1 and display_coeffs[-1] == 0:
-            display_coeffs.pop()
-
-        if not display_coeffs:
-            return "0"
-
-        terms = []
-        degree = len(display_coeffs) - 1
-
-        for i in range(degree, -1, -1):
-            coeff = display_coeffs[i]
-            if coeff == 0:
-                continue
-
-            coeff_abs = abs(coeff)
-            sign = '+' if coeff > 0 else '-'
-            
-            if not terms and sign == '+':
-                sign = ''
-
-            term_str = ''
-            if i == 0:
-                term_str = f"{coeff_abs}"
-            elif i == 1:
-                if coeff_abs == 1:
-                    term_str = "x"
-                else:
-                    term_str = f"{coeff_abs}x"
-            else:
-                if coeff_abs == 1:
-                    term_str = f"x^{i}"
-                else:
-                    term_str = f"{coeff_abs}x^{i}"
-
-            terms.append(f"{sign}{term_str}")
-
-        result = "".join(terms).lstrip('+')
-        return result if result else "0"
-
-    # Helper for derivative symbol
-    def _get_derivative_symbol(order, is_latex=True):
-        if is_latex:
-            if order == 1:
-                return "f'(x)"
-            elif order == 2:
-                return "f''(x)"
-            else:
-                return f"f^{{({order})}}(x)" # triple brace for LaTeX superscript
-        else: # Plain text
-            if order == 1:
-                return "f'(x)"
-            elif order == 2:
-                return "f''(x)"
-            else:
-                return f"f^({order})(x)"
-
     while True:
-        # 1. Generate degree and polynomial_coeffs
-        degree = random.choice([3, 4, 5])
-        polynomial_coeffs = [0] * (degree + 1)
+        # Step 1: Generate the base polynomial terms
+        max_degree = random.randint(3, 5)
+        num_terms = random.randint(3, min(5, max_degree + 1))
         
-        # Ensure highest degree coefficient is non-zero
-        polynomial_coeffs[degree] = random.randint(-10, 10)
-        while polynomial_coeffs[degree] == 0:
-            polynomial_coeffs[degree] = random.randint(-10, 10)
+        available_degrees = list(range(max_degree + 1))
+        random.shuffle(available_degrees)
+        selected_degrees = available_degrees[:num_terms]
         
-        # Generate other coefficients
-        for i in range(degree):
-            polynomial_coeffs[i] = random.randint(-10, 10)
+        terms = []
+        has_negative_coefficient = False
+        for deg in selected_degrees:
+            coeff = random.randint(-10, 10)
+            while coeff == 0:
+                coeff = random.randint(-10, 10)
+            if coeff < 0:
+                has_negative_coefficient = True
+            terms.append((coeff, deg))
+        
+        # Ensure there is a constant term (degree 0)
+        degrees_present = {d for c, d in terms}
+        if 0 not in degrees_present:
+            terms.append((random.randint(1, 10), 0))
             
-        # Ensure at least 3 non-zero coefficients
-        non_zero_count = sum(1 for c in polynomial_coeffs if c != 0)
-        if non_zero_count < 3:
-            continue # Regenerate polynomial if not enough non-zero terms
-
-        # 2. Generate derivative_order_1 and derivative_order_2
-        derivative_order_1 = random.randint(1, degree)
-        derivative_order_2 = random.randint(1, degree)
-        while derivative_order_2 == derivative_order_1:
-            derivative_order_2 = random.randint(1, degree)
-
-        # 3. Calculate derivatives
-        current_coeffs = list(polynomial_coeffs) # Start with original coeffs
-        
-        f_prime1_coeffs = None
-        f_prime2_coeffs = None
-        
-        max_order = max(derivative_order_1, derivative_order_2)
-        
-        # Flag to indicate if coefficients exceeded limits
-        coeff_limit_exceeded = False
-
-        # Iterate differentiation
-        for k in range(1, max_order + 1):
-            next_coeffs = []
-            # Differentiate: c_j * x^j becomes (c_j * j) * x^(j-1)
-            # The new list starts from x^0 term (derived from x^1)
-            for j in range(1, len(current_coeffs)): # Start from c1 (x^1 term)
-                coeff = current_coeffs[j] * j
-                if abs(coeff) > 1000: # Check coefficient boundary
-                    coeff_limit_exceeded = True
-                    break # Break inner loop
-                next_coeffs.append(coeff)
-            
-            if coeff_limit_exceeded:
-                break # Break outer loop, will trigger regeneration
-            
-            current_coeffs = next_coeffs
-            
-            # Record the coefficients for the requested orders
-            if k == derivative_order_1:
-                f_prime1_coeffs = list(current_coeffs)
-            if k == derivative_order_2:
-                f_prime2_coeffs = list(current_coeffs)
-        
-        # Check if any coefficients exceeded limits during differentiation
-        if coeff_limit_exceeded:
-            continue # Regeneration needed due to boundary violation
-
-        # Ensure derivative results were actually calculated and not None
-        if f_prime1_coeffs is None or f_prime2_coeffs is None:
-            continue # This should ideally not happen if max_order is reached and no limit exceeded
-
-        # Ensure derivative results are not all zeros (e.g. asking for 3rd derivative of x^2)
-        # A polynomial `[0]` means it's the zero polynomial.
-        if not f_prime1_coeffs or all(c == 0 for c in f_prime1_coeffs):
-            continue
-        if not f_prime2_coeffs or all(c == 0 for c in f_prime2_coeffs):
-            continue
-
-        # All checks passed, break the regeneration loop
-        break
-
-    # 4. Format question text
-    f_x_latex = _fmt_polynomial_latex(polynomial_coeffs)
+        # Ensure at least one negative coefficient
+        if not any(c < 0 for c, d in terms):
+            # Convert the first term to negative
+            c, d = terms[0]
+            terms[0] = (-abs(c), d)
     
-    prime1_symbol_latex = _get_derivative_symbol(derivative_order_1, is_latex=True)
-    prime2_symbol_latex = _get_derivative_symbol(derivative_order_2, is_latex=True)
+        # Step 2: Generate the derivative orders
+        num_derivatives = random.randint(1, 2)
+        derivative_orders_list = []
+        
+        attempts = 0
+        while len(derivative_orders_list) < num_derivatives and attempts < 20:
+            order = random.randint(1, min(max_degree, 4))
+            if order not in derivative_orders_list:
+                derivative_orders_list.append(order)
+            attempts += 1
+            
+        if not derivative_orders_list:
+            continue
+            
+        derivative_orders_list.sort()
     
-    q = f"已知 $f(x) = {f_x_latex}$，求 ${prime1_symbol_latex}$ 與 ${prime2_symbol_latex}$。"
-    q = clean_latex_output(q)
-
-    # 5. Format answer text
-    f_prime1_text = _fmt_polynomial_text(f_prime1_coeffs)
-    f_prime2_text = _fmt_polynomial_text(f_prime2_coeffs)
-
-    prime1_symbol_text = _get_derivative_symbol(derivative_order_1, is_latex=False)
-    prime2_symbol_text = _get_derivative_symbol(derivative_order_2, is_latex=False)
-
-    a = f"{prime1_symbol_text} = {f_prime1_text}\n{prime2_symbol_text} = {f_prime2_text}"
-
+        # Step 3: Calculate the derivatives and Validate
+        derivative_results = []
+        all_valid = True
+        
+        for order in derivative_orders_list:
+            deriv_terms = _differentiate_poly(terms, order=order)
+            if not any(c != 0 for c, _ in deriv_terms):
+                all_valid = False
+                break
+            derivative_results.append((order, deriv_terms))
+            
+        if all_valid:
+            break
+    
+    # Step 4: Format the question
+    poly_latex = _poly_to_latex(terms)
+    
+    # [Fix] Added $ wrappers around derivative symbols
+    derivative_symbols_latex = ', '.join(_deriv_symbol_latex(order) for order in derivative_orders_list)
+    q = f"已知 $f(x) = {poly_latex}$，求 ${derivative_symbols_latex}$。"
+    
+    # Step 5: Format the answer
+    ans_parts = []
+    for order, deriv_terms in derivative_results:
+        deriv_poly_plain = _poly_to_plain(deriv_terms)
+        ans_parts.append(deriv_poly_plain)
+    correct_answer = ', '.join(ans_parts)
+    
     return {
         'question_text': q,
-        'correct_answer': a,
-        'answer': a,
+        'correct_answer': correct_answer,
+        'answer': correct_answer,
         'mode': 1
     }

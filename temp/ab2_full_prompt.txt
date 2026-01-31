@@ -1,0 +1,564 @@
+====================================================================================================
+【完整 UNIVERSAL_GEN_CODE_PROMPT + Domain + MASTER_SPEC (Ab2/Ab3)】
+====================================================================================================
+
+【角色】K12 數學演算法工程師。
+【任務】實作 `def generate(level=1, **kwargs)`，根據 MASTER_SPEC 產出完整的 Python 代碼。
+【限制】僅輸出代碼，無 Markdown/說明。**嚴禁 eval/exec/safe_eval**。
+
+🔴 **最高優先級：MASTER_SPEC 是唯一權威來源**
+- 你收到的 MASTER_SPEC 包含完整的題型定義、複雜度要求和實現檢查清單
+- **必須逐項實現 MASTER_SPEC 中的所有要求**
+- 任何與 MASTER_SPEC 衝突的通用規則都應以 MASTER_SPEC 為準
+
+【預載工具 (直接使用)】
+- random, math, re, ast, operator, Fraction
+- fmt_num(n), to_latex(n), clean_latex_output(q)
+- check(user_answer, correct_answer)
+- op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
+- 數論函數: is_prime(n), gcd(a,b), lcm(a,b), get_factors(n)
+- 組合數學: nCr(n,r), nPr(n,r), factorial_bounded(n)
+- 其他: clamp_fraction(f), safe_pow(base,exp), rational_gauss_solve(...)
+
+【生成管線標準】
+1. 變數生成（嚴格遵守 MASTER_SPEC）
+2. 運算（Python 直接計算，嚴禁 eval）
+3. 運算順序與括號
+4. 題幹格式化（LaTeX + 中文處理）
+5. 答案格式化
+6. 回傳標準格式
+
+【LaTeX 格式鐵律】(CRITICAL - 違反此規則將導致顯示錯誤)
+
+1. **數學表達式必須用 $ $ 包裹**
+   ✅ 正確：f"計算 ${fmt_num(a)} + {fmt_num(b)}$ 的值"
+   ❌ 錯誤：f"計算 {fmt_num(a)} + {fmt_num(b)} 的值"  # 缺少 $
+
+2. **中文與 $ $ 必須分離**
+   ✅ 正確：f"求 ${expr}$ 的因式分解"
+   ❌ 錯誤：f"求${expr}$的因式分解"  # $ 與中文相連
+
+3. **題目字串拼接標準流程（3 步驟）**
+   ```python
+   # 步驟 1: 先組裝數學表達式（不含 $ $）
+   expr = f"{fmt_num(a)} {op_latex['+']} {fmt_num(b)}"
+   
+   # 步驟 2: 組合中文與數學式（手動加 $ $）
+   q_str = f"計算 ${expr}$ 的值"
+   
+   # 步驟 3: 最後清洗（可選）
+   question_text = clean_latex_output(q_str)
+   ```
+
+4. **答案格式（answer 欄位）**
+   - 純數字或 LaTeX 分數，**不含 $ $**
+   ✅ 正確："42" 或 "\\frac{3}{7}"
+   ❌ 錯誤："$42$" 或 "答案是 42"
+   
+   🔴 **導數題型特殊規範**（ApplicationsOfDerivatives 等）：
+   - 當題目要求多個導數時，答案應直接顯示多項式，用逗號間隔
+   - ✅ 正確："35x^4 - 8x^3 + 5, 420x^2 - 48x"（純多項式，逗號間隔）
+   - ❌ 錯誤："f'(x) = 35x^4 - 8x^3 + 5\nf^(3)(x) = 420x^2 - 48x"（不要包含符號前綴）
+   - ❌ 錯誤："f'(x) = 35x^4 - 8x^3 + 5, f^(3)(x) = 420x^2 - 48x"（不要包含等號）
+
+5. **常見陷阱（絕對禁止）**
+   ❌ 在 f-string 內呼叫 clean_latex_output()
+   ❌ 使用 + 運算符拼接函式呼叫結果
+   ❌ 混合 Python 字串與 LaTeX 命令
+
+🔴 **多項式 LaTeX 處理特殊規則** (CRITICAL - 必須遵守)
+
+當使用多項式標準函數（_poly_to_latex, _deriv_symbol_latex 等）時：
+
+✅ **正確做法**：手動包裝 $ $，**不要** 呼叫 clean_latex_output()
+```python
+poly_str = _poly_to_latex(terms)           # 返回: "3x^{2} - 5x + 2"
+deriv_sym = _deriv_symbol_latex(order)     # 返回: "f'(x)"
+q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
+# ⚠️ 直接返回 q，不要再呼叫 clean_latex_output(q)！
+return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+```
+
+❌ **錯誤做法**：對已經格式化的 LaTeX 再次呼叫 clean_latex_output()
+```python
+poly_str = _poly_to_latex(terms)
+q = f'已知 $f(x) = {poly_str}$, 求導數。'
+return {'question_text': clean_latex_output(q), ...}  # ❌ 這會破壞 LaTeX 格式！
+# 結果：$x$ ^{ $4$ } $- 6x$ ^{ $3$ }（錯誤！每個部分都被獨立包裝）
+```
+
+**原因**：多項式函數已經返回正確的 LaTeX 格式（如 `x^{4}`），
+         clean_latex_output() 會把它錯誤地拆分成 `$x$ ^{ $4$ }`
+
+**適用範圍**：所有使用 Domain 標準函數的情況（多項式、幾何、向量等）
+
+【運算順序與括號規則】
+
+1. **負數必須加括號**
+   ✅ fmt_num(-3) → "(-3)"
+   ✅ f"${fmt_num(-3)} + 5$" → "$(-3) + 5$"
+
+2. **分數運算時括號規則**
+   - 分子分母各自是單項：不加括號
+     ✅ "\\frac{3}{7}"
+   - 分子分母有運算：必須加括號
+     ✅ "\\frac{(2+3)}{(5-1)}"
+
+3. **混合運算括號規則**
+   - 乘除優於加減：加減項需括號
+     ✅ "(3 + 4) \\times 5"
+   - 負數參與運算：負數項需括號
+     ✅ "5 + (-3)"
+
+【函式實作檢查清單】
+
+□ **def generate(level=1, **kwargs)** 存在
+□ 實作了 MASTER_SPEC 中的所有難度級別
+□ 使用 fmt_num() 格式化所有數字
+□ 使用 op_latex 字典處理運算符
+□ 題目字串正確使用 $ $ 包裹數學式
+□ 答案欄位不含 $ $ 符號
+□ 使用簡短變量名：q (題目), a (答案)
+□ ⚠️ 回傳格式：{'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+
+【禁止事項】
+
+❌ **絕對禁止在生成的代碼中直接呼叫 eval() / exec() / safe_eval()**
+   - 所有運算必須用 Python 直接計算
+   - safe_eval() 僅允許在系統預載工具內部使用
+
+❌ **禁止重新定義預載工具**
+   - fmt_num, to_latex, check 等已注入，不要重寫
+   - 禁止定義同名函數覆蓋系統工具
+
+❌ **禁止在代碼中寫死題目內容**
+   - 所有數值必須動態生成
+   - 題目描述可以是固定模板，但參數必須隨機
+
+❌ **禁止使用可能導致無限迴圈的 while 模式** ⚠️ **CRITICAL**
+   - 禁止使用 `while len(list) < target` 且條件可能永遠無法滿足
+   - 禁止使用 `while True` 沒有明確 break 條件
+   - 禁止在 while 迴圈內用 continue 跳過所有可能的執行路徑
+   
+   ✅ **正確做法**（生成不重複隨機元素）：
+   ```python
+   # 先洗牌，再切片（保證終止）
+   max_degree = random.randint(3, 5)
+   num_terms = random.randint(3, min(5, max_degree + 1))  # 確保 num_terms <= 可選數量
+   
+   available_degrees = list(range(max_degree + 1))
+   random.shuffle(available_degrees)
+   selected_degrees = available_degrees[:num_terms]  # 直接切片，不需要 while
+   
+   terms = [(random.choice(coeffs), deg) for deg in selected_degrees]
+   ```
+   
+   ❌ **錯誤做法**（可能無限迴圈）：
+   ```python
+   # 危險！如果 num_terms > max_degree + 1，永遠湊不滿
+   while len(terms) < num_terms:
+       degree = random.randint(0, max_degree)
+       if degree in [d for _, d in terms]:  # 已存在就跳過
+           continue  # ← 可能所有 degree 都已存在，永遠跳不出
+       terms.append((coeff, degree))
+   ```
+
+【回傳格式規範】
+
+⚠️ 必須完全遵守以下格式（參考 Example_Program_Research.py）：
+```python
+# 使用簡短變量名
+# 若使用 Domain 標準函數（如 _poly_to_latex）且已手動包 $ $，直接使用 question_string
+# 若是原始字串拼接，可選擇性使用 clean_latex_output()
+q = question_string  # 題目（已格式化）
+a = str(answer_value)  # 答案
+
+# 返回字典（必須包含雙鍵）
+return {
+    'question_text': q,
+    'correct_answer': a,       # ⚠️ CRITICAL: 必須包含此鍵
+    'answer': a,               # ⚠️ CRITICAL: 必須同時包含此鍵（值與 correct_answer 相同）
+    'mode': 1                  # 固定為 1
+}
+```
+
+【進階技巧】
+
+1. **動態難度控制**
+   ```python
+   def generate(level=1, **kwargs):
+       if level == 1:
+           # 簡單題型
+           a = random.randint(1, 10)
+       elif level == 2:
+           # 進階題型
+           a = random.randint(10, 100)
+   ```
+
+2. **分數處理**
+   ```python
+   from fractions import Fraction
+   result = Fraction(3, 7)
+   answer = to_latex(result)  # "\\frac{3}{7}"
+   ```
+
+3. **避免除以零**
+   ```python
+   b = random.randint(1, 10)  # 不包含 0
+   while b == 0:
+       b = random.randint(1, 10)
+   ```
+
+4. **確保有效題目**
+   ```python
+   for _ in range(1000):  # 最多嘗試 1000 次
+       # 生成參數
+       if is_valid_question(...):
+           break
+   ```
+
+【輸出要求】
+
+- 僅輸出 Python 代碼
+- 從 `import random` 開始
+- 不要有任何解釋性文字
+- 不要有 Markdown 標記（```python ... ```）
+
+
+### 🔧 [強制規範] 標準函數庫 (請務必使用以下函數，禁止自創同名函數)
+
+此題目屬於以下數學領域：polynomial, calculus
+
+請**優先使用**以下預定義的標準函數（禁止重新定義相同功能的函數）：
+
+
+# ===== 多項式標準函數庫 =====
+
+def _poly_to_latex(terms):
+    '''
+    將多項式內部表示轉換為 LaTeX 字符串
+    參數: terms = [(coeff, exp), ...] 例如 [(3, 2), (-5, 0)] → 3x² - 5
+    返回: LaTeX 字符串（不含 $ 符號）
+    '''
+    if not terms:
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else (' + ' if c > 0 else ' - ')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{{{e}}}' if coeff_str else f'x^{{{e}}}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
+
+def _poly_to_plain(terms):
+    '''
+    將多項式內部表示轉換為純文本字符串
+    參數: terms = [(coeff, exp), ...]
+    返回: 純文本字符串，例如 "3x^2-5"（答案格式：無空格）
+    '''
+    if not terms:
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else ('+' if c > 0 else '-')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{e}' if coeff_str else f'x^{e}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
+
+def _differentiate_poly(terms, order=1):
+    '''
+    對多項式求導 order 次
+    參數:
+        terms: [(coeff, exp), ...]
+        order: 求導次數
+    返回: 導數的內部表示 [(new_coeff, new_exp), ...]
+    '''
+    result = list(terms)
+    for _ in range(order):
+        new_terms = []
+        for c, e in result:
+            if e > 0:
+                new_c = c * e
+                if abs(new_c) > 10000:  # [Fix] 放寬限制，避免合理係數被拒絕
+                    raise ValueError(f"Coefficient {new_c} exceeds limit")
+                new_terms.append((new_c, e - 1))
+        result = new_terms
+    return result
+
+def _deriv_symbol_latex(order):
+    '''生成導數符號（LaTeX）: f'(x), f''(x), f^{(n)}(x)'''
+    if order == 1:
+        return "f'(x)"
+    elif order == 2:
+        return "f''(x)"
+    else:
+        return f"f^{{({order})}}(x)"
+
+def _deriv_symbol_plain(order):
+    '''生成導數符號（純文本）: f'(x), f''(x), f^(n)(x)'''
+    if order == 1:
+        return "f'(x)"
+    elif order == 2:
+        return "f''(x)"
+    else:
+        return f"f^({order})(x)"
+
+# ===== 🔴 CRITICAL: 題目組裝規範（必須遵守）=====
+# 
+# 當使用多項式函數時，請按以下方式組裝題目：
+# 
+# ✅ 正確範例（手動添加 $ 符號，**不要** 使用 clean_latex_output）：
+#   poly_str = _poly_to_latex(terms)        # 返回: "3x^{2} - 5x + 2"
+#   deriv_sym = _deriv_symbol_latex(1)      # 返回: "f'(x)"
+#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
+#   # ⚠️ 直接使用 q，不要調用 clean_latex_output(q)！
+#   return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+# 
+# ❌ 錯誤範例（會破壞 LaTeX 格式）：
+#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
+#   return {'question_text': clean_latex_output(q), ...}  # ❌ 不要這樣做！
+#   # 錯誤結果：$x$ ^{ $4$ } $- 6x$ ^{ $3$ }（每個符號都被錯誤地獨立包裝）
+# 
+# 原因：clean_latex_output() 適用於簡單運算（如 "3 + 5"），
+#      但多項式函數已經返回正確的 LaTeX 格式（如 x^{4}），
+#      再次呼叫會導致過度處理，將 x^{4} 拆分成 $x$ ^{ $4$ }
+
+
+
+# ===== 微積分標準函數庫 =====
+# (多項式微分已在 POLYNOMIAL_HELPERS 中定義)
+
+def _find_critical_points(coeffs):
+    '''
+    找多項式的臨界點（一階導數為 0 的點）
+    參數: coeffs = [a_n, a_{n-1}, ..., a_0] (降冪排列)
+    返回: 臨界點列表
+    '''
+    # 實現求導 + 解方程
+    pass
+
+def _evaluate_poly(coeffs, x):
+    '''計算多項式在 x 點的值'''
+    result = 0
+    for i, c in enumerate(coeffs):
+        result += c * (x ** (len(coeffs) - 1 - i))
+    return result
+
+
+⚠️ 重要規則：
+1. 如果標準函數庫已提供相應函數（例如 _poly_to_latex），請直接調用，不要自己重新實現
+2. 你只需要實現 `def generate(level=1, **kwargs)` 函數
+3. 標準函數庫的函數簽名和命名必須嚴格遵守，不得修改
+4. 禁止創建 CamelCase 命名的函數（例如 FormatPolynomial）
+
+🔴 **導數題型答案格式（CRITICAL）**：
+當使用 _differentiate_poly() 等函數時，答案格式要求：
+- ✅ 正確：直接用 _poly_to_plain() 轉換每個導數，然後用 ', '.join() 連接
+  ```python
+  ans_parts = []
+  for order, deriv_terms in derivative_results:
+      ans_parts.append(_poly_to_plain(deriv_terms))
+  correct_answer = ', '.join(ans_parts)  # 例如："35x^4 - 8x^3 + 5, 420x^2 - 48x"
+  ```
+- ❌ 錯誤：包含導數符號或等號
+  ```python
+  # 不要這樣做：
+  ans_parts.append(f"f'(x) = {_poly_to_plain(deriv_terms)}")  # ❌
+  ```
+
+
+### MASTER_SPEC:
+```
+domain: calculus.polynomial_differentiation
+
+entities:
+  - coeff_value: integer
+    constraints:
+      - value_range: -10~10
+      - 非零 (用於非常數項的係數)
+  - degree_value: integer
+    constraints:
+      - value_range: 0~5 (最高次數)
+  - derivative_order_value: integer
+    constraints:
+      - value_range: 1~4 (導數階數)
+
+operators:
+  - +, -, *, ^ (指數運算)
+  - derivative_rule: d/dx (ax^n) = anx^(n-1) (概念性運算，用於描述求導過程)
+
+constraints:
+  - 可計算性: 所有原始多項式和導數多項式的係數都必須是「可精確計算」的整數。
+  - 邊界:
+    * 原始多項式的最高次數: 3~5。
+    * 原始多項式的非零項數: 3~5。
+    * 原始多項式係數範圍: -10~10 (非零)。
+    * 導數結果的係數範圍: 絕對值不超過 100。
+  - 最小複雜度:
+    * 原始多項式必須至少有 3 個非零項。
+    * 原始多項式的最高次數必須至少為 3。
+    * 原始多項式必須至少包含一個負數係數。
+    * 原始多項式必須包含一個常數項 (即 0 次項)。
+    * 所有要求計算的導數結果都不能是零多項式。
+  - 互斥:
+    * 原始多項式中不能有重複的次數項。
+    * 要求計算的導數階數列表中的階數不能重複。
+
+templates:
+  - name: find_multiple_polynomial_derivatives
+    
+    complexity_requirements: |
+      - 原始多項式最高次數必須在 3 到 5 之間。
+      - 原始多項式必須至少包含 3 個非零項。
+      - 原始多項式必須包含一個負數係數。
+      - 原始多項式必須包含一個常數項。
+      - 必須要求計算至少兩種不同階的導數（例如 f' 和 f'''）。
+      - 所有要求的導數結果（例如 f'(x) 和 f'''(x)）都不能是零多項式。
+      
+    variables:
+      - base_poly_terms: List of (coeff, degree) tuples.
+        生成規則: 
+          1. 隨機選擇最高次數 `max_degree` (3~5)。
+          2. 隨機選擇非零項數 `num_terms` (3~5)。
+          3. 隨機生成 `num_terms` 個不重複的次數，範圍從 0 到 `max_degree`，確保 `max_degree` 和 `0` 次項都被包含。
+          4. 為每個次數生成係數 `c` (從 `coeff_value` 實體範圍中隨機取值，非零)。
+          5. 確保至少有一個係數是負數。
+          6. 將 `(c, d)` 對以次數降序排列。
+      - derivative_orders_list: List of integers.
+        生成規則:
+          1. 隨機選擇列表長度 (1 或 2)。
+          2. 對於每個要計算的導數，隨機選擇一個階數 `k` (從 `derivative_order_value` 實體範圍中隨機取值)。
+          3. 確保每個 `k` 都滿足 `1 <= k <= max_degree`。
+          4. 若列表長度為 2，確保兩個階數不同。
+          5. 最終驗證：確保每個計算出的導數多項式都不是零多項式。
+    
+    construction: |
+      1. **構建原始多項式 $P(x)$**：
+         - 將 `base_poly_terms` 中的 `(係數, 次數)` 對表示為原始多項式 $P(x)$。
+      
+      2. **計算指定階數的導數**：
+         - 對於 `derivative_orders_list` 中的每個要求階數 `k`：
+           a. 從原始多項式 $P(x)$ 的項列表開始。
+           b. 重複執行 `k` 次以下微分操作：
+              i.  對於當前多項式中的每個項 `(係數 c, 次數 d)`：
+                  - 若 `d > 0`，則該項微分後的結果為 `(c * d, d - 1)`。
+                  - 若 `d = 0` (常數項)，則該項微分後為 `(0, 0)` (即消失)。
+              ii. 將所有微分後的非零項收集起來，形成新的多項式項列表。
+              iii. 合併相同次數的項（若有），並將係數為零的項移除。
+           c. 將最終得到的項列表作為 $P^{(k)}(x)$ 的結果。
+           d. 驗證 $P^{(k)}(x)$ 不是零多項式。
+      
+      3. **最終答案**：
+         - 收集所有計算出的 $P^{(k)}(x)$ 多項式作為最終答案。
+      
+    implementation_checklist: |
+      工程師實作時必須確認：
+      - [ ] 是否生成了符合複雜度要求的原始多項式（最高次數、項數、負係數、常數項）。
+      - [ ] 是否生成了至少兩種不同且符合要求的導數階數。
+      - [ ] 是否正確實現了多項式微分的邏輯，包括常數項歸零、係數與次數的乘積、次數減一。
+      - [ ] 是否確保所有中間和最終的係數都是整數。
+      - [ ] 是否驗證所有生成的導數多項式都不是零多項式。
+      - [ ] 是否遵守了所有 constraints。
+    
+    formatting:
+      question_display: |
+        🔴 **核心原則**：
+        - 中文字和文字敘述必須在 LaTeX ($...$) 外面
+        - 數學式子必須在 LaTeX ($...$) 裡面
+        - 使用 fmt_num() 格式化所有數字（包括係數和變數）
+        - 使用 op_latex 字典映射運算符（* → \\times, / → \\div）
+        - 使用 clean_latex_output() 自動包裝**最後一次**（僅呼叫一次）
+
+        **具體步驟**：
+        1. **格式化原始多項式 $f(x)$**：
+           - 將 `base_poly_terms` 列表中的 `(係數, 次數)` 對格式化為 LaTeX 字串。
+           - 處理特殊情況：
+             - `x^1` 顯示為 `x`。
+             - `x^0` (常數項) 只顯示係數。
+             - 係數為 1 或 -1 時，省略數字 `1` (例如 `x^2` 而非 `1x^2`，`-x^3` 而非 `-1x^3`)。
+             - 正係數在非首項時，前面加 `+`；負係數前面加 `-`。
+           - 將所有項拼接成 `poly_latex` 字串。
+           - 例如：對於 `(1,4)` `(-2,3)` `(5,1)` `(-4,0)` -> `x^4 - 2x^3 + 5x - 4`
+        
+        2. **格式化導數符號**：
+           - 對於 `derivative_orders_list` 中的每個要求的導數階數 `k`：
+             - 若 `k=1`，使用 `f'(x)`。
+             - 若 `k=2`，使用 `f''(x)`。
+             - 若 `k=3`，使用 `f'''(x)`。
+             - 若 `k > 3`，使用 `f^{(k)}(x)`。
+           - 將這些格式化的導數符號用「與」或逗號連接起來，例如 "$f'(x)$ 與 $f'''(x)$"。
+           - 儲存為 `derivative_symbols_latex` 字串。
+        
+        3. **組合題目**：
+           - `q = f"已知 $f(x) = {poly_latex}$，求 {derivative_symbols_latex}。" `
+           - 最後呼叫 `q = clean_latex_output(q)`。
+        
+      answer_display: |
+        答案格式化規則（多個答案用換行符 `\n` 分隔）：
+        - 對於每個計算出的導數 $f^{(k)}(x)$：
+          - 首先使用與 `question_display` 中格式化原始多項式相同的方式，將 $f^{(k)}(x)$ 格式化為 LaTeX 字串 `derivative_poly_latex`。
+          - 然後組合成 `f^{(k)}(x) = {derivative_poly_latex}` 的形式。
+          - 範例：`f"f'(x) = 4x^3 - 6x^2 + 5\nf'''(x) = 24x - 12"`
+        - 禁止使用 LaTeX 格式（如 \\frac{3}{7}）
+        - 禁止使用 fmt_num() 作為答案
+      
+    notes: |
+      - 為了確保題目和答案的格式一致性，建議實作一個通用的 `format_polynomial_latex(terms_list, var_name='x')` 輔助函數。
+      - 需特別注意處理係數為 1 或 -1 的情況，以及正負號的顯示。
+
+diversity:
+  - 變異點 1: 原始多項式的最高次數 (3~5 之間)。
+  - 變異點 2: 原始多項式的非零項數 (3~5 之間)。
+  - 變異點 3: 原始多項式中包含的負係數數量與位置。
+  - 變異點 4: 要求計算的導數階數列表的長度 (1 或 2)。
+  - 變異點 5: 要求計算的具體導數階數 (1~4 之間，且不能導致零多項式)。
+  - 退化檢查:
+    - 確保多項式不是單項式。
+    - 確保求導結果不是零多項式。
+    - 確保所有係數都不是零。
+    - 確保所有要求計算的導數階數都不同。
+
+verifier:
+  - 生成後應驗證：
+    * 原始多項式是否滿足所有 `constraints` 和 `complexity_requirements` (例如：最高次數、項數、負係數、常數項)。
+    * `derivative_orders_list` 中的階數是否有效且不重複。
+    * 每個計算出的導數多項式是否為非零多項式。
+    * 所有係數是否都在指定範圍內。
+    * 問題和答案的 LaTeX 格式是否正確且符合規範。
+
+cross_domain_tools:
+  - fmt_num: 將數字格式化為適合 LaTeX 的字串（處理負號、分數）。
+  - op_latex: 將運算符號映射到 LaTeX 格式（例如 `*` 到 `\times`）。
+  - clean_latex_output: 將最終的題目字串自動包裝在 `$ $` 符號中，並處理中文與數學式的混合。
+```
+
+====================================================================================================
+
+Prompt 總字數: 15249 字元
+Prompt 總行數: 546 行
+
+UNIVERSAL_GEN_CODE_PROMPT 部分: 5586 字元, 223 行
+Domain 函數庫注入部分: 4436 字元, 159 行
+MASTER_SPEC 部分: 5193 字元, 164 行
+
+【與 Ab1 的比較】
+Ab1 (BARE_PROMPT): ~1,242 字元, 47 行
+Ab2/Ab3 (UNIVERSAL + Domain + SPEC): 15249 字元, 546 行
+差距: 14007 字元 (12.3x)

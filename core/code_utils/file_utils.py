@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
-=============================================================================
-模組名稱 (Module Name): core/utils/file_utils.py
-功能說明 (Description): 檔案系統相關工具函數
-執行語法 (Usage): from core.utils import get_base_root, path_in_root, ensure_dir
-版本資訊 (Version): V2.0 (Refactored from code_generator.py)
-更新日期 (Date): 2026-01-30
-維護團隊 (Maintainer): Math AI Project Team
-=============================================================================
-"""
+# ==============================================================================
+# ID: core/code_utils/file_utils.py
+# Version: V2.0 (Refactored from code_generator.py)
+# Last Updated: 2026-01-30
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   檔案系統相關工具函數
+#   提供路徑處理和目錄創建功能
+#
+# [Functionality]:
+#   1. get_base_root: 取得專案根目錄（優先使用 Flask app context）
+#   2. path_in_root: 構建專案根目錄下的路徑
+#   3. ensure_dir: 確保目錄存在（不存在則創建）
+#
+# [Logic Flow]:
+#   get_base_root -> Flask context 或 fallback to parent of core/
+#   path_in_root -> os.path.join(base_root, *parts)
+#   ensure_dir -> os.makedirs(path, exist_ok=True)
+# ==============================================================================
 
 import os
 

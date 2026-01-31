@@ -1,14 +1,24 @@
 # -*- coding: utf-8 -*-
-"""
-=============================================================================
-模組名稱 (Module Name): core/utils/math_utils.py
-功能說明 (Description): 數學運算相關工具函數（LaTeX 格式化、安全運算、數論等）
-執行語法 (Usage): from core.utils import safe_choice, to_latex, fmt_num, ...
-版本資訊 (Version): V2.0 (Refactored from code_generator.py)
-更新日期 (Date): 2026-01-30
-維護團隊 (Maintainer): Math AI Project Team
-=============================================================================
-"""
+# ==============================================================================
+# ID: core/code_utils/math_utils.py
+# Version: V2.0 (Refactored from code_generator.py)
+# Last Updated: 2026-01-30
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   數學運算相關工具函數庫
+#   包含 LaTeX 格式化、安全運算、數論函數等
+#
+# [Functionality]:
+#   1. LaTeX 格式化: to_latex, fmt_num, fmt_set, fmt_interval, fmt_vec
+#   2. 安全運算: safe_choice, safe_eval, safe_pow, clamp_fraction
+#   3. 數論工具: is_prime, gcd, lcm, get_factors, nCr, nPr
+#   4. 數學運算: factorial_bounded, rational_gauss_solve, normalize_angle
+#   5. 多項式: build_polynomial_text (防止 LLM 幻覺)
+#
+# [Logic Flow]:
+#   Import -> Use utility functions in generated code
+# ==============================================================================
 
 import random
 import math
@@ -101,6 +111,45 @@ def fmt_num(num, signed=False, op=False):
         return f"({latex_val})"
         
     return latex_val
+
+def fmt_term(coeff, power, var='x'):
+    """
+    [Standard Utils] 格式化單一多項式項目
+    例如: fmt_term(-1, 2, 'x') -> "-x^2"
+          fmt_term(3, 1, 'x') -> "3x"
+          fmt_term(-2, 0, 'x') -> "-2"
+    
+    Args:
+        coeff: 係數（整數或分數）
+        power: 次方數
+        var: 變數名稱（預設 'x'）
+        
+    Returns:
+        str: LaTeX 格式的項目字串
+    """
+    if coeff == 0: 
+        return ""
+    
+    # 符號部分
+    sign = ""
+    if coeff < 0: 
+        sign = "-"
+    
+    abs_c = abs(coeff)
+    
+    # 係數部分
+    c_str = ""
+    if abs_c != 1 or power == 0:
+        c_str = fmt_num(abs_c)
+    
+    # 變數部分
+    v_str = ""
+    if power == 1:
+        v_str = var
+    elif power > 1:
+        v_str = f"{var}^{{{power}}}"  # 使用 LaTeX 標準格式
+        
+    return f"{sign}{c_str}{v_str}"
 
 # ==============================================================================
 # 安全運算

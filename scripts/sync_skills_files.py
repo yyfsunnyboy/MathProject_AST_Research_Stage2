@@ -319,9 +319,10 @@ if __name__ == "__main__":
         arch_config = Config.MODEL_ROLES.get('architect', {})
         arch_model = arch_config.get('model', 'Unknown')
 
-        print(f"🚀 開始同步資料庫與實體檔案 (V9.2.0 Scientific Standard Edition)")
-        print(f"🧠 架構師模型 (Architect): \033[1;35m{arch_model}\033[0m")        
-        print(f"🤖 工程師模型 (Coder): \033[1;36m{current_model}\033[0m")         
+        # [隱藏大測試輸出] 暫時註解掉以減少干擾
+        # print(f"🚀 開始同步資料庫與實體檔案 (V9.2.0 Scientific Standard Edition)")
+        # print(f"🧠 架構師模型 (Architect): \033[1;35m{arch_model}\033[0m")        
+        # print(f"🤖 工程師模型 (Coder): \033[1;36m{current_model}\033[0m")         
         # --- 1. 互動篩選 ---
         curriculums = [r[0] for r in db.session.query(distinct(SkillCurriculum.curriculum)).order_by(SkillCurriculum.curriculum).all()]
         selected_curr = get_user_selection(curriculums, "請選擇課綱:")
@@ -455,6 +456,20 @@ if __name__ == "__main__":
             if ab_input == '0':
                 print("✅ 已設定實驗模式：綜合評估 (AB1 + AB2 + AB3)")
                 
+                # [FIX V9.2.1] 先詢問 Model Size Class，再執行三個 Ablation
+                print("\n" + "="*60)
+                print("📏 [實驗變因控制] 請選擇本次綜合評估的 Model Size Class:")
+                print("   1: Cloud     -> 大型模型 (如 Gemini, GPT-4)")
+                print("   2: Local 14B -> 中型模型 (如 Qwen 2.5-14B)")
+                print("   3: Edge 7B   -> 小型模型 (如 Llama 3-8B, Phi-3)")
+                print("="*60)
+                
+                size_map = {'1': 'Cloud', '2': '14B', '3': '7B'}
+                ms_input = input("   👉 輸入選項 (1/2/3, 預設 1): ").strip()
+                # 預設為 'Cloud'
+                model_size_class = size_map.get(ms_input, 'Cloud')
+                print(f"✅ 已設定模型量級：{model_size_class}")
+                
                 # [CRITICAL LOGIC] 判斷是否需要重新生成 Coding Prompt
                 # 規則 1: 若前一個選擇是 [2]（Overwrite All），則跳過 Architect（已有 Prompt）
                 # 規則 2: 若前一個選擇是 [4]（Full Pipeline），則執行 Architect（生成新 Prompt）
@@ -465,13 +480,11 @@ if __name__ == "__main__":
                 else:
                     print("\n📋 [Coding Prompt 策略] 根據前一個選項 [2]，將跳過 Architect，使用資料庫中最新的 Prompt...")
                 
-                # 連續執行三個 Ablation ID
+                # 連續執行三個 Ablation ID（使用相同的 model_size_class）
                 for ablation_id in [1, 2, 3]:
                     ab_desc = {1: "Bare", 2: "Engineered-Only", 3: "Full-Healing"}
                     print(f"\n⏳ 正在執行 AB{ablation_id} ({ab_desc[ablation_id]})...")
                     
-                    # 使用相同的 Model Size Class 和其他配置執行三次
-                    model_size_class = '14b'
                     prompt_level = ab_desc[ablation_id]
                     
                     # 呼叫執行管道
@@ -500,7 +513,7 @@ if __name__ == "__main__":
                     print(f"✅ AB{ablation_id} 執行完成\n")
                 
                 print("="*60)
-                print("🎉 綜合評估完成！已生成三個版本（針對每個技能）：")
+                print(f"🎉 綜合評估完成！模型: {model_size_class}，已生成三個版本（針對每個技能）：")
                 for skill_id in list_to_process:
                     print(f"   📄 {skill_id}_{model_size_class}_Ab1.py (Bare)")
                     print(f"   📄 {skill_id}_{model_size_class}_Ab2.py (Engineered)")

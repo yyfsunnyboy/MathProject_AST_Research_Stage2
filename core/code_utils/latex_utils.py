@@ -1,14 +1,23 @@
 # -*- coding: utf-8 -*-
-"""
-=============================================================================
-模組名稱 (Module Name): core/utils/latex_utils.py
-功能說明 (Description): LaTeX 格式處理工具
-執行語法 (Usage): from core.utils import clean_latex_output
-版本資訊 (Version): V2.0 (Refactored from code_generator.py)
-更新日期 (Date): 2026-01-30
-維護團隊 (Maintainer): Math AI Project Team
-=============================================================================
-"""
+# ==============================================================================
+# ID: core/code_utils/latex_utils.py
+# Version: V2.0 (Refactored from code_generator.py)
+# Last Updated: 2026-01-30
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   LaTeX 格式處理工具
+#   [V47.7 Fix] 尊重預先包裝的 $...$ 塊，避免重複包裝
+#
+# [Functionality]:
+#   1. clean_latex_output: 智能 LaTeX 包裝（中文/數學分離）
+#   2. check: Pyflakes 語法檢查（使用 BytesIO 避免編碼問題）
+#
+# [Logic Flow]:
+#   1. 提取已包裝的 $...$ 塊
+#   2. 對剩餘文本進行中文/數學分離
+#   3. 合併結果
+# ==============================================================================
 
 import re
 
