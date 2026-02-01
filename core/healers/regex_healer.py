@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: core/healers/regex_healer.py
-# Version: V2.1 (Refactored from code_generator.py)
-# Last Updated: 2026-01-30
+# Version: V2.2 (Loop Breaker V2.0 - AST Auto-Fix)
+# Last Updated: 2026-02-01
 # Author: Math AI Research Team (Advisor & Student)
 #
 # [Description]:
@@ -28,6 +28,7 @@
 
 import re
 import logging
+import ast  # [2026-02-01] 新增：用於 Loop Breaker AST 驗證與修復
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,90 @@ logger = logging.getLogger(__name__)
 COMPILED_PATTERNS = {
     'clean_expression': re.compile(r'clean_expression\('),
 }
+
+# ==============================================================================
+# [2026-02-01 新增] Loop Breaker AST 修復輔助函數
+# ==============================================================================
+
+def _fix_loop_scope_indentation(code):
+    """
+    修復 Loop Breaker 造成的縮排問題
+    
+    問題：Regex 替換 while True → for _safety_counter 後，
+    可能導致 break 之後的代碼縮排錯誤（應該在迴圈內，但縮排沒變）
+    
+    策略：
+    1. 找到 for _safety_counter 行及其縮排級別
+    2. 找到該迴圈的 break 語句
+    3. 檢查 break 之後是否有代碼（且縮排 <= loop_indent）
+    4. 如果有，將這些代碼縮排 +4（移入迴圈內）
+    
+    Returns:
+        str: 修復後的代碼
+    """
+    lines = code.split('\n')
+    fixed_lines = []
+    
+    in_safety_loop = False
+    loop_indent = 0
+    found_break = False
+    break_line_idx = -1
+    
+    for i, line in enumerate(lines):
+        # 檢測 for _safety_counter（Loop Breaker 標記）
+        if 'for _safety_counter in range' in line:
+            in_safety_loop = True
+            loop_indent = len(line) - len(line.lstrip())
+            fixed_lines.append(line)
+            continue
+        
+        # 檢測 break（標記迴圈的預期結束點）
+        if in_safety_loop and not found_break:
+            stripped = line.strip()
+            # 檢查是否為獨立的 break 語句（不在字串或註解中）
+            if stripped == 'break' or stripped.startswith('break ') or stripped.startswith('break#'):
+                found_break = True
+                break_line_idx = i
+                fixed_lines.append(line)
+                continue
+        
+        # 修復 break 之後的代碼（檢查是否應該在迴圈內）
+        if found_break and in_safety_loop:
+            if not line.strip():  # 空行，保持原樣
+                fixed_lines.append(line)
+                continue
+            
+            current_indent = len(line) - len(line.lstrip())
+            
+            # 關鍵判斷：如果縮排 <= loop_indent，說明已經跳出迴圈
+            # 但如果後續有 continue/break 等迴圈語句，說明應該還在迴圈內
+            if current_indent <= loop_indent:
+                # 檢查接下來的幾行是否有迴圈相關語句
+                has_loop_statement = False
+                check_lines = lines[i:min(i+20, len(lines))]
+                for check_line in check_lines:
+                    check_stripped = check_line.strip()
+                    # 如果發現 continue、break 或 return（在迴圈內才有意義）
+                    if check_stripped.startswith('continue') or \
+                       (check_stripped.startswith('break') and 'for ' not in check_line and 'while ' not in check_line):
+                        has_loop_statement = True
+                        break
+                
+                # 如果有迴圈語句，說明這些代碼應該在迴圈內
+                if has_loop_statement and line.strip():
+                    # 增加縮排（移入迴圈內）
+                    fixed_line = ' ' * (loop_indent + 4) + line.lstrip()
+                    fixed_lines.append(fixed_line)
+                    continue
+                else:
+                    # 真的跳出迴圈了
+                    in_safety_loop = False
+        
+        fixed_lines.append(line)
+    
+    return '\n'.join(fixed_lines)
+
+# ==============================================================================
 
 class RegexHealer:
     """
@@ -151,16 +236,22 @@ class RegexHealer:
                 print(f"   ⚠️  無法找到 generate() 函數定義，無法注入變數")
 
         # -----------------------------------------------------------
-        # 0.9 [Loop Breaker] 無窮迴圈破壞者 (CRITICAL SAFETY)
+        # 0.9 [Loop Breaker V2.0] 無窮迴圈破壞者 + AST 修復 (CRITICAL SAFETY)
         # -----------------------------------------------------------
-        # 在 AST 解析前，強制將危險的 while 迴圈加上計數器限制
-        # 這樣即使 AST Healer 失敗，至少迴圈會有個極限
+        # [2026-02-01 升級] 增加 AST 驗證與自動修復功能
+        # 
+        # 策略：
+        # 1. Regex 替換：while True → for _safety_counter（快速）
+        # 2. AST 驗證：檢查語法是否正確
+        # 3. AST 修復：如果有錯誤，自動修復縮排
+        # 4. 再次驗證：確保修復成功
+        
         dangerous_loops = ['while True:', 'while 1:', 'while (True):', 'while (1):']
         if any(loop in refined_code for loop in dangerous_loops):
-            print(f"🔧 [Loop Breaker] 偵測到危險的無限迴圈，正在轉換為有限迴圈...")
+            print(f"🔧 [Loop Breaker V2.0] 偵測到危險的無限迴圈，正在轉換...")
             original_code = refined_code
             
-            # Pattern 1: while True: -> for _safety_counter in range(1000):
+            # Step 1: Regex 替換
             refined_code = re.sub(
                 r'(\s*)while\s+(True|1|\(True\)|\(1\))\s*:',
                 r'\1for _safety_counter in range(1000):  # Safety: converted from while True',
@@ -168,9 +259,40 @@ class RegexHealer:
             )
             
             if refined_code != original_code:
-                fixes += 1
-                print(f"   ✅ 已強制替換無限迴圈為有限迴圈（最多 1000 次）")
-                print(f"   ⚠️  警告：這是緊急保護措施，請檢查生成邏輯是否正確")
+                # Step 2: AST 驗證
+                try:
+                    ast.parse(refined_code)
+                    # 驗證成功，Regex 替換沒有破壞語法
+                    fixes += 1
+                    print(f"   ✅ Loop Breaking 成功（Regex 替換，AST 驗證通過）")
+                    print(f"   📊 已轉換為有限迴圈（最多 1000 次）")
+                
+                except SyntaxError as e:
+                    # Step 3: AST 修復
+                    print(f"   ⚠️  AST 驗證失敗：{type(e).__name__}: {e}")
+                    print(f"   🔧 [Auto-Fixer] 嘗試修復縮排問題...")
+                    
+                    try:
+                        # 使用 AST 修復函數
+                        fixed_code = _fix_loop_scope_indentation(refined_code)
+                        
+                        # Step 4: 再次驗證
+                        ast.parse(fixed_code)
+                        
+                        # 修復成功！
+                        refined_code = fixed_code
+                        fixes += 1
+                        print(f"   ✅ AST 自動修復成功！縮排問題已解決")
+                        print(f"   📊 Loop Breaking 完成（Regex + AST 修復）")
+                    
+                    except Exception as fix_error:
+                        # 修復失敗，回退到原始代碼
+                        print(f"   ❌ AST 修復失敗：{type(fix_error).__name__}: {fix_error}")
+                        print(f"   🔄 回退到原始代碼（保持 while True）")
+                        refined_code = original_code
+            else:
+                # 沒有檢測到需要替換的迴圈
+                print(f"   ℹ️  未檢測到需要替換的無限迴圈模式")
 
 
         # -----------------------------------------------------------

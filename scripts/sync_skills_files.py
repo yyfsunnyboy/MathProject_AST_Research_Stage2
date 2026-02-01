@@ -254,7 +254,11 @@ def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class,
                 
                 # Post-Validation Patching
                 try:
-                    skill_path = os.path.join(project_root, 'skills', f"{skill_id}.py")
+                    # [Bug Fix 2026-02-01] 檔案已經在 code_generator.py 中生成為帶 ablation_id 的形式
+                    # 格式: gh_ApplicationsOfDerivatives_14b_Ab1.py
+                    file_name = f"{skill_id}_{model_size_class.lower()}_Ab{ablation_id}.py"
+                    skill_path = os.path.join(project_root, 'skills', file_name)
+                    
                     if os.path.exists(skill_path):
                         with open(skill_path, 'r', encoding='utf-8') as f:
                             content = f.read()
@@ -267,24 +271,16 @@ def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class,
                         
                         
                         if patched_content != content:
+                            # 寫回同一個檔案
                             with open(skill_path, 'w', encoding='utf-8') as f:
                                 f.write(patched_content)
                             tqdm.write(f"   🔧 {skill_id}: Patched missing functions.")
                         
-                        # 2. [Unified Storage Strategy] 統一命名，無論成功失敗
-                        # 所有檔案統一格式：gh_ApplicationsOfDerivatives_14B_Ab{1,2,3}.py
-                        # 評分程式統一讀取並測試，自動檢測品質
-                        
-                        file_name = f"{skill_id}_{model_size_class}_Ab{ablation_id}.py"
-                        file_path = os.path.join(SKILLS_DIR, file_name)
-                        
-                        # 複製原始檔案內容（包含完整標頭）
-                        with open(file_path, "w", encoding="utf-8") as f:
-                            f.write(patched_content)
-                        
                         # 輸出狀態信息
                         status_msg = "❌ 驗證失敗" if is_failed else "✅ 驗證通過"
                         tqdm.write(f"   📦 已保存: {file_name} ({status_msg})")
+                    else:
+                        tqdm.write(f"   ⚠️  警告: 找不到檔案 {file_name}")
 
                 except Exception as e:
                      tqdm.write(f"   ❌ {skill_id} Patching/Saving Error: {e}")
@@ -464,10 +460,10 @@ if __name__ == "__main__":
                 print("   3: Edge 7B   -> 小型模型 (如 Llama 3-8B, Phi-3)")
                 print("="*60)
                 
-                size_map = {'1': 'Cloud', '2': '14B', '3': '7B'}
+                size_map = {'1': 'cloud', '2': '14b', '3': '7b'}
                 ms_input = input("   👉 輸入選項 (1/2/3, 預設 1): ").strip()
                 # 預設為 'Cloud'
-                model_size_class = size_map.get(ms_input, 'Cloud')
+                model_size_class = size_map.get(ms_input, 'cloud')
                 print(f"✅ 已設定模型量級：{model_size_class}")
                 
                 # [CRITICAL LOGIC] 判斷是否需要重新生成 Coding Prompt
@@ -533,10 +529,10 @@ if __name__ == "__main__":
                 print("   3: Edge 7B   -> 小型模型 (如 Llama 3-8B, Phi-3)")
                 print("="*60)
                 
-                size_map = {'1': 'Cloud', '2': '14B', '3': '7B'}
+                size_map = {'1': 'cloud', '2': '14b', '3': '7b'}
                 ms_input = input("   👉 輸入選項 (1/2/3, 預設 1): ").strip()
                 # 預設為 'Cloud'
-                model_size_class = size_map.get(ms_input, 'Cloud')
+                model_size_class = size_map.get(ms_input, 'cloud')
                 print(f"✅ 已設定模型量級：{model_size_class}")
                 
                 prompt_level = ab_desc[ablation_id] # Update prompt_level to match description

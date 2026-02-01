@@ -1,0 +1,17 @@
+﻿======================================================================
+python : Traceback (most recent call last):
+位於 線路:1 字元:1
++ python test_loop_breaker_v2.py 2>&1 | Out-File -Encoding 
+utf8 test_ou ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (Traceback (most r 
+   ecent call last)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  File 
+"E:\Python\MathProject_AST_Research\test_loop_breaker_v2.py", 
+line 37, in <module>
+    print("\U0001f9ea Loop Breaker V2.0 測試")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'cp950' codec can't encode character 
+'\U0001f9ea' in position 0: illegal multibyte sequence

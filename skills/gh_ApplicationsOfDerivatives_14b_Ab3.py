@@ -1,11 +1,11 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
 # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
-# Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 19.23s | Tokens: In=7120, Out=700
-# Created At: 2026-02-01 09:33:53
-# Fix Status: [Advanced Healer] | Fixes: Basic=2, Advanced=(Regex=5, AST=0)
-# Verification: Internal Logic Check = PASSED
+# Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
+# Performance: 14.63s | Tokens: In=393, Out=606
+# Created At: 2026-02-01 14:30:54
+# Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
+# Verification: Internal Logic Check = FAILED
 # ==============================================================================
 
 
@@ -17,6 +17,7 @@ from fractions import Fraction
 import re
 import ast
 import operator
+import os
 
 # ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
 op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
@@ -679,45 +680,65 @@ def _evaluate_poly(coeffs, x):
 # ---------------------------------------------------------
 
 
+import random
+
 def generate(level=1, **kwargs):
-    for _safety_counter in range(1000):
-        max_degree = random.randint(3, 5)
-        num_terms = random.randint(3, min(5, max_degree + 1))
-        available_degrees = list(range(max_degree + 1))
-        random.shuffle(available_degrees)
-        selected_degrees = available_degrees[:num_terms]
-        if max_degree not in selected_degrees:
-            selected_degrees.append(max_degree)
-        if 0 not in selected_degrees:
-            selected_degrees.append(0)
-        base_poly_terms = []
-        for d in sorted(selected_degrees, reverse=True):
-            coeff = random.randint(-10, 10)
-            while coeff == 0:
-                coeff = random.randint(-10, 10)
-            if coeff < 0 and any((c > 0 for c, _ in base_poly_terms)):
-                continue
-            base_poly_terms.append((coeff, d))
-        derivative_orders_list = []
-        while len(derivative_orders_list) < random.randint(1, 2):
-            order = random.randint(1, min(max_degree, 4))
-            if order not in derivative_orders_list:
-                derivative_orders_list.append(order)
-        valid_derivatives = True
-        for order in derivative_orders_list:
-            deriv_terms = _differentiate_poly(base_poly_terms, order=order)
-            if not any((c != 0 for c, _ in deriv_terms)):
-                valid_derivatives = False
-                break
-        if valid_derivatives:
-            break
-    poly_latex = _poly_to_latex(base_poly_terms)
-    derivative_symbols_latex = ' 與 '.join((_deriv_symbol_latex(order) for order in derivative_orders_list))
-    q = f'已知 $f(x) = {poly_latex}$，求 ${derivative_symbols_latex}$。'
-    ans_parts = []
-    for order in derivative_orders_list:
-        deriv_terms = _differentiate_poly(base_poly_terms, order=order)
-        derivative_poly_plain = _poly_to_plain(deriv_terms)
-        ans_parts.append(derivative_poly_plain)
-    correct_answer = ', '.join(ans_parts)
-    return {'question_text': q, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
+    # 生成隨機係數和次方
+    degree = random.randint(3, 5)
+    coefficients = [random.randint(-10, 10) for _ in range(degree + 1)]
+    
+    # 創建函數 f(x)
+    def create_function(coefficients):
+        terms = []
+        for i, coeff in enumerate(reversed(coefficients)):
+            if coeff != 0:
+                term = f"{coeff}x^{degree - i}" if degree - i > 1 else "x" if degree - i == 1 else str(coeff)
+                terms.append(term)
+        return " + ".join(terms)
+    
+    function_text = create_function(coefficients)
+    
+    # 計算一階和三階導數
+    def derivative(coefficients, order):
+        new_coeffs = []
+        for i in range(len(coefficients) - 1):
+            coeff = coefficients[i] * (len(coefficients) - 1 - i)
+            if order > 1:
+                coeff *= derivative([coeff], order - 1)['coeffs'][0]
+            new_coeffs.append(coeff)
+        return {'coeffs': new_coeffs}
+    
+    first_derivative_coeffs = derivative(coefficients, 1)['coeffs']
+    third_derivative_coeffs = derivative(first_derivative_coeffs, 2)['coeffs']
+    
+    # 格式化答案
+    def format_derivative(coeffs):
+        terms = []
+        for i, coeff in enumerate(reversed(coeffs)):
+            if coeff != 0:
+                term = f"{coeff}x^{len(coeffs) - 1 - i}" if len(coeffs) - 1 - i > 1 else "x" if len(coeffs) - 1 - i == 1 else str(coeff)
+                terms.append(term)
+        return " + ".join(terms)
+    
+    first_derivative_text = format_derivative(first_derivative_coeffs)
+    third_derivative_text = format_derivative(third_derivative_coeffs)
+    
+    question_text = f"已知 $f(x) = {function_text}$，求 $f'(x)$ 與 $f'''(x)$。"
+    answer = f"$f'(x) = {first_derivative_text}$, $f'''(x) = {third_derivative_text}$"
+    
+    return {
+        'question_text': question_text,
+        'answer': answer,
+        'correct_answer': answer,
+        'mode': 1
+    }
+
+def check(user_answer, correct_answer):
+    # 簡單的字串比對，不考慮格式差異
+    user_answer = user_answer.replace(" ", "").replace("$", "")
+    correct_answer = correct_answer.replace(" ", "").replace("$", "")
+    
+    return {
+        'correct': user_answer == correct_answer,
+        'result': "正確" if user_answer == correct_answer else "錯誤"
+    }

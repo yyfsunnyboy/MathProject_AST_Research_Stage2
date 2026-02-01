@@ -56,10 +56,10 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
    - `def generate(level=1, **kwargs)`: 生成題目
    - `def check(user_answer, correct_answer)`: 檢查答案是否正確
 
-2. `generate` 函式要回傳一個字典 (Dictionary)，包含以下欄位（請照抄）：
-   - 'question_text': 題目字串
-   - 'answer': 答案字串（只要答案本身，不要多餘的說明或符號）
-   - 'correct_answer': 答案字串 (同上)
+2. `generate` 函式要回傳一個字典 (Dictionary)，包含以下欄位（請照抄 key 名稱）：
+   - 'question_text'
+   - 'answer'
+   - 'correct_answer'
    - 'mode': 1
 
 3. `check` 函式請回傳一個字典，包含：
@@ -67,9 +67,6 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
    - 'result': 回傳 '正確' 或 '錯誤'
 
 4. 請使用 Python 的 standard library (如 random, math) 即可。
-
-【答案格式特別注意】
-答案只要乾淨的結果就好，不要包含文字或符號。
 
 請直接給我 Python 程式碼，不要解釋。
 """
@@ -157,7 +154,7 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師。
 - 任何與 MASTER_SPEC 衝突的通用規則都應以 MASTER_SPEC 為準
 
 【預載工具 (直接使用)】
-- random, math, re, ast, operator, Fraction
+- random, math, re, ast, operator, os, Fraction
 - fmt_num(n), to_latex(n), clean_latex_output(q)
 - check(user_answer, correct_answer)
 - op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}

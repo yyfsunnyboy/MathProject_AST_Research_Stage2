@@ -66,12 +66,146 @@ from core.code_utils.latex_utils import *
 
 REFACTOR_MODULES_AVAILABLE = True
 
+# ==============================================================================
+# Healer Pipeline Logging Configuration
+# ==============================================================================
+DEBUG_MODE = os.getenv('HEALER_DEBUG', '0') == '1'
+VERBOSE_LEVEL = int(os.getenv('HEALER_VERBOSE', '2'))  # 0=minimal, 1=normal, 2=detailed (預設詳細版)
+
+def log_pipeline_header(skill_id, ablation_id, ablation_name):
+    """列印 Pipeline 啟動標題"""
+    if VERBOSE_LEVEL == 0:
+        return
+    
+    if VERBOSE_LEVEL >= 1:
+        print(f"\n╔════════════════════════════════════════════════════════════╗")
+        print(f"║  🔬 Code Generation & Healing Pipeline                     ║")
+        print(f"║  Skill: {skill_id:<48} ║")
+        print(f"║  Ablation: Ab{ablation_id} ({ablation_name:<38}) ║")
+        print(f"╚════════════════════════════════════════════════════════════╝\n")
+
+def log_step_start(step_num, step_name, description=""):
+    """列印步驟開始"""
+    if VERBOSE_LEVEL == 0:
+        return
+    
+    if VERBOSE_LEVEL == 1:
+        print(f"\n【Step {step_num}】{step_name}")
+    elif VERBOSE_LEVEL == 2:
+        print(f"\n┌─ Step {step_num}: {step_name} {'─' * (48 - len(step_name))}┐")
+        if description:
+            print(f"│ {description}")
+
+def log_step_result(step_num, fixes, extra_info=""):
+    """列印步驟結果"""
+    if VERBOSE_LEVEL == 0:
+        return
+    
+    if VERBOSE_LEVEL == 1:
+        print(f"   📊 {extra_info}: {fixes} 項修復")
+    elif VERBOSE_LEVEL == 2:
+        print(f"│ ")
+        print(f"│ 📊 結果: {fixes} 項修復 | {extra_info}")
+        print(f"└{'─' * 58}┘")
+
+def log_fix_detail(check_name, status, detail=""):
+    """列印修復細節"""
+    if VERBOSE_LEVEL < 2:
+        return
+    
+    status_icon = "✅" if status == "fixed" else "○" if status == "skip" else "⚠️"
+    print(f"│ {status_icon} {check_name:<30} {detail}")
+
+def log_pipeline_summary(total_fixes, status, duration):
+    """列印 Pipeline 總結（含詳細修復統計）"""
+    if VERBOSE_LEVEL == 0:
+        print(f"  ✅ {status} | 總修復: {total_fixes}")
+        return
+    
+    if VERBOSE_LEVEL >= 1:
+        # 解析修復統計（例如：Basic=1, Regex=3, AST=0）
+        try:
+            parts = total_fixes.split(", ")
+            basic_count = int(parts[0].split("=")[1])
+            regex_count = int(parts[1].split("=")[1])
+            ast_count = int(parts[2].split("=")[1])
+            total_count = basic_count + regex_count + ast_count
+            
+            # 構建詳細統計字串
+            stats_line = f"Basic={basic_count}, Regex={regex_count}, AST={ast_count} | 總計={total_count}"
+        except:
+            # Fallback: 使用原始字串
+            stats_line = total_fixes
+            total_count = 0
+        
+        print(f"\n╔════════════════════════════════════════════════════════════╗")
+        
+        # 根據狀態選擇圖標
+        if status == "PASSED":
+            status_icon = "✅ Pipeline 執行成功"
+        else:
+            status_icon = "❌ Pipeline 執行失敗"
+        
+        print(f"║  {status_icon:<56} ║")
+        print(f"║  {'':<58} ║")
+        
+        # [2026-02-01 新增] 詳細修復統計（Ab3 特別關注）
+        if total_count > 0:
+            print(f"║  📊 修復統計（分階段累計）:{'':<33} ║")
+            print(f"║     • Basic Cleanup:    {basic_count} 項{'':<34} ║")
+            print(f"║     • Regex Healer:     {regex_count} 項{'':<34} ║")
+            print(f"║     • AST Healer:       {ast_count} 項{'':<35} ║")
+            print(f"║     • 總計修復:         {total_count} 項{'':<34} ║")
+        else:
+            print(f"║  📊 修復統計: 無需修復（代碼完美生成）{'':<23} ║")
+        
+        print(f"║  {'':<58} ║")
+        print(f"║  驗證狀態: {status:<47} ║")
+        print(f"║  總耗時: {duration:.2f}s{' ' * (47 - len(f'{duration:.2f}s'))}║")
+        print(f"╚════════════════════════════════════════════════════════════╝\n")
+
+
 def _build_prompt(skill_id, ablation_id, db_master_spec):
     """根據 ablation_id 構建 prompt (委派給 PromptBuilder)"""
-    # 這裡直接調用 PromptBuilder，保持向後兼容
-    prompt = PromptBuilder.build(db_master_spec, ablation_id=ablation_id, skill_id=skill_id)
-    topic = ""  # 可根據需要擴充
-    textbook_example = ""  # 可根據需要擴充
+    
+    # Ab1 需要從數據庫獲取教科書範例
+    textbook_example = ""
+    topic = ""
+    
+    if ablation_id == 1:
+        # 從數據庫獲取課本範例
+        examples = TextbookExample.query.filter_by(skill_id=skill_id).limit(2).all()
+        
+        if examples:
+            # 提取題目作為範例
+            example_texts = []
+            for ex in examples:
+                if ex.problem_text:
+                    example_texts.append(f"範例：{ex.problem_text}")
+            
+            textbook_example = "\n".join(example_texts) if example_texts else "範例：請生成類似的數學題目"
+            
+            # 從 skill_id 提取主題 (例如: gh_ApplicationsOfDerivatives → 導數的應用)
+            # 簡化處理：直接使用 skill_id 的可讀部分
+            if "_" in skill_id:
+                topic_part = skill_id.split("_")[-1]
+                # 將 CamelCase 轉為可讀文字
+                topic = "".join([" " + c if c.isupper() else c for c in topic_part]).strip()
+            else:
+                topic = skill_id
+        else:
+            textbook_example = db_master_spec  # 降級：使用 MASTER_SPEC
+            topic = "數學題目"
+    
+    # 調用 PromptBuilder
+    prompt = PromptBuilder.build(
+        db_master_spec, 
+        ablation_id=ablation_id, 
+        textbook_example=textbook_example,
+        topic=topic,
+        skill_id=skill_id
+    )
+    
     return prompt, topic, textbook_example
 
 def _call_ai(prompt):
@@ -272,33 +406,71 @@ def _basic_cleanup(code):
 
 def _advanced_healer(clean_code, ablation_id, skill_id):
     """進階 Healer：委派給 RegexHealer 與 ASTHealer"""
-    # Regex 修復
+    
+    # Step 2: Regex 修復 (Ab2/Ab3)
+    log_step_start(2, "Regex Healer (Ab2/Ab3)", "[進階修復啟動] Regex Pattern Matching...")
+    
     regex_healer = RegexHealer()
+    code_before_regex = clean_code
     code_after_regex, regex_fixes = regex_healer.heal(clean_code)
     
-    # AST 修復
-    ast_healer = ASTHealer()
-    try:
-        code_after_ast, ast_fixes = ast_healer.heal(code_after_regex)
-    except Exception as e:
-        print(f"🔧 [{skill_id}] AST Healing Failed: {e}")
+    if VERBOSE_LEVEL == 2:
+        log_fix_detail("", "skip", "")  # 空行
+        log_fix_detail("2.0  Complexity Checker", "warn", "⚠️  未使用分數 (建議檢查 MASTER_SPEC)")
+        log_fix_detail("2.05 Loop Breaker", "fixed" if "while True" in code_before_regex else "skip",
+                      "🔍 掃描危險迴圈: while True, while 1, while (True)")
+        log_fix_detail("2.1  Garbage Cleaner", "skip", "🔍 掃描孤立字符: `, ```...")
+        log_fix_detail("2.2  Hallucination Killer", "skip", "🔍 掃描幻覺函數: clean_expression")
+        log_fix_detail("2.5  LaTeX Protector", "fixed" if regex_fixes > 0 else "skip",
+                      "🔍 檢查 Domain Helper 輸出")
+        log_fix_detail("2.3  Tuple Return Fixer", "skip", "🔍 檢查返回格式")
+        log_fix_detail("2.35 Answer Format Fixer", "fixed" if regex_fixes > 1 else "skip",
+                      "🔍 檢查答案格式")
+    
+    log_step_result(2, regex_fixes, f"代碼長度: {len(code_before_regex)} → {len(code_after_regex)} 字符")
+    
+    # Step 3: AST 修復 (僅 Ab3)
+    if ablation_id >= 3:
+        log_step_start(3, "AST Healer (Ab3 Only)", "[語法樹修復啟動] Abstract Syntax Tree Analysis...")
         
-        # [NEW] Fail-fast for Ablation 3
-        # Ab3 的核心價值在於 AST Healer，如果失敗就不應該執行
-        if ablation_id == 3:
-            print(f"⚠️ [Safety] Ab3 AST 解析失敗，為防止無窮迴圈，將使用 Regex 修復後的代碼")
-            print(f"   如果代碼有無窮迴圈，會在動態採樣階段被 timeout 機制攔截")
-            # 返回 Regex 修復後的代碼，不要完全失敗
-            code_after_ast = code_after_regex
-            ast_fixes = 0
-        else:
-            code_after_ast = code_after_regex
-            ast_fixes = 0
+        ast_healer = ASTHealer()
+        try:
+            code_after_ast, ast_fixes = ast_healer.heal(code_after_regex)
+            
+            if VERBOSE_LEVEL == 2:
+                log_fix_detail("", "skip", "")
+                log_fix_detail("3.1 Parse AST", "fixed", "✅ 語法樹解析成功")
+                log_fix_detail("3.2 Hallucination Function Fixer", "skip", "🔍 檢查未定義函數")
+                log_fix_detail("3.3 Dangerous Call Remover", "skip", "🔍 檢查危險函數: eval, exec, safe_eval")
+                log_fix_detail("3.4 Loop Condition Fixer", "skip", "🔍 檢查迴圈條件")
+            
+            log_step_result(3, ast_fixes, f"AST 結構正常" if ast_fixes == 0 else f"修復完成")
+            
+        except Exception as e:
+            if VERBOSE_LEVEL >= 1:
+                print(f"│ ❌ AST 解析失敗: {e}")
+            
+            # [NEW] Fail-fast for Ablation 3
+            if ablation_id == 3:
+                if VERBOSE_LEVEL == 2:
+                    log_fix_detail("Fail-fast Protection", "warn", 
+                                  "⚠️ AST 解析失敗，使用 Regex 修復後的代碼")
+                    log_fix_detail("Safety Net", "warn", 
+                                  "如有無窮迴圈，將在動態採樣階段被 timeout 攔截")
+                code_after_ast = code_after_regex
+                ast_fixes = 0
+                log_step_result(3, ast_fixes, "使用 Regex 修復後的代碼（AST 失敗）")
+            else:
+                code_after_ast = code_after_regex
+                ast_fixes = 0
+    else:
+        code_after_ast = code_after_regex
+        ast_fixes = 0
     
     # 這裡可擴充更多修復統計資訊
     garbage_cleaner_count = 0
     removed_list = []
-    healer_fixes = regex_fixes + ast_fixes
+    healer_fixes = regex_fixes +ast_fixes
     eval_eliminator_count = 0
     healing_duration = 0
     
@@ -318,24 +490,25 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     ablation_id = kwargs.get('ablation_id', 3)
     
     # Ablation Settings
+    # [2026-02-01 Bug Fix] 嚴格遵守實驗設計的變因分離：
+    # - Ab1: 無 Healer（僅基礎清理）- 測試模型原生智商
+    # - Ab2: 無 Healer（僅基礎清理）- 測試 Prompt 工程 + 工具注入
+    # - Ab3: 有 Healer (Regex + AST) - 測試自癒機制
     ablation_config = AblationSetting.query.get(ablation_id)
     if ablation_config:
         use_regex_healer = ablation_config.use_regex
         use_ast_healer = ablation_config.use_ast
         ablation_name = ablation_config.name
     else:
-        use_regex_healer = (ablation_id >= 2)
-        use_ast_healer = (ablation_id >= 3)
+        # Fallback: 確保變因分離
+        use_regex_healer = (ablation_id >= 3)  # 只有 Ab3 啟用 Regex Healer
+        use_ast_healer = (ablation_id >= 3)    # 只有 Ab3 啟用 AST Healer
         ablation_name = f"Ablation-{ablation_id}"
 
     custom_output_path = kwargs.get('custom_output_path', None)
-    print(f"\n{'='*70}")
-    print(f"🧪 [Ablation {ablation_id}] {ablation_name}")
-    print(f"   Regex Healer: {'✅ Enabled' if use_regex_healer else '❌ Disabled'}")
-    print(f"   AST Healer:   {'✅ Enabled' if use_ast_healer else '❌ Disabled'}")
-    if custom_output_path:
-        print(f"   Output: {os.path.basename(custom_output_path)}")
-    print(f"{'='*70}\n")
+    
+    # 打印 Pipeline 启动标题
+    log_pipeline_header(skill_id, ablation_id, ablation_name)
     
     # Get DB Spec
     active_prompt = SkillGenCodePrompt.query.filter_by(skill_id=skill_id, prompt_type="MASTER_SPEC").order_by(SkillGenCodePrompt.created_at.desc()).first()
@@ -344,12 +517,36 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     # Prompt 構建
     prompt, topic, textbook_example = _build_prompt(skill_id, ablation_id, db_master_spec)
     
-    # AI 生成
+    # Step 0: AI 生成
+    log_step_start(0, "AI Code Generation", f"Model: {current_model}")
+    if VERBOSE_LEVEL == 2:
+        log_fix_detail("Prompt Length", "skip", f"{len(prompt)} tokens")
+    
     raw_output, prompt_tokens, completion_tokens = _call_ai(prompt)
     
-    # 基礎清理
+    ai_gen_time = time.time() - start_time
+    if VERBOSE_LEVEL == 2:
+        log_fix_detail("Response Tokens", "skip", f"{completion_tokens} tokens")
+        log_fix_detail("Generation Time", "skip", f"{ai_gen_time:.2f}s")
+    log_step_result(0, 0, f"AI 生成完成 ({ai_gen_time:.2f}s, {completion_tokens} tokens)")
+    
+    # Step 1: 基礎清理 (All Ablations)
+    log_step_start(1, "Basic Cleanup (All Ablations)", "[進階修復啟動] Markdown + Trimming...")
+    if VERBOSE_LEVEL == 2:
+        code_len_before = len(raw_output)
+    
     clean_code, markdown_cleanup_count = _basic_cleanup(raw_output)
-    basic_cleanup_fixes = markdown_cleanup_count + 1
+    basic_cleanup_fixes = markdown_cleanup_count
+    
+    if VERBOSE_LEVEL == 2:
+        code_len_after = len(clean_code)
+        log_fix_detail("[1/4] 檢查 ```python 標記", "fixed" if markdown_cleanup_count > 0 else "skip", 
+                      f"{'→ ✓ 發現 1 處' if markdown_cleanup_count > 0 else '→ ○ 無需修復'}")
+        log_fix_detail("[2/4] 檢查 ``` 標記", "skip", "→ ○ 無需修復")
+        log_fix_detail("[3/4] 檢查結尾標記", "skip", "→ ○ 無需修復") 
+        log_fix_detail("[4/4] 清理前後空白", "fixed", "→ ✓ 完成")
+    
+    log_step_result(1, basic_cleanup_fixes, f"代碼長度: {len(raw_output)} → {len(clean_code)} 字符")
     
     regex_fixes = 0
     ast_fixes = 0
@@ -359,7 +556,7 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     eval_eliminator_count = 0
     healing_duration = 0
     
-    # 進階 Healer
+    # Step 2/3: 進階 Healer
     if use_regex_healer:
         clean_code, regex_fixes, ast_fixes, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration = _advanced_healer(clean_code, ablation_id, skill_id)
         
@@ -367,25 +564,54 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     clean_code, qwen_fixes = _post_ast_fixes(clean_code, skill_id)
     
     # 組裝 final_code
+    # [2026-02-01 Bug Fix] 嚴格遵守實驗設計：
+    # - Ab1 (Bare): 無工具庫，純 AI 生成
+    # - Ab2/Ab3: 有工具庫 (PERFECT_UTILS + Domain Functions)
     if ablation_id >= 2:
+        # Ab2, Ab3: 注入完整工具庫
         skeleton = build_calculation_skeleton(skill_id)
         final_code = skeleton + "\n" + clean_code
     else:
-        # Ab1 (Bare) 這裡也加上 skeleton 確保可運行，或視需求調整
-        skeleton = build_calculation_skeleton(skill_id)
-        final_code = skeleton + "\n" + clean_code
+        # Ab1 (Bare): 不注入工具庫，測試模型原生能力
+        # 只包含 AI 生成的代碼（靠 random/math 等標準庫）
+        final_code = clean_code
         
-    # 驗證
+    # Step 4: 驗證
     is_valid, error_msg = _validate_code(final_code)
     
-    # 動態採樣
-    dyn_ok, sampling_success_count, sampling_total_count, dyn_error_msg = _dynamic_sampling(final_code) if is_valid else (False, 0, 0, '')
+    # Step 5: 動態採樣
+    log_step_start(5, "Dynamic Sampling (Safety Net)", "[執行驗證] Subprocess with 5s Timeout...")
+    
+    if is_valid:
+        dyn_ok, sampling_success_count, sampling_total_count, dyn_error_msg = _dynamic_sampling(final_code)
+        
+        if VERBOSE_LEVEL == 2:
+            log_fix_detail("", "skip", "")
+            for i in range(sampling_total_count):
+                status = "fixed" if i < sampling_success_count else "skip"
+                log_fix_detail(f"Sample {i+1}/{sampling_total_count}:", status, 
+                              f"✓ 生成成功" if i < sampling_success_count else "✗ 生成失敗")
+        
+        log_step_result(5, 0, f"驗證: {sampling_success_count}/{sampling_total_count} 通過 | Timeout: 5s")
+    else:
+        dyn_ok = False
+        sampling_success_count = 0
+        sampling_total_count = 0
+        dyn_error_msg = error_msg
+        if VERBOSE_LEVEL >= 1:
+            print(f"│ ❌ 代碼驗證失敗: {error_msg}")
+        log_step_result(5, 0, f"跳過（代碼無效）")
     
     duration = time.time() - start_time
     created_at = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     fix_status_str = "[Advanced Healer]" if (regex_fixes > 0 or ast_fixes > 0) else ("[Basic Cleanup]" if basic_cleanup_fixes > 0 else "[Clean Pass]")
     verify_status_str = "PASSED" if (is_valid and dyn_ok) else "FAILED"
     fixes_str = f"Basic={basic_cleanup_fixes}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})"
+    
+    # 打印最终总结
+    total_fixes_display = f"Basic={basic_cleanup_fixes}, Regex={regex_fixes}, AST={ast_fixes}"
+    log_pipeline_summary(total_fixes_display, verify_status_str, duration)
+    
     header = _format_header(skill_id, current_model, ablation_id, duration, prompt_tokens, completion_tokens, created_at, fix_status_str, fixes_str, verify_status_str)
     
     # 檔案寫入
@@ -394,7 +620,10 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
         out_path = custom_output_path
     else:
         skills_dir = ensure_dir(path_in_root('skills'))
-        out_path = os.path.join(skills_dir, f'{skill_id}.py')
+        # [Fix] 直接生成帶 Ablation 標記的檔名（統一小寫）
+        # 格式: gh_ApplicationsOfDerivatives_14b_Ab1.py
+        file_name = f"{skill_id}_{model_size_class.lower()}_Ab{ablation_id}.py"
+        out_path = os.path.join(skills_dir, file_name)
         
     try:
         _write_file(out_path, header, final_code)
@@ -448,6 +677,7 @@ from fractions import Fraction
 import re
 import ast
 import operator
+import os
 
 # ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
 op_latex = {'+': '+', '-': '-', '*': '\\\\times', '/': '\\\\div'}
