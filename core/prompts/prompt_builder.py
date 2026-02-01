@@ -241,6 +241,35 @@ def generate(level=1, **kwargs):
    ✅ 正確：`q = f"已知 $f(x) = {poly}$, 求 ${deriv}$。"` (直接使用)
    ❌ 錯誤：`q = clean_latex_output(f"已知 $f(x) = {poly}$...")` (會破壞格式)
 
+【答案格式鐵律】(CRITICAL - 違反將導致評分錯誤)
+
+1. **答案只包含結果（等號右邊）**
+   - ✅ 正確：`correct_answer = "24, 4x^3+14x"`  # 只有多項式/數值
+   - ❌ 錯誤：`correct_answer = "f^(4)(x) = 24\nf'(x) = 4x^3+14x"`  # 包含符號和等號
+
+2. **多個答案用逗號分隔**
+   - ✅ 正確：`correct_answer = ', '.join(ans_parts)`
+   - ❌ 錯誤：`correct_answer = '\n'.join(ans_parts)`
+
+3. **實作範例（求導數題型）**
+   ```python
+   # 生成多個導數結果
+   ans_parts = []
+   for order in derivative_orders_list:
+       deriv_terms = _differentiate_poly(base_poly_terms, order=order)
+       poly_plain = _poly_to_plain(deriv_terms)  # 只取多項式
+       ans_parts.append(poly_plain)  # 不要加 f'(x) = 前綴
+   
+   correct_answer = ', '.join(ans_parts)  # 逗號分隔
+   # 範例輸出："24, 4x^3+14x" 而不是 "f^(4)(x) = 24\nf'(x) = 4x^3+14x"
+   ```
+
+4. **答案不含 LaTeX 符號**
+   - 答案中使用純文本，不要 $ $ 符號
+   - ✅ 正確：`"24, 4x^3+14x"`
+   - ❌ 錯誤：`"$24$, $4x^3+14x$"`
+
+
 【無限迴圈與邏輯安全鐵律】(CRITICAL - 違反將導致系統卡死)
 
 🔴 **絕對禁止使用的危險模式**
@@ -298,8 +327,11 @@ def generate(level=1, **kwargs):
 □ **安全集合選擇**: 是否使用了 shuffle + slice 模式？（避免無限迴圈）
 □ **LaTeX Formatting**: 所有數學符號（包括列表中的符號）是否都有 `$` 包裹？
 □ **No Double Cleaning**: 是否避免了對 Domain 函數結果使用 clean_latex_output？
-□ 答案欄位不含 $ $ 符號
-□ 回傳格式：{'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+□ **答案格式**: 是否只包含結果（等號右邊），不含符號前綴？
+□ **答案分隔**: 多個答案是否用逗號分隔（不是換行）？
+□ **答案欄位不含 $ $ 符號**
+□ **回傳格式**: {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+
 
 """
 

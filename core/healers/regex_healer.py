@@ -176,42 +176,23 @@ class RegexHealer:
         # -----------------------------------------------------------
         # 0.95 [Advanced Loop Pattern Fixer] 修復 while len(...) < target 模式
         # -----------------------------------------------------------
-        # 簡化版：只替換 while len(...) 為 for loop with safety counter
+        # ⚠️ DISABLED: 此功能會產生縮排錯誤，已禁用
+        # 策略改為：在 Prompt 層級徹底杜絕 while len(...) 模式
+        # Loop Breaker 已經能處理基本的 while True 轉換
         
-        pattern = r'(\s*)while\s+len\(\s*(\w+)\s*\)\s*<\s*(\w+)\s*:'
-        matches = list(re.finditer(pattern, refined_code))
+        # pattern = r'(\s*)while\s+len\(\s*(\w+)\s*\)\s*<\s*(\w+)\s*:'
+        # matches = list(re.finditer(pattern, refined_code))
+        # 
+        # if matches:
+        #     print(f"🔧 [Advanced Loop Fixer] 偵測到危險的 while len(...) 模式，正在重構...")
+        #     ... (省略) ...
         
-        if matches:
-            print(f"🔧 [Advanced Loop Fixer] 偵測到危險的 while len(...) 模式，正在重構...")
-            
-            for match in reversed(matches):  # 從後往前處理
-                indent = match.group(1)
-                var_name = match.group(2)
-                target_var = match.group(3)
-                
-                # 簡單替換：while len(xxx) < target: → for _attempt in range(100):
-                # 並在 for 內部添加 break 條件
-                original_while = match.group(0)
-                
-                # 新的 for loop 頭部
-                new_for_loop = f"{indent}for _attempt in range(100):  # Safety: converted from while len({var_name}) < {target_var}"
-                
-                # 替換
-                refined_code = refined_code[:match.start()] + new_for_loop + refined_code[match.end():]
-                
-                # 在 for loop 後面插入 break 條件（下一行）
-                # 找到下一行的位置
-                next_line_start = match.end()
-                next_newline = refined_code.find('\n', next_line_start)
-                if next_newline != -1:
-                    # 插入 break 條件
-                    break_line = f"\n{indent}    if len({var_name}) >= {target_var}: break"
-                    refined_code = refined_code[:next_newline] + break_line + refined_code[next_newline:]
-                
-                fixes += 1
-            
-            print(f"   ✅ 已修復 {len(matches)} 處危險的 while len(...) 模式")
-            print(f"   提示：建議使用 shuffle + slice 模式替代 while len(...)") 
+        # 改為只發出警告，不嘗試修復
+        pattern = r'while\s+len\(\s*(\w+)\s*\)\s*<\s*'
+        if re.search(pattern, refined_code):
+            print(f"⚠️  [Loop Safety Warning] 偵測到 while len(...) 模式")
+            print(f"   此模式可能導致無限迴圈，建議改用 shuffle + slice 模式")
+            print(f"   範例：available = list(...); random.shuffle(available); selected = available[:n]")
 
 
 
@@ -248,6 +229,42 @@ class RegexHealer:
             fixes += n
 
         # -----------------------------------------------------------
+        # 2.5 [Domain Helper LaTeX Protector] 移除對 Domain 函數的錯誤清洗
+        # -----------------------------------------------------------
+        # 檢測並移除 `q = clean_latex_output(q)` 的錯誤調用
+        # 這個調用會破壞 Domain Helper (_poly_to_latex, _deriv_symbol_latex 等) 的完美 LaTeX 輸出
+        
+        # 簡化策略：只要 q 使用了 f-string 且包含 poly_latex 或 derivative_symbols_latex，
+        # 就不應該再呼叫 clean_latex_output(q)
+        
+        # 檢查是否有包含 Domain Helper 變數的 q 賦值
+        has_domain_helper_usage = bool(re.search(
+            r'q\s*=\s*f[\'"].*(?:poly_latex|derivative_symbols_latex|_poly_to_latex|_deriv_symbol_latex)',
+            refined_code
+        ))
+        
+        # 檢查是否有 clean_latex_output(q) 調用
+        has_clean_call = bool(re.search(r'\n\s*q\s*=\s*clean_latex_output\(q\)', refined_code))
+        
+        if has_domain_helper_usage and has_clean_call:
+            print(f"🔧 [LaTeX Protector] 偵測到對 Domain Helper 輸出的錯誤清洗")
+            print(f"   移除 clean_latex_output(q) 調用...")
+            
+            # 移除 clean_latex_output(q) 這一行
+            original_code = refined_code
+            refined_code = re.sub(
+                r'\n(\s*)q\s*=\s*clean_latex_output\(q\)\s*\n',
+                r'\n\1# [Auto-Fixed] clean_latex_output removed - Domain helpers return perfect LaTeX\n',
+                refined_code
+            )
+            
+            if refined_code != original_code:
+                fixes += 1
+                print(f"   ✅ 已移除錯誤的 clean_latex_output(q) 調用")
+
+
+
+        # -----------------------------------------------------------
         # 3. [Tuple Return Fixer] 修復錯誤的 tuple 返回格式
         # -----------------------------------------------------------
         tuple_return_patterns = [
@@ -269,6 +286,49 @@ class RegexHealer:
                 fixes += 1
                 print(f"   ✅ 已修復: {new_return}")
                 break
+
+        # -----------------------------------------------------------
+        # 3.5 [Answer Format Fixer] 修復答案格式（移除符號前綴，改為逗號分隔）
+        # -----------------------------------------------------------
+        # 檢測並修復類似：
+        # ans_parts.append(f'{symbol} = {result}')  → ans_parts.append(result)
+        # correct_answer = '\n'.join(ans_parts)   → correct_answer = ', '.join(ans_parts)
+        
+        # Pattern 1: 修復 ans_parts.append 中的符號前綴
+        # 匹配: ans_parts.append(f'{_deriv_symbol_plain(x)} = {poly}')
+        # 關鍵：必須包含 ' = ' 才算是有前綴的格式
+        pattern1 = r"ans_parts\.append\(f['\"](\{[^}]+\})\s*=\s*(\{[^}]+\})['\"\)]\)"
+        matches = list(re.finditer(pattern1, refined_code))
+        
+        if matches:
+            print(f"🔧 [Answer Format Fixer] 偵測到答案包含符號前綴")
+            print(f"   移除符號前綴 (例如: f'{{symbol}} = {{result}}' → result)...")
+            
+            # 更精確的替換：提取變數名
+            for match in matches:
+                original_line = match.group(0)
+                result_var = match.group(2)  # {derivative_poly_plain}
+                var_name = result_var.strip('{}')  # derivative_poly_plain
+                replacement_line = f'ans_parts.append({var_name})'
+                refined_code = refined_code.replace(original_line, replacement_line, 1)
+                fixes += 1
+            
+            print(f"   ✅ 已移除 {len(matches)} 處答案符號前綴")
+        
+        # Pattern 2: 修復答案分隔符（\n → ,）
+        pattern2 = r"correct_answer\s*=\s*['\"]\\n['\"]\.join\(ans_parts\)"
+        if re.search(pattern2, refined_code):
+            print(f"🔧 [Answer Format Fixer] 偵測到換行分隔符")
+            print(f"   轉換為逗號分隔...")
+            
+            refined_code = re.sub(
+                pattern2,
+                r"correct_answer = ', '.join(ans_parts)",
+                refined_code
+            )
+            fixes += 1
+            print(f"   ✅ 已轉換答案分隔符: \\n → ,")
+
 
         # -----------------------------------------------------------
         # 4. [Overly Strict Constraint Remover] 移除過度嚴格的複雜度約束

@@ -2,9 +2,9 @@
 # ID: gh_ApplicationsOfDerivatives
 # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 16.00s | Tokens: In=5936, Out=589
-# Created At: 2026-02-01 01:09:16
-# Fix Status: [Advanced Healer] | Fixes: Basic=2, Advanced=(Regex=3, AST=2)
+# Performance: 19.23s | Tokens: In=7120, Out=700
+# Created At: 2026-02-01 09:33:53
+# Fix Status: [Advanced Healer] | Fixes: Basic=2, Advanced=(Regex=5, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -680,72 +680,44 @@ def _evaluate_poly(coeffs, x):
 
 
 def generate(level=1, **kwargs):
-    while True:
-        # Generate polynomial with safe logic
+    for _safety_counter in range(1000):
         max_degree = random.randint(3, 5)
-        num_terms = random.randint(3, min(5, max_degree + 1))  # Ensure num_terms <= available degrees
-        
-        # Safe pattern: shuffle + slice (no infinite loop)
+        num_terms = random.randint(3, min(5, max_degree + 1))
         available_degrees = list(range(max_degree + 1))
         random.shuffle(available_degrees)
         selected_degrees = available_degrees[:num_terms]
-        
+        if max_degree not in selected_degrees:
+            selected_degrees.append(max_degree)
+        if 0 not in selected_degrees:
+            selected_degrees.append(0)
         base_poly_terms = []
-        has_negative = False
-        for d in selected_degrees:
-            coeff = safe_choice([-10, -9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-            if coeff < 0:
-                has_negative = True
+        for d in sorted(selected_degrees, reverse=True):
+            coeff = random.randint(-10, 10)
+            while coeff == 0:
+                coeff = random.randint(-10, 10)
+            if coeff < 0 and any((c > 0 for c, _ in base_poly_terms)):
+                continue
             base_poly_terms.append((coeff, d))
-        
-        # Ensure at least one negative coefficient
-        if not has_negative:
-            c, d = base_poly_terms[0]
-            base_poly_terms[0] = (-abs(c), d)
-        
-        # Generate derivative orders with safe logic
-        num_derivatives = safe_choice([1, 2])
-        max_deriv_order = min(max_degree, 4)  # Limit to reasonable orders
-        
-        if num_derivatives > max_deriv_order:
-            num_derivatives = max_deriv_order
-        
-        # Safe pattern: shuffle + slice
-        available_orders = list(range(1, max_deriv_order + 1))
-        random.shuffle(available_orders)
-        derivative_orders_list = available_orders[:num_derivatives]
-        
-        # Calculate derivatives and validate
-        derivative_results = []
-        all_valid = True
-        
-        for k in derivative_orders_list:
-            try:
-                deriv_terms = _differentiate_poly(base_poly_terms, order=k)
-                if all(c == 0 for c, _ in deriv_terms):
-                    all_valid = False
-                    break
-                derivative_results.append((k, deriv_terms))
-            except ValueError:
-                all_valid = False
+        derivative_orders_list = []
+        while len(derivative_orders_list) < random.randint(1, 2):
+            order = random.randint(1, min(max_degree, 4))
+            if order not in derivative_orders_list:
+                derivative_orders_list.append(order)
+        valid_derivatives = True
+        for order in derivative_orders_list:
+            deriv_terms = _differentiate_poly(base_poly_terms, order=order)
+            if not any((c != 0 for c, _ in deriv_terms)):
+                valid_derivatives = False
                 break
-        
-        if all_valid and len(derivative_results) == num_derivatives:
+        if valid_derivatives:
             break
-    
-    # Format question
     poly_latex = _poly_to_latex(base_poly_terms)
-    derivative_symbols_latex = ', '.join(_deriv_symbol_latex(k) for k, _ in derivative_results)
+    derivative_symbols_latex = ' 與 '.join((_deriv_symbol_latex(order) for order in derivative_orders_list))
     q = f'已知 $f(x) = {poly_latex}$，求 ${derivative_symbols_latex}$。'
-    
-    # Do NOT call clean_latex_output - domain helpers already formatted correctly
-    
-    # Format answer - pure polynomials only, comma separated
     ans_parts = []
-    for order, deriv_terms in derivative_results:
+    for order in derivative_orders_list:
+        deriv_terms = _differentiate_poly(base_poly_terms, order=order)
         derivative_poly_plain = _poly_to_plain(deriv_terms)
         ans_parts.append(derivative_poly_plain)
-    
     correct_answer = ', '.join(ans_parts)
-    
     return {'question_text': q, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
