@@ -86,6 +86,9 @@ templates: [一個或多個可變模板]
       
     implementation_checklist: |
       工程師實作時必須確認：
+      - [ ] **必須有外層 while True: 迴圈**（def generate 內第一行）
+      - [ ] 所有驗證邏輯都在 while True 內（用 continue 或 break 控制重試）
+      - [ ] 格式化和 return 都在 while True 外（break 後才執行）
       - [ ] 是否生成了所有必要的變數
       - [ ] 是否實現了所有必要的運算步驟
       - [ ] 是否達到複雜度要求（運算數數量、運算符種類等）
@@ -100,34 +103,48 @@ templates: [一個或多個可變模板]
         - 數學式子必須在 LaTeX ($...$) 裡面
         - 使用 fmt_num() 格式化所有數字（包括係數和變數）
         - 使用 op_latex 字典映射運算符（* → \\times, / → \\div）
-        - 使用 clean_latex_output() 自動包裝**最後一次**（僅呼叫一次）
         
-        **實作三部曲**：
-        1. 構造中文敘述：使用占位符 {} 預留位置
-        2. 構造 LaTeX 式子：用 fmt_num() 和 op_latex 格式化
-        3. 組合：將式子插入敘述，最後呼叫 clean_latex_output(q)
+        **實作模式判斷**：
         
-        **標準模式**：
-        1. 純數學式（無中文）：
-           expr = fmt_num(a) + op_latex['*'] + fmt_num(b)  # 產生 "a \\times b"
-           q = f"計算 {expr} 的值"
-           q = clean_latex_output(q)  # 最後才呼叫，產生 "計算 $a \\times b$ 的值"
+        🟢 **模式 A：使用 Domain 標準函數（推薦）**
+        - 當題型涉及多項式、導數、三角函數等，優先使用 Domain 標準函數庫
+        - Domain 函數已返回完美 LaTeX（不含 $ 符號）
+        - ⚠️ **絕對禁止**對 Domain 函數結果調用 clean_latex_output()
         
-        2. 複雜中文 + 數學式（推薦用於導數、多項式等）：
-           poly_str = fmt_num(a) + f"x{op_latex['*']}2" + op_latex['+'] + fmt_num(b) + "x" + op_latex['+'] + fmt_num(c)
-           q = f"已知 $f(x) = {poly_str}$，求 $f'(x)$ 的值。"
-           q = clean_latex_output(q)  # 自動補 $ $
+        範例（導數題型）：
+        1. 使用標準函數格式化：
+           poly_latex = _poly_to_latex(terms)  # 返回 "3x^{2} - 5x + 2" (無 $)
+           deriv_sym = _deriv_symbol_latex(1)   # 返回 "f'(x)" (無 $)
         
-        3. 帶入特定點求值：
-           poly_at_x0 = f"({})**2 + {}".format(fmt_num(a), fmt_num(b))  # 先用括號確保順序
-           q = f"在點 $P({fmt_num(x0)}, {fmt_num(y0)})$ 處，求 $y = {poly_at_x0}$ 的導數。"
-           q = clean_latex_output(q)
+        2. 手動添加 $ 符號組合題目：
+           q = f"已知 $f(x) = {poly_latex}$，求 ${deriv_sym}$ 的值。"
+           # ✅ 完成！不要再呼叫 clean_latex_output(q)
         
-        **禁止（會導致失敗）**：
-        - ❌ 將中文包在 $ $ 內（matplotlib 無法渲染中文）
+        3. 列舉多個符號時，每個符號獨立包裹 $：
+           symbols = ' 與 '.join(f"${_deriv_symbol_latex(n)}$" for n in orders)
+           q = f"已知 $f(x) = {poly_latex}$，求 {symbols}。"
+           # ✅ 完成！
+        
+        🟡 **模式 B：簡單運算式（無 Domain 函數）**
+        - 當題型是簡單四則運算、不使用標準函數庫時
+        - 可以在最後呼叫 clean_latex_output() 一次
+        
+        範例（簡單運算）：
+        1. 構造 LaTeX 式子（不含 $）：
+           expr = f"{fmt_num(a)} {op_latex['*']} {fmt_num(b)}"  # "3 \\times 5"
+        
+        2. 組合題目：
+           q = f"計算 {expr} 的值"  # "計算 3 \\times 5 的值"
+        
+        3. 最後呼叫一次：
+           q = clean_latex_output(q)  # "計算 $3 \\times 5$ 的值"
+        
+        **絕對禁止（會導致佔位符外洩）**：
+        - ❌ 對 Domain 函數結果使用 clean_latex_output()
+        - ❌ 混合已包裹 $ 和未包裹內容後再 clean_latex_output()
         - ❌ 重複呼叫 clean_latex_output()（會產生多層 $ $）
         - ❌ 先手動添加 $ 符號後又呼叫 clean_latex_output()（會產生 $...$...$）
-        - ❌ 在 clean_latex_output() 前用 str.replace 修改字符串（會破壞結構）
+        - ❌ 將中文包在 $ $ 內（matplotlib 無法渲染中文）
         - ❌ 不用 fmt_num()，直接用 str(a)（無法正確處理負數和分數）
         
       answer_display: |
@@ -163,6 +180,40 @@ verifier:
 - ❌ **嚴禁直接寫 Python Code**：規格是「自然語述」，工程師自己實作。
 - ❌ **嚴禁繪圖、視覺、Matplotlib**：題目可涉及幾何，但別要求繪圖生成。
 - ❌ **嚴禁應用題、物理情境、單位轉換等實世界敘事**：純數學題。
+
+【工程師實作結構要求】
+在自然語述規格完成後，工程師必須按照以下結構實作 generate() 函數：
+
+```python
+def generate(level=1, **kwargs):
+    while True:  # ⚠️ CRITICAL: 外層 while True 是必須的！用於整個物件再生
+        # === 步驟 1: 變數生成（按照 MASTER_SPEC） ===
+        <根據規格生成變數>
+        
+        # === 步驟 2: 運算與驗證 ===
+        <執行必要的運算>
+        
+        # === 步驟 3: 驗證與重試控制 ===
+        if <不符合要求>:
+            continue  # 重新生成整個物件
+        
+        if <符合所有要求>:
+            break  # 跳出迴圈，進入格式化
+    
+    # === 步驟 4: 格式化（必須在 while True 外層！） ===
+    q = <格式化題目>
+    a = <格式化答案>
+    
+    # === 步驟 5: 回傳標準格式 ===
+    return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+```
+
+**結構檢查清單（提交前必確認）**：
+✅ 必須有外層 `while True:`（def generate 內第一行）
+✅ 所有驗證邏輯都在 while True 內
+✅ 格式化和 return 都在 while True 外
+✅ 有 continue 語句時，確保在 while True 內
+✅ 不可在內層有 while True（只有外層一個）
 
 【輸出範例（僅示意）】
 ⚠️ **重要**：以下範例必須包含明確的複雜度要求和實現檢查清單

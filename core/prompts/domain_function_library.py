@@ -50,12 +50,13 @@ Domain 分類：
 POLYNOMIAL_HELPERS = """
 # ===== 多項式標準函數庫 =====
 
+def _coeffs_to_terms(coeffs):
+    '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
+    degree = len(coeffs) - 1
+    return [(coeffs[i], degree - i) for i in range(len(coeffs))]
+
 def _poly_to_latex(terms):
-    '''
-    將多項式內部表示轉換為 LaTeX 字符串
-    參數: terms = [(coeff, exp), ...] 例如 [(3, 2), (-5, 0)] → 3x² - 5
-    返回: LaTeX 字符串（不含 $ 符號）
-    '''
+    '''terms → LaTeX (不含$)，例: [(3,2),(-5,0)] → "3x^{2} - 5"'''
     if not terms:
         return '0'
     parts = []
@@ -75,11 +76,7 @@ def _poly_to_latex(terms):
     return ''.join(parts).strip()
 
 def _poly_to_plain(terms):
-    '''
-    將多項式內部表示轉換為純文本字符串
-    參數: terms = [(coeff, exp), ...]
-    返回: 純文本字符串，例如 "3x^2-5"（答案格式：無空格）
-    '''
+    '''terms → 純文本答案格式 (無空格)，例: "3x^2-5"'''
     if not terms:
         return '0'
     parts = []
@@ -99,27 +96,21 @@ def _poly_to_plain(terms):
     return ''.join(parts).strip()
 
 def _differentiate_poly(terms, order=1):
-    '''
-    對多項式求導 order 次
-    參數:
-        terms: [(coeff, exp), ...]
-        order: 求導次數
-    返回: 導數的內部表示 [(new_coeff, new_exp), ...]
-    '''
+    '''求導 order 次，返回新 terms'''
     result = list(terms)
     for _ in range(order):
         new_terms = []
         for c, e in result:
             if e > 0:
                 new_c = c * e
-                if abs(new_c) > 10000:  # [Fix] 放寬限制，避免合理係數被拒絕
+                if abs(new_c) > 10000:
                     raise ValueError(f"Coefficient {new_c} exceeds limit")
                 new_terms.append((new_c, e - 1))
         result = new_terms
     return result
 
 def _deriv_symbol_latex(order):
-    '''生成導數符號（LaTeX）: f'(x), f''(x), f^{(n)}(x)'''
+    '''導數符號 LaTeX: f'(x), f''(x), f^{(n)}(x)'''
     if order == 1:
         return "f'(x)"
     elif order == 2:
@@ -128,33 +119,13 @@ def _deriv_symbol_latex(order):
         return f"f^{{({order})}}(x)"
 
 def _deriv_symbol_plain(order):
-    '''生成導數符號（純文本）: f'(x), f''(x), f^(n)(x)'''
+    '''導數符號純文本: f'(x), f''(x), f^(n)(x)'''
     if order == 1:
         return "f'(x)"
     elif order == 2:
         return "f''(x)"
     else:
         return f"f^({order})(x)"
-
-# ===== 🔴 CRITICAL: 題目組裝規範（必須遵守）=====
-# 
-# 當使用多項式函數時，請按以下方式組裝題目：
-# 
-# ✅ 正確範例（手動添加 $ 符號，**不要** 使用 clean_latex_output）：
-#   poly_str = _poly_to_latex(terms)        # 返回: "3x^{2} - 5x + 2"
-#   deriv_sym = _deriv_symbol_latex(1)      # 返回: "f'(x)"
-#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
-#   # ⚠️ 直接使用 q，不要調用 clean_latex_output(q)！
-#   return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
-# 
-# ❌ 錯誤範例（會破壞 LaTeX 格式）：
-#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
-#   return {'question_text': clean_latex_output(q), ...}  # ❌ 不要這樣做！
-#   # 錯誤結果：$x$ ^{ $4$ } $- 6x$ ^{ $3$ }（每個符號都被錯誤地獨立包裝）
-# 
-# 原因：clean_latex_output() 適用於簡單運算（如 "3 + 5"），
-#      但多項式函數已經返回正確的 LaTeX 格式（如 x^{4}），
-#      再次呼叫會導致過度處理，將 x^{4} 拆分成 $x$ ^{ $4$ }
 """
 
 # ============================================================================

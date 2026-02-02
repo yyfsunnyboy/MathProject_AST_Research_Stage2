@@ -1,0 +1,161 @@
+[
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab1.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab1.py",
+    "ablation_id": 1,
+    "healer_enabled": false,
+    "l1_engineering": 20,
+    "l2_data_hygiene": 13,
+    "l3_fairness": 25,
+    "l4_pedagogy": 26,
+    "mcri_score": 84,
+    "details": {
+      "l1": {
+        "scores": {
+          "syntax_safety": 10,
+          "runtime_stability": 10
+        },
+        "details": {
+          "syntax_safety": "✓ 語法正確",
+          "runtime_stability": "✓ 執行穩定 (耗時 0.01秒)"
+        }
+      },
+      "l2": {
+        "scores": {
+          "interface_contract": 10,
+          "format_purity": 3
+        },
+        "details": {
+          "interface_contract": "✓ 介面正確 (dict, 3/3 keys)",
+          "format_purity": "△ 格式問題: 含 LaTeX 符號, 含等號左邊"
+        }
+      },
+      "l3": {
+        "scores": {
+          "internal_consistency": 15,
+          "external_robustness": 10
+        },
+        "details": {
+          "internal_consistency": "✓ 內在一致（自己的答案能判對）",
+          "external_robustness": "△ 外在強健性不足: 10/15 (正確變體 2/4, 錯誤識別 2/2)"
+        }
+      },
+      "l4": {
+        "scores": {
+          "numeric_friendliness": 15,
+          "visual_legibility": 11
+        },
+        "details": {
+          "numeric_friendliness": "✓ 數值友善",
+          "visual_legibility": "△ 視覺問題: 答案不應含 LaTeX 符號"
+        }
+      }
+    }
+  },
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab2.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab2.py",
+    "ablation_id": 2,
+    "healer_enabled": false,
+    "l1_engineering": 17,
+    "l2_data_hygiene": 14,
+    "l3_fairness": 25,
+    "l4_pedagogy": 30,
+    "mcri_score": 86,
+    "details": {
+      "l1": {
+        "scores": {
+          "syntax_safety": 7,
+          "runtime_stability": 10
+        },
+        "details": {
+          "syntax_safety": "△ 語法部分通過 (使用禁運函數: eval)",
+          "runtime_stability": "✓ 執行穩定 (耗時 0.01秒)"
+        }
+      },
+      "l2": {
+        "scores": {
+          "interface_contract": 10,
+          "format_purity": 4
+        },
+        "details": {
+          "interface_contract": "✓ 介面正確 (dict, 3/3 keys)",
+          "format_purity": "△ 格式問題: 含等號左邊, 含換行"
+        }
+      },
+      "l3": {
+        "scores": {
+          "internal_consistency": 15,
+          "external_robustness": 10
+        },
+        "details": {
+          "internal_consistency": "✓ 內在一致（自己的答案能判對）",
+          "external_robustness": "△ 外在強健性不足: 10/15 (正確變體 2/4, 錯誤識別 2/2)"
+        }
+      },
+      "l4": {
+        "scores": {
+          "numeric_friendliness": 15,
+          "visual_legibility": 15
+        },
+        "details": {
+          "numeric_friendliness": "✓ 數值友善",
+          "visual_legibility": "✓ 視覺清晰"
+        }
+      }
+    }
+  },
+  {
+    "filepath": "E:\\Python\\MathProject_AST_Research\\skills\\gh_ApplicationsOfDerivatives_14b_Ab3.py",
+    "filename": "gh_ApplicationsOfDerivatives_14b_Ab3.py",
+    "ablation_id": 3,
+    "healer_enabled": true,
+    "l1_engineering": 17,
+    "l2_data_hygiene": 20,
+    "l3_fairness": 26,
+    "l4_pedagogy": 30,
+    "mcri_score": 93,
+    "details": {
+      "l1": {
+        "scores": {
+          "syntax_safety": 7,
+          "runtime_stability": 10
+        },
+        "details": {
+          "syntax_safety": "△ 語法部分通過 (使用禁運函數: eval)",
+          "runtime_stability": "✓ 執行穩定 (耗時 0.00秒)"
+        }
+      },
+      "l2": {
+        "scores": {
+          "interface_contract": 10,
+          "format_purity": 10
+        },
+        "details": {
+          "interface_contract": "✓ 介面正確 (dict, 3/3 keys)",
+          "format_purity": "✓ 格式純淨"
+        }
+      },
+      "l3": {
+        "scores": {
+          "internal_consistency": 15,
+          "external_robustness": 11
+        },
+        "details": {
+          "internal_consistency": "✓ 內在一致（自己的答案能判對）",
+          "external_robustness": "△ 外在強健性不足: 11/15 (正確變體 2/3, 錯誤識別 2/2)"
+        }
+      },
+      "l4": {
+        "scores": {
+          "numeric_friendliness": 15,
+          "visual_legibility": 15
+        },
+        "details": {
+          "numeric_friendliness": "✓ 數值友善",
+          "visual_legibility": "✓ 視覺清晰"
+        }
+      }
+    }
+  }
+]

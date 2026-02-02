@@ -9,6 +9,7 @@ flask_sqlalchemy
 openpyxl
 matplotlib
 numpy
+scipy
 xlsxwriter
 tqdm
 PyMuPDF
@@ -20,3 +21,4 @@ pypandoc
 pytesseract
 Pillow
 psutil
+scipy

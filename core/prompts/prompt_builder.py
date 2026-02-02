@@ -57,9 +57,9 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
    - `def check(user_answer, correct_answer)`: 檢查答案是否正確
 
 2. `generate` 函式要回傳一個字典 (Dictionary)，包含以下欄位（請照抄 key 名稱）：
-   - 'question_text'
-   - 'answer'
-   - 'correct_answer'
+   - 'question_text': 題目文字
+   - 'answer': 空字串 ''
+    - 'correct_answer': 正確答案（必須是字串，例如："24" 或 "3x^2+5"；多個答案用逗號分隔）
    - 'mode': 1
 
 3. `check` 函式請回傳一個字典，包含：
@@ -68,7 +68,15 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
 
 4. 請使用 Python 的 standard library (如 random, math) 即可。
 
-請直接給我 Python 程式碼，不要解釋。
+⚠️ 重要：只輸出 Python 程式碼！
+- ✅ 正確：直接從 import 開始寫
+- ❌ 錯誤：不要加任何說明文字或註解在程式碼之外
+- ❌ 錯誤：不要在程式碼後面加「這個程式碼會...」的說明
+- ❌ 錯誤：不要在程式碼後面加英文說明（如 "This code defines..."）
+- ❌ 錯誤：不要用 ```python 包裹代碼
+- ❌ 錯誤：不要加 Example usage 或 `if __name__ == '__main__'`
+- ❌ 錯誤：不要加 Explanation/說明段落
+- 🔴 CRITICAL：程式碼結束後不可有任何文字（包括空白行後的說明）
 """
 
 # ==============================================================================
@@ -146,7 +154,15 @@ BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER
 
 UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師。
 【任務】實作 `def generate(level=1, **kwargs)`，根據 MASTER_SPEC 產出完整的 Python 代碼。
-【限制】僅輸出代碼，無 Markdown/說明。**嚴禁 eval/exec/safe_eval**。
+【限制】
+1. 僅輸出代碼，無 Markdown/說明
+2. **嚴禁 eval/exec/safe_eval**
+3. 🔴 **禁止在代碼結尾加任何說明文字或註解段落**
+   - ❌ 錯誤：代碼後直接寫 "This implementation follows..." 或中文說明
+   - ✅ 正確：代碼結束後不加任何文字
+4. 🔴 **禁止 Example usage / __main__ 測試段落**
+    - ❌ 錯誤：`if __name__ == '__main__': ...`
+    - ❌ 錯誤：`### Explanation:` 或任何說明段落
 
 🔴 **最高優先級：MASTER_SPEC 是唯一權威來源**
 - 你收到的 MASTER_SPEC 包含完整的題型定義、複雜度要求和實現檢查清單
@@ -162,27 +178,35 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師。
 - 組合數學: nCr(n,r), nPr(n,r), factorial_bounded(n)
 - 其他: clamp_fraction(f), safe_pow(base,exp), rational_gauss_solve(...)
 
+【函數使用規則（CRITICAL）】
+- 只使用已提供的 helper 名稱與原始參數簽名，**不可臆造新函數**。
+- ❌ 錯誤：`_poly_to_string(...)`, `_deriv_symbol_latex(order, latex=False)`
+- ✅ 正確：`_poly_to_latex(terms)`, `_poly_to_plain(terms)`, `_deriv_symbol_latex(order)`, `_deriv_symbol_plain(order)`
+- 若手上是係數列表，先用 `_coeffs_to_terms(coeffs)` 轉成 `[(c,e), ...]` 再丟給 `_poly_to_latex/_poly_to_plain`。
+
 【生成管線標準】
-1. 變數生成（嚴格遵守 MASTER_SPEC）
-2. 運算（Python 直接計算，嚴禁 eval）
-3. 運算順序與括號
-4. 題幹格式化（LaTeX + 中文處理）
-5. 答案格式化
-6. 回傳標準格式
+1. **結構要求**：必須有外層 `while True:` 迴圈（用於物件再生）
+2. 變數生成（嚴格遵守 MASTER_SPEC）
+3. 運算（Python 直接計算，嚴禁 eval）
+4. 運算順序與括號
+5. 題幹格式化（LaTeX + 中文處理）
+6. 答案格式化
+7. 回傳標準格式
 
 【安全生成範例 - 請參照此模式】
 ```python
 def generate(level=1, **kwargs):
-    while True:  # 外層 while True 用於整個物件再生
+    while True:  # ⚠️ CRITICAL: 外層 while True 是必須的！用於整個物件再生
         # 步驟 1: 使用 shuffle + slice 選擇集合元素（絕對安全）
         max_degree = random.randint(3, 5)
         num_terms = random.randint(3, min(5, max_degree + 1))  # 關鍵：確保不超過可選值數量
         
+        # 步驟 2: 實際變數生成
         available_degrees = list(range(max_degree + 1))
         random.shuffle(available_degrees)
         selected_degrees = available_degrees[:num_terms]  # 直接切片，O(1) 時間
         
-        # 步驟 2: 生成基礎物件
+        # 步驟 3: 生成基礎物件
         poly_terms = []
         for d in selected_degrees:
             coeff = random.randint(-10, 10)
@@ -190,20 +214,180 @@ def generate(level=1, **kwargs):
                 coeff = random.randint(-10, 10)
             poly_terms.append((coeff, d))
         
-        # 步驟 3: 驗證並決定是否重試
+        # 步驟 4: 驗證並決定是否重試
         deriv = differentiate(poly_terms)
         if is_valid(deriv):  # 如果有效則跳出
             break
         # 否則 continue，回到 while True 開頭重新生成整個物件
     
-    # 步驟 4: 格式化輸出
+    # 步驟 5: 生成答案（CRITICAL：答案只包含結果，不含符號前綴或等號）
+    # ✅ 正確範例（求導數題型）：
+    ans_parts = []
+    for order in derivative_orders_list:
+        deriv_terms = _differentiate_poly(base_poly_terms, order=order)
+        poly_plain = _poly_to_plain(deriv_terms)  # 只取多項式文字
+        ans_parts.append(poly_plain)  # 不加 "f'(x) =" 前綴
+    
+    correct_answer = ', '.join(ans_parts)  # 逗號分隔，不用換行
+    # 結果："2, 0" 而非 "f''(x) = 2\nf^(3)(x) = 0"
+    
+    # ❌ 錯誤範例（會導致評分失敗）：
+    # ans_parts.append(f"{_deriv_symbol_plain(k)} = {poly_plain}")  # 包含等號
+    # correct_answer = '\n'.join(ans_parts)  # 用換行分隔
+    
+    # 步驟 6: 格式化題幹與返回
     q = f'...'
-    a = '...'
-    return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+    return {'question_text': q, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
 ```
 
+⚠️ **返回格式檢查清單（CRITICAL - 違反將導致驗證失敗）**
 
-【LaTeX 格式鐵律】(CRITICAL - 違反此規則將導致顯示錯誤)
+1. **必須返回字典**，不是 tuple：
+   - ✅ 正確：`return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}`
+   - ❌ 錯誤：`return q, a`（這是 tuple，不是字典！）
+   - ❌ 錯誤：`return (q, a)`（同樣是 tuple）
+
+2. **字典必須包含以下 4 個 key**（缺一不可）：
+   - `'question_text'`: 題目字串
+   - `'correct_answer'`: 答案字串（純文本，不是字典！）
+   - `'answer'`: 同 `'correct_answer'`
+   - `'mode'`: 固定值 1
+
+3. **correct_answer 必須是字串**，不是字典：
+   - ✅ 正確：`'correct_answer': '24, 4x^3+14x'`（逗號分隔的字串）
+   - ❌ 錯誤：`'correct_answer': {'f\'(x)': ..., 'f\'\'(x)': ...}`（字典）
+   - ❌ 錯誤：`'correct_answer': ['24', '4x^3+14x']`（列表）
+
+【結構檢查清單 - 提交代碼前必須確認】
+✅ **必須有外層 `while True:`**（def generate 內第一行）
+✅ **所有驗證邏輯都在 while True 內**
+✅ **格式化和 return 都在 while True 外**
+✅ **有 continue 語句時，確保在 while True 內**
+✅ **不可在內層有 while True**（只有外層一個）
+✅ **必須返回字典**（不是 tuple）
+✅ **字典必須有 4 個 key**（question_text, correct_answer, answer, mode）
+✅ **correct_answer 必須是字串**（不是字典或列表）
+
+
+【LaTeX 格式鐵律 - 方案 1：場景區分法】(CRITICAL - 違反此規則將導致顯示錯誤)
+
+🎯 **核心原則**：工程化 = 簡潔直接，不是複雜的字串處理
+
+📋 **場景分類決策樹**：
+```
+你的題型使用了 Domain 標準函數嗎？（如 _poly_to_latex, _deriv_symbol_latex 等）
+    │
+    ├─ ✅ 是 → 🟢 場景 A：Domain 函數題型
+    │          → 手動添加 $ 符號
+    │          → 🔴 絕對禁止 clean_latex_output()
+    │
+    └─ ❌ 否 → 🟡 場景 B：簡單運算題型
+               → 手動添加 $ 符號（推薦）
+               → 或最後調用一次 clean_latex_output()（可選）
+```
+
+---
+
+## 🟢 場景 A：Domain 函數題型（多項式、導數、三角等）
+
+### ✅ 標準實作流程（方案 1）
+
+```python
+# 步驟 1: 使用 Domain 函數格式化（返回不含 $ 的完美 LaTeX）
+poly_latex = _poly_to_latex(base_poly_terms)  # "10x^{5} + 9x^{2} + 5"
+
+# 步驟 2: 手動為每個數學符號添加 $ $
+derivative_symbols_latex = ' 與 '.join(
+    f"${_deriv_symbol_latex(order)}$" 
+    for order in derivative_orders_list
+)
+# 結果: "$f^{(3)}(x)$ 與 $f^{(4)}(x)$"
+
+# 步驟 3: 組合題目（直接使用 f-string）
+q = f"已知 $f(x) = {poly_latex}$，求 {derivative_symbols_latex}。"
+# 最終: "已知 $f(x) = 10x^{5} + 9x^{2} + 5$，求 $f^{(3)}(x)$ 與 $f^{(4)}(x)$。"
+
+# ✅ 完成！不需要也不應該呼叫 clean_latex_output()
+```
+
+### 🔴 絕對禁止的錯誤用法
+
+```python
+# ❌ 錯誤 1: 混合已包裹和未包裹的內容
+poly_latex = _poly_to_latex(terms)
+deriv_sym = _deriv_symbol_latex(1)  # 無 $ $
+q = f"已知 $f(x) = {poly_latex}$，求 {deriv_sym}。"  # 混合了
+q = clean_latex_output(q)  # 💣 炸了！產生 placeholder 外洩
+
+# ❌ 錯誤 2: 對 Domain 函數結果使用 clean_latex_output()
+poly_latex = _poly_to_latex(terms)
+q = f"已知 $f(x) = {poly_latex}$，求導數。"
+q = clean_latex_output(q)  # 💣 多此一舉，可能破壞結果
+
+# ❌ 錯誤 3: 寫自己的清洗函數
+def my_clean_function(s):  # 💣 不要這樣做！
+    # 複雜的 regex 替換邏輯...
+    return result
+```
+
+### 📌 記憶口訣
+```
+Domain 函數已完美 → 手動加 $ → 直接用，不 clean
+```
+
+---
+
+## 🟡 場景 B：簡單運算題型（四則運算、不使用 Domain 函數）
+
+### ✅ 方式 A：手動添加 $（推薦 - 最簡潔）
+
+```python
+# 步驟 1: 構造數學式（不含 $ $）
+expr = f"{fmt_num(a)} {op_latex['*']} {fmt_num(b)}"  # "3 \\times 5"
+
+# 步驟 2: 手動添加 $ 符號
+q = f"計算 ${expr}$ 的值"  # "計算 $3 \\times 5$ 的值"
+
+# ✅ 完成！簡單直接
+```
+
+### ✅ 方式 B：使用 clean_latex_output()（可選）
+
+```python
+# 步驟 1: 構造數學式（不含 $ $）
+expr = f"{fmt_num(a)} {op_latex['*']} {fmt_num(b)}"  # "3 \\times 5"
+
+# 步驟 2: 組合題目（不加 $）
+q = f"計算 {expr} 的值"  # "計算 3 \\times 5 的值"
+
+# 步驟 3: 最後調用一次 clean_latex_output()
+q = clean_latex_output(q)  # "計算 $3 \\times 5$ 的值"
+
+# ✅ 也可以，但方式 A 更簡潔
+```
+
+### 📌 記憶口訣
+```
+簡單運算 → 優先手動 $ → 或最後 clean 一次
+```
+
+---
+
+## 🔴 絕對禁止的混合模式（會導致 placeholder 外洩）
+
+```python
+# 💣 致命組合：Domain 函數 + 混合內容 + clean_latex_output()
+poly_latex = _poly_to_latex(terms)                    # Domain 函數
+deriv_sym = _deriv_symbol_latex(1)                     # Domain 函數
+q = f"已知 $f(x) = {poly_latex}$，求 {deriv_sym}。"   # 混合了 $ 和裸露內容
+q = clean_latex_output(q)                              # 💣 爆炸！
+
+# 結果: "已知 __ $LATEX$ _ $BLOCK$ _ $0$ __，求 $f$ ^{ $(1)$ } $(x)$..."
+```
+
+---
+
+## 📊 通用規則（適用所有場景）
 
 1. **數學表達式必須用 $ $ 包裹**
    ✅ 正確：f"計算 ${fmt_num(a)} + {fmt_num(b)}$ 的值"
@@ -213,80 +397,64 @@ def generate(level=1, **kwargs):
    ✅ 正確：f"求 ${expr}$ 的因式分解"
    ❌ 錯誤：f"求${expr}$的因式分解"  # $ 與中文相連
 
-3. **多數學物件列舉規則**
-   - 當列舉多個數學符號（如導數符號、坐標點）時，必須確保**每個符號**都被主要 $ 包裹，或整個數學區塊被包裹。
-   ✅ 正確：f"求 ${sym1}, {sym2}$" (例如 "求 $f'(x), f''(x)$")
-   ✅ 正確：f"求 ${sym1}$ 與 ${sym2}$"
-   ❌ 錯誤：f"求 {sym1}, {sym2}" (完全無LaTeX)
+3. **優先使用簡單的 f-string**
+   - ✅ 推薦：f"已知 ${poly_latex}$，求 ${deriv_sym}$。"
+   - ⚠️ 可選：先拼接再 clean_latex_output()（僅限場景 B）
+   - ❌ 禁止：寫複雜的佔位符替換邏輯
 
-4. **題目字串拼接標準流程**
-   ```python
-   # 步驟 1: 組裝數學表達式（不含 $ $）
-   expr = f"{fmt_num(a)} {op_latex['+']} {fmt_num(b)}"
-   
-   # 步驟 2: 組合中文與數學式（手動加 $ $）
-   q_str = f"計算 ${expr}$ 的值"  # 🟢 簡單字串拼接
-   
-   # 步驟 3: 清洗（僅在非 Domain Helper 場景下使用）
-   # 如果你使用了 _poly_to_latex 等標準庫函數，通常不需要也不應該呼叫 clean_latex_output
-   ```
+4. **工程化 = 簡潔，不是複雜**
+   - ✅ 好的工程化：清晰的變數命名、直接的 f-string
+   - ❌ 壞的工程化：過度複雜的字串處理、多層替換邏輯
 
-5. **多項式/Domain 函數特殊規則 (CRITICAL)**
-   - Domain 函數（如 `_poly_to_latex`, `_deriv_symbol_latex`）已返回完美 LaTeX。
-   - 🔴 **絕對禁止** 對其結果再次呼叫 `clean_latex_output()`。
-   
-   ✅ 正確：`q = f"已知 $f(x) = {poly}$, 求 ${deriv}$。"` (直接使用)
-   ❌ 錯誤：`q = clean_latex_output(f"已知 $f(x) = {poly}$...")` (會破壞格式)
-
-【答案格式鐵律】(CRITICAL - 違反將導致評分錯誤)
-
-1. **答案只包含結果（等號右邊）**
-   - ✅ 正確：`correct_answer = "24, 4x^3+14x"`  # 只有多項式/數值
-   - ❌ 錯誤：`correct_answer = "f^(4)(x) = 24\nf'(x) = 4x^3+14x"`  # 包含符號和等號
-
-2. **多個答案用逗號分隔**
-   - ✅ 正確：`correct_answer = ', '.join(ans_parts)`
-   - ❌ 錯誤：`correct_answer = '\n'.join(ans_parts)`
-
-3. **實作範例（求導數題型）**
-   ```python
-   # 生成多個導數結果
-   ans_parts = []
-   for order in derivative_orders_list:
-       deriv_terms = _differentiate_poly(base_poly_terms, order=order)
-       poly_plain = _poly_to_plain(deriv_terms)  # 只取多項式
-       ans_parts.append(poly_plain)  # 不要加 f'(x) = 前綴
-   
-   correct_answer = ', '.join(ans_parts)  # 逗號分隔
-   # 範例輸出："24, 4x^3+14x" 而不是 "f^(4)(x) = 24\nf'(x) = 4x^3+14x"
-   ```
-
-4. **答案不含 LaTeX 符號**
-   - 答案中使用純文本，不要 $ $ 符號
-   - ✅ 正確：`"24, 4x^3+14x"`
-   - ❌ 錯誤：`"$24$, $4x^3+14x$"`
+【題幹 LaTeX 拼接規則（CRITICAL）】
+1. **多個符號必須分別包 $**，不可整段包在 $$ 或混用
+    - ✅ 正確：`symbols = ' 與 '.join(f"${_deriv_symbol_latex(n)}$" for n in orders)`
+    - ✅ 正確：`q = f"已知 $f(x) = {poly_latex}$，求 {symbols}。"`
+    - ❌ 錯誤：`q = f"... 求 $${symbols}$$。"`（會產生 $$）
+2. **已手動加 $ 的內容，絕對不可再做整段包裹或 clean_latex_output**
+    - ❌ 錯誤：`q = clean_latex_output(q)`（若 q 內已有 $...$）
 
 
 【無限迴圈與邏輯安全鐵律】(CRITICAL - 違反將導致系統卡死)
 
-🔴 **絕對禁止使用的危險模式**
+� **必須使用的結構（REQUIRED）**
 
-1. **禁止 `while True:`**
-   - ❌ **絕對禁止**：`while True:`, `while 1:`, `while (True):`
-   - 原因：沒有保證終止條件，容易導致無限迴圈卡死
-   
-2. **禁止可能無法終止的 while 迴圈**
-   - ❌ **絕對禁止**：`while len(set) < target:` 如果 target 超過可選值數量
-   - 範例（會卡死）：
+1. **外層 `while True:` 是必須的**
+   - ✅ **必須有**：`def generate` 的第一行必須是 `while True:`
+   - 用途：用於整個物件再生（驗證失敗時重新生成）
+   - 結構：
      ```python
-     # 錯誤！如果 num_terms=5 但 max_degree=3，只有 [0,1,2,3] 4個值，永遠湊不滿 5 個
-     degrees = set()
-     while len(degrees) < num_terms:
-         degree = random.randint(0, max_degree)
-         degrees.add(degree)
+     def generate(level=1, **kwargs):
+         while True:  # ⚠️ 必須！外層物件再生迴圈
+             # 步驟 1: 生成變數
+             # 步驟 2: 驗證
+             if <不符合要求>:
+                 continue  # 重新生成
+             break  # 符合要求，跳出
+         
+         # 格式化（在 while True 外層）
+         return {...}
      ```
 
-✅ **安全的替代模式（必須使用）**
+🔴 **絕對禁止使用的危險模式**
+
+2. **禁止內層無限迴圈**
+   - ❌ **絕對禁止**：在 `while True:` **內部**再用 `while True:` 或其他無保證終止的迴圈
+   - ❌ **絕對禁止**：`while len(set) < target:` 如果 target 超過可選值數量
+   - 原因：沒有保證終止條件，容易導致無限迴圈卡死
+   
+   範例（會卡死）：
+   ```python
+   def generate(level=1, **kwargs):
+       while True:  # ✅ 外層可以
+           # ❌ 錯誤！內層又有無限迴圈
+           degrees = set()
+           while len(degrees) < num_terms:  # 可能永遠湊不滿
+               degree = random.randint(0, max_degree)
+               degrees.add(degree)
+   ```
+
+✅ **安全的內層實作模式（必須使用）**
 
 1. **使用 Shuffle + Slice 模式（推薦）**
    ```python
@@ -368,34 +536,14 @@ class PromptBuilder:
                     domain_code = get_domain_helpers_code(required_domains)
                     domain_injection = f"""
 
-### 🔧 [強制規範] 標準函數庫 (請務必使用以下函數，禁止自創同名函數)
-
-此題目屬於以下數學領域：{', '.join(required_domains)}
-
-請**優先使用**以下預定義的標準函數（禁止重新定義相同功能的函數）：
+### 🔧 標準函數庫（{', '.join(required_domains)}）
 
 {domain_code}
 
-⚠️ 重要規則：
-1. 如果標準函數庫已提供相應函數（例如 _poly_to_latex），請直接調用，不要自己重新實現
-2. 你只需要實現 `def generate(level=1, **kwargs)` 函數
-3. 標準函數庫的函數簽名和命名必須嚴格遵守，不得修改
-4. 禁止創建 CamelCase 命名的函數（例如 FormatPolynomial）
-
-🔴 **導數題型答案格式（CRITICAL）**：
-當使用 _differentiate_poly() 等函數時，答案格式要求：
-- ✅ 正確：直接用 _poly_to_plain() 轉換每個導數，然後用 ', '.join() 連接
-  ```python
-  ans_parts = []
-  for order, deriv_terms in derivative_results:
-      ans_parts.append(_poly_to_plain(deriv_terms))
-  correct_answer = ', '.join(ans_parts)  # 例如："35x^4 - 8x^3 + 5, 420x^2 - 48x"
-  ```
-- ❌ 錯誤：包含導數符號或等號
-  ```python
-  # 不要這樣做：
-  ans_parts.append(f"f'(x) = {{_poly_to_plain(deriv_terms)}}")  # ❌
-  ```
+⚠️ 規則：
+1. 直接調用上述函數，禁止重新定義
+2. 你只需實現 `def generate(level=1, **kwargs)`
+3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
 """
                     logger.info(f"   ✅ Domain 函數庫注入: {required_domains}")
             except Exception as e:

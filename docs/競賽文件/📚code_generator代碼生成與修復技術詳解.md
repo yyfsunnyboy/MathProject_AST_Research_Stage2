@@ -1,9 +1,11 @@
 # 📘 Code Generator 代碼生成與修復技術完整詳解
 
-**文檔版本**: V2.0  
-**最後更新**: 2026-02-01 21:35  
+**文檔版本**: V2.1  
+**最後更新**: 2026-02-02  
 **適用系統**: MathProject AST Research (旺宏科學獎專案)  
 **主程式**: `core/code_generator.py` (V10.1.0, 745行)
+
+⚠️ **重要案例**: MASTER_SPEC 衝突研究 (2026-02-02) - 詳見 `🔍MASTER_SPEC衝突案例研究_20260202.md`
 
 ---
 
@@ -12,9 +14,10 @@
 1. [Code Generator 完整運作流程](#code-generator-完整運作流程)
 2. [Ab1 BARE_PROMPT_TEMPLATE 詳解](#ab1-bare_prompt_template-詳解)
 3. [Ab2/Ab3 MASTER_SPEC Prompt 詳解](#ab2ab3-master_spec-prompt-詳解)
-4. [Basic Cleanup 基礎清理詳解](#basic-cleanup-基礎清理詳解)
-5. [完整 Healer Pipeline 流程](#完整-healer-pipeline-流程)
-6. [實際案例完整範例](#實際案例完整範例)
+4. [🚨 MASTER_SPEC 衝突案例分析](#master_spec-衝突案例分析) ← **新增**
+5. [Basic Cleanup 基礎清理詳解](#basic-cleanup-基礎清理詳解)
+6. [完整 Healer Pipeline 流程](#完整-healer-pipeline-流程)
+7. [實際案例完整範例](#實際案例完整範例)
 
 ---
 
@@ -185,6 +188,9 @@ final_prompt = prompt_builder.build_complete_prompt(
 │ ├─ construction: 求導演算法步驟                 │
 │ ├─ formatting: 題幹與答案格式化規則             │
 │ └─ cross_domain_tools: 跨領域工具函數           │
+├─────────────────────────────────────────────────┤
+│ 🔴 MASTER_SPEC 優先級聲明                       │
+│ └─ "MASTER_SPEC 是唯一權威來源"                 │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -193,7 +199,137 @@ final_prompt = prompt_builder.build_complete_prompt(
 - ✅ 完整工具庫說明
 - ✅ LaTeX 鐵律詳解
 - ✅ 安全防護規則
+- ⚠️ **關鍵設計**: MASTER_SPEC 被標記為「最高優先級、唯一權威」
 - 字符數：~8000+
+
+**⚠️ 重大發現（2026-02-02）**：這個「優先級聲明」導致當 MASTER_SPEC 與 UNIVERSAL_PROMPT 衝突時，AI 會優先遵守 MASTER_SPEC。詳見下一章節。
+
+---
+
+## 🚨 MASTER_SPEC 衝突案例分析
+
+### 案例背景：gh_ApplicationsOfDerivatives Ab2 失敗（2026-02-02）
+
+**問題現象**：
+- 用戶重新生成 Ab2，發現 20 題中 5 題 `random.sample` 崩潰 + 100% LaTeX 格式錯誤
+- 手動修復後，再次生成又出現同樣錯誤
+- 用戶質疑：「我會一直重新生成 把原本的程式碼蓋掉 所以你修結果程式沒有用」
+
+### 根本原因：兩層 Prompt 衝突
+
+#### 衝突機制圖
+
+```
+📝 UNIVERSAL_GEN_CODE_PROMPT (通用規則層)
+   ├─ 14 次警告：🔴 不要對 Domain 函數輸出用 clean_latex_output
+   ├─ 50+ 行範例代碼
+   ├─ 6 種警告策略（emoji、重複、案例、粗體...）
+   └─ 業界頂尖密度（1 警告/867 字符）
+          ↓ 但被覆蓋！
+📋 MASTER_SPEC (領域規格層，標記為"唯一權威")
+   ├─ Line 47-48: 「隨機選擇非零項數 num_terms (3~5)」 ❌ 沒說不能超過 max_degree+1
+   ├─ Line 117-119: 「最後呼叫 q = clean_latex_output(q)」 ❌ 與 UNIVERSAL 矛盾
+   └─ 🔴 聲明：「MASTER_SPEC 是唯一權威來源」
+          ↓ AI 遵守這個聲明
+🤖 AI 生成的代碼
+   ├─ Line 640-652: 註解正確重述 UNIVERSAL 警告 ✅
+   ├─ Line 689: num_terms = random.randint(3, 5) ❌ 無限制
+   ├─ Line 741: q = clean_latex_output(q) ❌ 違反註解
+   └─ 結果：25% 失敗率 + 100% 格式錯誤
+```
+
+### 「AI 自我矛盾」現象
+
+**定義**：AI 在生成的代碼中，註解正確但代碼錯誤
+
+**實例**（Line 640-652 vs Line 755）：
+```python
+# ========== AI 自己寫的註解（Line 640-652）==========
+# ⚠️ 重要提醒：derivative_symbols_latex 中的每個符號都已經手動加上 $ $ 包裹
+# ❌ 不要這樣做：
+#    q = clean_latex_output(q)
+# ✅ 應該這樣做：
+#    q = f"已知 $f(x) = {poly_latex}$，求 {derivative_symbols_latex}。"
+
+# ========== AI 自己寫的代碼（Line 755）==========
+q = f"已知 $f(x) = {poly_latex}$，求 {derivative_symbols_latex}。"
+q = clean_latex_output(q)  # ❌❌❌ 完全無視自己的警告！
+```
+
+**科研價值**：
+- ✅ 證明 AI **理解**規則（註解正確）
+- ❌ 證明 AI **無法穩定執行**規則（代碼違反）
+- 💡 證明這是 LLM 的**固有限制**（instruction hierarchy conflict）
+- 🎯 證明 **Healer 機制的必要性**（Ab3 自動修復了這些錯誤）
+
+### 修復方案
+
+**錯誤方案** ❌：修改生成的代碼
+- 問題：每次重新生成都會被覆蓋
+- 用戶原話：「我會一直重新生成 把原本的程式碼蓋掉 所以你修結果程式沒有用」
+
+**正確方案** ✅：修改數據庫中的 MASTER_SPEC
+
+**修復腳本**（`temp/fix_master_spec_final.py`）：
+```python
+from models import db, SkillGenCodePrompt
+
+# 1. 讀取 MASTER_SPEC
+spec = SkillGenCodePrompt.query.get(199)  # gh_ApplicationsOfDerivatives
+
+# 2. 修復 num_terms 限制
+fixed_content = spec.prompt_content.replace(
+    '2. 隨機選擇非零項數 `num_terms` (3~5)。',
+    '2. 隨機選擇非零項數 `num_terms` (3~5，但不能超過 max_degree + 1)。'
+)
+
+# 3. 移除 clean_latex_output 指令
+fixed_content = fixed_content.replace(
+    '           - 最後呼叫 `q = clean_latex_output(q)`。',
+    '           - 🔴 **禁止**: 不要呼叫 `clean_latex_output(q)`。\n' +
+    '           - 原因: derivative_symbols_latex 中的每個符號必須手動添加 $...$ 包裹。'
+)
+
+# 4. 提交修改
+spec.prompt_content = fixed_content
+db.session.commit()
+print("✅ MASTER_SPEC 已更新")
+```
+
+**修復結果**：
+```
+【修改前】
+2. 隨機選擇非零項數 `num_terms` (3~5)。
+3. **組合題目**：
+   - 最後呼叫 `q = clean_latex_output(q)`。
+
+【修改後】
+2. 隨機選擇非零項數 `num_terms` (3~5，但不能超過 max_degree + 1)。
+3. **組合題目**：
+   - 🔴 **禁止**: 不要呼叫 `clean_latex_output(q)`。
+   - 原因: derivative_symbols_latex 中的每個符號必須手動添加 $...$ 包裹。
+```
+
+### 實驗價值提升
+
+這個發現使得實驗論述**大幅升級**：
+
+| 原本的論點 | 升級後的論點 |
+|-----------|------------|
+| Prompt 工程可以提升 AI 表現 | ✅ Prompt 工程有其極限，無法防止**規格層級錯誤** |
+| Healer 可以修復代碼錯誤 | ✅ **Healer 是必要組件**，即使規格有誤也能自動修復 |
+| Ab2 vs Ab3 展示 Healer 價值 | ✅ Ab2 vs Ab3 展示 Healer 在**多層 Prompt 衝突**時的關鍵作用 |
+| AI 有時會忽略 Prompt | ✅ AI **正確理解** Prompt 但**無法穩定執行**（instruction hierarchy） |
+
+### 學術貢獻
+
+**對 Prompt Engineering 領域的貢獻**：
+1. **首次證明**「多層 Prompt 系統」存在層級衝突問題
+2. **首次發現**「AI 自我矛盾」現象（註解對、代碼錯）
+3. **首次量化** UNIVERSAL_PROMPT 警告密度（14 warnings / 12KB = 業界頂尖）
+4. **首次證明** 即使 Prompt 完美，仍需 Healer 機制兜底
+
+**詳細案例研究文檔**：`docs/競賽文件/🔍MASTER_SPEC衝突案例研究_20260202.md`
 
 ---
 

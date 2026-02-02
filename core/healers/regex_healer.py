@@ -706,14 +706,27 @@ class RegexHealer:
             # 例如：q = f'...求 {derivative_symbols_latex}。'
             # 應改為：q = f'...求 ${derivative_symbols_latex}$。'
             pattern1 = r"(q\s*=\s*f['\"][^'\"]*求\s+)(\{[^}]+symbols[^}]*\})(。['\"])"
-            if re.search(pattern1, refined_code):
-                print(f"🔧 [Healer] 偵測到導數符號缺少 $ 包裝，正在修復...")
-                refined_code = re.sub(
-                    pattern1,
-                    r"\1$\2$\3",
-                    refined_code
-                )
-                fixes += 1
+            match1 = re.search(pattern1, refined_code)
+            if match1:
+                # 取得符號變數名稱（例如 {deriv_symbols_latex}）
+                var_expr = match1.group(2)
+                var_name = var_expr.strip("{}").strip()
+                # 如果該變數在前面已經用 $ 包裝過，就不要再加，避免 $$
+                var_has_dollar = False
+                if var_name:
+                    var_assign_pattern = rf"{re.escape(var_name)}\s*=\s*.*\$"
+                    var_has_dollar = bool(re.search(var_assign_pattern, refined_code))
+
+                if var_has_dollar:
+                    print(f"🔧 [Healer] 偵測到符號變數已含 $，跳過二次包裝")
+                else:
+                    print(f"🔧 [Healer] 偵測到導數符號缺少 $ 包裝，正在修復...")
+                    refined_code = re.sub(
+                        pattern1,
+                        r"\1$\2$\3",
+                        refined_code
+                    )
+                    fixes += 1
             
             # Pattern 2: 移除對 Domain Helper 輸出的 clean_latex_output 呼叫
             # 檢測：q = clean_latex_output(q) 且 q 包含 _poly_to_latex 或 _deriv_symbol_latex

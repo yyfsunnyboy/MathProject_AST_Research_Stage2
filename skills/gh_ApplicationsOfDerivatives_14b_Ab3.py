@@ -1,11 +1,11 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
 # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
-# Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 14.63s | Tokens: In=393, Out=606
-# Created At: 2026-02-01 14:30:54
-# Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
-# Verification: Internal Logic Check = FAILED
+# Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 30.68s | Tokens: In=8192, Out=932
+# Created At: 2026-02-02 23:53:59
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=2, AST=0)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -547,12 +547,13 @@ def ensure_dir(p):
 
 # ===== 多項式標準函數庫 =====
 
+def _coeffs_to_terms(coeffs):
+    '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
+    degree = len(coeffs) - 1
+    return [(coeffs[i], degree - i) for i in range(len(coeffs))]
+
 def _poly_to_latex(terms):
-    '''
-    將多項式內部表示轉換為 LaTeX 字符串
-    參數: terms = [(coeff, exp), ...] 例如 [(3, 2), (-5, 0)] → 3x² - 5
-    返回: LaTeX 字符串（不含 $ 符號）
-    '''
+    '''terms → LaTeX (不含$)，例: [(3,2),(-5,0)] → "3x^{2} - 5"'''
     if not terms:
         return '0'
     parts = []
@@ -572,11 +573,7 @@ def _poly_to_latex(terms):
     return ''.join(parts).strip()
 
 def _poly_to_plain(terms):
-    '''
-    將多項式內部表示轉換為純文本字符串
-    參數: terms = [(coeff, exp), ...]
-    返回: 純文本字符串，例如 "3x^2-5"（答案格式：無空格）
-    '''
+    '''terms → 純文本答案格式 (無空格)，例: "3x^2-5"'''
     if not terms:
         return '0'
     parts = []
@@ -596,27 +593,21 @@ def _poly_to_plain(terms):
     return ''.join(parts).strip()
 
 def _differentiate_poly(terms, order=1):
-    '''
-    對多項式求導 order 次
-    參數:
-        terms: [(coeff, exp), ...]
-        order: 求導次數
-    返回: 導數的內部表示 [(new_coeff, new_exp), ...]
-    '''
+    '''求導 order 次，返回新 terms'''
     result = list(terms)
     for _ in range(order):
         new_terms = []
         for c, e in result:
             if e > 0:
                 new_c = c * e
-                if abs(new_c) > 10000:  # [Fix] 放寬限制，避免合理係數被拒絕
+                if abs(new_c) > 10000:
                     raise ValueError(f"Coefficient {new_c} exceeds limit")
                 new_terms.append((new_c, e - 1))
         result = new_terms
     return result
 
 def _deriv_symbol_latex(order):
-    '''生成導數符號（LaTeX）: f'(x), f''(x), f^{(n)}(x)'''
+    '''導數符號 LaTeX: f'(x), f''(x), f^{(n)}(x)'''
     if order == 1:
         return "f'(x)"
     elif order == 2:
@@ -625,33 +616,13 @@ def _deriv_symbol_latex(order):
         return f"f^{{({order})}}(x)"
 
 def _deriv_symbol_plain(order):
-    '''生成導數符號（純文本）: f'(x), f''(x), f^(n)(x)'''
+    '''導數符號純文本: f'(x), f''(x), f^(n)(x)'''
     if order == 1:
         return "f'(x)"
     elif order == 2:
         return "f''(x)"
     else:
         return f"f^({order})(x)"
-
-# ===== 🔴 CRITICAL: 題目組裝規範（必須遵守）=====
-# 
-# 當使用多項式函數時，請按以下方式組裝題目：
-# 
-# ✅ 正確範例（手動添加 $ 符號，**不要** 使用 clean_latex_output）：
-#   poly_str = _poly_to_latex(terms)        # 返回: "3x^{2} - 5x + 2"
-#   deriv_sym = _deriv_symbol_latex(1)      # 返回: "f'(x)"
-#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
-#   # ⚠️ 直接使用 q，不要調用 clean_latex_output(q)！
-#   return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
-# 
-# ❌ 錯誤範例（會破壞 LaTeX 格式）：
-#   q = f'已知 $f(x) = {poly_str}$, 求 ${deriv_sym}$。'
-#   return {'question_text': clean_latex_output(q), ...}  # ❌ 不要這樣做！
-#   # 錯誤結果：$x$ ^{ $4$ } $- 6x$ ^{ $3$ }（每個符號都被錯誤地獨立包裝）
-# 
-# 原因：clean_latex_output() 適用於簡單運算（如 "3 + 5"），
-#      但多項式函數已經返回正確的 LaTeX 格式（如 x^{4}），
-#      再次呼叫會導致過度處理，將 x^{4} 拆分成 $x$ ^{ $4$ }
 
 
 
@@ -680,65 +651,79 @@ def _evaluate_poly(coeffs, x):
 # ---------------------------------------------------------
 
 
-import random
-
 def generate(level=1, **kwargs):
-    # 生成隨機係數和次方
-    degree = random.randint(3, 5)
-    coefficients = [random.randint(-10, 10) for _ in range(degree + 1)]
-    
-    # 創建函數 f(x)
-    def create_function(coefficients):
-        terms = []
-        for i, coeff in enumerate(reversed(coefficients)):
-            if coeff != 0:
-                term = f"{coeff}x^{degree - i}" if degree - i > 1 else "x" if degree - i == 1 else str(coeff)
-                terms.append(term)
-        return " + ".join(terms)
-    
-    function_text = create_function(coefficients)
-    
-    # 計算一階和三階導數
-    def derivative(coefficients, order):
-        new_coeffs = []
-        for i in range(len(coefficients) - 1):
-            coeff = coefficients[i] * (len(coefficients) - 1 - i)
-            if order > 1:
-                coeff *= derivative([coeff], order - 1)['coeffs'][0]
-            new_coeffs.append(coeff)
-        return {'coeffs': new_coeffs}
-    
-    first_derivative_coeffs = derivative(coefficients, 1)['coeffs']
-    third_derivative_coeffs = derivative(first_derivative_coeffs, 2)['coeffs']
-    
-    # 格式化答案
-    def format_derivative(coeffs):
-        terms = []
-        for i, coeff in enumerate(reversed(coeffs)):
-            if coeff != 0:
-                term = f"{coeff}x^{len(coeffs) - 1 - i}" if len(coeffs) - 1 - i > 1 else "x" if len(coeffs) - 1 - i == 1 else str(coeff)
-                terms.append(term)
-        return " + ".join(terms)
-    
-    first_derivative_text = format_derivative(first_derivative_coeffs)
-    third_derivative_text = format_derivative(third_derivative_coeffs)
-    
-    question_text = f"已知 $f(x) = {function_text}$，求 $f'(x)$ 與 $f'''(x)$。"
-    answer = f"$f'(x) = {first_derivative_text}$, $f'''(x) = {third_derivative_text}$"
-    
-    return {
-        'question_text': question_text,
-        'answer': answer,
-        'correct_answer': answer,
-        'mode': 1
-    }
+    for _safety_counter in range(1000):
+        num_terms = random.randint(3, 5)
+        max_degree = random.randint(3, 5)
+        exponents = list(range(max_degree + 1))
+        random.shuffle(exponents)
+        selected_exponents = exponents[:num_terms]
+        initial_polynomial_terms = []
+        for exp in selected_exponents:
+            if exp >= 2 or (exp == 0 and num_terms > 1):
+                coeff_range = range(-10, 11) if exp != 0 else [0]
+                coefficient = safe_choice(coeff_range)
+            else:
+                coefficient = 1
+            initial_polynomial_terms.append((coefficient, exp))
+        num_orders = random.randint(1, 2)
+        possible_orders = list(range(1, min(3, max_degree + 1)))
+        derivative_orders = random.sample(possible_orders, num_orders)
+        if any((term[0] == 0 for term in initial_polynomial_terms)):
+            continue
+        current_polynomial_terms = initial_polynomial_terms[:]
+        derivative_results = {}
+        for order in range(1, max(derivative_orders) + 1):
+            next_polynomial_terms = []
+            for coeff, exp in current_polynomial_terms:
+                if exp == 0:
+                    continue
+                new_coeff = coeff * exp
+                new_exp = exp - 1
+                if abs(new_coeff) > 100:
+                    break
+                next_polynomial_terms.append((new_coeff, new_exp))
+            merged_terms = {}
+            for coeff, exp in next_polynomial_terms:
+                if exp in merged_terms:
+                    merged_terms[exp] += coeff
+                else:
+                    merged_terms[exp] = coeff
+            next_polynomial_terms = [(coeff, exp) for exp, coeff in sorted(merged_terms.items(), reverse=True)]
+            next_polynomial_terms = [(coeff, exp) for coeff, exp in next_polynomial_terms if coeff != 0]
+            if order in derivative_orders:
+                derivative_results[order] = next_polynomial_terms
+            current_polynomial_terms = next_polynomial_terms
+        valid = True
+        for terms in derivative_results.values():
+            if not any((exp >= 1 for _, exp in terms)):
+                valid = False
+                break
+        if not valid:
+            continue
+        poly_latex = _poly_to_latex(initial_polynomial_terms)
+        deriv_symbols_latex = ' 與 '.join((f'${_deriv_symbol_latex(order)}$' for order in derivative_orders))
+        q = f'已知 $f(x) = {poly_latex}$，求 {deriv_symbols_latex}。'
+        answers = []
+        for order, terms in sorted(derivative_results.items()):
+            answer_poly = _format_polynomial_for_answer(terms)
+            answers.append(f'f^{order}(x) = {answer_poly}')
+        a = '\n'.join(answers)
+        return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
 
-def check(user_answer, correct_answer):
-    # 簡單的字串比對，不考慮格式差異
-    user_answer = user_answer.replace(" ", "").replace("$", "")
-    correct_answer = correct_answer.replace(" ", "").replace("$", "")
-    
-    return {
-        'correct': user_answer == correct_answer,
-        'result': "正確" if user_answer == correct_answer else "錯誤"
-    }
+def _format_polynomial_for_answer(terms, var='x'):
+    if not terms:
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        sign = '' if i == 0 else ' + ' if c > 0 else ' - '
+        abs_c = abs(c)
+        coeff_str = '' if abs_c == 1 and e > 0 else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}{var}' if coeff_str else var
+        else:
+            var_str = f'{coeff_str}{var}^{e}' if coeff_str else f'{var}^{e}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()

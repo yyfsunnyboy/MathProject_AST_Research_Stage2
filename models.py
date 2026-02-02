@@ -691,6 +691,70 @@ class SystemSetting(db.Model):
             'updated_at': self.updated_at.strftime('%Y-%m-%d %H:%M:%S') if self.updated_at else None
         }
 
+# =============================================================================
+# MCRI V4.2 實驗資料模型（2026-02-02）
+# =============================================================================
+
+class AblationSummary(db.Model):
+    """
+    [MCRI V4.2] 彙總統計表 - 記錄每個技能在不同配置下的統計彙總
+    
+    一個 summary 代表「一個技能 × 一個配置 × 5 個 sample 的統計結果」
+    包含：平均分、標準差、95% 信賴區間、顯著性檢定
+    """
+    __tablename__ = 'ablation_summary'
+    
+    # ========== 主鍵與識別 ==========
+    summary_id = db.Column(db.String(36), primary_key=True)  # UUID
+    skill_name = db.Column(db.String(100), nullable=False)  # gh_ApplicationsOfDerivatives
+    ablation_id = db.Column(db.Integer, nullable=False)  # 1=Bare, 2=Eng, 3=Healer
+    model_name = db.Column(db.String(50), nullable=False)  # qwen2.5-coder:14b
+    
+    # ========== 統計數據 ==========
+    sample_count = db.Column(db.Integer, nullable=False, default=5)  # 樣本數（固定 5）
+    total_runs = db.Column(db.Integer, nullable=False, default=100)  # 總執行次數（5 × 20）
+    
+    # ========== MCRI 總分統計 ==========
+    mean_mcri_total = db.Column(db.Float, nullable=False)  # 5 個 sample 的 avg_mcri_total 平均
+    std_mcri_total = db.Column(db.Float, nullable=False)  # 標準差
+    ci95_lower = db.Column(db.Float, nullable=False)  # 95% 信賴區間下界
+    ci95_upper = db.Column(db.Float, nullable=False)  # 95% 信賴區間上界
+    
+    # ========== 關鍵維度統計 ==========
+    mean_l3_external = db.Column(db.Float)  # L3.2 外在強健性平均（跨 5 sample）
+    mean_l4_numeric = db.Column(db.Float)  # L4.1 數值友善性平均（跨 5 sample）
+    
+    # ========== 顯著性檢定 ==========
+    p_value_vs_ab1 = db.Column(db.Float)  # 與 Ab1 的 t-test p-value
+    notes = db.Column(db.Text)  # 備註（如「Ab3 顯著優於 Ab1, p<0.001」）
+    
+    # 唯一約束（每個技能 × 配置 × 模型只能有一筆）
+    __table_args__ = (
+        db.UniqueConstraint('skill_name', 'ablation_id', 'model_name', name='_summary_unique'),
+    )
+    
+    def __repr__(self):
+        return f"<AblationSummary {self.skill_name} Ab{self.ablation_id} | μ={self.mean_mcri_total:.1f}±{self.std_mcri_total:.1f}>"
+    
+    def to_dict(self):
+        """轉換為字典（用於 JSON/CSV 序列化）"""
+        return {
+            'summary_id': self.summary_id,
+            'skill_name': self.skill_name,
+            'ablation_id': self.ablation_id,
+            'model_name': self.model_name,
+            'sample_count': self.sample_count,
+            'total_runs': self.total_runs,
+            'mean_mcri_total': self.mean_mcri_total,
+            'std_mcri_total': self.std_mcri_total,
+            'ci95_lower': self.ci95_lower,
+            'ci95_upper': self.ci95_upper,
+            'mean_l3_external': self.mean_l3_external,
+            'mean_l4_numeric': self.mean_l4_numeric,
+            'p_value_vs_ab1': self.p_value_vs_ab1,
+            'notes': self.notes
+        }
+
 # [新增] ExperimentLog 模型 (科展實驗數據記錄)
 class ExperimentLog(db.Model):
     __tablename__ = 'experiment_log'
@@ -785,3 +849,178 @@ class ExecutionSample(db.Model):
 
     def __repr__(self):
         return f"<ExecutionSample {self.skill_id} Mode {self.mode} #{self.sample_index}>"
+
+
+# =============================================================================
+# MCRI V4.2 實驗資料模型（2026-02-02 新增）
+# =============================================================================
+
+class ExperimentRun(db.Model):
+    """
+    [MCRI V4.2] 實驗主表 - 記錄每次完整的實驗執行
+    
+    一個 run 代表「一個技能 × 一個配置 × 一次完整測試（20次採樣）」
+    包含：L1/L2 固定分數 + L3/L4 平均分 + 執行統計
+    """
+    __tablename__ = 'experiment_runs'
+    
+    # ========== 主鍵與識別 ==========
+    run_id = db.Column(db.String(36), primary_key=True)  # UUID
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    
+    # ========== 實驗配置 ==========
+    model_name = db.Column(db.String(50), nullable=False)  # qwen-14b / gemini-flash
+    skill_name = db.Column(db.String(100), nullable=False)  # gh_ApplicationsOfDerivatives
+    ablation_id = db.Column(db.Integer, nullable=False)  # 1=Bare, 2=Eng, 3=Healer
+    sample_index = db.Column(db.Integer, nullable=False)  # 1~5
+    
+    # ========== 版本資訊 ==========
+    code_commit_hash = db.Column(db.String(40), nullable=False)  # git commit hash
+    python_version = db.Column(db.String(20), nullable=False)  # 3.9.13
+    mcri_version = db.Column(db.String(20), nullable=False, default='V4.2')
+    
+    # ========== 生成參數 ==========
+    model_temperature = db.Column(db.Float, nullable=False, default=0.7)
+    
+    # ========== 執行統計 ==========
+    repetitions_planned = db.Column(db.Integer, nullable=False, default=20)
+    repetitions_completed = db.Column(db.Integer, nullable=False)
+    fail_count = db.Column(db.Integer, nullable=False, default=0)
+    pass_rate = db.Column(db.Float)  # 0.0~1.0
+    avg_exec_time = db.Column(db.Float)  # 秒
+    
+    # ========== L1. 工程基石（20分）- 固定值 ==========
+    score_l1_total = db.Column(db.Integer)  # 0~20
+    score_l1_1_syntax = db.Column(db.Integer)  # 0~10
+    score_l1_2_runtime = db.Column(db.Integer)  # 0~10
+    
+    # ========== L2. 資料衛生（20分）- 固定值 ==========
+    score_l2_total = db.Column(db.Integer)  # 0~20
+    score_l2_1_contract = db.Column(db.Integer)  # 0~10
+    score_l2_2_purity = db.Column(db.Integer)  # 0~10
+    
+    # ========== L3. 評測公平（30分）- 平均值 ==========
+    avg_l3_total = db.Column(db.Float)  # 0.0~30.0
+    avg_l3_1_internal = db.Column(db.Float)  # 0.0~15.0
+    avg_l3_2_external = db.Column(db.Float)  # 0.0~15.0
+    
+    # ========== L4. 教學有效（30分）- 平均值 ==========
+    avg_l4_total = db.Column(db.Float)  # 0.0~30.0
+    avg_l4_1_numeric = db.Column(db.Float)  # 0.0~15.0
+    avg_l4_2_visual = db.Column(db.Float)  # 0.0~15.0
+    
+    # ========== 總分（100分）==========
+    avg_mcri_total = db.Column(db.Float)  # 0.0~100.0
+    
+    # ========== 檔案與備註 ==========
+    source_code_path = db.Column(db.String(255), nullable=False)
+    notes = db.Column(db.Text)
+    
+    # 關聯 (一對多：一個 run 有多個 evaluation_items)
+    evaluation_items = db.relationship('EvaluationItem', backref='run', lazy=True, cascade='all, delete-orphan')
+    
+    def __repr__(self):
+        return f"<ExperimentRun {self.skill_name} Ab{self.ablation_id} #{self.sample_index} | MCRI={self.avg_mcri_total:.1f}>"
+    
+    def to_dict(self):
+        """轉換為字典（用於 JSON 序列化）"""
+        return {
+            'run_id': self.run_id,
+            'timestamp': self.timestamp.isoformat() if self.timestamp else None,
+            'model_name': self.model_name,
+            'skill_name': self.skill_name,
+            'ablation_id': self.ablation_id,
+            'sample_index': self.sample_index,
+            'code_commit_hash': self.code_commit_hash,
+            'python_version': self.python_version,
+            'mcri_version': self.mcri_version,
+            'model_temperature': self.model_temperature,
+            'repetitions_planned': self.repetitions_planned,
+            'repetitions_completed': self.repetitions_completed,
+            'fail_count': self.fail_count,
+            'pass_rate': self.pass_rate,
+            'avg_exec_time': self.avg_exec_time,
+            'score_l1_total': self.score_l1_total,
+            'score_l1_1_syntax': self.score_l1_1_syntax,
+            'score_l1_2_runtime': self.score_l1_2_runtime,
+            'score_l2_total': self.score_l2_total,
+            'score_l2_1_contract': self.score_l2_1_contract,
+            'score_l2_2_purity': self.score_l2_2_purity,
+            'avg_l3_total': self.avg_l3_total,
+            'avg_l3_1_internal': self.avg_l3_1_internal,
+            'avg_l3_2_external': self.avg_l3_2_external,
+            'avg_l4_total': self.avg_l4_total,
+            'avg_l4_1_numeric': self.avg_l4_1_numeric,
+            'avg_l4_2_visual': self.avg_l4_2_visual,
+            'avg_mcri_total': self.avg_mcri_total,
+            'source_code_path': self.source_code_path,
+            'notes': self.notes
+        }
+
+
+class EvaluationItem(db.Model):
+    """
+    [MCRI V4.2] 評估明細表 - 記錄每次採樣的詳細結果
+    
+    包含：L3/L4 單次分數 + 產出內容 + 執行狀態
+    用於分析失敗模式與保留原始資料
+    """
+    __tablename__ = 'evaluation_items'
+    
+    # ========== 主鍵與關聯 ==========
+    item_id = db.Column(db.String(36), primary_key=True)  # UUID
+    run_id = db.Column(db.String(36), db.ForeignKey('experiment_runs.run_id'), nullable=False)
+    repetition_index = db.Column(db.Integer, nullable=False)  # 1~20
+    
+    # ========== 產出內容 ==========
+    generated_question = db.Column(db.Text)  # question_text
+    generated_answer = db.Column(db.Text)  # answer（通常空白）
+    generated_correct_answer = db.Column(db.Text)  # correct_answer（比對用）
+    
+    # ========== 執行狀態 ==========
+    status = db.Column(db.String(20), nullable=False)  # Success / Fail / Timeout
+    error_log = db.Column(db.Text)  # 錯誤訊息（截斷至 1000 字元）
+    exec_time_ms = db.Column(db.Float)  # 執行時間（毫秒）
+    
+    # ========== 統計控制 ==========
+    included_in_avg = db.Column(db.Boolean, nullable=False, default=True)  # 是否計入平均
+    
+    # ========== L3. 評測公平（30分）- 單次分數 ==========
+    score_l3_total = db.Column(db.Integer)  # 0~30
+    score_l3_1_internal = db.Column(db.Integer)  # 0~15
+    score_l3_2_external = db.Column(db.Integer)  # 0~15
+    
+    # ========== L4. 教學有效（30分）- 單次分數 ==========
+    score_l4_total = db.Column(db.Integer)  # 0~30
+    score_l4_1_numeric = db.Column(db.Integer)  # 0~15
+    score_l4_2_visual = db.Column(db.Integer)  # 0~15
+    
+    # ========== L3.2 外在強健性測試細節 ==========
+    student_input_test = db.Column(db.Text)  # JSON：["2x", "f'(x)=2x", "2*x"]
+    student_input_result = db.Column(db.Text)  # JSON：[true, true, false]
+    
+    def __repr__(self):
+        return f"<EvaluationItem Run={self.run_id[:8]}... Rep={self.repetition_index} Status={self.status}>"
+    
+    def to_dict(self):
+        """轉換為字典（用於 JSON 序列化）"""
+        return {
+            'item_id': self.item_id,
+            'run_id': self.run_id,
+            'repetition_index': self.repetition_index,
+            'generated_question': self.generated_question,
+            'generated_answer': self.generated_answer,
+            'generated_correct_answer': self.generated_correct_answer,
+            'status': self.status,
+            'error_log': self.error_log,
+            'exec_time_ms': self.exec_time_ms,
+            'included_in_avg': self.included_in_avg,
+            'score_l3_total': self.score_l3_total,
+            'score_l3_1_internal': self.score_l3_1_internal,
+            'score_l3_2_external': self.score_l3_2_external,
+            'score_l4_total': self.score_l4_total,
+            'score_l4_1_numeric': self.score_l4_1_numeric,
+            'score_l4_2_visual': self.score_l4_2_visual,
+            'student_input_test': self.student_input_test,
+            'student_input_result': self.student_input_result
+        }
