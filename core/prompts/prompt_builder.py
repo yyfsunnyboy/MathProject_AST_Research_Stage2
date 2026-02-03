@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 # ==============================================================================
 
 BARE_PROMPT_TEMPLATE = """【角色設定】
-你是一位國中數學老師的「出題助理」。
+你是一位中學數學老師的「出題助理」。
 
 【任務說明】
 請幫我寫一個 Python 程式，用來自動生成數學題目。
@@ -59,7 +59,7 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
 2. `generate` 函式要回傳一個字典 (Dictionary)，包含以下欄位（請照抄 key 名稱）：
    - 'question_text': 題目文字
    - 'answer': 空字串 ''
-    - 'correct_answer': 正確答案（必須是字串，例如："24" 或 "3x^2+5"；多個答案用逗號分隔）
+   - 'correct_answer': 正確答案（必須是字串，例如："24" 或 "3x^2+5"；多個答案用換行分隔）
    - 'mode': 1
 
 3. `check` 函式請回傳一個字典，包含：
@@ -149,6 +149,113 @@ BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER
 """
 
 # ==============================================================================
+# [V2.4 NEW] SIMPLIFIED_GEN_CODE_PROMPT - 簡化版工程化 Prompt（鷹架法）
+# ==============================================================================
+# 設計理念：
+# - 基於教學脚手架原則：清楚的任務 → 提供的工具 → 簡潔的規則 → 成功範例
+# - 從 9000+ 字符的 UNIVERSAL_GEN_CODE_PROMPT 簡化到 ~2000 字符
+# - 只保留 5 條不可違反的核心規則，移除冗餘警告符號
+# - 讓 Qwen 專注在核心任務，降低認知負荷
+# ==============================================================================
+
+SIMPLIFIED_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
+
+【任務】
+實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
+該函數應返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+
+【預載工具】(直接使用，無需定義)
+- 模塊: random, math, re, ast, operator, os, Fraction
+- 工具函數: fmt_num(n), to_latex(n), clean_latex_output(q), check(user_answer, correct_answer)
+- 多項式工具: _coeffs_to_terms(coeffs), _poly_to_latex(terms), _poly_to_plain(terms), _differentiate_poly(terms, order=1), _deriv_symbol_latex(order)
+- 其他: op_latex, is_prime, gcd, lcm, get_factors, nCr, nPr, factorial_bounded, clamp_fraction, safe_pow, rational_gauss_solve
+
+【核心規則】(只有 5 條，最重要的)
+
+1. ✅ **安全的迴圈設計 + 數學一致性約束**
+   - 集合選擇必須遵守 **num_terms ≤ (max_degree + 1)** 的物理極限
+     * 例：degree 3 有 4 個可能指數 [0,1,2,3]，所以 num_terms ≤ 4
+     * 例：度數 5 有 6 個可能指數，所以 num_terms ≤ 6
+     * 使用 `num_terms = random.randint(3, min(5, max_degree + 1))` 確保合法性
+   - 使用 shuffle + slice：`available = list(range(n)); random.shuffle(available); selected = available[:k]`
+   - 外層 while True 只用於整個物件再生，內層絕對不能有無終止條件迴圈
+   - 若違反此約束，會導致 while 迴圈無限尋找不重複元素而卡死
+
+2. ✅ **LaTeX 格式**（只有一條簡單規則）
+   - 所有數學式必須被 $ 包裹：f"計算 ${expr}$ 的值"
+   - **中文與 $ 必須分離**：f"求 ${expr}$ 的因式分解"（**不是** f"求${expr}$的"）
+
+3. ✅ **答案格式**（嚴格要求）
+   - 純結果，不含符號、等號、LaTeX
+   - ✅ 正確（多個答案用換行分隔）：
+     ```
+     6x^2-10x
+     12x-10
+     ```
+   - ❌ 錯誤（含函數符號和等號）：
+     ```
+     f'(x) = 6x^2-10x
+     f''(x) = 12x-10
+     ```
+   - **答案欄位不含 $ 符號**（純文字）
+
+4. ✅ **Domain 函數使用**
+   - 先轉換格式：terms = _coeffs_to_terms(coeffs)
+   - 再調用函數：_poly_to_latex(terms), _differentiate_poly(terms), _poly_to_plain(terms)
+   - 不要對結果呼叫 clean_latex_output()
+
+5. ✅ **只輸出代碼**
+   - 不要在代碼結尾加說明或註解
+   - 不使用 eval/exec/safe_eval
+
+
+【成功的代碼模式】
+
+```python
+def generate(level=1, **kwargs):
+    # 步驟 1: 生成參數（數學一致性約束）
+    max_degree = random.randint(3, 5)
+    # 確保項數不超過物理極限 (degree 3 → 4項，degree 5 → 6項)
+    # num_terms 必須 ≤ (max_degree + 1)
+    max_possible_terms = max_degree + 1
+    num_terms = random.randint(3, min(5, max_possible_terms))
+    
+    # 步驟 2: 生成係數
+    coeffs = [random.randint(-10, 10) for _ in range(num_terms)]
+    while coeffs[0] == 0:
+        coeffs[0] = random.randint(1, 10)
+    
+    # 步驟 3: 使用 shuffle + slice（安全集合選擇）
+    available_exponents = list(range(max_degree + 1))
+    random.shuffle(available_exponents)
+    selected_exponents = available_exponents[:num_terms]
+    
+    # 步驟 4: 轉換為 terms 格式
+    terms = [(coeffs[i], selected_exponents[i]) for i in range(num_terms)]
+    
+    # 步驟 5: 計算導數
+    deriv1_terms = _differentiate_poly(terms, order=1)
+    deriv2_terms = _differentiate_poly(terms, order=2)
+    
+    # 步驟 6: 組裝題目（手動加 $，中文與 $ 分離）
+    poly_latex = _poly_to_latex(terms)
+    q = f'已知 $f(x) = {poly_latex}$ ，求 $f\'(x)$ 與 $f\'\'(x)$ 。'
+    
+    # 步驟 7: 組裝答案（純多項式，換行分隔，無 LaTeX、無函數符號）
+    ans1 = _poly_to_plain(deriv1_terms)
+    ans2 = _poly_to_plain(deriv2_terms)
+    a = f"{ans1}\n{ans2}"  # 多個答案用換行分隔
+    
+    return {
+        'question_text': q,
+        'correct_answer': a,
+        'answer': a,
+        'mode': 1
+    }
+```
+"""
+
+# ==============================================================================
 # 完整的 UNIVERSAL_GEN_CODE_PROMPT（194 行完整版）
 # ==============================================================================
 
@@ -168,6 +275,27 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師。
 - 你收到的 MASTER_SPEC 包含完整的題型定義、複雜度要求和實現檢查清單
 - **必須逐項實現 MASTER_SPEC 中的所有要求**
 - 任何與 MASTER_SPEC 衝突的通用規則都應以 MASTER_SPEC 為準
+
+🔴 **【CRITICAL】集合選擇的強制規則 - 違反將導致無限迴圈！**
+- ❌ 嚴禁使用 `while True` + `if not in set` 模式生成不重複隨機元素
+  ```python
+  ❌ 危險模式（會導致無限迴圈）：
+  while True:
+      exp = random.randint(0, max_degree)
+      if exp not in exponents:
+          exponents.add(exp)
+          break
+  ```
+- ✅ 必須使用 **shuffle + slice 模式**（唯一正確方式）：
+  ```python
+  ✅ 正確模式（O(n)，絕對不會無限迴圈）：
+  max_degree = random.randint(3, 5)
+  num_terms = random.randint(3, min(5, max_degree + 1))  # 關鍵：num_terms ≤ max_degree + 1
+  available = list(range(max_degree + 1))
+  random.shuffle(available)
+  selected = available[:num_terms]
+  ```
+- 原因：如果 num_terms > max_degree + 1，while 迴圈無法找到足夠多的不重複元素，導致程式卡死
 
 【預載工具 (直接使用)】
 - random, math, re, ast, operator, os, Fraction
@@ -220,7 +348,7 @@ def generate(level=1, **kwargs):
             break
         # 否則 continue，回到 while True 開頭重新生成整個物件
     
-    # 步驟 5: 生成答案（CRITICAL：答案只包含結果，不含符號前綴或等號）
+    # 步驟 5: 生成答案（CRITICAL：答案只包含結果，不含符號前綴或等號，多個答案用換行分隔）
     # ✅ 正確範例（求導數題型）：
     ans_parts = []
     for order in derivative_orders_list:
@@ -228,12 +356,15 @@ def generate(level=1, **kwargs):
         poly_plain = _poly_to_plain(deriv_terms)  # 只取多項式文字
         ans_parts.append(poly_plain)  # 不加 "f'(x) =" 前綴
     
-    correct_answer = ', '.join(ans_parts)  # 逗號分隔，不用換行
-    # 結果："2, 0" 而非 "f''(x) = 2\nf^(3)(x) = 0"
+    correct_answer = '\n'.join(ans_parts)  # 換行分隔
+    # 結果：
+    # 2
+    # 0
+    # 而非 "f''(x) = 2\nf^(3)(x) = 0" 或 "2, 0"
     
     # ❌ 錯誤範例（會導致評分失敗）：
     # ans_parts.append(f"{_deriv_symbol_plain(k)} = {poly_plain}")  # 包含等號
-    # correct_answer = '\n'.join(ans_parts)  # 用換行分隔
+    # correct_answer = ', '.join(ans_parts)  # 用逗號分隔（舊格式）
     
     # 步驟 6: 格式化題幹與返回
     q = f'...'
@@ -254,9 +385,38 @@ def generate(level=1, **kwargs):
    - `'mode'`: 固定值 1
 
 3. **correct_answer 必須是字串**，不是字典：
-   - ✅ 正確：`'correct_answer': '24, 4x^3+14x'`（逗號分隔的字串）
+   - ✅ 正確：`'correct_answer': '24\n4x^3+14x'`（換行分隔的字串）
    - ❌ 錯誤：`'correct_answer': {'f\'(x)': ..., 'f\'\'(x)': ...}`（字典）
    - ❌ 錯誤：`'correct_answer': ['24', '4x^3+14x']`（列表）
+
+🔴 **【CRITICAL】答案格式強制規則 - 違反將導致評分失敗！**
+
+**核心原則**：正確答案 = 純數學運算結果，學生在文本框中直接輸入（不含函數符號、等號、LaTeX）
+
+1. **單個答案格式**（求 1 個值）：
+   ```python
+   ✅ 正確: correct_answer = '36x^2 + 10'  # 純多項式
+   ✅ 正確: correct_answer = '42'           # 純數字
+   ✅ 正確: correct_answer = '3/7'          # 純分數
+   ❌ 錯誤: correct_answer = 'f\'(x) = 36x^2 + 10'      # 不要包含函數符號和等號
+   ❌ 錯誤: correct_answer = '$36x^2 + 10$'             # 不要包含 LaTeX 符號 $ $
+   ❌ 錯誤: correct_answer = r'36x^{{2}} + 10'          # 不要包含 LaTeX 大括號
+   ```
+
+2. **多個答案格式**（求 2 個或以上的值，例如求導函數）：
+   ```python
+   ✅ 正確: correct_answer = '36x^2 + 10\n72x'         # 換行分隔
+   ✅ 正確: correct_answer = '24\n12\n6'               # 多個數字
+   ✅ 正確: correct_answer = '3/7\n5/8\n1/2'           # 多個分數
+   ❌ 錯誤: correct_answer = 'f\'(x) = 36x^2 + 10\nf\'\'(x) = 72x'    # 不要含函數符號
+   ❌ 錯誤: correct_answer = 'f\'(x) = 36x^2 + 10, f\'\'(x) = 72x'   # 不要含函數符號
+   ❌ 錯誤: correct_answer = '36x^2 + 10, 72x'                       # 不要用逗號分隔
+   ```
+
+3. **為什麼**：換行分隔讓系統自動判斷學生輸入的多個答案：
+   - ✅ 學生可輸入：`36x^2 + 10`（第一個答案）
+   - ✅ 系統自動匹配：第一個答案=`36x^2 + 10`✓，第二個答案=`72x`✓
+   - ❌ 無法輸入：`f'(x) = 36x^2 + 10` （沒有鍵盤輸入 f'(x) = 符號）
 
 【結構檢查清單 - 提交代碼前必須確認】
 ✅ **必須有外層 `while True:`**（def generate 內第一行）
@@ -267,6 +427,8 @@ def generate(level=1, **kwargs):
 ✅ **必須返回字典**（不是 tuple）
 ✅ **字典必須有 4 個 key**（question_text, correct_answer, answer, mode）
 ✅ **correct_answer 必須是字串**（不是字典或列表）
+✅ **correct_answer 只包含純數學式**（無函數符號、無等號、無 LaTeX 符號）
+✅ **多答案必須用換行分隔**（'\n' 換行分隔，不用逗號）
 
 
 【LaTeX 格式鐵律 - 方案 1：場景區分法】(CRITICAL - 違反此規則將導致顯示錯誤)
@@ -506,9 +668,9 @@ class PromptBuilder:
     Prompt 構建引擎 - 負責生成不同 Ablation 模式的 Prompt
     
     支援 3 種 Ablation 模式：
-    - Ab1: BARE_MINIMAL_PROMPT (最簡 Prompt)
-    - Ab2: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC
-    - Ab3: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC (默認)
+    - Ab1: BARE_PROMPT_TEMPLATE (一般用戶自然語言 Prompt)
+    - Ab2: SIMPLIFIED_GEN_CODE_PROMPT + MASTER_SPEC (工程化鷹架版，~2000 字符)
+    - Ab3: SIMPLIFIED_GEN_CODE_PROMPT + MASTER_SPEC + Healer (鷹架版 + AST 修復)
     """
     
     @staticmethod
@@ -543,7 +705,7 @@ class PromptBuilder:
 ⚠️ 規則：
 1. 直接調用上述函數，禁止重新定義
 2. 你只需實現 `def generate(level=1, **kwargs)`
-3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
+3. 答案格式：純多項式換行分隔，例 "6x-5\n6"（禁止包含 f'(x)= 或逗號）
 """
                     logger.info(f"   ✅ Domain 函數庫注入: {required_domains}")
             except Exception as e:
@@ -567,17 +729,17 @@ class PromptBuilder:
             logger.info(f"   Textbook Example: {len(textbook_example)} chars")
             logger.info(f"   Final Prompt: {len(prompt)} chars")
         elif ablation_id == 2:
-            # Ab2: UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫
-            prompt = UNIVERSAL_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{master_spec}"
-            logger.info(f"Prompt Ab2 - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain")
-            logger.info(f"   Universal Prompt: {len(UNIVERSAL_GEN_CODE_PROMPT)} chars")
+            # Ab2: SIMPLIFIED Prompt (鷹架版) + MASTER_SPEC + Domain 函數庫
+            prompt = SIMPLIFIED_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{master_spec}"
+            logger.info(f"Prompt Ab2 - SIMPLIFIED_GEN_CODE_PROMPT + MASTER_SPEC + Domain (鷹架版)")
+            logger.info(f"   Simplified Prompt: {len(SIMPLIFIED_GEN_CODE_PROMPT)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
             logger.info(f"   MASTER_SPEC: {len(master_spec)} chars")
         else:
-            # Ab3 (默認): UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫
-            prompt = UNIVERSAL_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{master_spec}"
-            logger.info(f"Prompt Ab{ablation_id} - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain")
-            logger.info(f"   Universal Prompt: {len(UNIVERSAL_GEN_CODE_PROMPT)} chars")
+            # Ab3 (默認): SIMPLIFIED Prompt (鷹架版) + MASTER_SPEC + Domain 函數庫
+            prompt = SIMPLIFIED_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{master_spec}"
+            logger.info(f"Prompt Ab{ablation_id} - SIMPLIFIED_GEN_CODE_PROMPT + MASTER_SPEC + Domain (鷹架版)")
+            logger.info(f"   Simplified Prompt: {len(SIMPLIFIED_GEN_CODE_PROMPT)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
             logger.info(f"   MASTER_SPEC: {len(master_spec)} chars")
         
@@ -597,6 +759,8 @@ class PromptBuilder:
 # 導出常量（向後兼容）
 __all__ = [
     'PromptBuilder',
+    'BARE_PROMPT_TEMPLATE',
     'BARE_MINIMAL_PROMPT',
     'UNIVERSAL_GEN_CODE_PROMPT',
+    'SIMPLIFIED_GEN_CODE_PROMPT',
 ]

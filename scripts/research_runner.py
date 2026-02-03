@@ -123,7 +123,6 @@ def export_to_excel(skill_id, ablation_id=3):
     writer = pd.ExcelWriter(file_path, engine='xlsxwriter')
     
     # 建立一個不包含 image_base64 的 DataFrame (文字資料)
-    # 注意：這裡保留了 question_text
     display_df = df.drop(columns=['image_base64'])
     
     # 重新命名欄位，讓報表更清楚 (Optional)

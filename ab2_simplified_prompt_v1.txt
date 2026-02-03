@@ -1,0 +1,117 @@
+【角色】K12 數學演算法工程師
+
+【任務】
+實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
+該函數應返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+
+【預載工具】(直接使用，無需定義)
+- 模塊: random, math, re, ast, operator, os, Fraction
+- 工具函數: fmt_num(n), to_latex(n), clean_latex_output(q), check(user_answer, correct_answer)
+- 多項式工具: _coeffs_to_terms(coeffs), _poly_to_latex(terms), _poly_to_plain(terms), _differentiate_poly(terms, order=1), _deriv_symbol_latex(order)
+- 其他: op_latex, is_prime, gcd, lcm, get_factors, nCr, nPr, factorial_bounded, clamp_fraction, safe_pow, rational_gauss_solve
+
+【核心規則】(只有 5 條，最重要的)
+
+1. ✅ **安全的迴圈設計**
+   - 使用 shuffle + slice：available = list(range(n)); random.shuffle(available); selected = available[:k]
+   - 外層 while True 只用於整個物件再生，內層絕對不能有無終止條件迴圈
+
+2. ✅ **LaTeX 格式**（只有一條簡單規則）
+   - 所有數學式必須被 $ 包裹：f"計算 ${expr}$ 的值"
+   - 中文與 $ 必須分離：f"求 ${expr}$ 的因式分解"（不是 f"求${expr}$的"）
+
+3. ✅ **答案格式**（嚴格要求）
+   - 純結果，不含符號、等號、換行
+   - ✅ 正確："6x^2-10x, 12x-10"
+   - ❌ 錯誤："f'(x) = 6x^2-10x\nf''(x) = 12x-10"
+
+4. ✅ **Domain 函數使用**
+   - 先轉換格式：terms = _coeffs_to_terms(coeffs)
+   - 再調用函數：_poly_to_latex(terms), _differentiate_poly(terms), _poly_to_plain(terms)
+   - 不要對結果呼叫 clean_latex_output()
+
+5. ✅ **只輸出代碼**
+   - 不要在代碼結尾加說明或註解
+   - 不使用 eval/exec/safe_eval
+
+
+【成功的代碼模式】
+
+```python
+def generate(level=1, **kwargs):
+    # 步驟 1: 生成參數
+    degree = random.randint(3, 5)
+    coeffs = [random.randint(-10, 10) for _ in range(degree + 1)]
+    while coeffs[0] == 0:
+        coeffs[0] = random.randint(1, 10)
+    
+    # 步驟 2: 使用 shuffle + slice（安全）
+    available_degrees = list(range(degree + 1))
+    random.shuffle(available_degrees)
+    selected_degrees = available_degrees[:min(3, degree + 1)]
+    
+    # 步驟 3: 格式轉換
+    terms = _coeffs_to_terms(coeffs)
+    
+    # 步驟 4: 計算結果
+    deriv1_terms = _differentiate_poly(terms, order=1)
+    deriv2_terms = _differentiate_poly(terms, order=2)
+    
+    # 步驟 5: 組裝題目（手動加 $）
+    poly_latex = _poly_to_latex(terms)
+    q = f'已知 $f(x) = {poly_latex}$，求 $f\'(x)$ 與 $f\'\'(x)$。'
+    
+    # 步驟 6: 組裝答案（純多項式，逗號分隔）
+    ans1 = _poly_to_plain(deriv1_terms)
+    ans2 = _poly_to_plain(deriv2_terms)
+    a = f"{ans1}, {ans2}"
+    
+    return {
+        'question_text': q,
+        'correct_answer': a,
+        'answer': a,
+        'mode': 1
+    }
+```
+
+
+【MASTER_SPEC】
+
+```
+domain: algebra.polynomial.derivatives
+
+entities:
+  - polynomial_degree: 3~5
+  - coefficients: -10~10 (至少 3 個非零項)
+  - derivative_order_1: 1~3，小於 polynomial_degree
+  - derivative_order_2: 1~3，小於 polynomial_degree，不同於 order_1
+
+constraints:
+  - 所有中間值必須精確計算（用 int）
+  - 最終係數絕對值不超過 3 位數（例 120, -360）
+  - 原始多項式至少 3 個非零項
+
+templates:
+  - name: polynomial_multiple_derivatives
+    variables:
+      - degree: 3~5
+      - coeffs: 確保 coeffs[0] 非零，至少 3 個非零元素
+      - order1: 1~min(3, degree-1)
+      - order2: 1~min(3, degree-1)，order2 ≠ order1
+    
+    construction:
+      1. 生成 coeffs (降冪排列)
+      2. terms = _coeffs_to_terms(coeffs)
+      3. deriv1 = _differentiate_poly(terms, order1)
+      4. deriv2 = _differentiate_poly(terms, order2)
+      5. q = f'已知 $f(x) = {_poly_to_latex(terms)}$，求 ... 的導數。'
+      6. a = f"{_poly_to_plain(deriv1)}, {_poly_to_plain(deriv2)}"
+
+answer_spec:
+  format: "polynomial1, polynomial2"
+  examples:
+    - "6x^2-10x, 12x-10"
+    - "35x^4-24x^2, 140x^3-48x"
+  forbidden:
+    - 任何包含 "f'(x) =" 或換行符的格式
+```

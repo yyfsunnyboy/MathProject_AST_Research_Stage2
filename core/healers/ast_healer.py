@@ -293,19 +293,21 @@ class ASTHealer(ast.NodeTransformer):
             ast.fix_missing_locations(new_tree)
             
             new_code = ast.unparse(new_tree)
-            return new_code, self.fixes
+            
+            # 📌 【方案 A】驗證 ast.unparse() 的輸出是否有效
+            # 這是關鍵的防線：即使 unparse 成功執行，輸出代碼也可能有語法錯誤
+            try:
+                ast.parse(new_code)
+                logger.info(f"✅ AST Healer 成功：輸出代碼驗證通過，修復 {self.fixes} 項")
+                return new_code, self.fixes
+            except SyntaxError as syntax_err:
+                logger.warning(f"⚠️  AST unparse 產生無效代碼：{syntax_err}")
+                logger.warning(f"🔄 回退使用 Regex Healer 的結果（安全降級）")
+                return code_str, 0
+                
         except Exception as e:
-            logger.error(f"AST Healing Failed: {e}")
+            logger.error(f"❌ AST Healing Failed: {e}")
             return code_str, 0
-        # 簡單計算修復次數
-        fix_count = 0
-        if fixed_code != code_str:
-            # 計算替換次數（eval -> safe_eval）
-            fix_count = code_str.count('eval(') - fixed_code.count('eval(')
-            fix_count = max(0, fix_count)
-        
-        logger.info(f"AST Healer 完成，修復 {fix_count} 處")
-        return fixed_code, fix_count
     
     # TODO: 將以下方法從 fix_code_via_ast() 拆分出來
     # def _replace_eval_to_safe_eval(self, tree): pass

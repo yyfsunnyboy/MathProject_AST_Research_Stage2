@@ -146,6 +146,106 @@ class RegexHealer:
             'latex_format', '_format_term_with_parentheses'
         ]
     
+    def _fix_answer_format(self, code_str: str) -> tuple:
+        """
+        [Healer Level 2 Defense] Fix answer format
+        
+        Rule checklist:
+        1. NO function symbol prefix (f'(x) = , f''(x) = , f^(n)(x) = etc)
+        2. NO comma separator for multiple answers, MUST use newline
+        3. NO $ LaTeX symbols in answer field
+        4. ONLY pure polynomial text allowed
+        
+        Returns:
+            tuple: (fixed code, fix count)
+        """
+        fixes = 0
+        result = code_str
+        
+        # Rule 1: Remove function symbol prefix (f'(x) = , f''(x) = , f^(n)(x) = etc)
+        # WRONG: a = f"f'(x) = {ans1}\nf''(x) = {ans2}"
+        # RIGHT: a = f"{ans1}\n{ans2}"
+        
+        # Check f-string format with function symbols
+        if re.search(r'a\s*=\s*f["\'].*?f[\'"]?\([^)]*\)\s*=', result):
+            logger.info('[Answer Healer] Detected function symbols in f-string, removing...')
+            # Remove f'(x) = pattern from f-strings
+            result = re.sub(
+                r'(a\s*=\s*f["\'])f[\'"]?\([^)]*\)\s*=\s*({[^}]*})',
+                r'\1\2',
+                result
+            )
+            # Handle multiple patterns
+            while re.search(r'f[\'"]?\([^)]*\)\s*=', result):
+                result = re.sub(
+                    r'\\nf[\'"]?\([^)]*\)\s*=\s*',
+                    r'\\n',
+                    result
+                )
+                fixes += 1
+            if fixes == 0:
+                fixes = 1
+        
+        # Check regular string format with function symbols
+        if re.search(r'a\s*=\s*["\'].*?f[\'"]?\([^)]*\)\s*=', result):
+            logger.info('[Answer Healer] Detected function symbols in string, removing...')
+            result = re.sub(
+                r'(["\'])f[\'"]?\([^)]*\)\s*=\s*',
+                r'\1',
+                result
+            )
+            fixes += 1
+        
+        # Rule 2: Replace comma separator with newline
+        # WRONG: a = ', '.join(ans_parts)
+        # RIGHT: a = '\n'.join(ans_parts)
+        
+        # Match both single and double quote variations
+        if re.search(r",\s*['\"]\.join", result):
+            logger.info('[Answer Healer] Detected comma join, changing to newline join...')
+            # Match patterns like: ', '.join or ", ".join or ','.join
+            result = re.sub(
+                r"['\"],\s*['\"]\.join",
+                r"'\\n'.join",
+                result
+            )
+            fixes += 1
+        
+        # Rule 2B: Replace space separator with newline (NEW - handle space-separated answers)
+        # WRONG: a = ' '.join(ans_parts)
+        # RIGHT: a = '\n'.join(ans_parts)
+        
+        if re.search(r"['\"]\\s+['\"]\.join|['\"] ['\"]\.join", result):
+            logger.info('[Answer Healer] Detected space separator, changing to newline join...')
+            # Match patterns like: ' '.join or spaces in join
+            result = re.sub(
+                r"['\"]\\s+['\"]\.join",
+                r"'\\n'.join",
+                result
+            )
+            # Also handle literal space pattern
+            result = re.sub(
+                r"['\"] ['\"]\.join",
+                r"'\\n'.join",
+                result
+            )
+            fixes += 1
+        
+        # Rule 3: Remove $ LaTeX symbols from answer
+        # WRONG: a = "$24x^2$ + $48x$"
+        # RIGHT: a = "24x^2+48x"
+        
+        if '$' in result and re.search(r"a\s*=.*?\$", result):
+            logger.info('[Answer Healer] Detected $ LaTeX in answer, removing...')
+            result = re.sub(
+                r'\$([^$]*)\$',
+                r'\1',
+                result
+            )
+            fixes += 1
+        
+        return result, fixes
+    
     def heal(self, code_str: str) -> tuple:
         """
         執行 Regex 修復
@@ -794,6 +894,12 @@ class RegexHealer:
                             func_end = func_start + len(func_body)
                             refined_code = refined_code[:func_end] + default_return + refined_code[func_end:]
                             fixes += 1
+        
+        # -----------------------------------------------------------
+        # 【新增】答案格式修復（第 2 層防線）
+        # -----------------------------------------------------------
+        refined_code, answer_format_fixes = self._fix_answer_format(refined_code)
+        fixes += answer_format_fixes
 
         return refined_code, fixes
 

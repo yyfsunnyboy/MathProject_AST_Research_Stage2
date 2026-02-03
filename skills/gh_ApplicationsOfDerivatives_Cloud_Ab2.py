@@ -1,10 +1,10 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: gemini-2.5-flash | Strategy: V47.5 Unified-Cleanup + Advanced-Healer
-# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 25.90s | Tokens: In=5454, Out=3193
-# Created At: 2026-01-31 16:21:22
-# Fix Status: [Basic Cleanup] | Fixes: Basic=2, Advanced=(Regex=0, AST=0)
+# Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
+# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 20.11s | Tokens: In=5529, Out=642
+# Created At: 2026-02-03 16:03:46
+# Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -17,6 +17,7 @@ from fractions import Fraction
 import re
 import ast
 import operator
+import os
 
 # ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
 op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
@@ -542,319 +543,180 @@ def ensure_dir(p):
     return p
 
 
-# [AI GENERATED CODE]
-# ---------------------------------------------------------
+# [DOMAIN HELPERS - Auto-Injected for gh_ApplicationsOfDerivatives]
 
+# ===== 多項式標準函數庫 =====
 
-import random
-import math
-import re
-from fractions import Fraction
+def _coeffs_to_terms(coeffs):
+    '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
+    degree = len(coeffs) - 1
+    return [(coeffs[i], degree - i) for i in range(len(coeffs))]
 
-# Assume pre-loaded tools are available:
-# fmt_num(n), to_latex(n), clean_latex_output(q), op_latex, etc.
-
-# Mock implementations for testing if not running in a specific environment
-# In the actual environment, these would be provided.
-try:
-    fmt_num(1)
-except NameError:
-    def fmt_num(n):
-        if isinstance(n, Fraction):
-            if n.denominator == 1:
-                return str(n.numerator)
-            return f"\\frac{{{n.numerator}}}{{{n.denominator}}}"
-        return str(n)
-
-try:
-    to_latex(1)
-except NameError:
-    def to_latex(n):
-        if isinstance(n, Fraction):
-            if n.denominator == 1:
-                return str(n.numerator)
-            return f"\\frac{{{n.numerator}}}{{{n.denominator}}}"
-        return str(n)
-
-try:
-    op_latex
-except NameError:
-    op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
-
-# As per MASTER_SPEC, clean_latex_output should NOT be called for question_text
-# when using _poly_to_latex and manual $ wrapping.
-# So, we define a dummy if it's not already defined to avoid NameError,
-# but it will not be used in the question formatting.
-try:
-    clean_latex_output("test")
-except NameError:
-    def clean_latex_output(q):
-        return q
-
-
-# Helper functions for polynomial formatting and differentiation
 def _poly_to_latex(terms):
-    """
-    Converts a list of polynomial terms (coeff, exp) to a LaTeX string.
-    Handles formatting for 1x^n, -1x^n, x^1, x^0, and signs.
-    Does NOT wrap in $$.
-    """
+    '''terms → LaTeX (不含$)，例: [(3,2),(-5,0)] → "3x^{2} - 5"'''
     if not terms:
-        return "0"
-    
-    # Filter out zero terms and sort by exponent in descending order
-    terms = [(c, e) for c, e in terms if c != 0]
-    if not terms: return "0" # If all terms became zero after filtering
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else (' + ' if c > 0 else ' - ')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{{{e}}}' if coeff_str else f'x^{{{e}}}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
 
-    terms.sort(key=lambda x: x[1], reverse=True)
-    
-    latex_parts = []
-    for i, (coeff, exp) in enumerate(terms):
-        part = ""
-        
-        # Handle sign for non-first terms
-        if coeff > 0 and i > 0:
-            part += "+"
-        elif coeff < 0:
-            part += "-"
-
-        abs_coeff = abs(coeff)
-
-        # Handle coefficient part
-        if abs_coeff != 1 or exp == 0: # Show 1 for constant term, otherwise omit for x^n
-            part += fmt_num(abs_coeff)
-        
-        # Handle x and exponent part
-        if exp > 0:
-            part += "x"
-            if exp > 1:
-                part += f"^{{{exp}}}"
-        
-        latex_parts.append(part)
-    
-    return "".join(latex_parts)
-
-def _poly_to_text(terms):
-    """
-    Converts a list of polynomial terms (coeff, exp) to a plain text string.
-    Handles formatting for 1x^n, -1x^n, x^1, x^0, and signs.
-    Used for the answer field.
-    """
+def _poly_to_plain(terms):
+    '''terms → 純文本答案格式 (無空格)，例: "3x^2-5"'''
     if not terms:
-        return "0"
+        return '0'
+    parts = []
+    for i, (c, e) in enumerate(sorted(terms, key=lambda x: x[1], reverse=True)):
+        if c == 0:
+            continue
+        sign = '' if i == 0 else ('+' if c > 0 else '-')
+        abs_c = abs(c)
+        coeff_str = '' if (abs_c == 1 and e > 0) else str(abs_c)
+        if e == 0:
+            var_str = str(abs_c)
+        elif e == 1:
+            var_str = f'{coeff_str}x' if coeff_str else 'x'
+        else:
+            var_str = f'{coeff_str}x^{e}' if coeff_str else f'x^{e}'
+        parts.append(f'{sign}{var_str}')
+    return ''.join(parts).strip()
 
-    # Filter out zero terms and sort by exponent in descending order
-    terms = [(c, e) for c, e in terms if c != 0]
-    if not terms: return "0" # If all terms became zero after filtering
-
-    terms.sort(key=lambda x: x[1], reverse=True)
-    
-    text_parts = []
-    for i, (coeff, exp) in enumerate(terms):
-        part = ""
-        
-        # Handle sign and spacing
-        if coeff > 0 and i > 0:
-            part += " + "
-        elif coeff < 0:
-            part += " - "
-        elif i > 0: # Should not happen if first term is positive
-            pass # No sign for first positive term
-
-        abs_coeff = abs(coeff)
-
-        # Handle coefficient part
-        if abs_coeff != 1 or exp == 0:
-            part += str(abs_coeff)
-        
-        # Handle x and exponent part
-        if exp > 0:
-            part += "x"
-            if exp > 1:
-                part += f"^{exp}"
-        
-        text_parts.append(part.strip())
-    
-    result = "".join(text_parts)
-    # Clean up leading '+' if present (from the first term being positive)
-    if result.startswith('+ '):
-        result = result[2:]
+def _differentiate_poly(terms, order=1):
+    '''求導 order 次，返回新 terms'''
+    result = list(terms)
+    for _ in range(order):
+        new_terms = []
+        for c, e in result:
+            if e > 0:
+                new_c = c * e
+                if abs(new_c) > 10000:
+                    raise ValueError(f"Coefficient {new_c} exceeds limit")
+                new_terms.append((new_c, e - 1))
+        result = new_terms
     return result
 
 def _deriv_symbol_latex(order):
-    """
-    Returns the LaTeX string for the derivative symbol (e.g., f'(x), f''(x), f'''(x), f^(n)(x)).
-    Does NOT wrap in $$.
-    """
+    '''導數符號 LaTeX: f'(x), f''(x), f^{(n)}(x)'''
     if order == 1:
         return "f'(x)"
     elif order == 2:
         return "f''(x)"
-    elif order == 3:
-        return "f'''(x)"
     else:
         return f"f^{{({order})}}(x)"
 
-def _calculate_derivative(polynomial_terms, order):
-    """
-    Calculates the derivative of a polynomial for a given order.
-    Input: list of (coefficient, exponent) tuples.
-    Output: list of (coefficient, exponent) tuples for the derivative.
-    """
-    current_terms = list(polynomial_terms) # Work on a copy
-    
-    for _ in range(order):
-        next_terms = []
-        for coeff, exp in current_terms:
-            if exp > 0: # Only differentiate terms with exp > 0
-                new_coeff = coeff * exp
-                new_exp = exp - 1
-                # Only keep terms with non-zero coefficient after differentiation
-                if new_coeff != 0:
-                    next_terms.append((new_coeff, new_exp))
-        current_terms = next_terms
-        
-    # Filter out terms with coefficient 0 and sort by exponent
-    current_terms = [(c, e) for c, e in current_terms if c != 0]
-    current_terms.sort(key=lambda x: x[1], reverse=True)
-    return current_terms
+def _deriv_symbol_plain(order):
+    '''導數符號純文本: f'(x), f''(x), f^(n)(x)'''
+    if order == 1:
+        return "f'(x)"
+    elif order == 2:
+        return "f''(x)"
+    else:
+        return f"f^({order})(x)"
+
+def _format_polynomial_for_answer(terms):
+    '''Format polynomial terms for answer display - use plain text, no LaTeX brackets
+    Examples:
+      _format_polynomial_for_answer([(36, 3), (27, 2), (16, 1)]) → "36x^3+27x^2+16x"
+      _format_polynomial_for_answer([(216, 1), (54, 0)]) → "216x+54"
+    '''
+    return _poly_to_plain(terms)
+
+
+
+# ===== 微積分標準函數庫 =====
+# (多項式微分已在 POLYNOMIAL_HELPERS 中定義)
+
+def _find_critical_points(coeffs):
+    '''
+    找多項式的臨界點（一階導數為 0 的點）
+    參數: coeffs = [a_n, a_{n-1}, ..., a_0] (降冪排列)
+    返回: 臨界點列表
+    '''
+    # 實現求導 + 解方程
+    pass
+
+def _evaluate_poly(coeffs, x):
+    '''計算多項式在 x 點的值'''
+    result = 0
+    for i, c in enumerate(coeffs):
+        result += c * (x ** (len(coeffs) - 1 - i))
+    return result
+
+
+
+# [AI GENERATED CODE]
+# ---------------------------------------------------------
+
 
 def generate(level=1, **kwargs):
-    max_attempts = 100 # Max attempts to generate a valid question
-    for _ in range(max_attempts):
-        try:
-            # 1. Generate degree (3~5)
-            degree = random.randint(3, 5)
-
-            # 2. Generate num_terms (3~5)
-            num_terms = random.randint(3, min(degree + 1, 5)) # Ensure num_terms <= degree + 1
-
-            # 3. Generate exponents: choose num_terms distinct exponents from degree down to 0
-            # Ensure highest degree term is present
-            available_exponents = list(range(degree + 1))
-            
-            exponents = set()
-            exponents.add(degree) # Ensure highest degree term
-            while len(exponents) < num_terms:
-                exponents.add(random.choice(available_exponents))
-            
-            exponents = sorted(list(exponents), reverse=True)
-
-            # 4. Generate coefficients for each exponent
-            coefficients = []
-            has_negative_coeff = False
-            has_non_one_minus_one_coeff = False
-            
-            for exp in exponents:
-                coeff = 0
-                while coeff == 0: # Coefficient must be non-zero (unless it's a constant term that can be 0, but total polynomial cannot be zero)
-                    coeff = random.randint(-10, 10)
-                
-                if coeff < 0:
-                    has_negative_coeff = True
-                if coeff not in [-1, 1]:
-                    has_non_one_minus_one_coeff = True
-                
-                coefficients.append(coeff)
-            
-            # Ensure constraints for coefficients
-            if not has_negative_coeff:
-                # Find a non-constant term to make negative
-                idx_to_negate = random.choice([i for i, exp in enumerate(exponents) if exp > 0])
-                coefficients[idx_to_negate] = -abs(coefficients[idx_to_negate])
-                has_negative_coeff = True # Redundant, but for clarity
-
-            if not has_non_one_minus_one_coeff:
-                # Find a term to make non-+-1
-                idx_to_change = random.choice(range(len(coefficients)))
-                original_coeff = coefficients[idx_to_change]
-                new_coeff = random.choice([c for c in [-10, -9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9, 10] if c != original_coeff])
-                coefficients[idx_to_change] = new_coeff
-                has_non_one_minus_one_coeff = True # Redundant
-
-            # Ensure highest degree term has non-zero coefficient (already handled by coeff != 0 loop)
-            # Ensure the polynomial is not a zero polynomial (handled by ensuring at least 3 terms with non-zero coefficients)
-
-            # Construct polynomial_terms
-            polynomial_terms = sorted(list(zip(coefficients, exponents)), key=lambda x: x[1], reverse=True)
-            
-            # Check basic polynomial validity
-            if len(polynomial_terms) < 3 or polynomial_terms[0][1] < 3:
-                raise ValueError("Polynomial does not meet minimum term/degree requirements.")
-            if not has_negative_coeff or not has_non_one_minus_one_coeff:
-                 raise ValueError("Polynomial does not meet coefficient diversity requirements.")
-
-
-            # 6. Choose requested_derivative_orders
-            possible_orders = [o for o in range(1, degree)] # 1 <= order < degree
-            if len(possible_orders) < 2: # Need at least two distinct orders
-                raise ValueError("Not enough possible derivative orders for this polynomial degree.")
-
-            order1 = random.choice(possible_orders)
-            order2 = random.choice([o for o in possible_orders if o != order1])
-            requested_derivative_orders = sorted([order1, order2])
-
-            # Ensure at least one order > 1
-            if all(o == 1 for o in requested_derivative_orders):
-                # If both are 1, try to change one to > 1
-                if degree > 1: # This should always be true as degree >= 3
-                    higher_orders = [o for o in possible_orders if o > 1]
-                    if higher_orders:
-                        requested_derivative_orders[random.randint(0,1)] = random.choice(higher_orders)
-                        requested_derivative_orders.sort()
-                    else:
-                        raise ValueError("Cannot ensure at least one derivative order > 1 for this polynomial.")
-                
-            # 7. Calculate derivatives and check coefficient bounds
-            derivative_results = {}
-            for order in requested_derivative_orders:
-                deriv_poly = _calculate_derivative(polynomial_terms, order)
-                
-                # Check if derivative is zero polynomial (e.g., if order >= original degree)
-                if not deriv_poly:
-                    raise ValueError(f"Derivative of order {order} resulted in a zero polynomial. Regenerating orders.")
-                
-                # Check coefficient bounds for the derivative
-                for c, _ in deriv_poly:
-                    if abs(c) > 1000:
-                        raise ValueError(f"Derivative coefficient {c} exceeds absolute limit of 1000.")
-                
-                derivative_results[order] = deriv_poly
-            
-            # All checks passed, proceed to formatting
-            
-            # Question formatting
-            poly_str = _poly_to_latex(polynomial_terms)
-            
-            deriv_req_parts_latex = []
-            for order in requested_derivative_orders:
-                deriv_req_parts_latex.append(f"${_deriv_symbol_latex(order)}$")
-            
-            derivative_requests_str = "與".join(deriv_req_parts_latex)
-            
-            q = f"已知 $f(x) = {poly_str}$，求 {derivative_requests_str}。"
-            # CRITICAL: As per MASTER_SPEC "多項式 LaTeX 處理特殊規則", DO NOT call clean_latex_output(q) here.
-
-            # Answer formatting
-            answer_parts = []
-            # Sort by order to ensure consistent answer output
-            for order in sorted(requested_derivative_orders):
-                deriv_poly_str_text = _poly_to_text(derivative_results[order])
-                answer_parts.append(deriv_poly_str_text)
-            
-            # CRITICAL: As per MASTER_SPEC "導數題型特殊規範", answer should be
-            # comma-separated polynomial expressions without f'(x) = prefixes.
-            a = ", ".join(answer_parts)
-            
-            return {
-                'question_text': q,
-                'correct_answer': a,
-                'answer': a,
-                'mode': 1
-            }
-
-        except ValueError as e:
-            # print(f"Regenerating due to: {e}") # For debugging purposes
-            continue # Try again
+    while True:
+        # 步驟 1: 生成參數（數學一致性約束）
+        max_degree = random.randint(2, 5)
+        num_terms = random.randint(3, min(5, max_degree + 1))
+        
+        # 步驟 2: 生成係數
+        coeffs = [random.randint(-10, 10) for _ in range(num_terms)]
+        while coeffs[0] == 0:
+            coeffs[0] = random.randint(1, 10)
+        
+        # 步驟 3: 使用 shuffle + slice（安全集合選擇）
+        available_exponents = list(range(max_degree + 1))
+        random.shuffle(available_exponents)
+        selected_exponents = available_exponents[:num_terms]
+        
+        # 步驟 4: 轉換為 terms 格式
+        terms = [(coeffs[i], selected_exponents[i]) for i in range(num_terms)]
+        
+        # 步驟 5: 驗證項數和最高次項係數
+        if len(terms) < 3 or coeffs[0] == 0:
+            continue
+        
+        # 步驟 6: 生成導數階數
+        derivative_orders = random.sample(range(1, min(4, max_degree + 1)), random.randint(1, 2))
+        
+        # 步驟 7: 計算所有請求的導數
+        derivatives = {}
+        current_poly_terms = terms[:]
+        for order in range(1, max(derivative_orders) + 1):
+            deriv_terms = _differentiate_poly(current_poly_terms)
+            if not deriv_terms:
+                continue
+            derivatives[order] = deriv_terms
+            current_poly_terms = deriv_terms
+        
+        # 步驟 8: 驗證所有導數結果是否為非零多項式
+        for order in derivative_orders:
+            if not derivatives[order]:
+                continue
+        
+        break
     
-    raise RuntimeError("Failed to generate a valid question after multiple attempts.")
+    # 步驟 9: 組裝題目（手動加 $，中文與 $ 分離）
+    poly_latex = _poly_to_latex(terms)
+    symbols = ' 與 '.join(f"${_deriv_symbol_latex(n)}$" for n in derivative_orders)
+    q = f"已知 $f(x) = {poly_latex}$，求 {symbols}。"
+    
+    # 步驟 10: 組裝答案（純多項式，逗號分隔，無 LaTeX、無函數符號）
+    ans_list = []
+    for order in derivative_orders:
+        deriv_terms = derivatives[order]
+        ans_list.append(_poly_to_plain(deriv_terms))
+    a = " | ".join(ans_list)
+    
+    return {
+        'question_text': q,
+        'correct_answer': a,
+        'answer': a,
+        'mode': 1
+    }

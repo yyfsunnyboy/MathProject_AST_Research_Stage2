@@ -126,6 +126,14 @@ def _deriv_symbol_plain(order):
         return "f''(x)"
     else:
         return f"f^({order})(x)"
+
+def _format_polynomial_for_answer(terms):
+    '''Format polynomial terms for answer display - use plain text, no LaTeX brackets
+    Examples:
+      _format_polynomial_for_answer([(36, 3), (27, 2), (16, 1)]) → "36x^3+27x^2+16x"
+      _format_polynomial_for_answer([(216, 1), (54, 0)]) → "216x+54"
+    '''
+    return _poly_to_plain(terms)
 """
 
 # ============================================================================

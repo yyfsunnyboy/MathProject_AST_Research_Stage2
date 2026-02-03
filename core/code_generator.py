@@ -395,12 +395,54 @@ def _log_experiment(**kwargs):
             pass
 
 def _basic_cleanup(code):
-    """移除 markdown 標記"""
+    """移除 markdown 標記與尾部說明文字（Qwen 違規檢測與移除）"""
     old_code = code
+    
+    # Step 1: 移除 markdown 標記
     code = re.sub(r'^(\s*)```python\s*\n', '', code, flags=re.MULTILINE)
     code = re.sub(r'^(\s*)```\s*\n', '', code, flags=re.MULTILINE)
     code = re.sub(r'\n(\s*)```\s*$', '', code, flags=re.MULTILINE)
-    code = code.strip()
+    
+    # Step 2: 移除尾部說明文字（Qwen 14b 違規模式）
+    # 特徵：代碼結束後有英文或中文說明段落
+    # 例如: "This code defines..." 或中文說明
+    
+    lines = code.split('\n')
+    cleaned_lines = []
+    
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        # 判斷是否進入說明文字區域
+        # 說明文字通常特徵：
+        # 1. 不是 Python 代碼（不含括號、return、def 等）
+        # 2. 以英文大寫字母或中文開頭
+        # 3. 不是註解（不以 # 開頭）
+        
+        if stripped and not stripped.startswith('#'):
+            # 檢查是否看起來像說明文字
+            is_explanation = False
+            
+            # 英文說明：通常以 "This", "The", "This code", "This function" 開頭
+            if re.match(r'^(This|The|This code|This function|The function|This implementation)', stripped):
+                is_explanation = True
+            
+            # 或者是純英文敘述文字（不是代碼）
+            elif re.match(r'^[A-Z][a-z]+ ', stripped) and \
+                 not any(keyword in stripped for keyword in ['=', '(', ')', 'return', 'if', 'def', 'import']):
+                is_explanation = True
+            
+            # 中文說明
+            elif re.match(r'^[\u4e00-\u9fff]', stripped):
+                is_explanation = True
+            
+            if is_explanation:
+                # 從這一行開始是說明文字，停止添加後續行
+                break
+        
+        cleaned_lines.append(line)
+    
+    code = '\n'.join(cleaned_lines).strip()
     return code, 1 if code != old_code else 0
 
 
