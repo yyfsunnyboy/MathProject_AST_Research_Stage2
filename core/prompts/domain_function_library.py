@@ -47,8 +47,13 @@ Domain 分類：
 # Domain 1: POLYNOMIAL (多項式)
 # ============================================================================
 
-POLYNOMIAL_HELPERS = """
+POLYNOMIAL_HELPERS = r"""
 # ===== 多項式標準函數庫 =====
+
+# 🔴 答案格式：純多項式逗號分隔（例："36x^2+10,72x"）
+#    ✅ 用 _format_polynomial_for_answer() 組答案，再 ','.join()
+#    ❌ 禁止：_deriv_symbol_plain() 只用於題目，不用於答案
+#    ❌ 禁止：換行分隔 '\n'.join()
 
 def _coeffs_to_terms(coeffs):
     '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''

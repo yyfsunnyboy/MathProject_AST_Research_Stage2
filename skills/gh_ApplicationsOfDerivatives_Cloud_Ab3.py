@@ -1,10 +1,10 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
+# Model: gemini-2.5-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 18.17s | Tokens: In=5529, Out=687
-# Created At: 2026-02-03 16:04:04
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=1, AST=0)
+# Performance: 45.81s | Tokens: In=5306, Out=1993
+# Created At: 2026-02-04 23:24:44
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=1, AST=1)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -547,6 +547,11 @@ def ensure_dir(p):
 
 # ===== 多項式標準函數庫 =====
 
+# 🔴 答案格式：純多項式逗號分隔（例："36x^2+10,72x"）
+#    ✅ 用 _format_polynomial_for_answer() 組答案，再 ','.join()
+#    ❌ 禁止：_deriv_symbol_plain() 只用於題目，不用於答案
+#    ❌ 禁止：換行分隔 '\n'.join()
+
 def _coeffs_to_terms(coeffs):
     '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
     degree = len(coeffs) - 1
@@ -661,37 +666,81 @@ def _evaluate_poly(coeffs, x):
 
 def generate(level=1, **kwargs):
     for _safety_counter in range(1000):
-        max_degree = random.randint(2, 5)
-        num_terms = random.randint(3, min(5, max_degree + 1))
-        coeffs = [random.randint(-10, 10) for _ in range(num_terms)]
-        while coeffs[0] == 0:
-            coeffs[0] = random.randint(1, 10)
-        available_exponents = list(range(max_degree + 1))
-        random.shuffle(available_exponents)
-        selected_exponents = available_exponents[:num_terms]
-        terms = [(coeffs[i], selected_exponents[i]) for i in range(num_terms)]
-        filtered_terms = [term for term in terms if term[0] != 0]
-        if len(filtered_terms) < 3 or max(selected_exponents) < 2:
+        try:
+            max_degree = random.randint(3, 5)
+            num_terms_to_generate = random.randint(3, 5)
+            all_possible_exponents = list(range(max_degree + 1))
+            chosen_exponents = [max_degree]
+            remaining_pool = [e for e in all_possible_exponents if e != max_degree]
+            actual_num_other_exponents_to_sample = min(num_terms_to_generate - 1, len(remaining_pool))
+            if actual_num_other_exponents_to_sample > 0:
+                chosen_exponents.extend(random.sample(remaining_pool, actual_num_other_exponents_to_sample))
+            exponents = sorted(list(set(chosen_exponents)), reverse=True)
+            if len(exponents) < 3:
+                continue
+            original_polynomial_terms_raw = []
+            highest_degree_coeff_is_nonzero = False
+            abs_coeff_greater_than_1_found = False
+            for exp in exponents:
+                coeff = random.randint(-10, 10)
+                if exp == max_degree:
+                    while coeff == 0:
+                        coeff = random.randint(-10, 10)
+                    highest_degree_coeff_is_nonzero = True
+                if coeff != 0:
+                    original_polynomial_terms_raw.append((coeff, exp))
+                    if abs(coeff) > 1:
+                        abs_coeff_greater_than_1_found = True
+            original_polynomial_terms = sorted(original_polynomial_terms_raw, key=lambda x: x[1], reverse=True)
+            if not original_polynomial_terms:
+                continue
+            if len(original_polynomial_terms) < 3:
+                continue
+            if original_polynomial_terms[0][1] != max_degree:
+                continue
+            if not highest_degree_coeff_is_nonzero:
+                continue
+            if not abs_coeff_greater_than_1_found:
+                continue
+            possible_deriv_orders = [1, 2, 3]
+            num_deriv_orders_to_request = random.randint(2, 3)
+            eligible_orders = [o for o in possible_deriv_orders if o <= max_degree]
+            if len(eligible_orders) < num_deriv_orders_to_request:
+                continue
+            derivative_orders_to_request = random.sample(eligible_orders, num_deriv_orders_to_request)
+            derivative_orders_to_request.sort()
+            calculated_derivs = {}
+            current_poly_terms = original_polynomial_terms
+            max_order_needed_for_calculation = max(derivative_orders_to_request)
+            for order_k in range(1, max_order_needed_for_calculation + 1):
+                current_poly_terms = _differentiate_poly(current_poly_terms, order=1)
+                cleaned_deriv_terms = [(c, e) for c, e in current_poly_terms if c != 0]
+                calculated_derivs[order_k] = cleaned_deriv_terms
+                if order_k in derivative_orders_to_request:
+                    for c, _ in cleaned_deriv_terms:
+                        if abs(c) > 100:
+                            raise ValueError(f'Final derivative coefficient {c} exceeds absolute value limit of 100.')
+            is_any_requested_deriv_non_zero = False
+            for order in derivative_orders_to_request:
+                if calculated_derivs.get(order):
+                    is_any_requested_deriv_non_zero = True
+                    break
+            if not is_any_requested_deriv_non_zero:
+                continue
+            break
+        except ValueError as e:
             continue
-        derivative_orders = random.sample(range(1, min(max_degree + 1, 4)), random.randint(1, 2))
-        if any((order > max(selected_exponents) for order in derivative_orders)):
+        except Exception as e:
             continue
-        break
-    current_poly_terms = filtered_terms
-    derivatives = {}
-    for order in sorted(derivative_orders):
-        deriv_terms = _differentiate_poly(current_poly_terms, order=order)
-        if not deriv_terms:
-            continue
-        derivatives[order] = deriv_terms
-        current_poly_terms = deriv_terms
-    poly_latex = _poly_to_latex(filtered_terms)
-    symbols = ' 與 '.join((f'${_deriv_symbol_latex(n)}$' for n in derivative_orders))
-    q = f'已知 $f(x) = {poly_latex}$ ，求 {symbols} 。'
-    ans_list = []
-    for order in sorted(derivative_orders):
-        deriv_terms = derivatives[order]
-        ans_list.append(_poly_to_plain(deriv_terms))
-    # correct_answer: 純多項式答案用逗號分隔（Excel 用）
-    a = ','.join(ans_list)
-    return {'question_text': q, 'correct_answer': a, 'answer': '', 'mode': 1}
+    original_poly_latex = _poly_to_latex(original_polynomial_terms)
+    deriv_symbols_latex_list = [f'${_deriv_symbol_latex(order)}$' for order in derivative_orders_to_request]
+    deriv_symbols_joined = ' 與 '.join(deriv_symbols_latex_list)
+    question_text = f'已知 $f(x) = {original_poly_latex}$，求 {deriv_symbols_joined}。'
+    answer_parts = []
+    for order in derivative_orders_to_request:
+        deriv_terms = calculated_derivs.get(order, [])
+        formatted_poly = _format_polynomial_for_answer(deriv_terms)
+        answer_parts.append(formatted_poly if formatted_poly else '0')
+    correct_answer = ','.join(answer_parts)
+    answer = correct_answer
+    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}

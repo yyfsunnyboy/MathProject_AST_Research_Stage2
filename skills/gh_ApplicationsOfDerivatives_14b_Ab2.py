@@ -2,8 +2,8 @@
 # ID: gh_ApplicationsOfDerivatives
 # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 19.41s | Tokens: In=5470, Out=622
-# Created At: 2026-02-03 18:17:25
+# Performance: 20.20s | Tokens: In=1592, Out=668
+# Created At: 2026-02-04 16:43:58
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -547,6 +547,11 @@ def ensure_dir(p):
 
 # ===== 多項式標準函數庫 =====
 
+# 🔴 答案格式：純多項式逗號分隔（例："36x^2+10,72x"）
+#    ✅ 用 _format_polynomial_for_answer() 組答案，再 ','.join()
+#    ❌ 禁止：_deriv_symbol_plain() 只用於題目，不用於答案
+#    ❌ 禁止：換行分隔 '\n'.join()
+
 def _coeffs_to_terms(coeffs):
     '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
     degree = len(coeffs) - 1
@@ -660,71 +665,67 @@ def _evaluate_poly(coeffs, x):
 
 
 def generate(level=1, **kwargs):
+    # 外層循環：負責整個物件的重試
     while True:
-        # 步驟 1: 生成參數（數學一致性約束）
-        max_degree = random.randint(3, 5)
-        num_terms = random.randint(3, min(5, max_degree + 1))
+        # 步驟 1: 生成參數
+        degree = random.randint(3, 5)
         
-        # 步驟 2: 生成係數
-        coeffs = [random.randint(-10, 10) for _ in range(num_terms)]
-        while coeffs[0] == 0:
-            coeffs[0] = random.randint(1, 10)
+        # 步驟 2: 使用 shuffle + slice 確保「至少 3 個非零項」
+        # (這是滿足 MASTER_SPEC 約束的關鍵技巧)
+        coeffs = [0] * (degree + 1)
         
-        if all(c > 0 for c in coeffs):
-            continue
+        # 2.1 確保最高次項係數非零
+        coeffs[degree] = random.randint(-10, 10)
+        while coeffs[degree] == 0:
+            coeffs[degree] = random.randint(1, 10)
+            
+        # 2.2 決定還需要幾個非零項
+        min_extra = 2 
+        max_extra = degree 
+        num_extra = random.randint(min_extra, max_extra)
         
-        # 步驟 3: 使用 shuffle + slice（安全集合選擇）
-        available_exponents = list(range(max_degree + 1))
-        random.shuffle(available_exponents)
-        selected_exponents = available_exponents[:num_terms]
+        # 2.3 從剩餘的位置中隨機選取
+        remaining_indices = list(range(degree))
+        random.shuffle(remaining_indices)
+        selected_indices = remaining_indices[:num_extra]
         
-        if not (0 in selected_exponents or 1 in selected_exponents):
-            continue
+        # 2.4 填入係數
+        for idx in selected_indices:
+            c = random.randint(-10, 10)
+            while c == 0: c = random.randint(-10, 10)
+            coeffs[idx] = c
+            
+        # 步驟 3: 格式轉換 (Standard Domain Tool)
+        # ✅ 關鍵：terms 是 List，專門給計算用的
+        terms = _coeffs_to_terms(coeffs)
         
-        # 步驟 4: 轉換為 terms 格式
-        terms = [(coeffs[i], selected_exponents[i]) for i in range(num_terms)]
+        # 步驟 4: 計算結果 (包含錯誤處理)
+        try:
+            orders = list(range(1, degree))
+            random.shuffle(orders)
+            target_orders = sorted(orders[:2])
+            
+            deriv_results = []
+            for order in target_orders:
+                # ✅ 關鍵：傳入的是 terms (List)，絕對不是字串！
+                d_terms = _differentiate_poly(terms, order=order)
+                deriv_results.append(d_terms)
+                
+        except ValueError:
+             continue # 數值過大等錯誤，重試整個題目
+
+        # 步驟 5: 組裝題目（手動加 $，絕對不 call clean）
+        poly_latex = _poly_to_latex(terms)
+        symbols = " 與 ".join(f"${_deriv_symbol_latex(o)}$" for o in target_orders)
+        q = f'已知 $f(x) = {poly_latex}$，求 {symbols}。'
         
-        # 步驟 5: 隨機生成兩個不同的導數階數
-        derivative_orders = random.sample(range(1, max_degree + 2), 2)
+        # 步驟 6: 組裝答案（純多項式，逗號分隔）
+        ans_parts = [_poly_to_plain(d) for d in deriv_results]
+        a = ", ".join(ans_parts)
         
-        # 步驟 6: 計算導數
-        derivs = []
-        for order in derivative_orders:
-            deriv_terms = _differentiate_poly(terms, order=order)
-            if any(abs(c) > 1000 for c, e in deriv_terms):
-                continue
-            derivs.append((order, deriv_terms))
-        
-        if len(derivs) != 2:
-            continue
-        
-        break
-    
-    # 步驟 7: 組裝題目（手動加 $，中文與 $ 分離）
-    poly_latex = _poly_to_latex(terms)
-    deriv_symbols_latex = [_deriv_symbol_latex(order) for order, _ in derivs]
-    symbols_str = ' 與 '.join(f"${sym}$" for sym in deriv_symbols_latex)
-    q = f'已知 $f(x) = {poly_latex}$ ，求 {symbols_str} 。'
-    
-    # 步驟 8: 組裝答案
-    # answer: 空白（供用戶輸入）
-    # correct_answer: 完整形式，包含導數符號與等號
-    answers = []
-    correct_answers = []
-    for order, deriv_terms in derivs:
-        ans = _poly_to_plain(deriv_terms)  # 純多項式
-        answers.append(ans)
-        
-        sym = _deriv_symbol_latex(order)  # e.g., "f'(x)"
-        correct_answers.append(f'{sym} = {ans}')
-    
-    a = '\n'.join(answers)  # 多個答案用換行分隔（純多項式）
-    # correct_answer: 純多項式答案用逗號分隔（Excel 用）
-    correct_a = ','.join(answers)
-    
-    return {
-        'question_text': q,
-        'correct_answer': correct_a,
-        'answer': '',
-        'mode': 1
-    }
+        return {
+            'question_text': q,
+            'correct_answer': a,
+            'answer': a,
+            'mode': 1
+        }

@@ -1,0 +1,82 @@
+UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
+
+【任務】
+實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
+該函數應返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+
+【預載工具】(直接使用，無需定義)
+- 模塊: random, math, re, ast, operator, os, Fraction
+- 工具函數: fmt_num(n), to_latex(n), clean_latex_output(q), check(user_answer, correct_answer)
+- 多項式工具: _coeffs_to_terms(coeffs), _poly_to_latex(terms), _poly_to_plain(terms), _differentiate_poly(terms, order=1), _deriv_symbol_latex(order)
+- 其他: op_latex, is_prime, gcd, lcm, get_factors, nCr, nPr, factorial_bounded, clamp_fraction, safe_pow, rational_gauss_solve
+
+【核心規則】(只有 5 條，最重要的)
+
+1. ✅ **安全的迴圈設計**
+   - 使用 shuffle + slice：available = list(range(n)); random.shuffle(available); selected = available[:k]
+   - 外層 while True 只用於整個物件再生，內層絕對不能有無終止條件迴圈
+
+2. ✅ **LaTeX 格式**（只有一條簡單規則）
+   - 所有數學式必須被 $ 包裹：f"計算 ${expr}$ 的值"
+   - 中文與 $ 必須分離：f"求 ${expr}$ 的因式分解"（不是 f"求${expr}$的"）
+
+3. ✅ **答案格式**（嚴格要求）
+   - 純結果，不含符號、等號、換行
+   - ✅ 正確："6x^2-10x, 12x-10"
+   - ❌ 錯誤："f'(x) = 6x^2-10x\nf''(x) = 12x-10"
+
+4. ✅ **Domain 函數使用**
+   - 先轉換格式：terms = _coeffs_to_terms(coeffs)
+   - 再調用函數：_poly_to_latex(terms), _differentiate_poly(terms), _poly_to_plain(terms)
+   - 不要對結果呼叫 clean_latex_output()
+
+5. ✅ **只輸出代碼**
+   - 不要在代碼結尾加說明或註解
+   - 不使用 eval/exec/safe_eval
+
+
+【成功的代碼模式】
+
+```python
+def generate(level=1, **kwargs):
+    # 步驟 1: 生成參數
+    degree = random.randint(3, 5)
+    coeffs = [random.randint(-10, 10) for _ in range(degree + 1)]
+    while coeffs[0] == 0:
+        coeffs[0] = random.randint(1, 10)
+    
+    # 步驟 2: 使用 shuffle + slice（安全）
+    available_degrees = list(range(degree + 1))
+    random.shuffle(available_degrees)
+    selected_degrees = available_degrees[:min(3, degree + 1)]
+    
+    # 步驟 3: 格式轉換
+    terms = _coeffs_to_terms(coeffs)
+    
+    # 步驟 4: 計算結果
+    deriv1_terms = _differentiate_poly(terms, order=1)
+    deriv2_terms = _differentiate_poly(terms, order=2)
+    
+    # 步驟 5: 組裝題目（手動加 $）
+    poly_latex = _poly_to_latex(terms)
+    q = f'已知 $f(x) = {poly_latex}$，求 $f\'(x)$ 與 $f\'\'(x)$。'
+    
+    # 步驟 6: 組裝答案（純多項式，逗號分隔）
+    ans1 = _poly_to_plain(deriv1_terms)
+    ans2 = _poly_to_plain(deriv2_terms)
+    a = f"{ans1}, {ans2}"
+    
+    return {
+        'question_text': q,
+        'correct_answer': a,
+        'answer': a,
+        'mode': 1
+    }
+```
+
+🔴 三大核心規則（必須記住）:
+
+1. 格式轉換: coeffs → terms (使用 _coeffs_to_terms)
+2. 答案格式: 純多項式，逗號分隔，無符號無換行
+3. 題目組裝: 手動添加 $ 符號，不要用 clean_latex_output
+"""

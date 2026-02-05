@@ -196,40 +196,8 @@ class RegexHealer:
             )
             fixes += 1
         
-        # Rule 2: Replace comma separator with newline
-        # WRONG: a = ', '.join(ans_parts)
-        # RIGHT: a = '\n'.join(ans_parts)
-        
-        # Match both single and double quote variations
-        if re.search(r",\s*['\"]\.join", result):
-            logger.info('[Answer Healer] Detected comma join, changing to newline join...')
-            # Match patterns like: ', '.join or ", ".join or ','.join
-            result = re.sub(
-                r"['\"],\s*['\"]\.join",
-                r"'\\n'.join",
-                result
-            )
-            fixes += 1
-        
-        # Rule 2B: Replace space separator with newline (NEW - handle space-separated answers)
-        # WRONG: a = ' '.join(ans_parts)
-        # RIGHT: a = '\n'.join(ans_parts)
-        
-        if re.search(r"['\"]\\s+['\"]\.join|['\"] ['\"]\.join", result):
-            logger.info('[Answer Healer] Detected space separator, changing to newline join...')
-            # Match patterns like: ' '.join or spaces in join
-            result = re.sub(
-                r"['\"]\\s+['\"]\.join",
-                r"'\\n'.join",
-                result
-            )
-            # Also handle literal space pattern
-            result = re.sub(
-                r"['\"] ['\"]\.join",
-                r"'\\n'.join",
-                result
-            )
-            fixes += 1
+        # [V47.15 移除舊邏輯] 以下 Rule 2/2B/3 已被 Answer Format Fixer (Line 540+) 取代
+        # 舊邏輯會錯誤地把逗號改成換行，與 Prompt 要求（逗號分隔）衝突
         
         # Rule 3: Remove $ LaTeX symbols from answer
         # WRONG: a = "$24x^2$ + $48x$"
@@ -538,18 +506,21 @@ class RegexHealer:
             print(f"   ✅ 已移除 {len(matches)} 處答案符號前綴")
         
         # Pattern 2: 修復答案分隔符（\n → ,）
-        pattern2 = r"correct_answer\s*=\s*['\"]\\n['\"]\.join\(ans_parts\)"
-        if re.search(pattern2, refined_code):
+        # [V47.15 Fix] 匹配任何變數名 (a, correct_answer, answer, etc.)
+        pattern2 = r"(\w+)\s*=\s*['\"]\\n['\"]\.join\(ans_parts\)"
+        matches2 = list(re.finditer(pattern2, refined_code))
+        if matches2:
             print(f"🔧 [Answer Format Fixer] 偵測到換行分隔符")
             print(f"   轉換為逗號分隔...")
             
-            refined_code = re.sub(
-                pattern2,
-                r"correct_answer = ', '.join(ans_parts)",
-                refined_code
-            )
-            fixes += 1
-            print(f"   ✅ 已轉換答案分隔符: \\n → ,")
+            for match in matches2:
+                var_name = match.group(1)
+                original = match.group(0)
+                replacement = f"{var_name} = ','.join(ans_parts)"
+                refined_code = refined_code.replace(original, replacement, 1)
+                fixes += 1
+            
+            print(f"   ✅ 已轉換 {len(matches2)} 處答案分隔符: \\n → ,")
 
 
         # -----------------------------------------------------------

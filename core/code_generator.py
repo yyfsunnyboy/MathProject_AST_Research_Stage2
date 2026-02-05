@@ -165,10 +165,46 @@ def log_pipeline_summary(total_fixes, status, duration):
         print(f"╚════════════════════════════════════════════════════════════╝\n")
 
 
-def _build_prompt(skill_id, ablation_id, db_master_spec):
-    """根據 ablation_id 構建 prompt (委派給 PromptBuilder)"""
+def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False, save_golden_prompt=False):
+    """根據 ablation_id 構建 prompt (委派給 PromptBuilder 或讀取 Golden Prompt)
     
-    # Ab1 需要從數據庫獲取教科書範例
+    Args:
+        skill_id: 技能 ID
+        ablation_id: Ablation 層級 (1/2/3)
+        db_master_spec: 數據庫中的規格書（Fallback 使用）
+        use_golden_prompt: 是否使用固定的 Golden Prompt（實驗模式 2）
+        save_golden_prompt: 是否將生成的 Prompt 保存為 Golden Prompt（實驗模式 4）
+    """
+    
+    # [實驗模式 2] 讀取固定的 Golden Prompt
+    if use_golden_prompt:
+        # Ab2/Ab3 共用同一個 Ab2 Prompt（因為差異只在 Healer 開關）
+        prompt_ablation_id = 1 if ablation_id == 1 else 2
+        golden_prompt_path = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'experiments', 'golden_prompts', 'temp', 
+            f'{skill_id}_Ab{prompt_ablation_id}.txt'
+        )
+        
+        if os.path.exists(golden_prompt_path):
+            try:
+                with open(golden_prompt_path, 'r', encoding='utf-8') as f:
+                    prompt = f.read()
+                
+                if VERBOSE_LEVEL >= 1:
+                    print(f"   📄 已讀取 Golden Prompt: {os.path.basename(golden_prompt_path)}")
+                
+                # 返回 Golden Prompt（topic 和 textbook_example 不重要了）
+                return prompt, "", ""
+            except Exception as e:
+                if VERBOSE_LEVEL >= 1:
+                    print(f"   ⚠️ 無法讀取 Golden Prompt ({e})，改用動態生成")
+        else:
+            if VERBOSE_LEVEL >= 1:
+                print(f"   ⚠️ Golden Prompt 不存在: {golden_prompt_path}")
+                print(f"   → 改用動態生成模式")
+    
+    # [原有邏輯] 動態生成 Prompt
     textbook_example = ""
     topic = ""
     
@@ -205,6 +241,33 @@ def _build_prompt(skill_id, ablation_id, db_master_spec):
         topic=topic,
         skill_id=skill_id
     )
+    
+    # [實驗模式 4] 保存為 Golden Prompt
+    if save_golden_prompt:
+        # Ab2/Ab3 共用同一個 Ab2 文件
+        prompt_ablation_id = 1 if ablation_id == 1 else 2
+        golden_prompt_dir = os.path.join(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+            'experiments', 'golden_prompts', 'temp'
+        )
+        
+        # 確保目錄存在
+        os.makedirs(golden_prompt_dir, exist_ok=True)
+        
+        golden_prompt_path = os.path.join(
+            golden_prompt_dir,
+            f'{skill_id}_Ab{prompt_ablation_id}.txt'
+        )
+        
+        try:
+            with open(golden_prompt_path, 'w', encoding='utf-8') as f:
+                f.write(prompt)
+            
+            if VERBOSE_LEVEL >= 1:
+                print(f"   💾 已保存 Golden Prompt: {os.path.basename(golden_prompt_path)}")
+        except Exception as e:
+            if VERBOSE_LEVEL >= 1:
+                print(f"   ⚠️ 無法保存 Golden Prompt: {e}")
     
     return prompt, topic, textbook_example
 
@@ -530,6 +593,8 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     role_config = Config.MODEL_ROLES.get('coder', {'provider': 'google', 'model': 'gemini-1.5-flash'})
     current_model = role_config.get('model', 'Unknown')
     ablation_id = kwargs.get('ablation_id', 3)
+    use_golden_prompt = kwargs.get('use_golden_prompt', False)  # [NEW] 實驗模式 2 參數
+    save_golden_prompt = kwargs.get('save_golden_prompt', False)  # [NEW] 實驗模式 4 參數
     
     # Ablation Settings
     # [2026-02-01 Bug Fix] 嚴格遵守實驗設計的變因分離：
@@ -552,12 +617,16 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     # 打印 Pipeline 启动标题
     log_pipeline_header(skill_id, ablation_id, ablation_name)
     
-    # Get DB Spec
+    # Get DB Spec (作為 Fallback)
     active_prompt = SkillGenCodePrompt.query.filter_by(skill_id=skill_id, prompt_type="MASTER_SPEC").order_by(SkillGenCodePrompt.created_at.desc()).first()
     db_master_spec = active_prompt.prompt_content if active_prompt else "生成一題簡單的整數四則運算。"
     
-    # Prompt 構建
-    prompt, topic, textbook_example = _build_prompt(skill_id, ablation_id, db_master_spec)
+    # Prompt 構建（可能讀取 Golden Prompt 或保存新的 Golden Prompt）
+    prompt, topic, textbook_example = _build_prompt(
+        skill_id, ablation_id, db_master_spec, 
+        use_golden_prompt=use_golden_prompt,
+        save_golden_prompt=save_golden_prompt
+    )
     
     # Step 0: AI 生成
     log_step_start(0, "AI Code Generation", f"Model: {current_model}")

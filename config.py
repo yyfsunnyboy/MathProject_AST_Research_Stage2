@@ -70,25 +70,69 @@ class Config:
             # 'provider': 'google',        # <--- 改用 Gemini 擔任工程師
             # 'model': 'gemini-2.5-flash',
 
-            'provider': 'local',  
-            'model': 'qwen2.5-coder:14b',             
+            # 'provider': 'local',  
+            # 'model': 'qwen2.5-coder:14b',             
+            # # --- 核心參數 ---
+            # 'temperature': 0.1,   # 極低溫，確保邏輯鎖死
+            # 'max_tokens': 2048,   # ✅ 優化: 1024 → 2048 (避免複雜代碼被截斷)
+            # # --- Ollama 特定參數 (透過 extra_body 傳遞) ---
+            # # 這是 OpenAI SDK 傳遞給 Ollama 的標準方式
+            # 'extra_body': {
+            #     'num_ctx': 8192,       # ✅ 優化: 4096 → 8192 (支持更長上下文)
+            #     'num_gpu': -1,         # 強制使用所有 GPU
+            #     'num_thread': 12,      # ✅ 優化: 6 → 12 (32GB RAM 可支持更多執行緒)
+            #     # 'enable_thinking': False # Qwen Coder 通常沒有這個參數，建議移除以免報錯
+            # # ✅ 性能優化參數 (針對 RTX 5060 Ti 16GB)
+            # 'num_batch': 1024,     # ✅ 關鍵優化: 256 → 1024 (GPU 利用率 60% → 95%, 速度 +40-50%)
+            # 'num_predict': 2048,   # ✅ 優化: 1024 → 2048 (同 max_tokens)
+            # 'num_keep': 4,         # 保留最近 4 個 token（加速推理）
+            # 'repeat_penalty': 1.15,  # 避免重複代碼
+            # 'top_k': 10,           # ✅ 優化: 20 → 10 (代碼生成更聚焦)
+            # 'top_p': 0.9,          # ✅ 優化: 0.8 → 0.9 (OpenAI Codex 推薦值)
+            # }
+
+
+            'provider': 'local',
+            'model': 'qwen2.5-coder:7b',
+            
             # --- 核心參數 ---
-            'temperature': 0.1,   # 極低溫，確保邏輯鎖死
-            'max_tokens': 2048,   # ✅ 優化: 1024 → 2048 (避免複雜代碼被截斷)
-            # --- Ollama 特定參數 (透過 extra_body 傳遞) ---
-            # 這是 OpenAI SDK 傳遞給 Ollama 的標準方式
+            'temperature': 0.1,    # 保持低溫，確保邏輯穩定
+            'max_tokens': 2048,    # 生成長度限制
+            
+            # --- Ollama 性能榨乾參數 (針對 16GB VRAM) ---
             'extra_body': {
-                'num_ctx': 8192,       # ✅ 優化: 4096 → 8192 (支持更長上下文)
-                'num_gpu': -1,         # 強制使用所有 GPU
-                'num_thread': 12,      # ✅ 優化: 6 → 12 (32GB RAM 可支持更多執行緒)
-                # 'enable_thinking': False # Qwen Coder 通常沒有這個參數，建議移除以免報錯
-            # ✅ 性能優化參數 (針對 RTX 5060 Ti 16GB)
-            'num_batch': 1024,     # ✅ 關鍵優化: 256 → 1024 (GPU 利用率 60% → 95%, 速度 +40-50%)
-            'num_predict': 2048,   # ✅ 優化: 1024 → 2048 (同 max_tokens)
-            'num_keep': 4,         # 保留最近 4 個 token（加速推理）
-            'repeat_penalty': 1.15,  # 避免重複代碼
-            'top_k': 10,           # ✅ 優化: 20 → 10 (代碼生成更聚焦)
-            'top_p': 0.9,          # ✅ 優化: 0.8 → 0.9 (OpenAI Codex 推薦值)
+                # [Context Window]
+                # 7B 模型很小，16GB VRAM 可以輕鬆開到 32k context 都不會爆
+                # 我們保守開 16k，確保速度最快
+                'num_ctx': 16384,
+
+                # [GPU Acceleration]
+                # -1 代表將所有層 (Layers) 全部丟進 GPU，不讓 CPU 拖慢速度
+                'num_gpu': -1,
+
+                # [Parallel Processing]
+                # 您的 4060 Ti 算力很強，可以同時處理更多 token
+                # 7B 模型下，Batch Size 開到 2048 是安全的
+                'num_batch': 2048,
+                
+                # [CPU Threads]
+                # Ryzen 7500F 是 6核12緒
+                # Ollama 建議設為實體核心數 (6) 或略高，設 8 是個平衡點
+                # 主要是負責數據預處理，不要設滿 12，留給系統一點空間
+                'num_thread': 8,
+
+                # [Prediction]
+                # 預測長度，與 max_tokens 保持一致或略大
+                'num_predict': 2048,
+
+                # [Cache]
+                # 讓模型在 VRAM 裡待久一點 (30分鐘)，避免跑下一題時還要重新載入
+                'keep_alive': "30m",
+                
+                # [Sampling Parameters] (針對 Code Generation 優化)
+                'top_k': 10,       # 降低候選詞數量，讓生成的代碼更精確
+                'top_p': 0.9,      # 稍微嚴格一點的機率過濾
+                'repeat_penalty': 1.15, # 避免迴圈鬼打牆
             }
         },
         

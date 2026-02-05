@@ -212,12 +212,17 @@ def run_expert_pipeline(skill_ids, arch_model, current_model, ablation_id, model
     
     # Step 2: Coder
     # 這裡才把真正負責寫 code 的模型身分傳下去，記錄在 experiment_log
-    execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class, prompt_level)
+    # [NEW 2026-02-04] Mode 4 會自動保存 Golden Prompts
+    execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class, prompt_level, use_golden_prompt=False, save_golden_prompt=True)
 
-def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class, prompt_level):
+def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class, prompt_level, use_golden_prompt=False, save_golden_prompt=False):
     print("="*50)
     print(f"💻 [Step 2] 啟動工程師批次實作 ({current_model})")
     print(f"   🧬 Experiment Config: Ablation={ablation_id} | Size={model_size_class} | Prompt={prompt_level}")
+    if use_golden_prompt:
+        print(f"   📌 使用固定 Golden Prompt（實驗模式 2）")
+    if save_golden_prompt:
+        print(f"   💾 自動保存 Golden Prompts（實驗模式 4）")
     print("="*50)
     
     success_count = 0
@@ -235,7 +240,9 @@ def execute_coder_phase(skill_ids, current_model, ablation_id, model_size_class,
                 queue=None, 
                 ablation_id=ablation_id, 
                 model_size_class=model_size_class,
-                prompt_level=prompt_level
+                prompt_level=prompt_level,
+                use_golden_prompt=use_golden_prompt,  # [NEW 2026-02-04] 傳遞參數
+                save_golden_prompt=save_golden_prompt  # [NEW 2026-02-04] 模式 4 保存 Golden Prompt
             )
 
             if is_ok:
@@ -411,6 +418,7 @@ if __name__ == "__main__":
         list_to_process = []
         run_full_pipeline = False
         skip_architect = False  # [NEW] 控制是否跳過 Architect 階段
+        use_golden_prompt = False  # [NEW 2026-02-04] 控制是否使用 Golden Prompt（實驗模式 2）
         
         # 判斷處理清單
         if mode == '1':
@@ -418,6 +426,10 @@ if __name__ == "__main__":
         elif mode == '2':
             list_to_process = sorted(list(target_skill_ids)) # 強制範圍內全跑
             skip_architect = True  # [NEW] mode 2 跳過 Architect
+            use_golden_prompt = True  # [NEW 2026-02-04] 使用固定的 Golden Prompt
+            print("\n📌 [實驗模式 2] 將使用固定的 Golden Prompts（不再動態生成）")
+            print(f"   📄 Ab1 讀取: experiments/golden_prompts/temp/{{skill_id}}_Ab1.txt")
+            print(f"   📄 Ab2/Ab3 共用: experiments/golden_prompts/temp/{{skill_id}}_Ab2.txt")
         elif mode == '3':
             list_to_process = sorted(list(target_skill_ids.intersection(to_create))) # 範圍內且缺失
         elif mode == '4':
@@ -503,7 +515,9 @@ if __name__ == "__main__":
                                 current_model,
                                 ablation_id,
                                 model_size_class,
-                                prompt_level
+                                prompt_level,
+                                use_golden_prompt=False,
+                                save_golden_prompt=False
                             )
                     
                     print(f"✅ AB{ablation_id} 執行完成\n")
@@ -569,5 +583,7 @@ if __name__ == "__main__":
                     current_model, 
                     ablation_id, 
                     model_size_class, 
-                    prompt_level
+                    prompt_level,
+                    use_golden_prompt=use_golden_prompt,  # [NEW 2026-02-04] Mode 2 使用 Golden Prompt
+                    save_golden_prompt=False  # [NEW 2026-02-04] Mode 1/2/3 不保存
                 )

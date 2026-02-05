@@ -1,9 +1,9 @@
 # ==============================================================================
 # ID: gh_ApplicationsOfDerivatives
-# Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
+# Model: gemini-2.5-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 20.11s | Tokens: In=5529, Out=642
-# Created At: 2026-02-03 16:03:46
+# Performance: 35.45s | Tokens: In=5306, Out=1462
+# Created At: 2026-02-04 23:23:58
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -547,6 +547,11 @@ def ensure_dir(p):
 
 # ===== 多項式標準函數庫 =====
 
+# 🔴 答案格式：純多項式逗號分隔（例："36x^2+10,72x"）
+#    ✅ 用 _format_polynomial_for_answer() 組答案，再 ','.join()
+#    ❌ 禁止：_deriv_symbol_plain() 只用於題目，不用於答案
+#    ❌ 禁止：換行分隔 '\n'.join()
+
 def _coeffs_to_terms(coeffs):
     '''係數列表 [a_n,...,a_0] → terms [(c,e),...]'''
     degree = len(coeffs) - 1
@@ -659,64 +664,136 @@ def _evaluate_poly(coeffs, x):
 # ---------------------------------------------------------
 
 
+import random
+import math
+
 def generate(level=1, **kwargs):
     while True:
-        # 步驟 1: 生成參數（數學一致性約束）
-        max_degree = random.randint(2, 5)
-        num_terms = random.randint(3, min(5, max_degree + 1))
-        
-        # 步驟 2: 生成係數
-        coeffs = [random.randint(-10, 10) for _ in range(num_terms)]
-        while coeffs[0] == 0:
-            coeffs[0] = random.randint(1, 10)
-        
-        # 步驟 3: 使用 shuffle + slice（安全集合選擇）
-        available_exponents = list(range(max_degree + 1))
-        random.shuffle(available_exponents)
-        selected_exponents = available_exponents[:num_terms]
-        
-        # 步驟 4: 轉換為 terms 格式
-        terms = [(coeffs[i], selected_exponents[i]) for i in range(num_terms)]
-        
-        # 步驟 5: 驗證項數和最高次項係數
-        if len(terms) < 3 or coeffs[0] == 0:
-            continue
-        
-        # 步驟 6: 生成導數階數
-        derivative_orders = random.sample(range(1, min(4, max_degree + 1)), random.randint(1, 2))
-        
-        # 步驟 7: 計算所有請求的導數
-        derivatives = {}
-        current_poly_terms = terms[:]
-        for order in range(1, max(derivative_orders) + 1):
-            deriv_terms = _differentiate_poly(current_poly_terms)
-            if not deriv_terms:
+        try:
+            # 1. 生成原始多項式項
+            max_degree = random.randint(3, 5)
+            num_terms = random.randint(3, 5)
+
+            # 確保 max_degree 包含在指數中，且有 num_terms 個唯一指數
+            chosen_exponents = [max_degree]
+            if num_terms > 1:
+                other_exponents_pool = list(range(max_degree)) # 從 0 到 max_degree-1 選擇
+                random.shuffle(other_exponents_pool)
+                # 確保選取的其他指數數量不超過池的大小
+                num_to_add = min(num_terms - 1, len(other_exponents_pool))
+                chosen_exponents.extend(other_exponents_pool[:num_to_add])
+            
+            # 如果因為 num_terms > max_degree + 1 導致無法生成足夠的唯一指數，則重試
+            if len(set(chosen_exponents)) < num_terms:
                 continue
-            derivatives[order] = deriv_terms
-            current_poly_terms = deriv_terms
-        
-        # 步驟 8: 驗證所有導數結果是否為非零多項式
-        for order in derivative_orders:
-            if not derivatives[order]:
+            chosen_exponents = list(set(chosen_exponents)) # 確保唯一性
+
+            original_polynomial_terms_dict = {}
+            has_coeff_abs_gt_1 = False
+
+            for exp in chosen_exponents:
+                coeff = random.randint(-10, 10)
+                # 確保最高次數項的係數非零
+                if exp == max_degree:
+                    while coeff == 0:
+                        coeff = random.randint(-10, 10)
+                
+                # 檢查是否有係數絕對值大於 1
+                if abs(coeff) > 1:
+                    has_coeff_abs_gt_1 = True
+                
+                original_polynomial_terms_dict[exp] = coeff
+            
+            # 將字典轉換為列表，並移除係數為 0 的項
+            original_polynomial_terms = [(c, e) for e, c in original_polynomial_terms_dict.items() if c != 0]
+            
+            # 驗證原始多項式是否符合所有複雜度要求
+            if len(original_polynomial_terms) < 3: # 至少三個非零項
                 continue
-        
-        break
+            
+            actual_max_degree = max([e for c, e in original_polynomial_terms], default=0)
+            if actual_max_degree < 3: # 最高次數至少為 3
+                continue
+            
+            if not has_coeff_abs_gt_1: # 至少有一個係數絕對值大於 1
+                continue
+
+            # 2. 生成請求的導數階數
+            possible_deriv_orders = [1, 2, 3]
+            random.shuffle(possible_deriv_orders)
+            
+            num_deriv_requests = random.randint(2, 3)
+            # 確保選取的導數階數不超過實際最高次數
+            valid_orders = [o for o in possible_deriv_orders if o <= actual_max_degree]
+            
+            if len(valid_orders) < num_deriv_requests: # 如果有效階數不夠，則重試
+                continue
+            
+            derivative_orders_to_request = sorted(valid_orders[:num_deriv_requests])
+
+            # 3. 計算每個請求階數的導數
+            all_calculated_derivs = {}
+            current_poly_terms = original_polynomial_terms
+            
+            max_requested_order = max(derivative_orders_to_request)
+
+            for order in range(1, max_requested_order + 1):
+                current_poly_terms = _differentiate_poly(current_poly_terms, order=1)
+                all_calculated_derivs[order] = current_poly_terms
+
+            # 4. 驗證結果並收集最終答案
+            final_deriv_results = {}
+            any_non_zero_deriv = False
+            
+            for order in derivative_orders_to_request:
+                deriv_terms = all_calculated_derivs[order]
+                
+                # 檢查係數絕對值是否不超過 100
+                coeff_too_large = False
+                for c, _ in deriv_terms:
+                    if abs(c) > 100:
+                        coeff_too_large = True
+                        break
+                if coeff_too_large:
+                    raise ValueError("Coefficient exceeds 100 in derivative, retry generation.")
+                
+                final_deriv_results[order] = deriv_terms
+                
+                # 檢查是否至少有一個導數結果不是零多項式
+                if any(c != 0 for c, _ in deriv_terms):
+                    any_non_zero_deriv = True
+            
+            if not any_non_zero_deriv:
+                continue # 如果所有請求的導數都為零，則重試
+
+            # 所有檢查通過，跳出迴圈
+            break
+
+        except ValueError:
+            continue # 如果中間係數過大，則重試
+
+    # --- 格式化題目和答案 ---
     
-    # 步驟 9: 組裝題目（手動加 $，中文與 $ 分離）
-    poly_latex = _poly_to_latex(terms)
-    symbols = ' 與 '.join(f"${_deriv_symbol_latex(n)}$" for n in derivative_orders)
-    q = f"已知 $f(x) = {poly_latex}$，求 {symbols}。"
+    # 題目文本
+    original_poly_latex = _poly_to_latex(original_polynomial_terms)
+    deriv_symbols_latex_list = [f"${_deriv_symbol_latex(order)}$" for order in derivative_orders_to_request]
+    deriv_symbols_joined = " 與 ".join(deriv_symbols_latex_list)
     
-    # 步驟 10: 組裝答案（純多項式，逗號分隔，無 LaTeX、無函數符號）
-    ans_list = []
-    for order in derivative_orders:
-        deriv_terms = derivatives[order]
-        ans_list.append(_poly_to_plain(deriv_terms))
-    a = " | ".join(ans_list)
+    question_text = f"已知 $f(x) = {original_poly_latex}$，求 {deriv_symbols_joined}。"
+
+    # 正確答案文本
+    answer_parts = []
+    # 按照請求的導數階數排序，以確保答案順序一致
+    sorted_requested_orders = sorted(derivative_orders_to_request) 
+    for order in sorted_requested_orders:
+        deriv_poly_plain = _format_polynomial_for_answer(final_deriv_results[order])
+        answer_parts.append(deriv_poly_plain)
     
+    correct_answer = ",".join(answer_parts)
+
     return {
-        'question_text': q,
-        'correct_answer': a,
-        'answer': a,
+        'question_text': question_text,
+        'correct_answer': correct_answer,
+        'answer': correct_answer,
         'mode': 1
     }
