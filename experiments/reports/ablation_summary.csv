@@ -1,0 +1,4 @@
+summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,p_value_vs_ab1,notes
+7083755d-bcb0-4129-8a0a-86e5e3e35802,gh_ApplicationsOfDerivatives,1,qwen2.5-coder-14b,5,100,96.81,0.08,96.71,96.91,15.0,15.0,,-
+f95ba04e-c073-4fe3-b31a-bf56fa055875,gh_ApplicationsOfDerivatives,2,qwen2.5-coder-14b,5,100,93.91,0.2,93.66,94.16,15.0,15.0,0.0,Ab2 vs Ab1: p<0.001 (高度顯著)
+1439b756-f924-438b-b19d-5933133ab8c3,gh_ApplicationsOfDerivatives,3,qwen2.5-coder-14b,5,100,93.91,0.21,93.65,94.17,15.0,15.0,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)

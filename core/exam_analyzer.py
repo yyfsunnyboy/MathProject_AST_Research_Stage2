@@ -20,7 +20,13 @@
 
 import os
 import json
-import google.generativeai as genai
+# [Fix] Migrate from deprecated 'google.generativeai' to 'google.genai'
+try:
+    from google import genai
+except ImportError:
+    # Fallback to old package if new one is not installed (though warning suggests it's deprecated)
+    import google.generativeai as genai # Compat
+    print("[WARN] Using deprecated 'google.generativeai'. Please upgrade to 'google-genai'.")
 from flask import current_app
 from core.ai_analyzer import get_model
 from models import db, SkillInfo, SkillCurriculum, ExamAnalysis

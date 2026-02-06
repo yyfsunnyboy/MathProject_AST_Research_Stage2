@@ -1,12 +1,34 @@
 # MCRI V4.2 評估系統進展報告
 
-**最後更新**: 2026-02-02  
-**版本**: V4.2.1 (L3 Logic Fix Edition)  
+**最後更新**: 2026-02-05  
+**版本**: V4.2.2 (Healer Events Tracking Edition)  
 **負責人**: Math AI Research Team
 
 ---
 
-## 🚨 重要更新 (V4.2.1)
+## � 本次更新摘要 (V4.2.2 - 2026-02-05)
+
+### 核心新增: healer_events 表與 ORM 整合
+
+✅ **healer_events 診斷層表** - 記錄每次 Healer 修復事件
+- 9 個欄位（識別層、介入層、證據層、效果層）
+- 支持追蹤每次修復的前後對比與耗時
+- 外鍵關聯到 experiment_runs
+- 2 個查詢索引（run_id, stage）
+
+✅ **HealerEvent ORM 模型** - models.py
+- 完整序列化支持（to_dict()）
+- 關聯映射到 ExperimentRun
+
+✅ **文檔同步** - 架構與進展報告
+- 系統架構.md 新增 healer_events 完整定義
+- 進展報告新增實用指南與 SQL 查詢範例
+
+📊 **系統現狀**: 4 層診斷表 + 39 欄位的 experiment_runs + 9 欄位 healer_events
+
+---
+
+## �🚨 重要更新 (V4.2.1)
 
 ### Critical Bug Fix - L3 評估邏輯修正
 
@@ -825,3 +847,164 @@ Ab3        gh_ApplicationsOfDerivatives   89.67    2.34     [87.35, 91.99]
 - **mean_l4_numeric**: 教學友善的關鍵指標（數值難度）
 
 如果 Ab3 的 CI 下界 > Ab1 的 CI 上界，表示提升達到統計顯著性！
+
+---
+
+## 🚀 系統架構更新 (V2.0 - 2026-02-05)
+
+### 資料庫欄位擴展
+
+**版本**: experiment_runs 從 30 欄位擴展至 39 欄位（新增 9 個）  
+**目的**: 支持 Golden Prompt 批量生成、成本效能追蹤、Healer 統計  
+**狀態**: ✅ 已遷移至 instance/kumon_math.db
+
+#### 新增欄位詳解
+
+##### 群組 1: 批次管理 (1 欄位)
+atch_id TEXT - 批次識別符，用於分組查詢相同條件的多個 run
+
+**用途**: 支持 Golden Prompt 批量生成模式
+
+##### 群組 2: Golden Prompt 變因控制 (2 欄位)
+- golden_prompt_path TEXT - Golden Prompt 文件的絕對路徑
+- prompt_hash TEXT - Prompt 內容的 SHA256 哈希值
+
+**用途**: 追蹤 Prompt 版本與質量關係
+
+##### 群組 3: 成本效能指標 (4 欄位)
+- prompt_tokens INTEGER - 提示詞 Token 數
+- completion_tokens INTEGER - 完成 Token 數
+- 	otal_tokens INTEGER - 總 Token 數
+- latency_ms REAL - 端對端延遲（毫秒）
+
+**用途**: 成本效能分析
+
+##### 群組 4: Healer 統計 (2 欄位)
+- healer_applied INTEGER - 0 = 未應用, 1 = 已應用
+- healer_fix_count INTEGER - Healer 總修復次數
+
+**用途**: Healer 效果量化
+
+#### 資料庫遷移日誌
+
+**執行日期**: 2026-02-05  
+**遷移腳本**: temp/migrate_experiment_runs_v2.py  
+**執行結果**: ✅ 全部成功（39 欄位，0 行數據）
+
+**ORM 模型更新**: models.py
+- 新增 9 個 db.Column 定義
+- 更新 to_dict() 方法（包含新欄位）
+- 所有序列化已驗證 ✅
+
+---
+
+#### 系統架構文檔
+
+完整的系統架構已記錄在：
+📄 docs/競賽文件/系統架構.md
+
+包含內容：
+- I. 項目目錄架構（完整樹狀圖）
+- II. 資料庫 Schema（8 個核心表）
+- III. 表格關聯圖（星型架構）
+- IV. 核心模塊相互關係
+- V. 核心技術架構（Ablation / Healer / MCRI）
+- VI. 2+1+15 混合實驗策略
+- VII. 快速啟動指南
+- VIII. 關鍵文件索引
+- IX. 新增欄位詳解（4 群組、9 欄位、用途說明、SQL 範例、科展價值）
+
+
+---
+
+## 🆕 healer_events 表新增 (2026-02-05)
+
+### 表格用途
+
+healer_events 是新的診斷層表，用於記錄每次 Healer 修復事件的詳細信息：
+- **階段追蹤**: 哪個階段的修復（Pre-Process, Regex_Healer, AST_Healer）
+- **模式識別**: 修復的具體類型（fix_infinite_loop, fix_latex_dollar_sign 等）
+- **效果證據**: 修復前後的代碼片段（用於審計）
+- **性能分析**: 每次修復的耗時（毫秒）
+
+### 表結構
+
+`sql
+CREATE TABLE healer_events (
+    event_id VARCHAR(36) PRIMARY KEY,      -- 事件 UUID
+    run_id VARCHAR(36) NOT NULL,           -- FK 關聯到 experiment_runs
+    stage VARCHAR(50) NOT NULL,            -- 修復階段
+    pattern_id VARCHAR(100),               -- 修復模式
+    original_snippet TEXT,                 -- 修改前代碼
+    healed_snippet TEXT,                   -- 修改後代碼
+    is_success BOOLEAN DEFAULT 1,          -- 修復成功否
+    fix_duration_ms INTEGER DEFAULT 0,     -- 耗時（毫秒）
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+索引: idx_healer_run, idx_healer_stage
+外鍵: run_id → experiment_runs(run_id)
+`
+
+### 欄位詳解
+
+| 欄位 | 類型 | 說明 | 例子 |
+|-----|------|------|------|
+| event_id | VARCHAR(36) | 事件識別碼 | '550e8400-e29b-41d4-a716-446655440000' |
+| run_id | VARCHAR(36) | 關聯的 run | 與 experiment_runs.run_id 對應 |
+| stage | VARCHAR(50) | 修復階段 | 'Regex_Healer', 'AST_Healer', 'Pre-Process' |
+| pattern_id | VARCHAR(100) | 修復規則 | 'fix_infinite_loop', 'fix_latex_dollar_sign' |
+| original_snippet | TEXT | 原始代碼片段 | 'while True:\n    x = 1' （前 500 字） |
+| healed_snippet | TEXT | 修復後代碼 | 'for i in range(100):\n    x = 1' |
+| is_success | BOOLEAN | 是否成功應用 | 1 or 0 |
+| fix_duration_ms | INTEGER | 修復耗時 | 23 (毫秒) |
+| timestamp | DATETIME | 記錄時間 | '2026-02-05 10:30:45.123' |
+
+### 關鍵 SQL 查詢
+
+**查詢某個 run 的所有修復事件**:
+`sql
+SELECT stage, pattern_id, COUNT(*) as count, SUM(fix_duration_ms) as total_ms
+FROM healer_events
+WHERE run_id='exp123'
+GROUP BY stage, pattern_id
+ORDER BY total_ms DESC;
+`
+
+**找出最常見的修復模式**:
+`sql
+SELECT pattern_id, COUNT(*) as frequency, AVG(fix_duration_ms) as avg_ms
+FROM healer_events
+WHERE is_success=1
+GROUP BY pattern_id
+ORDER BY frequency DESC
+LIMIT 10;
+`
+
+**計算 Healer 對單個 run 的總開銷**:
+`sql
+SELECT 
+    run_id,
+    COUNT(*) as event_count,
+    SUM(fix_duration_ms) as total_healer_ms,
+    AVG(fix_duration_ms) as avg_event_ms
+FROM healer_events
+GROUP BY run_id
+ORDER BY total_healer_ms DESC;
+`
+
+### 科展價值
+
+1. **定量證明**: 用具體數字證明 Healer 確實在工作（不是「掛名」）
+2. **效能分析**: 計算 Healer 帶來的時間開銷 vs 品質提升
+3. **優化基礎**: 識別哪些修復最耗時，進行針對優化
+4. **審計追蹤**: 論文可以說「我們的修復過程是完全可追蹤的」
+
+### 遷移狀態
+
+- ✅ 表已建立 (9 欄位)
+- ✅ 外鍵已設定 (run_id → experiment_runs)
+- ✅ 索引已建立 (idx_healer_run, idx_healer_stage)
+- ✅ ORM 模型已定義 (models.py: HealerEvent 類)
+- ⏳ 待填充: 運行實驗時自動記錄修復事件
+

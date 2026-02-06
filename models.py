@@ -916,6 +916,23 @@ class ExperimentRun(db.Model):
     source_code_path = db.Column(db.String(255), nullable=False)
     notes = db.Column(db.Text)
     
+    # ========== 新增：批次管理 (Batch Management) ==========
+    batch_id = db.Column(db.String(50))  # 批次 ID (e.g., 'exp_20260205_001')
+    
+    # ========== 新增：Golden Prompt 變因控制 (Control Variables) ==========
+    golden_prompt_path = db.Column(db.String(255))  # Golden Prompt 文件路徑
+    prompt_hash = db.Column(db.String(64))  # Prompt SHA256 雜湊值（驗證一致性）
+    
+    # ========== 新增：成本與效能指標 (Cost & Performance) ==========
+    prompt_tokens = db.Column(db.Integer)           # Prompt Token 數
+    completion_tokens = db.Column(db.Integer)       # 完成 Token 數
+    total_tokens = db.Column(db.Integer)            # 總 Token 數
+    latency_ms = db.Column(db.Integer)              # 延遲（毫秒）
+    
+    # ========== 新增：Healer 介入統計 (Healer Metrics) ==========
+    healer_applied = db.Column(db.Boolean, default=False)  # 是否啟用 Healer (0=Ab2, 1=Ab3)
+    healer_fix_count = db.Column(db.Integer, default=0)    # Healer 修復次數
+    
     # 關聯 (一對多：一個 run 有多個 evaluation_items)
     evaluation_items = db.relationship('EvaluationItem', backref='run', lazy=True, cascade='all, delete-orphan')
     
@@ -954,7 +971,17 @@ class ExperimentRun(db.Model):
             'avg_l4_2_visual': self.avg_l4_2_visual,
             'avg_mcri_total': self.avg_mcri_total,
             'source_code_path': self.source_code_path,
-            'notes': self.notes
+            'notes': self.notes,
+            # 新增欄位
+            'batch_id': self.batch_id,
+            'golden_prompt_path': self.golden_prompt_path,
+            'prompt_hash': self.prompt_hash,
+            'prompt_tokens': self.prompt_tokens,
+            'completion_tokens': self.completion_tokens,
+            'total_tokens': self.total_tokens,
+            'latency_ms': self.latency_ms,
+            'healer_applied': self.healer_applied,
+            'healer_fix_count': self.healer_fix_count
         }
 
 
@@ -1023,4 +1050,70 @@ class EvaluationItem(db.Model):
             'score_l4_2_visual': self.score_l4_2_visual,
             'student_input_test': self.student_input_test,
             'student_input_result': self.student_input_result
+        }
+
+
+# ==============================================================================
+# 7. HealerEvent 類 (Healer 修復事件追蹤表)
+# ==============================================================================
+
+class HealerEvent(db.Model):
+    """
+    Healer 修復事件表
+    
+    記錄每次 Healer 修復的詳細信息，包括：
+    - 修復階段 (stage): Pre-Process, Regex_Healer, AST_Healer 等
+    - 修復模式 (pattern_id): 具體的修復類型
+    - 修復前後的代碼片段 (Evidence)
+    - 修復耗時 (效能分析)
+    """
+    
+    __tablename__ = 'healer_events'
+    
+    # ========== 識別欄位 ==========
+    event_id = db.Column(db.String(36), primary_key=True)              # UUID
+    run_id = db.Column(db.String(36), db.ForeignKey('experiment_runs.run_id'), nullable=False)
+    
+    # ========== 介入階段與類型 ==========
+    stage = db.Column(db.String(50), nullable=False)                   # 例如 'Pre-Process', 'Regex_Healer', 'AST_Healer'
+    pattern_id = db.Column(db.String(100))                             # 例如 'fix_infinite_loop', 'fix_latex_dollar_sign'
+    
+    # ========== 手術前後對比 (Evidence) ==========
+    original_snippet = db.Column(db.Text)                              # 修改前片段 (限制 500 字)
+    healed_snippet = db.Column(db.Text)                                # 修改後片段
+    
+    # ========== 結果與追蹤 ==========
+    is_success = db.Column(db.Boolean, default=True)                   # 修復是否成功應用
+    fix_duration_ms = db.Column(db.Integer, default=0)                 # 修復耗時（毫秒）
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)        # 記錄時間戳
+    
+    # ========== 關聯 ==========
+    experiment_run = db.relationship('ExperimentRun', backref=db.backref('healer_events', lazy=True, cascade='all, delete-orphan'))
+    
+    def __init__(self, event_id, run_id, stage, pattern_id=None, original_snippet=None, 
+                 healed_snippet=None, is_success=True, fix_duration_ms=0):
+        self.event_id = event_id
+        self.run_id = run_id
+        self.stage = stage
+        self.pattern_id = pattern_id
+        self.original_snippet = original_snippet
+        self.healed_snippet = healed_snippet
+        self.is_success = is_success
+        self.fix_duration_ms = fix_duration_ms
+    
+    def __repr__(self):
+        return f"<HealerEvent Event={self.event_id[:8]}... Run={self.run_id[:8]}... Stage={self.stage}>"
+    
+    def to_dict(self):
+        """轉換為字典（用於 JSON 序列化）"""
+        return {
+            'event_id': self.event_id,
+            'run_id': self.run_id,
+            'stage': self.stage,
+            'pattern_id': self.pattern_id,
+            'original_snippet': self.original_snippet,
+            'healed_snippet': self.healed_snippet,
+            'is_success': self.is_success,
+            'fix_duration_ms': self.fix_duration_ms,
+            'timestamp': self.timestamp.isoformat() if self.timestamp else None
         }

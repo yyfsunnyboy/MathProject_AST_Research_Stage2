@@ -164,6 +164,7 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
 1. **基礎工具**
    - `fmt_num(n) -> str`: 格式化數字
    - `to_latex(n) -> str`: 轉 LaTeX 格式
+   - `clean_latex_output(latex_str) -> str`: LaTeX 格式清洗和包裹 (自動添加 $)
    
 2. **多項式專用工具**
    - `_coeffs_to_terms(coeffs: list) -> list[tuple]`: 係數轉 terms

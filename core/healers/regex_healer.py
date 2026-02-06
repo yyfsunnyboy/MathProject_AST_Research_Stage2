@@ -146,6 +146,88 @@ class RegexHealer:
             'latex_format', '_format_term_with_parentheses'
         ]
     
+    def _fix_lazy_latex_formatting(self, code_str: str) -> tuple:
+        """
+        [Healer LaTeX Formatter V1.0] Fix improper LaTeX formatting patterns
+        
+        Detects and fixes patterns like:
+        WRONG:
+            q = f'計算 {math_expr_str} 的值。'
+            def clean_latex_output(s):
+                return s.replace('[', '$[').replace(']', ']$')
+            q = clean_latex_output(q)
+        
+        CORRECT:
+            math_expr_str = f'({fmt_num(n1)} {op_latex[op1]} {fmt_num(n2)}) ...'
+            q = f'計算 ${math_expr_str}$ 的值。'
+        
+        Fixes:
+        1. Remove improper clean_latex_output() function definitions
+        2. Replace separated bracket LaTeX with proper $...$ wrapping
+        3. Fix question text LaTeX formatting for proper rendering
+        
+        Returns:
+            tuple: (fixed code, fix count)
+        """
+        fixes = 0
+        result = code_str
+        
+        # Pattern 1: Remove problematic clean_latex_output function definition
+        # 偵測: def clean_latex_output(s): return s.replace('[', '$[').replace(']', ']$')
+        # 使用更寬鬆的模式來避免複雜的字符類
+        pattern_remove_func = r'def\s+clean_latex_output\s*\([^)]*\)\s*:\s*\n\s+return\s+s\.replace\([^)]+\)\.replace\([^)]+\)'
+        matches = list(re.finditer(pattern_remove_func, result, re.MULTILINE | re.DOTALL))
+        if matches:
+            print(f"🔧 [LaTeX Formatter] 偵測到不正確的 clean_latex_output 函數，正在移除...")
+            for _ in matches:
+                result = re.sub(pattern_remove_func, 
+                              '# [Auto-Removed] Incorrect clean_latex_output definition',
+                              result, count=1, flags=re.MULTILINE | re.DOTALL)
+                fixes += 1
+        
+        # Pattern 2: Remove calls to clean_latex_output() that split brackets
+        # 偵測: q = clean_latex_output(q)
+        pattern_remove_call = r'\n\s*q\s*=\s*clean_latex_output\s*\(\s*q\s*\)\s*(?=\n|$)'
+        matches2 = list(re.finditer(pattern_remove_call, result))
+        if matches2:
+            print(f"🔧 [LaTeX Formatter] 偵測到 clean_latex_output(q) 調用，正在移除...")
+            result = re.sub(pattern_remove_call, '\n', result)
+            fixes += len(matches2)
+        
+        # Pattern 3: Fix math_expr_str with brackets to use parentheses
+        # 偵測: math_expr_str = f'[ ... ]' 應改為 math_expr_str = f'( ... )'
+        if re.search(r"math_expr_str\s*=\s*f['\"].*?\[", result):
+            print(f"🔧 [LaTeX Formatter] 偵測到 math_expr_str 中的方括號，轉換為圓括號...")
+            
+            # 替換 [ 為 (
+            result = re.sub(
+                r"(math_expr_str\s*=\s*f['\"])(\[)",
+                r"\1(",
+                result
+            )
+            # 替換對應的 ] 為 )
+            result = re.sub(
+                r"(\])(\s*['\"])",
+                r")\2",
+                result,
+                count=1
+            )
+            fixes += 1
+        
+        # Pattern 4: Ensure question text has proper LaTeX wrapping
+        # 如果 q = f'計算 {math_expr_str} 的值。' 但沒有 $...$，則添加
+        if re.search(r"q\s*=\s*f['\"]計算\s+{math_expr_str}\s+的值['\"]", result):
+            if not re.search(r"\$\{math_expr_str\}\$", result):
+                print(f"🔧 [LaTeX Formatter] 添加 math_expr_str 的 LaTeX 包裹...")
+                result = re.sub(
+                    r"(q\s*=\s*f['\"])計算\s+({math_expr_str})\s+的值(['\"])",
+                    r"\1計算 $\2$ 的值\3",
+                    result
+                )
+                fixes += 1
+        
+        return result, fixes
+    
     def _fix_answer_format(self, code_str: str) -> tuple:
         """
         [Healer Level 2 Defense] Fix answer format
@@ -865,6 +947,12 @@ class RegexHealer:
                             func_end = func_start + len(func_body)
                             refined_code = refined_code[:func_end] + default_return + refined_code[func_end:]
                             fixes += 1
+        
+        # -----------------------------------------------------------
+        # 【新增】LaTeX 格式修復（防止不正確的括號分離）
+        # -----------------------------------------------------------
+        refined_code, latex_format_fixes = self._fix_lazy_latex_formatting(refined_code)
+        fixes += latex_format_fixes
         
         # -----------------------------------------------------------
         # 【新增】答案格式修復（第 2 層防線）

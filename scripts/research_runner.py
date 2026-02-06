@@ -272,15 +272,28 @@ if __name__ == "__main__":
     if not skills:
         print("❌ skills/ 目錄內沒有可測試的檔案。")
         sys.exit(0)
-        
-    for i, name in enumerate(skills, 1):
-        print(f"   [{i}] {name}")
-        
-    try:
-        choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
-        if 1 <= choice <= len(skills):
-            run_research_samples(skills[choice-1])
-        else:
-            print("❌ 超出範圍。")
-    except ValueError:
-        print("❌ 請輸入數字。")
+    
+    while True:  # 主循環：允許多次執行
+        print("\n" + "="*60)
+        for i, name in enumerate(skills, 1):
+            print(f"   [{i}] {name}")
+            
+        try:
+            choice = int(input(f"\n👉 請選擇要採樣的技能 (1-{len(skills)}): "))
+            if 1 <= choice <= len(skills):
+                run_research_samples(skills[choice-1])
+                
+                # 詢問是否繼續
+                while True:
+                    continue_choice = input("\n🔄 是否繼續採樣其他技能? (y/n): ").strip().lower()
+                    if continue_choice in ['y', 'yes']:
+                        break  # 回到主循環
+                    elif continue_choice in ['n', 'no']:
+                        print("\n✅ 感謝使用！再見。")
+                        sys.exit(0)
+                    else:
+                        print("❌ 請輸入 'y' 或 'n'")
+            else:
+                print("❌ 超出範圍。")
+        except ValueError:
+            print("❌ 請輸入數字。")

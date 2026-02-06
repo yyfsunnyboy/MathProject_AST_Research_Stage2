@@ -510,6 +510,8 @@ if __name__ == "__main__":
                         else:
                             # 跳過 Architect 階段，只執行 Coder 階段
                             # 直接使用資料庫中最新的該 skill_id 的 Prompt
+                            # [FIX 2026-02-06] 模式 [0] 中，Ab2 也要保存 Golden Prompt（Ab3 與 Ab2 共用）
+                            should_save_golden = (ablation_id == 2)  # Ab2/Ab3 共用一個文件
                             execute_coder_phase(
                                 [skill_id],
                                 current_model,
@@ -517,7 +519,7 @@ if __name__ == "__main__":
                                 model_size_class,
                                 prompt_level,
                                 use_golden_prompt=False,
-                                save_golden_prompt=False
+                                save_golden_prompt=should_save_golden
                             )
                     
                     print(f"✅ AB{ablation_id} 執行完成\n")

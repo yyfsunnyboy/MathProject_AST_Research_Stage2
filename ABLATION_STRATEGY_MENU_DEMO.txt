@@ -1,0 +1,171 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# Demo Script: New Ablation Strategy Selection Menu
+# ==============================================================================
+
+print("""
+================================================================================
+🧪 Math AI 科展實驗執行腳本 (Experiment Runner) - V1.2.0
+================================================================================
+
+[請選擇要執行的技能]
+[0] 全部執行 (All Skills)
+[1] gh_ApplicationsOfDerivatives
+[2] jh_BasicAlgebra
+... (更多技能)
+
+👉 請輸入編號: (假設選擇 [1])
+✅ 已選擇: 1 個技能
+
+======================================
+🤖 [模型選擇] 請選擇要執行的模型範圍
+======================================
+   [0] ALL (全部 3 個模型)
+   [1] Cloud Gemini 2.5 Flash
+   [2] Local Qwen2.5-Coder 14B
+   [3] Local Qwen2.5-Coder 7B
+
+👉 請輸入選項 (0-3): (假設選擇 [0])
+✅ 已選擇: 3 個模型
+
+""")
+
+print("=" * 70)
+print("📋 [策略選擇] 請選擇要執行的 Ablation 策略   <<<< [NEW] 新增菜單!")
+print("=" * 70)
+print("""   [0] ALL (全部 3 個策略)
+   [1] Ab1 (Bare - 原生能力測試)
+   [2] Ab2 (Engineered - Prompt 工程貢獻)
+   [3] Ab3 (Full-Healing - 完整系統修復)
+
+👉 請輸入選項 (0-3): (假設選擇 [0])
+✅ 已選擇: 3 個策略
+
+""")
+
+print("=" * 70)
+print("📊 實驗配置統計:")
+print("=" * 70)
+print("""
+已選擇: 1 個技能
+  - gh_ApplicationsOfDerivatives
+已選擇: 3 個模型
+  - Cloud Gemini 2.5 Flash
+  - Local Qwen2.5-Coder 14B
+  - Local Qwen2.5-Coder 7B
+已選擇: 3 個策略
+  - Ab1
+  - Ab2
+  - Ab3
+
+📊 實驗配置統計:
+  技能數: 1
+  模型數: 3
+  策略數: 3
+  每組樣本數: 5
+  📈 總執行次數: 45  (1 技能 × 3 模型 × 3 策略 × 5 樣本)
+
+👉 確定要開始實驗嗎? (y/n): y
+
+""")
+
+print("=" * 70)
+print("🔬 [實驗執行] 開始巢狀迴圈... Batch: 20260205_123456")
+print("=" * 70)
+print("""
+巢狀迴圈結構:
+  for skill in [gh_ApplicationsOfDerivatives]:
+    for model in [gemini-2.5-flash, qwen2.5-coder-14b, qwen2.5-coder-7b]:
+      for strategy in [Ab1, Ab2, Ab3]:  <<<< 現在只執行使用者選擇的策略!
+        for sample in [1, 2, 3, 4, 5]:
+          - 呼叫 LLM
+          - 執行 Basic Cleanup
+          - 執行 Healer (如果是 Ab3)
+          - 注入 Scaffold (如果是 Ab2/Ab3)
+          - 保存檔案
+          - 記錄到資料庫
+
+""")
+
+print("=" * 70)
+print("✅ 特性演示")
+print("=" * 70)
+print("""
+1️⃣  選擇 [0] ALL - 執行全部 3 個策略
+   - 執行順序: Ab1 → Ab2 → Ab3
+   - 總計: 1 × 3 × 3 × 5 = 45 次執行
+
+2️⃣  選擇 [1] Ab1 - 僅執行 Ab1 (測試模型原生能力)
+   - 執行順序: Ab1 (無 Scaffold, 無 Healer)
+   - 總計: 1 × 3 × 1 × 5 = 15 次執行
+   - 文件: 輕量級 (僅標頭 + AI 生成代碼)
+
+3️⃣  選擇 [2] Ab2 - 僅執行 Ab2 (測試工具庫和 Prompt 工程)
+   - 執行順序: Ab2 (有 Scaffold, 無 Healer)
+   - 總計: 1 × 3 × 1 × 5 = 15 次執行
+   - 文件: 完整 (標頭 + Scaffold + AI 生成代碼)
+
+4️⃣  選擇 [3] Ab3 - 僅執行 Ab3 (測試完整系統)
+   - 執行順序: Ab3 (有 Scaffold, 有 Healer + Regex/AST)
+   - 總計: 1 × 3 × 1 × 5 = 15 次執行
+   - 文件: 完整 (標頭 + Scaffold + 修復後代碼)
+
+""")
+
+print("=" * 70)
+print("🎯 使用場景")
+print("=" * 70)
+print("""
+場景 A: 快速測試單一策略
+  選擇 [1] Ab1 → 快速生成輕量級代碼
+  執行時間: 快 ⚡
+
+場景 B: 比較 Ab2 vs Ab3 的差異
+  1. 先執行 [2] Ab2
+  2. 再執行 [3] Ab3
+  對比兩者的 Healer 修復效果
+
+場景 C: 完整科展實驗
+  選擇 [0] ALL → 執行全部策略
+  得到完整的 Ablation Study 數據
+  執行時間: 慢 (但科學嚴謹)
+
+""")
+
+print("=" * 70)
+print("📁 生成文件示例")
+print("=" * 70)
+print("""
+如果選擇 [0] ALL，結果目錄結構:
+
+experiments/results/gh_ApplicationsOfDerivatives/
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run01.py  ✓ 輕量級
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run02.py  ✓ 輕量級
+├── ...
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab2_run01.py  ✓ 含 Scaffold
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab2_run02.py  ✓ 含 Scaffold
+├── ...
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab3_run01.py  ✓ 含 Scaffold + 修復
+├── gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab3_run02.py  ✓ 含 Scaffold + 修復
+└── ...
+
+""")
+
+print("=" * 70)
+print("✨ 版本變更")
+print("=" * 70)
+print("""
+V1.1.0 (舊版):
+  菜單流程: 技能 → 模型 → 直接執行全部 3 個策略
+
+V1.2.0 (新版):  ⭐ 你現在看到的!
+  菜單流程: 技能 → 模型 → [NEW] 策略選擇 → 執行選定的策略
+  
+優勢:
+  ✅ 更靈活: 可選擇執行單一或全部策略
+  ✅ 更快速: 快速測試時無需等待全部 3 個策略
+  ✅ 更清楚: 明確顯示已選擇的策略
+  ✅ 更科學: 易於進行 Ablation Study 對比
+
+""")

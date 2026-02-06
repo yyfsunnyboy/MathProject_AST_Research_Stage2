@@ -264,7 +264,13 @@ def draw_diagram():
     機制：使用 Thread-Safe 的 Figure 物件模式，避免多執行緒繪圖衝突
     """
     try:
-        import google.generativeai as genai
+        # [Fix] Migrate from deprecated 'google.generativeai' to 'google.genai'
+        try:
+            from google import genai
+        except ImportError:
+            # Fallback to old package if new one is not installed
+            import google.generativeai as genai
+        
         data = request.get_json()
         question_text = data.get('question_text')
 

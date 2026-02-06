@@ -52,103 +52,87 @@ class Config:
     # ==========================================
     
     # AI 模型調度中心
-    
-    # 預設供應商 (預設用 local 比較省錢)
     DEFAULT_PROVIDER = 'local' 
 
-    # ★ 關鍵修改：角色與模型的對照表
-    # 格式：'角色': {'provider': '供應商', 'model': '模型名稱'}
+    # [實驗專用] 模型參數倉庫 (Coder Presets)
+    # 用途：供 scripts/run_experiment.py 透過 Key 直接讀取並動態切換
+    # 結構：Dictionary { 'safe-name': { config } }
+    CODER_PRESETS = {
+        # 1. Google Gemini (Cloud)
+        'gemini-2.5-flash': {
+            'provider': 'google',
+            'model': 'gemini-2.5-flash',
+            'temperature': 0.1,
+            'max_tokens': 8192,
+            'description': 'Gemini 2.5 Flash (Cloud)'
+        },
+
+        # 2. Qwen 2.5 14B (Local)
+        # Key 使用連字號 (檔案安全)，Value 使用冒號 (Ollama API)
+        'qwen2.5-coder-14b': {
+            'provider': 'local',
+            'model': 'qwen2.5-coder:14b', 
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 16384,
+                'num_gpu': -1,
+                'num_batch': 1024,
+                'num_thread': 8,
+                'num_predict': 2048,
+                'keep_alive': "30m",
+                'top_k': 10,
+                'top_p': 0.9,
+                'repeat_penalty': 1.15,
+            },
+            'description': 'Qwen 2.5 Coder 14B (Local)'
+        },
+
+        # 3. Qwen 2.5 7B (Local)
+        'qwen2.5-coder-7b': {
+            'provider': 'local',
+            'model': 'qwen2.5-coder:7b',
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 16384,
+                'num_gpu': -1,
+                'num_batch': 2048, # 7B 較快，Batch 可開大
+                'num_thread': 8,
+                'num_predict': 2048,
+                'keep_alive': "30m",
+                'top_k': 10,
+                'top_p': 0.9,
+                'repeat_penalty': 1.15,
+            },
+            'description': 'Qwen 2.5 Coder 7B (Local)'
+        }
+    }
+
+    # ★ 系統角色指派
+    # 這是 Web 介面預設使用的設定
+    # 注意：run_experiment.py 執行時，會強制覆蓋這裡的 'coder'
     MODEL_ROLES = {
         'architect': {
             'provider': 'google',
             'model': 'gemini-2.5-flash', 
-            'temperature': 0.7, # 稍微高一點，讓它能歸納出不同的題型變化
-            'max_tokens': 1500,  # 足夠寫出詳細的設計圖
-        },        
-        # 1. 工程師：專門寫 Code (精準、強迫症)
-        'coder': {
-            # 'provider': 'google',        # <--- 改用 Gemini 擔任工程師
-            # 'model': 'gemini-2.5-flash',
-
-            # 'provider': 'local',  
-            # 'model': 'qwen2.5-coder:14b',             
-            # # --- 核心參數 ---
-            # 'temperature': 0.1,   # 極低溫，確保邏輯鎖死
-            # 'max_tokens': 2048,   # ✅ 優化: 1024 → 2048 (避免複雜代碼被截斷)
-            # # --- Ollama 特定參數 (透過 extra_body 傳遞) ---
-            # # 這是 OpenAI SDK 傳遞給 Ollama 的標準方式
-            # 'extra_body': {
-            #     'num_ctx': 8192,       # ✅ 優化: 4096 → 8192 (支持更長上下文)
-            #     'num_gpu': -1,         # 強制使用所有 GPU
-            #     'num_thread': 12,      # ✅ 優化: 6 → 12 (32GB RAM 可支持更多執行緒)
-            #     # 'enable_thinking': False # Qwen Coder 通常沒有這個參數，建議移除以免報錯
-            # # ✅ 性能優化參數 (針對 RTX 5060 Ti 16GB)
-            # 'num_batch': 1024,     # ✅ 關鍵優化: 256 → 1024 (GPU 利用率 60% → 95%, 速度 +40-50%)
-            # 'num_predict': 2048,   # ✅ 優化: 1024 → 2048 (同 max_tokens)
-            # 'num_keep': 4,         # 保留最近 4 個 token（加速推理）
-            # 'repeat_penalty': 1.15,  # 避免重複代碼
-            # 'top_k': 10,           # ✅ 優化: 20 → 10 (代碼生成更聚焦)
-            # 'top_p': 0.9,          # ✅ 優化: 0.8 → 0.9 (OpenAI Codex 推薦值)
-            # }
-
-
-            'provider': 'local',
-            'model': 'qwen2.5-coder:7b',
-            
-            # --- 核心參數 ---
-            'temperature': 0.1,    # 保持低溫，確保邏輯穩定
-            'max_tokens': 2048,    # 生成長度限制
-            
-            # --- Ollama 性能榨乾參數 (針對 16GB VRAM) ---
-            'extra_body': {
-                # [Context Window]
-                # 7B 模型很小，16GB VRAM 可以輕鬆開到 32k context 都不會爆
-                # 我們保守開 16k，確保速度最快
-                'num_ctx': 16384,
-
-                # [GPU Acceleration]
-                # -1 代表將所有層 (Layers) 全部丟進 GPU，不讓 CPU 拖慢速度
-                'num_gpu': -1,
-
-                # [Parallel Processing]
-                # 您的 4060 Ti 算力很強，可以同時處理更多 token
-                # 7B 模型下，Batch Size 開到 2048 是安全的
-                'num_batch': 2048,
-                
-                # [CPU Threads]
-                # Ryzen 7500F 是 6核12緒
-                # Ollama 建議設為實體核心數 (6) 或略高，設 8 是個平衡點
-                # 主要是負責數據預處理，不要設滿 12，留給系統一點空間
-                'num_thread': 8,
-
-                # [Prediction]
-                # 預測長度，與 max_tokens 保持一致或略大
-                'num_predict': 2048,
-
-                # [Cache]
-                # 讓模型在 VRAM 裡待久一點 (30分鐘)，避免跑下一題時還要重新載入
-                'keep_alive': "30m",
-                
-                # [Sampling Parameters] (針對 Code Generation 優化)
-                'top_k': 10,       # 降低候選詞數量，讓生成的代碼更精確
-                'top_p': 0.9,      # 稍微嚴格一點的機率過濾
-                'repeat_penalty': 1.15, # 避免迴圈鬼打牆
-            }
+            'temperature': 0.7,
+            'max_tokens': 1500,
         },
         
-        # 2. 助教：專門解釋觀念 (溫柔、話多)
+        # 預設工程師 (先指向 7B)
+        'coder': CODER_PRESETS['qwen2.5-coder-7b'], 
+        
         'tutor': {
             'provider': 'local',
             'model': 'phi3.5'
         },
         
-        # 3. 教授：專門解析課本與圖片 (聰明、視力好)
         'vision_analyzer': {
             'provider': 'gemini', 
             'model': 'gemini-1.5-flash' 
         },
 
-        # 4. 預設值 (Default)
         'default': {
             'provider': 'local',
             'model': 'qwen2.5-coder:7b'
@@ -169,3 +153,13 @@ class Config:
     
     # [V2.5 Data Enhancement] Experiment Batch Tag
     EXPERIMENT_BATCH = 'Run_V2.5_Elite'
+
+    # ==========================================
+    # [NEW] 實驗參數設定 (Experiment Configuration)
+    # ==========================================
+    # 用途：統一管理評分、生成等實驗過程中的超時和穩定性參數
+    # 優點：一次配置，全系統套用；換電腦或模型時只需改這裡，無需改程式碼
+    
+    EXECUTION_TIMEOUT = 10      # 評分時代碼執行的秒數限制 (原 5s -> 建議 10s)
+    OLLAMA_TIMEOUT = 600        # 本地模型推理超時限制 (原 300s -> 建議 600s)
+    STABILITY_REPS = 3          # L1.2 穩定性測試重複次數

@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: evaluate_mcri.py
-# Version: V4.2.2 (L4.2 Math Smell Detection)
-# Last Updated: 2026-02-02
+# Version: V4.4 (L4.3 Quality Control + L5 Complexity Analysis)
+# Last Updated: 2026-02-05
 # Author: Math AI Research Team
 #
 # [Description]:
-#   MCRI V4.2.2 評估系統 - 完整評分腳本（含數學異味檢測）
+#   MCRI V4.4 評估系統 - 完整評分腳本（含質量控制與複雜度分析）
 #   評估三個 Ablation 版本的題目生成品質（Ab1 Bare, Ab2 Engineered, Ab3 Healer）
 #   
 #   [Version History]:
+#   - V4.4: 加入 L4.3 質量控制、L5 複雜度分析（不計分，僅記錄）
+#   - V4.3: 原始 L4.3 數學異味檢測
 #   - V4.2.2: 加入 L4.2 數學異味檢測（+ -, 1x, -1x 等）
 #   - V4.2.1: 修復 L3.1/L3.2 評分邏輯 - check() 返回 dict 而非 bool
 #   - V4.2:   補齊 L2 評估邏輯（之前固定為 20 分）
@@ -20,34 +22,26 @@
 #   與 AST Healer 機制對程式碼品質的影響，支援科展實驗的統計分析需求。
 #
 # [Key Functions]:
-#   1. MCRI_Evaluator: 核心評估器類別，實作 4 大維度 8 項指標
+#   1. MCRI_Evaluator: 核心評估器類別，實作 4 大維度（L1-L4 計分，L5 記錄）
 #   2. create_database: 建立 SQLite 資料庫（3 張表：runs, items, summary）
 #   3. main: 主程式入口，批次評估所有 Ablation 樣本
 #
 # [Evaluation Dimensions] (滿分 100):
 #   - L1 工程基石 (20分): 語法安全 + 執行穩定性
-#   - L2 資料衛生 (20分): 介面契約 + 格式純淨度 [V4.2 已實作真實評估]
+#   - L2 資料衛生 (20分): 介面契約 + 格式純淨度
 #   - L3 評測公平 (30分): 內在一致性 + 外在強健性
-#   - L4 教學有效 (30分): 數值友善度 + 視覺可讀性
+#   - L4 教學有效 (30分): 數值友善度 + 視覺可讀性 + 質量控制 (L4.3)
+#   - L5 複雜度分析 (不計分): 數學複雜度 + 代碼複雜度 (僅記錄)
 #
 # [Database Schema]:
-#   - experiment_runs: 27 欄位 × ~15 筆 (3 ablations × 5 samples)
-#   - evaluation_items: 19 欄位 × ~300 筆 (15 runs × 20 repetitions)
-#   - ablation_summary: 12 欄位 × 3 筆 (統計彙總)
+#   - experiment_runs: 39 欄位 × ~15 筆
+#   - evaluation_items: 24 欄位 × ~300 筆 (新增 complexity_* 欄位)
+#   - ablation_summary: 14 欄位 × 3 筆
 #
 # [Output]:
-#   - SQLite: reports/mcri_evaluation.db
-#   - CSV: reports/csv/{experiment_runs, evaluation_items, ablation_summary}.csv
+#   - SQLite: instance/kumon_math.db
+#   - CSV: experiments/reports/{skill}_*.csv
 #   - Terminal: 彙總統計表格與關鍵洞察
-#
-# [Logic Flow]:
-#   1. 載入技能檔案 (Ab1/Ab2/Ab3.py)
-#   2. 提取 metadata (Performance, Tokens, Fix Status 等 7 個欄位)
-#   3. L1 評估 (語法 + 執行穩定性，執行 3 次)
-#   4. 重複 20 次 generate() 呼叫:
-#      - L2.1 介面契約 + L2.2 格式純淨度 [V4.2 新增]
-#      - L3.1 內在一致性 + L3.2 外在強健性
-#      - L4.1 數值友善度 + L4.2 視覺可讀性
 #   5. 計算統計指標 (mean, std, 95% CI)
 #   6. 雙輸出 (SQLite + CSV)
 #
@@ -64,6 +58,7 @@
 # ==============================================================================
 
 import ast
+import builtins
 import importlib.util
 import os
 import re
@@ -81,23 +76,74 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+# 可選導入: SymPy (用於數學複雜度分析)
+try:
+    import sympy
+    HAS_SYMPY = True
+except ImportError:
+    HAS_SYMPY = False
+import pandas as pd
+from scipy import stats
+import sys
+import os
+
+# 添加项目根目录到路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from config import Config
+
 
 # ========================================
 # 常數定義
 # ========================================
 MCRI_VERSION = "4.2.2"
-DEFAULT_TIMEOUT = 5  # 秒
-DEFAULT_REPETITIONS = 20
+# [NEW] 从 config 读取超时和重复次数配置
+DEFAULT_TIMEOUT = getattr(Config, 'EXECUTION_TIMEOUT', 10)  # 秒
+DEFAULT_REPETITIONS = getattr(Config, 'STABILITY_REPS', 3) if getattr(Config, 'STABILITY_REPS', None) is not None else 20
 ALLOWED_IMPORTS = {'math', 'random', 'fractions', 're', 'ast', 'operator', 'os', 'typing', 'decimal', 'sympy', 'numpy'}
 FORBIDDEN_BUILTINS = {'eval', 'exec'}  # 移除誤判的 compile, __import__
 
 
 # ========================================
-# 超時控制（Windows 相容）
+# 自定義異常
 # ========================================
 class TimeoutError(Exception):
     """超時異常"""
     pass
+
+class ForbiddenInputError(Exception):
+    """禁止互動輸入異常 - 當程式碼包含 input() 時拋出"""
+    pass
+
+
+# ========================================
+# 安全執行上下文 (Safe Execution Context)
+# ========================================
+def forbidden_input(*args, **kwargs):
+    """被禁止的 input() 實現 - 自動評分不允許互動輸入"""
+    raise ForbiddenInputError(
+        "❌ 嚴重違規：生成的程式碼包含 input() 互動函數，不符合自動評估要求"
+    )
+
+
+@contextmanager
+def safe_execution_context():
+    """
+    安全執行上下文 - 臨時替換 builtins.input 和 builtins.print
+    確保被評測的程式碼無法進行互動式輸入，且輸出被靜音
+    """
+    original_input = builtins.input
+    original_print = builtins.print
+    
+    # 替換為禁止函數和靜音函數
+    builtins.input = forbidden_input
+    builtins.print = lambda *args, **kwargs: None  # 靜音模式
+    
+    try:
+        yield
+    finally:
+        # 確保無論成功或失敗都還原
+        builtins.input = original_input
+        builtins.print = original_print
 
 
 @contextmanager
@@ -153,9 +199,24 @@ class MCRI_Evaluator:
         self.version = MCRI_VERSION
         
         # 從檔名提取技能名稱
-        # gh_ApplicationsOfDerivatives_14b_Ab1.py → gh_ApplicationsOfDerivatives_14b
+        # 檔名格式: gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run01.py
+        # 需要提取的是：gh_ApplicationsOfDerivatives (技能部分，在第一個模型名稱之前)
         filename = self.skill_path.stem
-        self.skill_name = '_'.join(filename.split('_')[:-1]) if '_Ab' in filename else filename
+        
+        # 方法：找到 _Ab{1,2,3} 的位置，然後回溯到找到模型名稱
+        # 先移除 _run{idx} 部分
+        if '_run' in filename:
+            filename = filename.rsplit('_run', 1)[0]  # gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1
+        
+        # 再移除 _Ab{n} 部分
+        if '_Ab' in filename:
+            filename = filename.rsplit('_Ab', 1)[0]  # gh_ApplicationsOfDerivatives_qwen2.5-coder-14b
+        
+        # 最後移除模型名稱部分 (最後一個 _ 之後)
+        if '_' in filename:
+            filename = filename.rsplit('_', 1)[0]  # gh_ApplicationsOfDerivatives
+        
+        self.skill_name = filename
         
         self.module = None
         self.generate_func = None
@@ -173,7 +234,7 @@ class MCRI_Evaluator:
             # 1. 提取檔案 metadata
             self.metadata = self._extract_metadata()
             
-            # 2. 載入模組
+            # 2. 載入模組（使用安全執行上下文防止全局代碼中的 input() 卡住）
             spec = importlib.util.spec_from_file_location(
                 f"skill_{self.ablation_id}", 
                 str(self.skill_path)
@@ -182,15 +243,23 @@ class MCRI_Evaluator:
                 return False
             
             self.module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(self.module)
+            
+            # 在安全上下文中載入模組，防止全局代碼中的 input() 導致卡住
+            try:
+                with safe_execution_context():
+                    spec.loader.exec_module(self.module)
+            except ForbiddenInputError:
+                # 全局代碼包含 input()，但我們仍允許模組載入成功
+                # （只要函數本身存在即可，評估時會再次檢查）
+                pass
             
             # 3. 檢查必要函數
             if not hasattr(self.module, 'generate'):
-                print(f"❌ {self.skill_path.name} 缺少 generate() 函數")
+                print(f"[ERROR] {self.skill_path.name} 缺少 generate() 函數")
                 return False
             
             if not hasattr(self.module, 'check'):
-                print(f"⚠️  {self.skill_path.name} 缺少 check() 函數（L3 將失分）")
+                print(f"[WARN] {self.skill_path.name} 缺少 check() 函數（L3 將失分）")
                 self.check_func = None
             else:
                 self.check_func = self.module.check
@@ -199,7 +268,7 @@ class MCRI_Evaluator:
             return True
             
         except Exception as e:
-            print(f"❌ 載入失敗 {self.skill_path.name}: {e}")
+            print(f"[ERROR] 載入失敗 {self.skill_path.name}: {e}")
             return False
     
     def _extract_metadata(self) -> Dict[str, str]:
@@ -352,6 +421,7 @@ class MCRI_Evaluator:
         L1.2 執行穩定性 (10分)
         - 在 5 秒內成功執行 3 次
         - 無 crash、timeout
+        - [FIX] 強制使用 safe_execution_context 攔截 input()
         
         Returns:
             (score, notes, exec_times)
@@ -360,16 +430,27 @@ class MCRI_Evaluator:
         notes = []
         exec_times = []
         success_count = 0
+        forbidden_input_detected = False
         
         for i in range(repetitions):
             try:
                 start_time = time.time()
                 with time_limit(DEFAULT_TIMEOUT):
-                    result = self.generate_func()
+                    # [FIX] 這裡必須加上安全上下文，否則 input() 會真的執行而卡住
+                    with safe_execution_context():
+                        result = self.generate_func()
                 exec_time = time.time() - start_time
                 
                 exec_times.append(exec_time)
                 success_count += 1
+                
+            except ForbiddenInputError as e:
+                # 程式碼包含 input()，嚴重違規
+                forbidden_input_detected = True
+                notes.append(f"Rep{i+1} 違規: 包含 input()")
+                exec_times.append(0.0)
+                # 一旦發現違規，後續重複測試也可以跳過 (可選)
+                break
                 
             except TimeoutError:
                 notes.append(f"Rep{i+1} 超時")
@@ -378,13 +459,20 @@ class MCRI_Evaluator:
                 notes.append(f"Rep{i+1} 失敗: {type(e).__name__}")
                 exec_times.append(0.0)
         
-        # 評分：每成功 1 次得 3.33 分
-        score = (success_count / repetitions) * 10.0
-        
-        if success_count == repetitions:
-            notes.append(f"全部成功 (平均 {np.mean(exec_times):.2f}s)")
+        # 如果檢測到 input()，L1 直接給 0 分（嚴重違規）
+        if forbidden_input_detected:
+            score = 0.0
+            # 確保錯誤訊息排在第一位
+            if "❌ 嚴重違規：包含 input() 互動函數" not in notes:
+                notes.insert(0, "❌ 嚴重違規：包含 input() 互動函數")
         else:
-            notes.append(f"成功 {success_count}/{repetitions} 次")
+            # 評分：每成功 1 次得 3.33 分
+            score = (success_count / repetitions) * 10.0
+            
+            if success_count == repetitions:
+                notes.append(f"全部成功 (平均 {np.mean(exec_times):.2f}s)")
+            else:
+                notes.append(f"成功 {success_count}/{repetitions} 次")
         
         return score, "; ".join(notes) if notes else "穩定", exec_times
     
@@ -737,6 +825,166 @@ class MCRI_Evaluator:
         
         return score, "; ".join(notes) if notes else "清晰"
     
+    def evaluate_math_artifacts(self, text: str) -> Tuple[float, str]:
+        """
+        [L4.3] 數學異味檢測 (Math Smells) - 累進式扣分版 [Scientific]
+        
+        策略：不採用一刀斃命，而是依嚴重程度累進扣分，保留數據顆粒度。
+        1. 零係數 (0x^n): 嚴重，起手扣 5 分，每多一個再扣 2 分 (Max 10)。
+        2. 符號未簡化 (+ -): 中度，每個扣 2 分 (Max 6)。
+        3. 冗餘係數 (1x): 輕微，每個扣 1 分 (Max 3)。
+        
+        Returns:
+            score (0.0 ~ 10.0), notes
+        """
+        if not text:
+            return 10.0, "Pass"
+
+        penalty = 0.0
+        notes = []
+        
+        # 1. 檢測零係數 (嚴重違規: 數學概念錯誤) 
+        # Pattern: 0x, 0x^2, 0y, 0 x
+        # 排除小數點 (0.5x) 和整數 (10x)
+        zero_pattern = r"\b0\s*[a-zA-Z](\^\{?\d+\}?)?"
+        zero_matches = re.findall(zero_pattern, text)
+        
+        if zero_matches:
+            count = len(zero_matches)
+            # 累進邏輯：第一個錯很嚴重(-5)，後面代表模型崩潰(-2)
+            p = 5.0 + (count - 1) * 2.0
+            p = min(p, 10.0) # 此項最多扣完 10 分
+            penalty += p
+            notes.append(f"零係數x{count}(-{p})")
+
+        # 2. 檢測符號未簡化 (中度違規: 格式不潔)
+        # Pattern: + -, - -, ^1
+        sign_pattern = r"(\+\s*-)|(-\s*-)|(\^\s*\{?1\}?\b)"
+        sign_matches = re.findall(sign_pattern, text)
+        
+        if sign_matches:
+            count = len(sign_matches)
+            p = count * 2.0 # 每個扣 2 分
+            p = min(p, 6.0) # 上限扣 6 分，保留 4 分底分
+            penalty += p
+            notes.append(f"符號未簡化x{count}(-{p})")
+
+        # 3. 檢測冗餘係數 (輕微違規: 不夠專業)
+        # Pattern: 1x, -1x (前面不能有數字, 避免 11x 被抓)
+        redundant_pattern = r"(?<!\d)\b1[a-zA-Z]"
+        redundant_matches = re.findall(redundant_pattern, text)
+        
+        if redundant_matches:
+            count = len(redundant_matches)
+            p = count * 1.0 # 每個扣 1 分
+            p = min(p, 3.0) # 上限扣 3 分
+            penalty += p
+            notes.append(f"冗餘係數x{count}(-{p})")
+
+        # 計算最終分數 (滿分 10，最低 0)
+        final_score = max(0.0, 10.0 - penalty)
+        
+        # 格式化輸出
+        if not notes:
+            note_str = "完美"
+        else:
+            note_str = "; ".join(notes)
+        
+        return float(final_score), note_str
+    
+    def analyze_math_complexity(self, question_text: str) -> Tuple[int, int]:
+        """
+        L5A 數學複雜度分析 (不影響總分，記錄到 CSV)
+        
+        使用 SymPy 分析數學表達式的複雜度
+        
+        Returns:
+            (ops_count, atom_count) - 運算子數量和原子數量
+            若失敗，返回 (0, 0)
+        """
+        if not HAS_SYMPY:
+            return 0, 0
+        
+        try:
+            # 嘗試提取數學表達式 (簡單方法：查找 LaTeX 或簡單表達式)
+            # 若都失敗，返回 0, 0
+            text = str(question_text).strip()
+            if not text:
+                return 0, 0
+            
+            # 簡單的清理：移除 LaTeX 分隔符
+            text_clean = re.sub(r'\$|\\\(|\\\)|\$\$', '', text)
+            text_clean = re.sub(r'\\text\{[^}]*\}', '', text_clean)
+            text_clean = text_clean.strip()
+            
+            if not text_clean or len(text_clean) < 2:
+                return 0, 0
+            
+            # 嘗試解析為數學表達式
+            expr = sympy.sympify(text_clean, rational=True)
+            
+            # 計算運算子數量 (�用 tree_size 或 count_ops)
+            ops_count = len(sympy.preorder_traversal(expr)) - 1
+            
+            # 計算原子數量 (自由符號數)
+            atoms = expr.free_symbols
+            atom_count = len(atoms)
+            
+            return int(ops_count), int(atom_count)
+        
+        except Exception:
+            # 若解析失敗，返回 0, 0
+            return 0, 0
+    
+    def analyze_code_structure(self, code_content: str) -> Tuple[int, int]:
+        """
+        L5B 代碼複雜度分析 (不影響總分，記錄到 CSV)
+        
+        使用 AST 分析代碼的複雜度
+        
+        Returns:
+            (ast_node_count, max_loop_depth) - AST 節點數和最大循環深度
+            若失敗，返回 (0, 0)
+        """
+        try:
+            if not code_content or not isinstance(code_content, str):
+                return 0, 0
+            
+            tree = ast.parse(code_content)
+            
+            # 計算 AST 節點數
+            ast_node_count = len(list(ast.walk(tree)))
+            
+            # 計算最大循環深度
+            max_loop_depth = 0
+            
+            class LoopDepthVisitor(ast.NodeVisitor):
+                def __init__(self):
+                    self.current_depth = 0
+                    self.max_depth = 0
+                
+                def visit_For(self, node):
+                    self.current_depth += 1
+                    self.max_depth = max(self.max_depth, self.current_depth)
+                    self.generic_visit(node)
+                    self.current_depth -= 1
+                
+                def visit_While(self, node):
+                    self.current_depth += 1
+                    self.max_depth = max(self.max_depth, self.current_depth)
+                    self.generic_visit(node)
+                    self.current_depth -= 1
+            
+            visitor = LoopDepthVisitor()
+            visitor.visit(tree)
+            max_loop_depth = visitor.max_depth
+            
+            return ast_node_count, max_loop_depth
+        
+        except Exception:
+            # 若解析失敗，返回 0, 0
+            return 0, 0
+    
     # ========================================
     # 主評估流程
     # ========================================
@@ -757,6 +1005,7 @@ class MCRI_Evaluator:
             'status': 'FAIL',
             'error_log': '',
             'included_in_avg': 0,  # 0 or 1 (INTEGER)
+            'exec_time_ms': 0.0,   # 執行時間（毫秒）
             'score_l2_1_contract': 0,  # INTEGER (新增)
             'score_l2_2_purity': 0,    # INTEGER (新增)
             'score_l3_total': 0,   # INTEGER
@@ -765,22 +1014,30 @@ class MCRI_Evaluator:
             'score_l4_total': 0,   # INTEGER
             'score_l4_1_numeric': 0,
             'score_l4_2_visual': 0,
+            'score_l4_3_artifacts': 0,  # [V4.4 NEW] 質量控制 (10分)
+            'complexity_math_ops': 0,   # [V4.4 NEW] 數學複雜度 - 運算子數
+            'complexity_ast_nodes': 0,  # [V4.4 NEW] 代碼複雜度 - AST 節點數
+            'complexity_loop_depth': 0, # [V4.4 NEW] 代碼複雜度 - 最大循環深度
             'student_input_test': '',
             'student_input_result': '',
         }
         
         try:
             # 執行 generate() 並記錄執行時間 [V4.2.2 優先級3]
+            # [IMPORTANT] 使用安全上下文防止 input() 調用
             start_time = time.time()
             with time_limit(DEFAULT_TIMEOUT):
-                result = self.generate_func()
+                # 在安全上下文中執行 generate()，防止互動式輸入
+                with safe_execution_context():
+                    result = self.generate_func()
+            
             exec_time = time.time() - start_time
             
             # 儲存生成內容
             item['generated_question'] = str(result.get('question_text', ''))[:500]
             item['generated_answer'] = str(result.get('answer', ''))[:200]
             item['generated_correct_answer'] = str(result.get('correct_answer', ''))[:200]
-            item['exec_time'] = round(exec_time, 4)  # [V4.2.2] 記錄單次執行時間
+            item['exec_time_ms'] = round(exec_time * 1000, 2)  # 轉換為毫秒
             
             # L2.1 介面契約
             score_l2_1, _ = self.evaluate_interface_contract(result)
@@ -804,27 +1061,71 @@ class MCRI_Evaluator:
                 
                 item['score_l3_total'] = int(score_l3_1 + score_l3_2)
                 
-                # L4.1 數值友善度
+                # ===== L4 評分 (30分) ===== [V4.3 重新分配]
+                # 準備要評分的文本
+                q_text = str(result.get('question_text', ''))
+                a_text = str(result.get('answer', ''))
+                
+                # L4.1 數值友善度 (10分)
                 score_l4_1, _ = self.evaluate_numeric_friendliness(result)
-                item['score_l4_1_numeric'] = int(score_l4_1)
+                # 將 L4.1 從原本的 15分 縮放到 10分
+                score_l4_1_scaled = (score_l4_1 / 15.0) * 10.0
+                item['score_l4_1_numeric'] = int(score_l4_1_scaled)
                 
-                # L4.2 視覺可讀性
+                # L4.2 視覺可讀性 (10分)
                 score_l4_2, _ = self.evaluate_visual_readability(result)
-                item['score_l4_2_visual'] = int(score_l4_2)
+                # 將 L4.2 從原本的 15分 縮放到 10分
+                score_l4_2_scaled = (score_l4_2 / 15.0) * 10.0
+                item['score_l4_2_visual'] = int(score_l4_2_scaled)
                 
-                item['score_l4_total'] = int(score_l4_1 + score_l4_2)
+                # L4.3 質量控制 (10分) [V4.4 NEW]
+                combined_text = q_text + " " + a_text
+                score_l4_3, _ = self.evaluate_math_artifacts(combined_text)
+                item['score_l4_3_artifacts'] = int(score_l4_3)
+                
+                # ===== L5 複雜度分析 (不影響總分，記錄指標) ===== [V4.4 NEW]
+                # L5A 數學複雜度
+                math_ops, math_atoms = self.analyze_math_complexity(result.get('question_text', ''))
+                item['complexity_math_ops'] = math_ops
+                
+                # L5B 代碼複雜度 [FIX]
+                # 修正：直接讀取技能檔案的原始碼，而不是從生成結果找 code
+                try:
+                    with open(self.skill_path, 'r', encoding='utf-8') as f:
+                        code_content = f.read()
+                    ast_nodes, loop_depth = self.analyze_code_structure(code_content)
+                except Exception:
+                    ast_nodes, loop_depth = 0, 0
+                    
+                item['complexity_ast_nodes'] = ast_nodes
+                item['complexity_loop_depth'] = loop_depth
+                
+                item['score_l4_total'] = int(score_l4_1_scaled + score_l4_2_scaled + score_l4_3)
                 
                 item['status'] = 'PASS'
                 item['included_in_avg'] = 1
             else:
                 item['error_log'] = '介面契約不完整'
         
+        except ForbiddenInputError as e:
+            # 生成代碼包含 input()，嚴重違規
+            item['status'] = 'FORBIDDEN_INPUT'
+            item['error_log'] = f'❌ {str(e)}'
+            item['score_l1_1_syntax'] = 0
+            item['score_l1_2_runtime'] = 0
+            item['score_l1_total'] = 0
+            item['score_l2_1_contract'] = 0
+            item['score_l2_2_purity'] = 0
+            item['score_l2_total'] = 0
+            item['included_in_avg'] = 0
         except TimeoutError:
             item['status'] = 'TIMEOUT'
             item['error_log'] = f'執行超過 {DEFAULT_TIMEOUT} 秒'
+            item['included_in_avg'] = 0
         except Exception as e:
             item['status'] = 'ERROR'
             item['error_log'] = f'{type(e).__name__}: {str(e)[:200]}'
+            item['included_in_avg'] = 0
         
         return item
     
@@ -847,7 +1148,7 @@ class MCRI_Evaluator:
         # L2.2 格式純淨度（從 repetitions 中計算）
         
         # 執行所有 repetitions
-        print(f"\n🔄 執行 {repetitions} 次重複測試...")
+        print(f"\n[REPEAT] 執行 {repetitions} 次重複測試...")
         items = []
         for i in range(repetitions):
             item = self.evaluate_single_repetition(i + 1)
@@ -880,9 +1181,17 @@ class MCRI_Evaluator:
         avg_l3_1 = np.mean([item['score_l3_1_internal'] for item in pass_items]) if pass_items else 0.0
         avg_l3_2 = np.mean([item['score_l3_2_external'] for item in pass_items]) if pass_items else 0.0
         
+        # ===== [V4.3] L4 重新計算 =====
         avg_l4_total = np.mean([item['score_l4_total'] for item in pass_items]) if pass_items else 0.0
         avg_l4_1 = np.mean([item['score_l4_1_numeric'] for item in pass_items]) if pass_items else 0.0
         avg_l4_2 = np.mean([item['score_l4_2_visual'] for item in pass_items]) if pass_items else 0.0
+        # [V4.3 NEW] 新增 L4.3 平均分
+        avg_l4_3 = np.mean([item['score_l4_3_artifacts'] for item in pass_items]) if pass_items else 0.0
+        
+        # ===== [V4.4] L5 複雜度平均值（不影響總分）=====
+        avg_complexity_math_ops = np.mean([item['complexity_math_ops'] for item in pass_items]) if pass_items else 0.0
+        avg_complexity_ast_nodes = np.mean([item['complexity_ast_nodes'] for item in pass_items]) if pass_items else 0.0
+        avg_complexity_loop_depth = np.mean([item['complexity_loop_depth'] for item in pass_items]) if pass_items else 0.0
         
         avg_mcri_total = score_l1_total + score_l2_total + avg_l3_total + avg_l4_total
         # avg_exec_time 已在上方從 repetitions 計算
@@ -895,6 +1204,10 @@ class MCRI_Evaluator:
             'skill_name': self.skill_name,
             'ablation_id': self.ablation_id,  # INTEGER
             'sample_index': sample_index,
+            'code_commit_hash': '',  # 暫時空值
+            'python_version': f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
+            'mcri_version': self.version,
+            'model_temperature': 0.7,  # 預設值
             'repetitions_planned': repetitions,
             'repetitions_completed': len(items),
             'fail_count': fail_count,
@@ -912,10 +1225,22 @@ class MCRI_Evaluator:
             'avg_l4_total': round(avg_l4_total, 2),
             'avg_l4_1_numeric': round(avg_l4_1, 2),
             'avg_l4_2_visual': round(avg_l4_2, 2),
+            'avg_l4_3_artifacts': round(avg_l4_3, 2),  # [V4.4 NEW]
+            'avg_complexity_math_ops': round(avg_complexity_math_ops, 2),  # [V4.4 NEW]
+            'avg_complexity_ast_nodes': round(avg_complexity_ast_nodes, 2),  # [V4.4 NEW]
+            'avg_complexity_loop_depth': round(avg_complexity_loop_depth, 2),  # [V4.4 NEW]
             'avg_mcri_total': round(avg_mcri_total, 2),
             'source_code_path': str(self.skill_path),
-            'mcri_version': self.version,
             'notes': self._build_notes(notes_l1_1, notes_l1_2),
+            'batch_id': '',  # 暫時空值
+            'golden_prompt_path': '',  # 暫時空值
+            'prompt_hash': '',  # 暫時空值
+            'prompt_tokens': 0,  # 暫時 0
+            'completion_tokens': 0,  # 暫時 0
+            'total_tokens': 0,  # 暫時 0
+            'latency_ms': int(avg_exec_time * 1000),  # 轉換為毫秒
+            'healer_applied': 0,  # 暫時 0
+            'healer_fix_count': 0,  # 暫時 0
         }
         
         return run_record, items
@@ -955,46 +1280,67 @@ class MCRI_Evaluator:
 # 資料庫管理
 # ========================================
 def create_database(db_path: str):
-    """建立 SQLite 資料庫與三張表"""
+    """建立 SQLite 資料庫與三張表（如果不存在）"""
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # 1. experiment_runs (主表)
+    # 刪除舊表（確保新結構）
+    cursor.execute("DROP TABLE IF EXISTS evaluation_items")  # 先刪附表
+    cursor.execute("DROP TABLE IF EXISTS experiment_runs")
+    cursor.execute("DROP TABLE IF EXISTS ablation_summary")
+    
+    # 1. experiment_runs (主表) - 匹配現有 39 列架構
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS experiment_runs (
-            run_id TEXT PRIMARY KEY,
-            timestamp TEXT,
-            model_name TEXT,
-            skill_name TEXT,
+        CREATE TABLE experiment_runs (
+            run_id VARCHAR(36) PRIMARY KEY,
+            timestamp DATETIME,
+            model_name VARCHAR(50),
+            skill_name VARCHAR(100),
             ablation_id INTEGER,
             sample_index INTEGER,
+            code_commit_hash VARCHAR(40),
+            python_version VARCHAR(20),
+            mcri_version VARCHAR(20),
+            model_temperature FLOAT,
             repetitions_planned INTEGER,
             repetitions_completed INTEGER,
             fail_count INTEGER,
-            pass_rate REAL,
-            avg_exec_time REAL,
+            pass_rate FLOAT,
+            avg_exec_time FLOAT,
             score_l1_total INTEGER,
             score_l1_1_syntax INTEGER,
             score_l1_2_runtime INTEGER,
             score_l2_total INTEGER,
             score_l2_1_contract INTEGER,
             score_l2_2_purity INTEGER,
-            avg_l3_total REAL,
-            avg_l3_1_internal REAL,
-            avg_l3_2_external REAL,
-            avg_l4_total REAL,
-            avg_l4_1_numeric REAL,
-            avg_l4_2_visual REAL,
-            avg_mcri_total REAL,
-            source_code_path TEXT,
-            mcri_version TEXT,
-            notes TEXT
+            avg_l3_total FLOAT,
+            avg_l3_1_internal FLOAT,
+            avg_l3_2_external FLOAT,
+            avg_l4_total FLOAT,
+            avg_l4_1_numeric FLOAT,
+            avg_l4_2_visual FLOAT,
+            avg_l4_3_artifacts FLOAT,
+            avg_complexity_math_ops FLOAT,
+            avg_complexity_ast_nodes FLOAT,
+            avg_complexity_loop_depth FLOAT,
+            avg_mcri_total FLOAT,
+            source_code_path VARCHAR(255),
+            notes TEXT,
+            batch_id VARCHAR(50),
+            golden_prompt_path VARCHAR(255),
+            prompt_hash VARCHAR(64),
+            prompt_tokens INTEGER,
+            completion_tokens INTEGER,
+            total_tokens INTEGER,
+            latency_ms INTEGER,
+            healer_applied BOOLEAN,
+            healer_fix_count INTEGER
         )
     """)
     
     # 2. evaluation_items (附表)
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS evaluation_items (
+        CREATE TABLE evaluation_items (
             item_id TEXT PRIMARY KEY,
             run_id TEXT,
             repetition_index INTEGER,
@@ -1004,6 +1350,7 @@ def create_database(db_path: str):
             status TEXT,
             error_log TEXT,
             included_in_avg INTEGER,
+            exec_time_ms REAL,
             score_l2_1_contract INTEGER,
             score_l2_2_purity INTEGER,
             score_l3_total INTEGER,
@@ -1012,15 +1359,19 @@ def create_database(db_path: str):
             score_l4_total INTEGER,
             score_l4_1_numeric INTEGER,
             score_l4_2_visual INTEGER,
+            score_l4_3_artifacts INTEGER,
+            complexity_math_ops INTEGER,
+            complexity_ast_nodes INTEGER,
+            complexity_loop_depth INTEGER,
             student_input_test TEXT,
             student_input_result TEXT,
             FOREIGN KEY (run_id) REFERENCES experiment_runs(run_id)
         )
     """)
     
-    # 3. ablation_summary (彙總表)
+    # 3. ablation_summary (彙總表) - 13 欄
     cursor.execute("""
-        CREATE TABLE IF NOT EXISTS ablation_summary (
+        CREATE TABLE ablation_summary (
             summary_id TEXT PRIMARY KEY,
             skill_name TEXT,
             ablation_id INTEGER,
@@ -1032,13 +1383,15 @@ def create_database(db_path: str):
             ci95_lower REAL,
             ci95_upper REAL,
             mean_l3_external REAL,
-            mean_l4_numeric REAL
+            mean_l4_numeric REAL,
+            p_value_vs_ab1 REAL,
+            notes TEXT
         )
     """)
     
     conn.commit()
     conn.close()
-    print(f"✅ 資料庫已建立: {db_path}")
+    print(f"[OK] 資料庫已建立: {db_path}")
 
 
 def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
@@ -1047,19 +1400,34 @@ def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
     
     for run in runs:
         cursor.execute("""
-            INSERT INTO experiment_runs VALUES (
-                :run_id, :timestamp, :model_name, :skill_name, :ablation_id, :sample_index,
-                :repetitions_planned, :repetitions_completed, :fail_count, :pass_rate, :avg_exec_time,
-                :score_l1_total, :score_l1_1_syntax, :score_l1_2_runtime,
-                :score_l2_total, :score_l2_1_contract, :score_l2_2_purity,
-                :avg_l3_total, :avg_l3_1_internal, :avg_l3_2_external,
-                :avg_l4_total, :avg_l4_1_numeric, :avg_l4_2_visual,
-                :avg_mcri_total, :source_code_path, :mcri_version, :notes
-            )
+            INSERT INTO experiment_runs 
+            (run_id, timestamp, model_name, skill_name, ablation_id, sample_index,
+             code_commit_hash, python_version, mcri_version, model_temperature,
+             repetitions_planned, repetitions_completed, fail_count, pass_rate, avg_exec_time,
+             score_l1_total, score_l1_1_syntax, score_l1_2_runtime,
+             score_l2_total, score_l2_1_contract, score_l2_2_purity,
+             avg_l3_total, avg_l3_1_internal, avg_l3_2_external,
+             avg_l4_total, avg_l4_1_numeric, avg_l4_2_visual,
+             avg_mcri_total, source_code_path, notes,
+             batch_id, golden_prompt_path, prompt_hash,
+             prompt_tokens, completion_tokens, total_tokens,
+             latency_ms, healer_applied, healer_fix_count)
+            VALUES
+            (:run_id, :timestamp, :model_name, :skill_name, :ablation_id, :sample_index,
+             :code_commit_hash, :python_version, :mcri_version, :model_temperature,
+             :repetitions_planned, :repetitions_completed, :fail_count, :pass_rate, :avg_exec_time,
+             :score_l1_total, :score_l1_1_syntax, :score_l1_2_runtime,
+             :score_l2_total, :score_l2_1_contract, :score_l2_2_purity,
+             :avg_l3_total, :avg_l3_1_internal, :avg_l3_2_external,
+             :avg_l4_total, :avg_l4_1_numeric, :avg_l4_2_visual,
+             :avg_mcri_total, :source_code_path, :notes,
+             :batch_id, :golden_prompt_path, :prompt_hash,
+             :prompt_tokens, :completion_tokens, :total_tokens,
+             :latency_ms, :healer_applied, :healer_fix_count)
         """, run)
     
     conn.commit()
-    print(f"✅ 已插入 experiment_runs: {len(runs)} 筆")
+    print(f"[OK] 已插入 experiment_runs: {len(runs)} 筆")
 
 
 def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
@@ -1068,19 +1436,26 @@ def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
     
     for item in items:
         cursor.execute("""
-            INSERT INTO evaluation_items VALUES (
-                :item_id, :run_id, :repetition_index,
-                :generated_question, :generated_answer, :generated_correct_answer,
-                :status, :error_log, :included_in_avg,
-                :score_l2_1_contract, :score_l2_2_purity,
-                :score_l3_total, :score_l3_1_internal, :score_l3_2_external,
-                :score_l4_total, :score_l4_1_numeric, :score_l4_2_visual,
-                :student_input_test, :student_input_result
-            )
+            INSERT INTO evaluation_items
+            (item_id, run_id, repetition_index,
+             generated_question, generated_answer, generated_correct_answer,
+             status, error_log, included_in_avg, exec_time_ms,
+             score_l2_1_contract, score_l2_2_purity,
+             score_l3_total, score_l3_1_internal, score_l3_2_external,
+             score_l4_total, score_l4_1_numeric, score_l4_2_visual,
+             student_input_test, student_input_result)
+            VALUES
+            (:item_id, :run_id, :repetition_index,
+             :generated_question, :generated_answer, :generated_correct_answer,
+             :status, :error_log, :included_in_avg, :exec_time_ms,
+             :score_l2_1_contract, :score_l2_2_purity,
+             :score_l3_total, :score_l3_1_internal, :score_l3_2_external,
+             :score_l4_total, :score_l4_1_numeric, :score_l4_2_visual,
+             :student_input_test, :student_input_result)
         """, item)
     
     conn.commit()
-    print(f"✅ 已插入 evaluation_items: {len(items)} 筆")
+    print(f"[OK] 已插入 evaluation_items: {len(items)} 筆")
 
 
 def compute_and_insert_summary(conn: sqlite3.Connection):
@@ -1099,11 +1474,40 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
         mean_mcri = np.mean(mcri_scores)
         std_mcri = np.std(mcri_scores, ddof=1) if len(mcri_scores) > 1 else 0.0
         
-        # 95% CI (簡化版：1.96*std/sqrt(n))
+        # 95% CI (使用 t 分布)
         n = len(mcri_scores)
-        ci_margin = 1.96 * std_mcri / np.sqrt(n) if n > 0 else 0.0
-        ci95_lower = mean_mcri - ci_margin
-        ci95_upper = mean_mcri + ci_margin
+        if n > 1:
+            ci_result = stats.t.interval(
+                confidence=0.95,
+                df=n-1,
+                loc=mean_mcri,
+                scale=stats.sem(mcri_scores)
+            )
+            ci95_lower, ci95_upper = ci_result
+        else:
+            ci95_lower = ci95_upper = mean_mcri
+        
+        # 計算 p_value_vs_ab1（顯著性檢定）
+        p_value = None
+        notes = "-"
+        if ablation_id > 1:  # 只對 Ab2, Ab3 與 Ab1 比較
+            ab1_group = df[(df['skill_name'] == skill_name) & 
+                          (df['ablation_id'] == 1) & 
+                          (df['model_name'] == model_name)]
+            if len(ab1_group) > 0:
+                ab1_scores = ab1_group['avg_mcri_total'].values
+                try:
+                    t_stat, p_value = stats.ttest_ind(mcri_scores, ab1_scores)
+                    if p_value < 0.001:
+                        notes = f"Ab{int(ablation_id)} vs Ab1: p<0.001 (高度顯著)"
+                    elif p_value < 0.01:
+                        notes = f"Ab{int(ablation_id)} vs Ab1: p<0.01 (顯著)"
+                    elif p_value < 0.05:
+                        notes = f"Ab{int(ablation_id)} vs Ab1: p<0.05 (邊緣顯著)"
+                    else:
+                        notes = f"Ab{int(ablation_id)} vs Ab1: p={p_value:.3f} (無顯著差異)"
+                except:
+                    p_value = None
         
         summary = {
             'summary_id': str(uuid.uuid4()),
@@ -1118,6 +1522,8 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
             'ci95_upper': round(ci95_upper, 2),
             'mean_l3_external': round(np.mean(l3_external), 2),
             'mean_l4_numeric': round(np.mean(l4_numeric), 2),
+            'p_value_vs_ab1': round(p_value, 6) if p_value is not None else None,
+            'notes': notes,
         }
         summary_data.append(summary)
     
@@ -1125,16 +1531,22 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
     cursor = conn.cursor()
     for s in summary_data:
         cursor.execute("""
-            INSERT INTO ablation_summary VALUES (
-                :summary_id, :skill_name, :ablation_id, :model_name,
-                :sample_count, :total_runs,
-                :mean_mcri_total, :std_mcri_total, :ci95_lower, :ci95_upper,
-                :mean_l3_external, :mean_l4_numeric
-            )
+            INSERT INTO ablation_summary
+            (summary_id, skill_name, ablation_id, model_name,
+             sample_count, total_runs,
+             mean_mcri_total, std_mcri_total, ci95_lower, ci95_upper,
+             mean_l3_external, mean_l4_numeric,
+             p_value_vs_ab1, notes)
+            VALUES
+            (:summary_id, :skill_name, :ablation_id, :model_name,
+             :sample_count, :total_runs,
+             :mean_mcri_total, :std_mcri_total, :ci95_lower, :ci95_upper,
+             :mean_l3_external, :mean_l4_numeric,
+             :p_value_vs_ab1, :notes)
         """, s)
     
     conn.commit()
-    print(f"✅ 已插入 ablation_summary: {len(summary_data)} 筆")
+    print(f"[OK] 已插入 ablation_summary: {len(summary_data)} 筆")
     
     return summary_data
 
@@ -1148,20 +1560,25 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
     
     fieldnames = [
         'run_id', 'timestamp', 'model_name', 'skill_name', 'ablation_id', 'sample_index',
+        'code_commit_hash', 'python_version', 'mcri_version', 'model_temperature',
         'repetitions_planned', 'repetitions_completed', 'fail_count', 'pass_rate', 'avg_exec_time',
         'score_l1_total', 'score_l1_1_syntax', 'score_l1_2_runtime',
         'score_l2_total', 'score_l2_1_contract', 'score_l2_2_purity',
         'avg_l3_total', 'avg_l3_1_internal', 'avg_l3_2_external',
-        'avg_l4_total', 'avg_l4_1_numeric', 'avg_l4_2_visual',
-        'avg_mcri_total', 'source_code_path', 'mcri_version', 'notes'
+        'avg_l4_total', 'avg_l4_1_numeric', 'avg_l4_2_visual', 'avg_l4_3_artifacts',
+        'avg_complexity_math_ops', 'avg_complexity_ast_nodes', 'avg_complexity_loop_depth',  # [V4.4 NEW]
+        'avg_mcri_total', 'source_code_path', 'notes',
+        'batch_id', 'golden_prompt_path', 'prompt_hash',
+        'prompt_tokens', 'completion_tokens', 'total_tokens',
+        'latency_ms', 'healer_applied', 'healer_fix_count'
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8') as f:
+    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(runs)
     
-    print(f"✅ 已寫入 CSV: {output_path} ({len(runs)} 筆)")
+    print(f"[OK] 已寫入 CSV: {output_path} ({len(runs)} 筆)")
 
 
 def write_evaluation_items_csv(items: List[Dict], output_path: str):
@@ -1174,17 +1591,18 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
         'status', 'error_log', 'included_in_avg',
         'score_l2_1_contract', 'score_l2_2_purity',
         'score_l3_total', 'score_l3_1_internal', 'score_l3_2_external',
-        'score_l4_total', 'score_l4_1_numeric', 'score_l4_2_visual',
+        'score_l4_total', 'score_l4_1_numeric', 'score_l4_2_visual', 'score_l4_3_artifacts',
+        'complexity_math_ops', 'complexity_ast_nodes', 'complexity_loop_depth',  # [V4.4] L5 複雜度指標
         'student_input_test', 'student_input_result',
-        'exec_time'  # [V4.2.2] 新增執行時間記錄
+        'exec_time_ms'  # [V4.2.2] 執行時間記錄（毫秒）
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8') as f:
+    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(items)
     
-    print(f"✅ 已寫入 CSV: {output_path} ({len(items)} 筆)")
+    print(f"[OK] 已寫入 CSV: {output_path} ({len(items)} 筆)")
 
 
 def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
@@ -1195,15 +1613,15 @@ def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
         'summary_id', 'skill_name', 'ablation_id', 'model_name', 
         'sample_count', 'total_runs',
         'mean_mcri_total', 'std_mcri_total', 'ci95_lower', 'ci95_upper',
-        'mean_l3_external', 'mean_l4_numeric'
+        'mean_l3_external', 'mean_l4_numeric', 'p_value_vs_ab1', 'notes'
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8') as f:
+    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(summaries)
     
-    print(f"✅ 已寫入 CSV: {output_path} ({len(summaries)} 筆)")
+    print(f"[OK] 已寫入 CSV: {output_path} ({len(summaries)} 筆)")
 
 
 # ========================================
@@ -1212,7 +1630,7 @@ def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
 def print_summary_table(summaries: List[Dict]):
     """列印彙總表格"""
     print("\n" + "="*80)
-    print("📊 MCRI V4.2 彙總統計")
+    print("[SUMMARY] MCRI V4.2 彙總統計")
     print("="*80)
     
     print(f"\n{'Ablation':<10} {'Skill':<30} {'Mean':<8} {'Std':<8} {'95% CI':<20}")
@@ -1229,12 +1647,12 @@ def print_summary_table(summaries: List[Dict]):
 def print_insights(summaries: List[Dict], all_runs: List[Dict]):
     """列印關鍵洞察"""
     print("\n" + "="*80)
-    print("💡 關鍵洞察")
+    print("[INSIGHT] 關鍵洞察")
     print("="*80)
     
     # 找出最佳 ablation
     best = max(summaries, key=lambda x: x['mean_mcri_total'])
-    print(f"\n🏆 最佳配置: Ab{best['ablation_id']} ({best['mean_mcri_total']:.2f} 分)")
+    print(f"\n[BEST] 最佳配置: Ab{best['ablation_id']} ({best['mean_mcri_total']:.2f} 分)")
     
     # 計算 Ab3 vs Ab1 的提升
     ab1_mean = next((s['mean_mcri_total'] for s in summaries if s['ablation_id'] == 1), None)
@@ -1242,7 +1660,7 @@ def print_insights(summaries: List[Dict], all_runs: List[Dict]):
     
     if ab1_mean and ab3_mean:
         improvement = ab3_mean - ab1_mean
-        print(f"\n📈 Ab3 (Healer) vs Ab1 (Bare):")
+        print(f"\n[IMPROVEMENT] Ab3 (Healer) vs Ab1 (Bare):")
         print(f"  提升: +{improvement:.1f} 分 ({improvement/ab1_mean*100:.1f}%)")
         
         # 分維度分析
@@ -1259,7 +1677,7 @@ def print_insights(summaries: List[Dict], all_runs: List[Dict]):
             print(f"  L4 教學有效: {avg_l4_ab1:.1f} → {avg_l4_ab3:.1f} (+{avg_l4_ab3-avg_l4_ab1:.1f})")
     
     # Healer 機制效果
-    print(f"\n🔧 Healer 機制 (Ab3):")
+    print(f"\n[HEALER] Healer 機制 (Ab3):")
     print(f"  - 自動修復 AST 錯誤，提升執行穩定性")
     print(f"  - 強化 check() 函數，改善評測公平性")
     print(f"  - 優化數值生成，增進教學適用性")
@@ -1269,90 +1687,204 @@ def print_insights(summaries: List[Dict], all_runs: List[Dict]):
 # 主程式
 # ========================================
 def main():
-    """主程式入口"""
+    """主程式入口 - 二層選單模式（技能 → 模型 → 自動評分 Ab1/Ab2/Ab3 run01-run05）"""
     print("="*80)
-    print("🎯 MCRI V4.2 評估系統")
+    print("[TARGET] MCRI V4.2 評估系統 - 快速評分模式")
     print("="*80)
     
-    # 設定
-    skills_dir = Path("skills")
-    db_dir = Path("reports")
-    db_dir.mkdir(exist_ok=True)
-    db_path = db_dir / "mcri_evaluation.db"
+    # ===== 路徑設定 =====
+    results_root = Path("experiments/results")
+    instance_dir = Path("instance")
+    instance_dir.mkdir(exist_ok=True)
+    db_path = instance_dir / "kumon_math.db"  # 資料庫使用 instance/kumon_math.db
     
-    # 建立資料庫
+    # ===== 第一層選單：技能選擇 =====
+    if not results_root.exists():
+        print(f"[ERROR] 找不到結果目錄: {results_root}")
+        return
+    
+    # 掃描技能目錄
+    available_skills = sorted([d for d in results_root.iterdir() if d.is_dir() and not d.name.startswith('.')])
+    
+    if not available_skills:
+        print("[ERROR] 結果目錄下沒有技能資料夾")
+        return
+    
+    print("\n" + "="*80)
+    print("[SKILL] 技能選擇")
+    print("="*80)
+    print(f"   [0] ALL (全部 {len(available_skills)} 個技能)")
+    for i, skill_dir in enumerate(available_skills, 1):
+        print(f"   [{i}] {skill_dir.name}")
+    
+    while True:
+        try:
+            skill_choice = input("\n[INPUT] 請輸入選項: ").strip()
+            if skill_choice == '0':
+                selected_skills = [d.name for d in available_skills]
+                break
+            idx = int(skill_choice) - 1
+            if 0 <= idx < len(available_skills):
+                selected_skills = [available_skills[idx].name]
+                break
+            print("[ERROR] 輸入無效，請重試。")
+        except ValueError:
+            print("[ERROR] 請輸入數字。")
+    
+    # ===== 第二層選單：模型選擇 =====
+    print("\n" + "="*80)
+    print("[MODEL] 模型選擇")
+    print("="*80)
+    
+    # 掃描第一個技能下的可用模型（從生成的檔案推斷）
+    sample_skill = results_root / selected_skills[0]
+    available_models = set()
+    if sample_skill.exists():
+        for py_file in sample_skill.glob("*.py"):
+            # 檔案格式: {skill}_{model}_{ablation}_run{idx}.py
+            # 例: gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab1_run01
+            filename_stem = py_file.stem
+            
+            # 移除 _run{idx} 後綴
+            if '_run' in filename_stem:
+                filename_stem = filename_stem.rsplit('_run', 1)[0]
+            
+            # 現在是: gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab1
+            # 移除 _Ab{n} 後綴
+            if '_Ab' in filename_stem:
+                filename_stem = filename_stem.rsplit('_Ab', 1)[0]
+            
+            # 現在是: gh_ApplicationsOfDerivatives_qwen2.5-coder-7b
+            # 移除技能名前綴 (選定的技能 + _)
+            skill_prefix = selected_skills[0] + '_'
+            if filename_stem.startswith(skill_prefix):
+                model_name = filename_stem[len(skill_prefix):]
+                if model_name and any(x in model_name for x in ['gemini', 'qwen', 'coder']):
+                    available_models.add(model_name)
+    
+    available_models = sorted(list(available_models))
+    
+    if not available_models:
+        print("[ERROR] 無法從檔案推斷可用模型")
+        return
+    
+    print(f"   [0] ALL (全部 {len(available_models)} 個模型)")
+    for i, model in enumerate(available_models, 1):
+        print(f"   [{i}] {model}")
+    
+    while True:
+        try:
+            model_choice = input("\n[INPUT] 請輸入選項: ").strip()
+            if model_choice == '0':
+                selected_models = available_models
+                break
+            idx = int(model_choice) - 1
+            if 0 <= idx < len(available_models):
+                selected_models = [available_models[idx]]
+                break
+            print("[ERROR] 輸入無效，請重試。")
+        except ValueError:
+            print("[ERROR] 請輸入數字。")
+    
+    # ===== 確認配置 =====
+    print("\n" + "="*80)
+    print("[CONFIG] 評估配置確認")
+    print("="*80)
+    print(f"技能數: {len(selected_skills)}")
+    for skill in selected_skills:
+        print(f"  - {skill}")
+    print(f"模型數: {len(selected_models)}")
+    for model in selected_models:
+        print(f"  - {model}")
+    print(f"策略: Ab1, Ab2, Ab3 (自動評分)")
+    print(f"樣本: run01, run02, run03, run04, run05 (自動評分)")
+    
+    total_files = len(selected_skills) * len(selected_models) * 3 * 5  # 3 ablations × 5 runs
+    print(f"\n[ESTIMATE] 預計評估檔案數: {total_files}")
+    
+    confirm = input("\n[INPUT] 確定要開始評估嗎? (y/n): ").strip().lower()
+    if confirm != 'y':
+        print("[CANCEL] 使用者取消，結束。")
+        return
+    
+    # ===== 建立資料庫 =====
     create_database(str(db_path))
     
-    # 技能檔案清單（三個 ablation 版本）
-    skill_base = "gh_ApplicationsOfDerivatives_14b"
-    skill_files = [
-        (skills_dir / f"{skill_base}_Ab1.py", 1, "gemini-pro"),  # Bare
-        (skills_dir / f"{skill_base}_Ab2.py", 2, "gemini-pro"),  # Engineered
-        (skills_dir / f"{skill_base}_Ab3.py", 3, "gemini-pro"),  # Healer
-    ]
-    
-    # 執行設定
-    samples_per_ablation = 5  # 每個 ablation 執行 5 個 sample
-    repetitions_per_sample = 20  # 每個 sample 重複 20 次
+    # ===== 主評估迴圈 =====
+    print("\n" + "="*80)
+    print("[RUNNING] 開始評估...")
+    print("="*80)
     
     all_runs = []
     all_items = []
+    evaluated_count = 0
+    skipped_count = 0
     
-    # 主循環
-    for skill_path, ablation_id, model_name in skill_files:
-        ablation_name = f"Ab{ablation_id}"
-        print(f"\n{'='*80}")
-        print(f"📝 評估: {skill_path.name} ({ablation_name})")
-        print(f"{'='*80}")
+    # 巢狀迴圈：技能 → 模型 → Ablation → 樣本 (自動)
+    for skill in selected_skills:
+        skill_dir = results_root / skill
         
-        if not skill_path.exists():
-            print(f"❌ 檔案不存在: {skill_path}")
-            continue
-        
-        evaluator = MCRI_Evaluator(str(skill_path), ablation_id, model_name)
-        
-        if not evaluator.load_skill_module():
-            print(f"❌ 載入失敗，跳過")
-            continue
-        
-        # 執行多個 sample
-        for sample_idx in range(1, samples_per_ablation + 1):
-            print(f"\n🔬 Sample {sample_idx}/{samples_per_ablation}")
-            
-            run_record, items = evaluator.run_full_evaluation(
-                sample_index=sample_idx,
-                repetitions=repetitions_per_sample
-            )
-            
-            all_runs.append(run_record)
-            all_items.extend(items)
-            
-            # 即時顯示結果
-            print(f"\n✅ Sample {sample_idx} 完成:")
-            print(f"  總分: {run_record['avg_mcri_total']:.2f}")
-            print(f"  L1: {run_record['score_l1_total']} | "
-                  f"L2: {run_record['score_l2_total']} | "
-                  f"L3: {run_record['avg_l3_total']:.2f} | "
-                  f"L4: {run_record['avg_l4_total']:.2f}")
-            print(f"  通過率: {run_record['pass_rate']*100:.1f}% ({run_record['repetitions_completed'] - run_record['fail_count']}/{run_record['repetitions_completed']})")
+        for model in selected_models:
+            # 自動掃描所有 Ab1/Ab2/Ab3 和 run01-run05
+            for ablation in ['Ab1', 'Ab2', 'Ab3']:
+                for run_idx in range(1, 6):  # run01 to run05
+                    # 檔名格式：{skill_name}_{model}_{ablation}_run{idx}.py
+                    # 例如：gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run01.py
+                    run_filename = f"{skill}_{model}_{ablation}_run{run_idx:02d}.py"
+                    skill_path = skill_dir / run_filename
+                    
+                    if not skill_path.exists():
+                        print(f"[SKIP] 跳過: {run_filename} (不存在)")
+                        skipped_count += 1
+                        continue
+                    
+                    try:
+                        print(f"\n[EVAL] 評估: {run_filename}")
+                        
+                        ablation_id = int(ablation[2])  # Ab1 -> 1, Ab2 -> 2, Ab3 -> 3
+                        evaluator = MCRI_Evaluator(str(skill_path), ablation_id, model)
+                        
+                        if not evaluator.load_skill_module():
+                            print(f"[ERROR] 載入失敗，跳過")
+                            skipped_count += 1
+                            continue
+                        
+                        # 執行完整評估
+                        run_record, items = evaluator.run_full_evaluation(
+                            sample_index=run_idx,
+                            repetitions=DEFAULT_REPETITIONS
+                        )
+                        
+                        all_runs.append(run_record)
+                        all_items.extend(items)
+                        evaluated_count += 1
+                        
+                        # 即時顯示結果
+                        print(f"[OK] 完成 - 總分: {run_record['avg_mcri_total']:.2f}")
+                        print(f"   L1: {run_record['score_l1_total']} | "
+                              f"L2: {run_record['score_l2_total']} | "
+                              f"L3: {run_record['avg_l3_total']:.2f} | "
+                              f"L4: {run_record['avg_l4_total']:.2f}")
+                        
+                    except Exception as e:
+                        print(f"[ERROR] 評估失敗: {e}")
+                        skipped_count += 1
+                        continue
     
-    # 寫入資料庫與 CSV（雙輸出）
+    # ===== 寫入結果 =====
     print(f"\n{'='*80}")
-    print("💾 寫入結果（資料庫 + CSV）...")
+    print("[SAVING] 寫入結果（資料庫 + CSV）...")
     print(f"{'='*80}")
     
-    # 1. 寫入 SQLite 資料庫
+    # 1. 建立資料庫（會刪除舊表並重新建立）
+    create_database(str(db_path))
     conn = sqlite3.connect(str(db_path))
     
-    # 清空舊資料（如果需要重新執行）
-    conn.execute("DELETE FROM evaluation_items")
-    conn.execute("DELETE FROM experiment_runs")
-    conn.execute("DELETE FROM ablation_summary")
-    conn.commit()
-    
     # 插入新資料
-    insert_experiment_runs(conn, all_runs)
-    insert_evaluation_items(conn, all_items)
+    if all_runs:
+        insert_experiment_runs(conn, all_runs)
+    if all_items:
+        insert_evaluation_items(conn, all_items)
     
     # 計算並插入彙總統計
     summaries = compute_and_insert_summary(conn)
@@ -1360,29 +1892,51 @@ def main():
     conn.close()
     
     # 2. 寫入 CSV 檔案
-    csv_dir = Path("reports/csv")
+    csv_dir = Path("experiments/reports")
     csv_dir.mkdir(parents=True, exist_ok=True)
     
-    write_experiment_runs_csv(all_runs, csv_dir / "experiment_runs.csv")
-    write_evaluation_items_csv(all_items, csv_dir / "evaluation_items.csv")
-    write_ablation_summary_csv(summaries, csv_dir / "ablation_summary.csv")
+    # 決定 CSV 檔名前綴：如果只選了一個技能，加上技能 ID
+    filename_prefix = ""
+    if len(selected_skills) == 1:
+        filename_prefix = selected_skills[0] + "_"
     
-    # 終端輸出
+    if all_runs:
+        write_experiment_runs_csv(all_runs, csv_dir / f"{filename_prefix}experiment_runs.csv")
+    if all_items:
+        write_evaluation_items_csv(all_items, csv_dir / f"{filename_prefix}evaluation_items.csv")
+    if summaries:
+        write_ablation_summary_csv(summaries, csv_dir / f"{filename_prefix}ablation_summary.csv")
+    
+    # ===== 終端輸出 =====
     print_summary_table(summaries)
-    print_insights(summaries, all_runs)
+    if summaries:
+        print_insights(summaries, all_runs)
     
     print(f"\n{'='*80}")
-    print("✅ 評估完成！")
-    print(f"{'='*80}")
-    print(f"\n📁 輸出檔案:")
-    print(f"  📊 SQLite 資料庫: {db_path}")
-    print(f"     - experiment_runs: {len(all_runs)} 筆")
-    print(f"     - evaluation_items: {len(all_items)} 筆")
-    print(f"     - ablation_summary: {len(summaries)} 筆")
-    print(f"\n  📄 CSV 報表: {csv_dir}/")
-    print(f"     - experiment_runs.csv")
-    print(f"     - evaluation_items.csv")
-    print(f"     - ablation_summary.csv")
+    print("[OK] 評估完成！")
+    print("="*80)
+    print(f"\n統計:")
+    print(f"  [OK] 已評估: {evaluated_count} 個檔案")
+    print(f"  [SKIP] 已跳過: {skipped_count} 個檔案")
+    print(f"  [INFO] 技能: {len(selected_skills)}")
+    print(f"  [INFO] 模型: {len(selected_models)}")
+    print(f"  [INFO] 策略: Ab1, Ab2, Ab3")
+    print(f"  [INFO] 樣本: run01-run05")
+    
+    print(f"\n[OUTPUT] 輸出檔案:")
+    print(f"  [DB] SQLite 資料庫: {db_path}")
+    if all_runs:
+        print(f"     - experiment_runs: {len(all_runs)} 筆")
+    if all_items:
+        print(f"     - evaluation_items: {len(all_items)} 筆")
+    if summaries:
+        print(f"     - ablation_summary: {len(summaries)} 筆")
+    
+    print(f"\n  [CSV] CSV 報表: {csv_dir}/")
+    print(f"     - {filename_prefix}experiment_runs.csv")
+    print(f"     - {filename_prefix}evaluation_items.csv")
+    print(f"     - {filename_prefix}ablation_summary.csv")
+    print("="*80)
 
 
 if __name__ == "__main__":

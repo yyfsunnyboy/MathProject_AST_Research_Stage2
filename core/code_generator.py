@@ -209,17 +209,15 @@ def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False
     topic = ""
     
     if ablation_id == 1:
-        # 從數據庫獲取課本範例
-        examples = TextbookExample.query.filter_by(skill_id=skill_id).limit(2).all()
+        # 從數據庫獲取課本範例（只取序號最小的第一個）
+        example = TextbookExample.query.filter_by(skill_id=skill_id).order_by(TextbookExample.id.asc()).first()
         
-        if examples:
-            # 提取題目作為範例
-            example_texts = []
-            for ex in examples:
-                if ex.problem_text:
-                    example_texts.append(f"範例：{ex.problem_text}")
-            
-            textbook_example = "\n".join(example_texts) if example_texts else "範例：請生成類似的數學題目"
+        if example:
+            # 只使用第一個例題，不合併多個
+            if example.problem_text:
+                textbook_example = f"範例：{example.problem_text}"
+            else:
+                textbook_example = "範例：請生成類似的數學題目"
             
             # 從 skill_id 提取主題 (例如: gh_ApplicationsOfDerivatives → 導數的應用)
             # 簡化處理：直接使用 skill_id 的可讀部分
@@ -271,9 +269,32 @@ def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False
     
     return prompt, topic, textbook_example
 
-def _call_ai(prompt):
-    """呼叫 AI 並回傳 raw_output, prompt_tokens, completion_tokens"""
-    client = get_ai_client(role='coder')
+def _call_ai(prompt, model_config=None):
+    """呼叫 AI 並回傳 raw_output, prompt_tokens, completion_tokens
+    
+    Args:
+        prompt: 提示文本
+        model_config: [NEW] 可选的模型配置字典，如果提供则使用，否则使用默认的 'coder' 角色
+    """
+    # [NEW FIX 2026-02-06] 如果提供了 model_config，使用它；否则使用默认的 'coder' 角色
+    if model_config:
+        # 使用提供的模型配置创建 AI 客户端
+        provider = model_config.get('provider', 'local').lower()
+        model_name = model_config.get('model', 'qwen2.5-coder:7b')
+        temperature = model_config.get('temperature', 0.1)
+        max_tokens = model_config.get('max_tokens', 2048)
+        extra_body = model_config.get('extra_body', {})
+        
+        if provider in ['google', 'gemini']:
+            from core.ai_wrapper import GoogleAIClient
+            client = GoogleAIClient(model_name, temperature)
+        else:
+            from core.ai_wrapper import LocalAIClient
+            client = LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
+    else:
+        # 使用默认的 'coder' 角色客户端
+        client = get_ai_client(role='coder')
+    
     response = client.generate_content(prompt)
     
     # 處理各種可能的 Response 格式
@@ -590,7 +611,26 @@ def _post_ast_fixes(clean_code, skill_id):
 
 def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     start_time = time.time()
-    role_config = Config.MODEL_ROLES.get('coder', {'provider': 'google', 'model': 'gemini-1.5-flash'})
+    
+    # [NEW FIX 2026-02-06] 根據 model_size_class 參數選擇正確的模型配置
+    # 映射: 'cloud' -> Gemini, '14b' -> Qwen 14B, '7b' -> Qwen 7B
+    model_size_class = kwargs.get('model_size_class', '14b')
+    
+    # 构建 model_key 映射
+    model_size_to_preset = {
+        'cloud': 'gemini-2.5-flash',
+        '14b': 'qwen2.5-coder-14b',
+        '7b': 'qwen2.5-coder-7b'
+    }
+    
+    model_preset_key = model_size_to_preset.get(model_size_class, 'qwen2.5-coder-14b')
+    
+    # 从 CODER_PRESETS 获取模型配置，如果不存在则降级到 MODEL_ROLES
+    if model_preset_key in Config.CODER_PRESETS:
+        role_config = Config.CODER_PRESETS[model_preset_key]
+    else:
+        role_config = Config.MODEL_ROLES.get('coder', {'provider': 'google', 'model': 'gemini-1.5-flash'})
+    
     current_model = role_config.get('model', 'Unknown')
     ablation_id = kwargs.get('ablation_id', 3)
     use_golden_prompt = kwargs.get('use_golden_prompt', False)  # [NEW] 實驗模式 2 參數
@@ -633,7 +673,8 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     if VERBOSE_LEVEL == 2:
         log_fix_detail("Prompt Length", "skip", f"{len(prompt)} tokens")
     
-    raw_output, prompt_tokens, completion_tokens = _call_ai(prompt)
+    # [FIX 2026-02-06] 传递 role_config 以确保使用正确的模型
+    raw_output, prompt_tokens, completion_tokens = _call_ai(prompt, model_config=role_config)
     
     ai_gen_time = time.time() - start_time
     if VERBOSE_LEVEL == 2:
@@ -670,6 +711,9 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     # Step 2/3: 進階 Healer
     if use_regex_healer:
         clean_code, regex_fixes, ast_fixes, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration = _advanced_healer(clean_code, ablation_id, skill_id)
+        # [DEBUG] Track fixer values
+        if VERBOSE_LEVEL >= 2:
+            print(f"[DEBUG] After _advanced_healer: regex_fixes={regex_fixes}, ast_fixes={ast_fixes}, healer_fixes={healer_fixes}")
         
     # F.12/F.13/F.14 Post-AST Fixes
     clean_code, qwen_fixes = _post_ast_fixes(clean_code, skill_id)
@@ -718,6 +762,10 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     fix_status_str = "[Advanced Healer]" if (regex_fixes > 0 or ast_fixes > 0) else ("[Basic Cleanup]" if basic_cleanup_fixes > 0 else "[Clean Pass]")
     verify_status_str = "PASSED" if (is_valid and dyn_ok) else "FAILED"
     fixes_str = f"Basic={basic_cleanup_fixes}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})"
+    
+    # [DEBUG] Track final Fix Status
+    if VERBOSE_LEVEL >= 1:
+        print(f"[DEBUG] Final Fix Status: {fix_status_str} | {fixes_str}")
     
     # 打印最终总结
     total_fixes_display = f"Basic={basic_cleanup_fixes}, Regex={regex_fixes}, AST={ast_fixes}"
