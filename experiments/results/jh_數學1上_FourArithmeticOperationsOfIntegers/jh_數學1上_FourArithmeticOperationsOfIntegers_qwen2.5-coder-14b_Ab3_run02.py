@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 39.27s | Tokens: In=4107, Out=823
-# Created At: 2026-02-06 14:12:13
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=5)
-# Verification: Internal Logic Check = FAILED
+# Performance: 54.05s | Tokens: In=4107, Out=888
+# Created At: 2026-02-06 20:21:11
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=2)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -592,11 +592,17 @@ def generate(level=1, **kwargs):
             for i, op in enumerate(operators_A):
                 n = operands_A[i + 1]
                 if op == '/' and val % n != 0:
-                    raise ValueError('Not divisible')
-                val = safe_eval(f'{val} {op} {n}')
+                    raise ValueError('Non-integer division')
+                elif op == '+':
+                    val += n
+                elif op == '-':
+                    val -= n
+                elif op == '*':
+                    val *= n
+                elif op == '/':
+                    val //= n
                 if abs(val) > 500:
                     raise ValueError('Intermediate result out of range')
-            val_A = val
         except ValueError:
             continue
         num_operands_C = safe_choice([2, 3])
@@ -604,33 +610,42 @@ def generate(level=1, **kwargs):
         operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
         if not any((op in ['*', '/'] for op in operators_C)):
             continue
-        val = operands_C[0]
+        val_C = operands_C[0]
         try:
             for i, op in enumerate(operators_C):
                 n = operands_C[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError('Not divisible')
-                val = safe_eval(f'{val} {op} {n}')
-                if abs(val) > 500:
-                    raise ValueError('Intermediate result out of range')
-            val_C = val
+                if op == '/' and val_C % n != 0:
+                    raise ValueError('Non-integer division')
+                elif op == '+':
+                    val_C += n
+                elif op == '-':
+                    val_C -= n
+                elif op == '*':
+                    val_C *= n
+                elif op == '/':
+                    val_C //= n
         except ValueError:
             continue
         val_B = abs(val_C)
         main_op = safe_choice(['+', '-'])
-        final_answer = safe_eval(f'{val_A} {main_op} {val_B}')
-        if final_answer in [0, 1, -1] or abs(final_answer) > 1000:
+        if main_op == '+':
+            final_answer = val + val_B
+        else:
+            final_answer = val - val_B
+        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
             continue
         if all((n > 0 for n in operands_A + operands_C)):
             continue
         break
     expr_A = fmt_num(operands_A[0])
-    for i, op in enumerate(operators_A):
+    for i in range(len(operators_A)):
+        op = operators_A[i].replace('*', '\\times').replace('/', '\\div')
         expr_A += f' {op} {fmt_num(operands_A[i + 1])}'
     expr_C = fmt_num(operands_C[0])
-    for i, op in enumerate(operators_C):
+    for i in range(len(operators_C)):
+        op = operators_C[i].replace('*', '\\times').replace('/', '\\div')
         expr_C += f' {op} {fmt_num(operands_C[i + 1])}'
-    main_op_symbol = {'+': '+', '-': '-'}.get(main_op)
-    question_text = f'計算 ${expr_A}$ {main_op_symbol} $|{expr_C}|$ 的值。'
+    question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
     correct_answer = str(final_answer)
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
+    answer = correct_answer
+    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}

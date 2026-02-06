@@ -1,3 +1,7 @@
+import re
+import sympy
+from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+import ast
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ==============================================================================
@@ -447,10 +451,15 @@ class MCRI_Evaluator:
             except ForbiddenInputError as e:
                 # 程式碼包含 input()，嚴重違規
                 forbidden_input_detected = True
-                notes.append(f"Rep{i+1} 違規: 包含 input()")
+                notes.insert(0, f"Rep{i+1} 違規: 包含 input()")
                 exec_times.append(0.0)
-                # 一旦發現違規，後續重複測試也可以跳過 (可選)
-                break
+                
+                # 🚨 關鍵：直接設定該項分數為 0，並標記嚴重違規
+                score = 0.0 
+                notes.insert(0, "❌ 嚴重違規：程式碼包含 input()，L1 直接歸零")
+                
+                # 🚨 關鍵：回傳時要確保這個 0.0 能被回傳出去
+                return 0.0, "\n".join(notes), exec_times
                 
             except TimeoutError:
                 notes.append(f"Rep{i+1} 超時")
@@ -892,6 +901,152 @@ class MCRI_Evaluator:
         
         return float(final_score), note_str
     
+
+
+
+    def score_math_question(self, question_text: str, answer: str) -> dict:
+        """
+        輸入題目文字 + 答案 → 輸出數學價值得分（滿分 50 分）
+        包含：難易度 (20) + 品質異味 (30)
+        """
+        result = {
+            'total_math_score': 0,
+            'difficulty_score': 0,   # 20 分
+            'quality_score': 0,      # 30 分
+            'details': []
+        }
+        
+        if not question_text:
+            return result
+
+        # Step 1: 清洗題目文字，只保留數學式
+        # 去掉中文、$、f(x)= 等，只留下算式部分
+        clean_text = re.sub(r'[^\d\.\+\-\*\/\(\)\^x]', ' ', question_text)  # 去非數學符號
+        clean_text = clean_text.replace('^', '**').strip()
+        # 如果有等號，只取右邊（答案部分通常在左）
+        if '=' in clean_text:
+            clean_text = clean_text.split('=')[-1].strip()
+            
+        # Step 2: 嘗試用 sympy 解析（允許 2x 這種省略乘號）
+        try:
+            transformations = standard_transformations + (implicit_multiplication_application,)
+            # [Fix] empty check
+            if not clean_text.strip():
+                raise ValueError("Empty math text")
+                
+            expr = parse_expr(clean_text, transformations=transformations)
+            
+            # 難易度 - 運算複雜度 (滿分 10)
+            ops_count = sympy.count_ops(expr)
+            result['difficulty_score'] += min(ops_count * 0.8, 10)
+            if ops_count > 8:
+                result['details'].append(f"高運算量 ({ops_count} 步)")
+                
+            # 難易度 - 變數與次數 (滿分 5)
+            symbols = expr.free_symbols
+            if len(symbols) > 0:
+                degree = sympy.degree(expr)
+                result['difficulty_score'] += min(degree * 1.5, 5)
+                if degree >= 3:
+                    result['details'].append(f"高次多項式 (deg={degree})")
+                    
+            # 難易度 - 負數與括號 (滿分 5)
+            negative = clean_text.count('-')
+            parentheses = clean_text.count('(') + clean_text.count('[')
+            result['difficulty_score'] += min(negative * 1, 2.5)
+            result['difficulty_score'] += min(parentheses * 1, 2.5)
+            
+        except Exception as e:
+            # sympy 解析失敗 → 降級用簡單規則
+            result['details'].append(f"SymPy 解析失敗: {str(e)}")
+            ops_count = len(re.findall(r'[\+\-\*/]', clean_text))
+            result['difficulty_score'] = min(ops_count * 1.5, 20)
+            
+        # Step 3: 品質異味檢測 (滿分 30)
+        quality = 30
+        
+        # 嚴重異味（直接扣重）
+        if re.search(r'\+ -', clean_text): quality -= 8
+        if re.search(r'\b1x', clean_text): quality -= 8
+        if re.search(r'\b-1x', clean_text): quality -= 8
+        if re.search(r'\^1\b', clean_text): quality -= 6
+        if re.search(r'0x', clean_text): quality -= 10
+        if '+0' in clean_text or '-0' in clean_text: quality -= 5
+        
+        # 輕微異味
+        if ' ' in clean_text.replace('**', ''): quality -= 3
+        if re.search(r'\*\*', clean_text) and not re.search(r'\*\*\d+', clean_text): quality -= 5
+        
+        result['quality_score'] = max(quality, 0)
+        
+        # 總分
+        result['total_math_score'] = min(50, result['difficulty_score'] + result['quality_score'])
+        return result
+
+    def evaluate_code_architecture(self, code_content: str) -> Tuple[float, str]:
+        """
+        L5. 架構品質 (10分) - 評估代碼的工程水準 (Engineering Quality)
+        評分標準:
+        1. 模組化 (+2): 定義了輔助函數 (Helper Functions)
+        2. 型別提示 (+2): 使用了 Type Hints
+        3. 錯誤處理 (+2): 使用了 try-except 機制
+        4. 文檔說明 (+2): 包含 Docstrings
+        5. 安全實踐 (+2): 未使用裸 eval() / 使用了 safe_eval
+        """
+        score = 0.0
+        notes = []
+        try:
+            if not code_content:
+                return 0.0, "無代碼"
+
+            tree = ast.parse(code_content)
+            
+            # 1. 模組化 (Helper Functions)
+            func_defs = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+            if len(func_defs) > 2: 
+                score += 2.0
+                notes.append("模組化(+2)")
+            
+            # 2. 型別提示 (Type Hinting)
+            has_type_hints = False
+            for node in func_defs:
+                if node.returns or any(arg.annotation for arg in node.args.args):
+                    has_type_hints = True
+                    break
+            if has_type_hints:
+                score += 2.0
+                notes.append("TypeHint(+2)")
+
+            # 3. 錯誤處理 (Error Handling)
+            has_try = any(isinstance(node, ast.Try) for node in ast.walk(tree))
+            if has_try:
+                score += 2.0
+                notes.append("Try-Catch(+2)")
+
+            # 4. 文檔字串 (Docstrings)
+            has_docstring = any(ast.get_docstring(node) for node in func_defs)
+            if has_docstring:
+                score += 2.0
+                notes.append("Docstring(+2)")
+                
+            # 5. 安全性 (Safe Eval)
+            unsafe_calls = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                    if node.func.id in ['eval', 'exec']:
+                        unsafe_calls.append(node.func.id)
+            
+            if not unsafe_calls:
+                score += 2.0
+                notes.append("Safe(+2)")
+            else:
+                notes.append(f"Unsafe({unsafe_calls[0]})")
+
+        except Exception as e:
+            notes.append(f"分析失敗: {type(e).__name__}")
+            
+        return score, ", ".join(notes)
+
     def analyze_math_complexity(self, question_text: str) -> Tuple[int, int]:
         """
         L5A 數學複雜度分析 (不影響總分，記錄到 CSV)
@@ -1015,6 +1170,10 @@ class MCRI_Evaluator:
             'score_l4_1_numeric': 0,
             'score_l4_2_visual': 0,
             'score_l4_3_artifacts': 0,  # [V4.4 NEW] 質量控制 (10分)
+            'score_l4_4_mqi': 0,        # [V6.0] MQI (30分)
+            'score_math_total': 0.0,    # [V6.0] 數學價值總分 (50分)
+            'score_math_quality': 0.0,  # [V6.0] 品質分 (30分)
+            'score_math_difficulty': 0.0,# [V6.0] 難度分 (20分)
             'complexity_math_ops': 0,   # [V4.4 NEW] 數學複雜度 - 運算子數
             'complexity_ast_nodes': 0,  # [V4.4 NEW] 代碼複雜度 - AST 節點數
             'complexity_loop_depth': 0, # [V4.4 NEW] 代碼複雜度 - 最大循環深度
@@ -1083,6 +1242,14 @@ class MCRI_Evaluator:
                 score_l4_3, _ = self.evaluate_math_artifacts(combined_text)
                 item['score_l4_3_artifacts'] = int(score_l4_3)
                 
+                # ===== [V6.0] 數學價值評估 (50分) =====
+                math_res = self.score_math_question(q_text, a_text)
+                item['score_math_total'] = math_res['total_math_score']
+                item['score_math_difficulty'] = math_res['difficulty_score']
+                item['score_math_quality'] = math_res['quality_score']
+                item['score_l4_4_mqi'] = math_res['quality_score']  # MQI mapped from quality
+
+                
                 # ===== L5 複雜度分析 (不影響總分，記錄指標) ===== [V4.4 NEW]
                 # L5A 數學複雜度
                 math_ops, math_atoms = self.analyze_math_complexity(result.get('question_text', ''))
@@ -1143,6 +1310,15 @@ class MCRI_Evaluator:
         score_l1_1, notes_l1_1 = self.evaluate_syntax_safety()
         score_l1_2, notes_l1_2, exec_times = self.evaluate_runtime_stability(repetitions=3)
         score_l1_total = score_l1_1 + score_l1_2
+        # L5 架構品質評估
+        try:
+            with open(self.skill_path, 'r', encoding='utf-8') as f:
+                code_content = f.read()
+            score_l5_arch, notes_l5_arch = self.evaluate_code_architecture(code_content)
+        except Exception as e:
+            score_l5_arch = 0.0
+            notes_l5_arch = str(e)
+
         
         # L2.1 介面契約（從 repetitions 中計算）
         # L2.2 格式純淨度（從 repetitions 中計算）
@@ -1185,15 +1361,49 @@ class MCRI_Evaluator:
         avg_l4_total = np.mean([item['score_l4_total'] for item in pass_items]) if pass_items else 0.0
         avg_l4_1 = np.mean([item['score_l4_1_numeric'] for item in pass_items]) if pass_items else 0.0
         avg_l4_2 = np.mean([item['score_l4_2_visual'] for item in pass_items]) if pass_items else 0.0
-        # [V4.3 NEW] 新增 L4.3 平均分
         avg_l4_3 = np.mean([item['score_l4_3_artifacts'] for item in pass_items]) if pass_items else 0.0
+        avg_l4_4 = np.mean([item['score_l4_4_mqi'] for item in pass_items]) if pass_items else 0.0
         
         # ===== [V4.4] L5 複雜度平均值（不影響總分）=====
         avg_complexity_math_ops = np.mean([item['complexity_math_ops'] for item in pass_items]) if pass_items else 0.0
         avg_complexity_ast_nodes = np.mean([item['complexity_ast_nodes'] for item in pass_items]) if pass_items else 0.0
         avg_complexity_loop_depth = np.mean([item['complexity_loop_depth'] for item in pass_items]) if pass_items else 0.0
         
-        avg_mcri_total = score_l1_total + score_l2_total + avg_l3_total + avg_l4_total
+        # ===== [V5.0] 50/50 Split Scoring System =====
+        # Part A: Program Value (Max 50)
+        # L1 Reliability (20 -> 15)
+        score_program_l1 = score_l1_total * (15.0 / 20.0)
+        # L2 Compliance (20 -> 15)
+        score_program_l2 = score_l2_total * (15.0 / 20.0)
+        # L5 Architecture (10 -> 20)
+        score_program_l5 = score_l5_arch * (20.0 / 10.0)
+        
+        score_program_total = score_program_l1 + score_program_l2 + score_program_l5
+        
+        # Part B: Math Value (Max 50)
+        # Part B: Math Value (Max 50)
+        # Using the new score_math_question results averaged over pass_items
+        avg_math_total = np.mean([item['score_math_total'] for item in pass_items]) if pass_items else 0.0
+        
+        # If we want to keep L3 correctness as a penalty/multiplier:
+        # If correctness is low, the math value is questionable. 
+        # But for now, let's stick to the function output as requested.
+        # Maybe Correctness (L3) is implicitly part of "Program Reliability" in user's mind? 
+        # Or we can average L3 into it? 
+        # User said "Math Value 50" comes from the function. 
+        # But correctness is critical. 
+        # Let's make Math Total = avg_math_total (from function) * (avg_l3_total / 30.0) ? 
+        # No, that's too harsh. 
+        # Let's just use the function output, but note that incorrect items are filtered by pass_items usually?
+        # No, pass_items filters by L1/L2 crash, not L3 correctness.
+        # Let's just use avg_math_total for now to follow code structure.
+        
+        score_math_total = avg_math_total
+        # Final MCRI Total (Max 100)
+        avg_mcri_total = score_program_total + score_math_total
+        
+        # Debug Log
+        print(f"\n[Scoring] Program: {score_program_total:.2f}/50 | Math: {score_math_total:.2f}/50 | Total: {avg_mcri_total:.2f}/100")
         # avg_exec_time 已在上方從 repetitions 計算
         
         # 建立 run 記錄
@@ -1229,7 +1439,11 @@ class MCRI_Evaluator:
             'avg_complexity_math_ops': round(avg_complexity_math_ops, 2),  # [V4.4 NEW]
             'avg_complexity_ast_nodes': round(avg_complexity_ast_nodes, 2),  # [V4.4 NEW]
             'avg_complexity_loop_depth': round(avg_complexity_loop_depth, 2),  # [V4.4 NEW]
+            'avg_l4_4_mqi': round(avg_l4_4, 2),
             'avg_mcri_total': round(avg_mcri_total, 2),
+            'score_program_total': round(score_program_total, 2),
+            'score_math_total': round(score_math_total, 2),
+            'score_l5_architecture': round(score_program_l5, 2), # Use scaled or raw? Let's use scaled for consistency with program score
             'source_code_path': str(self.skill_path),
             'notes': self._build_notes(notes_l1_1, notes_l1_2),
             'batch_id': '',  # 暫時空值
@@ -1323,6 +1537,10 @@ def create_database(db_path: str):
             avg_complexity_math_ops FLOAT,
             avg_complexity_ast_nodes FLOAT,
             avg_complexity_loop_depth FLOAT,
+            score_program_total FLOAT,
+            score_math_total FLOAT,
+            score_l5_architecture FLOAT,
+            avg_l4_4_mqi FLOAT,
             avg_mcri_total FLOAT,
             source_code_path VARCHAR(255),
             notes TEXT,
@@ -1360,6 +1578,10 @@ def create_database(db_path: str):
             score_l4_1_numeric INTEGER,
             score_l4_2_visual INTEGER,
             score_l4_3_artifacts INTEGER,
+            score_l4_4_mqi REAL,
+            score_math_total REAL,
+            score_math_quality REAL,
+            score_math_difficulty REAL,
             complexity_math_ops INTEGER,
             complexity_ast_nodes INTEGER,
             complexity_loop_depth INTEGER,
@@ -1384,6 +1606,10 @@ def create_database(db_path: str):
             ci95_upper REAL,
             mean_l3_external REAL,
             mean_l4_numeric REAL,
+            mean_program_total REAL,
+            mean_math_total REAL,
+            mean_l5_architecture REAL,
+            mean_l4_mqi REAL,
             p_value_vs_ab1 REAL,
             notes TEXT
         )
@@ -1408,7 +1634,7 @@ def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
              score_l2_total, score_l2_1_contract, score_l2_2_purity,
              avg_l3_total, avg_l3_1_internal, avg_l3_2_external,
              avg_l4_total, avg_l4_1_numeric, avg_l4_2_visual,
-             avg_mcri_total, source_code_path, notes,
+             score_program_total, score_math_total, score_l5_architecture, avg_l4_4_mqi, avg_mcri_total, source_code_path, notes,
              batch_id, golden_prompt_path, prompt_hash,
              prompt_tokens, completion_tokens, total_tokens,
              latency_ms, healer_applied, healer_fix_count)
@@ -1420,7 +1646,7 @@ def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
              :score_l2_total, :score_l2_1_contract, :score_l2_2_purity,
              :avg_l3_total, :avg_l3_1_internal, :avg_l3_2_external,
              :avg_l4_total, :avg_l4_1_numeric, :avg_l4_2_visual,
-             :avg_mcri_total, :source_code_path, :notes,
+             :score_program_total, :score_math_total, :score_l5_architecture, :avg_l4_4_mqi, :avg_mcri_total, :source_code_path, :notes,
              :batch_id, :golden_prompt_path, :prompt_hash,
              :prompt_tokens, :completion_tokens, :total_tokens,
              :latency_ms, :healer_applied, :healer_fix_count)
@@ -1443,7 +1669,7 @@ def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
              score_l2_1_contract, score_l2_2_purity,
              score_l3_total, score_l3_1_internal, score_l3_2_external,
              score_l4_total, score_l4_1_numeric, score_l4_2_visual,
-             student_input_test, student_input_result)
+             score_l4_4_mqi, score_math_total, score_math_quality, score_math_difficulty, student_input_test, student_input_result)
             VALUES
             (:item_id, :run_id, :repetition_index,
              :generated_question, :generated_answer, :generated_correct_answer,
@@ -1451,7 +1677,7 @@ def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
              :score_l2_1_contract, :score_l2_2_purity,
              :score_l3_total, :score_l3_1_internal, :score_l3_2_external,
              :score_l4_total, :score_l4_1_numeric, :score_l4_2_visual,
-             :student_input_test, :student_input_result)
+             :score_l4_4_mqi, :score_math_total, :score_math_quality, :score_math_difficulty, :student_input_test, :student_input_result)
         """, item)
     
     conn.commit()
@@ -1472,6 +1698,10 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
         l4_numeric = group['avg_l4_1_numeric'].values
         
         mean_mcri = np.mean(mcri_scores)
+        mean_program = np.mean(group['score_program_total'].values)
+        mean_math = np.mean(group['score_math_total'].values)
+        mean_l5 = np.mean(group['score_l5_architecture'].values)
+        mean_mqi = np.mean(group['avg_l4_4_mqi'].values)
         std_mcri = np.std(mcri_scores, ddof=1) if len(mcri_scores) > 1 else 0.0
         
         # 95% CI (使用 t 分布)
@@ -1510,7 +1740,10 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
                     p_value = None
         
         summary = {
-            'summary_id': str(uuid.uuid4()),
+            'mean_program_total': round(mean_program, 2),
+            'mean_math_total': round(mean_math, 2),
+            'mean_l5_architecture': round(mean_l5, 2),
+            'mean_l4_mqi': round(mean_mqi, 2),            'summary_id': str(uuid.uuid4()),
             'skill_name': skill_name,
             'ablation_id': int(ablation_id),
             'model_name': model_name,
@@ -1536,12 +1769,14 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
              sample_count, total_runs,
              mean_mcri_total, std_mcri_total, ci95_lower, ci95_upper,
              mean_l3_external, mean_l4_numeric,
+             mean_program_total, mean_math_total, mean_l5_architecture, mean_l4_mqi,
              p_value_vs_ab1, notes)
             VALUES
             (:summary_id, :skill_name, :ablation_id, :model_name,
              :sample_count, :total_runs,
              :mean_mcri_total, :std_mcri_total, :ci95_lower, :ci95_upper,
              :mean_l3_external, :mean_l4_numeric,
+             :mean_program_total, :mean_math_total, :mean_l5_architecture, :mean_l4_mqi,
              :p_value_vs_ab1, :notes)
         """, s)
     
@@ -1566,7 +1801,8 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
         'score_l2_total', 'score_l2_1_contract', 'score_l2_2_purity',
         'avg_l3_total', 'avg_l3_1_internal', 'avg_l3_2_external',
         'avg_l4_total', 'avg_l4_1_numeric', 'avg_l4_2_visual', 'avg_l4_3_artifacts',
-        'avg_complexity_math_ops', 'avg_complexity_ast_nodes', 'avg_complexity_loop_depth',  # [V4.4 NEW]
+        'avg_complexity_math_ops', 'avg_complexity_ast_nodes', 'avg_complexity_loop_depth',
+        'score_program_total', 'score_math_total', 'score_l5_architecture', 'avg_l4_4_mqi',
         'avg_mcri_total', 'source_code_path', 'notes',
         'batch_id', 'golden_prompt_path', 'prompt_hash',
         'prompt_tokens', 'completion_tokens', 'total_tokens',
@@ -1592,6 +1828,7 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
         'score_l2_1_contract', 'score_l2_2_purity',
         'score_l3_total', 'score_l3_1_internal', 'score_l3_2_external',
         'score_l4_total', 'score_l4_1_numeric', 'score_l4_2_visual', 'score_l4_3_artifacts',
+        'score_l4_4_mqi', 'score_math_total', 'score_math_quality', 'score_math_difficulty',
         'complexity_math_ops', 'complexity_ast_nodes', 'complexity_loop_depth',  # [V4.4] L5 複雜度指標
         'student_input_test', 'student_input_result',
         'exec_time_ms'  # [V4.2.2] 執行時間記錄（毫秒）
@@ -1613,7 +1850,9 @@ def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
         'summary_id', 'skill_name', 'ablation_id', 'model_name', 
         'sample_count', 'total_runs',
         'mean_mcri_total', 'std_mcri_total', 'ci95_lower', 'ci95_upper',
-        'mean_l3_external', 'mean_l4_numeric', 'p_value_vs_ab1', 'notes'
+        'mean_l3_external', 'mean_l4_numeric', 
+        'mean_program_total', 'mean_math_total', 'mean_l5_architecture', 'mean_l4_mqi',
+        'p_value_vs_ab1', 'notes'
     ]
     
     with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:

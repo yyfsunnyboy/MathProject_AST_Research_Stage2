@@ -44,9 +44,15 @@ class ASTHealer(ast.NodeTransformer):
     5. 修復 fmt_num 參數問題
     """
     
-    def __init__(self):
-        """初始化 AST Healer"""
+    def __init__(self, ai_client=None):
+        """
+        初始化 AST Healer
+        
+        Args:
+            ai_client: (Optional) 用於執行 Semantic Healing 的 AI 客戶端
+        """
         self.fixes = 0
+        self.ai_client = ai_client
 
     def visit_BinOp(self, node):
         """修復二元運算符"""
@@ -61,6 +67,19 @@ class ASTHealer(ast.NodeTransformer):
     def visit_Call(self, node):
         """修復函數調用"""
         self.generic_visit(node)
+
+        # 00. [V50.3] 攔截 input() -> 直接閹割，避免卡死
+        # 將 input(...) 替換為常數字串 "0" (避免後續 int() 轉換失敗)
+        func_name = ""
+        if isinstance(node.func, ast.Name):
+            func_name = node.func.id
+        elif isinstance(node.func, ast.Attribute):
+            func_name = node.func.attr
+            
+        if func_name == 'input':
+            self.fixes += 1
+            logger.warning("💉 AST Healer: 偵測到 input()，正在切除... (Replaced with '0')")
+            return ast.Constant(value="0")
         
         # 0. [V10.0] 檢測並處理幻覺函數
         hallucinated_funcs = [
@@ -162,6 +181,22 @@ class ASTHealer(ast.NodeTransformer):
     
     def visit_FunctionDef(self, node):
         """修復函數定義"""
+        # [V50.2 Shadow Killer] 
+        # 刪除與 PERFECT_UTILS 重複定義的對象，避免 AI 生成劣質版本覆蓋標準庫
+        shadowed_funcs = {
+            'fmt_num', 'to_latex', 'clean_latex_output', 'check', 'safe_eval',
+            'gcd', 'lcm', 'is_prime', 'get_factors', 'safe_choice',
+            'clamp_fraction', 'safe_pow', 'factorial_bounded', 'nCr', 'nPr',
+            'rational_gauss_solve', 'normalize_angle',
+            'fmt_set', 'fmt_interval', 'fmt_vec',
+            'build_polynomial_text', 'format_polynomial', 'polynomial_to_latex'
+        }
+        
+        if node.name in shadowed_funcs:
+            self.fixes += 1
+            logger.info(f"🔪 Shadow Killer: 刪除重複定義的 '{node.name}' (使用 Injected Utils)")
+            return None
+
         self.generic_visit(node)
         
         # 1. 移除明顯的虛函數 [V47.13 CONSERVATIVE FIX]
@@ -313,3 +348,83 @@ class ASTHealer(ast.NodeTransformer):
     # def _replace_eval_to_safe_eval(self, tree): pass
     # def _fix_infinite_recursion(self, tree): pass
     # def _inject_missing_imports(self, tree): pass
+
+    # ==============================================================================
+    # [V50.0 Semantic Self-Correction] Hybrid Healing Extension
+    # ==============================================================================
+
+    def semantic_heal(self, code_str: str, error_msg: str, model_name: str = 'qwen2.5-coder:14b') -> tuple:
+        """
+        [Dynamic] 使用 LLM 進行語意層級的自我修復 (Self-Correction)
+        當靜態 AST 分析無法解決問題時（如變數未定義、邏輯錯誤），啟用此功能。
+        
+        Args:
+            code_str: 執行失敗的代碼
+            error_msg: 錯誤堆疊訊息 (Traceback)
+            model_name: 使用的模型名稱
+            
+        Returns:
+            tuple: (修復後的代碼, 是否成功修復)
+        """
+        if not self.ai_client:
+            logger.warning("⚠️  Semantic Heal Skipped: No AI Client provided.")
+            return code_str, False
+
+        logger.info(f"🧠 啟動 Semantic Healer (Self-Correction)...")
+        logger.debug(f"Error Context: {error_msg.splitlines()[-1]}")
+
+        # 1. 建構 Prompt
+        prompt = f"""
+You are an expert Python debugger. The following code failed to execute.
+Please fix the logic error based on the error message provided.
+
+[BROKEN CODE]:
+{code_str}
+
+[ERROR MESSAGE]:
+{error_msg}
+
+[INSTRUCTIONS]:
+1. Identify the variable or logic error causing the crash (e.g. NameError, TypeError).
+2. Fix the code to ensure it runs correctly and returns valid output.
+3. OUTPUT ONLY THE FULL FIXED PYTHON CODE.
+4. DO NOT wrap with markdown code blocks. DO NOT add explanations. JUST THE CODE.
+"""
+        messages = [
+            {"role": "system", "content": "You are a Python coding assistant. Output only raw code."},
+            {"role": "user", "content": prompt}
+        ]
+
+        try:
+            # 2. 呼叫 LLM
+            # 注意: 這裡假設 ai_client 介面是 chat_completion(messages, model_size)
+            # 我們需要適配參數。如果 ai_client 是 CodeGenerator 裡的 wrapper，通常有 chat_completion
+            response = self.ai_client.chat_completion(messages, model_size=model_name)
+            
+            # 3. 清理輸出的 Markdown
+            fixed_code = response.replace("```python", "").replace("```", "").strip()
+            
+            if not fixed_code:
+                logger.error("❌ Semantic Healer returned empty code.")
+                return code_str, False
+
+            # 4. 簡單驗證語法 (Syntax Check)
+            try:
+                ast.parse(fixed_code)
+            except SyntaxError:
+                logger.warning("❌ Semantic Healer generated invalid syntax.")
+                return code_str, False
+
+            # 5. 更新計數器並返回
+            if fixed_code != code_str:
+                self.fixes += 1
+                logger.info(f"✅ Semantic Healer 應用修正 (Fixes count: {self.fixes})")
+                return fixed_code, True
+            else:
+                logger.info("○ Semantic Healer 建議不變更代碼")
+                return code_str, False
+
+        except Exception as e:
+            logger.error(f"❌ Semantic Healing Error: {e}")
+            return code_str, False
+

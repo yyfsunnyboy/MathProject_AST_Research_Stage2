@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 49.20s | Tokens: In=4107, Out=940
-# Created At: 2026-02-06 16:35:18
+# Performance: 58.32s | Tokens: In=4107, Out=905
+# Created At: 2026-02-06 20:16:35
 # Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
 # Verification: Internal Logic Check = FAILED
 # ==============================================================================
@@ -584,102 +584,90 @@ import random
 import math
 
 def generate(level=1, **kwargs):
-    while True:
+    for _safety_counter in range(1000):  # Safety: converted from while True
         # Step 1: Generate Expr_A's operands and operators
-        num_operands_A = random.choice([3, 4])
-        operands_A = [random.randint(-20, 20) for _ in range(num_operands_A)]
-        operands_A = [x if x != 0 else (random.randint(1, 20)) for x in operands_A]  # Ensure non-zero
-        operators_A = random.choices(['+', '-', '*', '/'], k=num_operands_A - 1)
+        num_operands_A = safe_choice([3, 4])
+        operands_A = [random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20) for _ in range(num_operands_A)]
+        operators_A = []
+        for _ in range(num_operands_A - 1):
+            op = safe_choice(['+', '-', '*', '/'])
+            while op == '/' and operands_A[-1] % (random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20)) != 0:
+                op = safe_choice(['+', '-', '*', '/'])
+            operators_A.append(op)
         
-        # Check if there's at least one '*' or '/' in Expr_A
+        # Check for at least one '*' or '/' in Expr_A
         if not any(op in ['*', '/'] for op in operators_A):
             continue
         
         # Calculate Part A's value
-        val_A = operands_A[0]
-        try:
-            for i, op in enumerate(operators_A):
-                next_operand = operands_A[i + 1]
-                if op == '/' and val_A % next_operand != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val_A += next_operand
-                elif op == '-':
-                    val_A -= next_operand
-                elif op == '*':
-                    val_A *= next_operand
-                elif op == '/':
-                    val_A //= next_operand
-                if abs(val_A) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError as e:
-            continue
+        val = operands_A[0]
+        for i, op in enumerate(operators_A):
+            n = operands_A[i + 1]
+            if op == '/' and val % n != 0:
+                break
+            else:
+                val = eval(f"{val} {op} {n}")
+            if abs(val) > 500:
+                break
+        else:
+            val_A = val
         
         # Step 2: Generate Expr_C's operands and operators
-        num_operands_C = random.choice([2, 3])
-        operands_C = [random.randint(-100, 100) for _ in range(num_operands_C)]
-        operands_C = [x if x != 0 else (random.randint(1, 100)) for x in operands_C]  # Ensure non-zero
-        operators_C = random.choices(['+', '-', '*', '/'], k=num_operands_C - 1)
+        num_operands_C = safe_choice([2, 3])
+        operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
+        operators_C = []
+        for _ in range(num_operands_C - 1):
+            op = safe_choice(['+', '-', '*', '/'])
+            while op == '/' and operands_C[-1] % (random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20)) != 0:
+                op = safe_choice(['+', '-', '*', '/'])
+            operators_C.append(op)
         
-        # Check if there's at least one '*' or '/' in Expr_C
+        # Check for at least one '*' or '/' in Expr_C
         if not any(op in ['*', '/'] for op in operators_C):
             continue
         
         # Calculate Part C's value
-        val_C = operands_C[0]
-        try:
-            for i, op in enumerate(operators_C):
-                next_operand = operands_C[i + 1]
-                if op == '/' and val_C % next_operand != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val_C += next_operand
-                elif op == '-':
-                    val_C -= next_operand
-                elif op == '*':
-                    val_C *= next_operand
-                elif op == '/':
-                    val_C //= next_operand
-        except ValueError as e:
-            continue
+        val = operands_C[0]
+        for i, op in enumerate(operators_C):
+            n = operands_C[i + 1]
+            if op == '/' and val % n != 0:
+                break
+            else:
+                val = eval(f"{val} {op} {n}")
+            if abs(val) > 500:
+                break
+        else:
+            val_C = val
         
         # Step 3: Calculate Part B's value
         val_B = abs(val_C)
         
         # Step 4: Calculate final answer
-        main_op = random.choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val_A + val_B
-        elif main_op == '-':
-            final_answer = val_A - val_B
+        main_op = safe_choice(['+', '-'])
+        final_answer = eval(f"{val_A} {main_op} {val_B}")
         
-        # Final checks
-        if final_answer in [0, 1, -1]:
-            continue
-        if abs(final_answer) > 1000:
-            continue
-        if all(x >= 0 for x in operands_A + operands_C):
+        # Check for valid final answer
+        if final_answer == 0 or final_answer in [1, -1]:
             continue
         
-        # Formatting the question text
-        expr_A = fmt_num(operands_A[0])
-        for i in range(len(operators_A)):
-            op_symbol = operators_A[i].replace('*', '\\times').replace('/', '\\div')
-            expr_A += f" {op_symbol} {fmt_num(operands_A[i + 1])}"
+        # Step 5: Final validation
+        if all(n > 0 for n in operands_A + operands_C):
+            continue
         
-        expr_C = fmt_num(operands_C[0])
-        for i in range(len(operators_C)):
-            op_symbol = operators_C[i].replace('*', '\\times').replace('/', '\\div')
-            expr_C += f" {op_symbol} {fmt_num(operands_C[i + 1])}"
-        
-        question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+ ').replace('-', '- ')} $|{expr_C}|$ 的值。"
-        
-        # Formatting the answer
-        correct_answer = str(final_answer)
-        
-        return {
-            'question_text': question_text,
-            'correct_answer': correct_answer,
-            'answer': correct_answer,
-            'mode': 1
-        }
+        break
+    
+    # Format the question text
+    expr_A = fmt_num(operands_A[0])
+    for i in range(len(operators_A)):
+        expr_A += f" {operators_A[i].replace('*', '\\times').replace('/', '\\div')} {fmt_num(operands_A[i + 1])}"
+    
+    expr_C = fmt_num(operands_C[0])
+    for i in range(len(operators_C)):
+        expr_C += f" {operators_C[i].replace('*', '\\times').replace('/', '\\div')} {fmt_num(operands_C[i + 1])}"
+    
+    q = f"計算 ${expr_A}$ {main_op} $|{expr_C}|$ 的值。"
+    
+    # Format the answer
+    a = str(final_answer)
+    
+    return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}

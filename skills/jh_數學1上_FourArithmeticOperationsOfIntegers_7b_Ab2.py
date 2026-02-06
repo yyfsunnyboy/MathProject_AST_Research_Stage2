@@ -1,13 +1,12 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
-# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 57.22s | Tokens: In=4107, Out=914
-# Created At: 2026-02-06 20:18:27
-# Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
-# Verification: Internal Logic Check = PASSED
+# Model: qwen2.5-coder:7b | Strategy: V10.1 Modular Refactored
+# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 18.40s | Tokens: In=4390, Out=1250
+# Created At: 2026-02-06 19:40:55
+# Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
+# Verification: Internal Logic Check = FAILED
 # ==============================================================================
-
 
 
 # [INJECTED UTILS]
@@ -580,106 +579,144 @@ def _quadratic_formula(a, b, c):
 # ---------------------------------------------------------
 
 
-import random
-import math
-
 def generate(level=1, **kwargs):
-    for _safety_counter in range(1000):  # Safety: converted from while True
-        # Step 1: Generate Expr_A's operands and operators
-        num_operands_A = safe_choice([3, 4])
-        operands_A = [random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20) for _ in range(num_operands_A)]
-        operators_A = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_A - 1)]
+    import random
+    import math
 
-        # Ensure at least one '*' or '/' in Expr_A
-        if not any(op in ['*', '/'] for op in operators_A):
-            continue
+    # 定義運算符對應的 LaTeX 符號
+    op_latex = {
+        '+': r'\plus',
+        '-': r'\minus',
+        '*': r'\times',
+        '/': r'\div'
+    }
 
-        # Calculate Part A's value
-        val = operands_A[0]
-        try:
-            for i, op in enumerate(operators_A):
-                n = operands_A[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val += n
-                elif op == '-':
-                    val -= n
-                elif op == '*':
-                    val *= n
-                elif op == '/':
-                    val //= n
+    def fmt_num(n):
+        return str(n)
 
-                if abs(val) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
+    def clean_latex_output(latex_str):
+        return f"${latex_str}$"
 
-        # Step 2: Generate Expr_C's operands and operators
-        num_operands_C = safe_choice([2, 3])
-        operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
-        operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
+    def _solve_linear_2x2(a1, b1, c1, a2, b2, c2):
+        det = a1 * b2 - a2 * b1
+        if det == 0:
+            return None
+        x = (c1 * b2 - c2 * b1) / det
+        y = (a1 * c2 - a2 * c1) / det
+        return (x, y)
 
-        # Ensure at least one '*' or '/' in Expr_C
-        if not any(op in ['*', '/'] for op in operators_C):
-            continue
+    def _quadratic_formula(a, b, c):
+        discriminant = b**2 - 4*a*c
+        if discriminant < 0:
+            return None
+        x1 = (-b + math.sqrt(discriminant)) / (2*a)
+        x2 = (-b - math.sqrt(discriminant)) / (2*a)
+        return (x1, x2)
 
-        # Calculate Part C's value
-        val_C = operands_C[0]
-        try:
-            for i, op in enumerate(operators_C):
-                n = operands_C[i + 1]
-                if op == '/' and val_C % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val_C += n
-                elif op == '-':
-                    val_C -= n
-                elif op == '*':
-                    val_C *= n
-                elif op == '/':
-                    val_C //= n
+    def _coeffs_to_terms(coeffs):
+        terms = []
+        for i, coeff in enumerate(coeffs):
+            if coeff != 0:
+                term = f"{fmt_num(coeff)}x^{len(coeffs) - i - 1}"
+                terms.append(term)
+        return terms
 
-                if abs(val_C) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
+    def _differentiate_poly(terms, order=1):
+        new_terms = []
+        for i, (coeff, power) in enumerate(terms):
+            if power >= order:
+                new_coeff = coeff * power
+                new_power = power - order
+                new_term = f"{fmt_num(new_coeff)}x^{new_power}"
+                new_terms.append((new_coeff, new_power))
+        return new_terms
 
-        # Step 3: Calculate Part B's value
-        val_B = abs(val_C)
+    def _poly_to_latex(terms):
+        latex_str = ""
+        for term in terms:
+            if latex_str != "":
+                latex_str += " + "
+            coeff, power = term
+            if power == 0:
+                latex_str += fmt_num(coeff)
+            elif power == 1:
+                latex_str += f"{fmt_num(coeff)}x"
+            else:
+                latex_str += f"{fmt_num(coeff)}x^{power}"
+        return latex_str
 
-        # Step 4: Calculate final answer
-        main_op = safe_choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val + val_B
+    def _poly_to_plain(terms):
+        plain_text = ""
+        for term in terms:
+            coeff, power = term
+            if plain_text != "":
+                plain_text += " + "
+            if power == 0:
+                plain_text += fmt_num(coeff)
+            elif power == 1:
+                plain_text += f"{fmt_num(coeff)}x"
+            else:
+                plain_text += f"{fmt_num(coeff)}x^{power}"
+        return plain_text
+
+    def _deriv_symbol_latex(order):
+        if order == 1:
+            return r"\frac{d}{dx}"
+        elif order == 2:
+            return r"\frac{d^2}{dx^2}"
         else:
-            final_answer = val - val_B
+            return f"\frac{{d^{order}}}{{dx^{order}}}"
 
-        # Ensure final answer is within range and not 0, 1, or -1
-        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
-            continue
+    def generate_expr(num_operands, operators):
+        while True:
+            operands = [random.randint(-20, -1) if random.random() < 0.33 else random.randint(1, 20) for _ in range(num_operands)]
+            ops = random.sample(operators, num_operands - 1)
+            expr = f"{operands[0]}"
+            for i in range(len(ops)):
+                expr += f" {op_latex[ops[i]]} {operands[i + 1]}"
 
-        # Step 5: Final verification
-        if all(n > 0 for n in operands_A + operands_C):
-            continue
+            try:
+                result = eval(expr)
+                if isinstance(result, int) and -500 <= result <= 500:
+                    return expr, result
+            except ZeroDivisionError:
+                continue
 
-        break
+    def generate_abs_expr(num_operands, operators):
+        while True:
+            operands = [random.randint(-20, -1) if random.random() < 0.33 else random.randint(1, 20) for _ in range(num_operands)]
+            ops = random.sample(operators, num_operands - 1)
+            expr = f"{operands[0]}"
+            for i in range(len(ops)):
+                expr += f" {op_latex[ops[i]]} {operands[i + 1]}"
 
-    # Format the question text
-    expr_A = fmt_num(operands_A[0])
-    for i in range(len(operators_A)):
-        op_symbol = operators_A[i].replace('*', '\\times').replace('/', '\\div')
-        expr_A += f" {op_symbol} {fmt_num(operands_A[i + 1])}"
+            try:
+                result = eval(expr)
+                if isinstance(result, int) and -500 <= result <= 500:
+                    return expr, abs(result)
+            except ZeroDivisionError:
+                continue
 
-    expr_C = fmt_num(operands_C[0])
-    for i in range(len(operators_C)):
-        op_symbol = operators_C[i].replace('*', '\\times').replace('/', '\\div')
-        expr_C += f" {op_symbol} {fmt_num(operands_C[i + 1])}"
+    def generate_question():
+        num_operands_A = random.choice([3, 4])
+        num_operands_C = random.choice([2, 3])
 
-    question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
+        operators_A = random.sample(['+', '-', '*', '/'], num_operands_A - 1)
+        operators_C = random.sample(['+', '-', '*', '/'], num_operands_C - 1)
 
-    # Format the answer
-    correct_answer = str(final_answer)
-    answer = correct_answer
+        expr_A, val_A = generate_expr(num_operands_A, operators_A)
+        expr_C, val_C = generate_abs_expr(num_operands_C, operators_C)
 
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}
+        main_op = random.choice(['+', '-'])
+        final_result = eval(f"{val_A} {main_op} {val_C}")
+
+        if not (-1000 <= final_result <= 1000) or final_result == 0 or final_result == 1 or final_result == -1:
+            return generate_question()
+
+        q_raw = f"計算 ${expr_A} {op_latex[main_op]} |{expr_C}|$ 的值。"
+        q = clean_latex_output(q_raw)
+        a = str(final_result)
+
+        return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+
+    return generate_question()

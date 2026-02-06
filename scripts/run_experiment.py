@@ -8,6 +8,10 @@
 
 import sys
 import os
+
+# 添加專案根目錄到 sys.path，確保能 import core
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import glob
 import time
 import hashlib
@@ -18,6 +22,7 @@ from datetime import datetime
 from pathlib import Path
 from tqdm import tqdm
 from collections import defaultdict
+from core.code_generator import _advanced_healer  # [NEW] 統一使用核心 Healer Pipeline
 
 # [NEW] 嘗試引入 Google Generative AI SDK (新版本)
 try:
@@ -788,25 +793,42 @@ def main():
                         # B. 基本清理（Ab1/Ab2/Ab3 都執行）
                         cleaned_code, basic_cleanup_count = apply_basic_cleanup(raw_code)
                         
-                        # C. 進階 Healer（僅 Ab3 使用）
-                        final_code = cleaned_code
-                        healer_status = "OFF"
-                        regex_fixes = 0
-                        ast_fixes = 0
-                        healer_fixed_count = 0
+                        # C. 進階 Healer Pipeline (統一呼叫核心模組)
+                        # Ab1: _advanced_healer 內部會自動判斷 ablation_id，如果不需修復會直接返回
+                        final_code, regex_fixes, ast_fixes, _, _, healer_fixed_count, _, _ = \
+                            _advanced_healer(cleaned_code, ablation_id, skill)
                         
-                        if use_healer:  # Ab3 才會進到這裡
-                            final_code, regex_fixes, ast_fixes, healer_fixed_count = \
-                                apply_healer_mock(cleaned_code, ablation_id, skill)
-                            healer_status = "ON"
+                        # 狀態標記
+                        healer_status = "ON" if (regex_fixes > 0 or ast_fixes > 0) else "OFF"
+                        if healer_status == "ON":
                             stats.healed_count += 1
                         
                         # D. 建立檔案標頭 (完整格式，參考 code_generator.py)
                         run_duration = time.time() - run_start_time
                         
-                        # [新增] 驗證代碼完整性
-                        verify_status = verify_code_integrity(final_code)
+                        # D-0. [NEW] 為 Ab2/Ab3 注入脚手架與工具庫 (Move before Verification)
+                        # 必須先注入，否則 verify_code_integrity 會因為找不到 fmt_num 等函數而失敗
+                        code_to_save = final_code
+                        if ablation_id >= 2:
+                            # Ab2, Ab3: 注入完整工具庫與 Domain 函數庫
+                            try:
+                                from core.code_generator import build_calculation_skeleton
+                                skeleton = build_calculation_skeleton(skill)  # 傳入 skill_id
+                                code_to_save = skeleton + "\n" + final_code
+                            except ImportError:
+                                # Fallback: 如果無法導入，直接使用最終代碼
+                                tqdm.write(f"⚠️  無法導入 build_calculation_skeleton，跳過脚手架注入")
+                                code_to_save = final_code
+                        else:
+                            # Ab1 (Bare): 不注入脚手架，僅使用生成的代碼
+                            code_to_save = final_code
+
+                        # [新增] 驗證代碼完整性 (現在檢查的是完整的 code_to_save)
+                        verify_status = verify_code_integrity(code_to_save)
                         tqdm.write(f"   [DEBUG] verify_status = {verify_status}")
+                        
+                        # D. 建立檔案標頭 (完整格式，參考 code_generator.py)
+                        run_duration = time.time() - run_start_time
                         
                         header = _format_file_header(
                             skill_id=skill,
@@ -825,22 +847,6 @@ def main():
                             verify_status=verify_status
                         )
                         
-                        # D-1. [NEW] 為 Ab2/Ab3 注入脚手架與工具庫 (參考 code_generator.py L682-683)
-                        code_to_save = final_code
-                        if ablation_id >= 2:
-                            # Ab2, Ab3: 注入完整工具庫與 Domain 函數庫
-                            try:
-                                from core.code_generator import build_calculation_skeleton
-                                skeleton = build_calculation_skeleton(skill)  # 傳入 skill_id
-                                code_to_save = skeleton + "\n" + final_code
-                            except ImportError:
-                                # Fallback: 如果無法導入，直接使用最終代碼
-                                tqdm.write(f"⚠️  無法導入 build_calculation_skeleton，跳過脚手架注入")
-                                code_to_save = final_code
-                        else:
-                            # Ab1 (Bare): 不注入脚手架，僅使用生成的代碼
-                            code_to_save = final_code
-                        
                         # E. Save File (帶標頭 + 脚手架)
                         filename = f"{skill}_{model_key}_{ab_name}_run{i:02d}.py"
                         filepath = os.path.join(skill_dir, filename)
@@ -852,13 +858,20 @@ def main():
                         
                         # [DEBUG] 檢查最終要寫入的內容
                         final_content = header + code_to_save
-                        if final_content.count('# ==============================================================================') > 1:
-                            tqdm.write(f"⚠️  WARNING: 偵測到多個文件頭！計數: {final_content.count('# ==============================================================================')}")
+                        # [Refined Check] 改為檢查 "# ID:" 的出現次數，避免將工具庫中的分隔線誤判為文件頭
+                        if final_content.count('\n# ID:') > 1 or final_content.count('^# ID:') > 1:
+                             tqdm.write(f"⚠️  WARNING: 偵測到多個主要文件頭 (Duplicate Header Detected)！")
+                        elif final_content.count('# ==============================================================================') > 12:
+                             # 只有當分隔線數量異常多時才警告 (原本 utils 約有 10-12 個)
+                             tqdm.write(f"⚠️  WARNING: 偵測到異常多的分隔線 (Count: {final_content.count('# ==============================================================================')})")
                         
                         with open(filepath, 'w', encoding='utf-8') as f:
                             f.write(final_content)
                         
                         # F. 記錄到資料庫 (ExperimentLog)
+                        # [FIX] 如果驗證失敗，則視為實驗失敗
+                        is_run_successful = (verify_status == "PASSED")
+                        
                         log_experiment_to_db(
                             skill_id=skill,
                             model_name=model_key,
@@ -868,27 +881,38 @@ def main():
                             completion_tokens=usage.get('completion', 0),
                             raw_code=raw_code,
                             final_code=code_to_save,  # 使用注入脚手架後的代碼
-                            is_success=True,
+                            is_success=is_run_successful,
                             healer_fixes=healer_fixed_count,
-                            verify_status=verify_status  # <--- [NEW] 記得傳入這個！
+                            verify_status=verify_status
                         )
                         
                         # G. 更新統計數據
-                        stats.successful_runs += 1
+                        if is_run_successful:
+                            stats.successful_runs += 1
+                            stats.model_stats[model_key]['success'] += 1
+                            stats.skill_stats[skill]['success'] += 1
+                            
+                            tqdm.write(f"✅ [{batch_id.split('_')[1]}] {filename} "
+                                     f"({usage['completion']} toks, {run_duration:.2f}s, {healer_status}) | DB: logged")
+                        else:
+                            stats.failed_runs += 1
+                            stats.model_stats[model_key]['failure'] += 1
+                            stats.skill_stats[skill]['failure'] += 1
+                            
+                            tqdm.write(f"❌ [{batch_id.split('_')[1]}] {filename} "
+                                     f"(Verification Failed: {verify_status}) | DB: logged as failed")
+                        
                         stats.total_tokens_prompt += usage.get('prompt', 0)
                         stats.total_tokens_completion += usage.get('completion', 0)
                         stats.total_time_seconds += run_duration
-                        stats.model_stats[model_key]['success'] += 1
+                        
                         stats.model_stats[model_key]['tokens_prompt'] += usage.get('prompt', 0)
                         stats.model_stats[model_key]['tokens_completion'] += usage.get('completion', 0)
                         stats.model_stats[model_key]['time'] += run_duration
-                        stats.skill_stats[skill]['success'] += 1
+                        
                         stats.skill_stats[skill]['tokens_prompt'] += usage.get('prompt', 0)
                         stats.skill_stats[skill]['tokens_completion'] += usage.get('completion', 0)
                         stats.skill_stats[skill]['time'] += run_duration
-                        
-                        tqdm.write(f"✅ [{batch_id.split('_')[1]}] {filename} "
-                                 f"({usage['completion']} toks, {run_duration:.2f}s, {healer_status}) | DB: logged")
                         
                     except Exception as e:
                         stats.failed_runs += 1

@@ -2,9 +2,9 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 43.66s | Tokens: In=4107, Out=888
-# Created At: 2026-02-06 14:02:36
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=2)
+# Performance: 54.13s | Tokens: In=4107, Out=1007
+# Created At: 2026-02-06 19:20:04
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=8)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -592,59 +592,44 @@ def generate(level=1, **kwargs):
                 n = operands_A[i + 1]
                 if op == '/' and val % n != 0:
                     raise ValueError('Not an integer division')
-                elif op == '+':
-                    val += n
-                elif op == '-':
-                    val -= n
-                elif op == '*':
-                    val *= n
-                elif op == '/':
-                    val //= n
+                val = safe_eval(f'{val} {op} {n}')
                 if abs(val) > 500:
                     raise ValueError('Intermediate result out of range')
-        except ValueError:
+            val_A = val
+        except Exception as e:
             continue
         num_operands_C = safe_choice([2, 3])
         operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
         operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
         if not any((op in ['*', '/'] for op in operators_C)):
             continue
-        val_C = operands_C[0]
+        val = operands_C[0]
         try:
             for i, op in enumerate(operators_C):
                 n = operands_C[i + 1]
-                if op == '/' and val_C % n != 0:
+                if op == '/' and val % n != 0:
                     raise ValueError('Not an integer division')
-                elif op == '+':
-                    val_C += n
-                elif op == '-':
-                    val_C -= n
-                elif op == '*':
-                    val_C *= n
-                elif op == '/':
-                    val_C //= n
-        except ValueError:
+                val = safe_eval(f'{val} {op} {n}')
+                if abs(val) > 500:
+                    raise ValueError('Intermediate result out of range')
+            val_C = val
+        except Exception as e:
             continue
         val_B = abs(val_C)
         main_op = safe_choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val + val_B
-        else:
-            final_answer = val - val_B
-        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
+        final_answer = safe_eval(f'{val_A} {main_op} {val_B}')
+        if final_answer == 0 or final_answer in [1, -1] or abs(final_answer) > 1000:
             continue
         if all((n > 0 for n in operands_A + operands_C)):
             continue
         break
     expr_A = fmt_num(operands_A[0])
-    for i in range(len(operators_A)):
-        op = operators_A[i].replace('*', '\\times').replace('/', '\\div')
+    for i, op in enumerate(operators_A):
         expr_A += f' {op} {fmt_num(operands_A[i + 1])}'
     expr_C = fmt_num(operands_C[0])
-    for i in range(len(operators_C)):
-        op = operators_C[i].replace('*', '\\times').replace('/', '\\div')
+    for i, op in enumerate(operators_C):
         expr_C += f' {op} {fmt_num(operands_C[i + 1])}'
-    question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
+    main_op_symbol = {'+': '+', '-': '-'}.get(main_op)
+    question_text = f'計算 ${expr_A}$ {main_op_symbol} $|{expr_C}|$ 的值。'
     correct_answer = str(final_answer)
-    answer = correct_answer
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}
+    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}

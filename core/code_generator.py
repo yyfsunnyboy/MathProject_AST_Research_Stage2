@@ -2,13 +2,13 @@
 # -*- coding: utf-8 -*-
 # ============================================================================== 
 # ID: code_generator.py
-# Version: V10.1.0 (Modular Refactored Edition)
-# Last Updated: 2026-01-31
+# Version: V50.0 (Semantic Self-Correction Edition)
+# Last Updated: 2026-02-06
 # Author: Math AI Research Team (Advisor & Student)
 #
 # [Description]:
 #   本模組為科展實驗的自動技能生成核心，負責根據規格書自動產生技能程式碼，
-#   並支援 AST/Regex 修復、沙盒驗證等功能，確保生成結果符合標準。
+#   並支援 AST/Regex 修復、Semantic Self-Correction (Hybrid Healer)、沙盒驗證等功能，確保生成結果符合標準。
 #
 #   [Scientific Control Strategy]:
 #   本模組配合「單一黃金標準」策略，確保所有技能生成均以統一規格書為依據，
@@ -559,8 +559,11 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
     if ablation_id >= 3:
         log_step_start(3, "AST Healer (Ab3 Only)", "[語法樹修復啟動] Abstract Syntax Tree Analysis...")
         
-        ast_healer = ASTHealer()
+        # [V50.0] 傳入 AI Client 以支援 Semantic Healing
+        ai_client = get_ai_client()
+        ast_healer = ASTHealer(ai_client=ai_client)
         try:
+            # 3.1 靜態 AST 修復
             code_after_ast, ast_fixes = ast_healer.heal(code_after_regex)
             
             if VERBOSE_LEVEL == 2:
@@ -570,6 +573,50 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
                 log_fix_detail("3.3 Dangerous Call Remover", "skip", "🔍 檢查危險函數: eval, exec, safe_eval")
                 log_fix_detail("3.4 Loop Condition Fixer", "skip", "🔍 檢查迴圈條件")
             
+            # [V50.0] Semantic Self-Correction (邏輯修復)
+            # 先進行一次快速驗證，如果有 SyntaxError 或 NameError 等嚴重錯誤，才啟動 LLM 修復
+            try:
+                # 簡單的 compile 檢查 (不執行，只查語法與變數綁定)
+                compile(code_after_ast, '<string>', 'exec')
+                
+                # [V50.1] Simulation & Rescue (模擬執行與救援)
+                # 進一步捕捉 runtime 錯誤 (如 NameError: name 'val_A' is not defined)
+                # 因為代碼片段可能依賴 utils，我們只在它看起來完整時嘗試
+                
+                # 使用 validator 進行沙盒模擬
+                # 注意：這會比較慢，但能抓到邏輯漏洞
+                is_valid_sim, sim_error = _validate_python_code(code_after_ast)
+                
+                if not is_valid_sim:
+                    if VERBOSE_LEVEL == 2:
+                        # 簡化錯誤訊息顯示
+                        preview_err = sim_error.split('\n')[-1] if sim_error else "Unknown Error"
+                        log_fix_detail("3.6 Simulation Check", "warn", f"⚠️  模擬執行失敗: {preview_err}")
+                        log_fix_detail("3.7 Semantic Rescue", "active", "🚑 啟動 Rescue Mission...")
+                    
+                    # 啟動救援
+                    fixed_code, is_fixed = ast_healer.semantic_heal(code_after_ast, sim_error)
+                    
+                    if is_fixed:
+                        code_after_ast = fixed_code
+                        # 更新計數 (ast_healer.fixes 已在內部增加)
+                        ast_fixes = ast_healer.fixes
+                        if VERBOSE_LEVEL == 2:
+                            log_fix_detail("3.7 Semantic Rescue", "fixed", "✅ 成功修復 Runtime Error")
+            
+            except Exception as e:
+                # 如果 compile 就失敗，直接啟動 Semantic Heal
+                if VERBOSE_LEVEL == 2:
+                    log_fix_detail("3.5 Semantic Self-Correction", "warn", f"⚠️  Syntax 嚴重錯誤，啟動 LLM 修復: {e}")
+                
+                fixed_code, is_fixed = ast_healer.semantic_heal(code_after_ast, str(e))
+                if is_fixed:
+                    code_after_ast = fixed_code
+                    pass
+
+            # 更新總修復數
+            ast_fixes = ast_healer.fixes
+            
             log_step_result(3, ast_fixes, f"AST 結構正常" if ast_fixes == 0 else f"修復完成")
             
         except Exception as e:
@@ -578,13 +625,28 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
             
             # [NEW] Fail-fast for Ablation 3
             if ablation_id == 3:
-                if VERBOSE_LEVEL == 2:
-                    log_fix_detail("Fail-fast Protection", "warn", 
-                                  "⚠️ AST 解析失敗，使用 Regex 修復後的代碼")
-                    log_fix_detail("Safety Net", "warn", 
-                                  "如有無窮迴圈，將在動態採樣階段被 timeout 攔截")
-                code_after_ast = code_after_regex
-                ast_fixes = 0
+                # AST 徹底失敗時，嘗試最後一次 Semantic Heal
+                # (因為 parse 失敗代表連 AST 都建不起來)
+                try: 
+                    if VERBOSE_LEVEL == 2:
+                        log_fix_detail("Emergency Semantic Heal", "warn", "⚠️ AST Parse Failed - Trying LLM Fix")
+                    
+                    fixed_code, is_fixed = ast_healer.semantic_heal(code_after_regex, f"SyntaxError: {str(e)}")
+                    if is_fixed:
+                        code_after_ast = fixed_code
+                        ast_fixes = ast_healer.fixes
+                    else:
+                        code_after_ast = code_after_regex
+                        ast_fixes = 0
+                except:
+                    if VERBOSE_LEVEL == 2:
+                        log_fix_detail("Fail-fast Protection", "warn", 
+                                      "⚠️ AST 解析失敗，使用 Regex 修復後的代碼")
+                        log_fix_detail("Safety Net", "warn", 
+                                      "如有無窮迴圈，將在動態採樣階段被 timeout 攔截")
+                    code_after_ast = code_after_regex
+                    ast_fixes = 0
+
                 log_step_result(3, ast_fixes, "使用 Regex 修復後的代碼（AST 失敗）")
             else:
                 code_after_ast = code_after_regex
@@ -596,7 +658,7 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
     # 這裡可擴充更多修復統計資訊
     garbage_cleaner_count = 0
     removed_list = []
-    healer_fixes = regex_fixes +ast_fixes
+    healer_fixes = regex_fixes + ast_fixes
     eval_eliminator_count = 0
     healing_duration = 0
     

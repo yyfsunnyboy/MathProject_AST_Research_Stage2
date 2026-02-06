@@ -1,11 +1,11 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
-# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 57.22s | Tokens: In=4107, Out=914
-# Created At: 2026-02-06 20:18:27
-# Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
-# Verification: Internal Logic Check = PASSED
+# Model: qwen2.5-coder-7b | Strategy: V10.1 Modular Refactored
+# Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 18.93s | Tokens: In=4107, Out=1406
+# Created At: 2026-02-06 20:11:11
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=7, AST=0)
+# Verification: Internal Logic Check = FAILED
 # ==============================================================================
 
 
@@ -580,106 +580,169 @@ def _quadratic_formula(a, b, c):
 # ---------------------------------------------------------
 
 
-import random
-import math
-
 def generate(level=1, **kwargs):
-    for _safety_counter in range(1000):  # Safety: converted from while True
-        # Step 1: Generate Expr_A's operands and operators
-        num_operands_A = safe_choice([3, 4])
-        operands_A = [random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20) for _ in range(num_operands_A)]
-        operators_A = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_A - 1)]
+    import random
+    from algebra import _solve_linear_2x2, _quadratic_formula
 
-        # Ensure at least one '*' or '/' in Expr_A
-        if not any(op in ['*', '/'] for op in operators_A):
-            continue
+    def fmt_num(n):
+        return f"{n}"
 
-        # Calculate Part A's value
-        val = operands_A[0]
-        try:
-            for i, op in enumerate(operators_A):
-                n = operands_A[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val += n
-                elif op == '-':
-                    val -= n
-                elif op == '*':
-                    val *= n
-                elif op == '/':
-                    val //= n
-
-                if abs(val) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
-
-        # Step 2: Generate Expr_C's operands and operators
-        num_operands_C = safe_choice([2, 3])
-        operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
-        operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
-
-        # Ensure at least one '*' or '/' in Expr_C
-        if not any(op in ['*', '/'] for op in operators_C):
-            continue
-
-        # Calculate Part C's value
-        val_C = operands_C[0]
-        try:
-            for i, op in enumerate(operators_C):
-                n = operands_C[i + 1]
-                if op == '/' and val_C % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val_C += n
-                elif op == '-':
-                    val_C -= n
-                elif op == '*':
-                    val_C *= n
-                elif op == '/':
-                    val_C //= n
-
-                if abs(val_C) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
-
-        # Step 3: Calculate Part B's value
-        val_B = abs(val_C)
-
-        # Step 4: Calculate final answer
-        main_op = safe_choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val + val_B
+    def to_latex(n):
+        if n < 0:
+            return f"({n})"
         else:
-            final_answer = val - val_B
+            return str(n)
 
-        # Ensure final answer is within range and not 0, 1, or -1
-        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
+    def clean_latex_output(latex_str):
+        return f"${latex_str}$"
+
+    def _coeffs_to_terms(coeffs: list) -> list[tuple]:
+        terms = []
+        for i, coeff in enumerate(coeffs):
+            if coeff != 0:
+                term = (coeff, len(coeffs) - i - 1)
+                terms.append(term)
+        return terms
+
+    def _differentiate_poly(terms, order=1) -> list[tuple]:
+        new_terms = []
+        for coeff, power in terms:
+            if power >= order:
+                new_coeff = coeff * power
+                new_power = power - order
+                new_terms.append((new_coeff, new_power))
+        return new_terms
+
+    def _poly_to_latex(terms) -> str:
+        latex_str = ""
+        first_term = True
+        for coeff, power in terms:
+            if not first_term:
+                latex_str += " + "
+            if power == 0:
+                latex_str += fmt_num(coeff)
+            elif power == 1:
+                if coeff == 1:
+                    latex_str += f"x"
+                else:
+                    latex_str += f"{fmt_num(coeff)}x"
+            else:
+                if coeff == 1:
+                    latex_str += f"x^{power}"
+                else:
+                    latex_str += f"{fmt_num(coeff)}x^{power}"
+            first_term = False
+        return clean_latex_output(latex_str)
+
+    def _poly_to_plain(terms) -> str:
+        plain_str = ""
+        first_term = True
+        for coeff, power in terms:
+            if not first_term:
+                plain_str += " + "
+            if power == 0:
+                plain_str += fmt_num(coeff)
+            elif power == 1:
+                if coeff == 1:
+                    plain_str += f"x"
+                else:
+                    plain_str += f"{fmt_num(coeff)}x"
+            else:
+                if coeff == 1:
+                    plain_str += f"x^{power}"
+                else:
+                    plain_str += f"{fmt_num(coeff)}x^{power}"
+            first_term = False
+        return plain_str
+
+    def _deriv_symbol_latex(order) -> str:
+        if order == 1:
+            return "f'(x)"
+        elif order == 2:
+            return "f''(x)"
+        else:
+            return f"f^{order}(x)"
+
+    while True:
+        num_operands_A = safe_choice([3, 4])
+        num_operands_C = safe_choice([2, 3])
+
+        operands_A = [random.randint(-20, -1) if random.random() < 1/3 else random.randint(1, 20) for _ in range(num_operands_A)]
+        operators_A = random.choices(['+', '-', '*', '/'], k=num_operands_A-1)
+
+        operands_C = [random.randint(-100, -1) if random.random() < 1/3 else random.randint(1, 100) for _ in range(num_operands_C)]
+        operators_C = random.choices(['+', '-', '*', '/'], k=num_operands_C-1)
+
+        main_op = safe_choice(['+', '-'])
+
+        def calculate_expression(expr):
+            stack = []
+            i = 0
+            while i < len(expr):
+                if expr[i] in '+-':
+                    operator = expr[i]
+                    i += 1
+                    num = int(''.join(filter(str.isdigit, expr[i:])))
+                    i += len(str(num))
+                    if operator == '-':
+                        stack.append(-num)
+                    else:
+                        stack.append(num)
+                elif expr[i].isdigit():
+                    num = int(expr[i])
+                    while i+1 < len(expr) and expr[i+1].isdigit():
+                        num = num * 10 + int(expr[i+1])
+                        i += 1
+                    stack.append(num)
+            return sum(stack)
+
+        def calculate_part_A(operands, operators):
+            val = operands[0]
+            for op, n in zip(operators, operands[1:]):
+                if op == '/':
+                    if val % n != 0:
+                        continue
+                val = eval(f"{val}{op}{n}")
+                if abs(val) > 500 or abs(val) < -500:
+                    continue
+            return val
+
+        def calculate_part_C(operands, operators):
+            val = operands[0]
+            for op, n in zip(operators, operands[1:]):
+                if op == '/':
+                    if val % n != 0:
+                        continue
+                val = eval(f"{val}{op}{n}")
+                if abs(val) > 500 or abs(val) < -500:
+                    continue
+            return val
+
+        val_A = calculate_part_A(operands_A, operators_A)
+        val_C = calculate_part_C(operands_C, operators_C)
+
+        final_answer = eval(f"{val_A}{main_op}{abs(val_C)}")
+
+        if final_answer == 0 or final_answer in [1, -1]:
             continue
 
-        # Step 5: Final verification
-        if all(n > 0 for n in operands_A + operands_C):
+        if all(op in ['+', '-'] for op in operators_A + operators_C):
             continue
 
-        break
+        if any(n > 20 or n < -20 for n in operands_A) or any(n > 500 or n < -500 for n in [val_A, val_B]):
+            continue
 
-    # Format the question text
-    expr_A = fmt_num(operands_A[0])
-    for i in range(len(operators_A)):
-        op_symbol = operators_A[i].replace('*', '\\times').replace('/', '\\div')
-        expr_A += f" {op_symbol} {fmt_num(operands_A[i + 1])}"
+        if all(op in ['+', '-'] for op in operators_A + operators_C):
+            continue
 
-    expr_C = fmt_num(operands_C[0])
-    for i in range(len(operators_C)):
-        op_symbol = operators_C[i].replace('*', '\\times').replace('/', '\\div')
-        expr_C += f" {op_symbol} {fmt_num(operands_C[i + 1])}"
+        if final_answer == 0 or final_answer in [1, -1]:
+            continue
 
-    question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
+        if any(n > 20 or n < -20 for n in operands_A) or any(n > 500 or n < -500 for n in [val_A, val_B]):
+            continue
 
-    # Format the answer
-    correct_answer = str(final_answer)
-    answer = correct_answer
+        question_text = f"計算 ${clean_latex_output(' '.join([fmt_num(op) if isinstance(op, int) else op for op in operands_A + operators_A])}$ {main_op} $|{clean_latex_output(' '.join([fmt_num(op) if isinstance(op, int) else op for op in operands_C + operators_C]))}|$ 的值。"
+        correct_answer = str(final_answer)
+        answer = str(final_answer)
 
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}
+        return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}

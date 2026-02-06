@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 43.82s | Tokens: In=4107, Out=912
-# Created At: 2026-02-06 14:11:33
+# Performance: 55.66s | Tokens: In=4107, Out=914
+# Created At: 2026-02-06 20:20:17
 # Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=2)
-# Verification: Internal Logic Check = FAILED
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 

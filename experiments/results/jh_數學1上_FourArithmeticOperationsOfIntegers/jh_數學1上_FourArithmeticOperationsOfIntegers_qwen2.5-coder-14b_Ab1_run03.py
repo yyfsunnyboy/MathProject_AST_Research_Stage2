@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 22.86s | Tokens: In=617, Out=516
-# Created At: 2026-02-06 14:06:29
+# Performance: 27.08s | Tokens: In=617, Out=516
+# Created At: 2026-02-06 20:13:45
 # Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
-# Verification: Internal Logic Check = PASSED
+# Verification: Internal Logic Check = FAILED
 # ==============================================================================
 
 import random
@@ -19,9 +19,9 @@ def generate(level=1, **kwargs):
     num5 = random.randint(-50, 50)
 
     # 隨機選擇運算符
-    op1 = random.choice(['+', '-', '*', '/'])
-    op2 = random.choice(['+', '-', '*', '/'])
-    op3 = random.choice(['+', '-'])
+    op1 = safe_choice(['+', '-', '*', '/'])
+    op2 = safe_choice(['+', '-', '*', '/'])
+    op3 = safe_choice(['+', '-'])
 
     # 計算正確答案
     if op1 == '+':

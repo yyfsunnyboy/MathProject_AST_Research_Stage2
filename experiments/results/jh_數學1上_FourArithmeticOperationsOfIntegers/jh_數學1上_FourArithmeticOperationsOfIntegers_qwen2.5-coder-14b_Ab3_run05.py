@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 39.80s | Tokens: In=4107, Out=836
-# Created At: 2026-02-06 14:14:17
+# Performance: 58.86s | Tokens: In=4107, Out=971
+# Created At: 2026-02-06 20:24:03
 # Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=5)
-# Verification: Internal Logic Check = FAILED
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -587,51 +587,64 @@ def generate(level=1, **kwargs):
         operators_A = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_A - 1)]
         if not any((op in ['*', '/'] for op in operators_A)):
             continue
-        val = operands_A[0]
+        val_A = operands_A[0]
         try:
             for i, op in enumerate(operators_A):
-                n = operands_A[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError('Not an integer division')
-                val = safe_eval(f'{val} {op} {n}')
-                if abs(val) > 500:
-                    raise ValueError('Intermediate result out of range')
-            val_A = val
-        except Exception as e:
+                next_operand = operands_A[i + 1]
+                if op == '/' and val_A % next_operand != 0:
+                    raise ValueError('Non-integer division')
+                elif op == '+':
+                    val_A += next_operand
+                elif op == '-':
+                    val_A -= next_operand
+                elif op == '*':
+                    val_A *= next_operand
+                elif op == '/':
+                    val_A //= next_operand
+            if not -500 <= val_A <= 500:
+                continue
+        except ValueError:
             continue
         num_operands_C = safe_choice([2, 3])
         operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
         operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
         if not any((op in ['*', '/'] for op in operators_C)):
             continue
-        val = operands_C[0]
+        val_C = operands_C[0]
         try:
             for i, op in enumerate(operators_C):
-                n = operands_C[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError('Not an integer division')
-                val = safe_eval(f'{val} {op} {n}')
-                if abs(val) > 500:
-                    raise ValueError('Intermediate result out of range')
-            val_C = val
-        except Exception as e:
+                next_operand = operands_C[i + 1]
+                if op == '/' and val_C % next_operand != 0:
+                    raise ValueError('Non-integer division')
+                elif op == '+':
+                    val_C += next_operand
+                elif op == '-':
+                    val_C -= next_operand
+                elif op == '*':
+                    val_C *= next_operand
+                elif op == '/':
+                    val_C //= next_operand
+            if not -500 <= val_C <= 500:
+                continue
+        except ValueError:
             continue
         val_B = abs(val_C)
         main_op = safe_choice(['+', '-'])
-        final_answer = safe_eval(f'{val_A} {main_op} {val_B}')
-        if final_answer in [0, 1, -1] or abs(final_answer) > 1000:
+        if main_op == '+':
+            final_answer = val_A + val_B
+        elif main_op == '-':
+            final_answer = val_A - val_B
+        if not -1000 <= final_answer <= 1000 or final_answer in [0, 1, -1]:
             continue
-        if all((n > 0 for n in operands_A + operands_C)):
+        if all((op > 0 for op in operands_A + operands_C)):
             continue
-        break
-    expr_A = fmt_num(operands_A[0])
-    for i, op in enumerate(operators_A):
-        expr_A += f' {op} {fmt_num(operands_A[i + 1])}'
-    expr_C = fmt_num(operands_C[0])
-    for i, op in enumerate(operators_C):
-        expr_C += f' {op} {fmt_num(operands_C[i + 1])}'
-    main_op_symbol = '\\' + main_op if main_op == '*' else main_op
-    question_text = f'計算 ${expr_A}$ {main_op_symbol} $|{expr_C}|$ 的值。'
-    correct_answer = str(final_answer)
-    answer = correct_answer
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}
+        expr_A = fmt_num(operands_A[0])
+        for i, op in enumerate(operators_A):
+            expr_A += f' {op} {fmt_num(operands_A[i + 1])}'
+        expr_C = fmt_num(operands_C[0])
+        for i, op in enumerate(operators_C):
+            expr_C += f' {op} {fmt_num(operands_C[i + 1])}'
+        question_text = f'計算 ${expr_A}$ {main_op} $|{expr_C}|$ 的值。'
+        correct_answer = str(final_answer)
+        answer = correct_answer
+        return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}

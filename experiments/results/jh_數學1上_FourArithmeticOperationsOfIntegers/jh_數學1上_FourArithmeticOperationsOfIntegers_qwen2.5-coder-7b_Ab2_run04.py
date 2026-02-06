@@ -1,9 +1,9 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
+# Model: qwen2.5-coder-7b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 57.22s | Tokens: In=4107, Out=914
-# Created At: 2026-02-06 20:18:27
+# Performance: 10.48s | Tokens: In=4107, Out=796
+# Created At: 2026-02-06 20:10:11
 # Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -580,106 +580,82 @@ def _quadratic_formula(a, b, c):
 # ---------------------------------------------------------
 
 
-import random
-import math
-
 def generate(level=1, **kwargs):
+    import random
+    import math
+
+    def _format_operator(op):
+        if op == '+':
+            return '\\plus'
+        elif op == '-':
+            return '\\minus'
+        elif op == '*':
+            return '\\times'
+        elif op == '/':
+            return '\\div'
+
     for _safety_counter in range(1000):  # Safety: converted from while True
-        # Step 1: Generate Expr_A's operands and operators
+        # Generate operands and operators for Part A
         num_operands_A = safe_choice([3, 4])
-        operands_A = [random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20) for _ in range(num_operands_A)]
+        operands_A = [random.randint(-20, -1) if random.random() < 1/3 else random.randint(1, 20) for _ in range(num_operands_A)]
         operators_A = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_A - 1)]
 
-        # Ensure at least one '*' or '/' in Expr_A
+        # Ensure at least one '*' or '/'
         if not any(op in ['*', '/'] for op in operators_A):
             continue
 
-        # Calculate Part A's value
-        val = operands_A[0]
-        try:
-            for i, op in enumerate(operators_A):
-                n = operands_A[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val += n
-                elif op == '-':
-                    val -= n
-                elif op == '*':
-                    val *= n
-                elif op == '/':
-                    val //= n
+        val_A = operands_A[0]
+        for i, op in enumerate(operators_A):
+            next_operand = operands_A[i + 1]
+            if op == '/' and val_A % next_operand != 0:
+                continue
+            elif op == '*' or op == '/':
+                val_A = eval(f"{val_A} {op} {next_operand}")
+            if abs(val_A) > 500:
+                continue
 
-                if abs(val) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
-
-        # Step 2: Generate Expr_C's operands and operators
+        # Generate operands and operators for Part C
         num_operands_C = safe_choice([2, 3])
-        operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
+        operands_C = [random.randint(-100, -1) if random.random() < 1/3 else random.randint(1, 100) for _ in range(num_operands_C)]
         operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
 
-        # Ensure at least one '*' or '/' in Expr_C
+        # Ensure at least one '*' or '/'
         if not any(op in ['*', '/'] for op in operators_C):
             continue
 
-        # Calculate Part C's value
         val_C = operands_C[0]
-        try:
-            for i, op in enumerate(operators_C):
-                n = operands_C[i + 1]
-                if op == '/' and val_C % n != 0:
-                    raise ValueError("Non-integer division")
-                elif op == '+':
-                    val_C += n
-                elif op == '-':
-                    val_C -= n
-                elif op == '*':
-                    val_C *= n
-                elif op == '/':
-                    val_C //= n
+        for i, op in enumerate(operators_C):
+            next_operand = operands_C[i + 1]
+            if op == '/' and val_C % next_operand != 0:
+                continue
+            elif op == '*' or op == '/':
+                val_C = eval(f"{val_C} {op} {next_operand}")
+            if abs(val_C) > 500:
+                continue
 
-                if abs(val_C) > 500:
-                    raise ValueError("Intermediate result out of range")
-        except ValueError:
-            continue
-
-        # Step 3: Calculate Part B's value
+        # Calculate Part B value
         val_B = abs(val_C)
 
-        # Step 4: Calculate final answer
+        # Calculate final answer
         main_op = safe_choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val + val_B
-        else:
-            final_answer = val - val_B
+        final_answer = eval(f"val_A {main_op} val_B")
 
-        # Ensure final answer is within range and not 0, 1, or -1
-        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
+        # Verify constraints
+        if final_answer == 0 or final_answer in [1, -1]:
             continue
 
-        # Step 5: Final verification
-        if all(n > 0 for n in operands_A + operands_C):
+        if not any(op in ['*', '/'] for op in operators_A) or not any(op in ['*', '/'] for op in operators_C):
             continue
 
-        break
+        if all(operand > 0 for operand in operands_A + operands_C):
+            continue
 
-    # Format the question text
-    expr_A = fmt_num(operands_A[0])
-    for i in range(len(operators_A)):
-        op_symbol = operators_A[i].replace('*', '\\times').replace('/', '\\div')
-        expr_A += f" {op_symbol} {fmt_num(operands_A[i + 1])}"
+        # Format question and answer
+        expr_A = ' '.join(f"{fmt_num(operand)} {_format_operator(op)}" for operand, op in zip(operands_A[:-1], operators_A)) + f" {fmt_num(operands_A[-1])}"
+        expr_C = ' '.join(f"{fmt_num(operand)} {_format_operator(op)}" for operand, op in zip(operands_C[:-1], operators_C)) + f" {fmt_num(operands_C[-1])}"
 
-    expr_C = fmt_num(operands_C[0])
-    for i in range(len(operators_C)):
-        op_symbol = operators_C[i].replace('*', '\\times').replace('/', '\\div')
-        expr_C += f" {op_symbol} {fmt_num(operands_C[i + 1])}"
+        question_text = f"計算 ${expr_A}$ {main_op} $|{expr_C}|$ 的值。"
+        correct_answer = str(final_answer)
+        answer = str(final_answer)
 
-    question_text = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
-
-    # Format the answer
-    correct_answer = str(final_answer)
-    answer = correct_answer
-
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}
+        return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': answer, 'mode': 1}

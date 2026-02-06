@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 41.68s | Tokens: In=4107, Out=874
-# Created At: 2026-02-06 14:12:54
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=2)
-# Verification: Internal Logic Check = FAILED
+# Performance: 48.55s | Tokens: In=4107, Out=798
+# Created At: 2026-02-06 20:22:00
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=8, AST=5)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -585,66 +585,50 @@ def generate(level=1, **kwargs):
         num_operands_A = safe_choice([3, 4])
         operands_A = [random.randint(-20, -1) if random.random() < 0.3 else random.randint(1, 20) for _ in range(num_operands_A)]
         operators_A = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_A - 1)]
-        if not any((op in ['*', '/'] for op in operators_A)):
+        if '*' not in operators_A and '/' not in operators_A:
             continue
-        val = operands_A[0]
+        val_A = operands_A[0]
         try:
-            for i, op in enumerate(operators_A):
-                n = operands_A[i + 1]
-                if op == '/' and val % n != 0:
-                    raise ValueError('Not divisible')
-                if op == '+':
-                    val += n
-                elif op == '-':
-                    val -= n
-                elif op == '*':
-                    val *= n
-                elif op == '/':
-                    val //= n
-                if abs(val) > 500:
+            for op, n in zip(operators_A, operands_A[1:]):
+                if op == '/':
+                    if val_A % n != 0:
+                        raise ValueError('Not divisible')
+                val_A = safe_eval(f'{val_A} {op} {n}')
+                if abs(val_A) > 500:
                     raise ValueError('Intermediate result out of range')
-        except ValueError:
+        except Exception as e:
             continue
         num_operands_C = safe_choice([2, 3])
         operands_C = [random.randint(-100, -1) if random.random() < 0.3 else random.randint(1, 100) for _ in range(num_operands_C)]
         operators_C = [safe_choice(['+', '-', '*', '/']) for _ in range(num_operands_C - 1)]
-        if not any((op in ['*', '/'] for op in operators_C)):
+        if '*' not in operators_C and '/' not in operators_C:
             continue
         val_C = operands_C[0]
         try:
-            for i, op in enumerate(operators_C):
-                n = operands_C[i + 1]
-                if op == '/' and val_C % n != 0:
-                    raise ValueError('Not divisible')
-                if op == '+':
-                    val_C += n
-                elif op == '-':
-                    val_C -= n
-                elif op == '*':
-                    val_C *= n
-                elif op == '/':
-                    val_C //= n
-        except ValueError:
+            for op, n in zip(operators_C, operands_C[1:]):
+                if op == '/':
+                    if val_C % n != 0:
+                        raise ValueError('Not divisible')
+                val_C = safe_eval(f'{val_C} {op} {n}')
+                if abs(val_C) > 500:
+                    raise ValueError('Intermediate result out of range')
+        except Exception as e:
             continue
         val_B = abs(val_C)
         main_op = safe_choice(['+', '-'])
-        if main_op == '+':
-            final_answer = val + val_B
-        else:
-            final_answer = val - val_B
-        if abs(final_answer) > 1000 or final_answer in [0, 1, -1]:
+        final_answer = safe_eval(f'{val_A} {main_op} {val_B}')
+        if final_answer == 0 or final_answer in [1, -1]:
             continue
         if all((n > 0 for n in operands_A + operands_C)):
             continue
         break
     expr_A = fmt_num(operands_A[0])
-    for i in range(len(operators_A)):
-        op = operators_A[i].replace('*', '\\times').replace('/', '\\div')
-        expr_A += f' {op} {fmt_num(operands_A[i + 1])}'
+    for op, n in zip(operators_A, operands_A[1:]):
+        expr_A += f' {op} {fmt_num(n)}'
     expr_C = fmt_num(operands_C[0])
-    for i in range(len(operators_C)):
-        op = operators_C[i].replace('*', '\\times').replace('/', '\\div')
-        expr_C += f' {op} {fmt_num(operands_C[i + 1])}'
-    q = f"計算 ${expr_A}$ {main_op.replace('+', '+').replace('-', '-')} $|{expr_C}|$ 的值。"
-    a = str(final_answer)
-    return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+    for op, n in zip(operators_C, operands_C[1:]):
+        expr_C += f' {op} {fmt_num(n)}'
+    main_op_symbol = {'+': '+', '-': '-'}.get(main_op)
+    question_text = f'計算 ${expr_A}$ {main_op_symbol} $|{expr_C}|$ 的值。'
+    correct_answer = str(final_answer)
+    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}

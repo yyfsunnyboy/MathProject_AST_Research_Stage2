@@ -1,0 +1,7 @@
+﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
+0c561be2-c9fa-4303-a4d8-71a9f4402128,jh_數學1上_FourArithmeticOperationsOfIntegers,1,qwen2.5-coder-14b,5,15,13.1,2.19,10.38,15.82,0.0,0.0,13.1,0.0,5.6,0.0,,-
+d0f28120-aef3-4948-85ff-447a6612bc97,jh_數學1上_FourArithmeticOperationsOfIntegers,1,qwen2.5-coder-7b,4,12,60.68,3.54,55.04,66.32,15.0,10.0,33.44,27.24,4.0,24.33,,-
+d3dbc60e-d531-4f7d-98ff-bd7ea16807cc,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen2.5-coder-14b,5,15,58.57,23.56,29.32,87.82,12.0,7.07,33.5,25.07,12.0,21.6,0.002627,Ab2 vs Ab1: p<0.01 (顯著)
+6bec7df9-cb54-44f9-87fb-09baba8f7af5,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen2.5-coder-7b,5,15,28.85,22.66,0.72,56.99,3.0,1.73,22.8,6.05,14.4,5.4,0.028722,Ab2 vs Ab1: p<0.05 (邊緣顯著)
+28b31a5e-dbd5-4a45-b637-4674e7a9fe7e,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen2.5-coder-14b,5,15,70.38,0.21,70.12,70.64,15.0,9.07,39.0,31.38,12.0,27.0,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)
+48d3c20c-732d-4e94-b3d5-270d4222cd56,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen2.5-coder-7b,4,12,26.0,2.31,22.33,29.67,0.0,0.0,26.0,0.0,14.0,0.0,3e-06,Ab3 vs Ab1: p<0.001 (高度顯著)
