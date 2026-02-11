@@ -30,6 +30,15 @@
 4. 請使用 Python 的 standard library (如 random, math) 即可。
    - 🔴 重要：不要使用 sympy、numpy 或其他外部套件
 
+### ⚠️ PYTHON SYNTAX STRICTNESS (反 C 語言指令)
+**Python uses indentation, NOT braces `{}` for blocks.**
+1. ❌ NEVER put a closing brace `}` at the end of the script.
+2. ❌ NEVER use `return { ... };` (semi-colon).
+3. ❌ NEVER use C-style syntax like `};` to end blocks.
+4. ✅ Just end the `def generate` function naturally with indentation.
+5. ✅ Python dictionaries use `{ ... }` INSIDE expressions, not at block level.
+**Violation will cause AST Parse Error and crash the entire pipeline.**
+
 ⚠️ 重要：只輸出 Python 程式碼！
 - ✅ 正確：直接從 import 開始寫
 - ❌ 錯誤：不要加任何說明文字或註解在程式碼之外

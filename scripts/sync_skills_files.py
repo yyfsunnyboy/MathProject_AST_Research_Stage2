@@ -518,7 +518,7 @@ if __name__ == "__main__":
                                 ablation_id,
                                 model_size_class,
                                 prompt_level,
-                                use_golden_prompt=False,
+                                use_golden_prompt=use_golden_prompt,  # ✅ 使用全局 use_golden_prompt 变量
                                 save_golden_prompt=should_save_golden
                             )
                     

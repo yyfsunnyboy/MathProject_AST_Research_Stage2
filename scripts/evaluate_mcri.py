@@ -1,7 +1,3 @@
-import re
-import sympy
-from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
-import ast
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # ==============================================================================
@@ -86,10 +82,6 @@ try:
     HAS_SYMPY = True
 except ImportError:
     HAS_SYMPY = False
-import pandas as pd
-from scipy import stats
-import sys
-import os
 
 # 添加项目根目录到路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -129,6 +121,7 @@ def forbidden_input(*args, **kwargs):
     )
 
 
+@contextmanager
 @contextmanager
 def safe_execution_context():
     """

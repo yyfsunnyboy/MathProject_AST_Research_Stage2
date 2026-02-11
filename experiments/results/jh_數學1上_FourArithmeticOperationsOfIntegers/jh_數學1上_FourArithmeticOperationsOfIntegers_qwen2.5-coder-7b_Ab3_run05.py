@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-7b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 10.53s | Tokens: In=4107, Out=788
-# Created At: 2026-02-06 20:11:38
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=6, AST=5)
-# Verification: Internal Logic Check = FAILED
+# Performance: 12.37s | Tokens: In=1589, Out=981
+# Created At: 2026-02-09 16:50:21
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=10, AST=4)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -546,33 +546,65 @@ def ensure_dir(p):
 
 # [DOMAIN HELPERS - Auto-Injected for jh_數學1上_FourArithmeticOperationsOfIntegers]
 
-# ===== 代數標準函數庫 =====
+# ===== IntegerOps (整數標準函數庫) =====
 
-def _solve_linear_2x2(a1, b1, c1, a2, b2, c2):
-    '''
-    解二元一次方程組
-    a1*x + b1*y = c1
-    a2*x + b2*y = c2
-    返回: (x, y) 或 None（無解/無限多解）
-    '''
-    det = a1 * b2 - a2 * b1
-    if det == 0:
-        return None
-    x = (c1 * b2 - c2 * b1) / det
-    y = (a1 * c2 - a2 * c1) / det
-    return (x, y)
+class IntegerOps:
+    '''整數運算模組 - 支援格式化、隨機數生成、整除判斷等'''
+    
+    @staticmethod
+    def fmt_num(n):
+        '''
+        格式化數字，為負數自動加括號
+        - 便於生成 Python 算式（如 "x + (-5)" 而非 "x + -5"）
+        
+        範例：
+            IntegerOps.fmt_num(5)   → "5"
+            IntegerOps.fmt_num(-5)  → "(-5)"
+            IntegerOps.fmt_num(0)   → "0"
+        '''
+        if n < 0:
+            return f"({n})"
+        return str(n)
 
-def _quadratic_formula(a, b, c):
-    '''
-    求解一元二次方程 ax² + bx + c = 0
-    返回: (x1, x2) 或 None（無實根）
-    '''
-    discriminant = b**2 - 4*a*c
-    if discriminant < 0:
-        return None
-    x1 = (-b + math.sqrt(discriminant)) / (2*a)
-    x2 = (-b - math.sqrt(discriminant)) / (2*a)
-    return (x1, x2)
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        '''生成非零隨機整數'''
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        if not available:
+            raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
+        return random.choice(available)
+
+    @staticmethod
+    def is_divisible(a, b):
+        '''檢查 a 是否能被 b 整除'''
+        if b == 0:
+            return False
+        return a % b == 0
+
+    @staticmethod
+    def safe_eval(expr):
+        '''
+        安全評估算式，支援：abs()、基本四則運算、括號
+        
+        範例：
+            IntegerOps.safe_eval("8 * (-2) - 5")           → -21
+            IntegerOps.safe_eval("abs(8 * (-2) - 5)")     → 21
+            IntegerOps.safe_eval("[ (-20) + (-10)] / (-5) * 3")  → 18.0
+        '''
+        # 允許的函數和變數
+        safe_dict = {
+            '__builtins__': {},
+            'abs': abs,
+            'sum': sum,
+            'max': max,
+            'min': min,
+        }
+        # 移除方括號並替換為括號（如果需要）
+        expr = expr.replace('[', '(').replace(']', ')')
+        try:
+            return eval(expr, safe_dict)
+        except Exception as e:
+            raise ValueError(f"Invalid expression: {expr}. Error: {e}")
 
 
 
@@ -580,54 +612,59 @@ def _quadratic_formula(a, b, c):
 # ---------------------------------------------------------
 
 
-def generate(level=1, **kwargs):
+OP_LATEX = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
+L_ABS = '\\left|'
+R_ABS = '\\right|'
+L_BRACKET = '\\left['
+R_BRACKET = '\\right]'
 
-    def _format_operator(op):
-        if op == '*':
-            return '\\times'
-        elif op == '/':
-            return '\\div'
-        else:
-            return op
-    for _safety_counter in range(1000):
-        num_operands_A = safe_choice([3, 4])
-        operands_A = [random.randint(-20, -1) if random.random() < 1 / 3 else random.randint(1, 20) for _ in range(num_operands_A)]
-        operators_A = [_format_operator(safe_choice(['+', '-', '*', '/'])) for _ in range(num_operands_A - 1)]
-        if not any((op == '\\times' or op == '\\div' for op in operators_A)):
-            continue
-        val_A = operands_A[0]
-        for i, op in enumerate(operators_A):
-            next_operand = operands_A[i + 1]
-            if op == '\\div':
-                if val_A % next_operand != 0:
-                    continue
-            val_A = safe_eval(f'{val_A}{op}{next_operand}')
-            if not -500 <= val_A <= 500:
-                continue
-        num_operands_C = safe_choice([2, 3])
-        operands_C = [random.randint(-100, -1) if random.random() < 1 / 3 else random.randint(1, 100) for _ in range(num_operands_C)]
-        operators_C = [_format_operator(safe_choice(['+', '-', '*', '/'])) for _ in range(num_operands_C - 1)]
-        if not any((op == '\\times' or op == '\\div' for op in operators_C)):
-            continue
-        val_C = operands_C[0]
-        for i, op in enumerate(operators_C):
-            next_operand = operands_C[i + 1]
-            if op == '\\div':
-                if val_C % next_operand != 0:
-                    continue
-            val_C = safe_eval(f'{val_C}{op}{next_operand}')
-            if not -500 <= val_C <= 500:
-                continue
-        val_B = abs(val_C)
-        main_op = safe_choice(['+', '-'])
-        final_answer = safe_eval(f'val_A {main_op} val_B')
-        if final_answer == 0 or final_answer in [1, -1]:
-            continue
-        all_negative = all((op in ['-', '\\div'] for op in operators_A + operators_C))
-        if not any((n < 0 for n in operands_A + operands_C)) or all_negative:
-            continue
-        expr_A = ' '.join([fmt_num(operands_A[i]) + _format_operator(operators_A[i - 1]) for i in range(1, num_operands_A)]) + fmt_num(val_A)
-        expr_C = ' '.join([fmt_num(operands_C[i]) + _format_operator(operators_C[i - 1]) for i in range(1, num_operands_C)]) + fmt_num(val_C)
-        question_text = f'計算 ${expr_A}$ {main_op} $|{expr_C}|$ 的值。'
-        correct_answer = str(final_answer)
-        return {'question_text': clean_latex_output(question_text), 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
+def generate(level=1, **kwargs):
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    C = IntegerOps.random_nonzero(-10, 10)
+    if op2 == '/':
+        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        val_inner = target_term1 * C
+    else:
+        val_inner = IntegerOps.random_nonzero(-30, 30)
+        if op2 == '+':
+            target_term1 = val_inner + C
+        elif op2 == '-':
+            target_term1 = val_inner - C
+        elif op2 == '*':
+            target_term1 = val_inner * C
+    B = IntegerOps.random_nonzero(-10, 10)
+    if op1 == '/':
+        A = val_inner * B
+    elif op1 == '*':
+        A = IntegerOps.random_nonzero(-10, 10)
+        B = IntegerOps.random_nonzero(-10, 10)
+        val_inner = A * B
+        if op2 == '/':
+            if C == 0 or val_inner % C != 0:
+                C = 1
+            target_term1 = val_inner // C
+        elif op2 == '+':
+            target_term1 = val_inner + C
+        elif op2 == '-':
+            target_term1 = val_inner - C
+        elif op2 == '*':
+            target_term1 = val_inner * C
+    elif op1 == '+':
+        A = val_inner - B
+    elif op1 == '-':
+        A = val_inner + B
+    op3 = random.choice(['+', '-', '*'])
+    D = IntegerOps.random_nonzero(-15, 15)
+    E = IntegerOps.random_nonzero(-15, 15)
+    val_term2_raw = safe_eval(f'{D} {op3} {E}')
+    result_term2 = abs(int(val_term2_raw))
+    op_main = random.choice(['+', '-'])
+    final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
+    str_A, str_B, str_C = (fmt_num(A), fmt_num(B), fmt_num(C))
+    str_D, str_E = (fmt_num(D), fmt_num(E))
+    term1_latex = f'{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}'
+    term2_latex = f'{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}'
+    math_expression = f'{term1_latex} {OP_LATEX[op_main]} {term2_latex}'
+    q = f'計算 ${math_expression}$ 的值。'
+    return {'question_text': q, 'correct_answer': str(final_val), 'answer': str(final_val), 'mode': 1}

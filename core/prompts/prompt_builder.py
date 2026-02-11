@@ -153,11 +153,14 @@ BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER
 # 完整的 UNIVERSAL_GEN_CODE_PROMPT（針對 14B 模型優化的鷹架版）
 # ==============================================================================
 
-UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
+UNIVERSAL_GEN_CODE_PROMPT = """【角色】K12 數學演算法工程師
 
 【任務】
 實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
-該函數應返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+該函數應返回 dict: {{'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}}
+
+【參考範例】(請模仿此題型風格生成)
+{textbook_example_section}
 
 【預載工具 API 手冊】(環境已實作，請直接調用，無需重新定義)
 
@@ -181,7 +184,7 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
 5. ✅ 只輸出代碼
 
 ⚠️ **返回格式檢查**
-• 必須返回字典 {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+• 必須返回字典 {{'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}}
 • correct_answer 必須是字串
 • question_text 數學式必須用 $ 包裹
 """
@@ -190,17 +193,160 @@ UNIVERSAL_GEN_CODE_PROMPT = r"""【角色】K12 數學演算法工程師
 class PromptBuilder:
     """
     Prompt 構建引擎 - 負責生成不同 Ablation 模式的 Prompt
+    [V2.4 新增] 上下文感知工具選用系統 (Context-Aware Tool Selection)
     
     支援 3 種 Ablation 模式：
     - Ab1: BARE_MINIMAL_PROMPT (最簡 Prompt)
-    - Ab2: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC
-    - Ab3: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC (默認)
+    - Ab2: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + 動態工具選擇
+    - Ab3: UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + 動態工具選擇 (默認)
+    
+    [新增功能] 自動感知並選用數學工具：
+    - 根據題目關鍵字動態組裝 API 手冊
+    - 只給 LLM 看它需要的工具（節省 Token，減少幻覺）
+    - 植入決策指令確保工具正確使用
     """
+    
+    # ==========================================
+    # 工具庫手冊定義 (Domain Function Manuals)
+    # ==========================================
+    
+    # [V2.5 新增] 基礎工具手冊 - 所有題型都使用
+    MANUAL_BASE = """
+### 基礎工具 (全域可用)
+- `fmt_num(n) -> str`: 格式化數字，負數會自動加括號 (例: -5 -> "(-5)")。
+- `to_latex(n) -> str`: 將數字轉換為 LaTeX 格式 (支援分數、整數、小數)。
+- `clean_latex_output(latex_str) -> str`: LaTeX 格式清洗和包裹，自動添加 $ 符號。
+"""
+    
+    MANUAL_INTEGER = """
+### 1. 基礎與整數工具 (IntegerOps) - [預設啟用]
+- `fmt_num(n)`: 格式化數字，負數會自動加括號 (例: -5 -> "(-5)")。
+- `IntegerOps.random_nonzero(min, max)`: 生成非零整數 (避免除以零)。
+- `IntegerOps.is_divisible(a, b)`: 檢查整除。
+"""
+    
+    # [V2.5 新增] 多項式專用工具 - 僅在檢測到多項式關鍵字時載入
+    MANUAL_POLYNOMIAL = """
+### 多項式與微分工具 (CalculusOps - Polynomial Module) - [檢測到多項式/微分關鍵字時啟用]
+- `_coeffs_to_terms(coeffs: list) -> list[tuple]`: 將係數列表轉換為 (係數, 次數) 的 terms 清單。
+- `_differentiate_poly(terms, order=1) -> list[tuple]`: 對多項式進行符號微分，支援高階導數。
+- `_poly_to_latex(terms) -> str`: 將 terms 轉換為 LaTeX 格式字串 (不含 $)。
+- `_poly_to_plain(terms) -> str`: 將 terms 轉換為純文字格式。
+- `_deriv_symbol_latex(order) -> str`: 生成導數符號 (例: 一階 → f', 二階 → f'')。
+- `build_polynomial_text(coeffs) -> str`: 根據係數列表構建多項式文字表示 (例: [2, 0, -3, 1] → "2x^3 - 3x + 1")。
+
+**規則**: 涉及多項式、微分或導函數操作時，必須使用此模組。禁止自行實現多項式運算。
+"""
+
+    MANUAL_FRACTION = """
+### 2. ✨ 分數工具 (FractionOps) - [檢測到分數相關關鍵字時啟用]
+- `FractionOps.create(num, den)`: 建立分數，自動約分。
+- `FractionOps.to_latex(frac, mixed=True)`: 輸出 LaTeX (mixed=True 為帶分數格式)。
+- `FractionOps.add(a, b)`, `sub`, `mul`, `div`: 分數四則運算。
+**規則**: 涉及有理數運算時，必須使用此模組，嚴禁使用 float。
+"""
+
+    MANUAL_RADICAL = """
+### 3. ✨ 根號與幾何工具 (RadicalOps) - [檢測到根號/幾何關鍵字時啟用]
+- `RadicalOps.create(inner)`: 建立根號 sqrt(inner) 並自動化簡 (例: sqrt(12)->2sqrt(3))。
+- `RadicalOps.to_latex(expr)`: 輸出標準 LaTeX 根式。
+- `RadicalOps.is_perfect_square(n)`: 檢查完全平方數。
+**規則**: 涉及無理數或幾何運算(畢氏定理)時，必須使用此模組。
+"""
+    
+    @staticmethod
+    def _get_dynamic_api_manual(skill_name: str, skill_desc: str) -> tuple:
+        """
+        [V2.5 更新] 根據題目關鍵字，動態組裝 API 手冊 (Token 優化版)
+        
+        核心邏輯：
+        - 先載入基礎工具 (MANUAL_BASE) - 所有題型都需要
+        - 掃描技能名稱和描述中的關鍵字
+        - 根據檢測結果動態載入相應的領域工具手冊
+        - 節省 Token，減少 LLM 幻覺
+        
+        Args:
+            skill_name: 技能名稱 (例: "整數的四則運算")
+            skill_desc: 技能描述
+            
+        Returns:
+            tuple: (manual_text: str, active_tools: list[str])
+                - manual_text: 最終的 API 手冊文字
+                - active_tools: 已啟用的工具列表
+        """
+        # 1. 準備掃描文本 (轉小寫以模糊比對)
+        scan_text = (skill_name + " " + skill_desc).lower()
+        
+        # 2. 預設載入基礎工具和整數工具
+        manual_parts = [PromptBuilder.MANUAL_BASE, PromptBuilder.MANUAL_INTEGER]
+        active_tools = ["Base", "IntegerOps"]
+        
+        # 3. 關鍵字快篩 (Keyword Triggering)
+        # 注意：優先級順序很重要 - 多項式應該在分數之前檢查
+        
+        # [V2.5 新增] 多項式與微分偵測 (最先檢查，以免被分數偵測搶走)
+        if any(k in scan_text for k in ['多項式', 'poly', '微', '積分', 'integral', '導', '微分', 'diff', 'deriv', '切線', 'tangent', 'f(x)', 'f\'(x)', 'f\'\'(x)', 'derivative']):
+            manual_parts.append(PromptBuilder.MANUAL_POLYNOMIAL)
+            active_tools.append("CalculusOps")
+            logger.info(f"   ✅ 檢測到多項式/微分相關關鍵字，啟用 CalculusOps (Polynomial)")
+        
+        # 分數偵測 (避免與英文路徑中的 "/" 混淆，只檢查更精確的中文關鍵字)
+        if any(k in scan_text for k in ['分', 'frac', 'ratio', '有理', '除法', 'rational', '分之', '分母', '分子']):
+            manual_parts.append(PromptBuilder.MANUAL_FRACTION)
+            active_tools.append("FractionOps")
+            logger.info(f"   ✅ 檢測到分數相關關鍵字，啟用 FractionOps")
+            
+        # 根號/幾何偵測
+        if any(k in scan_text for k in ['根', 'sqrt', 'root', '幾何', 'geo', '畢氏', 'pythag', '開方', 'radical', '直角三角']):
+            manual_parts.append(PromptBuilder.MANUAL_RADICAL)
+            active_tools.append("RadicalOps")
+            logger.info(f"   ✅ 檢測到根號/幾何相關關鍵字，啟用 RadicalOps")
+            
+        # 4. 組裝最終手冊字串
+        header = f"\n【已啟用的數學軍火庫】(Detected Modes: {', '.join(active_tools)})\n"
+        manual_text = header + "\n".join(manual_parts)
+        
+        return manual_text, active_tools
+    
+    @staticmethod
+    def _build_tool_selection_protocol(active_tools: list) -> str:
+        """
+        [V2.4 新增] 構建工具選用協定 (Domain Tool Selection Protocol)
+        
+        强制 LLM 根據題目需求選擇正確的工具，避免亂用或重複實現。
+        
+        Args:
+            active_tools: 已啟用的工具列表
+            
+        Returns:
+            str: 協定文字
+        """
+        protocol = """
+## 🔧 Domain Tool Selection Protocol (工具選用協定)
+你必須根據題目需求，從上方【已啟用的數學軍火庫】中選擇正確的工具：
+"""
+        
+        if "FractionOps" in active_tools:
+            protocol += """1. **FractionOps**: 當題目涉及除法、比率或需要精確小數運算時。\n"""
+            
+        if "RadicalOps" in active_tools:
+            protocol += """2. **RadicalOps**: 當題目涉及開方、距離公式或無理數時。\n"""
+            
+        if "CalculusOps" in active_tools:
+            protocol += """3. **CalculusOps**: 當題目涉及多項式或變化率時。\n"""
+            
+        protocol += """4. **IntegerOps**: 僅在純整數運算時使用。
+
+**Constraint**: 在生成的 Python Code 中，嚴禁自己實現上述已有的功能 (如 gcd, simplify)，必須呼叫庫函數。
+**Critical Rule**: 永遠不要說「我沒有這個工具」- 所有必要的工具都已經為你準備好了。
+"""
+        return protocol
     
     @staticmethod
     def build(master_spec: str, ablation_id: int = 3, textbook_example: str = "", topic: str = "", skill_id: str = "") -> str:
         """
         構建 Prompt（[V47.13] 新增 Domain 函數庫自動注入）
+        [V2.4 新增] 動態工具選用系統
         
         Args:
             master_spec: MASTER_SPEC 字串
@@ -253,27 +399,105 @@ class PromptBuilder:
             logger.info(f"   Textbook Example: {len(textbook_example)} chars")
             logger.info(f"   Final Prompt: {len(prompt)} chars")
         elif ablation_id == 2:
-            # Ab2: UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫
+            # Ab2: UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫 + [V2.4新增] 動態工具選用 + 課本例題
             # ✅ [V47.14 淨化 MASTER_SPEC] 移除會誤導 14B 模型的實作步驟
             clean_spec = PromptBuilder._clean_master_spec(master_spec)
-            prompt = UNIVERSAL_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{clean_spec}"
-            logger.info(f"Prompt Ab2 - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain")
-            logger.info(f"   Universal Prompt: {len(UNIVERSAL_GEN_CODE_PROMPT)} chars")
+            
+            # [V2.4 新增] 根據 skill_id 動態組裝 API 手冊
+            dynamic_api_manual = ""
+            tool_selection_protocol = ""
+            if skill_id:
+                logger.info(f"   🔍 掃描技能: {skill_id}")
+                dynamic_api_manual, active_tools = PromptBuilder._get_dynamic_api_manual(skill_id, topic or "")
+                tool_selection_protocol = PromptBuilder._build_tool_selection_protocol(active_tools)
+                logger.info(f"   ✅ 已啟用工具: {', '.join(active_tools)}")
+            
+            # [V2.5 新增] 為 UNIVERSAL_GEN_CODE_PROMPT 注入課本例題
+            textbook_example_section = ""
+            if textbook_example:
+                textbook_example_section = f"【課本範例】\n{textbook_example}\n\n參考該風格生成類似題目。"
+            else:
+                textbook_example_section = "（無特定參考範例，根據 MASTER_SPEC 自由生成）"
+            
+            # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
+            universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
+                textbook_example_section=textbook_example_section
+            )
+            
+            prompt = universal_prompt_with_example + domain_injection + dynamic_api_manual + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
+            logger.info(f"Prompt Ab2 - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain + DynamicToolSelection + TextbookExample")
+            logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
+            logger.info(f"   Dynamic API Manual: {len(dynamic_api_manual)} chars")
+            logger.info(f"   Tool Selection Protocol: {len(tool_selection_protocol)} chars")
+            logger.info(f"   Textbook Example: {len(textbook_example_section)} chars")
             logger.info(f"   MASTER_SPEC (淨化前): {len(master_spec)} chars")
             logger.info(f"   MASTER_SPEC (淨化後): {len(clean_spec)} chars")
         else:
-            # Ab3 (默認): UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫
+            # Ab3 (默認): UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫 + [V2.4新增] 動態工具選用 + 課本例題
             # ✅ [V47.14 淨化 MASTER_SPEC] 移除會誤導模型的實作步驟
             clean_spec = PromptBuilder._clean_master_spec(master_spec)
-            prompt = UNIVERSAL_GEN_CODE_PROMPT + domain_injection + f"\n\n### MASTER_SPEC:\n{clean_spec}"
-            logger.info(f"Prompt Ab{ablation_id} - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain")
-            logger.info(f"   Universal Prompt: {len(UNIVERSAL_GEN_CODE_PROMPT)} chars")
+            
+            # [V2.4 新增] 根據 skill_id 動態組裝 API 手冊
+            dynamic_api_manual = ""
+            tool_selection_protocol = ""
+            if skill_id:
+                logger.info(f"   🔍 掃描技能: {skill_id}")
+                dynamic_api_manual, active_tools = PromptBuilder._get_dynamic_api_manual(skill_id, topic or "")
+                tool_selection_protocol = PromptBuilder._build_tool_selection_protocol(active_tools)
+                logger.info(f"   ✅ 已啟用工具: {', '.join(active_tools)}")
+            
+            # [V2.5 新增] 為 UNIVERSAL_GEN_CODE_PROMPT 注入課本例題
+            textbook_example_section = ""
+            if textbook_example:
+                textbook_example_section = f"【課本範例】\n{textbook_example}\n\n參考該風格生成類似題目。"
+            else:
+                textbook_example_section = "（無特定參考範例，根據 MASTER_SPEC 自由生成）"
+            
+            # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
+            universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
+                textbook_example_section=textbook_example_section
+            )
+            
+            prompt = universal_prompt_with_example + domain_injection + dynamic_api_manual + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
+            logger.info(f"Prompt Ab{ablation_id} - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain + DynamicToolSelection + TextbookExample")
+            logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
+            logger.info(f"   Dynamic API Manual: {len(dynamic_api_manual)} chars")
+            logger.info(f"   Tool Selection Protocol: {len(tool_selection_protocol)} chars")
+            logger.info(f"   Textbook Example: {len(textbook_example_section)} chars")
             logger.info(f"   MASTER_SPEC (淨化前): {len(master_spec)} chars")
             logger.info(f"   MASTER_SPEC (淨化後): {len(clean_spec)} chars")
         
         return prompt
+    
+    @staticmethod
+    def _extract_and_clean_yaml(text: str) -> str:
+        """
+        從 AI 回覆中提取並清理 YAML 區塊（強力去殼）
+        
+        處理 AI 可能包含的 Markdown 代碼塊標記（```yaml ... ```）
+        
+        Args:
+            text: 原始文本（可能包含 Markdown 代碼塊）
+        
+        Returns:
+            str: 清理後的 YAML 內容
+        """
+        import re
+        
+        # 1. 嘗試用正則表達式抓取 ```yaml ... ``` 中間的內容
+        pattern = r"```(?:yaml)?\n(.*?)```"
+        match = re.search(pattern, text, re.DOTALL)
+        
+        if match:
+            clean_text = match.group(1).strip()
+        else:
+            # 2. 如果沒找到 code block，可能整段就是 YAML
+            # 但要把頭尾的 ``` 去掉（可能只有頭或只有尾）
+            clean_text = text.replace("```yaml", "").replace("```", "").strip()
+        
+        return clean_text
     
     @staticmethod
     def _clean_master_spec(master_spec: str) -> str:
@@ -294,7 +518,10 @@ class PromptBuilder:
         """
         try:
             import yaml
-            spec_dict = yaml.safe_load(master_spec)
+            
+            # 🔧 [重要] 強力去殼 - 在解析前清理 Markdown 代碼塊標記
+            clean_input = PromptBuilder._extract_and_clean_yaml(master_spec)
+            spec_dict = yaml.safe_load(clean_input)
             
             # 移除會誤導模型的「實作指引」
             keys_to_remove = ['construction', 'implementation_checklist', 'formatting', 'variables']

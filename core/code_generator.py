@@ -57,6 +57,7 @@ from models import SkillGenCodePrompt, ExperimentLog, db, SkillInfo, TextbookExa
 
 from core.healers.regex_healer import RegexHealer
 from core.healers.ast_healer import ASTHealer
+from core.healers.unified_cleanup_healer import heal_unified
 from core.prompts.prompt_builder import PromptBuilder
 from core.validators.code_validator import validate_python_code as _validate_python_code
 from core.validators.dynamic_sampler import DynamicSampler
@@ -204,32 +205,32 @@ def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False
                 print(f"   ⚠️ Golden Prompt 不存在: {golden_prompt_path}")
                 print(f"   → 改用動態生成模式")
     
-    # [原有邏輯] 動態生成 Prompt
+    # [V2.5 新增] 動態提取課本範例（對所有 Ablation ID）
     textbook_example = ""
     topic = ""
     
-    if ablation_id == 1:
-        # 從數據庫獲取課本範例（只取序號最小的第一個）
-        example = TextbookExample.query.filter_by(skill_id=skill_id).order_by(TextbookExample.id.asc()).first()
-        
-        if example:
-            # 只使用第一個例題，不合併多個
-            if example.problem_text:
-                textbook_example = f"範例：{example.problem_text}"
-            else:
-                textbook_example = "範例：請生成類似的數學題目"
-            
-            # 從 skill_id 提取主題 (例如: gh_ApplicationsOfDerivatives → 導數的應用)
-            # 簡化處理：直接使用 skill_id 的可讀部分
-            if "_" in skill_id:
-                topic_part = skill_id.split("_")[-1]
-                # 將 CamelCase 轉為可讀文字
-                topic = "".join([" " + c if c.isupper() else c for c in topic_part]).strip()
-            else:
-                topic = skill_id
+    # 從數據庫獲取課本範例（只取序號最小的第一個）
+    example = TextbookExample.query.filter_by(skill_id=skill_id).order_by(TextbookExample.id.asc()).first()
+    
+    if example:
+        # 只使用第一個例題，不合併多個
+        if example.problem_text:
+            textbook_example = f"範例：{example.problem_text}"
         else:
-            textbook_example = db_master_spec  # 降級：使用 MASTER_SPEC
-            topic = "數學題目"
+            textbook_example = "範例：請生成類似的數學題目"
+        
+        # 從 skill_id 提取主題 (例如: gh_ApplicationsOfDerivatives → 導數的應用)
+        # 簡化處理：直接使用 skill_id 的可讀部分
+        if "_" in skill_id:
+            topic_part = skill_id.split("_")[-1]
+            # 將 CamelCase 轉為可讀文字
+            topic = "".join([" " + c if c.isupper() else c for c in topic_part]).strip()
+        else:
+            topic = skill_id
+    else:
+        # 降級：若無課本例題，使用預設值
+        textbook_example = ""  # Ab2/Ab3 會在 prompt 中顯示「無特定參考範例」
+        topic = "數學題目"
     
     # 調用 PromptBuilder
     prompt = PromptBuilder.build(
@@ -538,7 +539,9 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
     
     regex_healer = RegexHealer()
     code_before_regex = clean_code
-    code_after_regex, regex_fixes = regex_healer.heal(clean_code)
+    code_after_regex, regex_stats = regex_healer.heal(clean_code)
+    # [FIX 2026-02-07] RegexHealer.heal() 現在返回 stats dict，需要提取 regex_fix_count
+    regex_fixes = regex_stats.get('regex_fix_count', 0) if isinstance(regex_stats, dict) else regex_stats
     
     if VERBOSE_LEVEL == 2:
         log_fix_detail("", "skip", "")  # 空行
@@ -655,14 +658,38 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
         code_after_ast = code_after_regex
         ast_fixes = 0
     
+    # [NEW 2026-02-08] Step 4.5 + 7.5: Anti-Duplication & Variable-Before-Use Checker (僅 Ab3)
+    anti_dup_fixes = 0
+    var_check_fixes = 0
+    code_after_anti_dup = code_after_ast
+    
+    if ablation_id >= 3:
+        log_step_start(4.5, "Anti-Duplication & Variable Checker (Ab3 Only)", 
+                      "[自癒機制] 檢測重複定義和變量問題...")
+        
+        try:
+            code_after_anti_dup, anti_dup_fixes = heal_unified(code_after_ast)
+            
+            if VERBOSE_LEVEL == 2:
+                log_fix_detail("4.5 Anti-Duplication", "fixed" if anti_dup_fixes > 0 else "skip",
+                              f"✅ 清理 {anti_dup_fixes} 個重複定義或變量問題" if anti_dup_fixes > 0 else "無需修復")
+            
+            log_step_result(4.5, anti_dup_fixes, f"修復完成" if anti_dup_fixes > 0 else "無需修復")
+        except Exception as e:
+            if VERBOSE_LEVEL >= 1:
+                print(f"│ ⚠️ Anti-Duplication 修復失敗: {e}")
+            code_after_anti_dup = code_after_ast
+            anti_dup_fixes = 0
+            log_step_result(4.5, 0, "跳過（修復失敗，使用 AST 修復後的代碼）")
+    
     # 這裡可擴充更多修復統計資訊
     garbage_cleaner_count = 0
     removed_list = []
-    healer_fixes = regex_fixes + ast_fixes
+    healer_fixes = regex_fixes + ast_fixes + anti_dup_fixes
     eval_eliminator_count = 0
     healing_duration = 0
     
-    return code_after_ast, regex_fixes, ast_fixes, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration
+    return code_after_anti_dup, regex_fixes, ast_fixes, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration
 
 
 def _post_ast_fixes(clean_code, skill_id):

@@ -2,60 +2,66 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen2.5-coder-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 30.79s | Tokens: In=617, Out=514
-# Created At: 2026-02-06 20:12:53
+# Performance: 24.01s | Tokens: In=617, Out=497
+# Created At: 2026-02-09 09:41:02
 # Fix Status: [Basic Cleanup Only] | Fixes: Basic=1, Advanced=None
-# Verification: Internal Logic Check = FAILED
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 import random
 
 def generate(level=1, **kwargs):
-    # 生成隨機數字
-    num1 = random.randint(-50, 50)
-    num2 = random.randint(-50, 50)
-    num3 = random.randint(1, 50)
-    num4 = random.randint(-50, 50)
+    def random_operator():
+        return random.choice(['+', '-', '*', '÷'])
     
-    # 隨機選擇運算符
-    op1 = safe_choice(['+', '-', '*', '/'])
-    op2 = safe_choice(['+', '-', '*', '/'])
-    op3 = safe_choice(['+', '-'])
+    def random_number(min_val=-20, max_val=20):
+        return random.randint(min_val, max_val)
     
-    # 確保除數不為零
-    while num3 == 0:
-        num3 = random.randint(1, 50)
+    def create_expression(depth=3):
+        if depth == 0:
+            return str(random_number())
+        
+        operator = random_operator()
+        left_expr = create_expression(depth - 1)
+        right_expr = create_expression(depth - 1)
+        
+        # Add parentheses with a certain probability
+        if random.random() < 0.5:
+            left_expr = f"({left_expr})"
+        if random.random() < 0.5:
+            right_expr = f"({right_expr})"
+        
+        return f"{left_expr} {operator} {right_expr}"
     
-    # 生成題目文字
-    question_text = f"計算 [ ({num1}){op1}({num2}) ]{op2}(-{num3})×{num4} +｜{num4}{op3}(-{num4})-{num4}｜的值。"
+    def add_absolute_value(expression):
+        if random.random() < 0.3:
+            return f"|{expression}|"
+        return expression
     
-    # 計算正確答案
-    if op1 == '+':
-        part1 = num1 + num2
-    elif op1 == '-':
-        part1 = num1 - num2
-    elif op1 == '*':
-        part1 = num1 * num2
-    else:
-        part1 = num1 / num2
+    # Generate the main expression
+    main_expression = create_expression()
+    main_expression = add_absolute_value(main_expression)
     
-    if op2 == '+':
-        part2 = part1 + (-num3)
-    elif op2 == '-':
-        part2 = part1 - (-num3)
-    elif op2 == '*':
-        part2 = part1 * (-num3)
-    else:
-        part2 = part1 / (-num3)
+    # Add more complexity based on level
+    for _ in range(level - 1):
+        operator = random_operator()
+        sub_expr = create_expression()
+        sub_expr = add_absolute_value(sub_expr)
+        
+        if random.random() < 0.5:
+            main_expression = f"{main_expression} {operator} {sub_expr}"
+        else:
+            main_expression = f"{sub_expr} {operator} {main_expression}"
     
-    part3 = part2 * num4
+    # Replace '÷' with '/' for evaluation
+    eval_expression = main_expression.replace('÷', '/')
     
-    if op3 == '+':
-        part4 = num4 + (-num4) - num4
-    else:
-        part4 = num4 - (-num4) - num4
+    try:
+        correct_answer = str(eval(eval_expression))
+    except ZeroDivisionError:
+        return generate(level, **kwargs)
     
-    correct_answer = str(part3 + abs(part4))
+    question_text = f"計算 {main_expression} 的值。"
     
     return {
         'question_text': question_text,
@@ -65,7 +71,16 @@ def generate(level=1, **kwargs):
     }
 
 def check(user_answer, correct_answer):
-    if user_answer.strip() == correct_answer:
-        return {'correct': True, 'result': '正確'}
+    user_answer = str(user_answer).strip()
+    correct_answer = str(correct_answer)
+    
+    if user_answer == correct_answer:
+        return {
+            'correct': True,
+            'result': '正確'
+        }
     else:
-        return {'correct': False, 'result': '錯誤'}
+        return {
+            'correct': False,
+            'result': '錯誤'
+}

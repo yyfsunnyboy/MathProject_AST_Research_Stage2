@@ -56,7 +56,16 @@
    - 再調用計算：`deriv = _differentiate_poly(terms, order=1)` (🔴 輸入必須是 terms)
    - 最後轉字串：`ans = _poly_to_plain(deriv)`
 
-5. ✅ **只輸出代碼**
+5. ✅ **Python 語法嚴格性** (反 C 語言指令)
+   - **Python uses indentation, NOT braces `{}` for blocks.**
+   - ❌ NEVER put a closing brace `}` at the end of the script.
+   - ❌ NEVER use `return { ... };` (semi-colon).
+   - ❌ NEVER use C-style syntax like `};` to end blocks.
+   - ✅ Just end the `def generate` function naturally with indentation.
+   - ✅ Python dictionaries use `{ ... }` INSIDE expressions, not at block level.
+   - **Violation will cause AST Parse Error and crash the entire pipeline.**
+
+6. ✅ **只輸出代碼**
    - 不使用 `eval` / `exec`
    - 不加任何 Markdown 說明
 

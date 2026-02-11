@@ -1,281 +1,128 @@
-【角色】K12 數學演算法工程師
+【角色】Python Math Generator (K12)
+【任務】實作 `def generate(level=1, **kwargs)`，生成「整數四則運算」題目。
+【回傳格式】Dict: `{'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}`
 
-【任務】
-實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
-該函數應返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+### ⚠️ PYTHON SYNTAX STRICTNESS (反 C 語言指令)
+**Python uses indentation, NOT braces `{}` for blocks.**
+1. ❌ NEVER put a closing brace `}` at the end of the script.
+2. ❌ NEVER use `return { ... };` (semi-colon).
+3. ❌ NEVER use C-style syntax like `};` to end blocks.
+4. ✅ Just end the `def generate` function naturally with indentation.
+5. ✅ Python dictionaries use `{ ... }` INSIDE expressions, not at block level.
+**Violation will cause AST Parse Error and crash the entire pipeline.**
 
-【預載工具 API 手冊】(環境已實作，請直接調用，無需重新定義)
+### 🎯 參考例題與風格
+**範例：** 計算 $[(-20) + (-10)] \div (-5) \times 3 + |8 \times (-2) - 5|$ 的值。
+**要求**：
+1. 乘法用 `\times` (×)，除法用 `\div` (÷)。
+2. 絕對值必須使用 `\left| ... \right|`。
+3. **LaTeX 語法嚴格檢查**：`$` 符號只能出現在最外層，禁止在算式內部出現。
 
-1. **基礎工具**
-   - `fmt_num(n) -> str`: 格式化數字
-   - `to_latex(n) -> str`: 轉 LaTeX 格式
-   - `clean_latex_output(latex_str) -> str`: LaTeX 格式清洗和包裹 (自動添加 $)
-   
-2. **多項式專用工具**
-   - `_coeffs_to_terms(coeffs: list) -> list[tuple]`: 係數轉 terms
-   - `_differentiate_poly(terms, order=1) -> list[tuple]`: 求導
-   - `_poly_to_latex(terms) -> str`: 生成題目用 LaTeX (不含 $)
-   - `_poly_to_plain(terms) -> str`: 生成答案用純文字
-   - `_deriv_symbol_latex(order) -> str`: 導數符號 (不含 $)
+### 🔧 核心工具庫 (IntegerOps)
+class IntegerOps:
+    @staticmethod
+    def fmt_num(n):
+        return f"({n})" if n < 0 else str(n)
 
-【核心規則】
-1. ✅ shuffle + slice 避免無限迴圈
-2. ✅ 數學式用 $ 包裹
-3. ✅ 答案純結果，不含符號
-4. ✅ Data Flow: coeffs -> terms -> 計算 -> plain text
-5. ✅ 只輸出代碼
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        return random.choice(available)
 
-⚠️ **返回格式檢查**
-• 必須返回字典 {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
-• correct_answer 必須是字串
-• question_text 數學式必須用 $ 包裹
-
-
-### 🔧 標準函數庫（algebra）
-
-
-# ===== 代數標準函數庫 =====
-
-def _solve_linear_2x2(a1, b1, c1, a2, b2, c2):
-    '''
-    解二元一次方程組
-    a1*x + b1*y = c1
-    a2*x + b2*y = c2
-    返回: (x, y) 或 None（無解/無限多解）
-    '''
-    det = a1 * b2 - a2 * b1
-    if det == 0:
-        return None
-    x = (c1 * b2 - c2 * b1) / det
-    y = (a1 * c2 - a2 * c1) / det
-    return (x, y)
-
-def _quadratic_formula(a, b, c):
-    '''
-    求解一元二次方程 ax² + bx + c = 0
-    返回: (x1, x2) 或 None（無實根）
-    '''
-    discriminant = b**2 - 4*a*c
-    if discriminant < 0:
-        return None
-    x1 = (-b + math.sqrt(discriminant)) / (2*a)
-    x2 = (-b - math.sqrt(discriminant)) / (2*a)
-    return (x1, x2)
-
-
-⚠️ 規則：
-1. 直接調用上述函數，禁止重新定義
-2. 你只需實現 `def generate(level=1, **kwargs)`
-3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
-
-
-【參考例題】
-以下是該技能的課本真題範例（用於理解題型特徵）：
-
-**範例 1: 兩部分連接式**
-題目：計算 $[ (-20) + (-10) ] \div (-5) \times 3 + |8 \times (-2) - 5|$ 的值。
-
-解答步驟：
-1. **第一部分**: $[ (-20) + (-10) ] \div (-5) \times 3$
-   - 計算括號內: $(-20) + (-10) = -30$
-   - 除法: $-30 \div (-5) = 6$
-   - 乘法: $6 \times 3 = 18$
-   - 第一部分結果: $18$
-
-2. **第二部分**: $|8 \times (-2) - 5|$
-   - 乘法: $8 \times (-2) = -16$
-   - 減法: $-16 - 5 = -21$
-   - 絕對值: $|-21| = 21$
-   - 第二部分結果: $21$
-
-3. **最終計算**: $18 + 21 = 39$
-
-答案：**39**
-
-**特徵說明**：
-- 包含複雜的四則運算（加、減、乘、除）
-- 使用了括號改變運算順序
-- 包含絕對值運算
-- 涉及負數的計算
-- 最終答案為正整數
-
-### MASTER_SPEC:
-```
+### 📜 MASTER_SPEC (YAML Syntax Fixed)
 domain: arithmetic
-
 entities:
-  - integer_operand: integer
-    constraints: 
-      - value_range: -20~20
-      - 非零
-      - 推薦: 至少 1/3 的機率生成負數
-  - operator_arithmetic: operator (one of '+', '-', '*', '/')
-  - operator_main: operator (one of '+', '-') # 用於連接兩個主要計算部分
-  - num_terms_in_chain_A: integer
-    constraints:
-      - value_range: 3~4 # Expr_A 中的運算數數量
-  - num_terms_in_chain_C: integer
-    constraints:
-      - value_range: 2~3 # Expr_C (絕對值內部) 中的運算數數量
-  - parentheses_structure_A: string (one of 'none', 'outer_left_group', 'outer_right_group') # Expr_A 的括號結構
-  - parentheses_structure_C: string (one of 'none', 'left_group', 'right_group') # Expr_C 的括號結構 (僅在 num_terms_in_chain_C = 3 時適用)
-  - abs_content_range: integer
-    constraints:
-      - value_range: -100~100 # 絕對值內部表達式在應用 abs() 之前的值範圍
-
+  - operand: integer
 operators:
   - +, -, *, /, abs
-
 constraints:
-  - 可計算性: 所有中間值與最終答案都必須「可精確計算」（必須是整數）
-  - 邊界:
-    * 整數範圍 for operands: -20~20
-    * 整數範圍 for intermediate results: -500~500
-    * 整數範圍 for final answer: -1000~1000
-  - 互斥: 無。
-  - 最小複雜度:
-    * 總運算符數量必須至少為 4 個 (不含 `main_op`)。
-    * 必須至少包含 1 個乘法 (*) 或除法 (/) 運算符在 Expr_A 部分。
-    * 必須至少包含 1 個乘法 (*) 或除法 (/) 運算符在 Expr_C 部分。
-    * 必須包含至少 1 個負數操作數在整個題目中。
-    * 必須包含至少 1 個括號結構在整個題目中 (即 `parentheses_structure_A` 或 `parentheses_structure_C` 不為 'none')。
-    * 必須包含 1 個絕對值運算。
-    * 所有除法運算都必須是整除。
+  - 可計算性: 所有除法運算都必須是精確整除。
+  - 邊界: -50 ~ 50
 
-templates:
-  - name: chained_integer_operations_with_absolute_value
-    
-    complexity_requirements: |
-      - 必須生成兩個主要部分 (Part A 和 Part B)。
-      - Part A 必須是包含 3~4 個運算數的連串整數運算。
-      - Part B 必須是絕對值 $|Part_C|$，其中 Part_C 包含 2~3 個運算數的連串整數運算。
-      - 兩個部分都必須至少包含一個乘法 (*) 或除法 (/) 運算符。
-      - 至少一個操作數必須是負數。
-      - 所有除法運算都必須是整除。
-      - 最終答案必須為非零，且不為 1 或 -1。
-      
-    variables:
-      - num_operands_A: 隨機選取 (3 或 4)
-      - num_operands_C: 隨機選取 (2 或 3)
-      - main_op: 隨機選取 ('+' 或 '-') - 用於連接兩個主要計算部分
-      - operands_A: 列表，包含 `num_operands_A` 個整數 (範圍: -20~20，非零)
-      - operators_A: 列表，包含 `num_operands_A - 1` 個運算符 （'+', '-', '*', '/' 隨機選取）
-      - operands_C: 列表，包含 `num_operands_C` 個整數 (範圍: -100~100，非零)
-      - operators_C: 列表，包含 `num_operands_C - 1` 個運算符 （'+', '-', '*', '/' 隨機選取）
-      
-    construction: |
-      **整體流程 (在 while True 迴圈內)**
-      
-      1. **生成 Expr_A 的運算數和運算符：**
-         a. 隨機選擇 `num_operands_A` (3 或 4)
-         b. 生成 `num_operands_A` 個整數 (範圍: -20~20，非零)
-         c. 生成 `num_operands_A - 1` 個運算符 （'+', '-', '*', '/' 隨機選取）
-         d. **檢查：** 確保至少有 1 個 '*' 或 '/'。若無，`continue` 重試
-         e. **計算 Part A 的值：** 
-            - 從左到右逐個計算：`val = operands_A[0]`
-            - 對每個運算符 `op` 和下個運算數 `n`：
-              * 若 `op == '/'` 且 `val % n != 0`，則 `continue` 重試（整除檢查）
-              * 否則應用運算：`val = val op n`
-              * 若中間結果超過 500 或小於 -500，則 `continue` 重試
-            - 保存最終結果為 `val_A`
-      
-      2. **生成 Expr_C 的運算數和運算符：**
-         a. 隨機選擇 `num_operands_C` (2 或 3)
-         b. 生成 `num_operands_C` 個整數 (範圍: -100~100，非零)
-         c. 生成 `num_operands_C - 1` 個運算符
-         d. **檢查：** 確保至少有 1 個 '*' 或 '/'。若無，`continue` 重試
-         e. **計算 Part C 的值：** 
-            - 從左到右逐個計算，方式與 Part A 相同
-            - 保存最終結果為 `val_C`
-      
-      3. **計算 Part B 的值：**
-         - `val_B = abs(val_C)`
-      
-      4. **計算最終答案：**
-         - 隨機選擇主操作符 `main_op` ('+' 或 '-')
-         - `final_answer = val_A main_op val_B`
-         - **檢查：** 若 `final_answer == 0` 或 `final_answer in [1, -1]`，則 `continue` 重試
-      
-      5. **最終驗證：**
-         - 檢查所有操作數中至少有 1 個負數。若無，`continue` 重試
-         - 所有檢查都通過，執行格式化並 `return`
-      
-      6. **格式化題目：**
-         - 將 Expr_A 中每個數字用 `fmt_num()` 格式化，運算符用映射替換 ('*' → '\\times', '/' → '\\div')
-         - 將 Expr_C 中每個數字用 `fmt_num()` 格式化，運算符用映射替換
-         - 例如："計算 $-2 + 3 \\times 4$ + $|-5 + 6|$ 的值。"
-         - 使用 `fmt_num()` 確保負數有括號，例如 `fmt_num(-5)` → "(-5)"
-      
-    implementation_checklist: |
-      工程師實作時必須確認：
-      - [ ] 是否正確生成 `num_operands_A` (3 or 4) 和 `num_operands_C` (2 or 3)。
-      - [ ] `operands_A` 中的值是否都在 [-20, 20] 範圍內且非零。
-      - [ ] `operands_C` 中的值是否都在 [-100, 100] 範圍內且非零。
-      - [ ] `operators_A` 和 `operators_C` 是否各包含至少一個 '*' 或 '/'。
-      - [ ] 所有除法運算是否都進行了整除驗證（`val % next_operand == 0`）。
-      - [ ] 所有中間結果是否都在 [-500, 500] 範圍內。
-      - [ ] `final_answer` 是否在 [-1000, 1000] 範圍內，且非零且不為 1 或 -1。
-      - [ ] 所有操作數中是否至少有 1 個負數。
-      - [ ] 題目文本是否正確使用 `fmt_num()` 格式化每個數字。
-      - [ ] 運算符是否正確映射 ('*' → '\\times', '/' → '\\div')。
-      - [ ] 答案是否為純整數字符串。
-    
-    formatting:
-      question_display: |
-        題幹格式化規則：
-        
-        🔴 **核心原則**：
-        - 中文字和文字敘述必須在 LaTeX ($...$) 外面
-        - 數學式子必須在 LaTeX ($...$) 裡面
-        
-        **具體步驟**：
-        1. 遍歷 operands_A 和 operators_A，組裝題目文本
-           - 每個數字用 `fmt_num()` 格式化
-           - 每個運算符用映射替換 ('*' → '\\times', '/' → '\\div')
-        
-        2. 遍歷 operands_C 和 operators_C，組裝絕對值內部表達式
-           - 每個數字用 `fmt_num()` 格式化
-           - 每個運算符用映射替換
-        
-        3. 組裝完整題目：
-           `q = f"計算 ${expr_A}$ {main_op_symbol} $|{expr_C}|$ 的值。"`
-        
-        示例：
-        - operands_A = [-2, 3, 4], operators_A = ['+', '\\times']
-        - Part A: "(-2) + 3 \\times 4"
-        - operands_C = [-5, 6], operators_C = ['*']  
-        - Part C: "(-5) \\times 6"
-        - 完整: "計算 $(-2) + 3 \\times 4$ + $|(-5) \\times 6|$ 的值。"
-      
-      answer_display: |
-        答案格式化規則（純數字，不使用 LaTeX）：
-        - 答案為 `str(final_answer)`
-        - 禁止使用 LaTeX 格式
-        - 禁止使用 fmt_num() 作為答案
-      
-    notes: |
-      - 此題型的核心是連串四則運算 + 絕對值
-      - 避免過度複雜的括號邏輯，保持運算順序清晰
-      - 所有驗證都應在 while True 内进行，通過 continue 重試
-      
-diversity:
-  - 變異點 1: `num_operands_A` (3 或 4) 和 `num_operands_C` (2 或 3) 的隨機選擇改變複雜度
-  - 變異點 2: 運算符組合的多樣性 ('+', '-', '*', '/' 的各種組合)
-  - 變異點 3: 負數的數量和位置可以變化 (推薦至少 1/3 的概率)
-  - 變異點 4: 主操作符 ('+' 或 '-') 改變最終答案的計算
-  - 變異點 5: 最終答案的正負性變化
-  
-  退化檢查：
-  - ❌ 若所有運算符都是加減（無乘除），重新生成
-  - ❌ 若最終答案為 0, 1, 或 -1，重新生成
-  - ❌ 若所有操作數都是正數，重新生成
-  - ❌ 若中間或最終結果超出範圍，重新生成
+### 🏗️ 實作鷹架 (Implementation Scaffolding)
+請依照此邏輯撰寫，**使用逆向工程確保整除 (O(1) 複雜度)**。
+**關鍵修正**：請將數學式組裝 (Math String) 與題幹組裝 (Question String) 分開處理。
 
-verifier:
-  生成後應驗證：
-  - ✅ Part A 和 Part C 中各是否都至少包含 1 個乘法或除法
-  - ✅ 題目中是否包含至少 1 個負數操作數
-  - ✅ 所有除法是否都為整除
-  - ✅ 最終答案是否為非零、不為 1 或 -1、且在 [-1000, 1000] 範圍內
-  - ✅ 題目文本格式是否正確 (使用了 fmt_num() 和運算符映射)
-```
+```python
+import random
+# [在此貼上 IntegerOps Class]
+
+# ✅ 定義 LaTeX 常數
+OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
+
+def generate(level=1, **kwargs):
+    # ==========================================
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成)
+    # ==========================================
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    
+    # [Step 1] 逆推 op2 (外層)
+    C = IntegerOps.random_nonzero(-10, 10)
+    if op2 == '/':
+        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        val_inner = target_term1 * C 
+    else:
+        val_inner = IntegerOps.random_nonzero(-30, 30)
+        if op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+
+    # [Step 2] 逆推 op1 (內層)
+    B = IntegerOps.random_nonzero(-10, 10)
+    if op1 == '/':
+        A = val_inner * B
+    elif op1 == '*':
+        # 乘法重置
+        A = IntegerOps.random_nonzero(-10, 10)
+        B = IntegerOps.random_nonzero(-10, 10)
+        val_inner = A * B
+        if op2 == '/':
+             if C == 0 or val_inner % C != 0: C = 1
+             target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': A = val_inner - B
+    elif op1 == '-': A = val_inner + B
+
+    # ==========================================
+    # 2. 生成 Term 2: | D op3 E | 
+    # ==========================================
+    op3 = random.choice(['+', '-', '*']) 
+    D = IntegerOps.random_nonzero(-15, 15)
+    E = IntegerOps.random_nonzero(-15, 15)
+    
+    val_term2_raw = eval(f"{D} {op3} {E}")
+    result_term2 = abs(int(val_term2_raw))
+
+    # ==========================================
+    # 3. 組合與格式化 (CRITICAL FIX: 分段組裝)
+    # ==========================================
+    op_main = random.choice(['+', '-'])
+    final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
+    
+    # 格式化數字
+    str_A, str_B, str_C = IntegerOps.fmt_num(A), IntegerOps.fmt_num(B), IntegerOps.fmt_num(C)
+    str_D, str_E = IntegerOps.fmt_num(D), IntegerOps.fmt_num(E)
+    
+    # 1. 先組裝純數學 LaTeX 字串 (不含 $)
+    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
+    
+    math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
+    
+    # 2. 再組裝成題目句子 (明確加入 $，且前後留空白)
+    # 注意：這裡不使用 clean_latex_output，避免它干擾我們已經手動加好的 $
+    q = f"計算 ${math_expression}$ 的值。"
+    
+    return {
+        'question_text': q,
+        'correct_answer': str(final_val),
+        'answer': str(final_val),
+        'mode': 1
+    }

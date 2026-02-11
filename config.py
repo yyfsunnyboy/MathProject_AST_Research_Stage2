@@ -64,7 +64,28 @@ class Config:
             'model': 'gemini-2.5-flash',
             'temperature': 0.1,
             'max_tokens': 8192,
-            'description': 'Gemini 2.5 Flash (Cloud)'
+            'description': 'Gemini 2.5 Flash (Cloud)',
+
+            # ★★★ [NEW] 安全設定：全部關閉 (BLOCK_NONE) ★★★
+            # 這能防止模型因為誤判 "危險內容" 而拒絕生成數學題目
+            'safety_settings': [
+                {
+                    "category": "HARM_CATEGORY_HARASSMENT",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_HATE_SPEECH",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                    "threshold": "BLOCK_NONE"
+                },
+                {
+                    "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+                    "threshold": "BLOCK_NONE"
+                },
+            ]            
         },
 
         # 2. Qwen 2.5 14B (Local)

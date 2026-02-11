@@ -173,6 +173,44 @@ verifier:
     請明確列出工具名稱與用途。
 ```
 
+【OUTPUT FORMAT RULES (YAML 語法規則)】
+
+🔴 **YAML SYNTAX RULE 【強制規定】**:
+
+Inside YAML, NEVER use the asterisk * for bullet points.
+
+Use hyphens - for lists, or indent with spaces.
+
+❌ Bad Example:
+```yaml
+constraints:
+  * 可計算性: 所有中間值...
+  * 邊界: 明確指定數值範圍...
+  * range: 1-10
+```
+
+✅ Good Example:
+```yaml
+constraints:
+  - 可計算性: 所有中間值...
+  - 邊界: 明確指定數值範圍...
+  - range: 1-10
+```
+
+✅ Alternative (Key-Value Format):
+```yaml
+constraints:
+  computability: 所有中間值...
+  boundary: 明確指定數值範圍...
+  range: 1-10
+```
+
+**重點**：
+- YAML lists must use `-` (hyphen) prefixes, NOT `*` (asterisk)
+- Asterisk `*` in YAML is reserved for special syntax and will cause parsing errors
+- Always use `-` for bullet points in YAML contexts
+- If you need to use `*`, escape it or place it inside quotes: `"description with * character"`
+
 【嚴格禁令 (Negative Constraints)】
 - ❌ **嚴禁字串算式或 eval/exec/safe_eval 敘述**：任何運算都必須用「Python 直接運算」描述。
   - ❌ 錯誤: "使用 safe_eval 計算結果"
@@ -180,6 +218,7 @@ verifier:
 - ❌ **嚴禁直接寫 Python Code**：規格是「自然語述」，工程師自己實作。
 - ❌ **嚴禁繪圖、視覺、Matplotlib**：題目可涉及幾何，但別要求繪圖生成。
 - ❌ **嚴禁應用題、物理情境、單位轉換等實世界敘事**：純數學題。
+- ❌ **嚴禁在 YAML 中使用 * 作為條列符號**：使用 `-` 取代（見上方 YAML SYNTAX RULE）。
 
 【工程師實作結構要求】
 在自然語述規格完成後，工程師必須按照以下結構實作 generate() 函數：
@@ -243,9 +282,9 @@ entities:
 constraints:
   - 可計算性: 所有中間值與最終答案都必須「可精確計算」（用 Fraction 或 int）
   - 邊界:
-    * 分數分母範圍: 2~10
-    * 整數範圍: -20~20
-    * 運算複雜度: 分子/分母不超過 2 位數
+    - 分數分母範圍: 2~10
+    - 整數範圍: -20~20
+    - 運算複雜度: 分子/分母不超過 2 位數
   - 互斥: 不可全為整數（必須至少有一個分數）
   - 最小複雜度: 必須至少 3 個運算數，必須至少包含一個乘法或除法
 
