@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: evaluate_mcri.py
-# Version: V6.2 (Neuro-Symbolic Architecture Quality Evaluation)
-# Last Updated: 2026-02-13
+# Version: V4.4 (L4.3 Quality Control + L5 Complexity Analysis)
+# Last Updated: 2026-02-05
 # Author: Math AI Research Team
 #
 # [Description]:
-#   MCRI V6.2 評估系統 - AST 智慧分級評分腳本（Neuro-Symbolic Edition）
+#   MCRI V4.4 評估系統 - 完整評分腳本（含質量控制與複雜度分析）
 #   評估三個 Ablation 版本的題目生成品質（Ab1 Bare, Ab2 Engineered, Ab3 Healer）
 #   
 #   [Version History]:
-#   - V6.2: 移除 CodeBLEU 依賴，引入神經符號強健性分析 (L5 升級為 20 分)
-#   - V6.0: 雙軌評分體系 (Program Value 50 + Math Value 50)
 #   - V4.4: 加入 L4.3 質量控制、L5 複雜度分析（不計分，僅記錄）
 #   - V4.3: 原始 L4.3 數學異味檢測
 #   - V4.2.2: 加入 L4.2 數學異味檢測（+ -, 1x, -1x 等）
@@ -24,20 +22,16 @@
 #   與 AST Healer 機制對程式碼品質的影響，支援科展實驗的統計分析需求。
 #
 # [Key Functions]:
-#   1. MCRI_Evaluator: 核心評估器類別，實作雙軌評分（Program Value + Math Value）
-#   2. analyze_code_robustness: AST 智慧分級分析器 (ROBUST/MODERATE/RISKY)
-#   3. create_database: 建立 SQLite 資料庫（3 張表：runs, items, summary）
-#   4. main: 主程式入口，批次評估所有 Ablation 樣本
+#   1. MCRI_Evaluator: 核心評估器類別，實作 4 大維度（L1-L4 計分，L5 記錄）
+#   2. create_database: 建立 SQLite 資料庫（3 張表：runs, items, summary）
+#   3. main: 主程式入口，批次評估所有 Ablation 樣本
 #
 # [Evaluation Dimensions] (滿分 100):
-#   === Program Value (50分) ===
-#   - L1 工程基石 (15分): 語法安全 + 執行穩定性
-#   - L2 資料衛生 (15分): 介面契約 + 格式純淨度
-#   - L5 架構品質 (20分): 靜態分析 (10) + 神經符號強健性 (10)
-#   
-#   === Math Value (50分) ===
+#   - L1 工程基石 (20分): 語法安全 + 執行穩定性
+#   - L2 資料衛生 (20分): 介面契約 + 格式純淨度
 #   - L3 評測公平 (30分): 內在一致性 + 外在強健性
-#   - L4 教學有效 (20分): 數值友善度 + 視覺可讀性 + 質量控制
+#   - L4 教學有效 (30分): 數值友善度 + 視覺可讀性 + 質量控制 (L4.3)
+#   - L5 複雜度分析 (不計分): 數學複雜度 + 代碼複雜度 (僅記錄)
 #
 # [Database Schema]:
 #   - experiment_runs: 39 欄位 × ~15 筆
@@ -77,6 +71,11 @@ from contextlib import contextmanager
 from datetime import datetime, UTC
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional, Any
+# 在 import 區域加入這行
+from scripts.metrics_utils import compute_structural_codebleu  # 假設你把 compute_codebleu.py 改名或放在這
+# 或者如果你的檔名是 compute_codebleu.py，就寫：
+from compute_codebleu import compute_structural_codebleu
+import os
 
 import numpy as np
 import pandas as pd
@@ -97,7 +96,7 @@ from config import Config
 # ========================================
 # 常數定義
 # ========================================
-MCRI_VERSION = "6.2"
+MCRI_VERSION = "4.2.2"
 # [NEW] 从 config 读取超时和重复次数配置
 DEFAULT_TIMEOUT = getattr(Config, 'EXECUTION_TIMEOUT', 10)  # 秒
 DEFAULT_REPETITIONS = getattr(Config, 'STABILITY_REPS', 3) if getattr(Config, 'STABILITY_REPS', None) is not None else 20
@@ -172,70 +171,6 @@ def time_limit(seconds: int):
             yield
         finally:
             signal.alarm(0)
-
-
-# ========================================
-# AST 智慧分級分析器 (MCRI V6.2 核心)
-# ========================================
-def analyze_code_robustness(code):
-    """
-    MCRI V6.2 L5核心: AST 智慧分級分析器
-    區分: Bare(5), Engineered(7), Healer(10)
-    
-    Returns:
-        Tuple[str, str]: (status, evidence)
-        - status: "ROBUST", "MODERATE", "RISKY", "NEUTRAL", "SYNTAX_ERROR"
-        - evidence: 詳細說明
-    """
-    try:
-        tree = ast.parse(code)
-    except Exception as e:
-        return "SYNTAX_ERROR", f"Syntax Error: {str(e)[:100]}"
-
-    has_retry_loop = False
-    safe_calls = []
-    unsafe_calls = []
-    has_helpers = False 
-    
-    for node in ast.walk(tree):
-        # 1. Detect Retry Loop (Loop -> Try)
-        if isinstance(node, (ast.For, ast.While)):
-            for child in ast.walk(node):
-                if isinstance(child, ast.Try):
-                    has_retry_loop = True
-                    
-        # 2. Detect Helpers Definition (Ab2 Feature)
-        if isinstance(node, ast.FunctionDef) and node.name == 'safe_choice':
-            has_helpers = True
-        if isinstance(node, ast.ClassDef) and 'Ops' in node.name:
-            has_helpers = True
-
-        # 3. Detect Calls
-        if isinstance(node, ast.Call):
-            func_name = ""
-            if isinstance(node.func, ast.Name):
-                func_name = node.func.id
-            elif isinstance(node.func, ast.Attribute):
-                func_name = node.func.attr
-            
-            if func_name in ['safe_eval', 'check', 'safe_choice']:
-                safe_calls.append(func_name)
-            elif func_name in ['eval', 'exec']:
-                unsafe_calls.append(func_name)
-
-    # === Decision Logic (Golden Staircase) ===
-    if has_retry_loop:
-        return "ROBUST", "Retry Loop Detected"
-    if len(safe_calls) > 0:
-        return "ROBUST", f"Safe Functions: {list(set(safe_calls))}"
-    
-    if 'eval' in unsafe_calls and has_helpers:
-        return "MODERATE", "Unsafe Eval but Modular"
-        
-    if 'eval' in unsafe_calls:
-        return "RISKY", "Raw Unsafe Eval"
-
-    return "NEUTRAL", "Standard Structure"
 
 
 # ========================================
@@ -1046,57 +981,69 @@ class MCRI_Evaluator:
         result['total_math_score'] = min(50, result['difficulty_score'] + result['quality_score'])
         return result
 
-    def evaluate_l5_architecture(self, code_content: str) -> dict:
+    def evaluate_code_architecture(self, code_content: str) -> Tuple[float, str]:
         """
-        [MCRI V6.2] L5 Architecture Quality (Neuro-Symbolic Scoring)
-        Total: 20 Points = Part A (Static, 10) + Part B (Robustness, 10)
+        L5. 架構品質 (10分) - 評估代碼的工程水準 (Engineering Quality)
+        評分標準:
+        1. 模組化 (+2): 定義了輔助函數 (Helper Functions)
+        2. 型別提示 (+2): 使用了 Type Hints
+        3. 錯誤處理 (+2): 使用了 try-except 機制
+        4. 文檔說明 (+2): 包含 Docstrings
+        5. 安全實踐 (+2): 未使用裸 eval() / 使用了 safe_eval
         """
         score = 0.0
-        details = []
+        notes = []
+        try:
+            if not code_content:
+                return 0.0, "無代碼"
 
-        # --- Part A: Base Static Analysis (Max 10.0) ---
-        # 1. Modular (+2)
-        if code_content.count("def ") > 1: 
-            score += 2.0
-            details.append("Modular(+2)")
-        # 2. Type Hints (+2)
-        if "->" in code_content or ": int" in code_content: 
-            score += 2.0
-            details.append("TypeHint(+2)")
-        # 3. Docstrings (+2)
-        if '"""' in code_content or "'''" in code_content: 
-            score += 2.0
-            details.append("Docstring(+2)")
-        # 4. Error Handling Syntax (+2)
-        if "try:" in code_content and "except" in code_content:
-            score += 2.0
-            details.append("Try-Except(+2)")
-        # 5. Basic Safety (+2)
-        if "safe_eval" in code_content or "eval" not in code_content:
-            score += 2.0
-            details.append("BasicSafety(+2)")
-
-        # --- Part B: Neuro-Symbolic Robustness (Max 10.0) ---
-        # Call the external AST analyzer
-        status, evidence = analyze_code_robustness(code_content)
-        
-        robustness_score = 0.0
-        if status == "ROBUST":
-            robustness_score = 10.0  # Ab3
-        elif status == "MODERATE":
-            robustness_score = 7.0   # Ab2
-        elif status == "RISKY":
-            robustness_score = 5.0   # Ab1
-        else:
-            robustness_score = 6.0
+            tree = ast.parse(code_content)
             
-        score += robustness_score
-        details.append(f"Robustness:{status}(+{robustness_score}, {evidence})")
+            # 1. 模組化 (Helper Functions)
+            func_defs = [node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)]
+            if len(func_defs) > 2: 
+                score += 2.0
+                notes.append("模組化(+2)")
+            
+            # 2. 型別提示 (Type Hinting)
+            has_type_hints = False
+            for node in func_defs:
+                if node.returns or any(arg.annotation for arg in node.args.args):
+                    has_type_hints = True
+                    break
+            if has_type_hints:
+                score += 2.0
+                notes.append("TypeHint(+2)")
 
-        return {
-            "score": score,
-            "details": "; ".join(details)
-        }
+            # 3. 錯誤處理 (Error Handling)
+            has_try = any(isinstance(node, ast.Try) for node in ast.walk(tree))
+            if has_try:
+                score += 2.0
+                notes.append("Try-Catch(+2)")
+
+            # 4. 文檔字串 (Docstrings)
+            has_docstring = any(ast.get_docstring(node) for node in func_defs)
+            if has_docstring:
+                score += 2.0
+                notes.append("Docstring(+2)")
+                
+            # 5. 安全性 (Safe Eval)
+            unsafe_calls = []
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                    if node.func.id in ['eval', 'exec']:
+                        unsafe_calls.append(node.func.id)
+            
+            if not unsafe_calls:
+                score += 2.0
+                notes.append("Safe(+2)")
+            else:
+                notes.append(f"Unsafe({unsafe_calls[0]})")
+
+        except Exception as e:
+            notes.append(f"分析失敗: {type(e).__name__}")
+            
+        return score, ", ".join(notes)
 
     def analyze_math_complexity(self, question_text: str) -> Tuple[int, int]:
         """
@@ -1365,9 +1312,7 @@ class MCRI_Evaluator:
         try:
             with open(self.skill_path, 'r', encoding='utf-8') as f:
                 code_content = f.read()
-            l5_result = self.evaluate_l5_architecture(code_content)
-            score_l5_arch = l5_result["score"]
-            notes_l5_arch = l5_result["details"]
+            score_l5_arch, notes_l5_arch = self.evaluate_code_architecture(code_content)
         except Exception as e:
             score_l5_arch = 0.0
             notes_l5_arch = str(e)
