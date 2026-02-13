@@ -1,11 +1,11 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: gemini-2.5-flash | Strategy: V10.1 Modular Refactored
+# Model: gemini-3-flash-preview | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 60.84s | Tokens: In=1697, Out=2215
-# Created At: 2026-02-09 17:18:26
+# Performance: 22.08s | Tokens: In=1697, Out=1323
+# Created At: 2026-02-13 22:44:36
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
-# Verification: Internal Logic Check = FAILED
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -616,4 +616,105 @@ import random
 class IntegerOps:
     @staticmethod
     def fmt_num(n):
-        """
+        """格式化負數，使其帶有括號"""
+        return f"({n})" if n < 0 else str(n)
+
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        """生成範圍內非零的隨機整數"""
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        return random.choice(available)
+
+# ✅ 定義 LaTeX 常數
+OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
+
+def generate(level=1, **kwargs):
+    # ==========================================
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成確保整除)
+    # ==========================================
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    
+    # [Step 1] 處理外層 op2 與 C
+    C = IntegerOps.random_nonzero(-10, 10)
+    
+    if op2 == '/':
+        # 若外層是除法，先決定結果 target_term1，再反推內層應有的值 val_inner
+        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        val_inner = target_term1 * C 
+    else:
+        # 若外層非除法，先隨機決定內層結果 val_inner
+        val_inner = IntegerOps.random_nonzero(-30, 30)
+        if op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+
+    # [Step 2] 處理內層 op1 與 A, B
+    B = IntegerOps.random_nonzero(-10, 10)
+    
+    if op1 == '/':
+        # 若內層是除法，A 必須是 val_inner * B
+        A = val_inner * B
+    elif op1 == '*':
+        # 乘法邏輯：為了數字美觀，重新隨機 A, B 並修正外層結果
+        A = IntegerOps.random_nonzero(-10, 10)
+        B = IntegerOps.random_nonzero(-10, 10)
+        val_inner = A * B
+        # 重新計算 target_term1 以維持一致性
+        if op2 == '/':
+            if val_inner % C != 0: 
+                C = 1 # 強制整除修正
+            target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': 
+        A = val_inner - B
+    elif op1 == '-': 
+        A = val_inner + B
+
+    # ==========================================
+    # 2. 生成 Term 2: | D op3 E | 
+    # ==========================================
+    op3 = random.choice(['+', '-', '*']) 
+    D = IntegerOps.random_nonzero(-12, 12)
+    E = IntegerOps.random_nonzero(-12, 12)
+    
+    if op3 == '+': val_term2_raw = D + E
+    elif op3 == '-': val_term2_raw = D - E
+    else: val_term2_raw = D * E
+    
+    result_term2 = abs(val_term2_raw)
+
+    # ==========================================
+    # 3. 組合與格式化
+    # ==========================================
+    op_main = random.choice(['+', '-'])
+    if op_main == '+':
+        final_val = target_term1 + result_term2
+    else:
+        final_val = target_term1 - result_term2
+    
+    # 格式化數字 (負數加括號)
+    str_A, str_B, str_C = IntegerOps.fmt_num(A), IntegerOps.fmt_num(B), IntegerOps.fmt_num(C)
+    str_D, str_E = IntegerOps.fmt_num(D), IntegerOps.fmt_num(E)
+    
+    # 組裝 LaTeX 字串
+    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
+    
+    math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
+    
+    # 組裝題幹
+    q_text = f"計算 ${math_expression}$ 的值。"
+    
+    return {
+        'question_text': q_text,
+        'correct_answer': str(final_val),
+        'answer': str(final_val),
+        'mode': 1
+    }

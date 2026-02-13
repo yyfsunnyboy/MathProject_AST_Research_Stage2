@@ -370,6 +370,12 @@ class ASTHealer(ast.NodeTransformer):
             logger.warning("⚠️  Semantic Heal Skipped: No AI Client provided.")
             return code_str, False
 
+        # [Safety Check] 防止使用超大 Context 的模型 (如 Gemini 3.0 Preview, 65k tokens) 進行修復
+        # 因為那會導致極度漫長的等待，甚至看起來像死循環。
+        if hasattr(self.ai_client, 'max_tokens') and self.ai_client.max_tokens > 20000:
+            logger.warning(f"⏩ 跳過 Semantic Heal: Client max_tokens ({self.ai_client.max_tokens}) 過大，避免卡死。")
+            return code_str, False
+
         logger.info(f"🧠 啟動 Semantic Healer (Self-Correction)...")
         logger.debug(f"Error Context: {error_msg.splitlines()[-1]}")
 
@@ -390,19 +396,39 @@ Please fix the logic error based on the error message provided.
 3. OUTPUT ONLY THE FULL FIXED PYTHON CODE.
 4. DO NOT wrap with markdown code blocks. DO NOT add explanations. JUST THE CODE.
 """
-        messages = [
-            {"role": "system", "content": "You are a Python coding assistant. Output only raw code."},
-            {"role": "user", "content": prompt}
-        ]
+        # messages = [
+        #     {"role": "system", "content": "You are a Python coding assistant. Output only raw code."},
+        #     {"role": "user", "content": prompt}
+        # ]
 
         try:
             # 2. 呼叫 LLM
-            # 注意: 這裡假設 ai_client 介面是 chat_completion(messages, model_size)
-            # 我們需要適配參數。如果 ai_client 是 CodeGenerator 裡的 wrapper，通常有 chat_completion
-            response = self.ai_client.chat_completion(messages, model_size=model_name)
+            # [FIX] 使用 generate_content (適配 GoogleAIClient/LocalAIClient)
+            # 原來的 chat_completion 不存在於 wrapper 中
             
+            # [Refactored] 使用 shared retry logic (2 retries for healing is enough)
+            from core.ai_wrapper import call_ai_with_retry
+            
+            if hasattr(self.ai_client, 'generate_content'):
+                response = call_ai_with_retry(
+                    client=self.ai_client,
+                    prompt=prompt,
+                    max_retries=2,
+                    retry_delay=2,
+                    verbose=True
+                )
+                
+                # Wrapper 返回的是 MockResponse 對象，需取 .text
+                if hasattr(response, 'text'):
+                    fixed_code_raw = response.text
+                else:
+                    fixed_code_raw = str(response) # Fallback
+            else:
+                 logger.error("❌ AI Client 不支援 generate_content")
+                 return code_str, False
+
             # 3. 清理輸出的 Markdown
-            fixed_code = response.replace("```python", "").replace("```", "").strip()
+            fixed_code = fixed_code_raw.replace("```python", "").replace("```", "").strip()
             
             if not fixed_code:
                 logger.error("❌ Semantic Healer returned empty code.")

@@ -1,10 +1,10 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
+# Model: qwen3:14b-q4_K_M | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 40.32s | Tokens: In=1455, Out=1062
-# Created At: 2026-02-08 21:52:09
-# Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
+# Performance: 77.09s | Tokens: In=1612, Out=2108
+# Created At: 2026-02-13 20:53:35
+# Fix Status: [Clean Pass] | Fixes: Basic=0, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -613,7 +613,6 @@ class IntegerOps:
 
 import random
 
-# IntegerOps Class
 class IntegerOps:
     @staticmethod
     def fmt_num(n):
@@ -624,7 +623,7 @@ class IntegerOps:
         available = [x for x in range(min_val, max_val + 1) if x != 0]
         return random.choice(available)
 
-# LaTeX 常數
+# ✅ 定義 LaTeX 常數
 OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
 L_ABS = r"\left|"   # 左絕對值
 R_ABS = r"\right|"  # 右絕對值

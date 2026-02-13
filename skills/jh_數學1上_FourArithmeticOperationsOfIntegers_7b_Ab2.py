@@ -1,9 +1,9 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: qwen2.5-coder:7b | Strategy: V10.1 Modular Refactored
+# Model: qwen3:8b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 18.40s | Tokens: In=4390, Out=1250
-# Created At: 2026-02-06 19:40:55
+# Performance: 59.50s | Tokens: In=1588, Out=3977
+# Created At: 2026-02-13 22:29:07
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = FAILED
 # ==============================================================================
@@ -545,33 +545,65 @@ def ensure_dir(p):
 
 # [DOMAIN HELPERS - Auto-Injected for jh_數學1上_FourArithmeticOperationsOfIntegers]
 
-# ===== 代數標準函數庫 =====
+# ===== IntegerOps (整數標準函數庫) =====
 
-def _solve_linear_2x2(a1, b1, c1, a2, b2, c2):
-    '''
-    解二元一次方程組
-    a1*x + b1*y = c1
-    a2*x + b2*y = c2
-    返回: (x, y) 或 None（無解/無限多解）
-    '''
-    det = a1 * b2 - a2 * b1
-    if det == 0:
-        return None
-    x = (c1 * b2 - c2 * b1) / det
-    y = (a1 * c2 - a2 * c1) / det
-    return (x, y)
+class IntegerOps:
+    '''整數運算模組 - 支援格式化、隨機數生成、整除判斷等'''
+    
+    @staticmethod
+    def fmt_num(n):
+        '''
+        格式化數字，為負數自動加括號
+        - 便於生成 Python 算式（如 "x + (-5)" 而非 "x + -5"）
+        
+        範例：
+            IntegerOps.fmt_num(5)   → "5"
+            IntegerOps.fmt_num(-5)  → "(-5)"
+            IntegerOps.fmt_num(0)   → "0"
+        '''
+        if n < 0:
+            return f"({n})"
+        return str(n)
 
-def _quadratic_formula(a, b, c):
-    '''
-    求解一元二次方程 ax² + bx + c = 0
-    返回: (x1, x2) 或 None（無實根）
-    '''
-    discriminant = b**2 - 4*a*c
-    if discriminant < 0:
-        return None
-    x1 = (-b + math.sqrt(discriminant)) / (2*a)
-    x2 = (-b - math.sqrt(discriminant)) / (2*a)
-    return (x1, x2)
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        '''生成非零隨機整數'''
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        if not available:
+            raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
+        return random.choice(available)
+
+    @staticmethod
+    def is_divisible(a, b):
+        '''檢查 a 是否能被 b 整除'''
+        if b == 0:
+            return False
+        return a % b == 0
+
+    @staticmethod
+    def safe_eval(expr):
+        '''
+        安全評估算式，支援：abs()、基本四則運算、括號
+        
+        範例：
+            IntegerOps.safe_eval("8 * (-2) - 5")           → -21
+            IntegerOps.safe_eval("abs(8 * (-2) - 5)")     → 21
+            IntegerOps.safe_eval("[ (-20) + (-10)] / (-5) * 3")  → 18.0
+        '''
+        # 允許的函數和變數
+        safe_dict = {
+            '__builtins__': {},
+            'abs': abs,
+            'sum': sum,
+            'max': max,
+            'min': min,
+        }
+        # 移除方括號並替換為括號（如果需要）
+        expr = expr.replace('[', '(').replace(']', ')')
+        try:
+            return eval(expr, safe_dict)
+        except Exception as e:
+            raise ValueError(f"Invalid expression: {expr}. Error: {e}")
 
 
 
@@ -579,144 +611,97 @@ def _quadratic_formula(a, b, c):
 # ---------------------------------------------------------
 
 
-def generate(level=1, **kwargs):
-    import random
-    import math
+import random
+from math import gcd
 
-    # 定義運算符對應的 LaTeX 符號
-    op_latex = {
-        '+': r'\plus',
-        '-': r'\minus',
-        '*': r'\times',
-        '/': r'\div'
-    }
-
+class IntegerOps:
+    @staticmethod
     def fmt_num(n):
-        return str(n)
+        return f"({n})" if n < 0 else str(n)
 
-    def clean_latex_output(latex_str):
-        return f"${latex_str}$"
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        return random.choice(available)
 
-    def _solve_linear_2x2(a1, b1, c1, a2, b2, c2):
-        det = a1 * b2 - a2 * b1
-        if det == 0:
-            return None
-        x = (c1 * b2 - c2 * b1) / det
-        y = (a1 * c2 - a2 * c1) / det
-        return (x, y)
+# ✅ 定義 LaTeX 常數
+OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
 
-    def _quadratic_formula(a, b, c):
-        discriminant = b**2 - 4*a*c
-        if discriminant < 0:
-            return None
-        x1 = (-b + math.sqrt(discriminant)) / (2*a)
-        x2 = (-b - math.sqrt(discriminant)) / (2*a)
-        return (x1, x2)
+def generate(level=1, **kwargs):
+    # ==========================================
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成)
+    # ==========================================
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    
+    # [Step 1] 逆推 op2 (外層)
+    C = IntegerOps.random_nonzero(-10, 10)
+    if op2 == '/':
+        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        val_inner = target_term1 * C 
+    else:
+        val_inner = IntegerOps.random_nonzero(-30, 30)
+        if op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term
+    # [Step 2] 逆推 op1 (內層)
+    B = IntegerOps.random_nonzero(-10, 10)
+    if op1 == '/':
+        A = val_inner * B
+    elif op1 == '*':
+        # 乘法重置
+        A = IntegerOps.random_nonzero(-10, 10)
+        B = IntegerOps.random_nonzero(-10, 10)
+        val_inner = A * B
+        if op2 == '/':
+            if C == 0 or val_inner % C != 0: C = 1
+            target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': A = val_inner - B
+    elif op1 == '-': A = val_inner + B
 
-    def _coeffs_to_terms(coeffs):
-        terms = []
-        for i, coeff in enumerate(coeffs):
-            if coeff != 0:
-                term = f"{fmt_num(coeff)}x^{len(coeffs) - i - 1}"
-                terms.append(term)
-        return terms
+    # ==========================================
+    # 2. 生成 Term 2: | D op3 E | 
+    # ==========================================
+    op3 = random.choice(['+', '-', '*', '/']) 
+    if op3 == '/':
+        E = IntegerOps.random_nonzero(-10, 10)
+        D = E * IntegerOps.random_nonzero(-5, 5)
+    else:
+        D = IntegerOps.random_nonzero(-15, 15)
+        E = IntegerOps.random_nonzero(-15, 15)
+    
+    val_term2_raw = eval(f"{D} {op3} {E}")
+    result_term2 = abs(int(val_term2_raw))
 
-    def _differentiate_poly(terms, order=1):
-        new_terms = []
-        for i, (coeff, power) in enumerate(terms):
-            if power >= order:
-                new_coeff = coeff * power
-                new_power = power - order
-                new_term = f"{fmt_num(new_coeff)}x^{new_power}"
-                new_terms.append((new_coeff, new_power))
-        return new_terms
-
-    def _poly_to_latex(terms):
-        latex_str = ""
-        for term in terms:
-            if latex_str != "":
-                latex_str += " + "
-            coeff, power = term
-            if power == 0:
-                latex_str += fmt_num(coeff)
-            elif power == 1:
-                latex_str += f"{fmt_num(coeff)}x"
-            else:
-                latex_str += f"{fmt_num(coeff)}x^{power}"
-        return latex_str
-
-    def _poly_to_plain(terms):
-        plain_text = ""
-        for term in terms:
-            coeff, power = term
-            if plain_text != "":
-                plain_text += " + "
-            if power == 0:
-                plain_text += fmt_num(coeff)
-            elif power == 1:
-                plain_text += f"{fmt_num(coeff)}x"
-            else:
-                plain_text += f"{fmt_num(coeff)}x^{power}"
-        return plain_text
-
-    def _deriv_symbol_latex(order):
-        if order == 1:
-            return r"\frac{d}{dx}"
-        elif order == 2:
-            return r"\frac{d^2}{dx^2}"
-        else:
-            return f"\frac{{d^{order}}}{{dx^{order}}}"
-
-    def generate_expr(num_operands, operators):
-        while True:
-            operands = [random.randint(-20, -1) if random.random() < 0.33 else random.randint(1, 20) for _ in range(num_operands)]
-            ops = random.sample(operators, num_operands - 1)
-            expr = f"{operands[0]}"
-            for i in range(len(ops)):
-                expr += f" {op_latex[ops[i]]} {operands[i + 1]}"
-
-            try:
-                result = eval(expr)
-                if isinstance(result, int) and -500 <= result <= 500:
-                    return expr, result
-            except ZeroDivisionError:
-                continue
-
-    def generate_abs_expr(num_operands, operators):
-        while True:
-            operands = [random.randint(-20, -1) if random.random() < 0.33 else random.randint(1, 20) for _ in range(num_operands)]
-            ops = random.sample(operators, num_operands - 1)
-            expr = f"{operands[0]}"
-            for i in range(len(ops)):
-                expr += f" {op_latex[ops[i]]} {operands[i + 1]}"
-
-            try:
-                result = eval(expr)
-                if isinstance(result, int) and -500 <= result <= 500:
-                    return expr, abs(result)
-            except ZeroDivisionError:
-                continue
-
-    def generate_question():
-        num_operands_A = random.choice([3, 4])
-        num_operands_C = random.choice([2, 3])
-
-        operators_A = random.sample(['+', '-', '*', '/'], num_operands_A - 1)
-        operators_C = random.sample(['+', '-', '*', '/'], num_operands_C - 1)
-
-        expr_A, val_A = generate_expr(num_operands_A, operators_A)
-        expr_C, val_C = generate_abs_expr(num_operands_C, operators_C)
-
-        main_op = random.choice(['+', '-'])
-        final_result = eval(f"{val_A} {main_op} {val_C}")
-
-        if not (-1000 <= final_result <= 1000) or final_result == 0 or final_result == 1 or final_result == -1:
-            return generate_question()
-
-        q_raw = f"計算 ${expr_A} {op_latex[main_op]} |{expr_C}|$ 的值。"
-        q = clean_latex_output(q_raw)
-        a = str(final_result)
-
-        return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
-
-    return generate_question()
+    # ==========================================
+    # 3. 組合與格式化 (CRITICAL FIX: 分段組裝)
+    # ==========================================
+    op_main = random.choice(['+', '-'])
+    final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
+    
+    # 格式化數字
+    str_A, str_B, str_C = IntegerOps.fmt_num(A), IntegerOps.fmt_num(B), IntegerOps.fmt_num(C)
+    str_D, str_E = IntegerOps.fmt_num(D), IntegerOps.fmt_num(E)
+    
+    # 1. 先組裝純數學 LaTeX 字串 (不含 $)
+    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
+    
+    math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
+    
+    # 2. 再組裝成題目句子 (明確加入 $，且前後留空白)
+    q = f"計算 ${math_expression}$ 的值。"
+    
+    return {
+        'question_text': q,
+        'correct_answer': str(final_val),
+        'answer': str(final_val),
+        'mode': 1
+    }

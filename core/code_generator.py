@@ -52,7 +52,7 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from config import Config
-from core.ai_wrapper import get_ai_client
+from core.ai_wrapper import get_ai_client, call_ai_with_retry
 from models import SkillGenCodePrompt, ExperimentLog, db, SkillInfo, TextbookExample, AblationSetting
 
 from core.healers.regex_healer import RegexHealer
@@ -285,10 +285,16 @@ def _call_ai(prompt, model_config=None):
         temperature = model_config.get('temperature', 0.1)
         max_tokens = model_config.get('max_tokens', 2048)
         extra_body = model_config.get('extra_body', {})
+        safety_settings = model_config.get('safety_settings') # [ADD] Ensure safety settings passed
         
         if provider in ['google', 'gemini']:
             from core.ai_wrapper import GoogleAIClient
-            client = GoogleAIClient(model_name, temperature)
+            client = GoogleAIClient(
+                model_name, 
+                temperature, 
+                max_tokens=max_tokens, 
+                safety_settings=safety_settings
+            )
         else:
             from core.ai_wrapper import LocalAIClient
             client = LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
@@ -296,7 +302,20 @@ def _call_ai(prompt, model_config=None):
         # 使用默认的 'coder' 角色客户端
         client = get_ai_client(role='coder')
     
-    response = client.generate_content(prompt)
+    # [Refactored] 使用統一的 Retry 機制
+    try:
+        response = call_ai_with_retry(
+            client=client, 
+            prompt=prompt, 
+            max_retries=3, 
+            retry_delay=5, 
+            verbose=(VERBOSE_LEVEL >= 1)
+        )
+    except Exception as e:
+        # 重試失敗後，這裡捕獲最後的異常並回傳空值，避免程序崩潰
+        if VERBOSE_LEVEL >= 1:
+            print(f"   ❌ Final Failure in _call_ai: {e}")
+        return "", 0, 0
     
     # 處理各種可能的 Response 格式
     raw_output = ""
@@ -479,55 +498,71 @@ def _log_experiment(**kwargs):
         except:
             pass
 
-def _basic_cleanup(code):
-    """移除 markdown 標記與尾部說明文字（Qwen 違規檢測與移除）"""
+def _basic_cleanup(code, strict_mode=True):
+    """移除 markdown 標記與尾部說明文字（Qwen 違規檢測與移除）
+    
+    Args:
+        code: 原始代碼
+        strict_mode: 是否執行嚴格的尾部說明文字清理 (預設 True，Cloud 模型建議 False)
+    """
     old_code = code
     
-    # Step 1: 移除 markdown 標記
+    # Step 1: 移除 markdown 標記 (總是執行)
     code = re.sub(r'^(\s*)```python\s*\n', '', code, flags=re.MULTILINE)
     code = re.sub(r'^(\s*)```\s*\n', '', code, flags=re.MULTILINE)
     code = re.sub(r'\n(\s*)```\s*$', '', code, flags=re.MULTILINE)
     
-    # Step 2: 移除尾部說明文字（Qwen 14b 違規模式）
-    # 特徵：代碼結束後有英文或中文說明段落
-    # 例如: "This code defines..." 或中文說明
-    
-    lines = code.split('\n')
-    cleaned_lines = []
-    
-    for i, line in enumerate(lines):
-        stripped = line.strip()
+    # Step 2: 移除尾部說明文字（僅 strict_mode 執行）
+    if strict_mode:
+        # Qwen 14b 違規模式特徵：代碼結束後有英文或中文說明段落
+        lines = code.split('\n')
+        cleaned_lines = []
+        found_code_start = False
         
-        # 判斷是否進入說明文字區域
-        # 說明文字通常特徵：
-        # 1. 不是 Python 代碼（不含括號、return、def 等）
-        # 2. 以英文大寫字母或中文開頭
-        # 3. 不是註解（不以 # 開頭）
-        
-        if stripped and not stripped.startswith('#'):
-            # 檢查是否看起來像說明文字
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            
+            # 判斷是否為程式碼特徵
+            is_code_like = False
+            if stripped.startswith(('import ', 'from ', 'def ', 'class ', '@', 'if ', 'return ', 'print(', '#')):
+                is_code_like = True
+            elif '=' in stripped and not stripped.startswith('Here'): # 賦值語句，排除 "Here is..."
+                is_code_like = True
+            elif stripped == '' or stripped.startswith(')'): # 閉合括號或空行
+                is_code_like = True
+                
+            # 判斷是否進入說明文字區域
             is_explanation = False
-            
-            # 英文說明：通常以 "This", "The", "This code", "This function" 開頭
-            if re.match(r'^(This|The|This code|This function|The function|This implementation)', stripped):
-                is_explanation = True
-            
-            # 或者是純英文敘述文字（不是代碼）
-            elif re.match(r'^[A-Z][a-z]+ ', stripped) and \
-                 not any(keyword in stripped for keyword in ['=', '(', ')', 'return', 'if', 'def', 'import']):
-                is_explanation = True
-            
-            # 中文說明
-            elif re.match(r'^[\u4e00-\u9fff]', stripped):
-                is_explanation = True
+            if stripped and not stripped.startswith('#') and not is_code_like:
+                # 英文說明
+                if re.match(r'^(This|The|Here|Please|Note|In this|I have)', stripped, re.IGNORECASE):
+                    is_explanation = True
+                
+                # 純英文敘述文字 (開頭大寫，且沒有代碼關鍵字)
+                elif re.match(r'^[A-Z][a-z]+ ', stripped) and \
+                     not any(keyword in stripped for keyword in ['=', '(', ')', 'return', 'def', 'import']):
+                    is_explanation = True
+                
+                # 中文說明
+                elif re.match(r'^[\u4e00-\u9fff]', stripped):
+                    is_explanation = True
             
             if is_explanation:
-                # 從這一行開始是說明文字，停止添加後續行
-                break
+                if not found_code_start:
+                    # 尚未找到代碼，視為前導說明 (Intro)，跳過不處理
+                    continue
+                else:
+                    # 已經有代碼，視為尾部說明 (Outro)，截斷
+                    break
+            
+            # 標記已找到代碼開始 (只要不是空行或說明文字)
+            if stripped and not is_explanation:
+                found_code_start = True
+            
+            cleaned_lines.append(line)
         
-        cleaned_lines.append(line)
+        code = '\n'.join(cleaned_lines).strip()
     
-    code = '\n'.join(cleaned_lines).strip()
     return code, 1 if code != old_code else 0
 
 
@@ -707,9 +742,9 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     
     # 构建 model_key 映射
     model_size_to_preset = {
-        'cloud': 'gemini-2.5-flash',
-        '14b': 'qwen2.5-coder-14b',
-        '7b': 'qwen2.5-coder-7b'
+        'cloud': 'gemini-3-flash',
+        '14b': 'qwen3-14b', # [UPDATED 2026-02-13] Point to Qwen3 preset
+        '7b': 'qwen3-8b'
     }
     
     model_preset_key = model_size_to_preset.get(model_size_class, 'qwen2.5-coder-14b')
@@ -765,6 +800,10 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     # [FIX 2026-02-06] 传递 role_config 以确保使用正确的模型
     raw_output, prompt_tokens, completion_tokens = _call_ai(prompt, model_config=role_config)
     
+    # [DEBUG 2026-02-13] Inspect Raw Output
+    if VERBOSE_LEVEL >= 1:
+        print(f"\n[DEBUG] Raw Output Preview (First 500 chars):\n{raw_output[:500]!r}\n")
+    
     ai_gen_time = time.time() - start_time
     if VERBOSE_LEVEL == 2:
         log_fix_detail("Response Tokens", "skip", f"{completion_tokens} tokens")
@@ -776,7 +815,10 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     if VERBOSE_LEVEL == 2:
         code_len_before = len(raw_output)
     
-    clean_code, markdown_cleanup_count = _basic_cleanup(raw_output)
+    # Cloud 模型通常生成質量較高，不需要激進的去說明文字清理（避免誤刪 docstring）
+    is_cloud_model = (model_size_class == 'cloud')
+    # [DEBUG 2026-02-13] 強制關閉 strict_mode 以檢查 Qwen 3 輸出
+    clean_code, markdown_cleanup_count = _basic_cleanup(raw_output, strict_mode=False)
     basic_cleanup_fixes = markdown_cleanup_count
     
     if VERBOSE_LEVEL == 2:

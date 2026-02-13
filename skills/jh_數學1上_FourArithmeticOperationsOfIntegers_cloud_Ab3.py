@@ -1,9 +1,9 @@
 # ==============================================================================
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
-# Model: gemini-2.5-flash | Strategy: V10.1 Modular Refactored
+# Model: gemini-3-flash-preview | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 46.52s | Tokens: In=1697, Out=2281
-# Created At: 2026-02-09 17:16:05
+# Performance: 24.90s | Tokens: In=1697, Out=1342
+# Created At: 2026-02-13 22:45:35
 # Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=3, AST=2)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -617,83 +617,61 @@ R_ABS = '\\right|'
 L_BRACKET = '\\left['
 R_BRACKET = '\\right]'
 
-def _calculate_op(num1, op, num2):
-    """Performs integer arithmetic operation, ensuring integer division."""
-    if op == '+':
-        return num1 + num2
-    if op == '-':
-        return num1 - num2
-    if op == '*':
-        return num1 * num2
-    if op == '/':
-        if num2 == 0:
-            raise ZeroDivisionError('Division by zero in _calculate_op')
-        return num1 // num2
-    raise ValueError(f'Unknown operator: {op}')
-
 def generate(level=1, **kwargs):
     op1 = random.choice(['+', '-', '*', '/'])
     op2 = random.choice(['+', '-', '*', '/'])
     C = IntegerOps.random_nonzero(-10, 10)
-    target_term1 = IntegerOps.random_nonzero(-20, 20)
     if op2 == '/':
-        val_inner_candidate = target_term1 * C
-        val_inner = max(-50, min(50, val_inner_candidate))
-        if C != 0:
-            target_term1 = val_inner // C
-        else:
-            C = 1
-            target_term1 = val_inner
-    elif op2 == '*':
-        if target_term1 % C != 0:
-            target_term1 = target_term1 // C * C
-            if target_term1 == 0:
-                if C != 0:
-                    target_term1 = C * random.choice([-1, 1])
-                else:
-                    target_term1 = 1
-        val_inner = target_term1 // C
-    elif op2 == '+':
-        val_inner = target_term1 - C
-    elif op2 == '-':
-        val_inner = target_term1 + C
-    val_inner = max(-50, min(50, val_inner))
+        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        val_inner = target_term1 * C
+    else:
+        val_inner = IntegerOps.random_nonzero(-30, 30)
+        if op2 == '+':
+            target_term1 = val_inner + C
+        elif op2 == '-':
+            target_term1 = val_inner - C
+        elif op2 == '*':
+            target_term1 = val_inner * C
     B = IntegerOps.random_nonzero(-10, 10)
     if op1 == '/':
-        A_candidate = val_inner * B
-        A = max(-50, min(50, A_candidate))
-        if B != 0:
-            val_inner = A // B
-        else:
-            B = 1
-            val_inner = A
+        A = val_inner * B
     elif op1 == '*':
-        if val_inner % B != 0:
-            val_inner = val_inner // B * B
-            if val_inner == 0:
-                if B != 0:
-                    val_inner = B * random.choice([-1, 1])
-                else:
-                    val_inner = 1
-        A = val_inner // B
+        A = IntegerOps.random_nonzero(-10, 10)
+        B = IntegerOps.random_nonzero(-10, 10)
+        val_inner = A * B
+        if op2 == '/':
+            if val_inner % C != 0:
+                C = 1
+            target_term1 = val_inner // C
+        elif op2 == '+':
+            target_term1 = val_inner + C
+        elif op2 == '-':
+            target_term1 = val_inner - C
+        elif op2 == '*':
+            target_term1 = val_inner * C
     elif op1 == '+':
         A = val_inner - B
     elif op1 == '-':
         A = val_inner + B
-    A = max(-50, min(50, A))
-    actual_val_inner = _calculate_op(A, op1, B)
-    actual_target_term1 = _calculate_op(actual_val_inner, op2, C)
     op3 = random.choice(['+', '-', '*'])
-    D = IntegerOps.random_nonzero(-15, 15)
-    E = IntegerOps.random_nonzero(-15, 15)
-    val_term2_raw = _calculate_op(D, op3, E)
+    D = IntegerOps.random_nonzero(-12, 12)
+    E = IntegerOps.random_nonzero(-12, 12)
+    if op3 == '+':
+        val_term2_raw = D + E
+    elif op3 == '-':
+        val_term2_raw = D - E
+    else:
+        val_term2_raw = D * E
     result_term2 = abs(val_term2_raw)
     op_main = random.choice(['+', '-'])
-    final_val = _calculate_op(actual_target_term1, op_main, result_term2)
+    if op_main == '+':
+        final_val = target_term1 + result_term2
+    else:
+        final_val = target_term1 - result_term2
     str_A, str_B, str_C = (IntegerOps.fmt_num(A), IntegerOps.fmt_num(B), IntegerOps.fmt_num(C))
     str_D, str_E = (IntegerOps.fmt_num(D), IntegerOps.fmt_num(E))
     term1_latex = f'{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}'
     term2_latex = f'{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}'
     math_expression = f'{term1_latex} {OP_LATEX[op_main]} {term2_latex}'
-    q = f'計算 ${math_expression}$ 的值。'
-    return {'question_text': q, 'correct_answer': str(final_val), 'answer': str(final_val), 'mode': 1}
+    q_text = f'計算 ${math_expression}$ 的值。'
+    return {'question_text': q_text, 'correct_answer': str(final_val), 'answer': str(final_val), 'mode': 1}

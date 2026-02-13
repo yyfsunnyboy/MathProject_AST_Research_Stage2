@@ -59,12 +59,12 @@ class Config:
     # 結構：Dictionary { 'safe-name': { config } }
     CODER_PRESETS = {
         # 1. Google Gemini (Cloud)
-        'gemini-2.5-flash': {
+        'gemini-3-flash': {
             'provider': 'google',
-            'model': 'gemini-2.5-flash',
+            'model': 'gemini-3-flash-preview',
             'temperature': 0.1,
-            'max_tokens': 8192,
-            'description': 'Gemini 2.5 Flash (Cloud)',
+            'max_tokens': 65536,
+            'description': 'Gemini 3.0 Flash Preview (SOTA Cloud)',
 
             # ★★★ [NEW] 安全設定：全部關閉 (BLOCK_NONE) ★★★
             # 這能防止模型因為誤判 "危險內容" 而拒絕生成數學題目
@@ -88,8 +88,27 @@ class Config:
             ]            
         },
 
-        # 2. Qwen 2.5 14B (Local)
-        # Key 使用連字號 (檔案安全)，Value 使用冒號 (Ollama API)
+        # 2. Qwen 3 14B (Local) [Thinking Allowed]
+        'qwen3-14b': {
+            'provider': 'local',
+            'model': 'qwen3:14b-q4_K_M',
+            'temperature': 0.1,
+            'max_tokens': 16384,
+            'extra_body': {
+                'num_ctx': 32768,
+                'num_gpu': -1,            
+                'num_batch': 512,         
+                'num_thread': 8,
+                'keep_alive': "30m",
+                'system': "You are a coding assistant. Disable thinking process (<think>...</think>). OUTPUT ONLY PYTHON CODE.", # [RESTORED]
+                'top_k': 40,
+                'top_p': 0.95,
+                'repeat_penalty': 1.1,
+            },
+            'description': 'Qwen3-14B (Thinking Allowed)'
+        },
+
+        # 3. Qwen 2.5 14B (Local) - Legacy
         'qwen2.5-coder-14b': {
             'provider': 'local',
             'model': 'qwen2.5-coder:14b', 
@@ -109,24 +128,23 @@ class Config:
             'description': 'Qwen 2.5 Coder 14B (Local)'
         },
 
-        # 3. Qwen 2.5 7B (Local)
-        'qwen2.5-coder-7b': {
+        # 3. Qwen 3 8B (Local) [Thinking Allowed]
+        'qwen3-8b': {
             'provider': 'local',
-            'model': 'qwen2.5-coder:7b',
-            'temperature': 0.1,
-            'max_tokens': 2048,
+            'model': 'qwen3:8b',          # User's Qwen 3 8B model
+            'temperature': 0.1,           # Low temp for stability
+            'max_tokens': 16384,          # High tokens for reasoning
             'extra_body': {
-                'num_ctx': 16384,
+                'num_ctx': 32768,
                 'num_gpu': -1,
-                'num_batch': 2048, # 7B 較快，Batch 可開大
+                'num_batch': 1024,        # 8B is lighter, can handle larger batch
                 'num_thread': 8,
-                'num_predict': 2048,
                 'keep_alive': "30m",
-                'top_k': 10,
-                'top_p': 0.9,
-                'repeat_penalty': 1.15,
+                'top_k': 40,
+                'top_p': 0.95,
+                'repeat_penalty': 1.1,
             },
-            'description': 'Qwen 2.5 Coder 7B (Local)'
+            'description': 'Qwen3-8B (Thinking Allowed)'
         }
     }
 
@@ -141,8 +159,8 @@ class Config:
             'max_tokens': 1500,
         },
         
-        # 預設工程師 (先指向 7B)
-        'coder': CODER_PRESETS['qwen2.5-coder-7b'], 
+        # 預設工程師 (Qwen 3)
+        'coder': CODER_PRESETS['qwen3-14b'], 
         
         'tutor': {
             'provider': 'local',
@@ -156,7 +174,7 @@ class Config:
 
         'default': {
             'provider': 'local',
-            'model': 'qwen2.5-coder:7b'
+            'model': 'qwen3:14b-q4_K_M'
         }
     }
 

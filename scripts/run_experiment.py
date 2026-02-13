@@ -86,18 +86,49 @@ RESULTS_ROOT = os.path.join(project_root, "experiments", "results")
 PROMPTS_DIR = os.path.join(project_root, "experiments", "golden_prompts")
 DB_PATH = Config.db_path
 
-# 實驗目標模型 (對應 Config.CODER_PRESETS 的 Key)
-TARGET_MODELS = [
-    "gemini-2.5-flash",     # [1] -> Cloud Gemini
-    "qwen2.5-coder-14b",    # [2] -> Local Qwen 14B
-    "qwen2.5-coder-7b"      # [3] -> Local Qwen 7B
-]
+# 實驗目標模型 (動態從 Config 讀取)
+TARGET_MODELS = []
+MODEL_DISPLAY_NAMES = {}
 
-MODEL_DISPLAY_NAMES = {
-    "gemini-2.5-flash": "Cloud Gemini 2.5 Flash",
-    "qwen2.5-coder-14b": "Local Qwen2.5-Coder 14B",
-    "qwen2.5-coder-7b": "Local Qwen2.5-Coder 7B"
-}
+# 從 Config.CODER_PRESETS 動態構建模型列表
+if hasattr(Config, 'CODER_PRESETS'):
+    for key, preset in Config.CODER_PRESETS.items():
+        # 過濾出我們感興趣的模型類型 (Cloud/Local)
+        # 這裡我們保留原始的分類邏輯：
+        # 1. Cloud (Google)
+        # 2. Local 14B
+        # 3. Local 7B
+        
+        provider = preset.get('provider')
+        model_name = preset.get('model')
+        desc = preset.get('description', key)
+        
+        # 加入列表 (保持順序: Cloud -> 14B -> 7B)
+        # 注意: 字典迭代順序在 Python 3.7+ 是保證插入順序的，如果 Config 定義順序正確則沒問題
+        # 但為了保險，我們可以用關鍵字過濾
+        
+        if 'gemini' in key or provider == 'google':
+            TARGET_MODELS.append(key)
+            MODEL_DISPLAY_NAMES[key] = f"Cloud {model_name} ({desc})"
+        elif '14b' in key:
+            TARGET_MODELS.append(key)
+            MODEL_DISPLAY_NAMES[key] = f"Local {model_name} ({desc})"
+        elif '7b' in key or '8b' in key:  # [FIX] Support both 7B and 8B (Qwen 3)
+            TARGET_MODELS.append(key)
+            MODEL_DISPLAY_NAMES[key] = f"Local {model_name} ({desc})"
+
+# 如果 Config 沒讀到，回退到預設寫死列表 (Fail-safe)
+if not TARGET_MODELS:
+    TARGET_MODELS = [
+        "gemini-2.5-flash", 
+        "qwen2.5-coder-14b",
+        "qwen2.5-coder-7b"
+    ]
+    MODEL_DISPLAY_NAMES = {
+        "gemini-2.5-flash": "Cloud Gemini 2.5 Flash",
+        "qwen2.5-coder-14b": "Local Qwen2.5-Coder 14B",
+        "qwen2.5-coder-7b": "Local Qwen2.5-Coder 7B"
+    }
 
 # ==============================================================================
 # 2.5 實驗統計數據結構
@@ -138,161 +169,9 @@ def get_model_config(model_key):
         return Config.CODER_PRESETS[model_key]
     return None
 
-def _call_gemini(model_config, prompt_text):
-    """[Real] 呼叫 Google Gemini API"""
-    if not HAS_GENAI:
-        return "Error: google-generativeai package not installed.", {"prompt": 0, "completion": 0}
-        
-    api_key = Config.GEMINI_API_KEY
-    if not api_key:
-        return "Error: GEMINI_API_KEY not found in env.", {"prompt": 0, "completion": 0}
-
-    try:
-        # 新版本 google.genai API
-        client = genai.Client(api_key=api_key)
-        
-        # [關鍵修正] 這是 config.py 設定不了的，必須在程式碼裡寫死
-        # 目的：禁止 safety filter，確保完整返回代碼內容
-        safety_settings = [
-            {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-            {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
-        ]
-        
-        # 計算 prompt token
-        prompt_tokens = max((len(prompt_text) + 3) // 4, 100)
-        
-        # 構建 config object（如果 types 可用）
-        if types is not None:
-            try:
-                config = types.GenerateContentConfig(
-                    temperature=model_config.get('temperature', 0.1),
-                    max_output_tokens=model_config.get('max_tokens', 8192),
-                    safety_settings=safety_settings
-                )
-            except Exception as config_err:
-                # 降級：直接傳遞參數
-                print(f"⚠️  無法建立 GenerateContentConfig: {config_err}，使用直接參數傳遞")
-                config = {
-                    "temperature": model_config.get('temperature', 0.1),
-                    "max_output_tokens": model_config.get('max_tokens', 8192),
-                    "safety_settings": safety_settings
-                }
-        else:
-            # 舊 API 或無法導入 types
-            config = {
-                "temperature": model_config.get('temperature', 0.1),
-                "max_output_tokens": model_config.get('max_tokens', 8192),
-                "safety_settings": safety_settings
-            }
-        
-        # 發送請求
-        response = client.models.generate_content(
-            model=model_config.get('model'),
-            contents=prompt_text,
-            config=config
-        )
-        
-        # 提取響應文本
-        generated_text = None
-        if hasattr(response, 'text') and response.text:
-            generated_text = response.text
-        elif hasattr(response, 'content') and response.content:
-            generated_text = str(response.content)
-        elif hasattr(response, 'candidates') and len(response.candidates) > 0:
-            # 嘗試從 candidates 中提取
-            candidate = response.candidates[0]
-            if hasattr(candidate, 'content') and hasattr(candidate.content, 'parts'):
-                if len(candidate.content.parts) > 0:
-                    generated_text = candidate.content.parts[0].text
-        
-        if not generated_text:
-            return "# Error: Empty response from Gemini", {"prompt": prompt_tokens, "completion": 0}
-            
-        # [修復] 清洗模型可能重複生成的 Header
-        # 避免 Gemini 因為 Prompt 範例而自己生成了檔案頭，導致儲存時出現雙重 Header
-        cleaned_lines = []
-        lines = generated_text.split('\n')
-        skip_header = True  # 剛開始預設檢查 Header
-        
-        for line in lines:
-            stripped = line.strip()
-            # 如果開頭就是分隔線或編碼聲明，視為模型重複生成的 Header，跳過
-            if skip_header and (stripped.startswith("# ===") or stripped.startswith("# -*- coding")):
-                continue
-            # 如果開頭是中繼資料 (ID, Model...)，也跳過
-            if skip_header and (stripped.startswith("# ID:") or stripped.startswith("# Model:") or 
-                              stripped.startswith("# Ablation") or stripped.startswith("# Performance") or
-                              stripped.startswith("# Created") or stripped.startswith("# Fix") or
-                              stripped.startswith("# Verification")):
-                continue
-            
-            # 一旦遇到正常代碼或空行後不是註解，就停止跳過 Header 的行為
-            if stripped and not stripped.startswith("#"):
-                skip_header = False
-            
-            cleaned_lines.append(line)
-        
-        generated_text = "\n".join(cleaned_lines).strip()
-        
-        # 計算 completion token
-        completion_tokens = max((len(generated_text) + 3) // 4, 50)
-        
-        return generated_text, {"prompt": prompt_tokens, "completion": completion_tokens}
-            
-    except Exception as e:
-        error_msg = f"# Error calling Gemini: {str(e)}"
-        print(f"⚠️  Gemini 呼叫失敗: {e}")
-        import traceback
-        traceback.print_exc()
-        return error_msg, {"prompt": 0, "completion": 0}
-
-def _call_ollama(model_config, prompt_text):
-    """[Real] 呼叫 Local Ollama API"""
-    url = Config.LOCAL_API_URL # 通常是 http://localhost:11434/api/generate
-    
-    # [NEW] 从 config 读取超时设置
-    ollama_timeout = getattr(Config, 'OLLAMA_TIMEOUT', 600)
-    
-    # 準備 Payload
-    payload = {
-        "model": model_config.get('model'), # 這裡會拿到帶冒號的名稱 e.g. qwen2.5-coder:14b
-        "prompt": prompt_text,
-        "stream": False,
-        "options": {
-            "temperature": model_config.get('temperature', 0.1),
-            "num_predict": model_config.get('max_tokens', 2048),
-        }
-    }
-    
-    # 合併 extra_body (num_ctx, num_gpu 等進階參數)
-    if 'extra_body' in model_config:
-        for k, v in model_config['extra_body'].items():
-            payload['options'][k] = v
-
-    try:
-        # 發送請求
-        response = requests.post(url, json=payload, timeout=ollama_timeout) # 使用配置的超时值
-        response.raise_for_status()
-        
-        result_json = response.json()
-        generated_code = result_json.get('response', '')
-        
-        # Ollama 會回傳真實的 token 統計
-        usage = {
-            "prompt": result_json.get('prompt_eval_count', len(prompt_text)//4),
-            "completion": result_json.get('eval_count', len(generated_code)//4)
-        }
-        
-        return generated_code, usage
-        
-    except Exception as e:
-        return f"# Error calling Ollama: {str(e)}", {"prompt": 0, "completion": 0}
-
 def call_llm(model_key, prompt_text):
     """
-    統一入口：呼叫 LLM 生成程式碼
+    統一入口：呼叫 LLM 生成程式碼 (使用 core/ai_wrapper.py)
     """
     # 1. 取得設定
     model_config = get_model_config(model_key)
@@ -300,14 +179,83 @@ def call_llm(model_key, prompt_text):
         return f"# Error: Config not found for {model_key}", {"prompt": 0, "completion": 0}
     
     provider = model_config.get('provider')
+    model_name = model_config.get('model')
+    temperature = model_config.get('temperature', 0.1)
     
-    # 2. 路由到對應的 Provider
-    if provider == 'google':
-        return _call_gemini(model_config, prompt_text)
-    elif provider == 'local':
-        return _call_ollama(model_config, prompt_text)
-    else:
-        return f"# Error: Unknown provider {provider}", {"prompt": 0, "completion": 0}
+    client = None
+    
+    try:
+        # 2. 路由到對應的 Provider (使用 core.ai_wrapper)
+        if provider in ['google', 'gemini']:
+            from core.ai_wrapper import GoogleAIClient
+            client = GoogleAIClient(
+                model_name, 
+                temperature, 
+                max_tokens=model_config.get('max_tokens'),
+                safety_settings=model_config.get('safety_settings')
+            )
+        elif provider == 'local':
+            from core.ai_wrapper import LocalAIClient
+            # LocalAIClient 需要 extra_body 來傳遞 Ollama 的參數
+            client = LocalAIClient(
+                model_name, 
+                temperature, 
+                max_tokens=model_config.get('max_tokens'), 
+                extra_body=model_config.get('extra_body')
+            )
+        else:
+            return f"# Error: Unknown provider {provider}", {"prompt": 0, "completion": 0}
+
+        # [Refactored] 3. 執行呼叫 (使用 Shared Retry Logic)
+        from core.ai_wrapper import call_ai_with_retry
+        response = call_ai_with_retry(
+            client=client, 
+            prompt=prompt_text, 
+            max_retries=3, 
+            retry_delay=5, 
+            verbose=True
+        )
+        
+        # 4. 格式化回傳值
+        # ai_wrapper 返回的是 mock response 對象，包含 text 和 usage
+        generated_text = response.text
+        
+        # 安全獲取 usage (有些錯誤情況下可能沒有 usage 屬性)
+        usage = {"prompt": 0, "completion": 0}
+        if hasattr(response, 'usage'):
+            usage["prompt"] = getattr(response.usage, 'prompt_tokens', 0)
+            usage["completion"] = getattr(response.usage, 'completion_tokens', 0)
+        
+        # [修復] 清洗模型可能重複生成的 Header (保留原 run_experiment.py 的特殊邏輯)
+        # 避免 Gemini 因為 Prompt 範例而自己生成了檔案頭
+        if generated_text and (generated_text.strip().startswith("# ===") or generated_text.strip().startswith("# -*- coding")):
+             cleaned_lines = []
+             lines = generated_text.split('\n')
+             skip_header = True
+             
+             for line in lines:
+                 stripped = line.strip()
+                 if skip_header and (stripped.startswith("# ===") or stripped.startswith("# -*- coding")):
+                     continue
+                 if skip_header and (stripped.startswith("# ID:") or stripped.startswith("# Model:") or 
+                                   stripped.startswith("# Ablation") or stripped.startswith("# Performance") or
+                                   stripped.startswith("# Created") or stripped.startswith("# Fix") or
+                                   stripped.startswith("# Verification")):
+                     continue
+                 
+                 if stripped and not stripped.startswith("#"):
+                     skip_header = False
+                 
+                 cleaned_lines.append(line)
+             
+             generated_text = "\n".join(cleaned_lines).strip()
+
+        return generated_text, usage
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return f"# Error calling LLM: {str(e)}", {"prompt": 0, "completion": 0}
 
 def apply_basic_cleanup(raw_code):
     """
