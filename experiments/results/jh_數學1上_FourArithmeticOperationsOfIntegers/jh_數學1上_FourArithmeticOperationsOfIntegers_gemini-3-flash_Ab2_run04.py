@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: gemini-3-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 24.62s | Tokens: In=1711, Out=1225
-# Created At: 2026-02-14 09:38:30
+# Performance: 19.78s | Tokens: In=1711, Out=1419
+# Created At: 2026-02-14 13:28:43
 # Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -612,82 +612,78 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
-
-# [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
-# fmt_num(n) wraps negative numbers in parentheses, e.g., -5 -> "(-5)"
 
 # ✅ 定義 LaTeX 常數
 OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
-L_ABS = r"\left|"   
-R_ABS = r"\right|"  
-L_BRACKET = r"\left["  
-R_BRACKET = r"\right]" 
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
     # ==========================================
-    # 1. 生成 Term 1: [ (A op1 B) op2 C ]
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (使用逆向工程確保整除)
     # ==========================================
-    # 為了確保整除，我們先決定內層運算
     op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    
+    # [Step 1] 處理外層 op2 與 C
+    C = random.choice([x for x in range(-10, 11) if x != 0])
+    
+    if op2 == '/':
+        # 若外層是除法，先決定結果 target_term1，再反推被除數 val_inner
+        target_term1 = random.choice([x for x in range(-15, 16) if x != 0])
+        val_inner = target_term1 * C 
+    else:
+        # 若外層非除法，先隨機決定內層結果 val_inner
+        val_inner = random.choice([x for x in range(-20, 21) if x != 0])
+        if op2 == '+': 
+            target_term1 = val_inner + C
+        elif op2 == '-': 
+            target_term1 = val_inner - C
+        elif op2 == '*': 
+            target_term1 = val_inner * C
+
+    # [Step 2] 處理內層 op1 與 A, B
+    B = random.choice([x for x in range(-10, 11) if x != 0])
     
     if op1 == '/':
-        # 確保 A / B 是整數
-        B = random.choice([x for x in range(-10, 11) if x != 0])
-        inner_res = random.randint(-10, 10)
-        A = inner_res * B
-        val_inner = inner_res
+        # 內層除法：A = val_inner * B
+        A = val_inner * B
     elif op1 == '*':
-        A = random.randint(-10, 10)
-        B = random.randint(-10, 10)
+        # 內層乘法：由於 val_inner 可能難以分解，改為先定 A, B 再更新 val_inner 與 target_term1
+        A = random.choice([x for x in range(-8, 9) if x != 0])
+        B = random.choice([x for x in range(-8, 9) if x != 0])
         val_inner = A * B
-    elif op1 == '+':
-        A = random.randint(-20, 20)
-        B = random.randint(-20, 20)
-        val_inner = A + B
-    else: # op1 == '-'
-        A = random.randint(-20, 20)
-        B = random.randint(-20, 20)
-        val_inner = A - B
-
-    # 處理外層 op2
-    op2 = random.choice(['+', '-', '*', '/'])
-    if op2 == '/':
-        # 確保 val_inner / C 是整數
-        # 找出 val_inner 的所有因數 (在 -12 到 12 之間)
-        factors = [i for i in range(-12, 13) if i != 0 and val_inner % i == 0]
-        if not factors:
-            C = 1
-        else:
-            C = random.choice(factors)
-        target_term1 = val_inner // C
-    elif op2 == '*':
-        # 限制 C 的大小避免數值過大
-        C = random.randint(-5, 5)
-        target_term1 = val_inner * C
-    elif op2 == '+':
-        C = random.randint(-20, 20)
-        target_term1 = val_inner + C
-    else: # op2 == '-'
-        C = random.randint(-20, 20)
-        target_term1 = val_inner - C
+        # 重新計算 target_term1 以維持邏輯一致
+        if op2 == '/':
+            # 若外層是除法，必須確保 val_inner 能被 C 整除
+            # 這裡簡單處理：若不整除則強制令 C 為 val_inner 的因數或 1
+            if val_inner % C != 0:
+                C = random.choice([d for d in range(1, abs(val_inner) + 1) if val_inner % d == 0])
+                if random.random() > 0.5: C = -C
+            target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': 
+        A = val_inner - B
+    elif op1 == '-': 
+        A = val_inner + B
 
     # ==========================================
     # 2. 生成 Term 2: | D op3 E | 
     # ==========================================
     op3 = random.choice(['+', '-', '*']) 
-    D = random.randint(-12, 12)
-    E = random.randint(-12, 12)
+    D = random.choice([x for x in range(-12, 13) if x != 0])
+    E = random.choice([x for x in range(-12, 13) if x != 0])
     
-    if op3 == '+':
-        val_term2_raw = D + E
-    elif op3 == '-':
-        val_term2_raw = D - E
-    else: # op3 == '*'
-        val_term2_raw = D * E
-        
-    result_term2 = abs(val_term2_raw)
+    if op3 == '+': val_term2_raw = D + E
+    elif op3 == '-': val_term2_raw = D - E
+    elif op3 == '*': val_term2_raw = D * E
+    
+    result_term2 = abs(int(val_term2_raw))
 
     # ==========================================
     # 3. 組合與格式化
@@ -698,19 +694,21 @@ def generate(level=1, **kwargs):
     else:
         final_val = target_term1 - result_term2
     
-    # 格式化數字 (使用 pre-injected fmt_num)
+    # 使用預注入的 fmt_num 處理負數括號
     str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
     str_D, str_E = fmt_num(D), fmt_num(E)
     
-    # 組裝 LaTeX
-    # Term 1: [ (A op1 B) op2 C ]
-    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
-    # Term 2: | D op3 E |
+    # 組裝 LaTeX (不含外層 $)
+    # 內層 (A op1 B)
+    inner_latex = f"({str_A} {OP_LATEX[op1]} {str_B})"
+    # 外層 [ (inner) op2 C ]
+    term1_latex = f"{L_BRACKET} {inner_latex} {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    # 絕對值 | D op3 E |
     term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
     
     math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
     
-    # 題幹組裝
+    # 最終題幹
     q_text = f"計算 ${math_expression}$ 的值。"
     
     return {

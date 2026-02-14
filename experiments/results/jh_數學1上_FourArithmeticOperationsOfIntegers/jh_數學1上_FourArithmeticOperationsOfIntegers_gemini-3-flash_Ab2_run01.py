@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: gemini-3-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 23.03s | Tokens: In=1711, Out=1387
-# Created At: 2026-02-14 09:31:53
+# Performance: 150.23s | Tokens: In=1711, Out=1332
+# Created At: 2026-02-14 13:27:29
 # Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -612,82 +612,82 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 
-# [Standard Utils (fmt_num, etc.) are PRE-INJECTED in the runtime]
+# [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
+
+# ✅ 定義 LaTeX 常數
+OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
-    # ✅ 定義 LaTeX 常數
-    OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
-    L_ABS = r"\left|"   # 左絕對值
-    R_ABS = r"\right|"  # 右絕對值
-    L_BRACKET = r"\left["  # 左中括號
-    R_BRACKET = r"\right]" # 右中括號
-
+    """
+    生成整數四則運算題目，包含括號與絕對值。
+    邏輯：[ (A op1 B) op2 C ] op_main | D op3 E |
+    """
     # ==========================================
     # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成確保整除)
     # ==========================================
     op1 = random.choice(['+', '-', '*', '/'])
     op2 = random.choice(['+', '-', '*', '/'])
     
-    # [Step 1] 處理外層 op2 與內層目標值 val_inner
-    C = random.choice([x for x in range(-10, 11) if x != 0])
-    
-    if op2 == '/':
-        # 若外層是除法，先決定結果 target_term1，再反推被除數 val_inner
-        target_term1 = random.choice([x for x in range(-15, 16) if x != 0])
-        val_inner = target_term1 * C 
-    else:
-        # 若外層是加減乘，先隨機決定內層括號的值
-        val_inner = random.choice([x for x in range(-20, 21) if x != 0])
-        if op2 == '+': 
-            target_term1 = val_inner + C
-        elif op2 == '-': 
-            target_term1 = val_inner - C
-        elif op2 == '*': 
-            target_term1 = val_inner * C
-
-    # [Step 2] 處理內層 op1 與 A, B
+    # [Step 1] 處理內層 (A op1 B) = val_inner
+    # 為了確保 A, B 在 -50~50 且除法整除
     if op1 == '/':
-        # 內層是除法：A = val_inner * B
-        B = random.choice([x for x in range(-10, 11) if x != 0])
+        val_inner = random.randint(-10, 10)
+        B = random.choice([x for x in range(-5, 6) if x != 0])
         A = val_inner * B
     elif op1 == '*':
-        # 內層是乘法：隨機 A, B 並重新計算 val_inner 與 target_term1 以維持整除
-        A = random.choice([x for x in range(-10, 11) if x != 0])
-        B = random.choice([x for x in range(-10, 11) if x != 0])
+        A = random.randint(-7, 7)
+        B = random.randint(-7, 7)
         val_inner = A * B
-        # 重新修正外層結果
-        if op2 == '/':
-            if C == 0 or val_inner % C != 0: 
-                C = random.choice([1, -1, val_inner]) if val_inner != 0 else 1
+    elif op1 == '+':
+        A = random.randint(-20, 20)
+        B = random.randint(-20, 20)
+        val_inner = A + B
+    else: # op1 == '-'
+        A = random.randint(-20, 20)
+        B = random.randint(-20, 20)
+        val_inner = A - B
+
+    # [Step 2] 處理外層 (val_inner op2 C) = target_term1
+    C = random.choice([x for x in range(-10, 11) if x != 0])
+    if op2 == '/':
+        # 重新調整 val_inner 確保能被 C 整除
+        # 或是調整 C 成為 val_inner 的因數
+        if val_inner == 0:
+            target_term1 = 0
+        else:
+            # 尋找因數
+            factors = [i for i in range(-10, 11) if i != 0 and val_inner % i == 0]
+            C = random.choice(factors)
             target_term1 = val_inner // C
-        elif op2 == '+': 
-            target_term1 = val_inner + C
-        elif op2 == '-': 
-            target_term1 = val_inner - C
-        elif op2 == '*': 
-            target_term1 = val_inner * C
-    elif op1 == '+': 
-        B = random.choice([x for x in range(-20, 21) if x != 0])
-        A = val_inner - B
-    elif op1 == '-': 
-        B = random.choice([x for x in range(-20, 21) if x != 0])
-        A = val_inner + B
+    elif op2 == '*':
+        # 避免數值過大，若 val_inner 太大則縮小 C
+        if abs(val_inner) > 10:
+            C = random.randint(-3, 3)
+            if C == 0: C = 1
+        target_term1 = val_inner * C
+    elif op2 == '+':
+        target_term1 = val_inner + C
+    else: # op2 == '-'
+        target_term1 = val_inner - C
 
     # ==========================================
     # 2. 生成 Term 2: | D op3 E | 
     # ==========================================
     op3 = random.choice(['+', '-', '*']) 
-    D = random.choice([x for x in range(-12, 13) if x != 0])
-    E = random.choice([x for x in range(-12, 13) if x != 0])
+    D = random.randint(-12, 12)
+    E = random.randint(-12, 12)
     
-    if op3 == '+': 
+    if op3 == '+':
         val_term2_raw = D + E
-    elif op3 == '-': 
+    elif op3 == '-':
         val_term2_raw = D - E
-    else: 
+    else: # op3 == '*'
         val_term2_raw = D * E
         
     result_term2 = abs(val_term2_raw)
@@ -701,17 +701,19 @@ def generate(level=1, **kwargs):
     else:
         final_val = target_term1 - result_term2
     
-    # 使用 pre-injected fmt_num 處理負數括號
+    # 格式化數字 (使用 pre-injected fmt_num 處理負數括號)
     str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
     str_D, str_E = fmt_num(D), fmt_num(E)
     
     # 組裝 LaTeX
+    # Term 1: [(A op1 B) op2 C]
     term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    # Term 2: | D op3 E |
     term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
     
     math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
     
-    # 題幹組裝
+    # 最終題幹
     q = f"計算 ${math_expression}$ 的值。"
     
     return {

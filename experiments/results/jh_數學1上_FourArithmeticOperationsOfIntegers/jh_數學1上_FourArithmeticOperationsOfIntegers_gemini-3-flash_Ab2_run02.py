@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: gemini-3-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 33.73s | Tokens: In=1711, Out=1366
-# Created At: 2026-02-14 09:32:27
+# Performance: 26.07s | Tokens: In=1711, Out=1464
+# Created At: 2026-02-14 13:27:56
 # Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -612,7 +612,6 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 
 # [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
@@ -626,57 +625,59 @@ R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
     # ==========================================
-    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成確保整除)
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (使用逆向工程確保整除)
     # ==========================================
     op1 = random.choice(['+', '-', '*', '/'])
     op2 = random.choice(['+', '-', '*', '/'])
     
-    # [Step 1] 處理外層 op2 與內層目標值 val_inner
-    C = random.choice([x for x in range(-10, 11) if x != 0])
+    # [Step 1] 逆推 op2 (外層)
+    # 先決定外層運算元 C 與結果 target_term1
+    C = random.choice([x for x in range(-12, 13) if x != 0])
+    target_term1 = random.randint(-15, 15)
     
     if op2 == '/':
-        # 為了確保整除，先決定結果 target_term1，再反推 val_inner
-        target_term1 = random.randint(-15, 15)
+        # val_inner / C = target_term1 => val_inner = target_term1 * C
         val_inner = target_term1 * C
-    else:
-        val_inner = random.randint(-30, 30)
-        if op2 == '+': 
-            target_term1 = val_inner + C
-        elif op2 == '-': 
-            target_term1 = val_inner - C
-        elif op2 == '*': 
-            target_term1 = val_inner * C
+    elif op2 == '*':
+        # val_inner * C = target_term1 (為了確保整除，改為先決定 val_inner 再算 target)
+        val_inner = random.randint(-12, 12)
+        target_term1 = val_inner * C
+    elif op2 == '+':
+        # val_inner + C = target_term1 => val_inner = target_term1 - C
+        val_inner = target_term1 - C
+    else: # op2 == '-'
+        # val_inner - C = target_term1 => val_inner = target_term1 + C
+        val_inner = target_term1 + C
 
-    # [Step 2] 處理內層 op1 與 A, B
+    # [Step 2] 逆推 op1 (內層)
+    # 根據剛才算出的 val_inner，逆推 A 與 B
+    B = random.choice([x for x in range(-12, 13) if x != 0])
+    
     if op1 == '/':
-        # 確保 A / B = val_inner
-        B = random.choice([x for x in range(-10, 11) if x != 0])
+        # A / B = val_inner => A = val_inner * B
         A = val_inner * B
     elif op1 == '*':
-        # 乘法邏輯：隨機生成 A, B 並更新 val_inner 與 target_term1
+        # A * B = val_inner (若無法整除則重置 A, B 並修正 val_inner 與後續)
         A = random.randint(-10, 10)
         B = random.randint(-10, 10)
         val_inner = A * B
-        # 重新修正外層以符合新的 val_inner
+        # 因為 val_inner 變了，必須重新計算 target_term1 以維持等式
         if op2 == '/':
-            # 若外層是除法，必須確保 val_inner 能被 C 整除
-            if C == 0 or val_inner % C != 0:
-                # 尋找 val_inner 的因數作為新的 C
-                factors = [i for i in range(-10, 11) if i != 0 and val_inner % i == 0]
-                C = random.choice(factors) if factors else 1
+            # 確保 val_inner / C 能整除
+            if C == 0: C = 1
+            if val_inner % C != 0:
+                # 調整 C 使得能整除，或者直接讓 C = 1
+                C = 1 if val_inner == 0 else random.choice([d for d in range(1, 13) if val_inner % d == 0])
             target_term1 = val_inner // C
-        elif op2 == '+': 
-            target_term1 = val_inner + C
-        elif op2 == '-': 
-            target_term1 = val_inner - C
-        elif op2 == '*': 
-            target_term1 = val_inner * C
+        elif op2 == '*': target_term1 = val_inner * C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
     elif op1 == '+':
-        A = random.randint(-20, 20)
-        B = val_inner - A
-    elif op1 == '-':
-        A = random.randint(-20, 20)
-        B = A - val_inner
+        # A + B = val_inner => A = val_inner - B
+        A = val_inner - B
+    else: # op1 == '-'
+        # A - B = val_inner => A = val_inner + B
+        A = val_inner + B
 
     # ==========================================
     # 2. 生成 Term 2: | D op3 E | 
@@ -685,15 +686,11 @@ def generate(level=1, **kwargs):
     D = random.randint(-15, 15)
     E = random.randint(-15, 15)
     
-    # 使用 Python 原生運算子計算絕對值內的值
-    if op3 == '+': 
-        val_term2_raw = D + E
-    elif op3 == '-': 
-        val_term2_raw = D - E
-    else: 
-        val_term2_raw = D * E
-        
-    result_term2 = abs(int(val_term2_raw))
+    if op3 == '+': val_term2_raw = D + E
+    elif op3 == '-': val_term2_raw = D - E
+    else: val_term2_raw = D * E
+    
+    result_term2 = abs(val_term2_raw)
 
     # ==========================================
     # 3. 組合與格式化
@@ -704,19 +701,21 @@ def generate(level=1, **kwargs):
     else:
         final_val = target_term1 - result_term2
     
-    # 使用 pre-injected fmt_num 處理負數括號
+    # 格式化數字 (處理負數括號)
     str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
     str_D, str_E = fmt_num(D), fmt_num(E)
     
-    # 組裝 LaTeX 算式 (不含外層 $)
-    # Term 1 格式: [ (A op1 B) op2 C ]
-    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
-    # Term 2 格式: | D op3 E |
+    # 組裝 LaTeX
+    # 內層: (A op1 B)
+    inner_latex = f"({str_A} {OP_LATEX[op1]} {str_B})"
+    # 中層: [ inner op2 C ]
+    term1_latex = f"{L_BRACKET} {inner_latex} {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    # 絕對值層: | D op3 E |
     term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
     
     math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
     
-    # 組裝完整題幹
+    # 最終題幹
     q = f"計算 ${math_expression}$ 的值。"
     
     return {

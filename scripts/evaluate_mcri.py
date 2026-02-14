@@ -127,26 +127,27 @@ def forbidden_input(*args, **kwargs):
     )
 
 
-@contextmanager
-@contextmanager
-def safe_execution_context():
+class SafeExecutionContext:
     """
-    安全執行上下文 - 臨時替換 builtins.input 和 builtins.print
+    安全執行上下文 - class 實作版
     確保被評測的程式碼無法進行互動式輸入，且輸出被靜音
     """
-    original_input = builtins.input
-    original_print = builtins.print
-    
-    # 替換為禁止函數和靜音函數
-    builtins.input = forbidden_input
-    builtins.print = lambda *args, **kwargs: None  # 靜音模式
-    
-    try:
-        yield
-    finally:
+    def __enter__(self):
+        self.original_input = builtins.input
+        self.original_print = builtins.print
+        
+        # 替換為禁止函數和靜音函數
+        builtins.input = forbidden_input
+        builtins.print = lambda *args, **kwargs: None  # 靜音模式
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
         # 確保無論成功或失敗都還原
-        builtins.input = original_input
-        builtins.print = original_print
+        builtins.input = self.original_input
+        builtins.print = self.original_print
+
+def safe_execution_context():
+    return SafeExecutionContext()
 
 
 @contextmanager
@@ -335,6 +336,10 @@ class MCRI_Evaluator:
             return True
             
         except Exception as e:
+            import traceback
+            print(f"================ ERROR DEBUGGING ================")
+            traceback.print_exc()
+            print(f"=================================================")
             print(f"[ERROR] 載入失敗 {self.skill_path.name}: {e}")
             return False
     

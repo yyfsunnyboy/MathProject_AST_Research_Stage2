@@ -2,9 +2,9 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: gemini-3-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 338.63s | Tokens: In=1711, Out=1230
-# Created At: 2026-02-14 09:38:06
-# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=0, Minimal=(Import Only)
+# Performance: 26.96s | Tokens: In=1711, Out=1226
+# Created At: 2026-02-14 13:28:23
+# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -612,12 +612,10 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 
 # [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
-
-# ✅ 定義 LaTeX 常數
+# OP_LATEX, L_ABS, R_ABS, L_BRACKET, R_BRACKET are defined for LaTeX formatting
 OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
 L_ABS = r"\left|"   # 左絕對值
 R_ABS = r"\right|"  # 右絕對值
@@ -626,39 +624,38 @@ R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
     # ==========================================
-    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成確保整除)
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ]
     # ==========================================
-    op1 = random.choice(['+', '-', '*', '/'])
-    op2 = random.choice(['+', '-', '*', '/'])
+    # 為了確保整除性，採用先生成內部再調整外部的邏輯
     
-    # [Step 1] 處理內層 (A op1 B) = val_inner
-    # 為了確保後續 op2 如果是除法能整除，我們先決定 val_inner
+    # [Step 1] 生成 A, B, op1 -> val_inner
+    op1 = random.choice(['+', '-', '*', '/'])
+    B = random.choice([x for x in range(-12, 13) if x != 0])
+    
     if op1 == '/':
-        # A / B = val_inner => A = val_inner * B
-        B = random.choice([x for x in range(-10, 11) if x != 0])
-        val_inner = random.randint(-10, 10)
+        # 確保 A / B 是整數
+        val_inner = random.randint(-12, 12)
         A = val_inner * B
     elif op1 == '*':
         A = random.randint(-10, 10)
-        B = random.randint(-10, 10)
         val_inner = A * B
     elif op1 == '+':
         A = random.randint(-20, 20)
-        B = random.randint(-20, 20)
         val_inner = A + B
     else: # op1 == '-'
         A = random.randint(-20, 20)
-        B = random.randint(-20, 20)
         val_inner = A - B
 
-    # [Step 2] 處理外層 (val_inner op2 C) = target_term1
+    # [Step 2] 生成 C, op2 -> target_term1
+    op2 = random.choice(['+', '-', '*', '/'])
     if op2 == '/':
-        # 尋找 val_inner 的因數作為 C
-        divisors = [i for i in range(-20, 21) if i != 0 and val_inner % i == 0]
-        if not divisors:
-            C = 1
+        # 確保 val_inner / C 是整數
+        if val_inner == 0:
+            C = random.choice([x for x in range(-10, 11) if x != 0])
         else:
-            C = random.choice(divisors)
+            # 找出 val_inner 的因數
+            factors = [i for i in range(1, abs(val_inner) + 1) if val_inner % i == 0]
+            C = random.choice(factors) * random.choice([1, -1])
         target_term1 = val_inner // C
     elif op2 == '*':
         C = random.randint(-5, 5)
@@ -695,7 +692,7 @@ def generate(level=1, **kwargs):
     else:
         final_val = target_term1 - result_term2
     
-    # 格式化數字 (使用 pre-injected fmt_num 處理負數括號)
+    # 格式化數字 (使用 pre-injected fmt_num)
     str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
     str_D, str_E = fmt_num(D), fmt_num(E)
     
@@ -707,7 +704,7 @@ def generate(level=1, **kwargs):
     
     math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
     
-    # 組裝題目
+    # 題幹組裝
     q = f"計算 ${math_expression}$ 的值。"
     
     return {
