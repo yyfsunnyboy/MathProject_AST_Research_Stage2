@@ -1,7 +1,4 @@
 【角色】Python Math Generator (K12)
-【重要：進入 Thinking Mode】
-先用 <think> ... </think> 完整思考整個任務：
-
 【任務】實作 `def generate(level=1, **kwargs)`，生成「整數四則運算」題目。
 【回傳格式】Dict: `{'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}`
 
@@ -21,16 +18,9 @@
 2. 絕對值必須使用 `\left| ... \right|`。
 3. **LaTeX 語法嚴格檢查**：`$` 符號只能出現在最外層，禁止在算式內部出現。
 
-### 🔧 核心工具庫 (IntegerOps)
-class IntegerOps:
-    @staticmethod
-    def fmt_num(n):
-        return f"({n})" if n < 0 else str(n)
-
-    @staticmethod
-    def random_nonzero(min_val, max_val):
-        available = [x for x in range(min_val, max_val + 1) if x != 0]
-        return random.choice(available)
+**[Standard Utils are PRE-INJECTED in the runtime. DO NOT redefine them.]**
+**Usage:** `fmt_num(-5)` -> `"(-5)"`
+**Note:** Use standard `random` module for number generation.
 
 ### 📜 MASTER_SPEC (YAML Syntax Fixed)
 domain: arithmetic
@@ -48,7 +38,7 @@ constraints:
 
 ```python
 import random
-# [在此貼上 IntegerOps Class]
+# [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
 
 # ✅ 定義 LaTeX 常數
 OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
@@ -65,24 +55,24 @@ def generate(level=1, **kwargs):
     op2 = random.choice(['+', '-', '*', '/'])
     
     # [Step 1] 逆推 op2 (外層)
-    C = IntegerOps.random_nonzero(-10, 10)
+    C = random.choice([x for x in range(-10, 11) if x != 0])
     if op2 == '/':
-        target_term1 = IntegerOps.random_nonzero(-15, 15)
+        target_term1 = random.choice([x for x in range(-15, 16) if x != 0])
         val_inner = target_term1 * C 
     else:
-        val_inner = IntegerOps.random_nonzero(-30, 30)
+        val_inner = random.choice([x for x in range(-30, 31) if x != 0])
         if op2 == '+': target_term1 = val_inner + C
         elif op2 == '-': target_term1 = val_inner - C
         elif op2 == '*': target_term1 = val_inner * C
 
     # [Step 2] 逆推 op1 (內層)
-    B = IntegerOps.random_nonzero(-10, 10)
+    B = random.choice([x for x in range(-10, 11) if x != 0])
     if op1 == '/':
         A = val_inner * B
     elif op1 == '*':
         # 乘法重置
-        A = IntegerOps.random_nonzero(-10, 10)
-        B = IntegerOps.random_nonzero(-10, 10)
+        A = random.choice([x for x in range(-10, 11) if x != 0])
+        B = random.choice([x for x in range(-10, 11) if x != 0])
         val_inner = A * B
         if op2 == '/':
              if C == 0 or val_inner % C != 0: C = 1
@@ -97,8 +87,8 @@ def generate(level=1, **kwargs):
     # 2. 生成 Term 2: | D op3 E | 
     # ==========================================
     op3 = random.choice(['+', '-', '*']) 
-    D = IntegerOps.random_nonzero(-15, 15)
-    E = IntegerOps.random_nonzero(-15, 15)
+    D = random.choice([x for x in range(-15, 16) if x != 0])
+    E = random.choice([x for x in range(-15, 16) if x != 0])
     
     val_term2_raw = eval(f"{D} {op3} {E}")
     result_term2 = abs(int(val_term2_raw))
@@ -110,8 +100,8 @@ def generate(level=1, **kwargs):
     final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
     
     # 格式化數字
-    str_A, str_B, str_C = IntegerOps.fmt_num(A), IntegerOps.fmt_num(B), IntegerOps.fmt_num(C)
-    str_D, str_E = IntegerOps.fmt_num(D), IntegerOps.fmt_num(E)
+    str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
+    str_D, str_E = fmt_num(D), fmt_num(E)
     
     # 1. 先組裝純數學 LaTeX 字串 (不含 $)
     term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"

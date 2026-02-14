@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: gemini-3-flash | Strategy: V10.1 Modular Refactored
 # Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 40.48s | Tokens: In=548, Out=523
-# Created At: 2026-02-14 09:56:41
+# Performance: 267.73s | Tokens: In=548, Out=475
+# Created At: 2026-02-14 10:05:15
 # Fix Status: [No Healer - Bare LLM Output] | Fixes: Basic=0, Advanced=None
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -11,39 +11,34 @@
 import random
 
 def generate(level=1, **kwargs):
-    def fmt(n):
+    def p(n):
         return f"({n})" if n < 0 else str(n)
-    
+
+    # Template: [(a + b)] ÷ c × d ± |e × f + g|
     c = random.choice([i for i in range(-10, 11) if i != 0])
-    res_div = random.randint(-8, 8)
-    sum_ab = res_div * c
+    k = random.randint(-8, 8)
+    sum_ab = c * k
     a = random.randint(-20, 20)
     b = sum_ab - a
-    d = random.randint(-8, 8)
-    part1_val = res_div * d
-    
+    d = random.randint(-6, 6)
     e = random.randint(-10, 10)
-    f = random.randint(-10, 10)
+    f = random.randint(-6, 6)
     g = random.randint(-20, 20)
-    abs_op = random.choice(['+', '-'])
-    if abs_op == '+':
-        abs_inner_val = e * f + g
-        abs_str = f"|{fmt(e)}×{fmt(f)}+{fmt(g)}|"
-    else:
-        abs_inner_val = e * f - g
-        abs_str = f"|{fmt(e)}×{fmt(f)}-{fmt(g)}|"
-    part2_val = abs(abs_inner_val)
+    op_sym = random.choice(['+', '-'])
     
-    main_op = random.choice(['+', '-'])
-    if main_op == '+':
-        ans = part1_val + part2_val
+    if g < 0:
+        abs_expr = f"{p(e)}×{p(f)}-{abs(g)}"
     else:
-        ans = part1_val - part2_val
+        abs_expr = f"{p(e)}×{p(f)}+{g}"
         
-    q = f"計算 [{fmt(a)}+{fmt(b)}]÷{fmt(c)}×{fmt(d)}{main_op}{abs_str} 的值。"
+    q_text = f"計算 [({a})+({b})]÷{p(c)}×{p(d)}{op_sym}|{abs_expr}| 的值。"
+    
+    term1 = (a + b) // c * d
+    term2 = abs(e * f + g)
+    ans = term1 + term2 if op_sym == '+' else term1 - term2
     
     return {
-        'question_text': q,
+        'question_text': q_text,
         'answer': '',
         'correct_answer': str(ans),
         'mode': 1

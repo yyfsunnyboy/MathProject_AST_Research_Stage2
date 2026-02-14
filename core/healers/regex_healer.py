@@ -59,12 +59,16 @@ class RegexHealer:
         ]
         
         # [V2.5] 依賴映射表 - 自動注入規則
+        # [V3.5] 依賴映射表 - 自動注入規則
+        # [2026-02-14 Critical Fix] 禁用自動 import domain_function_library
+        # 因為我們現在使用 Scaffolding 機制直接將這些函數注入到生成代碼的頂部
+        # 所以不需要額外 import，否則會導致運行時錯誤 (ImportError)
         self.dependency_map = {
-            "IntegerOps": "from domain_function_library import IntegerOps",
-            "FractionOps": "from domain_function_library import FractionOps",
-            "RadicalOps":  "from domain_function_library import RadicalOps",
-            "CalculusOps": "from domain_function_library import CalculusOps",
-            "fmt_num":     "from domain_function_library import fmt_num",
+            # "IntegerOps": "from domain_function_library import IntegerOps", # Disabled
+            # "FractionOps": "from domain_function_library import FractionOps", # Disabled
+            # "RadicalOps":  "from domain_function_library import RadicalOps", # Disabled
+            # "CalculusOps": "from domain_function_library import CalculusOps", # Disabled
+            # "fmt_num":     "from domain_function_library import fmt_num", # Disabled
         }
 
     def remove_trailing_artifacts(self, code_str: str) -> str:
@@ -252,6 +256,42 @@ class RegexHealer:
             return header + code_str, len(injections)
         
         return code_str, 0
+
+    def remove_invalid_dependencies(self, code_str: str) -> tuple:
+        """
+        [V3.3 Ab3 Fix] 移除錯誤的模組引用（當使用 Scaffolding 注入時）
+        例如： from domain_function_library import fmt_num, IntegerOps
+        """
+        old_code = code_str
+        fix_count = 0
+        
+        # [Critial Fix] Remove 'from domain_function_library'
+        # [V3.4] 極度寬鬆模式：只要行內包含 import domain_function_library 就整行刪除
+        # 這是為了對抗可能的不可見字符或奇怪的前綴
+        if "domain_function_library" in code_str:
+             print(f"[DEBUG] Found 'domain_function_library' in code. Regex removing...")
+
+        patterns = [
+            r"^.*from\s+domain_function_library\s+import.*(?:\n|$)",
+            r"^.*import\s+domain_function_library.*(?:\n|$)",
+            r"^.*from\s+core\.code_generator\s+import.*(?:\n|$)",
+            r"^.*from\s+core\..*\s+import.*(?:\n|$)"
+        ]
+        
+        current_code = code_str
+        for pattern in patterns:
+            # 使用 sub 刪除匹配的行
+            new_code = re.sub(pattern, "", current_code, flags=re.MULTILINE)
+            if len(new_code) < len(current_code): # 如果長度變短，表示有刪除
+                fix_count += 1
+                current_code = new_code
+        
+        if fix_count > 0:
+            print(f"🔧 [RegexHealer] 移除已注入的無效依賴引用 (domain_function_library/core)")
+            # 移除可能留下的多餘空行 (3行變2行)
+            current_code = re.sub(r'\n\s*\n\s*\n', '\n\n', current_code)
+            
+        return current_code, fix_count
 
     def fix_common_syntax_errors(self, code_str: str) -> str:
         """
@@ -478,6 +518,12 @@ class RegexHealer:
             stats['braces_fixed'] = False
 
         # ================================================================
+        # Step 0.8: 移除無效依賴引用 ⭐ [V3.3 Ab3 Fix]
+        # ================================================================
+        code_str, dep_removed_count = self.remove_invalid_dependencies(code_str)
+        stats['regex_fix_count'] += dep_removed_count
+
+        # ================================================================
         # Step 1: 移除 Markdown 代碼塊標記
         # ================================================================
         old_code = code_str
@@ -542,6 +588,51 @@ class RegexHealer:
             print(f"🔧 [RegexHealer] 移除 input() 呼叫")
         else:
             stats['input_removed'] = False
+
+        return code_str, stats
+
+    def heal_minimal(self, code_str: str) -> tuple:
+        """
+        [V3.2 Ab2 Pure-Minimal] 純最小化修復 - 僅 Import Injection
+        
+        專為 Ab2 (Prompt Engineering) 設計，只做必要的環境配置，不做任何代碼修復。
+        
+        執行步驟：
+        1. 智慧依賴注入 (自動補 import)
+        
+        不執行：
+        - Markdown Removal (這是 Basic Cleanup 的工作，不是 Healer)
+        - Trailing Artifacts Removal (移除末尾 } 或 ; - 這算是修復 LLM 的語法錯誤)
+        - Syntax Fix (中文符號修復 - 這算是代碼修復)
+        - Loop Breaker (邏輯修復)
+        - Hallucination Killer (邏輯修復)
+        - Answer Format Fixer (邏輯修復)
+        - 括號不匹配修復 (邏輯修復)
+        - 重複類定義移除 (邏輯修復)
+        
+        Returns:
+            tuple: (fixed_code, stats_dict)
+        """
+        stats = {'regex_fix_count': 0, 'minimal_mode': True}
+        
+        if not code_str:
+            return "", stats
+
+        # Step 1: 智慧依賴注入 (Import Injection)
+        code_str, injected = self.inject_domain_imports(code_str)
+        stats['regex_fix_count'] += injected
+        stats['imports_injected'] = injected
+
+        # Step 1.5: [V3.3 NEW] 移除無效依賴引用 (Scaffolding Fix)
+        # 即使是 Minimal 模式，為了環境兼容性也必須移除 domain_function_library
+        code_str, dep_removed_count = self.remove_invalid_dependencies(code_str)
+        stats['regex_fix_count'] += dep_removed_count
+
+        # [REMOVED] Markdown Removal - 這是 Basic Cleanup 的工作
+        # [REMOVED] Trailing Artifacts Removal - 移除以維持實驗純淨度
+        # [REMOVED] Syntax Fix - 移除以維持實驗純淨度
+        stats['markdown_removed'] = False
+        stats['syntax_fixed'] = False
 
         return code_str, stats
 

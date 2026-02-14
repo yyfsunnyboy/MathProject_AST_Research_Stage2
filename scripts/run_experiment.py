@@ -23,6 +23,8 @@ from pathlib import Path
 from tqdm import tqdm
 from collections import defaultdict
 from core.code_generator import _advanced_healer  # [NEW] 統一使用核心 Healer Pipeline
+import multiprocessing
+import queue
 
 # [NEW] 嘗試引入 Google Generative AI SDK (新版本)
 try:
@@ -169,14 +171,20 @@ def get_model_config(model_key):
         return Config.CODER_PRESETS[model_key]
     return None
 
-def call_llm(model_key, prompt_text):
+
+def call_llm(model_key, prompt_text, ablation_id=None):
     """
     統一入口：呼叫 LLM 生成程式碼 (使用 core/ai_wrapper.py)
+    
+    Args:
+        model_key: 模型識別碼
+        prompt_text: Prompt 文本
+        ablation_id: Ablation 策略 ID (1=Ab1, 2=Ab2, 3=Ab3)，用於動態設定 timeout
     """
     # 1. 取得設定
     model_config = get_model_config(model_key)
     if not model_config:
-        return f"# Error: Config not found for {model_key}", {"prompt": 0, "completion": 0}
+        return f"# Error: Config not found for {model_key}", {"prompt": 0, "completion": 0}, None
     
     provider = model_config.get('provider')
     model_name = model_config.get('model')
@@ -204,27 +212,43 @@ def call_llm(model_key, prompt_text):
                 extra_body=model_config.get('extra_body')
             )
         else:
-            return f"# Error: Unknown provider {provider}", {"prompt": 0, "completion": 0}
+            return f"# Error: Unknown provider {provider}", {"prompt": 0, "completion": 0}, None
 
-        # [Refactored] 3. 執行呼叫 (使用 Shared Retry Logic)
+        # [Refactored] 3. 執行呼叫 (使用 Shared Retry Logic with Dynamic Timeout)
         from core.ai_wrapper import call_ai_with_retry
         response = call_ai_with_retry(
             client=client, 
             prompt=prompt_text, 
             max_retries=3, 
             retry_delay=5, 
-            verbose=True
+            verbose=True,
+            ablation_id=ablation_id  # [NEW] Pass ablation_id for dynamic timeout
         )
         
         # 4. 格式化回傳值
         # ai_wrapper 返回的是 mock response 對象，包含 text 和 usage
         generated_text = response.text
         
-        # 安全獲取 usage (有些錯誤情況下可能沒有 usage 屬性)
         usage = {"prompt": 0, "completion": 0}
+        
+        # 嘗試從各種屬性中提取 usage
+        # 1. New SDK/Mock (usage object)
         if hasattr(response, 'usage'):
-            usage["prompt"] = getattr(response.usage, 'prompt_tokens', 0)
-            usage["completion"] = getattr(response.usage, 'completion_tokens', 0)
+             usage["prompt"] = getattr(response.usage, 'prompt_tokens', 0)
+             usage["completion"] = getattr(response.usage, 'completion_tokens', 0)
+        # 2. Old SDK (usage_metadata)
+        elif hasattr(response, 'usage_metadata'):
+             try:
+                 usage["prompt"] = response.usage_metadata.prompt_token_count
+                 usage["completion"] = response.usage_metadata.candidates_token_count
+             except:
+                 pass
+        
+        # Method B: Fallback
+        if usage["prompt"] == 0 and usage["completion"] == 0:
+             usage["prompt"] = len(prompt_text) // 4
+             usage["completion"] = len(generated_text) // 4
+
         
         # [修復] 清洗模型可能重複生成的 Header (保留原 run_experiment.py 的特殊邏輯)
         # 避免 Gemini 因為 Prompt 範例而自己生成了檔案頭
@@ -243,19 +267,25 @@ def call_llm(model_key, prompt_text):
                                    stripped.startswith("# Verification")):
                      continue
                  
+                 # 只要遇到第一行非註釋代碼，就停止跳過（避免誤刪除所有註釋）
                  if stripped and not stripped.startswith("#"):
                      skip_header = False
                  
-                 cleaned_lines.append(line)
+                 # 如果已經停止跳過，或者是空行（保留某些空行），或者是重要的 import，就加入
+                 # 但我們希望徹底移除頭部，所以只要 skip_header 為 True 就跳過
+                 if not skip_header:
+                     cleaned_lines.append(line)
              
-             generated_text = "\n".join(cleaned_lines).strip()
+             # 如果全部被跳過，則保留原樣（避免清空）
+             if cleaned_lines:
+                 generated_text = "\n".join(cleaned_lines).strip()
 
-        return generated_text, usage
+        return generated_text, usage, client
 
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return f"# Error calling LLM: {str(e)}", {"prompt": 0, "completion": 0}
+        return f"# Error calling LLM: {str(e)}", {"prompt": 0, "completion": 0}, None
 
 def apply_basic_cleanup(raw_code):
     """
@@ -287,7 +317,10 @@ def apply_basic_cleanup(raw_code):
     
     if HAS_CODE_GENERATOR:
         # 使用真實的 _basic_cleanup() 實現
-        clean_code, generator_cleanup_count = _basic_cleanup(raw_code)
+        # [Critical Fix 2026-02-14] Disable strict_mode (default True)
+        # strict_mode 會嘗試截斷代碼後的「說明文字」，但經常誤殺中文 Docstring (例如 def generate(): """ 說明... """)
+        # 這導致代碼在中間被腰斬。Cloud 模型通常不需要這種激進的清理。
+        clean_code, generator_cleanup_count = _basic_cleanup(raw_code, strict_mode=False)
         return clean_code, cleanup_count + generator_cleanup_count
     else:
         # Fallback: 簡易版本
@@ -405,72 +438,97 @@ def log_experiment_to_db(skill_id, model_name, ablation_id, duration,
         tqdm.write(f"⚠️  資料庫記錄失敗: {e}")
         return False
 
+def _verify_worker(code_str, result_queue):
+    """子進程執行的驗證邏輯"""
+    try:
+        # 重定向 stdout/stderr 以免干擾主進程輸出
+        sys.stdout = open(os.devnull, 'w')
+        sys.stderr = open(os.devnull, 'w')
+
+        # 建立隔離的命名空間
+        namespace = {}
+        # [FIX] 確保 exec 環境能找到 core/domain_function_library.py
+        core_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../core'))
+        if core_path not in sys.path:
+            sys.path.append(core_path)
+
+        # [CRITICAL FIX] Mock sys.modules to point 'domain_function_library' to 'core.code_utils.math_utils'
+        # This is necessary because generated code writes `from domain_function_library import fmt_num`
+        # but the actual file is in `core/code_utils/math_utils.py`.
+        try:
+            import core.code_utils.math_utils as math_utils
+            sys.modules['domain_function_library'] = math_utils
+        except ImportError:
+            # Fallback if core structure is different
+            pass
+        
+        exec(code_str, namespace)
+        
+        if 'generate' not in namespace or not callable(namespace['generate']):
+            result_queue.put("FAILED")
+            return
+        
+        generate_func = namespace['generate']
+        result = generate_func()
+        
+        if not isinstance(result, dict):
+            result_queue.put("FAILED")
+            return
+        
+        if 'question_text' not in result or 'answer' not in result:
+            result_queue.put("FAILED")
+            return
+            
+        result_queue.put("PASSED")
+        
+    except Exception as e:
+        # [DEBUG] Capture specific error message
+        result_queue.put(f"FAILED: {str(e)}")
+    finally:
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+
 def verify_code_integrity(code_str):
     """
-    完整代碼驗證流程 (與 code_generator.py 同步)
-    
-    [V47.9 Simplified] 簡化驗證邏輯，避免模組導入問題
-    1. 檢查必要函數（generate, check）是否存在
-    2. 編譯檢查 
-    3. 動態採樣測試 - 執行 generate() 3 次檢查輸出格式
-    
-    Returns:
-        str: "PASSED" 或 "FAILED"
-        
-    Note:
-        由於 Ab2 代碼結構特殊（注入了大量工具庫），驗證比較寬鬆。
-        只要 generate() 函數能執行並返回有效格式，就視為 PASSED。
+    完整代碼驗證流程 (Support Timeout via Multiprocessing)
     """
     try:
         if not code_str or not code_str.strip():
-            return "FAILED"  # 空代碼
+            return "FAILED"
         
-        # 檢查必要函數是否存在
         if 'def generate(' not in code_str:
-            return "FAILED"  # 缺少 generate 函數
+            return "FAILED"
         
         if 'def check(' not in code_str:
-            return "FAILED"  # 缺少 check 函數
+            return "FAILED"
         
-        # Step 1: 編譯檢查
+        # Step 1: 編譯檢查 (快速)
         try:
             compile(code_str, '<string>', 'exec')
         except SyntaxError:
-            return "FAILED"  # 語法錯誤
-        except Exception:
-            pass  # 其他編譯異常但可能是動態行為
-        
-        # Step 2: 動態採樣驗證（直接在本進程執行）
-        try:
-            # 建立隔離的命名空間
-            namespace = {}
-            exec(code_str, namespace)
-            
-            # 檢查是否有 generate 函數
-            if 'generate' not in namespace or not callable(namespace['generate']):
-                return "FAILED"
-            
-            # 執行 1 次 generate()（先這樣），檢查輸出格式
-            generate_func = namespace['generate']
-            result = generate_func()
-            
-            # 檢查返回值格式
-            if not isinstance(result, dict):
-                return "FAILED"
-            
-            # 檢查必要的鍵
-            if 'question_text' not in result or 'answer' not in result:
-                return "FAILED"
-            
-            # 全部通過
-            return "PASSED"
-            
-        except Exception as e:
-            # 任何執行錯誤都返回 FAILED
             return "FAILED"
-    
+        except Exception:
+            pass
+        
+        # Step 2: 動態採樣驗證 (使用子進程防止死鎖)
+        result_queue = multiprocessing.Queue()
+        p = multiprocessing.Process(target=_verify_worker, args=(code_str, result_queue))
+        p.start()
+        
+        # 設定 5 秒超時
+        p.join(timeout=5)
+        
+        if p.is_alive():
+            p.terminate()
+            p.join()
+            return "FAILED (Timeout)"
+        
+        if not result_queue.empty():
+            return result_queue.get()
+        else:
+            return "FAILED" # 異常退出
+            
     except Exception:
-        # 最後的防線
         return "FAILED"
 
 def calculate_file_hash(filepath):
@@ -513,19 +571,24 @@ def _format_file_header(skill_id, model_name, ablation_id, ablation_name, durati
     strategy = "V10.1 Modular Refactored"
     
     # 構建 Advanced Healer 開關字符串
-    # Note: Ab2 只有 Regex Healer (進階修復), Ab3 才有 AST (Advanced Healer)
-    advanced_healer_status = 'ON' if ablation_id >= 3 else 'OFF'
+    # Ab1: No Healer | Ab2: Minimal Healer (Infrastructure) | Ab3: Full Healer (Logic Repair)
+    if ablation_id == 1:
+        advanced_healer_status = 'OFF'
+    elif ablation_id == 2:
+        advanced_healer_status = 'MINIMAL (Infrastructure Only)'
+    else:  # Ab3
+        advanced_healer_status = 'FULL (Logic Repair)'
     
     # 如果沒有提供 fix_status_str，則根據 ablation 類型生成
     if not fix_status_str:
         if ablation_id == 1:
-            fix_status_str = "[Basic Cleanup Only]"
+            fix_status_str = "[No Healer - Bare LLM Output]"
             fixes_str = f"Basic={basic_cleanup_count}, Advanced=None"
         elif ablation_id == 2:
-            fix_status_str = "[Basic Cleanup Only]"
-            fixes_str = f"Basic={basic_cleanup_count}, Advanced=None"
+            fix_status_str = "[Minimal Healer - Infrastructure Support]"
+            fixes_str = f"Basic={basic_cleanup_count}, Minimal=(Import Only)"
         else:  # ablation_id == 3
-            fix_status_str = "[Advanced Healer]"
+            fix_status_str = "[Full Healer - Logic Repair]"
             fixes_str = f"Basic={basic_cleanup_count}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})"
     
     # 格式化完整的標頭 (完全匹配 code_generator.py)
@@ -730,8 +793,8 @@ def main():
                 for i in range(1, 6):
                     run_start_time = time.time()
                     try:
-                        # A. Call LLM (生成代碼)
-                        raw_code, usage = call_llm(model_key, prompt_text)
+                        # A. Call LLM (生成代碼) with dynamic timeout based on ablation_id
+                        raw_code, usage, client_instance = call_llm(model_key, prompt_text, ablation_id=ablation_id)
                         
                         # [DEBUG] 檢查 Gemini 是否返回了包含頭部的代碼
                         if raw_code.startswith('#') and '==============' in raw_code:
@@ -742,9 +805,19 @@ def main():
                         cleaned_code, basic_cleanup_count = apply_basic_cleanup(raw_code)
                         
                         # C. 進階 Healer Pipeline (統一呼叫核心模組)
-                        # Ab1: _advanced_healer 內部會自動判斷 ablation_id，如果不需修復會直接返回
-                        final_code, regex_fixes, ast_fixes, _, _, healer_fixed_count, _, _ = \
-                            _advanced_healer(cleaned_code, ablation_id, skill)
+                        # Ab1: 不執行任何 Healer，直接使用 cleaned_code
+                        # Ab2/Ab3: 呼叫 _advanced_healer
+                        if ablation_id == 1:
+                            # Ab1 (Bare): 不執行 Healer
+                            final_code = cleaned_code
+                            regex_fixes = 0
+                            ast_fixes = 0
+                            healer_fixed_count = 0
+                        else:
+                            # Ab2/Ab3: 執行 Healer
+                            # [FIX 2026-02-14] Pass client_instance to use the SAME model for self-correction
+                            final_code, regex_fixes, ast_fixes, _, _, healer_fixed_count, _, _ = \
+                                _advanced_healer(cleaned_code, ablation_id, skill, ai_client=client_instance)
                         
                         # 狀態標記
                         healer_status = "ON" if (regex_fixes > 0 or ast_fixes > 0) else "OFF"

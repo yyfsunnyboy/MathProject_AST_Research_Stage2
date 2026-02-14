@@ -134,7 +134,8 @@ class GoogleAIClient:
     """
     def __init__(self, model_name, temperature=0.7, **kwargs):
         # 1. Config & API Key
-        api_key = kwargs.get('api_key') or Config.GEMINI_API_KEY
+        # Try multiple sources: kwargs > Config > environment variable
+        api_key = kwargs.get('api_key') or getattr(Config, 'GEMINI_API_KEY', None)
         if not api_key:
             api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
@@ -155,19 +156,24 @@ class GoogleAIClient:
         # 3. SDK Initialization (Priority: New > Old)
         self.is_new_sdk = False
         
-        # [HOTFIX] Force disable New SDK due to gRPC hanging issues on Windows (2026-02-13)
-        if False: # Was: if HAS_NEW_SDK:
+        # [2026-02-14] Try New SDK first with timeout protection
+        # If New SDK fails, fall back to Old SDK with REST transport
+        if HAS_NEW_SDK:
             try:
-                # [FIX] Set aggressive timeout (600000) to cover both seconds/milliseconds interpretation
-                # and remove invalid 'transport' arg to fix TypeError.
-                self.client = new_genai.Client(api_key=api_key, http_options={'timeout': 600000})
+                # [FIX 2026-02-14] Don't set http_options timeout here
+                # The New SDK has issues with timeout/deadline configuration
+                # We rely on ThreadPoolExecutor timeout in call_ai_with_retry instead
+                self.client = new_genai.Client(api_key=api_key)
                 self.is_new_sdk = True
-                # print(f"[DEBUG] GoogleAIClient initialized with New SDK (google.genai) for model: {model_name}")
+                print(f"[DEBUG] GoogleAIClient initialized with New SDK (google.genai) for model: {model_name}")
             except Exception as e:
-                print(f"[WARN] New SDK init failed: {e}. Falling back to Old SDK...")
+                import traceback
+                print(f"[WARN] New SDK init failed: {e}")
+                print(f"[DEBUG] Full traceback:")
+                traceback.print_exc()
                 if HAS_OLD_SDK:
                     # [FIX] Force REST transport to avoid gRPC hanging on Windows
-                    print(f"[INFO] New SDK init failed. Falling back to Old SDK (REST mode)...")
+                    print(f"[INFO] Falling back to Old SDK (REST mode)...")
                     old_genai.configure(api_key=api_key, transport='rest')
                     self.model = old_genai.GenerativeModel(model_name)
                     self.is_new_sdk = False
@@ -256,7 +262,8 @@ class GoogleAIClient:
                 # ---------------------------------------------------------
                 config = old_genai.GenerationConfig(
                     temperature=self.temperature,
-                    max_output_tokens=self.max_tokens
+                    max_output_tokens=self.max_tokens,
+                    stop_sequences=[]  # Explicitly disable stop sequences to prevent premature truncation
                 )
                 
                 kwargs = {}
@@ -300,7 +307,7 @@ def get_ai_client(role='default'):
         logger.warning(f"⚠️ 未知的 Provider: {provider}，強制切換至 Local 模式")
         return LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
 
-def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=False):
+def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=False, timeout=None, ablation_id=None):
     """
     [Utility] 帶有自動重試機制的 AI 呼叫函數 (Shared Logic)
     
@@ -310,23 +317,64 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
         max_retries: 最大重試次數
         retry_delay: 重試等待秒數
         verbose: 是否打印重試日誌
+        timeout: 單次請求的超時時間（秒），如果為 None 則根據模型和 ablation_id 自動設定
+        ablation_id: Ablation 策略 ID (1=Ab1, 2=Ab2, 3=Ab3)，用於動態設定 timeout
     
     Returns:
         response: AI 回傳的 Response 對象 (需自行處理 .text 或 .usage)
     """
     import time
+    from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
     last_exception = None
+    
+    # [2026-02-14] Dynamic Timeout based on Model Type and Ablation ID
+    if timeout is None:
+        if isinstance(client, GoogleAIClient):
+            # Gemini: Ab1=180s, Ab2/Ab3=120s
+            timeout = 180 if ablation_id == 1 else 120
+        elif isinstance(client, LocalAIClient):
+            # [FIX] LocalAIClient stores model name in 'model' attribute, not 'model_name'
+            # Also handle potential attribute mismatch safely
+            model_name = getattr(client, 'model', getattr(client, 'model_name', '')).lower()
+            if '14b' in model_name:
+                # Qwen 14B: Ab1=300s, Ab2/Ab3=240s
+                timeout = 300 if ablation_id == 1 else 240
+            elif '8b' in model_name:
+                # Qwen 8B: Ab1=300s, Ab2/Ab3=120s
+                timeout = 300 if ablation_id == 1 else 120
+            else:
+                # Unknown local model: conservative 300s
+                timeout = 300
+        else:
+            # Unknown client type: conservative 300s
+            timeout = 300
     
     for attempt in range(max_retries):
         try:
             if attempt > 0 and verbose:
                  print(f"   🔄 AI 生成重試 (Attempt {attempt+1}/{max_retries})...")
             
-            # [執行請求]
-            response = client.generate_content(prompt)
+            # [執行請求 with Timeout Protection]
+            # [FIX 2026-02-14] Manually manage Executor to avoid blocking on __exit__
+            # With `with ThreadPoolExecutor`, it calls shutdown(wait=True) which waits for stuck threads
+            executor = ThreadPoolExecutor(max_workers=1)
+            future = executor.submit(client.generate_content, prompt)
             
-            # 如無異常，直接回傳
-            return response
+            try:
+                response = future.result(timeout=timeout)
+                # Success: Return response and shutdown
+                executor.shutdown(wait=False)
+                return response
+            except FuturesTimeoutError:
+                # Timeout: Kill/Abandon the stuck thread immediately
+                # Don't wait for it to finish (that defeats the purpose of timeout)
+                future.cancel()
+                executor.shutdown(wait=False, cancel_futures=True)
+                raise TimeoutError(f"AI request timed out after {timeout} seconds")
+            except Exception as e:
+                # Other error
+                executor.shutdown(wait=False)
+                raise e
             
         except Exception as e:
             last_exception = e
@@ -337,7 +385,6 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
                 if verbose:
                     print(f"   ⚠️ 等待 {retry_delay} 秒後重試...")
                 time.sleep(retry_delay)
-            else:
-                if verbose:
-                    print(f"   ❌ AI 呼叫失敗 (最終): {e}")
-                raise last_exception  # 最後一次失敗則拋出異常
+    
+    # 所有重試均失敗
+    raise last_exception if last_exception else Exception("AI call failed after all retries")

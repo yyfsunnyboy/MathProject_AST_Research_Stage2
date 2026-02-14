@@ -566,30 +566,46 @@ def _basic_cleanup(code, strict_mode=True):
     return code, 1 if code != old_code else 0
 
 
-def _advanced_healer(clean_code, ablation_id, skill_id):
+def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
     """進階 Healer：委派給 RegexHealer 與 ASTHealer"""
     
     # Step 2: Regex 修復 (Ab2/Ab3)
-    log_step_start(2, "Regex Healer (Ab2/Ab3)", "[進階修復啟動] Regex Pattern Matching...")
+    if ablation_id == 2:
+        log_step_start(2, "Minimal Healer (Ab2 Only)", "[基礎設施支援] Import Injection Only...")
+    else:
+        log_step_start(2, "Regex Healer (Ab3)", "[進階修復啟動] Regex Pattern Matching...")
     
     regex_healer = RegexHealer()
     code_before_regex = clean_code
-    code_after_regex, regex_stats = regex_healer.heal(clean_code)
+    
+    # [V3.0 Ablation Fix] Ab2 使用最小化修復，Ab3 使用完整修復
+    if ablation_id == 2:
+        code_after_regex, regex_stats = regex_healer.heal_minimal(clean_code)
+    else:  # Ab3 or higher
+        code_after_regex, regex_stats = regex_healer.heal(clean_code)
+    
     # [FIX 2026-02-07] RegexHealer.heal() 現在返回 stats dict，需要提取 regex_fix_count
     regex_fixes = regex_stats.get('regex_fix_count', 0) if isinstance(regex_stats, dict) else regex_stats
     
     if VERBOSE_LEVEL == 2:
         log_fix_detail("", "skip", "")  # 空行
-        log_fix_detail("2.0  Complexity Checker", "warn", "⚠️  未使用分數 (建議檢查 MASTER_SPEC)")
-        log_fix_detail("2.05 Loop Breaker", "fixed" if "while True" in code_before_regex else "skip",
-                      "🔍 掃描危險迴圈: while True, while 1, while (True)")
-        log_fix_detail("2.1  Garbage Cleaner", "skip", "🔍 掃描孤立字符: `, ```...")
-        log_fix_detail("2.2  Hallucination Killer", "skip", "🔍 掃描幻覺函數: clean_expression")
-        log_fix_detail("2.5  LaTeX Protector", "fixed" if regex_fixes > 0 else "skip",
-                      "🔍 檢查 Domain Helper 輸出")
-        log_fix_detail("2.3  Tuple Return Fixer", "skip", "🔍 檢查返回格式")
-        log_fix_detail("2.35 Answer Format Fixer", "fixed" if regex_fixes > 1 else "skip",
-                      "🔍 檢查答案格式")
+        
+        if ablation_id == 2:
+            # Ab2 Minimal Healing Log
+            log_fix_detail("2.1 Import Injection", "fixed" if regex_stats.get('imports_injected', 0) > 0 else "skip",
+                          f"🔍 自動注入 {regex_stats.get('imports_injected', 0)} 個 import")
+        else:
+            # Ab3 Full Healing Log
+            log_fix_detail("2.0  Complexity Checker", "warn", "⚠️  未使用分數 (建議檢查 MASTER_SPEC)")
+            log_fix_detail("2.05 Loop Breaker", "fixed" if "while True" in code_before_regex else "skip",
+                          "🔍 掃描危險迴圈: while True, while 1, while (True)")
+            log_fix_detail("2.1  Garbage Cleaner", "skip", "🔍 掃描孤立字符: `, ```...")
+            log_fix_detail("2.2  Hallucination Killer", "skip", "🔍 掃描幻覺函數: clean_expression")
+            log_fix_detail("2.5  LaTeX Protector", "fixed" if regex_fixes > 0 else "skip",
+                          "🔍 檢查 Domain Helper 輸出")
+            log_fix_detail("2.3  Tuple Return Fixer", "skip", "🔍 檢查返回格式")
+            log_fix_detail("2.35 Answer Format Fixer", "fixed" if regex_fixes > 1 else "skip",
+                          "🔍 檢查答案格式")
     
     log_step_result(2, regex_fixes, f"代碼長度: {len(code_before_regex)} → {len(code_after_regex)} 字符")
     
@@ -598,7 +614,9 @@ def _advanced_healer(clean_code, ablation_id, skill_id):
         log_step_start(3, "AST Healer (Ab3 Only)", "[語法樹修復啟動] Abstract Syntax Tree Analysis...")
         
         # [V50.0] 傳入 AI Client 以支援 Semantic Healing
-        ai_client = get_ai_client()
+        if ai_client is None:
+             ai_client = get_ai_client() # Fallback to default
+             
         ast_healer = ASTHealer(ai_client=ai_client)
         try:
             # 3.1 靜態 AST 修復
