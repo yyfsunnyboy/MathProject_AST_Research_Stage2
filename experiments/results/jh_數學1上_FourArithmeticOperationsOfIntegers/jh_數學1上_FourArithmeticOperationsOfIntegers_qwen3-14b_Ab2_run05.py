@@ -2,9 +2,9 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen3-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 148.08s | Tokens: In=1632, Out=4176
-# Created At: 2026-02-14 01:40:07
-# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=0, Minimal=(Import Only)
+# Performance: 138.74s | Tokens: In=1632, Out=3284
+# Created At: 2026-02-14 14:04:21
+# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
@@ -612,15 +612,14 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 
 # ✅ 定義 LaTeX 常數
 OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
 L_ABS = r"\left|"   # 左絕對值
 R_ABS = r"\right|"  # 右絕對值
-L_BRACKET = r"["    # 左中括號
-R_BRACKET = r"]"    # 右中括號
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
     # ==========================================
@@ -630,27 +629,28 @@ def generate(level=1, **kwargs):
     op2 = random.choice(['+', '-', '*', '/'])
     
     # [Step 1] 逆推 op2 (外層)
-    C = random.choice([x for x in range(-50, 51) if x != 0])
+    C = random.choice([x for x in range(-10, 11) if x != 0])
     if op2 == '/':
-        target_term1 = random.choice([x for x in range(-50, 51) if x != 0])
+        target_term1 = random.choice([x for x in range(-15, 16) if x != 0])
         val_inner = target_term1 * C 
     else:
-        val_inner = random.choice([x for x in range(-50, 51) if x != 0])
+        val_inner = random.choice([x for x in range(-30, 31) if x != 0])
         if op2 == '+': target_term1 = val_inner + C
         elif op2 == '-': target_term1 = val_inner - C
         elif op2 == '*': target_term1 = val_inner * C
 
     # [Step 2] 逆推 op1 (內層)
-    B = random.choice([x for x in range(-50, 51) if x != 0])
+    B = random.choice([x for x in range(-10, 11) if x != 0])
     if op1 == '/':
         A = val_inner * B
     elif op1 == '*':
-        A = random.choice([x for x in range(-50, 51) if x != 0])
-        B = random.choice([x for x in range(-50, 51) if x != 0])
+        # 乘法重置
+        A = random.choice([x for x in range(-10, 11) if x != 0])
+        B = random.choice([x for x in range(-10, 11) if x != 0])
         val_inner = A * B
         if op2 == '/':
-            if C == 0 or val_inner % C != 0: C = 1
-            target_term1 = val_inner // C
+             if C == 0 or val_inner % C != 0: C = 1
+             target_term1 = val_inner // C
         elif op2 == '+': target_term1 = val_inner + C
         elif op2 == '-': target_term1 = val_inner - C
         elif op2 == '*': target_term1 = val_inner * C
@@ -661,11 +661,11 @@ def generate(level=1, **kwargs):
     # 2. 生成 Term 2: | D op3 E | 
     # ==========================================
     op3 = random.choice(['+', '-', '*']) 
-    D = random.choice([x for x in range(-50, 51) if x != 0])
-    E = random.choice([x for x in range(-50, 51) if x != 0])
+    D = random.choice([x for x in range(-15, 16) if x != 0])
+    E = random.choice([x for x in range(-15, 16) if x != 0])
     
-    val_term2_raw = eval(f"{D} {op3} {E}")
-    result_term2 = abs(int(val_term2_raw))
+    val_term2_raw = D + E if op3 == '+' else D - E if op3 == '-' else D * E
+    result_term2 = abs(val_term2_raw)
 
     # ==========================================
     # 3. 組合與格式化 (CRITICAL FIX: 分段組裝)

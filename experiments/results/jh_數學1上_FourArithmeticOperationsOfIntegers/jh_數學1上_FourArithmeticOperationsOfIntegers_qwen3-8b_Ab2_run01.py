@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen3-8b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 28.82s | Tokens: In=1608, Out=1930
-# Created At: 2026-02-14 08:37:08
+# Performance: 36.06s | Tokens: In=1608, Out=2069
+# Created At: 2026-02-14 16:21:25
 # Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -612,7 +612,6 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 # [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
 

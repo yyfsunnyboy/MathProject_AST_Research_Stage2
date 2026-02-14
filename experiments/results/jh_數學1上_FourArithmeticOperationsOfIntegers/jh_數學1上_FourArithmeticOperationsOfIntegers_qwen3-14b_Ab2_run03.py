@@ -2,10 +2,10 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen3-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 730.07s | Tokens: In=0, Out=0
-# Created At: 2026-02-14 13:52:38
-# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=0, Minimal=(Import Only)
-# Verification: Internal Logic Check = FAILED
+# Performance: 127.37s | Tokens: In=1632, Out=3043
+# Created At: 2026-02-14 14:00:32
+# Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
 
@@ -612,4 +612,85 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-# Error calling LLM: AI request timed out after 240 seconds
+import random
+
+# [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
+
+# ✅ 定義 LaTeX 常數
+OP_LATEX = {'+': '+', '-': '-', '*': r'\times', '/': r'\div'}
+L_ABS = r"\left|"   # 左絕對值
+R_ABS = r"\right|"  # 右絕對值
+L_BRACKET = r"\left["  # 左中括號
+R_BRACKET = r"\right]" # 右中括號
+
+def generate(level=1, **kwargs):
+    # ==========================================
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成)
+    # ==========================================
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
+    
+    # [Step 1] 逆推 op2 (外層)
+    C = random.choice([x for x in range(-50, 51) if x != 0])
+    if op2 == '/':
+        target_term1 = random.choice([x for x in range(-50, 51) if x != 0])
+        val_inner = target_term1 * C 
+    else:
+        val_inner = random.choice([x for x in range(-100, 101) if x != 0])
+        if op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+
+    # [Step 2] 逆推 op1 (內層)
+    B = random.choice([x for x in range(-50, 51) if x != 0])
+    if op1 == '/':
+        A = val_inner * B
+    elif op1 == '*':
+        # 乘法重置
+        A = random.choice([x for x in range(-50, 51) if x != 0])
+        B = random.choice([x for x in range(-50, 51) if x != 0])
+        val_inner = A * B
+        if op2 == '/':
+             if C == 0 or val_inner % C != 0: C = 1
+             target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': A = val_inner - B
+    elif op1 == '-': A = val_inner + B
+
+    # ==========================================
+    # 2. 生成 Term 2: | D op3 E | 
+    # ==========================================
+    op3 = random.choice(['+', '-', '*']) 
+    D = random.choice([x for x in range(-50, 51) if x != 0])
+    E = random.choice([x for x in range(-50, 51) if x != 0])
+    
+    val_term2_raw = eval(f"{D} {op3} {E}")
+    result_term2 = abs(int(val_term2_raw))
+
+    # ==========================================
+    # 3. 組合與格式化 (CRITICAL FIX: 分段組裝)
+    # ==========================================
+    op_main = random.choice(['+', '-'])
+    final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
+    
+    # 格式化數字
+    str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
+    str_D, str_E = fmt_num(D), fmt_num(E)
+    
+    # 1. 先組裝純數學 LaTeX 字串 (不含 $)
+    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
+    
+    math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
+    
+    # 2. 再組裝成題目句子 (明確加入 $，且前後留空白)
+    q = f"計算 ${math_expression}$ 的值。"
+    
+    return {
+        'question_text': q,
+        'correct_answer': str(final_val),
+        'answer': str(final_val),
+        'mode': 1
+    }

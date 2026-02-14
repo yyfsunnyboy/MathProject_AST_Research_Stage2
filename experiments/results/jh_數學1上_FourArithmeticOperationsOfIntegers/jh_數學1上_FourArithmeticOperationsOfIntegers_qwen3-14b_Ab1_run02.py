@@ -2,49 +2,45 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen3-14b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 1 | Basic Cleanup: ENABLED | Advanced Healer: OFF
-# Performance: 226.86s | Tokens: In=622, Out=6320
-# Created At: 2026-02-14 01:11:59
+# Performance: 307.19s | Tokens: In=622, Out=7100
+# Created At: 2026-02-14 14:28:56
 # Fix Status: [No Healer - Bare LLM Output] | Fixes: Basic=0, Advanced=None
-# Verification: Internal Logic Check = FAILED: maximum recursion depth exceeded
+# Verification: Internal Logic Check = FAILED: unsupported operand type(s) for /: 'list' and 'int'
 # ==============================================================================
 
 import random
 import re
 
 def generate(level=1, **kwargs):
-    while True:
-        a = random.randint(-10, 10)
-        b = random.randint(-10, 10)
-        op1 = random.choice(['+', '-', '*', '/'])
-        if op1 == '/' and b == 0:
-            continue
-        bracket_expr = f"({a} {op1} {b})"
-        break
+    a = random.randint(-50, 50)
+    b = random.randint(-50, 50)
+    op1 = random.choice(['+', '-', '×', '÷'])
     
-    while True:
-        c = random.randint(-10, 10)
-        if c == 0:
-            continue
-        op2 = random.choice(['/', '*'])
-        break
+    c = random.randint(-50, 50)
+    while c == 0:
+        c = random.randint(-50, 50)
     
-    op3 = random.choice(['+', '-'])
+    d = random.randint(-50, 50)
     
-    e = random.randint(-10, 10)
-    f = random.randint(-10, 10)
-    g = random.randint(-10, 10)
-    abs_expr = f"abs({e} * {f} - {g})"
+    e = random.randint(-50, 50)
+    f = random.randint(-50, 50)
+    g = random.randint(-50, 50)
     
-    full_expr = f"{bracket_expr} {op2} {c} {op3} {abs_expr}"
-    question_text = full_expr.replace('/', '÷').replace('*', '×').replace('abs(', '|').replace(')', '|')
+    def format_number(x):
+        if x < 0:
+            return f"({x})"
+        else:
+            return str(x)
     
-    expr_for_eval = question_text.replace('÷', '/').replace('×', '*')
-    expr_for_eval = re.sub(r'\|([^|]+)\|', r'abs(\1)', expr_for_eval)
+    bracket_expr = f"[{format_number(a)}{op1}{format_number(b)}]"
+    abs_expr = f"|{format_number(e)}×{format_number(f)}-{format_number(g)}|"
     
-    try:
-        correct_answer = eval(expr_for_eval)
-    except:
-        return generate(level=level)
+    question_text = f"{bracket_expr}÷{format_number(c)}×{format_number(d)}+{abs_expr}"
+    
+    expr = question_text.replace('÷', '/').replace('×', '*')
+    expr = re.sub(r'\|([^|]+)\|', r'abs(\1)', expr)
+    
+    correct_answer = eval(expr)
     
     return {
         'question_text': question_text,
@@ -54,14 +50,7 @@ def generate(level=1, **kwargs):
     }
 
 def check(user_answer, correct_answer):
-    correct_answers = correct_answer.split(',') if ',' in correct_answer else [correct_answer]
-    user_answers = user_answer.split(',') if ',' in user_answer else [user_answer]
-    
-    correct_answers = [a.strip() for a in correct_answers]
-    user_answers = [a.strip() for a in user_answers]
-    
-    correct = any(user in correct_answers for user in user_answers)
     return {
-        'correct': correct,
-        'result': '正確' if correct else '錯誤'
-}
+        'correct': user_answer == correct_answer,
+        'result': '正確' if user_answer == correct_answer else '錯誤'
+    }

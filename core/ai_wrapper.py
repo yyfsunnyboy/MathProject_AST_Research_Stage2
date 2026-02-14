@@ -337,8 +337,8 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
             # Also handle potential attribute mismatch safely
             model_name = getattr(client, 'model', getattr(client, 'model_name', '')).lower()
             if '14b' in model_name:
-                # Qwen 14B: Ab1=300s, Ab2/Ab3=360s (Increased for stability)
-                timeout = 300 if ablation_id == 1 else 360
+                # Qwen 14B: Ab1/Ab2/Ab3=360s (Increased for stability)
+                timeout = 360
             elif '8b' in model_name:
                 # Qwen 8B: Ab1=300s, Ab2/Ab3=120s
                 timeout = 300 if ablation_id == 1 else 120

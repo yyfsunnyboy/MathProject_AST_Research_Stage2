@@ -791,6 +791,22 @@ def main():
                 ablation_display = "Bare" if ab_name == "Ab1" else "Engineered" if ab_name == "Ab2" else "Full-Healing"
                 
                 for i in range(1, 6):
+                    # [Optimization] Check if successful run already exists
+                    filename = f"{skill}_{model_key}_{ab_name}_run{i:02d}.py"
+                    filepath = os.path.join(skill_dir, filename)
+                    
+                    if os.path.exists(filepath):
+                        try:
+                            with open(filepath, 'r', encoding='utf-8') as f:
+                                # Read header to check verification status
+                                content = f.read(2048)
+                                if "Verification: Internal Logic Check = PASSED" in content:
+                                    tqdm.write(f"✅ [SKIP] {filename} 已存在且通過驗證")
+                                    pbar.update(1)
+                                    continue
+                        except Exception:
+                            pass # If read error, regenerate
+
                     run_start_time = time.time()
                     try:
                         # A. Call LLM (生成代碼) with dynamic timeout based on ablation_id

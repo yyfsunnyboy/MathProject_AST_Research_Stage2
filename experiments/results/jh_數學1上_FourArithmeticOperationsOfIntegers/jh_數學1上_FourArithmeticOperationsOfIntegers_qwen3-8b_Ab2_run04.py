@@ -2,8 +2,8 @@
 # ID: jh_數學1上_FourArithmeticOperationsOfIntegers
 # Model: qwen3-8b | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: MINIMAL (Infrastructure Only)
-# Performance: 33.60s | Tokens: In=1608, Out=2287
-# Created At: 2026-02-14 08:39:18
+# Performance: 60.75s | Tokens: In=1608, Out=4004
+# Created At: 2026-02-14 16:25:20
 # Fix Status: [Minimal Healer - Infrastructure Support] | Fixes: Basic=1, Minimal=(Import Only)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -612,7 +612,6 @@ class IntegerOps:
 # ---------------------------------------------------------
 
 
-from domain_function_library import fmt_num
 import random
 # [Standard Utils (fmt_num, etc.) are PRE-INJECTED]
 
@@ -651,7 +650,10 @@ def generate(level=1, **kwargs):
         B = random.choice([x for x in range(-10, 11) if x != 0])
         val_inner = A * B
         if op2 == '/':
-            if C == 0 or val_inner % C != 0: C = 1
+            while val_inner % C != 0:
+                A = random.choice([x for x in range(-10, 11) if x != 0])
+                B = random.choice([x for x in range(-10, 11) if x != 0])
+                val_inner = A * B
             target_term1 = val_inner // C
         elif op2 == '+': target_term1 = val_inner + C
         elif op2 == '-': target_term1 = val_inner - C
