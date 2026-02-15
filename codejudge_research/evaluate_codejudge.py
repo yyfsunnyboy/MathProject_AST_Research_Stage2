@@ -9,7 +9,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 # ==========================================
 # 1. 設定區域
 # ==========================================
-GOOGLE_API_KEY = "AIzaSyBL3Yw3d3a5zT5C_OGQ5_drfLk5Q68DrWI"  # <--- 確認 Key
+GOOGLE_API_KEY = "your_api_key"  # <--- 確認 Key
 genai.configure(api_key=GOOGLE_API_KEY)
 
 MODEL_NAME = "gemini-2.5-flash"
