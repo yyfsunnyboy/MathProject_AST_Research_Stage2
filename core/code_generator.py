@@ -513,55 +513,63 @@ def _basic_cleanup(code, strict_mode=True):
     code = re.sub(r'\n(\s*)```\s*$', '', code, flags=re.MULTILINE)
     
     # Step 2: 移除尾部說明文字（僅 strict_mode 執行）
-    if strict_mode:
-        # Qwen 14b 違規模式特徵：代碼結束後有英文或中文說明段落
-        lines = code.split('\n')
-        cleaned_lines = []
-        found_code_start = False
+    # Step 2: 移除尾部說明文字（僅 strict_mode 執行）
+    # [Unknown Fix 2026-02-15] Aggressive Cleanup for Chatty Models (Gemini/Qwen)
+    # 強制移除代碼前後的對話內容，只保留核心代碼
+    
+    lines = code.split('\n')
+    cleaned_lines = []
+    found_code_start = False
+    
+    # 定義 Python 代碼的強特徵關鍵字 (Strong Signal)
+    code_starters = ('import ', 'from ', 'def ', 'class ', '@', '#', 'if __name__')
+    
+    # 掃描並過濾
+    for i, line in enumerate(lines):
+        stripped = line.strip()
         
-        for i, line in enumerate(lines):
-            stripped = line.strip()
-            
-            # 判斷是否為程式碼特徵
-            is_code_like = False
-            if stripped.startswith(('import ', 'from ', 'def ', 'class ', '@', 'if ', 'return ', 'print(', '#')):
-                is_code_like = True
-            elif '=' in stripped and not stripped.startswith('Here'): # 賦值語句，排除 "Here is..."
-                is_code_like = True
-            elif stripped == '' or stripped.startswith(')'): # 閉合括號或空行
-                is_code_like = True
+        # 1. 尚未找到代碼開始：檢查是否為代碼行
+        if not found_code_start:
+            # 如果是空行，跳過
+            if not stripped:
+                continue
                 
-            # 判斷是否進入說明文字區域
-            is_explanation = False
-            if stripped and not stripped.startswith('#') and not is_code_like:
-                # 英文說明
-                if re.match(r'^(This|The|Here|Please|Note|In this|I have)', stripped, re.IGNORECASE):
-                    is_explanation = True
-                
-                # 純英文敘述文字 (開頭大寫，且沒有代碼關鍵字)
-                elif re.match(r'^[A-Z][a-z]+ ', stripped) and \
-                     not any(keyword in stripped for keyword in ['=', '(', ')', 'return', 'def', 'import']):
-                    is_explanation = True
-                
-                # 中文說明
-                elif re.match(r'^[\u4e00-\u9fff]', stripped):
-                    is_explanation = True
-            
-            if is_explanation:
-                if not found_code_start:
-                    # 尚未找到代碼，視為前導說明 (Intro)，跳過不處理
-                    continue
-                else:
-                    # 已經有代碼，視為尾部說明 (Outro)，截斷
-                    break
-            
-            # 標記已找到代碼開始 (只要不是空行或說明文字)
-            if stripped and not is_explanation:
+            # 如果是強特徵關鍵字，標記開始
+            if stripped.startswith(code_starters):
                 found_code_start = True
+                cleaned_lines.append(line)
+                continue
+            
+            # 如果是賦值語句 (且不是中文說明)，可能也是代碼
+            # 但為了安全，我們傾向於相信 Strong Signal，或者包含 '=', 'return' 等
+            if '=' in stripped and not re.search(r'[\u4e00-\u9fff]', stripped):
+                 found_code_start = True
+                 cleaned_lines.append(line)
+                 continue
+            
+            # 其他情況：視為 Intro Text (對話)，丟棄！
+            # (例如: "Here is the code...", "以下是...")
+            continue
+            
+        else:
+            # 2. 已經在代碼區塊內：檢查是否為結尾說明 (Outro)
+            # 如果遇到明顯的 Markdown 標題 (###) 或長段中文說明，且不是註解，則截斷
+            
+            # Exclude: Generate 結尾的文字
+            if stripped.startswith('###') or stripped.startswith('Note:') or stripped.startswith('Explanation:'):
+                break
+                
+            # 如果是純中文說明且沒有 #，視為結束
+            if re.match(r'^[\u4e00-\u9fff]', stripped) and not stripped.startswith('#'):
+                 # 雙重確認：有些字串可能包含中文
+                 # 如果行內有 quote ('或")，可能是合法的 python string
+                 if not ("'" in stripped or '"' in stripped):
+                     break
             
             cleaned_lines.append(line)
-        
-        code = '\n'.join(cleaned_lines).strip()
+    
+    # 重組代碼
+    code = '\n'.join(cleaned_lines).strip()
     
     return code, 1 if code != old_code else 0
 

@@ -469,7 +469,7 @@ if __name__ == "__main__":
                 print("📏 [實驗變因控制] 請選擇本次綜合評估的 Model Size Class:")
                 print("   1: Cloud     -> 大型模型 (如 Gemini 3.0)")
                 print("   2: Local 14B -> 中型模型 (如 Qwen 3-14B)")
-                print("   3: Edge 7B   -> 小型模型 (如 Qwen 2.5-7B)")
+                print("   3: Edge 7B   -> 小型模型 (如 Qwen 3-8B)")
                 print("="*60)
                 
                 size_map = {'1': 'cloud', '2': '14b', '3': '7b'}
@@ -542,7 +542,7 @@ if __name__ == "__main__":
                 print("📏 [實驗變因控制] 請選擇 Model Size Class:")
                 print("   1: Cloud     -> 大型模型 (如 Gemini 3.0)")
                 print("   2: Local 14B -> 中型模型 (如 Qwen 3-14B)")
-                print("   3: Edge 7B   -> 小型模型 (如 Qwen 2.5-7B)")
+                print("   3: Edge 7B   -> 小型模型 (如 Qwen 3-8B)")
                 print("="*60)
                 
                 size_map = {'1': 'cloud', '2': '14b', '3': '7b'}

@@ -88,11 +88,11 @@ class Config:
             ]            
         },
 
-        # 2. Qwen 3 14B (Local) [Thinking Allowed]
+        # 2. Qwen 3 14B (Local) [Thinking Disabled via Modelfile]
         'qwen3-14b': {
             'provider': 'local',
-            'model': 'qwen3:14b-q4_K_M',
-            'temperature': 0.1,
+            'model': 'qwen3-14b-nothink:latest', # [Updated] User specific custom model
+            'temperature': 0.1,                  # [Note] Keep slight creativity to avoid logic loops
             'max_tokens': 16384,
             'extra_body': {
                 'num_ctx': 32768,
@@ -100,12 +100,11 @@ class Config:
                 'num_batch': 512,         
                 'num_thread': 8,
                 'keep_alive': "30m",
-                'system': "You are a coding assistant. Disable thinking process (<think>...</think>). OUTPUT ONLY PYTHON CODE.", # [RESTORED]
                 'top_k': 40,
-                'top_p': 0.95,
+                'top_p': 0.9,
                 'repeat_penalty': 1.1,
             },
-            'description': 'Qwen3-14B (Thinking Allowed)'
+            'description': 'Qwen3-14B (No-Think Custom)'
         },
 
         # 3. Qwen 2.5 14B (Local) - Legacy
@@ -174,7 +173,7 @@ class Config:
 
         'default': {
             'provider': 'local',
-            'model': 'qwen3:14b-q4_K_M'
+            'model': 'qwen3-14b-nothink:latest'
         }
     }
 

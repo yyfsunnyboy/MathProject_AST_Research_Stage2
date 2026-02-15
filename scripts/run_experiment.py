@@ -773,17 +773,45 @@ def main():
             for strat in selected_strategies:
                 ab_name = strat["name"]
                 use_healer = strat["healer"]
-                prompt_file = f"{skill}_{strat['prompt_suffix']}"
-                prompt_path = os.path.join(PROMPTS_DIR, prompt_file)
+                prompt_filename = f"{skill}_{strat['prompt_suffix']}"
                 
-                # 讀取 Prompt
-                if not os.path.exists(prompt_path):
-                    tqdm.write(f"❌ 找不到 Prompt: {prompt_file} (跳過)")
-                    pbar.update(stats.total_samples_per_run) # 跳過該策略的所有樣本
+                # [Prioritize Temp Directory] Match sync_skills_files.py behavior
+                temp_prompt_path = os.path.join(PROMPTS_DIR, 'temp', prompt_filename)
+                root_prompt_path = os.path.join(PROMPTS_DIR, prompt_filename)
+                
+                if os.path.exists(temp_prompt_path):
+                    prompt_path = temp_prompt_path
+                elif os.path.exists(root_prompt_path):
+                    prompt_path = root_prompt_path
+                else:
+                    # Try fuzzy match in root (sometimes ID differs slightly)
+                    # This is a fallback for manually named files
+                    candidates = glob.glob(os.path.join(PROMPTS_DIR, f"*{strat['prompt_suffix']}"))
+                    found = False
+                    for cand in candidates:
+                        if skill in os.path.basename(cand):
+                             prompt_path = cand
+                             found = True
+                             break
+                    
+                    if not found:
+                        tqdm.write(f"❌ 找不到 Prompt: {prompt_filename} (Checked temp/ and root/)")
+                        # pbar.update(...) # Logic relies on outer loop, simple continue is safer
+                        continue
+
+                try:
+                    with open(prompt_path, 'r', encoding='utf-8') as f:
+                        prompt_text = f.read()
+                    
+                    # [Safety Check] Ensure prompt is not empty
+                    if not prompt_text.strip():
+                        tqdm.write(f"⚠️  Prompt is empty: {prompt_path}")
+                        continue
+                        
+                except Exception as e:
+                    tqdm.write(f"❌ Error reading prompt {prompt_path}: {e}")
                     continue
-                
-                with open(prompt_path, 'r', encoding='utf-8') as f:
-                    prompt_text = f.read()
+
                 prompt_hash = calculate_file_hash(prompt_path)
                 
                 # (3) 樣本迴圈 (1~5)

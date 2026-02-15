@@ -168,13 +168,7 @@ UNIVERSAL_GEN_CODE_PROMPT = """【角色】K12 數學演算法工程師
    - `fmt_num(n) -> str`: 格式化數字
    - `to_latex(n) -> str`: 轉 LaTeX 格式
    - `clean_latex_output(latex_str) -> str`: LaTeX 格式清洗和包裹 (自動添加 $)
-   
-2. **多項式專用工具**
-   - `_coeffs_to_terms(coeffs: list) -> list[tuple]`: 係數轉 terms
-   - `_differentiate_poly(terms, order=1) -> list[tuple]`: 求導
-   - `_poly_to_latex(terms) -> str`: 生成題目用 LaTeX (不含 $)
-   - `_poly_to_plain(terms) -> str`: 生成答案用純文字
-   - `_deriv_symbol_latex(order) -> str`: 導數符號 (不含 $)
+
 
 【核心規則】
 1. ✅ shuffle + slice 避免無限迴圈
@@ -395,57 +389,53 @@ class PromptBuilder:
             )
             logger.info(f"Prompt Ab1 - BARE_PROMPT_TEMPLATE (自然語言)")
             logger.info(f"   Topic: {topic}")
-            logger.info(f"   Bare Prompt: {len(BARE_PROMPT_TEMPLATE)} chars")
-            logger.info(f"   Textbook Example: {len(textbook_example)} chars")
             logger.info(f"   Final Prompt: {len(prompt)} chars")
-        elif ablation_id == 2:
-            # Ab2: UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫 + [V2.4新增] 動態工具選用 + 課本例題
-            # ✅ [V47.14 淨化 MASTER_SPEC] 移除會誤導 14B 模型的實作步驟
-            clean_spec = PromptBuilder._clean_master_spec(master_spec)
-            
-            # [V2.4 新增] 根據 skill_id 動態組裝 API 手冊
-            dynamic_api_manual = ""
-            tool_selection_protocol = ""
-            if skill_id:
-                logger.info(f"   🔍 掃描技能: {skill_id}")
-                dynamic_api_manual, active_tools = PromptBuilder._get_dynamic_api_manual(skill_id, topic or "")
-                tool_selection_protocol = PromptBuilder._build_tool_selection_protocol(active_tools)
-                logger.info(f"   ✅ 已啟用工具: {', '.join(active_tools)}")
-            
-            # [V2.5 新增] 為 UNIVERSAL_GEN_CODE_PROMPT 注入課本例題
-            textbook_example_section = ""
-            if textbook_example:
-                textbook_example_section = f"【課本範例】\n{textbook_example}\n\n參考該風格生成類似題目。"
-            else:
-                textbook_example_section = "（無特定參考範例，根據 MASTER_SPEC 自由生成）"
-            
-            # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
-            universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
-                textbook_example_section=textbook_example_section
-            )
-            
-            prompt = universal_prompt_with_example + domain_injection + dynamic_api_manual + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
-            logger.info(f"Prompt Ab2 - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain + DynamicToolSelection + TextbookExample")
-            logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
-            logger.info(f"   Domain Injection: {len(domain_injection)} chars")
-            logger.info(f"   Dynamic API Manual: {len(dynamic_api_manual)} chars")
-            logger.info(f"   Tool Selection Protocol: {len(tool_selection_protocol)} chars")
-            logger.info(f"   Textbook Example: {len(textbook_example_section)} chars")
-            logger.info(f"   MASTER_SPEC (淨化前): {len(master_spec)} chars")
-            logger.info(f"   MASTER_SPEC (淨化後): {len(clean_spec)} chars")
-        else:
-            # Ab3 (默認): UNIVERSAL Prompt + MASTER_SPEC + Domain 函數庫 + [V2.4新增] 動態工具選用 + 課本例題
+
+        elif ablation_id == 2 or ablation_id == 3:
+            # Ab2/Ab3: UNIVERSAL Prompt + MASTER_SPEC + Domain Stubs (Stub Mode)
             # ✅ [V47.14 淨化 MASTER_SPEC] 移除會誤導模型的實作步驟
             clean_spec = PromptBuilder._clean_master_spec(master_spec)
             
-            # [V2.4 新增] 根據 skill_id 動態組裝 API 手冊
-            dynamic_api_manual = ""
+            # [V2.5 Refactor] 使用 Domain Stubs 取代冗長的 API Manual
+            # 1. 獲取所需的 Domain Code Stubs
+            domain_injection = ""
+            active_tools = ["Base"]  # Base tools are always active
             tool_selection_protocol = ""
+            
             if skill_id:
-                logger.info(f"   🔍 掃描技能: {skill_id}")
-                dynamic_api_manual, active_tools = PromptBuilder._get_dynamic_api_manual(skill_id, topic or "")
-                tool_selection_protocol = PromptBuilder._build_tool_selection_protocol(active_tools)
-                logger.info(f"   ✅ 已啟用工具: {', '.join(active_tools)}")
+                try:
+                    from core.prompts.domain_function_library import get_required_domains, get_domain_helpers_code
+                    required_domains = get_required_domains(skill_id)
+                    
+                    if required_domains:
+                        # 轉換 active_tools 用於 Protocol 生成
+                        # required_domains 是 ['fractionops', 'integerops'] 格式
+                        if 'fractionops' in required_domains: active_tools.append('FractionOps')
+                        if 'integerops' in required_domains: active_tools.append('IntegerOps')
+                        if 'radicalops' in required_domains: active_tools.append('RadicalOps')
+                        if 'calculusops' in required_domains or 'polynomial' in required_domains: active_tools.append('CalculusOps')
+                        if 'geometry' in required_domains: active_tools.append('GeometryOps')
+                        if 'vector' in required_domains: active_tools.append('VectorOps')
+                        if 'probability' in required_domains: active_tools.append('ProbabilityOps')
+
+                        # 獲取 Stubs 代碼
+                        domain_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
+                        
+                        domain_injection = f"""
+### 🔧 標準函數庫（API Stubs）
+{domain_stubs}
+
+⚠️ 規則：
+1. 直接調用上述函數，禁止重新定義
+2. 你只需實現 `def generate(level=1, **kwargs)`
+3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
+"""
+                        logger.info(f"   ✅ Domain Stubs 注入: {required_domains}")
+                except Exception as e:
+                    logger.warning(f"   ⚠️ Domain Stubs 注入失敗: {e}")
+
+            # 2. 生成工具選用協定
+            tool_selection_protocol = PromptBuilder._build_tool_selection_protocol(active_tools)
             
             # [V2.5 新增] 為 UNIVERSAL_GEN_CODE_PROMPT 注入課本例題
             textbook_example_section = ""
@@ -454,20 +444,28 @@ class PromptBuilder:
             else:
                 textbook_example_section = "（無特定參考範例，根據 MASTER_SPEC 自由生成）"
             
+            # 3. 注入 Manual Base (基礎工具說明)
+            # Universal Prompt 裡面已經有一個 placeholder 嗎？
+            # 沒，它在 UNIVERSAL_GEN_CODE_PROMPT 本身被包含
+            # 其實 UNIVERSAL_GEN_CODE_PROMPT 的 L165-177 已經寫死了「預載工具 API 手冊」
+            # 我們需要避免重複。
+            # UNIVERSAL_GEN_CODE_PROMPT 的內容是固定的，包含「基礎工具」和「多項式專用工具」(L172-177)
+            # 這些是 Legacy 的寫法。
+            # 我們應該依賴我們動態生成的 prompt part。
+            
             # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
             universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
                 textbook_example_section=textbook_example_section
             )
             
-            prompt = universal_prompt_with_example + domain_injection + dynamic_api_manual + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
-            logger.info(f"Prompt Ab{ablation_id} - UNIVERSAL_GEN_CODE_PROMPT + MASTER_SPEC + Domain + DynamicToolSelection + TextbookExample")
+            # 最終組裝
+            # universal_prompt + domain_stubs + tool_selection + master_spec
+            prompt = universal_prompt_with_example + domain_injection + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
+            
+            logger.info(f"Prompt Ab{ablation_id} - Optimized Stub Mode")
             logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
             logger.info(f"   Domain Injection: {len(domain_injection)} chars")
-            logger.info(f"   Dynamic API Manual: {len(dynamic_api_manual)} chars")
-            logger.info(f"   Tool Selection Protocol: {len(tool_selection_protocol)} chars")
-            logger.info(f"   Textbook Example: {len(textbook_example_section)} chars")
-            logger.info(f"   MASTER_SPEC (淨化前): {len(master_spec)} chars")
-            logger.info(f"   MASTER_SPEC (淨化後): {len(clean_spec)} chars")
+            logger.info(f"   MASTER_SPEC: {len(clean_spec)} chars")
         
         return prompt
     
@@ -521,6 +519,12 @@ class PromptBuilder:
             
             # 🔧 [重要] 強力去殼 - 在解析前清理 Markdown 代碼塊標記
             clean_input = PromptBuilder._extract_and_clean_yaml(master_spec)
+			
+            # [V47.15 Safety Check] 防止將 API 錯誤訊息當作 Spec 解析
+            if "Google AI Error" in clean_input or "PERMISSION_DENIED" in clean_input:
+                logger.error(f"   🚨 MASTER_SPEC 包含 API 錯誤訊息，攔截並回退到 Safe Mode")
+                return "domain: unknown\nentities: []\noperators: []\n# [System Error] Original Spec was an API Error Message"
+
             spec_dict = yaml.safe_load(clean_input)
             
             # 移除會誤導模型的「實作指引」

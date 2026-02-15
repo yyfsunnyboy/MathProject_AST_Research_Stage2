@@ -231,72 +231,80 @@ class CalculusOps:
 FRACTIONOPS_HELPERS = r"""
 # ===== FractionOps (分數標準函數庫) =====
 
-def FractionOps_create(value):
-    '''
-    建立分數，具備「型別智慧」
-    - 如果輸入是 float，先轉 str 再轉 Fraction（避免浮點精度誤差）
-    - 支援 str 輸入（如 "-0.6"）
-    - 支援 Fraction、int、float 輸入
+class FractionOps:
+    '''分數運算模組 - 精確處理分數與浮點數混合運算'''
     
-    範例：
-        FractionOps_create(-0.6)    → Fraction(-3, 5)
-        FractionOps_create("-0.6")  → Fraction(-3, 5)
-        FractionOps_create(3)       → Fraction(3, 1)
-    '''
-    if isinstance(value, float):
-        # 浮點數 → 字串 → Fraction（避免精度誤差）
-        value_str = str(value)
-        return Fraction(value_str).limit_denominator(10000)
-    elif isinstance(value, str):
-        return Fraction(value)
-    elif isinstance(value, Fraction):
-        return value
-    else:
-        return Fraction(value)
+    @staticmethod
+    def create(value):
+        '''
+        建立分數，具備「型別智慧」
+        - 如果輸入是 float，先轉 str 再轉 Fraction（避免浮點精度誤差）
+        - 支援 str 輸入（如 "-0.6"）
+        - 支援 Fraction、int、float 輸入
+        
+        範例：
+            FractionOps.create(-0.6)    → Fraction(-3, 5)
+            FractionOps.create("-0.6")  → Fraction(-3, 5)
+            FractionOps.create(3)       → Fraction(3, 1)
+        '''
+        if isinstance(value, float):
+            value_str = str(value)
+            return Fraction(value_str).limit_denominator(10000)
+        elif isinstance(value, str):
+            return Fraction(value)
+        elif isinstance(value, Fraction):
+            return value
+        else:
+            return Fraction(value)
 
-def FractionOps_to_latex(val, mixed=False):
-    '''
-    輸出 LaTeX 格式
-    - 分母為 1 時，只顯示整數
-    - mixed=True 時顯示帶分數（如 -1 1/2）
-    
-    範例：
-        FractionOps_to_latex(Fraction(3, 2))        → "\\frac{3}{2}"
-        FractionOps_to_latex(Fraction(3, 2), True)  → "1\\frac{1}{2}"
-        FractionOps_to_latex(Fraction(5, 1))        → "5"
-    '''
-    if isinstance(val, Fraction):
-        if val.denominator == 1:
-            return str(val.numerator)
-        if mixed and abs(val.numerator) > val.denominator:
-            whole = val.numerator // val.denominator
-            remainder = abs(val.numerator) % val.denominator
-            if remainder == 0:
-                return str(whole)
-            if whole == 0:
-                return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
-            sign = "-" if val < 0 else ""
-            return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
-        return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
-    return str(val)
+    @staticmethod
+    def to_latex(val, mixed=False):
+        '''
+        輸出 LaTeX 格式
+        - 分母為 1 時，只顯示整數
+        - mixed=True 時顯示帶分數（如 -1 1/2）
+        
+        範例：
+            FractionOps.to_latex(Fraction(3, 2))        → "\\frac{3}{2}"
+            FractionOps.to_latex(Fraction(3, 2), True)  → "1\\frac{1}{2}"
+            FractionOps.to_latex(Fraction(5, 1))        → "5"
+        '''
+        if isinstance(val, Fraction):
+            if val.denominator == 1:
+                return str(val.numerator)
+            if mixed and abs(val.numerator) > val.denominator:
+                whole = val.numerator // val.denominator
+                remainder = abs(val.numerator) % val.denominator
+                if remainder == 0:
+                    return str(whole)
+                if whole == 0:
+                    return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
+                sign = "-" if val < 0 else ""
+                return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
+            return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
+        return str(val)
 
-def FractionOps_add(a, b):
-    '''分數加法'''
-    return a + b
+    @staticmethod
+    def add(a, b):
+        '''分數加法'''
+        return a + b
 
-def FractionOps_sub(a, b):
-    '''分數減法'''
-    return a - b
+    @staticmethod
+    def sub(a, b):
+        '''分數減法'''
+        return a - b
 
-def FractionOps_mul(a, b):
-    '''分數乘法'''
-    return a * b
+    @staticmethod
+    def mul(a, b):
+        '''分數乘法'''
+        return a * b
 
-def FractionOps_div(a, b):
-    '''分數除法（注意：b 不能為零）'''
-    if b == 0:
-        raise ValueError("Division by zero")
-    return a / b
+    @staticmethod
+    def div(a, b):
+        '''分數除法（注意：b 不能為零）'''
+        if b == 0:
+            raise ValueError("Division by zero")
+        return a / b
 """
 
 # ============================================================================
@@ -372,54 +380,46 @@ class IntegerOps:
 RADICALOPS_HELPERS = r"""
 # ===== RadicalOps (根號標準函數庫) =====
 
-def RadicalOps_create(inner):
-    '''
-    建立根號 sqrt(inner) 並自動化簡
+class RadicalOps:
+    '''根號運算模組 - 化簡與精確計算'''
     
-    範例：
-        RadicalOps_create(12)  → "2√3"（化簡形式）
-        RadicalOps_create(9)   → "3"（完全平方）
-    '''
-    import math
-    if inner < 0:
-        raise ValueError("Cannot take square root of negative number")
-    
-    # 提取完全平方因子
-    i = 1
-    while i * i <= inner:
-        if inner % (i * i) == 0:
-            sqrt_val = i
-            remainder = inner // (i * i)
-            i += 1
-        else:
-            i += 1
-    
-    # 簡化結果
-    sqrt_val = int(math.sqrt(inner))
-    while sqrt_val * sqrt_val < inner:
-        sqrt_val += 1
-    while sqrt_val * sqrt_val > inner:
-        sqrt_val -= 1
-    
-    remainder = inner // (sqrt_val * sqrt_val) if sqrt_val > 0 else inner
-    
-    if sqrt_val == 1:
-        return str(inner)
-    if remainder == 1:
-        return str(sqrt_val)
-    return f"{sqrt_val}√{remainder}"
+    @staticmethod
+    def create(inner):
+        '''
+        建立根號 sqrt(inner) 並自動化簡
+        
+        範例：
+            RadicalOps.create(12)  → "2√3"（化簡形式）
+            RadicalOps.create(9)   → "3"（完全平方）
+        '''
+        if inner < 0:
+            raise ValueError("Cannot take square root of negative number")
+        if inner == 0:
+            return "0"
+        
+        # 尋找最大平方因子
+        i = int(math.sqrt(inner))
+        while i > 1:
+            if inner % (i * i) == 0:
+                sqrt_val = i
+                remainder = inner // (i * i)
+                return f"{sqrt_val}√{remainder}" if remainder > 1 else str(sqrt_val)
+            i -= 1
+        
+        return f"√{inner}"
 
-def RadicalOps_is_perfect_square(n):
-    '''檢查 n 是否為完全平方數'''
-    if n < 0:
-        return False
-    sqrt = int(n ** 0.5)
-    return sqrt * sqrt == n
+    @staticmethod
+    def is_perfect_square(n):
+        '''檢查 n 是否為完全平方數'''
+        if n < 0:
+            return False
+        sqrt = int(n ** 0.5)
+        return sqrt * sqrt == n
 
-def RadicalOps_to_latex(expr):
-    '''輸出根號的 LaTeX 格式'''
-    # 簡化的版本，可根據需求擴展
-    return f"\\sqrt{{{expr}}}"
+    @staticmethod
+    def to_latex(expr):
+        '''輸出根號的 LaTeX 格式'''
+        return f"\\sqrt{{{expr}}}"
 """
 
 # ============================================================================
@@ -760,6 +760,7 @@ DOMAIN_MAP = {
 SKILL_DOMAIN_MAPPING = {
     # ===== 整數運算相關 (新增 V2.6) =====
     'FourArithmeticOperationsOfIntegers': ['integerops'],
+    'FourArithmeticOperationsOfNumbers': ['integerops', 'fractionops'],  # [Fix] 補上分數工具
     
     # ===== 多項式相關 =====
     'polynomial_def': ['polynomial'],
@@ -846,8 +847,8 @@ def get_required_domains(skill_id):
     import logging
     logger = logging.getLogger(__name__)
     
-    # 移除前綴 'gh_' 或 'local_'
-    clean_id = skill_id.replace('gh_', '').replace('local_', '')
+    # 移除前綴 'gh_', 'jh_', 'local_'
+    clean_id = skill_id.replace('gh_', '').replace('jh_', '').replace('local_', '')
     logger.info(f"🔍 Domain 識別: skill_id={skill_id}, clean_id={clean_id}")
     
     # ===== 優先級 1: 精確匹配（手動維護的高優先級映射）=====
@@ -855,6 +856,14 @@ def get_required_domains(skill_id):
         domains = SKILL_DOMAIN_MAPPING[clean_id]
         logger.info(f"   ✅ 優先級 1 - 精確匹配: {domains}")
         return domains
+        
+    # [Fix] 嘗試更激進的提取：只取最後一段 (針對 'jh_數學1上_EnglishID' 這種格式)
+    if '_' in clean_id:
+        english_part = clean_id.split('_')[-1]
+        if english_part in SKILL_DOMAIN_MAPPING:
+            domains = SKILL_DOMAIN_MAPPING[english_part]
+            logger.info(f"   ✅ 優先級 1.5 - 後綴匹配 ({english_part}): {domains}")
+            return domains
     
     # ===== 優先級 2: 從資料庫章節信息推斷 =====
     try:
@@ -934,12 +943,57 @@ def get_required_domains(skill_id):
     logger.info(f"   ⚠️ 優先級 4 - 默認策略: ['algebra']")
     return ['algebra']
 
-def get_domain_helpers_code(domains):
+def _generate_stub(source_code):
+    """
+    使用 AST 將函數/類別實作替換為 Stubs (...)
+    保留 Docstring 和簽名，大幅減少 Token 消耗
+    """
+    import ast
+
+    class StubTransformer(ast.NodeTransformer):
+        def visit_FunctionDef(self, node):
+            # 保留 Docstring
+            docstring = ast.get_docstring(node)
+            
+            # 建立新的 body
+            new_body = []
+            if docstring:
+                new_body.append(ast.Expr(value=ast.Constant(value=docstring)))
+            
+            # 添加 ... (Ellipsis)
+            # 在 Python 3.9+ ast.Constant(value=...) 是合法的
+            # 為了兼容性，我們構造一個 Ellipsis 節點
+            new_body.append(ast.Expr(value=ast.Constant(value=...)))
+            
+            node.body = new_body
+            return node
+
+        def visit_ClassDef(self, node):
+            # 對於類別，我們繼續遞歸訪問其方法
+            self.generic_visit(node)
+            return node
+
+    try:
+        tree = ast.parse(source_code)
+        transformer = StubTransformer()
+        new_tree = transformer.visit(tree)
+        ast.fix_missing_locations(new_tree)
+        
+        # 使用 ast.unparse (Python 3.9+)
+        if hasattr(ast, 'unparse'):
+            return ast.unparse(new_tree)
+        else:
+            return source_code  # Fallback
+    except Exception as e:
+        return source_code
+
+def get_domain_helpers_code(domains, stub_mode=True):
     """
     獲取指定 domain 的所有標準函數代碼
     
     參數:
         domains: list of str, 例如 ['polynomial', 'calculus']
+        stub_mode: bool, 是否只返回介面定義 (Stubs) 以節省 Token [默認開啟]
     
     返回:
         str: 合併後的函數定義代碼
@@ -947,7 +1001,11 @@ def get_domain_helpers_code(domains):
     code_parts = []
     for domain in domains:
         if domain in DOMAIN_MAP:
-            code_parts.append(DOMAIN_MAP[domain])
+            full_code = DOMAIN_MAP[domain]
+            if stub_mode:
+                code_parts.append(_generate_stub(full_code))
+            else:
+                code_parts.append(full_code)
     
     return '\n\n'.join(code_parts)
 

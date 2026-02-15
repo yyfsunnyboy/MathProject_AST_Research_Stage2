@@ -1,35 +1,26 @@
-# -*- coding: utf-8 -*-
 # ==============================================================================
-# ID: core/code_utils/math_utils.py
-# Version: V2.0 (Refactored from code_generator.py)
-# Last Updated: 2026-01-30
-# Author: Math AI Research Team (Advisor & Student)
-#
-# [Description]:
-#   數學運算相關工具函數庫
-#   包含 LaTeX 格式化、安全運算、數論函數等
-#
-# [Functionality]:
-#   1. LaTeX 格式化: to_latex, fmt_num, fmt_set, fmt_interval, fmt_vec
-#   2. 安全運算: safe_choice, safe_eval, safe_pow, clamp_fraction
-#   3. 數論工具: is_prime, gcd, lcm, get_factors, nCr, nPr
-#   4. 數學運算: factorial_bounded, rational_gauss_solve, normalize_angle
-#   5. 多項式: build_polynomial_text (防止 LLM 幻覺)
-#
-# [Logic Flow]:
-#   Import -> Use utility functions in generated code
+# ID: jh_數學1上_FourArithmeticOperationsOfNumbers
+# Model: gemini-3-flash-preview | Strategy: V10.1 Modular Refactored
+# Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 23.45s | Tokens: In=2119, Out=1379
+# Created At: 2026-02-15 14:42:02
+# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=3, AST=5)
+# Verification: Internal Logic Check = PASSED
 # ==============================================================================
 
+
+# [INJECTED UTILS]
 import random
+from random import randint, choice
 import math
+from fractions import Fraction
 import re
 import ast
 import operator
-from fractions import Fraction
+import os
 
-# ============================================================================== 
-# 基礎數學工具
-# ==============================================================================
+# ✅ 預設的 LaTeX 運算子映射（四則）- 全域可用
+op_latex = {'+': '+', '-': '-', '*': '\\times', '/': '\\div'}
 
 def safe_choice(seq):
     """
@@ -449,3 +440,246 @@ def build_polynomial_text(coeffs):
             result += f" + {term}"
     
     return result
+
+def clean_latex_output(q_str):
+    """
+    [V47.7 Fix] LaTeX 格式清洗器 - 尊重預先包裝的 $...$ 塊
+    
+    邏輯：
+    1. 提取已經包裝的 $...$ 塊，暫時保留
+    2. 對剩餘的純文本進行中文/數學分離
+    3. 合併結果
+    """
+    if not isinstance(q_str, str): 
+        return str(q_str)
+    
+    # 第一步：提取所有已經包裝的 $...$ 塊
+    latex_blocks = []
+    def placeholder_replacer(match):
+        latex_blocks.append(match.group(1))
+        return f"__LATEX_BLOCK_{len(latex_blocks)-1}__"
+    
+    # 提取 $...$ 塊
+    temp_str = re.sub(r'\$([^$]*)\$', placeholder_replacer, q_str)
+    
+    # 第二步：對剩餘的純文本進行處理
+    clean_q = temp_str.strip()
+    
+    # 修復運算符：* -> \times, / -> \div（只在非 LaTeX 塊中）
+    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*\*\s*(?!_)', r' \\times ', clean_q)
+    clean_q = re.sub(r'(?<![\\a-zA-Z])\s*/\s*(?![{}])', r' \\div ', clean_q)
+    
+    # 修復雙重括號 ((...)) -> (...)
+    clean_q = re.sub(r'\(\(([^()]+)\)\)', r'(\1)', clean_q)
+    
+    # 移除多餘空白
+    clean_q = re.sub(r'\s+', ' ', clean_q).strip()
+    
+    # 第三步：智能分離中文與數學式（僅對非 LaTeX 塊的部分）
+    has_chinese = bool(re.search(r'[\u4e00-\u9fff]', clean_q))
+    
+    if has_chinese:
+        # 分離中文和數學
+        math_pattern = r'(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+(?:\s+(?:[\d\-+*/()（）\[\]【】\\]|\\[a-z]+(?:\{[^}]*\})?|[a-zA-Z])+)*'
+        
+        parts = []
+        last_end = 0
+        
+        for match in re.finditer(math_pattern, clean_q):
+            start, end = match.span()
+            
+            # 添加之前的文本（中文部分）
+            if start > last_end:
+                text_part = clean_q[last_end:start].strip()
+                if text_part:
+                    parts.append(text_part)
+            
+            # 添加數學部分（需要包裹 $）
+            math_part = match.group().strip()
+            if math_part:
+                parts.append(f'${math_part}$')
+            
+            last_end = end
+        
+        # 添加剩餘的文本
+        if last_end < len(clean_q):
+            text_part = clean_q[last_end:].strip()
+            if text_part:
+                parts.append(text_part)
+        
+        # 合併
+        result = ' '.join(parts)
+        result = re.sub(r'\s+', ' ', result).strip()
+        
+        # 清理連續的 $ 符號
+        result = re.sub(r'\$\s+\$', ' ', result)
+    else:
+        # 沒有中文：直接包裹整個表達式
+        result = f"${clean_q}$"
+    
+    # 第四步：恢復 LaTeX 塊
+    for i, block in enumerate(latex_blocks):
+        result = result.replace(f"__LATEX_BLOCK_{i}__", f"${block}$")
+    
+    return result
+
+def get_base_root():
+    """
+    優先用 Flask current_app.root_path；若不可用，回退到 core/ 的上一層（專案根）
+    """
+    try:
+        from flask import has_app_context, current_app
+        if has_app_context():
+            return current_app.root_path
+    except Exception:
+        pass
+    # fallback: project root = parent of core/
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+
+def path_in_root(*parts):
+    """構建專案根目錄下的路徑"""
+    return os.path.join(get_base_root(), *parts)
+
+def ensure_dir(p):
+    """確保目錄存在"""
+    os.makedirs(p, exist_ok=True)
+    return p
+
+
+# [DOMAIN HELPERS - Auto-Injected for jh_數學1上_FourArithmeticOperationsOfNumbers]
+class IntegerOps:
+    """整數運算模組 - 支援格式化、隨機數生成、整除判斷等"""
+
+    @staticmethod
+    def fmt_num(n):
+        '''格式化數字，為負數自動加括號
+- 便於生成 Python 算式（如 "x + (-5)" 而非 "x + -5"）
+
+範例：
+    IntegerOps.fmt_num(5)   → "5"
+    IntegerOps.fmt_num(-5)  → "(-5)"
+    IntegerOps.fmt_num(0)   → "0"'''
+        ...
+
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        """生成非零隨機整數"""
+        ...
+
+    @staticmethod
+    def is_divisible(a, b):
+        """檢查 a 是否能被 b 整除"""
+        ...
+
+    @staticmethod
+    def safe_eval(expr):
+        """安全評估算式，支援：abs()、基本四則運算、括號
+
+範例：
+    IntegerOps.safe_eval("8 * (-2) - 5")           → -21
+    IntegerOps.safe_eval("abs(8 * (-2) - 5)")     → 21
+    IntegerOps.safe_eval("[ (-20) + (-10)] / (-5) * 3")  → 18.0"""
+        ...
+
+class FractionOps:
+    """分數運算模組 - 精確處理分數與浮點數混合運算"""
+
+    @staticmethod
+    def create(value):
+        """建立分數，具備「型別智慧」
+- 如果輸入是 float，先轉 str 再轉 Fraction（避免浮點精度誤差）
+- 支援 str 輸入（如 "-0.6"）
+- 支援 Fraction、int、float 輸入
+
+範例：
+    FractionOps.create(-0.6)    → Fraction(-3, 5)
+    FractionOps.create("-0.6")  → Fraction(-3, 5)
+    FractionOps.create(3)       → Fraction(3, 1)"""
+        ...
+
+    @staticmethod
+    def to_latex(val, mixed=False):
+        '''輸出 LaTeX 格式
+- 分母為 1 時，只顯示整數
+- mixed=True 時顯示帶分數（如 -1 1/2）
+
+範例：
+    FractionOps.to_latex(Fraction(3, 2))        → "\\frac{3}{2}"
+    FractionOps.to_latex(Fraction(3, 2), True)  → "1\\frac{1}{2}"
+    FractionOps.to_latex(Fraction(5, 1))        → "5"'''
+        ...
+
+    @staticmethod
+    def add(a, b):
+        """分數加法"""
+        ...
+
+    @staticmethod
+    def sub(a, b):
+        """分數減法"""
+        ...
+
+    @staticmethod
+    def mul(a, b):
+        """分數乘法"""
+        ...
+
+    @staticmethod
+    def div(a, b):
+        """分數除法（注意：b 不能為零）"""
+        ...
+
+
+# [AI GENERATED CODE]
+# ---------------------------------------------------------
+
+
+def generate(level=1, **kwargs):
+
+    def fmt_term(num):
+        """格式化數字:負數加括號"""
+        s = to_latex(num)
+        if num < 0:
+            return f'({s})'
+        return s
+    ops_latex = ['+', '-', '\\times', '\\div']
+    ops_py = ['+', '-', '*', '/']
+    idx = [random.randint(0, 3) for _ in range(4)]
+    op_main_idx = random.choice([0, 1])
+
+    def rand_frac():
+        if random.random() < 0.3:
+            return Fraction(random.randint(-10, 10), 1)
+        else:
+            n = random.randint(-10, 10)
+            d = random.randint(2, 6)
+            return Fraction(n, d)
+    nums = []
+    for _ in range(6):
+        val = rand_frac()
+        while val == 0:
+            val = rand_frac()
+        nums.append(val)
+    f_nums = [f'Fraction({n.numerator},{n.denominator})' for n in nums]
+    t_nums = [fmt_term(n) for n in nums]
+    try:
+        py_inner = f'({f_nums[0]} {ops_py[idx[0]]} {f_nums[1]})'
+        tex_inner = f'({t_nums[0]} {ops_latex[idx[0]]} {t_nums[1]})'
+        py_mid = f'({py_inner} {ops_py[idx[1]]} {f_nums[2]})'
+        tex_mid = f'\\left[ {tex_inner} {ops_latex[idx[1]]} {t_nums[2]} \\right]'
+        py_block_a = f'({py_mid} {ops_py[idx[2]]} {f_nums[3]})'
+        tex_block_a = f'{tex_mid} {ops_latex[idx[2]]} {t_nums[3]}'
+        py_abs_inner = f'({f_nums[4]} {ops_py[idx[3]]} {f_nums[5]})'
+        py_block_b = f'abs({py_abs_inner})'
+        tex_block_b = f'\\left| {t_nums[4]} {ops_latex[idx[3]]} {t_nums[5]} \\right|'
+        main_op_py = ops_py[op_main_idx]
+        main_op_latex = ops_latex[op_main_idx]
+        final_py_expr = f'{py_block_a} {main_op_py} {py_block_b}'
+        final_tex_expr = f'{tex_block_a} {main_op_latex} {tex_block_b}'
+        ans_val = safe_eval(final_py_expr)
+        if ans_val.denominator > 200 or abs(ans_val.numerator) > 2000:
+            return generate(level, **kwargs)
+    except ZeroDivisionError:
+        return generate(level, **kwargs)
+    ans_latex = to_latex(ans_val)
+    return {'question_text': f'計算 ${final_tex_expr}$ 的值。', 'correct_answer': ans_latex, 'answer': ans_latex, 'mode': 1}

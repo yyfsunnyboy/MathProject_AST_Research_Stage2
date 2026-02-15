@@ -330,15 +330,15 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
     # [2026-02-14] Dynamic Timeout based on Model Type and Ablation ID
     if timeout is None:
         if isinstance(client, GoogleAIClient):
-            # Gemini: Ab1=180s, Ab2/Ab3=120s
-            timeout = 180 if ablation_id == 1 else 120
+            # Gemini: Ab1/Ab2/Ab3 = 600s (Extended for stability - User Request)
+            timeout = 600
         elif isinstance(client, LocalAIClient):
             # [FIX] LocalAIClient stores model name in 'model' attribute, not 'model_name'
             # Also handle potential attribute mismatch safely
             model_name = getattr(client, 'model', getattr(client, 'model_name', '')).lower()
             if '14b' in model_name:
-                # Qwen 14B: Ab1/Ab2/Ab3=360s (Increased for stability)
-                timeout = 360
+                # Qwen 14B: Ab1/Ab2/Ab3=1200s (Doubled for Thinking Models)
+                timeout = 1200
             elif '8b' in model_name:
                 # Qwen 8B: Ab1=300s, Ab2/Ab3=120s
                 timeout = 300 if ablation_id == 1 else 120
