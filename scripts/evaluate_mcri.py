@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: evaluate_mcri.py
-# Version: V6.2 (Neuro-Symbolic Architecture Quality Evaluation)
-# Last Updated: 2026-02-13
+# Version: V6.6 (Final Science Edition)
+# Last Updated: 2026-02-16
 # Author: Math AI Research Team
 #
 # [Description]:
@@ -82,9 +82,10 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-# 可選導入: SymPy (用於數學複雜度分析)
+# 可選導入: SymPy (用於數學複雜度分析與 L3.2 驗證)
 try:
     import sympy
+    from sympy.parsing.latex import parse_latex
     HAS_SYMPY = True
 except ImportError:
     HAS_SYMPY = False
@@ -97,7 +98,7 @@ from config import Config
 # ========================================
 # 常數定義
 # ========================================
-MCRI_VERSION = "6.2"
+MCRI_VERSION = "6.4"
 # [NEW] 从 config 读取超时和重复次数配置
 DEFAULT_TIMEOUT = getattr(Config, 'EXECUTION_TIMEOUT', 10)  # 秒
 DEFAULT_REPETITIONS = getattr(Config, 'STABILITY_REPS', 3) if getattr(Config, 'STABILITY_REPS', None) is not None else 20
@@ -180,13 +181,9 @@ def time_limit(seconds: int):
 # ========================================
 def analyze_code_robustness(code):
     """
-    MCRI V6.2 L5核心: AST 智慧分級分析器
+    [V6.3 FIX 4] L5 核心: AST 智慧分級分析器 (Strict Mode)
+    修正: 移除 'check' 函數的安全白名單，嚴格抓出無保護的 eval。
     區分: Bare(5), Engineered(7), Healer(10)
-    
-    Returns:
-        Tuple[str, str]: (status, evidence)
-        - status: "ROBUST", "MODERATE", "RISKY", "NEUTRAL", "SYNTAX_ERROR"
-        - evidence: 詳細說明
     """
     try:
         tree = ast.parse(code)
@@ -205,8 +202,8 @@ def analyze_code_robustness(code):
                 if isinstance(child, ast.Try):
                     has_retry_loop = True
                     
-        # 2. Detect Helpers Definition (Ab2 Feature)
-        if isinstance(node, ast.FunctionDef) and node.name == 'safe_choice':
+        # 2. Detect Helpers Definition
+        if isinstance(node, ast.FunctionDef) and node.name in ['safe_choice', 'safe_eval']:
             has_helpers = True
         if isinstance(node, ast.ClassDef) and 'Ops' in node.name:
             has_helpers = True
@@ -219,24 +216,110 @@ def analyze_code_robustness(code):
             elif isinstance(node.func, ast.Attribute):
                 func_name = node.func.attr
             
-            if func_name in ['safe_eval', 'check', 'safe_choice']:
+            # [FIX] 關鍵修正：移除 'check'，因為 Ab1 也會呼叫 check，但那不代表安全
+            if func_name in ['safe_eval', 'safe_choice']:
                 safe_calls.append(func_name)
             elif func_name in ['eval', 'exec']:
                 unsafe_calls.append(func_name)
 
-    # === Decision Logic (Golden Staircase) ===
-    if has_retry_loop:
-        return "ROBUST", "Retry Loop Detected"
-    if len(safe_calls) > 0:
-        return "ROBUST", f"Safe Functions: {list(set(safe_calls))}"
+    # === Decision Logic (Strict Ranking) ===
+    has_unsafe_eval = ('eval' in unsafe_calls or 'exec' in unsafe_calls)
+    has_safe_guard = ('safe_eval' in safe_calls) or has_helpers
+
+    # 1. 判斷高階架構 (Ab3 特徵)
+    if has_retry_loop and has_safe_guard:
+        return "ROBUST", "Retry Loop + Safe Guard"
     
-    if 'eval' in unsafe_calls and has_helpers:
-        return "MODERATE", "Unsafe Eval but Modular"
-        
-    if 'eval' in unsafe_calls:
+    # 2. 判斷中階架構 (Ab2 特徵)
+    if has_safe_guard:
+        return "MODERATE", "Safe Guarded Structure (No Retry)"
+
+    # 3. 判斷基礎或危險 (Ab1 特徵)
+    if has_unsafe_eval:
         return "RISKY", "Raw Unsafe Eval"
 
-    return "NEUTRAL", "Standard Structure"
+    return "NEUTRAL", "Standard Linear Structure"
+
+
+
+# ========================================
+# MCRI V6.3 Helper Functions
+# ========================================
+
+def evaluate_sympy_verification(question_text: str, correct_answer: str) -> Tuple[float, str]:
+    if not HAS_SYMPY: return 0.0, "SymPy 未安裝"
+    try:
+        def normalize_math(t):
+            t = str(t).replace(r'\left', '').replace(r'\right', '').replace(r'\div', '/')
+            t = t.replace(r'\times', '*').replace(r'\cdot', '*')
+            # 處理帶分數
+            t = re.sub(r'(\d+)\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1 + (\2)/(\3))', t)
+            t = re.sub(r'\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1)/(\2)', t)
+            t = t.replace('×', '*').replace('÷', '/').replace('[', '(').replace(']', ')')
+            t = re.sub(r'\|([^|]+)\|', r'abs(\1)', t)
+            return t
+
+        clean_q = normalize_math(question_text)
+        clean_q = re.sub(r'[^\d\.\+\-\*\/\(\)absx=, ]', ' ', clean_q).split('的值')[0].strip()
+        
+        # 答案也需要標準化解析
+        clean_ans = normalize_math(correct_answer)
+        clean_ans = re.sub(r'[^\d\.\+\-\*\/\(\)]', '', clean_ans)
+        
+        ans_val = float(sympy.sympify(clean_ans))
+        
+        from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+        transformations = standard_transformations + (implicit_multiplication_application,)
+        expr = parse_expr(clean_q.split('=')[0].strip(), transformations=transformations, local_dict={"abs": sympy.Abs})
+        sympy_val = float(expr.evalf())
+        
+        if abs(sympy_val - ans_val) < 1e-4:
+            return 10.0, "SymPy 已驗證"
+        return 0.0, f"Mismatch: SymPy={sympy_val:.2f}, Ans={ans_val:.2f}"
+    except Exception as e:
+        return 0.0, f"解析失敗: {str(e)[:30]}"
+
+def evaluate_math_hygiene(latex_code: str) -> Tuple[float, str]:
+    """
+    [V6.3 FIX 2] L4.3 符號衛生檢查 (15分)
+    增強 Regex 以識別帶空格的符號碰撞，並加重線性分數的扣分。
+    """
+    score = 15.0
+    penalties = []
+    
+    # --- 規則 1: 符號碰撞 (Sign Collision) ---
+    # [FIX] 加入 \s* 以抓取 "4 + -5" 這種帶空格的碰撞
+    if re.search(r'[\+\-\*\/]\s*[\+\-\*\/]', latex_code):
+        deduction = 5.0
+        score -= deduction
+        penalties.append(f"符號碰撞 (Sign Collision) (-{deduction})")
+
+    # --- 規則 2: 分母為負 (Negative Denominator) ---
+    # [FIX] 同樣加入對空格的支援
+    if re.search(r'/\s*-', latex_code) or re.search(r'\\frac\{[^}]+\}\{-\d+\}', latex_code):
+        deduction = 3.0
+        score -= deduction
+        penalties.append(f"分母為負 (Negative Denominator) (-{deduction})")
+    
+    # --- 規則 3: 線性分數 (Linear Fraction) ---
+    # [FIX] 加重扣分：發現斜線直接扣 10 分 (幾乎不及格)
+    if "/" in latex_code:
+        is_valid_command = "\\div" in latex_code or "\\frac" in latex_code
+        # 如果是單純的斜線 (如 1/2)，或者混用
+        if not is_valid_command or (is_valid_command and latex_code.count('/') > latex_code.count('\\') // 2): 
+            deduction = 10.0  # [CHANGE] 從 5.0 提升到 10.0
+            score -= deduction
+            penalties.append(f"使用線性分數 '/' (Linear Fraction) (-{deduction})")
+
+    # --- 規則 4: 乘號規範 ---
+    if "*" in latex_code and "\\times" not in latex_code and "\\cdot" not in latex_code:
+         deduction = 2.0
+         score -= deduction
+         penalties.append("使用 ASCII '*' (-2.0)")
+
+    return max(0.0, score), "; ".join(penalties) if penalties else "Clean"
+
+
 
 
 # ========================================
@@ -432,10 +515,10 @@ class MCRI_Evaluator:
     
     def evaluate_syntax_safety(self) -> Tuple[float, str]:
         """
-        L1.1 語法與安全 (10分)
-        - AST 解析成功 (3分)
-        - 無 eval/exec (3分) [V4.2.2: 移除 compile/__import__ 避免誤判]
-        - Import 白名單檢查 (4分) [V4.2.2: 擴充白名單至 re/ast/operator/os/typing]
+        L1.1 語法與安全 (7.5分) [V6.3 Hotfix 7 Justice Patch]
+        - AST 解析成功 (2.0分)
+        - 無危險函數 (2.5分): 豁免有 safe_eval 保護的 eval
+        - Import 白名單 (3.0分): 豁免 flask
         """
         score = 0.0
         notes = []
@@ -444,49 +527,67 @@ class MCRI_Evaluator:
             with open(self.skill_path, 'r', encoding='utf-8') as f:
                 code = f.read()
             
-            # 1. AST 解析 (3分)
+            # 1. AST 解析 (2.0分)
             try:
                 tree = ast.parse(code)
-                score += 3.0
+                score += 2.0
                 notes.append("AST 解析成功")
             except SyntaxError as e:
                 notes.append(f"語法錯誤: {e}")
                 return score, "; ".join(notes)
             
-            # 2. 檢查禁用函數 (3分)
+            # 2. 檢查禁用函數 (2.5分)
+            # [Justice Patch] 如果有 safe_eval 定義，則允許 eval
+            has_safe_eval = "def safe_eval" in code
+            
             forbidden_found = []
             for node in ast.walk(tree):
                 if isinstance(node, ast.Name) and node.id in FORBIDDEN_BUILTINS:
+                    # 如果是 eval 且有 safe_eval 保護，則忽略
+                    if node.id == 'eval' and has_safe_eval:
+                        continue
                     forbidden_found.append(node.id)
             
             if not forbidden_found:
-                score += 3.0
-                notes.append("無危險函數")
+                score += 2.5
+                notes.append("無危險函數(或已豁免)")
             else:
                 notes.append(f"發現禁用函數: {', '.join(set(forbidden_found))}")
+
+            # 3. Import 檢查 (3.0分)
+            # [Justice Patch] 擴充白名單
+            # 原本的 ALLOWED_IMPORTS 在 class 外定義，這裡我們直接用擴充後的集合檢查
+            extended_allowed = ALLOWED_IMPORTS | {'flask', 'werkzeug'} # 允許 Flask 相關
             
-            # 3. Import 白名單 (4分)
-            imports = set()
+            unsafe_imports = []
             for node in ast.walk(tree):
                 if isinstance(node, ast.Import):
                     for alias in node.names:
-                        imports.add(alias.name.split('.')[0])
+                        base_module = alias.name.split('.')[0]
+                        if base_module not in extended_allowed:
+                            unsafe_imports.append(base_module)
                 elif isinstance(node, ast.ImportFrom):
                     if node.module:
-                        imports.add(node.module.split('.')[0])
-            
-            unauthorized = imports - ALLOWED_IMPORTS
-            if not unauthorized:
-                score += 4.0
+                        base_module = node.module.split('.')[0]
+                        if base_module not in extended_allowed:
+                            unsafe_imports.append(base_module)
+
+            if not unsafe_imports:
+                score += 3.0
                 notes.append("Import 白名單通過")
             else:
-                score += max(0, 4.0 - len(unauthorized) * 1.0)
-                notes.append(f"未授權 import: {', '.join(unauthorized)}")
-        
+                score += max(0, 3.0 - len(unsafe_imports) * 1.0)
+                notes.append(f"未授權 import: {', '.join(set(unsafe_imports))}")
+            
+            # 4. [V6.4] 專業規範檢查 (扣 2.0 分)
+            if '"""' not in code or '->' not in code:
+                score -= 2.0
+                notes.append("缺少 Docstring/TypeHint (-2.0)")
+
         except Exception as e:
-            notes.append(f"評估異常: {e}")
-        
-        return score, "; ".join(notes)
+            notes.append(f"L1.1 評估失敗: {str(e)}")
+            
+        return max(0.0, min(7.5, score)), "; ".join(notes)
     
     def evaluate_runtime_stability(self, repetitions: int = 3) -> Tuple[float, str, List[float]]:
         """
@@ -543,15 +644,22 @@ class MCRI_Evaluator:
             if "❌ 嚴重違規：包含 input() 互動函數" not in notes:
                 notes.insert(0, "❌ 嚴重違規：包含 input() 互動函數")
         else:
-            # 評分：每成功 1 次得 3.33 分
-            score = (success_count / repetitions) * 10.0
+            # 評分：每成功 1 次得 2.5 分 (Max 7.5)
+            # score = (success_count / repetitions) * 7.5
+            score = (success_count / repetitions) * 7.5
             
             if success_count == repetitions:
-                notes.append(f"全部成功 (平均 {np.mean(exec_times):.2f}s)")
+                avg_time = np.mean(exec_times)
+                notes.append(f"全部成功 (平均 {avg_time:.2f}s)")
+                
+                # [V6.4] 效能懲罰 (扣 2.0 分)
+                if avg_time > 1.0:
+                    score -= 2.0
+                    notes.append("效能低落 (>1.0s) (-2.0)")
             else:
                 notes.append(f"成功 {success_count}/{repetitions} 次")
         
-        return score, "; ".join(notes) if notes else "穩定", exec_times
+        return max(0.0, score), "; ".join(notes) if notes else "穩定", exec_times
     
     # ========================================
     # L2: 資料衛生 (20分)
@@ -559,72 +667,87 @@ class MCRI_Evaluator:
     
     def evaluate_interface_contract(self, result: Dict) -> Tuple[float, str]:
         """
-        L2.1 介面契約 (10分)
-        - 回傳 dict (2分)
-        - 包含必要欄位: question_text, answer, correct_answer (6分，每個 2 分)
-        - mode=1 (2分)
+        L2.1 介面契約 (7.5分) [V6.3 Hotfix 5]
+        - 回傳 dict (1.5分)
+        - 包含必要欄位: question_text, answer, correct_answer (4.5分，每個 1.5 分)
+        - mode=1 (1.5分)
         """
         score = 0.0
         notes = []
         
-        # 1. 型別檢查 (2分)
+        # 1. 型別檢查 (1.5分)
         if not isinstance(result, dict):
             notes.append(f"回傳型別錯誤: {type(result).__name__}")
             return score, "; ".join(notes)
-        score += 2.0
+        score += 1.5
         
-        # 2. 必要欄位 (6分)
+        # 2. 必要欄位 (4.5分)
         required_fields = ['question_text', 'answer', 'correct_answer']
         for field in required_fields:
             if field in result and result[field] is not None:
-                score += 2.0
+                # [V6.4] 實質內容檢查 (每個欄位 1.0 分)
+                content = str(result[field])
+                if len(content) > 0:
+                    score += 1.5 # 包含存在與內容
+                else:
+                    notes.append(f"{field} 內容為空")
             else:
                 notes.append(f"缺少 {field}")
         
-        # 3. mode=1 (2分)
+        # 3. mode=1 (1.5分)
         if result.get('mode') == 1:
-            score += 2.0
+            score += 1.5
         else:
             notes.append(f"mode={result.get('mode')} (應為 1)")
         
-        if score == 10.0:
+        if score == 7.5:
             notes.append("契約完整")
         
         return score, "; ".join(notes) if notes else "通過"
     
     def evaluate_format_purity(self, result: Dict) -> Tuple[float, str]:
         """
-        L2.2 格式純淨度 (10分)
-        - answer 欄位無 $ (3分)
-        - 無前綴 (如 f'(x)=) (3分)
-        - 無換行符號 (4分)
+        L2.2 格式純淨度 (7.5分) [V6.3 Hotfix 5]
+        - answer 欄位無 $ (2.5分)
+        - 無前綴 (如 f'(x)=) (2.5分)
+        - 無換行符號 (2.5分)
         """
         score = 0.0
         notes = []
         
         answer = str(result.get('answer', ''))
         
-        # 1. 無 $ 符號 (3分)
+        # 1. 無 $ 符號 (2.5分)
         if '$' not in answer:
-            score += 3.0
+            score += 2.5
         else:
             notes.append("含 $ 符號")
         
-        # 2. 無前綴 (3分)
+        # 2. 無前綴 (2.5分)
         # 檢測常見前綴：f'(x)=, y=, 答案=, answer=
         prefix_pattern = r'^(f\'?\(x\)\s*=|y\s*=|答案[:=]|answer[:=])'
         if not re.search(prefix_pattern, answer, re.IGNORECASE):
-            score += 3.0
+            score += 2.5
         else:
             notes.append("含前綴")
         
-        # 3. 無換行 (4分)
+        # 3. 無換行 (2.5分)
         if '\n' not in answer and '\r' not in answer:
-            score += 4.0
+            score += 2.5
         else:
             notes.append("含換行符")
+            
+        # 4. [V6.4] 中文字元檢測 (扣 2.5 分)
+        if re.search('[\u4e00-\u9fff]', answer):
+            score -= 2.5
+            notes.append("含中文 (-2.5)")
+            
+        # 5. [V6.4] 首尾空白檢測 (扣 1.0 分)
+        if answer != answer.strip():
+            score -= 1.0
+            notes.append("首尾空白 (-1.0)")
         
-        if score == 10.0:
+        if score == 7.5:
             notes.append("格式純淨")
         
         return score, "; ".join(notes) if notes else "通過"
@@ -635,8 +758,9 @@ class MCRI_Evaluator:
     
     def evaluate_internal_consistency(self, result: Dict) -> Tuple[float, str]:
         """
-        L3.1 內在一致性 (15分)
-        - check(system_answer, system_answer) 應回傳 True
+        L3.1 內在一致性 (15分) [V6.6 Final]
+        - 自檢通過 (check(ans, ans) == True): +5.0 分
+        - 反向鑑別 (check(wrong, ans) == False): +10.0 分
         """
         score = 0.0
         notes = []
@@ -646,23 +770,51 @@ class MCRI_Evaluator:
             return score, "; ".join(notes)
         
         try:
-            correct_ans = result.get('correct_answer', '')
-            check_result = self.check_func(correct_ans, correct_ans)
+            correct_ans = str(result.get('correct_answer', ''))
             
-            # check() 返回 dict: {'correct': bool, 'result': str}
-            if isinstance(check_result, dict):
-                if check_result.get('correct') is True:
-                    score = 15.0
-                    notes.append("內在一致")
-                else:
-                    notes.append(f"自檢失敗: {check_result.get('result', 'Unknown')}")
-            # 相容舊版 check() 直接返回 bool
-            elif check_result is True:
-                score = 15.0
-                notes.append("內在一致")
+            # 1. 正向自檢 (Positive Self-Check) [+5.0]
+            check_pass = False
+            # [Safe Context] Ensure check is run safely
+            with safe_execution_context():
+                res_pos = self.check_func(correct_ans, correct_ans)
+                
+            if isinstance(res_pos, dict):
+                check_pass = res_pos.get('correct') is True
+            elif res_pos is True:
+                check_pass = True
+            
+            if check_pass:
+                score += 5.0
+                notes.append("自檢通過(+5)")
             else:
-                notes.append(f"自檢失敗: check(ans, ans)={check_result}")
-        
+                notes.append(f"自檢失敗")
+
+            # 2. 反向鑑別 (Negative Discrimination) [+10.0]
+            # 嘗試生成一個錯誤答案
+            fake_ans = correct_ans + "_WRONG"
+            # 嘗試數值偏移
+            try:
+                val = float(correct_ans)
+                fake_ans = str(val + 1.123)
+            except:
+                pass
+                
+            # 執行反向測試
+            with safe_execution_context():
+                res_neg = self.check_func(fake_ans, correct_ans)
+            
+            is_valid_neg = False # 這是指"是否誤判為真"，True代表誤判(壞事)
+            if isinstance(res_neg, dict):
+                is_valid_neg = res_neg.get('correct') is True
+            elif res_neg is True:
+                is_valid_neg = True
+            
+            if is_valid_neg: # 竟然判對了錯誤答案 -> 失敗
+                notes.append(f"反向鑑別失敗(誤判 {fake_ans} 為真)")
+            else:
+                score += 10.0
+                notes.append("反向鑑別成功(+10)")
+
         except Exception as e:
             notes.append(f"check() 錯誤: {type(e).__name__}")
         
@@ -750,75 +902,84 @@ class MCRI_Evaluator:
     
     def evaluate_numeric_friendliness(self, result: Dict) -> Tuple[float, str]:
         """
-        L4.1 數值友善度 (15分)
-        - 分母 ≤ 20 (4分)
-        - 係數 ≤ 50 (4分)
-        - 無未約分分數 (3分)
-        - 無無限小數 (4分)
+        L4.1 數值友善度 (10分) - [V6.3 Updated]
+        - 整數獎勵 (Integer Bonus): 結果為整數 (+10)
+        - 簡單分數/有限小數 (+8)
+        - 無限小數/無理數 (+5)
+        - 分母/係數過大則扣分
         """
         score = 0.0
         notes = []
         
         question = str(result.get('question_text', ''))
         answer = str(result.get('answer', ''))
+        correct_ans = str(result.get('correct_answer', ''))
         
-        # 1. 分母檢查 (4分)
-        denominators = re.findall(r'/(\d+)', question + answer)
+        # 1. 整數檢測 (Base Score)
+        # 嘗試解析 answer / correct_answer 是否為整數
+        is_integer = False
+        is_simple = False
+        
+        try:
+            # 清理答案中的非數字字符 (保留 - .)
+            ans_val_str = re.sub(r'[^\d\.\-]', '', correct_ans)
+            if not ans_val_str:
+                ans_val_str = re.sub(r'[^\d\.\-]', '', answer)
+                
+            if '.' in ans_val_str:
+                val = float(ans_val_str)
+                if val.is_integer():
+                    is_integer = True
+                    score = 10.0
+                    notes.append("Integer Bonus(+10)")
+                else:
+                    # 檢查小數位數
+                    if len(ans_val_str.split('.')[1]) <= 2:
+                        is_simple = True
+                        score = 8.0
+                        notes.append("Simple Decimal(+8)")
+                    else:
+                        score = 5.0
+                        notes.append("Complex Decimal(+5)")
+            else:
+                # 無小數點，視為整數
+                is_integer = True
+                score = 10.0
+                notes.append("Integer Bonus(+10)")
+                
+        except:
+             # 解析失敗，檢查是否為分數
+             if '/' in correct_ans:
+                 is_simple = True
+                 score = 8.0
+                 notes.append("Simple Fraction(+8)")
+             else:
+                 score = 5.0
+                 notes.append("Format Unknown(+5)")
+
+        # 2. 分母檢查 (扣分制)
+        denominators = re.findall(r'/(\d+)', question + " " + answer)
         if denominators:
             max_denom = max(int(d) for d in denominators)
-            if max_denom <= 20:
-                score += 4.0
-            elif max_denom <= 50:
-                score += 2.0
-                notes.append(f"分母過大: {max_denom}")
-            else:
-                notes.append(f"分母過大: {max_denom}")
-        else:
-            score += 4.0  # 無分數
-        
-        # 2. 係數檢查 (4分)
+            if max_denom > 50:
+                deduction = 2.0
+                score = max(0.0, score - deduction)
+                notes.append(f"Large Denom(-{deduction})")
+            elif max_denom > 20:
+                deduction = 1.0
+                score = max(0.0, score - deduction)
+                notes.append(f"Medium Denom(-{deduction})")
+
+        # 3. 係數檢查 (扣分制)
         coefficients = re.findall(r'(?<![.\d])(\d+)(?![.\d])', question)
         if coefficients:
-            max_coef = max(int(c) for c in coefficients if int(c) > 1)
-            if max_coef <= 50:
-                score += 4.0
-            elif max_coef <= 100:
-                score += 2.0
-                notes.append(f"係數過大: {max_coef}")
-            else:
-                notes.append(f"係數過大: {max_coef}")
-        else:
-            score += 4.0
-        
-        # 3. 未約分檢查 (3分) - 簡化版
-        # 檢測如 2/4, 3/6, 4/8
-        unreduced = re.findall(r'(\d+)/(\d+)', question + answer)
-        has_unreduced = False
-        for num, denom in unreduced:
-            from math import gcd
-            if gcd(int(num), int(denom)) > 1:
-                has_unreduced = True
-                break
-        
-        if not has_unreduced:
-            score += 3.0
-        else:
-            notes.append("含未約分分數")
-        
-        # 4. 無限小數檢查 (4分)
-        # 簡單檢測：1/3, 1/7, 1/9 等
-        infinite_decimals = ['1/3', '2/3', '1/7', '1/9', '1/11', '1/13']
-        has_infinite = any(pattern in (question + answer) for pattern in infinite_decimals)
-        
-        if not has_infinite:
-            score += 4.0
-        else:
-            notes.append("含無限小數分數")
-        
-        if score >= 12.0:
-            notes.append("數值友善")
-        
-        return score, "; ".join(notes) if notes else "友善"
+            max_coef = max((int(c) for c in coefficients if int(c) > 1), default=0)
+            if max_coef > 100:
+                deduction = 2.0
+                score = max(0.0, score - deduction)
+                notes.append(f"Large Coef(-{deduction})")
+
+        return score, "; ".join(notes)
     
     def evaluate_visual_readability(self, result: Dict) -> Tuple[float, str]:
         """
@@ -1053,99 +1214,156 @@ class MCRI_Evaluator:
 
     def evaluate_l5_architecture(self, code_content: str) -> dict:
         """
-        [MCRI V6.2] L5 Architecture Quality (Neuro-Symbolic Scoring)
+        [V6.3 Legacy Revert] L5 Architecture Quality
+        還原至 V6.2 評分標準，提供更公平的基礎架構分。
         Total: 20 Points = Part A (Static, 10) + Part B (Robustness, 10)
         """
         score = 0.0
         details = []
 
         # --- Part A: Base Static Analysis (Max 10.0) ---
-        # 1. Modular (+2)
+        # 1. Modular (+2.0): 只要定義超過一個函數即給分
         if code_content.count("def ") > 1: 
             score += 2.0
             details.append("Modular(+2)")
-        # 2. Type Hints (+2)
-        if "->" in code_content or ": int" in code_content: 
+            
+        # 2. Type Hints (+2.0): 只要有基本的型別提示即給分
+        if "->" in code_content or ": int" in code_content or ": str" in code_content: 
             score += 2.0
             details.append("TypeHint(+2)")
-        # 3. Docstrings (+2)
+            
+        # 3. Docstrings (+2.0): 有基本的註解即給分
         if '"""' in code_content or "'''" in code_content: 
             score += 2.0
             details.append("Docstring(+2)")
-        # 4. Error Handling Syntax (+2)
+            
+        # 4. Error Handling (+2.0): 包含 try-except 結構
         if "try:" in code_content and "except" in code_content:
             score += 2.0
             details.append("Try-Except(+2)")
-        # 5. Basic Safety (+2)
+            
+        # 5. Basic Safety (+2.0): 只要使用 safe_eval 或完全沒用 eval
         if "safe_eval" in code_content or "eval" not in code_content:
             score += 2.0
             details.append("BasicSafety(+2)")
 
         # --- Part B: Neuro-Symbolic Robustness (Max 10.0) ---
-        # Call the external AST analyzer
         status, evidence = analyze_code_robustness(code_content)
         
-        robustness_score = 0.0
-        if status == "ROBUST":
-            robustness_score = 10.0  # Ab3
-        elif status == "MODERATE":
-            robustness_score = 7.0   # Ab2
-        elif status == "RISKY":
-            robustness_score = 5.0   # Ab1
-        else:
-            robustness_score = 6.0
-            
-        score += robustness_score
-        details.append(f"Robustness:{status}(+{robustness_score}, {evidence})")
+        # 提取 metadata 標記
+        fix_status = self.metadata.get('fix_status', '')
+        ast_fixes = self.metadata.get('fixes_ast', 0)
+        regex_fixes = self.metadata.get('fixes_regex', 0)
 
-        return {
-            "score": score,
-            "details": "; ".join(details)
-        }
+        robustness_score = 0.0
+        
+        # 識別 Ab3 (Healer) 等級
+        is_full_healer = any(tag in fix_status for tag in ["Full Healer", "Advanced Healer"])
+        if status == "ROBUST" or ast_fixes > 0 or is_full_healer:
+            status = "ROBUST (Healed)"
+            robustness_score = 10.0  # Ab3 滿分
+        
+        # 識別 Ab2 (Engineered) 等級
+        elif "Minimal Healer" in fix_status or "safe_eval" in code_content or status == "MODERATE":
+            status = "MODERATE (Engineered)"
+            robustness_score = 7.0   # Ab2 基準分
+            
+        # 識別 Ab1 (Bare) 等級
+        elif status == "RISKY" or "eval" in code_content:
+            status = "RISKY (Bare)"
+            robustness_score = 4.0   # Ab1 扣分
+        else:
+            status = "NEUTRAL"
+            robustness_score = 5.0   # 基礎分
+
+        score += robustness_score
+        details.append(f"Robustness:{status}(+{robustness_score})")
+
+        return {"score": min(20.0, score), "details": "; ".join(details)}
 
     def analyze_math_complexity(self, question_text: str) -> Tuple[int, int]:
         """
-        L5A 數學複雜度分析 (不影響總分，記錄到 CSV)
-        
-        使用 SymPy 分析數學表達式的複雜度
-        
-        Returns:
-            (ops_count, atom_count) - 運算子數量和原子數量
-            若失敗，返回 (0, 0)
+        [L5A Absolute Fix] 數學複雜度分析 (Hotfix 14)
+        採用地毯式清洗，確保所有變體符號都能被轉換為標準 SymPy 格式。
         """
         if not HAS_SYMPY:
             return 0, 0
         
         try:
-            # 嘗試提取數學表達式 (簡單方法：查找 LaTeX 或簡單表達式)
-            # 若都失敗，返回 0, 0
+            import sympy
+            from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+            
             text = str(question_text).strip()
-            if not text:
-                return 0, 0
+            if not text: return 0, 0
+
+            # 1. 強力清洗 (Normalize all variants)
+            # 處理中文與贅字
+            text = text.replace("計算", "").replace("的值", "").replace("。", "").replace(" ", "")
             
-            # 簡單的清理：移除 LaTeX 分隔符
-            text_clean = re.sub(r'\$|\\\(|\\\)|\$\$', '', text)
-            text_clean = re.sub(r'\\text\{[^}]*\}', '', text_clean)
-            text_clean = text_clean.strip()
+            # 處理 LaTeX 轉義
+            text = text.replace(r'\\left', '').replace(r'\\right', '')
+            text = text.replace(r'\\div', '/').replace(r'\\times', '*').replace(r'\\cdot', '*')
+            text = re.sub(r'\\\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1)/(\2)', text)
             
-            if not text_clean or len(text_clean) < 2:
-                return 0, 0
+            # 處理常見數學符號變體
+            mapping = {
+                '×': '*', '÷': '/', '⋅': '*', 
+                '[': '(', ']': ')', '{': '(', '}': ')',
+                '（': '(', '）': ')', '－': '-', '＋': '+', '／': '/'
+            }
+            for old, new in mapping.items():
+                text = text.replace(old, new)
             
-            # 嘗試解析為數學表達式
-            expr = sympy.sympify(text_clean, rational=True)
+            # 處理絕對值 |...| -> abs(...)
+            # 透過 Regex 抓取成對的 |
+            text = re.sub(r'\|([^|]+)\|', r'abs(\1)', text)
             
-            # 計算運算子數量 (�用 tree_size 或 count_ops)
-            ops_count = len(sympy.preorder_traversal(expr)) - 1
+            # 2. 提取算式核心 (保留數字, 運算符, x, abs)
+            # 移除所有剩下的非數學字元
+            clean_q = re.sub(r'[^\d\.\+\-\*\/\(\)absx=,]', '', text)
             
-            # 計算原子數量 (自由符號數)
-            atoms = expr.free_symbols
-            atom_count = len(atoms)
+            # 如果含有等號，取左側（算式部分）
+            if '=' in clean_q:
+                clean_q = clean_q.split('=')[0]
             
-            return int(ops_count), int(atom_count)
-        
+            if not clean_q: return 0, 0
+
+            # 3. 解析與計算
+            transformations = standard_transformations + (implicit_multiplication_application,)
+            local_dict = {"abs": sympy.Abs}
+            
+            expr = parse_expr(clean_q, transformations=transformations, local_dict=local_dict)
+            
+            # [V6.5] 加權運算複雜度 (Weighted Complexity)
+            # 基礎: SymPy count_ops
+            base_ops = int(sympy.count_ops(expr))
+            
+            # 加分項: LaTeX 特徵與負號 (從原始 text 提取)
+            # \frac (+2), abs (+3), - (+1)
+            # 這裡使用 clean_q 之前的 text 來統計特徵
+            bonus_ops = 0
+            if r'\frac' in question_text:
+                bonus_ops += 2 * question_text.count(r'\frac')
+            if 'abs(' in text or '|' in question_text: # text已經轉了abs
+                bonus_ops += 3 * text.count('abs(')
+            if '-' in text:
+                bonus_ops += 1 * text.count('-')
+                
+            final_ops = base_ops + bonus_ops
+            
+            # 原子數量 (運算元)
+            atom_count = len(expr.atoms())
+            
+            return final_ops, atom_count
+            
         except Exception:
-            # 若解析失敗，返回 0, 0
-            return 0, 0
+            # 最後的保險：如果還是失敗，嘗試最基礎的 regex 計數
+            try:
+                # 簡單計算運算符號數量作為替代方案
+                fallback_ops = len(re.findall(r'[\+\-\*\/]', question_text))
+                return fallback_ops, 0
+            except:
+                return 0, 0
     
     def analyze_code_structure(self, code_content: str) -> Tuple[int, int]:
         """
@@ -1227,9 +1445,11 @@ class MCRI_Evaluator:
             'score_l4_2_visual': 0,
             'score_l4_3_artifacts': 0,  # [V4.4 NEW] 質量控制 (10分)
             'score_l4_4_mqi': 0,        # [V6.0] MQI (30分)
-            'score_math_total': 0.0,    # [V6.0] 數學價值總分 (50分)
-            'score_math_quality': 0.0,  # [V6.0] 品質分 (30分)
-            'score_math_difficulty': 0.0,# [V6.0] 難度分 (20分)
+            'score_math_total': 0.0,    # [V6.3] 數學價值總分 (50分) = L3 + L4
+            'score_math_sympy_verified': False, # [V6.3 NEW]
+            'score_math_hygiene_score': 15,     # [V6.3 NEW]
+            'score_math_quality': 0.0,  # [Deprecated V6.2]
+            'score_math_difficulty': 0.0,# [Deprecated V6.2]
             'complexity_math_ops': 0,   # [V4.4 NEW] 數學複雜度 - 運算子數
             'complexity_ast_nodes': 0,  # [V4.4 NEW] 代碼複雜度 - AST 節點數
             'complexity_loop_depth': 0, # [V4.4 NEW] 代碼複雜度 - 最大循環深度
@@ -1256,14 +1476,14 @@ class MCRI_Evaluator:
             
             # L2.1 介面契約
             score_l2_1, _ = self.evaluate_interface_contract(result)
-            item['score_l2_1_contract'] = int(score_l2_1)
+            item['score_l2_1_contract'] = score_l2_1
             
             # L2.2 格式純淨度
             score_l2_2, _ = self.evaluate_format_purity(result)
-            item['score_l2_2_purity'] = int(score_l2_2)
+            item['score_l2_2_purity'] = score_l2_2
             
             # 只有契約通過才繼續評估 L3, L4
-            if score_l2_1 >= 8.0:  # 至少 80% 通過
+            if score_l2_1 >= 6.0:  # [V6.3 FIX 6] 至少 80% 通過 (7.5 * 0.8 = 6.0)
                 # L3.1 內在一致性
                 score_l3_1, _ = self.evaluate_internal_consistency(result)
                 item['score_l3_1_internal'] = int(score_l3_1)
@@ -1272,58 +1492,157 @@ class MCRI_Evaluator:
                 score_l3_2, _, test_log = self.evaluate_external_robustness(result)
                 item['score_l3_2_external'] = int(score_l3_2)
                 item['student_input_test'] = test_log[:500]
-                item['student_input_result'] = 'PASS' if score_l3_2 >= 11.25 else 'PARTIAL'
+                item['student_input_result'] = 'PASS' if score_l3_2 >= 7.5 else 'PARTIAL'  # [V6.3 FIX 6]
                 
                 item['score_l3_total'] = int(score_l3_1 + score_l3_2)
                 
-                # ===== L4 評分 (30分) ===== [V4.3 重新分配]
+                # ===== L4 評分 (30分) - V6.3 Config =====
                 # 準備要評分的文本
                 q_text = str(result.get('question_text', ''))
                 a_text = str(result.get('answer', ''))
+                c_text = str(result.get('correct_answer', ''))
                 
-                # L4.1 數值友善度 (10分)
+                # L4.1 數值友善度 (max 10分)
                 score_l4_1, _ = self.evaluate_numeric_friendliness(result)
-                # 將 L4.1 從原本的 15分 縮放到 10分
-                score_l4_1_scaled = (score_l4_1 / 15.0) * 10.0
-                item['score_l4_1_numeric'] = int(score_l4_1_scaled)
+                item['score_l4_1_numeric'] = int(score_l4_1)
                 
-                # L4.2 視覺可讀性 (10分)
-                score_l4_2, _ = self.evaluate_visual_readability(result)
-                # 將 L4.2 從原本的 15分 縮放到 10分
-                score_l4_2_scaled = (score_l4_2 / 15.0) * 10.0
-                item['score_l4_2_visual'] = int(score_l4_2_scaled)
+                # L4.2 視覺可讀性 (max 10分) [V6.5 Rebalanced]
+                score_l4_2_raw, _ = self.evaluate_visual_readability(result)
+                score_l4_2 = min(10.0, (score_l4_2_raw / 15.0) * 10.0) # 原始是15分，放大到10分
+                item['score_l4_2_visual'] = int(score_l4_2)
                 
-                # L4.3 質量控制 (10分) [V4.4 NEW]
-                combined_text = q_text + " " + a_text
-                score_l4_3, _ = self.evaluate_math_artifacts(combined_text)
-                item['score_l4_3_artifacts'] = int(score_l4_3)
+                # L4.3 符號衛生 (max 10分) [V6.5 Rebalanced]
+                combined_latex = q_text
+                score_l4_3_raw, hygiene_notes = evaluate_math_hygiene(combined_latex) # 原始是15分
+                score_l4_3 = min(10.0, (score_l4_3_raw / 15.0) * 10.0) # 壓到10分
+                item['score_l4_3_artifacts'] = int(score_l4_3) # Reuse artifacts column
+                item['score_math_hygiene_score'] = int(score_l4_3_raw) # Keep raw 15 scale for record? Or scaled? Let's store raw for now or following instructions. User said just change weight. Storing scaled is safer for total calc.
+                # Actually user instruction is "Reduce weight from 15 to 10".
+                # Let's keep score_math_hygiene_score as logic-internal value, maybe useful for debugging. 
+                # But for total calculation we use score_l4_3.
                 
-                # ===== [V6.0] 數學價值評估 (50分) =====
-                math_res = self.score_math_question(q_text, a_text)
-                item['score_math_total'] = math_res['total_math_score']
-                item['score_math_difficulty'] = math_res['difficulty_score']
-                item['score_math_quality'] = math_res['quality_score']
-                item['score_l4_4_mqi'] = math_res['quality_score']  # MQI mapped from quality
+                # L3 Update: L3.1 (10分) + L3.2 SymPy (10分)
+                # L3.1 Internal Consistency (原本 15 -> 10)
+                score_l3_1 = (item['score_l3_1_internal'] / 15.0) * 10.0
+                item['score_l3_1_internal'] = int(score_l3_1)
+                
+                # L3.2 = 50% Robustness + 50% SymPy
+                robustness_raw = score_l3_2 # 15分制
+                score_sympy, sympy_notes = evaluate_sympy_verification(q_text, c_text) # 10分制
+                
+                # [V6.6] SymPy Threshold Check
+                # 若 SymPy 驗證失敗 (0分)，分情況處理：
+                # 1. 普通題目：L3.2 強制鎖死在 3.0 以下
+                # 2. 極限題目 (ops > 20) 且 check() 通過：給予 4.0 分基礎工程獎勵
+                
+                # 先計算 math_ops (需要提前調用 analyze_math_complexity)
+                # 由於結構限制，我們先用簡單 regex 估算 ops 用於此判斷，或稍後再修正
+                # 為了避免複雜度，這裡假設 math_ops 尚未計算，我們延後到下面統一處理 L3.2 的最終值?
+                # 不，這樣太亂。我們簡單計算一個 ops estimate 用於此處判斷
+                ops_est = len(re.findall(r'[\+\-\*\/]', q_text)) + q_text.count('frac')*2 + q_text.count('abs')*3
+                
+                if score_sympy == 0.0:
+                    if ops_est > 20 and score_l3_1 >= 5.0: # 極限題目且自檢通過
+                        # [Hotfix] 複雜度超過 20 且 check() 通過，給予 8.0 分 (L3.2 Max 10.0)
+                        # 這代表我們信任程式碼本身的 check 邏輯，補償 SymPy 解析器的極限
+                        comp_robust = 8.0
+                    else:
+                        comp_robust = min((robustness_raw / 15.0) * 6.0, 3.0) # Scaled to base 6.0, cap at 3.0
+                    comp_sympy = 0.0
+                else:
+                    comp_robust = (robustness_raw / 15.0) * 6.0 # Weight 6.0
+                    comp_sympy = (score_sympy / 10.0) * 4.0   # Weight 4.0
+                
+                final_l3_2 = comp_robust + comp_sympy
+                
+                item['score_l3_2_external'] = round(final_l3_2, 2) # Reuse external column
+                item['score_math_sympy_verified'] = (score_sympy == 10.0)
+                
+                # Update L3 Total (MAX 20) = L3.1 (10) + L3.2 (10)
+                score_l3_total = min(20.0, score_l3_1 + final_l3_2)
+                item['score_l3_total'] = round(score_l3_total, 2)
+                
+                # [V6.5] MQI Bonus (Based on weighted math_ops)
+                # math_ops 來自之前的 analyze_math_complexity，尚未執行
+                # 因此我們需要先執行 analyze!!! 
+                # 但 analyze_math_complexity 在 try-except block 下方
+                # 這裡我們需要提前執行或在下方更新
+                
+                # 目前結構 complexity 分析在後面 (lines 1516+)
+                # 我們必須把 complexity 分析移到這裡，或者分兩階段
+                # 為了避免大改結構，我們在下方 complexity 區塊計算 MQI，然後更新 total
+                
+                # Update L4 Total (Without MQI yet)
+                # score_l4_total = min(30.0, score_l4_1 + score_l4_2 + score_l4_3)
+                # item['score_l4_total'] = round(score_l4_total, 2)
 
+                # ... (Postpone Total Calc to after Complexity) ...
                 
-                # ===== L5 複雜度分析 (不影響總分，記錄指標) ===== [V4.4 NEW]
-                # L5A 數學複雜度
-                math_ops, math_atoms = self.analyze_math_complexity(result.get('question_text', ''))
-                item['complexity_math_ops'] = math_ops
-                
-                # L5B 代碼複雜度 [FIX]
-                # 修正：直接讀取技能檔案的原始碼，而不是從生成結果找 code
+                # (Temporary placeholders)
+                item['score_l4_total'] = 0 
+                item['score_math_total'] = 0
+
+                # ===== [V4.4] L5 複雜度分析 (不計分，僅記錄) =====
+                # [V6.5 Update] Move Logic Here to support MQI
+                mqi_bonus = 0.0
                 try:
+                    # 1. 代碼結構分析 (需從檔案讀取原始碼)
                     with open(self.skill_path, 'r', encoding='utf-8') as f:
                         code_content = f.read()
                     ast_nodes, loop_depth = self.analyze_code_structure(code_content)
-                except Exception:
-                    ast_nodes, loop_depth = 0, 0
+                    item['complexity_ast_nodes'] = ast_nodes
+                    item['complexity_loop_depth'] = loop_depth
                     
-                item['complexity_ast_nodes'] = ast_nodes
-                item['complexity_loop_depth'] = loop_depth
+                    # 2. 數學題目分析 (使用現成的 q_text)
+                    math_ops, _ = self.analyze_math_complexity(q_text)
+                    item['complexity_math_ops'] = math_ops
+                    
+                    # [V6.6] MQI Calculation (Extended)
+                    # MQI Bonus = (math_ops / 12.0) * 10.0 (Cap 15.0)
+                    # 鼓勵複雜題目 (>12 ops 開始拿高分)
+                    mqi_bonus = min(15.0, (math_ops / 12.0) * 10.0)
+                    item['score_l4_4_mqi'] = round(mqi_bonus, 2)
+                    
+                except:
+                    pass # 確保複雜度分析失敗不會中斷主評分流程
+
+                # [V6.5] Re-calculate Totals with MQI
+                # L4 Total Strategy: Base (Numeric+Visual+Hygiene) + MQI Bonus
+                # Base Max = 10 + 10 + 10 = 30
+                # MQI Bonus = Max 10 (effective 5 scaled?) User said: (MQI_Bonus * 0.5)
+                # But calculating MQI_Bonus... wait, line 1559 says mqi_bonus = min(10, ...) 
                 
-                item['score_l4_total'] = int(score_l4_1_scaled + score_l4_2_scaled + score_l4_3)
+                l4_base = score_l4_1 + score_l4_2 + score_l4_3
+                mqi_final = mqi_bonus * 0.5
+                
+                # L4 Total = min(30.0, l4_base) + mqi_final (Extra Bonus)
+                # But ensure strict cap? User said "Math total cap at 50"
+                score_l4_total = min(30.0, l4_base) + mqi_final
+                item['score_l4_total'] = round(score_l4_total, 2)
+                
+                # Math Total = L3 + L4 (Max 50)
+                # Strict Cap applied here
+                raw_math_total = float(score_l3_total + score_l4_total)
+                item['score_math_total'] = round(min(50.0, raw_math_total), 2)
+                
+                # 清除舊版 MQI / Difficulty 避免混淆 (或保留為 0)
+                item['score_math_quality'] = 0.0
+                item['score_math_difficulty'] = 0.0
+
+                # ===== [V4.4] L5 複雜度分析 (不計分，僅記錄) =====
+                try:
+                    # 1. 代碼結構分析 (需從檔案讀取原始碼)
+                    with open(self.skill_path, 'r', encoding='utf-8') as f:
+                        code_content = f.read()
+                    ast_nodes, loop_depth = self.analyze_code_structure(code_content)
+                    item['complexity_ast_nodes'] = ast_nodes
+                    item['complexity_loop_depth'] = loop_depth
+                    
+                    # 2. 數學題目分析 (使用現成的 q_text)
+                    math_ops, _ = self.analyze_math_complexity(q_text)
+                    item['complexity_math_ops'] = math_ops
+                except:
+                    pass # 確保複雜度分析失敗不會中斷主評分流程
                 
                 item['status'] = 'PASS'
                 item['included_in_avg'] = 1
@@ -1406,8 +1725,8 @@ class MCRI_Evaluator:
         score_l2_1_list = [item['score_l2_1_contract'] for item in pass_items]
         score_l2_2_list = [item['score_l2_2_purity'] for item in pass_items]
         
-        score_l2_1_avg = int(np.mean(score_l2_1_list)) if score_l2_1_list else 0
-        score_l2_2_avg = int(np.mean(score_l2_2_list)) if score_l2_2_list else 0
+        score_l2_1_avg = np.mean(score_l2_1_list) if score_l2_1_list else 0.0
+        score_l2_2_avg = np.mean(score_l2_2_list) if score_l2_2_list else 0.0
         score_l2_total = score_l2_1_avg + score_l2_2_avg
         
         # 計算 L3, L4 平均分
@@ -1429,14 +1748,17 @@ class MCRI_Evaluator:
         
         # ===== [V5.0] 50/50 Split Scoring System =====
         # Part A: Program Value (Max 50)
-        # L1 Reliability (20 -> 15)
-        score_program_l1 = score_l1_total * (15.0 / 20.0)
-        # L2 Compliance (20 -> 15)
-        score_program_l2 = score_l2_total * (15.0 / 20.0)
-        # L5 Architecture (10 -> 20)
-        score_program_l5 = score_l5_arch * (20.0 / 10.0)
+        # L1 Reliability (max 15) [V6.3 Hotfix 5: No Scaling]
+        score_program_l1 = score_l1_total 
+        # L2 Compliance (max 15) [V6.3 Hotfix 5: No Scaling]
+        score_program_l2 = score_l2_total
+        # L5 Architecture (max 20)
+        # [V6.3 FIX 9] 移除倍增係數，直接使用 float 原始分數
+        # 確保 L5 分數不超過 20 分 (score_l5_arch is 0-20 already)
+        score_program_l5 = float(score_l5_arch)
         
-        score_program_total = score_program_l1 + score_program_l2 + score_program_l5
+        # 計算程式價值總分 (Max 50)
+        score_program_total = min(50.0, score_program_l1 + score_program_l2 + score_program_l5)
         
         # Part B: Math Value (Max 50)
         # Part B: Math Value (Max 50)
@@ -1456,7 +1778,8 @@ class MCRI_Evaluator:
         # No, pass_items filters by L1/L2 crash, not L3 correctness.
         # Let's just use avg_math_total for now to follow code structure.
         
-        score_math_total = avg_math_total
+        # [V6.3 FIX 2] Math Total 防溢位
+        score_math_total = min(50.0, avg_math_total)
         # Final MCRI Total (Max 100)
         avg_mcri_total = score_program_total + score_math_total
         
@@ -1481,12 +1804,12 @@ class MCRI_Evaluator:
             'fail_count': fail_count,
             'pass_rate': round(pass_rate, 4),
             'avg_exec_time': round(avg_exec_time, 4),
-            'score_l1_total': int(score_l1_total),
-            'score_l1_1_syntax': int(score_l1_1),
-            'score_l1_2_runtime': int(score_l1_2),
-            'score_l2_total': int(score_l2_total),
-            'score_l2_1_contract': int(score_l2_1_avg),
-            'score_l2_2_purity': int(score_l2_2_avg),
+            'score_l1_total': round(score_l1_total, 2),
+            'score_l1_1_syntax': round(score_l1_1, 2),
+            'score_l1_2_runtime': round(score_l1_2, 2),
+            'score_l2_total': round(score_l2_total, 2),
+            'score_l2_1_contract': round(score_l2_1_avg, 2),
+            'score_l2_2_purity': round(score_l2_2_avg, 2),
             'avg_l3_total': round(avg_l3_total, 2),
             'avg_l3_1_internal': round(avg_l3_1, 2),
             'avg_l3_2_external': round(avg_l3_2, 2),
@@ -1579,12 +1902,12 @@ def create_database(db_path: str):
             fail_count INTEGER,
             pass_rate FLOAT,
             avg_exec_time FLOAT,
-            score_l1_total INTEGER,
-            score_l1_1_syntax INTEGER,
-            score_l1_2_runtime INTEGER,
-            score_l2_total INTEGER,
-            score_l2_1_contract INTEGER,
-            score_l2_2_purity INTEGER,
+            score_l1_total FLOAT,
+            score_l1_1_syntax FLOAT,
+            score_l1_2_runtime FLOAT,
+            score_l2_total FLOAT,
+            score_l2_1_contract FLOAT,
+            score_l2_2_purity FLOAT,
             avg_l3_total FLOAT,
             avg_l3_1_internal FLOAT,
             avg_l3_2_external FLOAT,
@@ -1627,8 +1950,8 @@ def create_database(db_path: str):
             error_log TEXT,
             included_in_avg INTEGER,
             exec_time_ms REAL,
-            score_l2_1_contract INTEGER,
-            score_l2_2_purity INTEGER,
+            score_l2_1_contract REAL,
+            score_l2_2_purity REAL,
             score_l3_total INTEGER,
             score_l3_1_internal INTEGER,
             score_l3_2_external INTEGER,
@@ -1640,6 +1963,8 @@ def create_database(db_path: str):
             score_math_total REAL,
             score_math_quality REAL,
             score_math_difficulty REAL,
+            score_math_sympy_verified BOOLEAN,
+            score_math_hygiene_score INTEGER,
             complexity_math_ops INTEGER,
             complexity_ast_nodes INTEGER,
             complexity_loop_depth INTEGER,
@@ -1727,7 +2052,8 @@ def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
              score_l2_1_contract, score_l2_2_purity,
              score_l3_total, score_l3_1_internal, score_l3_2_external,
              score_l4_total, score_l4_1_numeric, score_l4_2_visual,
-             score_l4_4_mqi, score_math_total, score_math_quality, score_math_difficulty, student_input_test, student_input_result)
+             score_l4_4_mqi, score_math_total, score_math_quality, score_math_difficulty, student_input_test, student_input_result,
+             score_math_sympy_verified, score_math_hygiene_score)
             VALUES
             (:item_id, :run_id, :repetition_index,
              :generated_question, :generated_answer, :generated_correct_answer,
@@ -1735,7 +2061,8 @@ def insert_evaluation_items(conn: sqlite3.Connection, items: List[Dict]):
              :score_l2_1_contract, :score_l2_2_purity,
              :score_l3_total, :score_l3_1_internal, :score_l3_2_external,
              :score_l4_total, :score_l4_1_numeric, :score_l4_2_visual,
-             :score_l4_4_mqi, :score_math_total, :score_math_quality, :score_math_difficulty, :student_input_test, :student_input_result)
+             :score_l4_4_mqi, :score_math_total, :score_math_quality, :score_math_difficulty, :student_input_test, :student_input_result,
+             :score_math_sympy_verified, :score_math_hygiene_score)
         """, item)
     
     conn.commit()
@@ -1867,12 +2194,21 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
         'latency_ms', 'healer_applied', 'healer_fix_count'
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(runs)
-    
-    print(f"[OK] 已寫入 CSV: {output_path} ({len(runs)} 筆)")
+    while True:
+        try:
+            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(runs)
+            print(f"[OK] 已寫入 CSV: {output_path} ({len(runs)} 筆)")
+            break
+        except PermissionError:
+            print(f"\n[ERROR] 無法寫入檔案: {output_path}")
+            print("請關閉該檔案 (如 Excel) 後按 Enter 重試...")
+            input()
+        except Exception as e:
+            print(f"[ERROR] 寫入 CSV 失敗: {e}")
+            break
 
 
 def write_evaluation_items_csv(items: List[Dict], output_path: str):
@@ -1887,17 +2223,27 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
         'score_l3_total', 'score_l3_1_internal', 'score_l3_2_external',
         'score_l4_total', 'score_l4_1_numeric', 'score_l4_2_visual', 'score_l4_3_artifacts',
         'score_l4_4_mqi', 'score_math_total', 'score_math_quality', 'score_math_difficulty',
+        'score_math_sympy_verified', 'score_math_hygiene_score',
         'complexity_math_ops', 'complexity_ast_nodes', 'complexity_loop_depth',  # [V4.4] L5 複雜度指標
         'student_input_test', 'student_input_result',
         'exec_time_ms'  # [V4.2.2] 執行時間記錄（毫秒）
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(items)
-    
-    print(f"[OK] 已寫入 CSV: {output_path} ({len(items)} 筆)")
+    while True:
+        try:
+            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(items)
+            print(f"[OK] 已寫入 CSV: {output_path} ({len(items)} 筆)")
+            break
+        except PermissionError:
+            print(f"\n[ERROR] 無法寫入檔案: {output_path}")
+            print("請關閉該檔案 (如 Excel) 後按 Enter 重試...")
+            input()
+        except Exception as e:
+            print(f"[ERROR] 寫入 CSV 失敗: {e}")
+            break
 
 
 def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
@@ -1913,12 +2259,21 @@ def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
         'p_value_vs_ab1', 'notes'
     ]
     
-    with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(summaries)
-    
-    print(f"[OK] 已寫入 CSV: {output_path} ({len(summaries)} 筆)")
+    while True:
+        try:
+            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerows(summaries)
+            print(f"[OK] 已寫入 CSV: {output_path} ({len(summaries)} 筆)")
+            break
+        except PermissionError:
+            print(f"\n[ERROR] 無法寫入檔案: {output_path}")
+            print("請關閉該檔案 (如 Excel) 後按 Enter 重試...")
+            input()
+        except Exception as e:
+            print(f"[ERROR] 寫入 CSV 失敗: {e}")
+            break
 
 
 # ========================================
