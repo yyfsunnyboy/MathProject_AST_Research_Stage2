@@ -1,0 +1,58 @@
+{
+    "evals": [
+        {
+            "eval_id": "rad_simple_ab1_01",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab1.txt",
+            "description": "根式化簡 (Ab1 Baseline: Weak Prompt + No Healer)",
+            "healer_type": "None",
+            "expectations": []
+        },
+        {
+            "eval_id": "rad_simple_ab1_02",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab1.txt",
+            "description": "根式化簡 (Ab1 Baseline: Weak Prompt + No Healer)",
+            "healer_type": "None",
+            "expectations": []
+        },
+        {
+            "eval_id": "rad_simple_ab2_01",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+            "description": "根式化簡 (Ab2 Standard: Strong Prompt + Regex Healer)",
+            "healer_type": "Regex",
+            "expectations": []
+        },
+        {
+            "eval_id": "rad_simple_ab2_02",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+            "description": "根式化簡 (Ab2 Standard: Strong Prompt + Regex Healer)",
+            "healer_type": "Regex",
+            "expectations": []
+        },
+        {
+            "eval_id": "rad_simple_ab3_01",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+            "description": "根式化簡 (Ab3 Advanced: Strong Prompt + Full Healer)",
+            "healer_type": "AST",
+            "expectations": []
+        },
+        {
+            "eval_id": "rad_simple_ab3_02",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+            "description": "根式化簡 (Ab3 Advanced: Strong Prompt + Full Healer)",
+            "healer_type": "AST",
+            "expectations": []
+        }
+    ]
+}

@@ -1,28 +1,142 @@
 {
   "evals": [
     {
-      "eval_id": "math_1b_integer_ops",
+      "eval_id": "math_2a_radical_simple",
+      "ablation_target": "Ab3",
       "model": "qwen3-14b-nothink",
-      "prompt": "jh_數學1上_IntegerAddition_Ab2",
-      "description": "整數的加減法運算",
+      "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+      "description": "根式化簡 (單純加減)",
+      "tags": [
+        "radical",
+        "add-sub",
+        "level2",
+        "basic"
+      ],
+      "difficulty": "easy",
+      "weight": 1.0,
+      "timeout_seconds": 60,
+      "max_output_tokens": 1500,
       "expectations": [
-        "程式碼包含 random.seed()",
-        "題目描述清晰,符合國中程度",
-        "答案計算正確 (-100 ~ 100 範圍)",
-        "JSON 格式正確: {question_text, correct_answer, mode: 1}"
+        "生成的程式碼能成功執行（無語法錯誤）",
+        "題目必須有 2~3 項未化簡根式加減",
+        "使用 RadicalOps.format_term_unsimplified 構建題目",
+        "答案為標準最簡根式（使用 RadicalOps.format_expression）",
+        "題目與答案必須不同（題目未化簡）"
       ]
     },
     {
-      "eval_id": "math_2a_radical_ops",
+      "eval_id": "math_2a_radical_complex",
+      "ablation_target": "Ab3",
       "model": "qwen3-14b-nothink",
-      "prompt": "jh_數學2上_FourOperationsOfRadicals_Ab2",
-      "description": "四則運算 (根號加法與乘法)",
+      "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+      "description": "根式四則運算 (加減+簡單乘法)",
+      "tags": [
+        "radical",
+        "multiply",
+        "level2",
+        "composite"
+      ],
+      "difficulty": "medium",
+      "weight": 1.5,
+      "timeout_seconds": 90,
+      "max_output_tokens": 2000,
       "expectations": [
-        "嚴禁使用 join 與 input()",
-        "程式碼無語法錯誤 (Healer Status: Regex=0, AST=0)",
-        "題目包含 LaTeX 數學式 ($...$)",
-        "答案必須是最簡根式",
-        "運算式使用 RadicalOps 工具"
+        "題目結構為 (多項未化簡) + k(括號與根式)",
+        "使用 RadicalOps.format_expression 產生答案",
+        "無 `++` 或 `+-` 連續符號",
+        "無 Hardcode 數字（使用 random.randint）",
+        "至少有一項可化簡"
+      ]
+    },
+    {
+      "eval_id": "math_1a_integer_add",
+      "ablation_target": "Ab3",
+      "model": "qwen3-14b-nothink",
+      "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
+      "description": "整數加法 (含負數)",
+      "tags": [
+        "integer",
+        "add",
+        "level1",
+        "negative"
+      ],
+      "difficulty": "easy",
+      "weight": 1.0,
+      "timeout_seconds": 30,
+      "max_output_tokens": 1000,
+      "expectations": [
+        "數值範圍 -100 ~ 100",
+        "使用 random.seed() 確保可重現性",
+        "題目包含 fmt_num 處理負數括號",
+        "答案為整數"
+      ]
+    },
+    {
+      "eval_id": "math_1a_integer_mix",
+      "ablation_target": "Ab3",
+      "model": "qwen3-14b-nothink",
+      "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
+      "description": "整數四則混合運算",
+      "tags": [
+        "integer",
+        "four-op",
+        "level1",
+        "mixed"
+      ],
+      "difficulty": "medium",
+      "weight": 1.2,
+      "timeout_seconds": 60,
+      "max_output_tokens": 1500,
+      "expectations": [
+        "包含 +, -, *, / 運算符",
+        "使用 clean_latex_output (若有必要)",
+        "Pass Rate > 90% (預期)",
+        "答案為整數或簡單分數"
+      ]
+    },
+    {
+      "eval_id": "math_2a_radical_div",
+      "ablation_target": "Ab3",
+      "model": "qwen3-14b-nothink",
+      "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
+      "description": "根式除法 (有理化)",
+      "tags": [
+        "radical",
+        "divide",
+        "rationalize",
+        "level2"
+      ],
+      "difficulty": "medium",
+      "weight": 1.3,
+      "timeout_seconds": 90,
+      "max_output_tokens": 2000,
+      "expectations": [
+        "題目包含除法結構",
+        "答案無根號分母（已理化）",
+        "使用 RadicalOps.format_expression"
+      ]
+    },
+    {
+      "eval_id": "math_gh_derivatives",
+      "ablation_target": "Ab3",
+      "model": "qwen3-14b-nothink",
+      "prompt_file": "gh_ApplicationsOfDerivatives_Ab2.txt",
+      "description": "多項式導數與應用 (微積分)",
+      "tags": [
+        "calculus",
+        "derivative",
+        "high-school",
+        "polynomial"
+      ],
+      "difficulty": "hard",
+      "weight": 2.0,
+      "timeout_seconds": 120,
+      "max_output_tokens": 2500,
+      "expectations": [
+        "題目為多項式求導",
+        "使用 _differentiate_poly 計算",
+        "答案為標準多項式格式",
+        "無 `++` 或 `+-` 連續符號"
       ]
     }
   ]

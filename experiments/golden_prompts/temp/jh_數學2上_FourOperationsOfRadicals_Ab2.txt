@@ -5,6 +5,16 @@
 題目結構必須為：(多項未化簡根式加減括號) + (簡單乘法結構)，用 + 連接。
 返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
 
+【必要函數】
+1. def generate(level=1, **kwargs): 生成題目
+2. def check(user_ans, correct_ans) -> bool: 驗證答案
+   - 簡單實作：比較數值或字串相等性
+   - 範例:
+     try:
+         return abs(eval(user_ans)-eval(correct_ans)) < 1e-6
+     except:
+         return str(user_ans).strip() == str(correct_ans).strip()
+
 【參考例題】（必須嚴格模仿此結構，不得生成其他題型）
 化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})$
 
