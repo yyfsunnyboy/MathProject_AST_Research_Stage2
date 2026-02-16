@@ -550,6 +550,15 @@ class RegexHealer:
         stats['imports_injected'] = import_fixes
 
         # ================================================================
+        # Step 2.1: 遺漏的標準庫注入 ⭐ [V3.4 NEW]
+        # ================================================================
+        code_str, std_lib_fixes = self.inject_standard_libraries(code_str)
+        stats['regex_fix_count'] += std_lib_fixes
+        if std_lib_fixes > 0:
+            print(f"🔧 [RegexHealer V3.4] 自動注入 {std_lib_fixes} 個標準庫依賴")
+
+
+        # ================================================================
         # Step 2.5: 移除重複的類定義 ⭐ [V2.8 NEW - 防止類定義衝突]
         # ================================================================
         code_str, duplicates_removed = self.remove_duplicate_class_definitions(code_str)
@@ -596,6 +605,96 @@ class RegexHealer:
             stats['input_removed'] = False
 
         return code_str, stats
+
+    def inject_standard_libraries(self, code_str: str) -> tuple:
+        """
+        [V3.4 NEW] 自動注入遺漏的 Python 標準庫
+        例如: 使用了 defaultdict 但沒 import collections
+        """
+        fix_count = 0
+        
+        # 映射表: 關鍵字 -> 需要的 import 語句
+        # 注意: 這裡只處理常用的，避免過度干涉
+        lib_map = {
+            'defaultdict': 'from collections import defaultdict',
+            'deque': 'from collections import deque',
+            'Counter': 'from collections import Counter',
+            'Fraction': 'from fractions import Fraction',
+            'Decimal': 'from decimal import Decimal',
+            're\\.\w+': 'import re',  # 如果用到 re.xxx
+            'math\\.\w+': 'import math', # 如果用到 math.xxx
+            'random\\.\w+': 'import random',
+            'itertools\\.\w+': 'import itertools',
+            'datetime': 'import datetime',
+        }
+        
+        # 準備插入點 (在第一個 import 之後或文件開頭)
+        lines = code_str.split('\n')
+        insert_idx = 0
+        has_imports = False
+        
+        # 簡單判斷插入位置
+        for i, line in enumerate(lines):
+            if line.startswith('import ') or line.startswith('from '):
+                insert_idx = i
+                has_imports = True
+            elif has_imports and not (line.startswith('import ') or line.startswith('from ') or line.strip() == ''):
+                break # 找到 import 塊結束
+                
+        if not has_imports:
+            # 如果完全沒 import，插在 docstring 後或最前面
+            insert_idx = 0
+            # 跳過 shebang 或 encoding
+            if len(lines) > 0 and (lines[0].startswith('#!') or lines[0].startswith('# -*')):
+                insert_idx = 1
+        else:
+            insert_idx += 1 # 插在最後一個 import 後面
+            
+        initial_insert_idx = insert_idx
+        injected_lines = []
+
+        for keyword_regex, import_stmt in lib_map.items():
+            # 1. 檢查是否使用了該關鍵字
+            if re.search(keyword_regex, code_str):
+                # 2. 檢查是否已經 import 了
+                # 簡易檢查：整行完全匹配，或 from ... import ... 中包含
+                # 對於 'import re' 這種，檢查 'import re' 或 'import .*re.*'
+                
+                already_imported = False
+                if import_stmt in code_str:
+                    already_imported = True
+                else:
+                    # 進階檢查
+                    if 'from ' in import_stmt:
+                        # e.g. from collections import defaultdict
+                        # check if "defaultdict" is in a line starting with "from collections"
+                        module = import_stmt.split(' ')[1]
+                        target = import_stmt.split(' ')[3]
+                        pattern = rf'from\s+{module}\s+import\s+.*{target}'
+                        if re.search(pattern, code_str):
+                            already_imported = True
+                    else:
+                        # e.g. import re
+                        # check "import re" or "import ..., re, ..."
+                        module = import_stmt.split(' ')[1]
+                        pattern = rf'^\s*import\s+.*(\s|,){module}(\s|,|$)'
+                        if re.search(pattern, code_str, re.MULTILINE):
+                            already_imported = True
+                            
+                if not already_imported:
+                    # 3. 注入
+                    injected_lines.append(import_stmt)
+                    fix_count += 1
+        
+        if injected_lines:
+            # 插入到代碼中
+            # 反向插入以保持順序
+            for stmt in reversed(injected_lines):
+                lines.insert(initial_insert_idx, stmt)
+            
+            code_str = '\n'.join(lines)
+            
+        return code_str, fix_count
 
     def fix_missing_class_prefix(self, code_str: str) -> tuple:
         """

@@ -2,8 +2,8 @@
 # ID: jh_數學2上_FourOperationsOfRadicals
 # Model: qwen3-14b-nothink:latest | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 82.45s | Tokens: In=2090, Out=2110
-# Created At: 2026-02-16 12:08:59
+# Performance: 47.86s | Tokens: In=870, Out=1374
+# Created At: 2026-02-16 15:45:32
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -547,66 +547,16 @@ def ensure_dir(p):
 
 
 # [DOMAIN HELPERS - Auto-Injected for jh_數學2上_FourOperationsOfRadicals]
+
+# ==============================================================================
+# [AUTO-INJECTED RESOURCE] RadicalOps
+# ==============================================================================
 class RadicalOps:
     """根號運算模組 - 化簡與精確計算"""
-
-    @staticmethod
-    def create(inner):
-        """建立根號 sqrt(inner) 並自動化簡 (例: 12 -> "2√3")"""
-        ...
-
-    @staticmethod
-    def is_perfect_square(n):
-        """檢查 n 是否為完全平方數"""
-        ...
-
-    @staticmethod
-    def to_latex(expr):
-        ...
-
-    @staticmethod
-    def get_prime_factors(n):
-        """質因數分解 (例: 12 -> {2:2, 3:1})"""
-        ...
-
+    
     @staticmethod
     def simplify_term(coeff, radicand):
         """化簡單項根式 c√r -> (new_c, new_r)"""
-        ...
-
-    @staticmethod
-    def format_term(coeff, radicand, is_first=True):
-        """格式化單項根式 (LaTeX)
-- 自動化簡: √12 -> 2√3
-- 處理正負號: first term 不顯示 + 號，負數顯示 -
-- 處理係數 1/-1: 顯示為 √r 或 -√r"""
-        ...
-
-    @staticmethod
-    def format_term_unsimplified(coeff, radicand, is_first=True):
-        """格式化單項根式 (不化簡，用於題目展示)
-- 保留原始 radicand (如 √18 而非 3√2)
-- 處理正負號與係數 1/-1"""
-        ...
-
-    @staticmethod
-    def format_expression(terms_dict, denominator=1):
-        """格式化多項根式表達式 (terms_dict: {radicand: coeff})
-- 自動化簡合併同類項
-- 自動處理分母有理化 (若 denominator > 1)
-- 自動排序 (整數項在前，根式項按 radicand 排序)"""
-        ...
-
-
-# [AI GENERATED CODE]
-# ---------------------------------------------------------
-
-
-import random
-
-class RadicalOps:
-    @staticmethod
-    def simplify_term(coeff, radicand):
         if radicand == 0:
             return (0, 0)
         if radicand == 1:
@@ -626,6 +576,7 @@ class RadicalOps:
 
     @staticmethod
     def format_term(coeff, radicand, is_first=True):
+        """格式化單項根式 (LaTeX)"""
         if coeff == 0:
             return ""
         
@@ -647,6 +598,7 @@ class RadicalOps:
 
     @staticmethod
     def format_term_unsimplified(coeff, radicand, is_first=True):
+        """格式化單項根式 (不化簡，用於題目展示)"""
         if coeff == 0:
             return ""
         
@@ -668,6 +620,7 @@ class RadicalOps:
 
     @staticmethod
     def format_expression(terms_dict, denominator=1):
+        """格式化多項根式表達式 (terms_dict: {radicand: coeff})"""
         if not terms_dict:
             return "0"
         
@@ -694,65 +647,65 @@ class RadicalOps:
             return f"\\frac{{{expr}}}{{{denominator}}}"
         return expr
 
+# [Global Aliases for AI Convenience]
+simplify_term = RadicalOps.simplify_term
+format_term = RadicalOps.format_term
+format_term_unsimplified = RadicalOps.format_term_unsimplified
+format_expression = RadicalOps.format_expression
+
+
+
+# [AI GENERATED CODE]
+# ---------------------------------------------------------
+
+
+import random
 
 def generate(level=1, **kwargs):
-    p1_terms = []
-    p1_val = {}
+    part1_terms = []
+    radicands = [18, 50, 8, 12, 27, 20, 45, 18, 50, 8]
+    signs = [1, -1, 1, -1]
     
-    r1 = random.choice([2, 3, 5])
-    for _ in range(3):
-        k = random.randint(1, 3)
-        rad = r1 * (k * k)
-        coeff = random.choice([1, -1, 2, -2])
-        p1_terms.append((coeff, rad))
-        
-        sc, sr = RadicalOps.simplify_term(coeff, rad)
-        if sr in p1_val:
-            p1_val[sr] += sc
+    for i in range(3 if random.random() < 0.5 else 4):
+        coeff = random.choice([1, 2])
+        radicand = radicands[i]
+        sign = signs[i % len(signs)]
+        part1_terms.append((sign * coeff, radicand))
+    
+    part2_coeff = random.choice([2, 3, 4])
+    part2_radicands = random.sample([12, 27, 20, 45], 2)
+    part2_terms = [(1, r) for r in part2_radicands]
+    
+    part1_str = ""
+    for i, (coeff, radicand) in enumerate(part1_terms):
+        is_first = i == 0
+        part1_str += RadicalOps.format_term_unsimplified(coeff, radicand, is_first)
+    
+    part2_str = f"{part2_coeff}({'+'.join(RadicalOps.format_term_unsimplified(1, r, False) for r in part2_radicands)})"
+
+    question_text = f"${part1_str} + {part2_str}$"
+    
+    simplified_terms = []
+    for coeff, radicand in part1_terms:
+        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
+        simplified_terms.append((new_coeff, new_radicand))
+    
+    for coeff, radicand in part2_terms:
+        new_coeff, new_radicand = RadicalOps.simplify_term(coeff * part2_coeff, radicand)
+        simplified_terms.append((new_coeff, new_radicand))
+    
+    terms_dict = {}
+    for coeff, radicand in simplified_terms:
+        if (coeff, radicand) in terms_dict:
+            terms_dict[(coeff, radicand)] += coeff
         else:
-            p1_val[sr] = sc
+            terms_dict[(coeff, radicand)] = coeff
     
-    p1_parts = []
-    for i, (c, r) in enumerate(p1_terms):
-        term_str = RadicalOps.format_term_unsimplified(c, r, is_first=(i==0))
-        p1_parts.append(term_str)
-    p1_str = "(" + "".join(p1_parts) + ")"
-    
-    pool = [2, 3, 5, 6]
-    r_a, r_b = random.choice(pool), random.choice(pool)
-    r_c = random.choice(pool)
-    k = random.randint(1, 4) * random.choice([1, -1])
-    
-    left_str = f"({RadicalOps.format_term_unsimplified(1, r_a)} {RadicalOps.format_term_unsimplified(1, r_b, is_first=False)})"
-    right_str = f"({RadicalOps.format_term_unsimplified(1, r_c)} {RadicalOps.format_term_unsimplified(k, 1, is_first=False)})"
-    p2_str = f"{left_str}{right_str}"
-    
-    p2_val = {}
-    left_terms = [(1, r_a), (1, r_b)]
-    right_terms = [(1, r_c), (k, 1)]
-    
-    for lc, lr in left_terms:
-        for rc, rr in right_terms:
-            prod_c = lc * rc
-            prod_r = lr * rr
-            sc, sr = RadicalOps.simplify_term(prod_c, prod_r)
-            if sr in p2_val:
-                p2_val[sr] += sc
-            else:
-                p2_val[sr] = sc
-    
-    final_val = p1_val.copy()
-    for r, c in p2_val.items():
-        if r in final_val:
-            final_val[r] += c
-        else:
-            final_val[r] = c
-    
-    question_text = f"${p1_str} + {p2_str}$"
-    answer = RadicalOps.format_expression(final_val)
+    sorted_terms = sorted(terms_dict.items(), key=lambda x: (x[1], x[0]))
+    answer = RadicalOps.format_expression(terms_dict)
     
     return {
-        'question_text': f"化簡下列各式：\n{question_text}",
+        'question_text': question_text,
         'correct_answer': answer,
         'answer': answer,
         'mode': 1

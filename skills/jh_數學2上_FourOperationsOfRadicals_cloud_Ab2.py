@@ -1,10 +1,10 @@
 # ==============================================================================
 # ID: jh_數學2上_FourOperationsOfRadicals
-# Model: qwen3-14b-nothink:latest | Strategy: V10.1 Modular Refactored
-# Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 44.83s | Tokens: In=870, Out=1215
-# Created At: 2026-02-16 15:54:47
-# Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=5, AST=1)
+# Model: gemini-3-flash-preview | Strategy: V10.1 Modular Refactored
+# Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
+# Performance: 4.57s | Tokens: In=644, Out=588
+# Created At: 2026-02-16 15:27:53
+# Fix Status: [Clean Pass] | Fixes: Basic=0, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = FAILED
 # ==============================================================================
 
@@ -547,112 +547,55 @@ def ensure_dir(p):
 
 
 # [DOMAIN HELPERS - Auto-Injected for jh_數學2上_FourOperationsOfRadicals]
-
-# ==============================================================================
-# [AUTO-INJECTED RESOURCE] RadicalOps
-# ==============================================================================
 class RadicalOps:
     """根號運算模組 - 化簡與精確計算"""
-    
+
+    @staticmethod
+    def create(inner):
+        """建立根號 sqrt(inner) 並自動化簡 (例: 12 -> "2√3")"""
+        ...
+
+    @staticmethod
+    def is_perfect_square(n):
+        """檢查 n 是否為完全平方數"""
+        ...
+
+    @staticmethod
+    def to_latex(expr):
+        ...
+
+    @staticmethod
+    def get_prime_factors(n):
+        """質因數分解 (例: 12 -> {2:2, 3:1})"""
+        ...
+
     @staticmethod
     def simplify_term(coeff, radicand):
         """化簡單項根式 c√r -> (new_c, new_r)"""
-        if radicand == 0:
-            return (0, 0)
-        if radicand == 1:
-            return (coeff, 1)
-        
-        new_coeff = coeff
-        new_radicand = radicand
-        
-        i = 2
-        while i * i <= new_radicand:
-            if new_radicand % (i * i) == 0:
-                new_coeff *= i
-                new_radicand //= (i * i)
-            else:
-                i += 1
-        return (new_coeff, new_radicand)
+        ...
 
     @staticmethod
     def format_term(coeff, radicand, is_first=True):
-        """格式化單項根式 (LaTeX)"""
-        if coeff == 0:
-            return ""
-        
-        if radicand == 1:
-            term_str = str(coeff)
-        elif radicand == 0:
-            term_str = "0"
-        else:
-            if coeff == 1:
-                term_str = f"\\sqrt{{{radicand}}}"
-            elif coeff == -1:
-                term_str = f"-\\sqrt{{{radicand}}}"
-            else:
-                term_str = f"{coeff}\\sqrt{{{radicand}}}"
-        
-        if not is_first and coeff > 0:
-            return "+" + term_str
-        return term_str
+        """格式化單項根式 (LaTeX)
+- 自動化簡: √12 -> 2√3
+- 處理正負號: first term 不顯示 + 號，負數顯示 -
+- 處理係數 1/-1: 顯示為 √r 或 -√r"""
+        ...
 
     @staticmethod
     def format_term_unsimplified(coeff, radicand, is_first=True):
-        """格式化單項根式 (不化簡，用於題目展示)"""
-        if coeff == 0:
-            return ""
-        
-        if radicand == 1:
-            term_str = str(coeff)
-        elif radicand == 0:
-            term_str = "0"
-        else:
-            if coeff == 1:
-                term_str = f"\\sqrt{{{radicand}}}"
-            elif coeff == -1:
-                term_str = f"-\\sqrt{{{radicand}}}"
-            else:
-                term_str = f"{coeff}\\sqrt{{{radicand}}}"
-        
-        if not is_first and coeff > 0:
-            return "+" + term_str
-        return term_str
+        """格式化單項根式 (不化簡，用於題目展示)
+- 保留原始 radicand (如 √18 而非 3√2)
+- 處理正負號與係數 1/-1"""
+        ...
 
     @staticmethod
     def format_expression(terms_dict, denominator=1):
-        """格式化多項根式表達式 (terms_dict: {radicand: coeff})"""
-        if not terms_dict:
-            return "0"
-        
-        sorted_radicands = sorted(terms_dict.keys())
-        
-        parts = []
-        is_first_term = True
-        for rad in sorted_radicands:
-            coeff = terms_dict[rad]
-            if coeff == 0:
-                continue
-            
-            part_str = RadicalOps.format_term(coeff, rad, is_first=is_first_term)
-            if part_str:
-                parts.append(part_str)
-                is_first_term = False
-        
-        if not parts:
-            return "0"
-        
-        expr = "".join(parts)
-        
-        if denominator != 1:
-            return f"\\frac{{{expr}}}{{{denominator}}}"
-        return expr
-
-# [Global Aliases for AI Convenience]
-simplify_term = RadicalOps.simplify_term
-format_term = RadicalOps.format_term
-format_term_unsimplified = RadicalOps.format_term_unsimplified
-format_expression = RadicalOps.format_expression
-
+        """格式化多項根式表達式 (terms_dict: {radicand: coeff})
+- 自動化簡合併同類項
+- 自動處理分母有理化 (若 denominator > 1)
+- 自動排序 (整數項在前，根式項按 radicand 排序)"""
+        ...
 
 
 # [AI GENERATED CODE]
@@ -660,36 +603,51 @@ format_expression = RadicalOps.format_expression
 
 
 def generate(level=1, **kwargs):
-    terms1 = []
-    radicands1 = [18, 50, 8]
-    coeffs1 = [1, 1, -2]
-    for i, (coeff, radicand) in enumerate(zip(coeffs1, radicands1)):
-        term = RadicalOps.format_term_unsimplified(coeff, radicand, is_first=i == 0)
-        terms1.append(term)
-    part1 = f"({'+'.join(terms1)})"
-    k = 3
-    radicands2 = [12, 27]
-    coeffs2 = [1, 1]
-    terms2 = []
-    for i, (coeff, radicand) in enumerate(zip(coeffs2, radicands2)):
-        term = RadicalOps.format_term_unsimplified(coeff, radicand, is_first=i == 0)
-        terms2.append(term)
-    part2 = f"{k}({'+'.join(terms2)})"
-    question_text = f'${part1} + {part2}$'
-    simplified_terms = []
-    for coeff, radicand in zip(coeffs1, radicands1):
-        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
-        simplified_terms.append((new_coeff, new_radicand))
-    for coeff, radicand in zip(coeffs2, radicands2):
-        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
-        simplified_terms.append((new_coeff * k, new_radicand))
-    grouped = defaultdict(lambda: [0, 0])
-    for coeff, radicand in simplified_terms:
-        grouped[radicand][0] += coeff
-    answer_terms = []
-    for radicand, (total_coeff, _) in sorted(grouped.items()):
-        if total_coeff != 0:
-            term = RadicalOps.format_term(total_coeff, radicand, is_first=len(answer_terms) == 0)
-            answer_terms.append(term)
-    correct_answer = RadicalOps.format_expression({'numerator': answer_terms}, denominator=1)
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
+    import random
+
+    def get_unsimplified(base, count):
+        terms = []
+        for _ in range(count):
+            k = random.randint(2, 5)
+            coeff = random.choice([-3, -2, -1, 1, 2, 3])
+            radicand = base * (k**2)
+            terms.append((coeff, radicand))
+        return terms
+
+    base1 = random.choice([2, 3, 5])
+    part1_raw = get_unsimplified(base1, 3)
+    
+    q_part1_list = []
+    for i, (c, r) in enumerate(part1_raw):
+        q_part1_list.append(RadicalOps.format_term_unsimplified(c, r, is_first=(i == 0)))
+    q_part1 = "(" + "".join(q_part1_list) + ")"
+
+    k2 = random.randint(2, 3)
+    base2 = random.choice([2, 3, 5])
+    part2_inner = [(1, base2 * 4), (-1, base2 * 9)]
+    random.shuffle(part2_inner)
+    
+    q_part2_list = []
+    for i, (c, r) in enumerate(part2_inner):
+        q_part2_list.append(RadicalOps.format_term_unsimplified(c, r, is_first=(i == 0)))
+    q_part2 = f"{k2}(" + "".join(q_part2_list) + ")"
+
+    question_text = f"化簡 $({q_part1} + {q_part2})$"
+
+    ans_dict = {}
+    for c, r in part1_raw:
+        nc, nr = RadicalOps.simplify_term(c, r)
+        ans_dict[nr] = ans_dict.get(nr, 0) + nc
+    
+    for c, r in part2_inner:
+        nc, nr = RadicalOps.simplify_term(c * k2, r)
+        ans_dict[nr] = ans_dict.get(nr, 0) + nc
+
+    final_ans = RadicalOps.format_expression(ans_dict)
+    
+    return {
+        'question_text': question_text,
+        'correct_answer': final_ans,
+        'answer': final_ans,
+        'mode': 1
+    }

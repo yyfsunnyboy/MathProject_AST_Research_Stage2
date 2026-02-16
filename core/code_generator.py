@@ -67,6 +67,105 @@ from core.code_utils.latex_utils import *
 
 REFACTOR_MODULES_AVAILABLE = True
 
+def _inject_domain_libs(code_str):
+    """
+    [New Feature 2026-02-16] 自動注入 Domain Libraries (如 RadicalOps) 的完整實作
+    使生成的 Skill File 可以獨立運行 (Self-Contained)。
+    [Fix V2] 增強版：
+    1. 強制替換 Stub
+    2. 自動注入 Global Alias (simplify_term = RadicalOps.simplify_term)
+    3. 自動移除錯誤的 import (from RadicalOps import ...)
+    """
+    injected_names = []
+    
+    # 定義需要注入的 Libs 關鍵字與對應 Class Name
+    # 目前僅支援 RadicalOps
+    target_libs = {
+        'RadicalOps': 'RadicalOps'
+    }
+    
+    # 讀取 domain_libs.py 的內容
+    try:
+        libs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scaffold', 'domain_libs.py')
+        if not os.path.exists(libs_path):
+            return code_str, []
+            
+        with open(libs_path, 'r', encoding='utf-8') as f:
+            libs_source = f.read()
+    except Exception:
+        return code_str, []
+
+    # 解析 libs_source，提取各個 Class 的定義
+    feature_code = ""
+
+    for keyword, class_name in target_libs.items():
+        # 檢查目標代碼是否使用了該 Lib
+        if keyword in code_str:
+            # 0. 清理錯誤的 import 語句 (e.g., from RadicalOps import ...)
+            # 因為我們將把 RadicalOps 注入到檔案內，這些 import 是多餘且會報錯的
+            invalid_import_pattern = re.compile(rf'^\s*from\s+{class_name}\s+import.*$', re.MULTILINE)
+            if invalid_import_pattern.search(code_str):
+                code_str = invalid_import_pattern.sub(f"# [Removed Invalid Import] {class_name} is injected internally.", code_str)
+
+            # 1. 如果代碼中已有該 class 的定義 (Stub 或完整定義)，先移除它
+            # Pattern: class ClassName ... (直到下一個 class 或特殊標記)
+            remove_pattern = re.compile(rf'(class {class_name}[^:]*:(?:.|\n)*?)(?=\nclass |\n# \[|\Z)', re.MULTILINE)
+            
+            if remove_pattern.search(code_str):
+                code_str = remove_pattern.sub('', code_str)
+            
+            # 2. 從 libs_source 提取該 Class 的完整源碼
+            extract_pattern = re.compile(rf'(class {class_name}:.*?)(\nclass |\Z)', re.DOTALL)
+            match = extract_pattern.search(libs_source)
+            if match:
+                class_code = match.group(1).strip()
+                
+                # 3. 準備注入內容 (包含 Header 和 Global Alias)
+                header = f"\n# ==============================================================================\n" \
+                         f"# [AUTO-INJECTED RESOURCE] {class_name}\n" \
+                         f"# ==============================================================================\n"
+                
+                # 自動產生 Global Alias (方便 AI 直接呼叫 simplify_term)
+                # 只有 RadicalOps 需要這個特殊處理
+                aliases = ""
+                if class_name == 'RadicalOps':
+                    aliases = "\n\n# [Global Aliases for AI Convenience]\n" \
+                              "simplify_term = RadicalOps.simplify_term\n" \
+                              "format_term = RadicalOps.format_term\n" \
+                              "format_term_unsimplified = RadicalOps.format_term_unsimplified\n" \
+                              "format_expression = RadicalOps.format_expression\n"
+                
+                feature_code += f"{header}{class_code}{aliases}\n"
+                injected_names.append(class_name)
+    
+    if feature_code:
+        # 將注入的代碼插入到 [DOMAIN HELPERS] 標記處
+        # 如果找不到標記，插在 import 之後
+        insert_marker = "# [DOMAIN HELPERS"
+        if insert_marker in code_str:
+             # 插在標記後面
+             lines = code_str.split('\n')
+             for i, line in enumerate(lines):
+                 if insert_marker in line:
+                     lines.insert(i + 1, feature_code)
+                     break
+             code_str = '\n'.join(lines)
+        else:
+            # Fallback
+            insert_marker_ai = "# [AI GENERATED CODE]"
+            if insert_marker_ai in code_str:
+                code_str = code_str.replace(insert_marker_ai, f"{feature_code}\n\n{insert_marker_ai}")
+            else:
+                last_import = 0
+                lines = code_str.split('\n')
+                for i, line in enumerate(lines):
+                    if line.startswith('import ') or line.startswith('from '):
+                        last_import = i
+                lines.insert(last_import + 1, feature_code)
+                code_str = '\n'.join(lines)
+            
+    return code_str, injected_names
+
 # ==============================================================================
 # Healer Pipeline Logging Configuration
 # ==============================================================================
@@ -889,6 +988,16 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
         final_code = clean_code
         
     # Step 4: 驗證
+    # [NEW STEP: Domain Library Injection] 2026-02-16
+    # 自動注入 Domain Libraries (如 RadicalOps) 的完整實作，使檔案 Self-Contained
+    final_code, injected_libs = _inject_domain_libs(final_code)
+    if injected_libs:
+        injected_count = len(injected_libs)
+        # Update logging strings if needed, though they are constructed later
+        if VERBOSE_LEVEL >= 1:
+            print(f"   💉 [Domain Injector] Injected {injected_count} libraries: {', '.join(injected_libs)}")
+
+    # Step N: Validation
     is_valid, error_msg = _validate_code(final_code)
     
     # Step 5: 動態採樣
