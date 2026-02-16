@@ -2,8 +2,8 @@
 # ID: jh_數學2上_FourOperationsOfRadicals
 # Model: qwen3-14b-nothink:latest | Strategy: V10.1 Modular Refactored
 # Ablation ID: 2 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 47.86s | Tokens: In=870, Out=1374
-# Created At: 2026-02-16 15:45:32
+# Performance: 47.83s | Tokens: In=870, Out=1118
+# Created At: 2026-02-16 22:01:25
 # Fix Status: [Basic Cleanup] | Fixes: Basic=1, Advanced=(Regex=0, AST=0)
 # Verification: Internal Logic Check = PASSED
 # ==============================================================================
@@ -663,47 +663,43 @@ import random
 
 def generate(level=1, **kwargs):
     part1_terms = []
-    radicands = [18, 50, 8, 12, 27, 20, 45, 18, 50, 8]
-    signs = [1, -1, 1, -1]
+    part1_radicands = [random.choice([2,3,5,7]) * (random.randint(2,4)**2) for _ in range(3)]
+    for i, rad in enumerate(part1_radicands):
+        coeff = random.randint(1,3)
+        if random.random() < 0.5:
+            coeff = -coeff
+        part1_terms.append((coeff, rad))
     
-    for i in range(3 if random.random() < 0.5 else 4):
-        coeff = random.choice([1, 2])
-        radicand = radicands[i]
-        sign = signs[i % len(signs)]
-        part1_terms.append((sign * coeff, radicand))
-    
-    part2_coeff = random.choice([2, 3, 4])
-    part2_radicands = random.sample([12, 27, 20, 45], 2)
-    part2_terms = [(1, r) for r in part2_radicands]
+    part2_coeff = random.randint(2,5)
+    part2_radicands = [random.choice([2,3,5,7]) * (random.randint(2,3)**2) for _ in range(2)]
+    part2_terms = [(part2_coeff, rad) for rad in part2_radicands]
     
     part1_str = ""
-    for i, (coeff, radicand) in enumerate(part1_terms):
+    for i, (coeff, rad) in enumerate(part1_terms):
         is_first = i == 0
-        part1_str += RadicalOps.format_term_unsimplified(coeff, radicand, is_first)
+        part1_str += RadicalOps.format_term_unsimplified(coeff, rad, is_first)
     
-    part2_str = f"{part2_coeff}({'+'.join(RadicalOps.format_term_unsimplified(1, r, False) for r in part2_radicands)})"
-
+    part2_str = ""
+    for i, (coeff, rad) in enumerate(part2_terms):
+        is_first = i == 0
+        part2_str += RadicalOps.format_term_unsimplified(coeff, rad, is_first)
+    part2_str = f"{part2_coeff}({part2_str})"
+    
     question_text = f"${part1_str} + {part2_str}$"
     
     simplified_terms = []
-    for coeff, radicand in part1_terms:
-        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
-        simplified_terms.append((new_coeff, new_radicand))
-    
-    for coeff, radicand in part2_terms:
-        new_coeff, new_radicand = RadicalOps.simplify_term(coeff * part2_coeff, radicand)
-        simplified_terms.append((new_coeff, new_radicand))
+    for coeff, rad in part1_terms + part2_terms:
+        new_coeff, new_rad = RadicalOps.simplify_term(coeff, rad)
+        simplified_terms.append((new_coeff, new_rad))
     
     terms_dict = {}
-    for coeff, radicand in simplified_terms:
-        if (coeff, radicand) in terms_dict:
-            terms_dict[(coeff, radicand)] += coeff
+    for coeff, rad in simplified_terms:
+        if (coeff, rad) in terms_dict:
+            terms_dict[(coeff, rad)] += coeff
         else:
-            terms_dict[(coeff, radicand)] = coeff
+            terms_dict[(coeff, rad)] = coeff
     
-    sorted_terms = sorted(terms_dict.items(), key=lambda x: (x[1], x[0]))
     answer = RadicalOps.format_expression(terms_dict)
-    
     return {
         'question_text': question_text,
         'correct_answer': answer,

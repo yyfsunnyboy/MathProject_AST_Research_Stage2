@@ -1,0 +1,29 @@
+{
+  "evals": [
+    {
+      "eval_id": "math_1b_integer_ops",
+      "model": "qwen3-14b-nothink",
+      "prompt": "jh_數學1上_IntegerAddition_Ab2",
+      "description": "整數的加減法運算",
+      "expectations": [
+        "程式碼包含 random.seed()",
+        "題目描述清晰,符合國中程度",
+        "答案計算正確 (-100 ~ 100 範圍)",
+        "JSON 格式正確: {question_text, correct_answer, mode: 1}"
+      ]
+    },
+    {
+      "eval_id": "math_2a_radical_ops",
+      "model": "qwen3-14b-nothink",
+      "prompt": "jh_數學2上_FourOperationsOfRadicals_Ab2",
+      "description": "四則運算 (根號加法與乘法)",
+      "expectations": [
+        "嚴禁使用 join 與 input()",
+        "程式碼無語法錯誤 (Healer Status: Regex=0, AST=0)",
+        "題目包含 LaTeX 數學式 ($...$)",
+        "答案必須是最簡根式",
+        "運算式使用 RadicalOps 工具"
+      ]
+    }
+  ]
+}

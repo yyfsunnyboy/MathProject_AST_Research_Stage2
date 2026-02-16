@@ -319,6 +319,11 @@ class RegexHealer:
             '"': '"',
             ''': "'",
             ''': "'",
+            # [V2.10] 雙重運算符修復 (For LaTeX/Math strings)
+            '++': '+',
+            '+-': '-',
+            '-+': '-',
+            # ' -- ': ' + ', # Too risky due to comments/separators
         }
         
         result = code_str

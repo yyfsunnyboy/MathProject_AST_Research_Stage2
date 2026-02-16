@@ -2,8 +2,8 @@
 # ID: jh_數學2上_FourOperationsOfRadicals
 # Model: qwen3-14b-nothink:latest | Strategy: V10.1 Modular Refactored
 # Ablation ID: 3 | Basic Cleanup: ENABLED | Advanced Healer: ON
-# Performance: 44.83s | Tokens: In=870, Out=1215
-# Created At: 2026-02-16 15:54:47
+# Performance: 48.77s | Tokens: In=870, Out=1284
+# Created At: 2026-02-16 22:17:28
 # Fix Status: [Advanced Healer] | Fixes: Basic=1, Advanced=(Regex=5, AST=1)
 # Verification: Internal Logic Check = FAILED
 # ==============================================================================
@@ -687,9 +687,9 @@ def generate(level=1, **kwargs):
     for coeff, radicand in simplified_terms:
         grouped[radicand][0] += coeff
     answer_terms = []
-    for radicand, (total_coeff, _) in sorted(grouped.items()):
-        if total_coeff != 0:
-            term = RadicalOps.format_term(total_coeff, radicand, is_first=len(answer_terms) == 0)
+    for radicand, (coeff_sum, _) in grouped.items():
+        if coeff_sum != 0:
+            term = RadicalOps.format_term(coeff_sum, radicand, is_first=len(answer_terms) == 0)
             answer_terms.append(term)
-    correct_answer = RadicalOps.format_expression({'numerator': answer_terms}, denominator=1)
-    return {'question_text': question_text, 'correct_answer': correct_answer, 'answer': correct_answer, 'mode': 1}
+    answer = RadicalOps.format_expression({'terms': answer_terms}, denominator=1)
+    return {'question_text': question_text, 'correct_answer': answer, 'answer': answer, 'mode': 1}
