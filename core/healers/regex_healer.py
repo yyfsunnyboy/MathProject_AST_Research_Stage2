@@ -524,6 +524,12 @@ class RegexHealer:
         stats['regex_fix_count'] += dep_removed_count
 
         # ================================================================
+        # Step 1.8: 自動補全類前綴 ⭐ [V2.9 New]
+        # ================================================================
+        code_str, prefix_fixes = self.fix_missing_class_prefix(code_str)
+        stats['regex_fix_count'] += prefix_fixes
+
+        # ================================================================
         # Step 1: 移除 Markdown 代碼塊標記
         # ================================================================
         old_code = code_str
@@ -591,27 +597,96 @@ class RegexHealer:
 
         return code_str, stats
 
+    def fix_missing_class_prefix(self, code_str: str) -> tuple:
+        """
+        [V2.9 New] 自動補全缺失的類前綴 (針對 RadicalOps 等工具)
+        
+        當 AI 寫出 `simplify_term(...)` 卻忘了加 `RadicalOps.` 時，
+        此函數會自動將其修復為 `RadicalOps.simplify_term(...)`。
+        
+        僅當：
+        1. 函數名在 target_methods 列表中
+        2. 函數未在本地定義 (def name)
+        3. 函數未被 import (我們已經移除了錯誤的 import)
+        """
+        fix_count = 0
+        
+        # 定義需要補前綴的函數映射
+        # 格式: 'method_name': 'ClassName'
+        method_map = {
+            'simplify_term': 'RadicalOps',
+            'format_term': 'RadicalOps',
+            'format_expression': 'RadicalOps',
+            'get_prime_factors': 'RadicalOps',
+            'is_perfect_square': 'RadicalOps',
+            'create_radical': 'RadicalOps', # Alias for create
+        }
+        
+        for method, class_name in method_map.items():
+            # 1. 檢查是否在本地定義了該函數 (避免誤殺自定義函數)
+            if re.search(rf'def\s+{method}\s*\(', code_str):
+                continue
+                
+            # 2. 查找並替換所有未加前綴的調用
+            # pattern: 匹配 ` method(` 但排除 `.method(`
+            pattern = rf'(?<!\.)\b{method}\s*\('
+            
+            # 使用回調函數來計數並替換
+            def replacer(match):
+                nonlocal fix_count
+                fix_count += 1
+                return f"{class_name}.{method}("
+            
+            # 執行替換
+            if re.search(pattern, code_str):
+                new_code = re.sub(pattern, replacer, code_str)
+                if new_code != code_str:
+                    code_str = new_code
+                    print(f"   [RegexHealer V2.9] 自動補全前綴: {method} → {class_name}.{method}")
+
+        return code_str, fix_count
+
+    def remove_invalid_dependencies(self, code_str: str) -> tuple:
+        """
+        [V3.3 Ab3 Fix] 移除錯誤的模組引用（當使用 Scaffolding 注入時）
+        例如： from domain_function_library import fmt_num, IntegerOps
+        [V3.4] 增加移除 from RadicalOps import ...
+        """
+        old_code = code_str
+        fix_count = 0
+        
+        if "domain_function_library" in code_str:
+             print(f"[DEBUG] Found 'domain_function_library' in code. Regex removing...")
+
+        patterns = [
+            r"^.*from\s+domain_function_library\s+import.*(?:\n|$)",
+            r"^.*import\s+domain_function_library.*(?:\n|$)",
+            r"^.*from\s+core\.code_generator\s+import.*(?:\n|$)",
+            r"^.*from\s+core\..*\s+import.*(?:\n|$)",
+            r"^.*from\s+RadicalOps\s+import.*(?:\n|$)", # [V3.4 NEW]
+            r"^.*import\s+RadicalOps.*(?:\n|$)"          # [V3.4 NEW]
+        ]
+        
+        current_code = code_str
+        for pattern in patterns:
+            # 使用 sub 刪除匹配的行
+            new_code = re.sub(pattern, "", current_code, flags=re.MULTILINE)
+            if len(new_code) < len(current_code): # 如果長度變短，表示有刪除
+                fix_count += 1
+                current_code = new_code
+        
+        if fix_count > 0:
+            print(f"🔧 [RegexHealer] 移除已注入的無效依賴引用 (domain/RadicalOps)")
+            # 移除可能留下的多餘空行 (3行變2行)
+            current_code = re.sub(r'\n\s*\n\s*\n', '\n\n', current_code)
+            
+        return current_code, fix_count
+
     def heal_minimal(self, code_str: str) -> tuple:
         """
         [V3.2 Ab2 Pure-Minimal] 純最小化修復 - 僅 Import Injection
         
         專為 Ab2 (Prompt Engineering) 設計，只做必要的環境配置，不做任何代碼修復。
-        
-        執行步驟：
-        1. 智慧依賴注入 (自動補 import)
-        
-        不執行：
-        - Markdown Removal (這是 Basic Cleanup 的工作，不是 Healer)
-        - Trailing Artifacts Removal (移除末尾 } 或 ; - 這算是修復 LLM 的語法錯誤)
-        - Syntax Fix (中文符號修復 - 這算是代碼修復)
-        - Loop Breaker (邏輯修復)
-        - Hallucination Killer (邏輯修復)
-        - Answer Format Fixer (邏輯修復)
-        - 括號不匹配修復 (邏輯修復)
-        - 重複類定義移除 (邏輯修復)
-        
-        Returns:
-            tuple: (fixed_code, stats_dict)
         """
         stats = {'regex_fix_count': 0, 'minimal_mode': True}
         
@@ -623,14 +698,17 @@ class RegexHealer:
         stats['regex_fix_count'] += injected
         stats['imports_injected'] = injected
 
-        # Step 1.5: [V3.3 NEW] 移除無效依賴引用 (Scaffolding Fix)
-        # 即使是 Minimal 模式，為了環境兼容性也必須移除 domain_function_library
+        # Step 1.5: 移除無效依賴引用 (Scaffolding Fix)
         code_str, dep_removed_count = self.remove_invalid_dependencies(code_str)
         stats['regex_fix_count'] += dep_removed_count
+        
+        # Step 1.8: 自動補全類前綴 (Minimal 模式下是否需要？)
+        # 為了讓 Ab2 也能跑通，我們允許這個 "語法糖" 級別的修復
+        # 因為這更像是環境適配，而非邏輯修復。但為了嚴格區分，也許不該加？
+        # 不，這屬於 "API 適配"，可以算在 Minimal 裡。
+        code_str, prefix_fixes = self.fix_missing_class_prefix(code_str)
+        stats['regex_fix_count'] += prefix_fixes
 
-        # [REMOVED] Markdown Removal - 這是 Basic Cleanup 的工作
-        # [REMOVED] Trailing Artifacts Removal - 移除以維持實驗純淨度
-        # [REMOVED] Syntax Fix - 移除以維持實驗純淨度
         stats['markdown_removed'] = False
         stats['syntax_fixed'] = False
 

@@ -340,8 +340,8 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
                 # Qwen 14B: Ab1/Ab2/Ab3=1200s (Doubled for Thinking Models)
                 timeout = 1200
             elif '8b' in model_name:
-                # Qwen 8B: Ab1=300s, Ab2/Ab3=120s
-                timeout = 300 if ablation_id == 1 else 120
+                # Qwen 8B: Increased timeout for complex prompts (Ab2/Ab3)
+                timeout = 600
             else:
                 # Unknown local model: conservative 300s
                 timeout = 300

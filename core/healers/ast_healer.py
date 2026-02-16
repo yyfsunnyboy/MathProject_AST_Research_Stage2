@@ -84,7 +84,7 @@ class ASTHealer(ast.NodeTransformer):
         # 0. [V10.0] 檢測並處理幻覺函數
         hallucinated_funcs = [
             'build_polynomial_text', 'format_polynomial', 'poly_to_latex',
-            'build_expression', 'format_expression', 'latex_polynomial',
+            'build_expression', 'latex_polynomial',
             'polynomial_text', 'expr_to_latex', 'build_latex'
         ]
         

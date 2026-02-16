@@ -1,0 +1,35 @@
+【角色】K12 數學演算法工程師
+
+【任務】
+實作 def generate(level=1, **kwargs)，生成根式化簡運算題目。
+題目必須模仿課本常見複合結構：一個加減多項括號 + 一個括號乘法結構，用 + 連接。
+返回 dict: {'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}
+
+【參考例題】（必須模仿此風格，不得生成單純加減或單項乘法）
+化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + (\sqrt{3} + \sqrt{2})(\sqrt{6} - 1)$
+
+【唯一允許的工具】（系統已注入，直接調用，嚴禁 import 或重新定義）
+- RadicalOps.simplify_term(coeff, radicand) → 返回 (new_coeff, new_radicand)
+- RadicalOps.format_term(coeff, radicand, is_first=True) → 化簡後格式化
+- RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True) → 未化簡格式化（用於題目）
+- RadicalOps.format_expression(terms_dict, denominator=1) → 最終答案格式化
+
+【核心規則】（必須嚴格遵守）
+1. 題目結構必須為：(加減多項括號) + (括號乘法)，不得生成其他題型
+2. 第一部分：3~4 項未化簡根式加減，使用 format_term_unsimplified 構建
+3. 第二部分：二項乘二項（係數可為 1 或小整數），至少一項可化簡
+4. 題目顯示未化簡形式，答案必須已化簡（題目與答案必須不同）
+5. 嚴禁使用 build_polynomial_text、fmt_num、fmt_term 或任何非 RadicalOps 工具
+6. 答案必須最簡、無根式分母、合併同類項、常數項在前
+7. question_text 數學式完整用 $...$ 包裹
+8. 只輸出 Python 代碼，無註解、無說明、無 Markdown、無額外文字
+9. 程式碼結束後絕對無任何內容
+
+【建議生成思路】（僅供參考，請自行調整細節）
+- 先生成第一部分：隨機 base radicand，乘 k² 構造可化簡項，組成加減括號
+- 再生成第二部分：兩個簡單根式相乘（或一係數一根式），組成括號乘法
+- 用 format_term_unsimplified 建構題目字串
+- 逐項 simplify_term 化簡後，用 format_expression 得到答案
+
+⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
+/no_think
