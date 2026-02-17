@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: evaluate_mcri.py
-# Version: V6.6 (Final Science Edition)
+# Version: V6.7 (Cognitive Load & Logic Depth)
 # Last Updated: 2026-02-16
 # Author: Math AI Research Team
 #
@@ -1222,30 +1222,53 @@ class MCRI_Evaluator:
         details = []
 
         # --- Part A: Base Static Analysis (Max 10.0) ---
-        # 1. Modular (+2.0): 只要定義超過一個函數即給分
-        if code_content.count("def ") > 1: 
-            score += 2.0
-            details.append("Modular(+2)")
-            
-        # 2. Type Hints (+2.0): 只要有基本的型別提示即給分
-        if "->" in code_content or ": int" in code_content or ": str" in code_content: 
-            score += 2.0
-            details.append("TypeHint(+2)")
-            
-        # 3. Docstrings (+2.0): 有基本的註解即給分
-        if '"""' in code_content or "'''" in code_content: 
-            score += 2.0
-            details.append("Docstring(+2)")
-            
-        # 4. Error Handling (+2.0): 包含 try-except 結構
+        # 1. Structure & Safety (Max 5.0)
+        # Modular (+1.5)
+        if code_content.count("def ") > 1:
+            score += 1.5
+            details.append("Modular(+1.5)")
+        # Try-Except (+1.5)
         if "try:" in code_content and "except" in code_content:
-            score += 2.0
-            details.append("Try-Except(+2)")
-            
-        # 5. Basic Safety (+2.0): 只要使用 safe_eval 或完全沒用 eval
+            score += 1.5
+            details.append("Try-Except(+1.5)")
+        # Basic Safety (+2.0)
         if "safe_eval" in code_content or "eval" not in code_content:
             score += 2.0
             details.append("BasicSafety(+2)")
+
+        # 2. Professionalism (Max 3.0)
+        # Type Hints (+1.5)
+        if "->" in code_content or ": int" in code_content:
+            score += 1.5
+            details.append("TypeHint(+1.5)")
+        # Docstrings (+1.5)
+        if '"""' in code_content or "'''" in code_content:
+            score += 1.5
+            details.append("Docstring(+1.5)")
+
+        # 3. Logic Efficiency (Max 2.0) - [V6.7 NEW]
+        # Measure AST Density & Control Flow
+        efficiency_score = 0.0
+        try:
+            ast_nodes, loop_depth = self.analyze_code_structure(code_content)
+            # A. Control Flow Complexity (Using Loops/Logic)
+            if loop_depth > 0:
+                efficiency_score += 1.0
+            
+            # B. AST Density (Nodes per Line of Code)
+            # Filter empty lines for accurate LOC
+            loc = len([l for l in code_content.splitlines() if l.strip()])
+            if loc > 0:
+                density = ast_nodes / loc
+                # Threshold: >3.5 nodes/line suggests dense logic (not just prints/whitespace)
+                if density > 3.5:
+                    efficiency_score += 1.0
+        except:
+            pass # Fallback if analysis fails
+
+        score += efficiency_score
+        if efficiency_score > 0:
+            details.append(f"Efficiency(+{efficiency_score})")
 
         # --- Part B: Neuro-Symbolic Robustness (Max 10.0) ---
         status, evidence = analyze_code_robustness(code_content)
@@ -1326,7 +1349,7 @@ class MCRI_Evaluator:
             if '=' in clean_q:
                 clean_q = clean_q.split('=')[0]
             
-            if not clean_q: return 0, 0
+            if not clean_q: return 0, 0, 0
 
             # 3. 解析與計算
             transformations = standard_transformations + (implicit_multiplication_application,)
@@ -1353,17 +1376,24 @@ class MCRI_Evaluator:
             
             # 原子數量 (運算元)
             atom_count = len(expr.atoms())
+
+            # [V6.7] 推導步數 (Inference Steps, IS)
+            # 統計所有核心運算節點 (Add, Mul, Pow, Abs)
+            inference_steps = 0
+            for node in sympy.preorder_traversal(expr):
+                if isinstance(node, (sympy.Add, sympy.Mul, sympy.Pow, sympy.Abs)):
+                    inference_steps += 1
             
-            return final_ops, atom_count
+            return final_ops, atom_count, inference_steps
             
         except Exception:
             # 最後的保險：如果還是失敗，嘗試最基礎的 regex 計數
             try:
                 # 簡單計算運算符號數量作為替代方案
                 fallback_ops = len(re.findall(r'[\+\-\*\/]', question_text))
-                return fallback_ops, 0
+                return fallback_ops, 0, 0
             except:
-                return 0, 0
+                return 0, 0, 0
     
     def analyze_code_structure(self, code_content: str) -> Tuple[int, int]:
         """
@@ -1444,13 +1474,15 @@ class MCRI_Evaluator:
             'score_l4_1_numeric': 0,
             'score_l4_2_visual': 0,
             'score_l4_3_artifacts': 0,  # [V4.4 NEW] 質量控制 (10分)
-            'score_l4_4_mqi': 0,        # [V6.0] MQI (30分)
+            'score_l4_4_mqi': 0,        # [V6.0] MQI (5分)
+            'score_math_is': 0.0,       # [V6.7] 推導步數分數 (Max 10分)
             'score_math_total': 0.0,    # [V6.3] 數學價值總分 (50分) = L3 + L4
             'score_math_sympy_verified': False, # [V6.3 NEW]
             'score_math_hygiene_score': 15,     # [V6.3 NEW]
             'score_math_quality': 0.0,  # [Deprecated V6.2]
             'score_math_difficulty': 0.0,# [Deprecated V6.2]
             'complexity_math_ops': 0,   # [V4.4 NEW] 數學複雜度 - 運算子數
+            'complexity_inference_steps': 0, # [V6.7 NEW] 推導步數
             'complexity_ast_nodes': 0,  # [V4.4 NEW] 代碼複雜度 - AST 節點數
             'complexity_loop_depth': 0, # [V4.4 NEW] 代碼複雜度 - 最大循環深度
             'student_input_test': '',
@@ -1496,128 +1528,81 @@ class MCRI_Evaluator:
                 
                 item['score_l3_total'] = int(score_l3_1 + score_l3_2)
                 
-                # ===== L4 評分 (30分) - V6.3 Config =====
+                # ===== L4 評分 (30分) - V6.7 Rebalance =====
                 # 準備要評分的文本
                 q_text = str(result.get('question_text', ''))
                 a_text = str(result.get('answer', ''))
                 c_text = str(result.get('correct_answer', ''))
                 
-                # L4.1 數值友善度 (max 10分)
-                score_l4_1, _ = self.evaluate_numeric_friendliness(result)
-                item['score_l4_1_numeric'] = int(score_l4_1)
+                # [V6.7] 提前執行複雜度分析 (For MQI & IS)
+                math_ops = 0
+                inference_steps = 0
+                try:
+                    math_ops, _, inference_steps = self.analyze_math_complexity(q_text)
+                    item['complexity_math_ops'] = math_ops
+                    item['complexity_inference_steps'] = inference_steps
+                except:
+                    pass
+
+                # L4.1 數值友善度 (Max 5分)
+                score_l4_1_raw, _ = self.evaluate_numeric_friendliness(result)
+                item['score_l4_1_numeric'] = int(score_l4_1_raw / 2.0)
                 
-                # L4.2 視覺可讀性 (max 10分) [V6.5 Rebalanced]
+                # L4.2 視覺可讀性 (Max 5分)
                 score_l4_2_raw, _ = self.evaluate_visual_readability(result)
-                score_l4_2 = min(10.0, (score_l4_2_raw / 15.0) * 10.0) # 原始是15分，放大到10分
-                item['score_l4_2_visual'] = int(score_l4_2)
+                item['score_l4_2_visual'] = int((score_l4_2_raw / 15.0) * 5.0)
                 
-                # L4.3 符號衛生 (max 10分) [V6.5 Rebalanced]
+                # L4.3 符號衛生 (Max 5分)
                 combined_latex = q_text
-                score_l4_3_raw, hygiene_notes = evaluate_math_hygiene(combined_latex) # 原始是15分
-                score_l4_3 = min(10.0, (score_l4_3_raw / 15.0) * 10.0) # 壓到10分
-                item['score_l4_3_artifacts'] = int(score_l4_3) # Reuse artifacts column
-                item['score_math_hygiene_score'] = int(score_l4_3_raw) # Keep raw 15 scale for record? Or scaled? Let's store raw for now or following instructions. User said just change weight. Storing scaled is safer for total calc.
-                # Actually user instruction is "Reduce weight from 15 to 10".
-                # Let's keep score_math_hygiene_score as logic-internal value, maybe useful for debugging. 
-                # But for total calculation we use score_l4_3.
+                score_l4_3_raw, hygiene_notes = evaluate_math_hygiene(combined_latex) 
+                item['score_l4_3_artifacts'] = int((score_l4_3_raw / 15.0) * 5.0)
+                item['score_math_hygiene_score'] = int(score_l4_3_raw)
+
+                # L4.4 MQI (Max 5分) - Formula: min(5, ops / 25 * 5) [UPDATED V6.7]
+                # 提高閾值至 25 ops，避免分數飽和
+                mqi_score = min(5.0, (math_ops / 25.0) * 5.0)
+                item['score_l4_4_mqi'] = round(mqi_score, 2)
+
+                # L4.5 IS 推導步數 (Max 10分) - Formula: min(10, IS / 8 * 10)
+                is_score = min(10.0, (inference_steps / 8.0) * 10.0)
+                item['score_math_is'] = round(is_score, 2)
                 
-                # L3 Update: L3.1 (10分) + L3.2 SymPy (10分)
+                # L3 Update: L3.1 (10分) + L3.2 (10分)
                 # L3.1 Internal Consistency (原本 15 -> 10)
                 score_l3_1 = (item['score_l3_1_internal'] / 15.0) * 10.0
-                item['score_l3_1_internal'] = int(score_l3_1)
+                item['score_l3_1_internal'] = round(score_l3_1, 2)
                 
                 # L3.2 = 50% Robustness + 50% SymPy
                 robustness_raw = score_l3_2 # 15分制
                 score_sympy, sympy_notes = evaluate_sympy_verification(q_text, c_text) # 10分制
                 
                 # [V6.6] SymPy Threshold Check
-                # 若 SymPy 驗證失敗 (0分)，分情況處理：
-                # 1. 普通題目：L3.2 強制鎖死在 3.0 以下
-                # 2. 極限題目 (ops > 20) 且 check() 通過：給予 4.0 分基礎工程獎勵
-                
-                # 先計算 math_ops (需要提前調用 analyze_math_complexity)
-                # 由於結構限制，我們先用簡單 regex 估算 ops 用於此判斷，或稍後再修正
-                # 為了避免複雜度，這裡假設 math_ops 尚未計算，我們延後到下面統一處理 L3.2 的最終值?
-                # 不，這樣太亂。我們簡單計算一個 ops estimate 用於此處判斷
-                ops_est = len(re.findall(r'[\+\-\*\/]', q_text)) + q_text.count('frac')*2 + q_text.count('abs')*3
-                
                 if score_sympy == 0.0:
-                    if ops_est > 20 and score_l3_1 >= 5.0: # 極限題目且自檢通過
-                        # [Hotfix] 複雜度超過 20 且 check() 通過，給予 8.0 分 (L3.2 Max 10.0)
-                        # 這代表我們信任程式碼本身的 check 邏輯，補償 SymPy 解析器的極限
+                    # 使用預先計算的 math_ops
+                    if math_ops > 20 and score_l3_1 >= 5.0: 
                         comp_robust = 8.0
                     else:
-                        comp_robust = min((robustness_raw / 15.0) * 6.0, 3.0) # Scaled to base 6.0, cap at 3.0
+                        comp_robust = min((robustness_raw / 15.0) * 6.0, 3.0) 
                     comp_sympy = 0.0
                 else:
-                    comp_robust = (robustness_raw / 15.0) * 6.0 # Weight 6.0
-                    comp_sympy = (score_sympy / 10.0) * 4.0   # Weight 4.0
+                    comp_robust = (robustness_raw / 15.0) * 6.0 
+                    comp_sympy = (score_sympy / 10.0) * 4.0 
                 
                 final_l3_2 = comp_robust + comp_sympy
-                
-                item['score_l3_2_external'] = round(final_l3_2, 2) # Reuse external column
+                item['score_l3_2_external'] = round(final_l3_2, 2) 
                 item['score_math_sympy_verified'] = (score_sympy == 10.0)
                 
-                # Update L3 Total (MAX 20) = L3.1 (10) + L3.2 (10)
+                # Update L3 Total (MAX 20)
                 score_l3_total = min(20.0, score_l3_1 + final_l3_2)
                 item['score_l3_total'] = round(score_l3_total, 2)
                 
-                # [V6.5] MQI Bonus (Based on weighted math_ops)
-                # math_ops 來自之前的 analyze_math_complexity，尚未執行
-                # 因此我們需要先執行 analyze!!! 
-                # 但 analyze_math_complexity 在 try-except block 下方
-                # 這裡我們需要提前執行或在下方更新
-                
-                # 目前結構 complexity 分析在後面 (lines 1516+)
-                # 我們必須把 complexity 分析移到這裡，或者分兩階段
-                # 為了避免大改結構，我們在下方 complexity 區塊計算 MQI，然後更新 total
-                
-                # Update L4 Total (Without MQI yet)
-                # score_l4_total = min(30.0, score_l4_1 + score_l4_2 + score_l4_3)
-                # item['score_l4_total'] = round(score_l4_total, 2)
-
-                # ... (Postpone Total Calc to after Complexity) ...
-                
-                # (Temporary placeholders)
-                item['score_l4_total'] = 0 
-                item['score_math_total'] = 0
-
-                # ===== [V4.4] L5 複雜度分析 (不計分，僅記錄) =====
-                # [V6.5 Update] Move Logic Here to support MQI
-                mqi_bonus = 0.0
-                try:
-                    # 1. 代碼結構分析 (需從檔案讀取原始碼)
-                    with open(self.skill_path, 'r', encoding='utf-8') as f:
-                        code_content = f.read()
-                    ast_nodes, loop_depth = self.analyze_code_structure(code_content)
-                    item['complexity_ast_nodes'] = ast_nodes
-                    item['complexity_loop_depth'] = loop_depth
-                    
-                    # 2. 數學題目分析 (使用現成的 q_text)
-                    math_ops, _ = self.analyze_math_complexity(q_text)
-                    item['complexity_math_ops'] = math_ops
-                    
-                    # [V6.6] MQI Calculation (Extended)
-                    # MQI Bonus = (math_ops / 12.0) * 10.0 (Cap 15.0)
-                    # 鼓勵複雜題目 (>12 ops 開始拿高分)
-                    mqi_bonus = min(15.0, (math_ops / 12.0) * 10.0)
-                    item['score_l4_4_mqi'] = round(mqi_bonus, 2)
-                    
-                except:
-                    pass # 確保複雜度分析失敗不會中斷主評分流程
-
-                # [V6.5] Re-calculate Totals with MQI
-                # L4 Total Strategy: Base (Numeric+Visual+Hygiene) + MQI Bonus
-                # Base Max = 10 + 10 + 10 = 30
-                # MQI Bonus = Max 10 (effective 5 scaled?) User said: (MQI_Bonus * 0.5)
-                # But calculating MQI_Bonus... wait, line 1559 says mqi_bonus = min(10, ...) 
-                
-                l4_base = score_l4_1 + score_l4_2 + score_l4_3
-                mqi_final = mqi_bonus * 0.5
-                
-                # L4 Total = min(30.0, l4_base) + mqi_final (Extra Bonus)
-                # But ensure strict cap? User said "Math total cap at 50"
-                score_l4_total = min(30.0, l4_base) + mqi_final
+                # Update L4 Total (MAX 30) = L4.1+L4.2+L4.3+L4.4+L4.5
+                l4_sum = (item['score_l4_1_numeric'] + 
+                          item['score_l4_2_visual'] + 
+                          item['score_l4_3_artifacts'] + 
+                          mqi_score + 
+                          is_score)
+                score_l4_total = min(30.0, l4_sum)
                 item['score_l4_total'] = round(score_l4_total, 2)
                 
                 # Math Total = L3 + L4 (Max 50)
@@ -1629,7 +1614,7 @@ class MCRI_Evaluator:
                 item['score_math_quality'] = 0.0
                 item['score_math_difficulty'] = 0.0
 
-                # ===== [V4.4] L5 複雜度分析 (不計分，僅記錄) =====
+                # ===== [V4.4] L5 代碼結構分析 (不計分，僅記錄) =====
                 try:
                     # 1. 代碼結構分析 (需從檔案讀取原始碼)
                     with open(self.skill_path, 'r', encoding='utf-8') as f:
@@ -1638,9 +1623,7 @@ class MCRI_Evaluator:
                     item['complexity_ast_nodes'] = ast_nodes
                     item['complexity_loop_depth'] = loop_depth
                     
-                    # 2. 數學題目分析 (使用現成的 q_text)
-                    math_ops, _ = self.analyze_math_complexity(q_text)
-                    item['complexity_math_ops'] = math_ops
+                    # (數學複雜度與 MQI 已在上方提前計算)
                 except:
                     pass # 確保複雜度分析失敗不會中斷主評分流程
                 
@@ -1741,8 +1724,9 @@ class MCRI_Evaluator:
         avg_l4_3 = np.mean([item['score_l4_3_artifacts'] for item in pass_items]) if pass_items else 0.0
         avg_l4_4 = np.mean([item['score_l4_4_mqi'] for item in pass_items]) if pass_items else 0.0
         
-        # ===== [V4.4] L5 複雜度平均值（不影響總分）=====
+        # ===== [V6.7] L5 複雜度平均值 =====
         avg_complexity_math_ops = np.mean([item['complexity_math_ops'] for item in pass_items]) if pass_items else 0.0
+        avg_complexity_inference_steps = np.mean([item['complexity_inference_steps'] for item in pass_items]) if pass_items else 0.0
         avg_complexity_ast_nodes = np.mean([item['complexity_ast_nodes'] for item in pass_items]) if pass_items else 0.0
         avg_complexity_loop_depth = np.mean([item['complexity_loop_depth'] for item in pass_items]) if pass_items else 0.0
         
@@ -1818,6 +1802,7 @@ class MCRI_Evaluator:
             'avg_l4_2_visual': round(avg_l4_2, 2),
             'avg_l4_3_artifacts': round(avg_l4_3, 2),  # [V4.4 NEW]
             'avg_complexity_math_ops': round(avg_complexity_math_ops, 2),  # [V4.4 NEW]
+            'avg_complexity_inference_steps': round(avg_complexity_inference_steps, 2), # [V6.7 NEW]
             'avg_complexity_ast_nodes': round(avg_complexity_ast_nodes, 2),  # [V4.4 NEW]
             'avg_complexity_loop_depth': round(avg_complexity_loop_depth, 2),  # [V4.4 NEW]
             'avg_l4_4_mqi': round(avg_l4_4, 2),
@@ -1916,6 +1901,7 @@ def create_database(db_path: str):
             avg_l4_2_visual FLOAT,
             avg_l4_3_artifacts FLOAT,
             avg_complexity_math_ops FLOAT,
+            avg_complexity_inference_steps FLOAT,
             avg_complexity_ast_nodes FLOAT,
             avg_complexity_loop_depth FLOAT,
             score_program_total FLOAT,
@@ -1965,7 +1951,9 @@ def create_database(db_path: str):
             score_math_difficulty REAL,
             score_math_sympy_verified BOOLEAN,
             score_math_hygiene_score INTEGER,
+            score_math_is REAL,
             complexity_math_ops INTEGER,
+            complexity_inference_steps INTEGER,
             complexity_ast_nodes INTEGER,
             complexity_loop_depth INTEGER,
             student_input_test TEXT,
@@ -2186,7 +2174,7 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
         'score_l2_total', 'score_l2_1_contract', 'score_l2_2_purity',
         'avg_l3_total', 'avg_l3_1_internal', 'avg_l3_2_external',
         'avg_l4_total', 'avg_l4_1_numeric', 'avg_l4_2_visual', 'avg_l4_3_artifacts',
-        'avg_complexity_math_ops', 'avg_complexity_ast_nodes', 'avg_complexity_loop_depth',
+        'avg_complexity_math_ops', 'avg_complexity_inference_steps', 'avg_complexity_ast_nodes', 'avg_complexity_loop_depth',
         'score_program_total', 'score_math_total', 'score_l5_architecture', 'avg_l4_4_mqi',
         'avg_mcri_total', 'source_code_path', 'notes',
         'batch_id', 'golden_prompt_path', 'prompt_hash',
@@ -2224,7 +2212,8 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
         'score_l4_total', 'score_l4_1_numeric', 'score_l4_2_visual', 'score_l4_3_artifacts',
         'score_l4_4_mqi', 'score_math_total', 'score_math_quality', 'score_math_difficulty',
         'score_math_sympy_verified', 'score_math_hygiene_score',
-        'complexity_math_ops', 'complexity_ast_nodes', 'complexity_loop_depth',  # [V4.4] L5 複雜度指標
+        'score_math_is',
+        'complexity_math_ops', 'complexity_inference_steps', 'complexity_ast_nodes', 'complexity_loop_depth',  # [V4.4] L5 複雜度指標
         'student_input_test', 'student_input_result',
         'exec_time_ms'  # [V4.2.2] 執行時間記錄（毫秒）
     ]

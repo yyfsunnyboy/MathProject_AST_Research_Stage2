@@ -1,9 +1,9 @@
 ﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-6a0915e2-63fa-429d-8e82-230103fa7598,jh_數學1上_FourArithmeticOperationsOfIntegers,1,gemini-3-flash,5,15,87.91,0.95,86.73,89.09,10.0,10.0,38.3,49.61,11.8,6.27,,-
-ff366c14-ad40-4360-829f-74069036e6ee,jh_數學1上_FourArithmeticOperationsOfIntegers,1,qwen3-14b,3,9,52.01,35.71,-36.7,140.71,4.33,5.0,26.33,25.67,9.33,5.18,,-
-d45b2ddb-512f-4a6f-b3f6-b5986b9c8031,jh_數學1上_FourArithmeticOperationsOfIntegers,2,gemini-3-flash,5,15,96.89,0.18,96.66,97.11,10.0,10.0,47.0,49.89,17.0,7.28,0.0,Ab2 vs Ab1: p<0.001 (高度顯著)
-7e684be2-c53b-4758-a4ab-fbdc827fba35,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen3-14b,5,15,96.36,0.6,95.61,97.1,10.0,9.47,47.0,49.36,17.0,6.72,0.025786,Ab2 vs Ab1: p<0.05 (邊緣顯著)
-bafc4b14-e078-4d73-87fa-6a1fa824ae39,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen3-8b,5,15,95.67,1.93,93.27,98.07,9.07,9.46,47.0,48.67,17.0,7.17,,-
-fa51ea6c-9a11-4c28-9b69-d57ad346370e,jh_數學1上_FourArithmeticOperationsOfIntegers,3,gemini-3-flash,5,15,99.64,0.33,99.24,100.05,10.0,9.87,50.0,49.64,20.0,7.28,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)
-ff830ecf-9b5b-4e82-a982-f40ff55c87e5,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen3-14b,5,15,99.47,0.54,98.79,100.14,10.0,9.47,50.0,49.47,20.0,7.83,0.019777,Ab3 vs Ab1: p<0.05 (邊緣顯著)
-102da394-0e08-40d1-b3e5-adc485f32fe7,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen3-8b,5,15,99.12,0.97,97.91,100.33,10.0,9.73,49.5,49.62,20.0,7.03,,-
+99dba52f-b26e-4c8b-89db-01ae1d7e0174,jh_數學1上_FourArithmeticOperationsOfIntegers,1,gemini-3-flash,5,15,71.09,0.75,70.16,72.03,10.0,5.0,36.6,34.49,10.1,1.49,,-
+72ac4d10-0c67-46a3-80ce-4adfbf329565,jh_數學1上_FourArithmeticOperationsOfIntegers,1,qwen3-14b,3,9,43.79,29.06,-28.41,115.98,3.56,3.22,25.5,18.29,8.5,1.07,,-
+74db4f4d-791d-4b0d-aba6-de5708d3bf35,jh_數學1上_FourArithmeticOperationsOfIntegers,2,gemini-3-flash,5,15,82.33,0.86,81.27,83.4,10.0,4.87,47.0,35.33,17.0,1.55,0.0,Ab2 vs Ab1: p<0.001 (高度顯著)
+61c91b72-0679-4a72-a067-a2dd13550e65,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen3-14b,5,15,84.12,2.35,81.2,87.03,10.0,4.93,47.0,37.12,17.0,1.85,0.017036,Ab2 vs Ab1: p<0.05 (邊緣顯著)
+b338ea3a-2753-4150-9ae8-99048829709e,jh_數學1上_FourArithmeticOperationsOfIntegers,2,qwen3-8b,5,15,83.22,2.49,80.13,86.31,9.07,4.67,47.0,36.22,17.0,1.99,,-
+03786f67-42d4-4d5a-9eb0-94c40db63c52,jh_數學1上_FourArithmeticOperationsOfIntegers,3,gemini-3-flash,5,15,86.22,1.31,84.6,87.85,10.0,5.0,50.0,36.22,20.0,1.64,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)
+ddbdf991-d8fd-4a34-a076-c05f1953e492,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen3-14b,5,15,87.04,1.6,85.05,89.03,10.0,4.8,50.0,37.04,20.0,1.83,0.012532,Ab3 vs Ab1: p<0.05 (邊緣顯著)
+ec29ac66-a03f-4b0d-a909-603d0c3fbbce,jh_數學1上_FourArithmeticOperationsOfIntegers,3,qwen3-8b,5,15,86.66,1.48,84.82,88.5,10.0,4.93,49.5,37.16,20.0,1.89,,-
