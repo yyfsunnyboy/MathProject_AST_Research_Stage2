@@ -1,10 +1,16 @@
+【絕對禁止輸出 thinking 或任何非 code 內容】
+- 嚴禁寫任何思考過程、解釋、註解
+- 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
+- 直接輸出 Python code，沒有任何前言、後語
+- 如果違反，直接 0 分
+
+【第一優先規則】嚴禁寫任何 import 語句！系統已注入 RadicalOps，直接用 RadicalOps.xxx()。
+
 【角色】K12 數學演算法工程師
 
 【任務】
-4: 實作 def generate(level=1, **kwargs)，生成根式化簡運算題目。
-5: 題目結構必須為：
-6: - level=1: 基礎根式四則運算 (單層根號)
-7: - level=2: 雙重根號化簡 ($\sqrt{A+2\sqrt{B}}$) 或有理化運算 (高難度格式)
+實作 def generate(level=1, **kwargs)，生成根式化簡運算題目。
+題目結構必須為：(多項未化簡根式加減括號) + (簡單乘法結構)，用 + 連接。
 返回 dict: {'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}
 
 【程式要求】（必須嚴格遵守）
@@ -20,20 +26,20 @@
    - 'correct': True 或 False
    - 'result': '正確' 或 '錯誤'
 
-【聰明的 check 函數要求】
-- 必須支援數值相等比較（考慮浮點誤差）
-- 優先字串比對（忽略空格與順序）
-- 再轉數值比對（使用 eval 或自訂解析）
-- 支援同類項順序不同但數值相等的情況
-
 【參考例題】（必須參考此風格，但生成多樣化題目）
-化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})$
+化簡 $$   (\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})   $$
 
 【系統已注入的輔助函式（API）】（嚴禁重新定義，直接調用）
 - RadicalOps.simplify_term(coeff, radicand) → (new_coeff, new_radicand)
 - RadicalOps.format_term(coeff, radicand, is_first=True) → 化簡後格式化
 - RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True) → 未化簡格式化（題目用）
 - RadicalOps.format_expression(terms_dict, denominator=1) → 最終答案
+
+【強制使用 API】（違反者 0 分）
+- 題目項：RadicalOps.format_term_unsimplified
+- 化簡：RadicalOps.simplify_term
+- 答案：RadicalOps.format_expression
+- 必須逐項調用，不能自己寫邏輯
 
 【核心規則】（必須嚴格遵守）
 1. 題目必須為：(多項未化簡根式加減括號) + 單純乘法（係數 × 括號內加減根式）
@@ -44,7 +50,7 @@
 6. 嚴禁自己 import RadicalOps 或其他模組
 7. 注意 generated string 不要出現 `+ +` 或 `+ -`，正確使用 is_first 參數
 8. 答案必須最簡、無根式分母、合併同類項、常數項在前
-9. question_text 數學式完整用 $...$ 包裹
+9. question_text 數學式完整用 $$   ...   $$ 包裹
 10. 只輸出 Python 代碼，無註解、無說明、無 Markdown、無額外文字
 11. 程式碼結束後絕對無任何內容
 
@@ -60,7 +66,7 @@
 def generate(level=1, **kwargs):
     # 你的生成邏輯...
     return {
-        'question_text': '化簡 $$   (\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})   $$',
+        'question_text': '化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})$',
         'answer': '',
         'correct_answer': '5\sqrt{2} + 3\sqrt{3}',
         'mode': 1
@@ -68,7 +74,9 @@ def generate(level=1, **kwargs):
 
 def check(user_answer, correct_answer):
     try:
-        # 簡單數值比較（可擴充）
         return abs(eval(user_answer) - eval(correct_answer)) < 1e-6
     except:
         return str(user_answer).strip() == str(correct_answer).strip()
+
+⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
+/no_think

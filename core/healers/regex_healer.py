@@ -504,6 +504,15 @@ class RegexHealer:
         # ================================================================
         old_code = code_str
         code_str = self.remove_trailing_artifacts(code_str)
+
+        # ================================================================
+        # Step -1: 移除夾雜的中文廢話 ⭐ [V4.0 Aggressive Healer]
+        # ================================================================
+        old_code_zh = code_str
+        code_str = self._strip_chinese_garbage(code_str)
+        if code_str != old_code_zh:
+            stats['regex_fix_count'] += 1
+            print(f"🔧 [RegexHealer V4.0] 移除夾雜的中文廢話 (Thinking Leakage)")
         
         if code_str != old_code:
             stats['regex_fix_count'] += 1
@@ -781,42 +790,86 @@ class RegexHealer:
         
         if fix_count > 0:
             print(f"🔧 [RegexHealer] 移除已注入的無效依賴引用 (domain/RadicalOps)")
-            # 移除可能留下的多餘空行 (3行變2行)
-            current_code = re.sub(r'\n\s*\n\s*\n', '\n\n', current_code)
-            
         return current_code, fix_count
 
-    def heal_minimal(self, code_str: str) -> tuple:
+    def _strip_chinese_garbage(self, code: str) -> str:
         """
-        [V3.2 Ab2 Pure-Minimal] 純最小化修復 - 僅 Import Injection
-        
-        專為 Ab2 (Prompt Engineering) 設計，只做必要的環境配置，不做任何代碼修復。
+        [V4.2 Aggressive Healer]
+        移除夾雜在代碼中的中文廢話 (Thinking Leakage)。
+        規則：
+        1. 忽略註解行 (# 開頭)
+        2. 使用強大的正則移除所有 Python 字串 (包括三引號、單引號、轉義字符)
+        3. 如果移除字串後，該行仍包含中文字符，則視為 Garbage 刪除
         """
-        stats = {'regex_fix_count': 0, 'minimal_mode': True}
+        lines = code.split('\n')
+        cleaned_lines = []
         
-        if not code_str:
-            return "", stats
+        # Robust Python String Regex (StackOverflow Approved)
+        # Matches: """...""" | '''...''' | "..." | '...' (handling escapes)
+        string_pattern = re.compile(r'("""[\s\S]*?"""|\'\'\'[\s\S]*?\'\'\'|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\')')
+
+        for line in lines:
+            stripped_line = line.strip()
+            # 1. 忽略註解
+            if stripped_line.startswith('#'):
+                cleaned_lines.append(line)
+                continue
+            
+            # 2. 移除字串內容
+            # 注意：這裡我們只針對單行進行檢查，所以假設字串不跨行 (大部分 Thinking 是單行的)
+            # 如果是跨行字串，Regex Healer本來就很難處理，交給 AST 吧。
+            line_no_strings = re.sub(string_pattern, '', line)
+            
+            # 3. 檢查剩餘內容是否有中文
+            if re.search(r'[\u4e00-\u9fff]', line_no_strings):
+                # 中文出現在字串外部 -> 這是廢話
+                continue
+            
+            cleaned_lines.append(line)
+        return '\n'.join(cleaned_lines)
+
+    def heal_minimal(self, code: str) -> Tuple[str, Dict[str, int]]:
+        """
+        僅進行最小幅度的修復，用於 Ab2 (Regex Only)
+        """
+        original_code = code
+        fixes = {}
+        fixes['regex_fix_count'] = 0
+        fixes['minimal_mode'] = True
+        
+        if not code:
+            return "", fixes
+
+        # 0. [NEW] Aggressive Chinese Stripping (First Pass)
+        code = self._strip_chinese_garbage(code)
 
         # Step 1: 智慧依賴注入 (Import Injection)
-        code_str, injected = self.inject_domain_imports(code_str)
-        stats['regex_fix_count'] += injected
-        stats['imports_injected'] = injected
+        code, injected = self.inject_domain_imports(code)
+        fixes['regex_fix_count'] += injected
+        
+        if injected > 0:
+            print(f"🔧 [RegexHealer] 自動注入 {injected} 個依賴 (Domain Specific)")
+
+        # Step 1: 移除 Markdown 代碼塊標記
+        code = self.remove_markdown_fences(code)
+        
+        # Step 2: 語法符號修復 (基本)
+        code = self.fix_common_syntax_errors(code)
 
         # Step 1.5: 移除無效依賴引用 (Scaffolding Fix)
-        code_str, dep_removed_count = self.remove_invalid_dependencies(code_str)
-        stats['regex_fix_count'] += dep_removed_count
+        # 這是為了移除舊的、錯誤的引用，避免 ImportError
+        code, dep_removed_count = self.remove_invalid_dependencies(code)
+        fixes['regex_fix_count'] += dep_removed_count
         
-        # Step 1.8: 自動補全類前綴 (Minimal 模式下是否需要？)
+        # Step 1.8: 自動補全類前綴
         # 為了讓 Ab2 也能跑通，我們允許這個 "語法糖" 級別的修復
-        # 因為這更像是環境適配，而非邏輯修復。但為了嚴格區分，也許不該加？
-        # 不，這屬於 "API 適配"，可以算在 Minimal 裡。
-        code_str, prefix_fixes = self.fix_missing_class_prefix(code_str)
-        stats['regex_fix_count'] += prefix_fixes
+        code, prefix_fixes = self.fix_missing_class_prefix(code)
+        fixes['regex_fix_count'] += prefix_fixes
 
-        stats['markdown_removed'] = False
-        stats['syntax_fixed'] = False
+        fixes['markdown_removed'] = False
+        fixes['syntax_fixed'] = False
 
-        return code_str, stats
+        return code, fixes
 
 
 # ==============================================================================

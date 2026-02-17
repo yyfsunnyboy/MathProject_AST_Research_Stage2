@@ -8,6 +8,12 @@
 - level=3: 挑戰運算 (包含大數運算，數值範圍 -10000~10000，或極端零值測試)
 返回 dict: {'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}
 
+【輸出規範】(非常重要，請嚴格遵守)
+1.  **禁止廢話**：不要輸出 "好的"、"Sure"、"Here is..."、"讓我思考一下" 等任何對話內容。
+2.  **直接代碼**：直接開始寫 `import ...` 或 `def generate...`。
+3.  **純淨代碼**：不要包含 Markdown 代碼塊標記 (```python)，直接輸出純文本代碼。
+4.  **禁止中文註釋**：代碼中的註解請使用英文，或完全不寫註解 (No Chinese Comments)。
+
 【程式要求】（必須嚴格遵守）
 1. 請寫成兩個函式：
    - def generate(level=1, **kwargs): 生成題目

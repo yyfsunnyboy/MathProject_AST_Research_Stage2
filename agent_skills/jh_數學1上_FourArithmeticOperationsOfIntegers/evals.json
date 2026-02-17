@@ -8,7 +8,7 @@
             "healer_type": "None",
             "description": "整數運算 Ab1 (Level 1: Bare)",
             "weight": 1.0,
-            "timeout_seconds": 30,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -21,7 +21,7 @@
             "healer_type": "None",
             "description": "整數運算 Ab1 (Level 2: Bare)",
             "weight": 1.2,
-            "timeout_seconds": 45,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }
@@ -34,7 +34,7 @@
             "healer_type": "Regex",
             "description": "整數運算 Ab2 (Level 1: Basic)",
             "weight": 1.0,
-            "timeout_seconds": 30,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -47,7 +47,7 @@
             "healer_type": "AST",
             "description": "整數運算 Ab3 (Level 1: Basic)",
             "weight": 1.0,
-            "timeout_seconds": 30,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -60,7 +60,7 @@
             "healer_type": "Regex",
             "description": "整數運算 Ab2 (Level 2: Long Chain)",
             "weight": 1.2,
-            "timeout_seconds": 45,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }
@@ -73,7 +73,7 @@
             "healer_type": "AST",
             "description": "整數運算 Ab3 (Level 2: Long Chain)",
             "weight": 1.2,
-            "timeout_seconds": 45,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }

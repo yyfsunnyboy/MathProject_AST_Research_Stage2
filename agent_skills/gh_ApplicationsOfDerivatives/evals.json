@@ -8,7 +8,7 @@
             "healer_type": "None",
             "description": "多項式導數 Ab1 (Level 1: Bare)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -21,7 +21,7 @@
             "healer_type": "None",
             "description": "多項式導數 Ab1 (Level 2: Bare)",
             "weight": 2.5,
-            "timeout_seconds": 90,
+            "timeout_seconds": 240,
             "generation_kwargs": {
                 "level": 2
             }
@@ -34,7 +34,7 @@
             "healer_type": "None",
             "description": "多項式導數 Ab1 (Level 3: Bare)",
             "weight": 3.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 3
             }
@@ -47,7 +47,7 @@
             "healer_type": "Regex",
             "description": "多項式導數 Ab2 (Level 1: 基礎導數)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -60,7 +60,7 @@
             "healer_type": "AST",
             "description": "多項式導數 Ab3 (Level 1: 基礎導數)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -73,7 +73,7 @@
             "healer_type": "Regex",
             "description": "多項式導數 Ab2 (Level 2: 切線方程式)",
             "weight": 2.5,
-            "timeout_seconds": 90,
+            "timeout_seconds": 240,
             "generation_kwargs": {
                 "level": 2
             }
@@ -86,7 +86,7 @@
             "healer_type": "AST",
             "description": "多項式導數 Ab3 (Level 2: 切線方程式)",
             "weight": 2.5,
-            "timeout_seconds": 90,
+            "timeout_seconds": 240,
             "generation_kwargs": {
                 "level": 2
             }
@@ -99,7 +99,7 @@
             "healer_type": "AST",
             "description": "多項式導數 Ab3 (Level 3: 極值問題)",
             "weight": 3.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 3
             }

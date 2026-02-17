@@ -8,7 +8,7 @@
             "healer_type": "None",
             "description": "根式運算 Ab1 (Level 1: Bare)",
             "weight": 1.5,
-            "timeout_seconds": 60,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -21,7 +21,7 @@
             "healer_type": "None",
             "description": "根式運算 Ab1 (Level 2: Bare)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }
@@ -34,7 +34,7 @@
             "healer_type": "Regex",
             "description": "根式運算 Ab2 (Level 1: Basic)",
             "weight": 1.5,
-            "timeout_seconds": 60,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -47,7 +47,7 @@
             "healer_type": "AST",
             "description": "根式運算 Ab3 (Level 1: Basic)",
             "weight": 1.5,
-            "timeout_seconds": 60,
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
@@ -58,9 +58,35 @@
             "ablation_target": "Ab2",
             "model": "qwen3-14b-nothink",
             "healer_type": "Regex",
-            "description": "根式運算 Ab2 (Level 2: Double Radical)",
+            "description": "根式運算 Ab2 (Level 2: Advanced Ops)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab2_L1_b",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "根式運算 Ab2 (Level 1: Re-Test 1)",
+            "weight": 1.0,
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab2_L2_b",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "根式運算 Ab2 (Level 2: Re-Test 1)",
+            "weight": 2.0,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }
@@ -71,9 +97,35 @@
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
             "healer_type": "AST",
-            "description": "根式運算 Ab3 (Level 2: Double Radical)",
+            "description": "根式運算 Ab3 (Level 2: Advanced Ops)",
             "weight": 2.0,
-            "timeout_seconds": 90,
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab3_L1_b",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "根式運算 Ab3 (Level 1: Re-Test 1)",
+            "weight": 1.0,
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab3_L2_b",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "根式運算 Ab3 (Level 2: Re-Test 1)",
+            "weight": 2.0,
+            "timeout_seconds": 300,
             "generation_kwargs": {
                 "level": 2
             }

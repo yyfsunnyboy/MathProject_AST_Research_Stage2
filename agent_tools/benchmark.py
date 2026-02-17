@@ -16,14 +16,91 @@
 #   - MCRI Integration: 詳細 L1-L5 評分
 #   - Data Export: SQLite + CSV (Runs, Items, Summary)
 # ==============================================================================
-import sys
-import os
-import json
-import time
+import config
+    
+    # ... (existing code)
+
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None):
+    print(f"🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
+    print(f"Project Root: {PROJECT_ROOT}")
+    print(f"Generations per Case: {repeat_count}")
+    if override_model:
+        print(f"👉 Force Model: {override_model}")
+
+    # ... (load evals logic) ...
+
+    # 4. Main Loop
+    for idx, test_case in enumerate(evals):
+        # Override Model if requested
+        if override_model:
+            test_case['model'] = override_model
+
+        eval_id_base = test_case.get("eval_id", f"case_{idx}")
+        # ... (rest of loop) ...
+        
+
+def show_interactive_menu(evals_file):
+    # ... (existing menu logic) ...
+    # ... (Skills selection) ...
+    # ... (Ablation selection) ...
+
+    # [Model Selection]
+    print("\n[Select Model]")
+    target_models = []
+    
+    try:
+        # Load form Config if available
+        if hasattr(config.Config, 'CODER_PRESETS'):
+            presets = config.Config.CODER_PRESETS
+            for key, val in presets.items():
+                desc = val.get('description', '') or val.get('model', key)
+                target_models.append((key, desc))
+    except Exception as e:
+        print(f"⚠️ Failed to load models from Config: {e}")
+        pass
+    
+    if not target_models:
+        target_models = [
+            ("qwen3-14b-nothink", "Local Finetuned (NoThink)"),
+            ("qwen2.5-coder-14b", "Local Qwen 2.5 14B"),
+            ("gemini-2.0-flash-exp", "Cloud Gemini 2.0")
+        ]
+
+    print("[0] Use Default (Defined in evals.json)")
+    for i, (m_id, m_desc) in enumerate(target_models, 1):
+        print(f"[{i}] {m_id} ({m_desc})")
+        
+    model_choice = input(f"\n👉 Select Model (0-{len(target_models)}): ").strip()
+    selected_model = None
+    if model_choice and model_choice != '0':
+        try:
+            idx = int(model_choice) - 1
+            if 0 <= idx < len(target_models):
+                selected_model = target_models[idx][0]
+        except:
+            pass
+            
+    # [Repetitions]
+    print("\n[Repetitions for Generation]")
+    rep_choice = input(f"👉 Enter number of generations per case (default 1): ").strip()
+    # ...
+
+    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
+
+if __name__ == "__main__":
+    # ... (argparse) ...
+    parser.add_argument("--model", help="Override AI Model (e.g. qwen2.5-coder-14b)")
+    args = parser.parse_args()
+    
+    if args.skill or args.ablation or args.repeat > 1 or args.model:
+        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat, override_model=args.model)
+    else:
+        show_interactive_menu(args.evals)
 import uuid
 import shutil
 import sqlite3
 import pandas as pd
+import re # [Fix] Add missing import
 from datetime import datetime
 
 # 設定專案根目錄
@@ -193,26 +270,34 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 # [Robust Extraction] Search for code blocks anywhere in the text
                 cleaned_code = raw_code.strip()
                 
-                # Try to find python code block
-                import re
+                # [V9.8 Robust Extraction]
+                # 1. Try Markdown Fences
                 code_block_match = re.search(r'```python\s*(.*?)```', cleaned_code, re.DOTALL)
                 if code_block_match:
                     cleaned_code = code_block_match.group(1).strip()
                 else:
-                    # Fallback: try generic code block
                     code_block_match = re.search(r'```\s*(.*?)```', cleaned_code, re.DOTALL)
                     if code_block_match:
                         cleaned_code = code_block_match.group(1).strip()
-                    else:
-                        # Fallback: if no markdown, assuming the whole text is code 
-                        pass
-
-                # [Safety] Double check for remaining fences (e.g. double fencing)
+                
+                # 2. [NEW] Aggressive Prelude Stripper
+                # Identify the start of valid code (import or def)
+                # This removes "好的，..." or "Sure, here is..." thinking text
+                match_start = re.search(r'^(import|from|def\s+)', cleaned_code, re.MULTILINE)
+                if match_start:
+                    start_index = match_start.start()
+                    if start_index > 0:
+                        # Keep only from the first code token onwards
+                         cleaned_code = cleaned_code[start_index:]
+                
+                # 3. Cleanup Fences (Double Safety)
                 cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)
                 cleaned_code = re.sub(r'^```\s*', '', cleaned_code, flags=re.MULTILINE)
                 cleaned_code = re.sub(r'```$', '', cleaned_code.strip(), flags=re.MULTILINE)
                 
+                
                 raw_code = cleaned_code.strip()
+                print(f" 🔍 [Pre-Heal] Code: {raw_code[:100].replace(chr(10), ' ')}...")
 
 
 
@@ -239,6 +324,27 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     healed_code, _ = _inject_domain_libs(healed_code)
                 else:
                     healed_code = raw_code # Fallback
+
+                # [Debug] Save artifacts for analysis
+                try:
+                    debug_dir = os.path.join(PROJECT_ROOT, "temp")
+                    os.makedirs(debug_dir, exist_ok=True)
+                    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    
+                    # 1. Raw Response (Full Thinking + Code)
+                    original_text = response.text if hasattr(response, 'text') else str(response)
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_raw.txt"), "w", encoding="utf-8") as f:
+                        f.write(original_text)
+                    
+                    # 2. Extracted Code (Pre-Heal)
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_extracted.py"), "w", encoding="utf-8") as f:
+                        f.write(raw_code)
+                    
+                    # 3. Healed Code (Final)
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_healed.py"), "w", encoding="utf-8") as f:
+                        f.write(healed_code)
+                except Exception as e:
+                    print(f"⚠️ Failed to save debug files: {e}")
 
                 # C. Evaluate using MCRI
                 if MCRI_AVAILABLE:

@@ -336,26 +336,45 @@ class ASTHealer(ast.NodeTransformer):
         if not any(kw in code_str for kw in keywords_need_ast):
             return code_str, 0
         
+        # [V51.0] Iterative Syntax Repair (Syntax De-Noising)
+        # 嘗試刪除導致語法錯誤的行（如 Thinking Leakage, 亂碼符號）
+        for attempt in range(5):
+            try:
+                tree = ast.parse(code_str)
+                break # Syntax Valid!
+            except SyntaxError as e:
+                lines = code_str.split('\n')
+                if 1 <= e.lineno <= len(lines):
+                    removed = lines.pop(e.lineno - 1)
+                    self.fixes += 1
+                    logger.warning(f"🔪 AST Syntax Repair: 刪除語法錯誤行 {e.lineno}: {removed.strip()}")
+                    code_str = '\n'.join(lines)
+                else:
+                    logger.error(f"❌ AST Syntax Repair Failed: Line {e.lineno} out of range")
+                    break
+            except Exception as e:
+                logger.error(f"❌ AST Input Error: {e}")
+                break
+
         try:
-            tree = ast.parse(code_str)
+            tree = ast.parse(code_str) # Re-parse final version
             new_tree = self.visit(tree)
             ast.fix_missing_locations(new_tree)
             
             new_code = ast.unparse(new_tree)
             
             # 📌 【方案 A】驗證 ast.unparse() 的輸出是否有效
-            # 這是關鍵的防線：即使 unparse 成功執行，輸出代碼也可能有語法錯誤
             try:
                 ast.parse(new_code)
-                logger.info(f"✅ AST Healer 成功：輸出代碼驗證通過，修復 {self.fixes} 項")
                 return new_code, self.fixes
             except SyntaxError as syntax_err:
                 logger.warning(f"⚠️  AST unparse 產生無效代碼：{syntax_err}")
-                logger.warning(f"🔄 回退使用 Regex Healer 的結果（安全降級）")
-                return code_str, 0
+                return code_str, self.fixes # Return modified code (at least we removed garbage lines)
                 
         except Exception as e:
             logger.error(f"❌ AST Healing Failed: {e}")
+            if self.fixes > 0:
+                return code_str, self.fixes # Return partial fixes (garbage removed)
             return code_str, 0
     
     # TODO: 將以下方法從 fix_code_via_ast() 拆分出來
