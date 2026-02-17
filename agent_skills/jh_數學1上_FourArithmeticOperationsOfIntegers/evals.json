@@ -1,0 +1,50 @@
+{
+    "evals": [
+        {
+            "eval_id": "math_1a_integer_add",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
+            "description": "整數加法 (含負數)",
+            "tags": [
+                "integer",
+                "add",
+                "level1",
+                "negative"
+            ],
+            "difficulty": "easy",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "max_output_tokens": 1000,
+            "expectations": [
+                "數值範圍 -100 ~ 100",
+                "使用 random.seed() 確保可重現性",
+                "題目包含 fmt_num 處理負數括號",
+                "答案為整數"
+            ]
+        },
+        {
+            "eval_id": "math_1a_integer_mix",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
+            "description": "整數四則混合運算",
+            "tags": [
+                "integer",
+                "four-op",
+                "level1",
+                "mixed"
+            ],
+            "difficulty": "medium",
+            "weight": 1.2,
+            "timeout_seconds": 60,
+            "max_output_tokens": 1500,
+            "expectations": [
+                "包含 +, -, *, / 運算符",
+                "使用 clean_latex_output (若有必要)",
+                "Pass Rate > 90% (預期)",
+                "答案為整數或簡單分數"
+            ]
+        }
+    ]
+}

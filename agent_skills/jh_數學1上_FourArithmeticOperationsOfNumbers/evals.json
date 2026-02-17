@@ -1,0 +1,50 @@
+{
+    "evals": [
+        {
+            "eval_id": "math_1a_number_fraction_add",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfNumbers_Ab2.txt",
+            "description": "分數加減法 (通分與約分)",
+            "tags": [
+                "fraction",
+                "add-sub",
+                "level1",
+                "basic"
+            ],
+            "difficulty": "medium",
+            "weight": 1.0,
+            "timeout_seconds": 60,
+            "max_output_tokens": 1500,
+            "expectations": [
+                "題目包含不同分母的分數",
+                "答案必須為最簡分數",
+                "運算結果不應為整數 (以測試分數處理能力)",
+                "使用 Fraction 類別處理"
+            ]
+        },
+        {
+            "eval_id": "math_1a_number_fraction_mix",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfNumbers_Ab2.txt",
+            "description": "分數四則混合運算",
+            "tags": [
+                "fraction",
+                "four-op",
+                "level1",
+                "mixed"
+            ],
+            "difficulty": "hard",
+            "weight": 1.5,
+            "timeout_seconds": 90,
+            "max_output_tokens": 2000,
+            "expectations": [
+                "包含 +, -, *, / 運算符",
+                "包含帶分數轉換為假分數",
+                "運算過程符合先乘除後加減",
+                "答案為最簡分數"
+            ]
+        }
+    ]
+}

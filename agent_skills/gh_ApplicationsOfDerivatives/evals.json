@@ -1,0 +1,27 @@
+{
+    "evals": [
+        {
+            "eval_id": "math_gh_derivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "prompt_file": "gh_ApplicationsOfDerivatives_Ab2.txt",
+            "description": "多項式導數與應用 (微積分)",
+            "tags": [
+                "calculus",
+                "derivative",
+                "high-school",
+                "polynomial"
+            ],
+            "difficulty": "hard",
+            "weight": 2.0,
+            "timeout_seconds": 120,
+            "max_output_tokens": 2500,
+            "expectations": [
+                "題目為多項式求導",
+                "使用 _differentiate_poly 計算",
+                "答案為標準多項式格式",
+                "無 `++` 或 `+-` 連續符號"
+            ]
+        }
+    ]
+}
