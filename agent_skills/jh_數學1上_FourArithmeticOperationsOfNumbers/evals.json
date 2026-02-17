@@ -1,50 +1,82 @@
 {
     "evals": [
         {
-            "eval_id": "math_1a_number_fraction_add",
-            "ablation_target": "Ab3",
+            "eval_id": "math_1a_num_ops_ab1",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab1",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfNumbers_Ab2.txt",
-            "description": "分數加減法 (通分與約分)",
-            "tags": [
-                "fraction",
-                "add-sub",
-                "level1",
-                "basic"
-            ],
-            "difficulty": "medium",
+            "healer_type": "None",
+            "description": "數的運算 Ab1 (Level 1: Bare)",
             "weight": 1.0,
-            "timeout_seconds": 60,
-            "max_output_tokens": 1500,
-            "expectations": [
-                "題目包含不同分母的分數",
-                "答案必須為最簡分數",
-                "運算結果不應為整數 (以測試分數處理能力)",
-                "使用 Fraction 類別處理"
-            ]
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
-            "eval_id": "math_1a_number_fraction_mix",
+            "eval_id": "math_1a_num_ops_ab1_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "數的運算 Ab1 (Level 2: Bare)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "數的運算 Ab2 (Level 1: Mixed)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab3",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfNumbers_Ab2.txt",
-            "description": "分數四則混合運算",
-            "tags": [
-                "fraction",
-                "four-op",
-                "level1",
-                "mixed"
-            ],
-            "difficulty": "hard",
-            "weight": 1.5,
-            "timeout_seconds": 90,
-            "max_output_tokens": 2000,
-            "expectations": [
-                "包含 +, -, *, / 運算符",
-                "包含帶分數轉換為假分數",
-                "運算過程符合先乘除後加減",
-                "答案為最簡分數"
-            ]
+            "healer_type": "AST",
+            "description": "數的運算 Ab3 (Level 1: Mixed)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab2_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "數的運算 Ab2 (Level 2: Nested)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab3_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "數的運算 Ab3 (Level 2: Nested)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
         }
     ]
 }

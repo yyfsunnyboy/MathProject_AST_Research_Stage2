@@ -1,58 +1,265 @@
 {
     "evals": [
         {
-            "eval_id": "rad_simple_ab1_01",
+            "eval_id": "math_1a_int_ops_ab1",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
             "ablation_target": "Ab1",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab1.txt",
-            "description": "根式化簡 (Ab1 Baseline: Weak Prompt + No Healer)",
             "healer_type": "None",
-            "expectations": []
+            "description": "整數運算 Ab1 (Bare)",
+            "weight": 1.0,
+            "timeout_seconds": 30
         },
         {
-            "eval_id": "rad_simple_ab1_02",
+            "eval_id": "math_1a_int_ops_ab2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "整數運算 Ab2 (Level 1: Basic)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab3",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "整數運算 Ab3 (Level 1: Basic)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab2_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "整數運算 Ab2 (Level 2: Long Chain)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab3_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "整數運算 Ab3 (Level 2: Long Chain)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab1",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab1",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab1.txt",
-            "description": "根式化簡 (Ab1 Baseline: Weak Prompt + No Healer)",
             "healer_type": "None",
-            "expectations": []
+            "description": "數的運算 Ab1 (Bare)",
+            "weight": 1.0,
+            "timeout_seconds": 30
         },
         {
-            "eval_id": "rad_simple_ab2_01",
+            "eval_id": "math_1a_num_ops_ab2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab2",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
-            "description": "根式化簡 (Ab2 Standard: Strong Prompt + Regex Healer)",
             "healer_type": "Regex",
-            "expectations": []
+            "description": "數的運算 Ab2 (Level 1: Mixed)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
-            "eval_id": "rad_simple_ab2_02",
+            "eval_id": "math_1a_num_ops_ab3",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "數的運算 Ab3 (Level 1: Mixed)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_num_ops_ab2_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab2",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
-            "description": "根式化簡 (Ab2 Standard: Strong Prompt + Regex Healer)",
             "healer_type": "Regex",
-            "expectations": []
+            "description": "數的運算 Ab2 (Level 2: Nested)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
         },
         {
-            "eval_id": "rad_simple_ab3_01",
+            "eval_id": "math_1a_num_ops_ab3_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
-            "description": "根式化簡 (Ab3 Advanced: Strong Prompt + Full Healer)",
             "healer_type": "AST",
-            "expectations": []
+            "description": "數的運算 Ab3 (Level 2: Nested)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
         },
         {
-            "eval_id": "rad_simple_ab3_02",
+            "eval_id": "math_2a_radicals_ab1",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "根式運算 Ab1 (Bare)",
+            "weight": 1.5,
+            "timeout_seconds": 60
+        },
+        {
+            "eval_id": "math_2a_radicals_ab2",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "根式運算 Ab2 (Level 1: Basic)",
+            "weight": 1.5,
+            "timeout_seconds": 60,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab3",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學2上_FourOperationsOfRadicals_Ab2.txt",
-            "description": "根式化簡 (Ab3 Advanced: Strong Prompt + Full Healer)",
             "healer_type": "AST",
-            "expectations": []
+            "description": "根式運算 Ab3 (Level 1: Basic)",
+            "weight": 1.5,
+            "timeout_seconds": 60,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab2_L2",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "根式運算 Ab2 (Level 2: Double Radical)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_2a_radicals_ab3_L2",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "根式運算 Ab3 (Level 2: Double Radical)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab1",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "多項式導數 Ab1 (Bare)",
+            "weight": 2.0,
+            "timeout_seconds": 90
+        },
+        {
+            "eval_id": "gh_deriv_ab2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "多項式導數 Ab2 (Level 1: Basic Derivative)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 1: Basic Derivative)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab2_L2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "多項式導數 Ab2 (Level 2: Tangent Line)",
+            "weight": 2.5,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3_L2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 2: Tangent Line)",
+            "weight": 2.5,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3_L3",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 3: Extrema/Challenge)",
+            "weight": 3.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 3
+            }
         }
     ]
 }

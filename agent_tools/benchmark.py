@@ -1,135 +1,365 @@
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# ID: benchmark.py
+# Version: V9.6.0 (Report Directory & Naming Convention)
+# Last Updated: 2026-02-17
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   本程式是科展實驗的核心執行控制台 (Experiment Runner)，負責驅動「自動出題與修復流水線」。
+#   V9.6 新增功能：自定義報表輸出路徑 (agent_tools/reports/) 與動態檔名生成。
+#
+# [Features]:
+#   - Interactive Menu: 互動式選單
+#   - Filtering: Skill/Ablation 過濾
+#   - Repeated Runs: 重複生成測試
+#   - MCRI Integration: 詳細 L1-L5 評分
+#   - Data Export: SQLite + CSV (Runs, Items, Summary)
+# ==============================================================================
 import sys
 import os
 import json
 import time
+import uuid
+import shutil
+import sqlite3
+import pandas as pd
+from datetime import datetime
 
 # 設定專案根目錄
-# benchmark.py 在 math-problem-generator/scripts/ 下，需往上跳 3 層回到專案根目錄
-PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
 from core.validators.code_validator import validate_python_code
 from core.healers.regex_healer import RegexHealer
 from core.healers.ast_healer import ASTHealer
+from core.code_generator import build_calculation_skeleton, _inject_domain_libs
 
-# Try importing MCRI Evaluator
+# Import MCRI tools
 try:
-    from scripts.evaluate_mcri import MCRI_Evaluator
-    MCRI_EVALUATOR_AVAILABLE = True
-except ImportError:
-    print("⚠️ MCRI Evaluator not found in scripts.evaluate_mcri")
-    MCRI_EVALUATOR_AVAILABLE = False
+    from scripts.evaluate_mcri import (
+        MCRI_Evaluator, create_database, insert_experiment_runs, insert_evaluation_items,
+        compute_and_insert_summary, write_experiment_runs_csv, write_evaluation_items_csv,
+        write_ablation_summary_csv
+    )
+    MCRI_AVAILABLE = True
+except ImportError as e:
+    print(f"⚠️ MCRI Import Error: {e}")
+    MCRI_AVAILABLE = False
 
-def calculate_mcri_score(code_str, eval_id):
+def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     """
-    使用 MCRI_Evaluator 計算代碼分數
+    從 agent_skills/{skill_name}/ 讀取 Prompt
     """
-    if not MCRI_EVALUATOR_AVAILABLE:
-        return 0.0
-
-    # 1. Save to temp file
-    temp_filename = f"temp_mcri_{eval_id}.py"
-    temp_path = os.path.join(PROJECT_ROOT, "skills", temp_filename) # Put in skills folder as MCRI expects
-    
-    # Ensure skills dir exists
-    os.makedirs(os.path.dirname(temp_path), exist_ok=True)
-    
-    try:
-        with open(temp_path, "w", encoding="utf-8") as f:
-            f.write(code_str)
-            
-        # 2. Initialize Evaluator
-        # ablation_id=3 (Ab3 - Healer)
-        evaluator = MCRI_Evaluator(temp_path, ablation_id=3) 
-        
-        if not evaluator.load_skill_module():
-            return 0.0
-            
-        # 3. Calculate Scores (Simplified MCRI Logic)
-        # L1: Syntax & Safety
-        l1_score, _ = evaluator.evaluate_syntax_safety()
-        l1_stab, _, _ = evaluator.evaluate_runtime_stability(repetitions=1)
-        l1_total = l1_score + l1_stab # Max 17.5 approx
-        
-        # Fake result dict for L2/L3 (simplified)
-        # We run generate to get a result for checking
-        try:
-            gen_result = evaluator.generate_func()
-        except:
-            gen_result = {}
-
-        # L2: Interface
-        l2_contract, _ = evaluator.evaluate_interface_contract(gen_result)
-        l2_fmt, _ = evaluator.evaluate_format_purity(gen_result)
-        l2_total = l2_contract + l2_fmt
-        
-        # L3: Consistency
-        l3_score, _ = evaluator.evaluate_internal_consistency(gen_result)
-        
-        # L4: Math Quality
-        q_text = str(gen_result.get('question_text', ''))
-        ans_text = str(gen_result.get('answer', ''))
-        math_res = evaluator.score_math_question(q_text, ans_text)
-        l4_total = math_res.get('total_math_score', 0)
-        
-        # Simple Weighted Sum (Normalized to 100 roughly)
-        # L1(15) + L2(15) + L3(20) + L4(50) = 100
-        # Our partial sums:
-        # l1 ~ 17.5 (scaled to 15) -> l1 * 0.85
-        # l2 ~ 15 -> l2 * 1.0
-        # l3 ~ 15 (scaled to 20 without external check) -> l3 * 1.3
-        # l4 ~ 50 -> l4
-        
-        total_score = (min(l1_total, 15)) + (min(l2_total, 15)) + (min(l3_score, 20)) + (min(l4_total, 50))
-        
-        return round(total_score, 1)
-
-    except Exception as e:
-        print(f"  ⚠️ MCRI Calc Error: {e}")
-        return 0.0
-    finally:
-        # Cleanup
-        if os.path.exists(temp_path):
-            try:
-                os.remove(temp_path)
-            except:
-                pass
-
-
-def load_prompt_from_file(prompt_filename):
-    """從 experiments/golden_prompts/temp/ 讀取 Prompt 內容 (模擬 SKILL.md)"""
-    path = os.path.join(PROJECT_ROOT, "experiments", "golden_prompts", "temp", prompt_filename)
-    if not os.path.exists(path):
-        # 嘗試在上一層找 (可能是 golden_prompts/)
-        path = os.path.join(PROJECT_ROOT, "experiments", "golden_prompts", prompt_filename)
+    if ablation_target == "Ab1":
+        path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "experiments", "ab1_bare_prompt.md")
+    else:
+        path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "SKILL.md")
     
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
+            
+    print(f"⚠️ Prompt file not found: {path}")
     return None
 
-def run_benchmark(evals_file="evals.json"):
-    print("🚀 Starting Math Problem Generator Benchmark...")
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1):
+    print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
+    print(f"Generations per Case: {repeat_count}")
 
-    # 1. Load Evals
-    # evals_path = os.path.join(PROJECT_ROOT, "math-problem-generator", "evals", "evals.json")
-    # If evals_file is absolute path, use it; else, look in evals dir or project root
+    # ==============================================================================
+    # 1. Load Evals (Dynamic Aggregation)
+    # [V9.7 Refactor] Now aggregates from agent_skills/*/evals.json
+    # ==============================================================================
+    
+    evals = []
+    agent_skills_dir = os.path.join(PROJECT_ROOT, "agent_skills")
+    
+    # 優先從各 Skill 目錄載入
+    print(f"📂 Scanning skills in: {agent_skills_dir}")
+    if os.path.exists(agent_skills_dir):
+        for skill_dir in os.listdir(agent_skills_dir):
+            skill_path = os.path.join(agent_skills_dir, skill_dir)
+            if not os.path.isdir(skill_path):
+                continue
+                
+            eval_file = os.path.join(skill_path, "evals.json")
+            if os.path.exists(eval_file):
+                try:
+                    with open(eval_file, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        skill_evals = data.get("evals", [])
+                        if skill_evals:
+                            # 確保 skill_name 正確 (可選)
+                            for e in skill_evals:
+                                if "skill_name" not in e:
+                                    e["skill_name"] = skill_dir
+                            evals.extend(skill_evals)
+                except Exception as e:
+                    print(f"⚠️ Failed to load {eval_file}: {e}")
+
+    # Fallback: 如果什麼都沒掃到，才嘗試讀舊的 evals_full.json
+    if not evals:
+        print("⚠️ No skill-specific evals found. Trying fallback to evals_full.json...")
+        if os.path.isabs(evals_file):
+            evals_path = evals_file
+        else:
+            try_path = os.path.join(PROJECT_ROOT, "math-problem-generator", "evals", evals_file)
+            if os.path.exists(try_path):
+                evals_path = try_path
+            else:
+                 try_path_root = os.path.join(PROJECT_ROOT, evals_file)
+                 if os.path.exists(try_path_root):
+                    evals_path = try_path_root
+                 else:
+                    evals_path = evals_file
+
+        if os.path.exists(evals_path):
+            try:
+                with open(evals_path, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    evals = data.get("evals", [])
+            except Exception as e:
+                print(f"❌ Failed to load fallback evals.json: {e}")
+                return
+
+    # Filter logic
+    if filter_skill:
+        evals = [e for e in evals if filter_skill in e.get("skill_name", "")]
+    if filter_ablation:
+        evals = [e for e in evals if e.get("ablation_target") == filter_ablation]
+        
+    if not evals:
+         print(f"⚠️ No matching test cases found. Exiting.")
+         return
+
+    print(f"📋 Loaded {len(evals)} test cases (Dynamic Aggregation).")
+
+    # 2. Setup AI & Healers
+    client = get_ai_client()
+    regex_healer = RegexHealer()
+    ast_healer = ASTHealer()
+
+    # 3. Setup Storage
+    instance_dir = os.path.join(PROJECT_ROOT, "instance")
+    os.makedirs(instance_dir, exist_ok=True)
+    db_path = os.path.join(instance_dir, "benchmark.db")
+    
+    if MCRI_AVAILABLE:
+        create_database(db_path)
+    
+    all_runs = []
+    all_items = []
+
+    # 4. Main Loop
+    for idx, test_case in enumerate(evals):
+        eval_id_base = test_case.get("eval_id", f"case_{idx}")
+        skill_name = test_case.get("skill_name", "")
+        ablation_target = test_case.get("ablation_target", "Ab3")
+        desc = test_case.get("description", "")
+        
+        # Mapping logic for backwards compatibility
+        if not skill_name and "prompt_file" in test_case:
+             mapping = {
+                "jh_數學2上_FourOperationsOfRadicals_Ab2.txt": "jh_數學2上_FourOperationsOfRadicals",
+                "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+                "gh_ApplicationsOfDerivatives_Ab2.txt": "gh_ApplicationsOfDerivatives"
+            }
+             pf = test_case["prompt_file"]
+             skill_name = mapping.get(pf, pf.replace("_Ab2.txt", "").replace("_Ab1.txt", ""))
+
+        print(f"\nExample {idx+1}/{len(evals)}: [{eval_id_base}] Ab:{ablation_target}")
+        skill_prompt = load_prompt_from_skill(skill_name, ablation_target)
+        if not skill_prompt:
+            continue
+
+        ab_id_map = {"Ab1": 1, "Ab2": 2, "Ab3": 3}
+        ab_id = ab_id_map.get(ablation_target, 3)
+
+        for run_i in range(repeat_count):
+            print(f"  🔹 Gen {run_i+1}/{repeat_count}...", end="", flush=True)
+            
+            try:
+                # A. Generate
+                response = call_ai_with_retry(client, skill_prompt, max_retries=3)
+                if hasattr(response, 'text'):
+                    raw_code = response.text
+                else:
+                    raw_code = str(response)
+                
+                # B. Heal & Extract Code
+                # [Robust Extraction] Search for code blocks anywhere in the text
+                cleaned_code = raw_code.strip()
+                
+                # Try to find python code block
+                import re
+                code_block_match = re.search(r'```python\s*(.*?)```', cleaned_code, re.DOTALL)
+                if code_block_match:
+                    cleaned_code = code_block_match.group(1).strip()
+                else:
+                    # Fallback: try generic code block
+                    code_block_match = re.search(r'```\s*(.*?)```', cleaned_code, re.DOTALL)
+                    if code_block_match:
+                        cleaned_code = code_block_match.group(1).strip()
+                    else:
+                        # Fallback: if no markdown, assuming the whole text is code 
+                        pass
+
+                # [Safety] Double check for remaining fences (e.g. double fencing)
+                cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)
+                cleaned_code = re.sub(r'^```\s*', '', cleaned_code, flags=re.MULTILINE)
+                cleaned_code = re.sub(r'```$', '', cleaned_code.strip(), flags=re.MULTILINE)
+                
+                raw_code = cleaned_code.strip()
+
+
+
+                healer_fixes = {}
+                healer_applied = False
+                
+                if ablation_target == "Ab1":
+                    healed_code = raw_code
+                elif ablation_target == "Ab2":
+                    healed_code, stats = regex_healer.heal_minimal(raw_code)
+                    healer_fixes = stats if isinstance(stats, dict) else {"regex": stats}
+                    healer_applied = True
+                    skel = build_calculation_skeleton(skill_name)
+                    healed_code = skel + "\n" + healed_code
+                    healed_code, _ = _inject_domain_libs(healed_code)
+                elif ablation_target == "Ab3":
+                    temp_code, r_fixes = regex_healer.heal(raw_code)
+                    healed_code, a_fixes = ast_healer.heal(temp_code)
+                    a_fixes_dict = {"ast": a_fixes} if isinstance(a_fixes, int) else a_fixes
+                    healer_fixes = {**r_fixes, **a_fixes_dict}
+                    healer_applied = True
+                    skel = build_calculation_skeleton(skill_name)
+                    healed_code = skel + "\n" + healed_code
+                    healed_code, _ = _inject_domain_libs(healed_code)
+                else:
+                    healed_code = raw_code # Fallback
+
+                # C. Evaluate using MCRI
+                if MCRI_AVAILABLE:
+                    temp_name = f"temp_gen_{uuid.uuid4().hex[:8]}.py"
+                    temp_dir = os.path.join(PROJECT_ROOT, "temp_benchmark")
+                    os.makedirs(temp_dir, exist_ok=True)
+                    temp_path = os.path.join(temp_dir, temp_name)
+                    
+                    with open(temp_path, "w", encoding="utf-8") as f:
+                        f.write(healed_code)
+                        
+                    gen_kwargs = test_case.get("generation_kwargs", {})
+                    evaluator = MCRI_Evaluator(temp_path, ablation_id=ab_id, model_name=test_case.get("model", "unknown"), generation_kwargs=gen_kwargs)
+                    if evaluator.load_skill_module():
+                        run_record, run_items = evaluator.run_full_evaluation(sample_index=idx, repetitions=3)
+                        
+                        run_record['skill_name'] = skill_name
+                        run_record['healer_applied'] = 1 if healer_applied else 0
+                        run_record['healer_fix_count'] = sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0
+                        run_record['notes'] += f" | GenRun:{run_i+1}"
+                        
+                        all_runs.append(run_record)
+                        all_items.extend(run_items)
+                        print(f" -> Score: {run_record['avg_mcri_total']:.1f}")
+                    else:
+                        print(f" -> Load Failed (Score: 0)")
+                        # Create a failed record for statistics
+                        failed_record = {
+                            'run_id': str(uuid.uuid4()),
+                            'timestamp': datetime.now().isoformat(),
+                            'model_name': test_case.get("model", "unknown"),
+                            'skill_name': skill_name,
+                            'ablation_id': ab_id,
+                            'sample_index': idx,
+                            'score_program_total': 0, 'score_math_total': 0, 'avg_mcri_total': 0,
+                            'pass_rate': 0.0, 'fail_count': 3, 'repetitions_planned': 3, 'repetitions_completed': 0,
+                            'notes': "Load Failed (SyntaxError or Import Error)",
+                            'healer_applied': 1 if healer_applied else 0,
+                            'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
+                             # Fill other fields with 0
+                            'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                            'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
+                            'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
+                            'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
+                            'score_l1_1_syntax': 0, 'score_l1_2_runtime': 0,
+                            'score_l2_1_contract': 0, 'score_l2_2_purity': 0,
+                            'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
+                            'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
+                            'source_code_path': temp_path,
+                            'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
+                            'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
+                            'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
+                            'total_tokens': 0, 'latency_ms': 0
+                        }
+                        all_runs.append(failed_record)
+
+                    
+                    try:
+                        os.remove(temp_path)
+                    except: pass
+                else:
+                    print(" -> MCRI Unavailable")
+
+            except Exception as e:
+                print(f" -> Error: {e}")
+
+    # 5. Save Results
+    if MCRI_AVAILABLE and all_runs:
+        conn = sqlite3.connect(db_path)
+        insert_experiment_runs(conn, all_runs)
+        insert_evaluation_items(conn, all_items)
+        summary_data = compute_and_insert_summary(conn)
+        conn.close()
+        
+        # Export CSVs
+        report_dir = os.path.join(PROJECT_ROOT, "agent_tools", "reports")
+        os.makedirs(report_dir, exist_ok=True)
+        
+        # Determine Prefix based on filter
+        prefix = "benchmark"
+        if filter_skill:
+            prefix = filter_skill
+            if filter_ablation:
+                prefix += f"_{filter_ablation}"  # e.g., SkillName_Ab1
+        
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
+        run_file = os.path.join(report_dir, f"{prefix}_runs_{ts}.csv")
+        item_file = os.path.join(report_dir, f"{prefix}_items_{ts}.csv")
+        sum_file = os.path.join(report_dir, f"{prefix}_summary_{ts}.csv")
+        
+        write_experiment_runs_csv(all_runs, run_file)
+        write_evaluation_items_csv(all_items, item_file)
+        write_ablation_summary_csv(summary_data, sum_file)
+        
+        print(f"\n✅ Results saved to {report_dir}")
+        print(f"   - {os.path.basename(run_file)}")
+        print(f"   - {os.path.basename(item_file)}")
+        print(f"   - {os.path.basename(sum_file)}")
+        print(f"   - DB: {db_path}")
+
+def show_interactive_menu(evals_file):
+    # ... (Same as before) ...
+    print("\n" + "="*60)
+    print("🔎 Benchmark Interactive Menu")
+    print("="*60)
+    
     if os.path.isabs(evals_file):
         evals_path = evals_file
     else:
-        # Check in math-problem-generator/evals first
         try_path = os.path.join(PROJECT_ROOT, "math-problem-generator", "evals", evals_file)
         if os.path.exists(try_path):
             evals_path = try_path
         else:
-            evals_path = os.path.join(PROJECT_ROOT, evals_file)
+             try_path_root = os.path.join(PROJECT_ROOT, evals_file)
+             if os.path.exists(try_path_root):
+                evals_path = try_path_root
+             else:
+                print(f"❌ Evals file not found: {evals_file}")
+                return
 
-    if not os.path.exists(evals_path):
-        print(f"❌ Evals file not found: {evals_path}")
-        return
-        
     try:
         with open(evals_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -137,149 +367,56 @@ def run_benchmark(evals_file="evals.json"):
     except Exception as e:
         print(f"❌ Failed to load evals.json: {e}")
         return
-
-    print(f"📋 Loaded {len(evals)} test cases.")
+        
+    skills = sorted(list(set(e.get("skill_name", "Unknown") for e in evals if e.get("skill_name"))))
     
-    results = []
+    print("[0] Run All Skills")
+    for i, skill in enumerate(skills, 1):
+        print(f"[{i}] {skill}")
+        
+    choice = input(f"\n👉 Select Skill (0-{len(skills)}): ").strip()
     
-    # 2. Run Each Eval
-    client = get_ai_client()
-    regex_healer = RegexHealer()
-    ast_healer = ASTHealer() # Ensure initialized for AST mode
-
-    for idx, test_case in enumerate(evals):
-        eval_id = test_case.get("eval_id", f"case_{idx}")
-        prompt_file = test_case.get("prompt_file", "")
-        desc = test_case.get("description", "")
-        
-        print(f"\nExample {idx+1}/{len(evals)}: [{eval_id}] {desc}")
-        
-        # Load Prompt (Simulate `SKILL.md` usage)
-        skill_prompt = load_prompt_from_file(prompt_file)
-        if not skill_prompt:
-            print(f"  ⚠️ Prompt file not found: {prompt_file}. Skipping.")
-            continue
-            
-        print("  Running AI Generation...")
-        start_time = time.time()
-        
-        # Call AI (Simulate Agent Execution)
+    selected_skill = None
+    if choice != '0':
         try:
-            # 模擬 AI 呼叫
-            response = call_ai_with_retry(client, skill_prompt, max_retries=3)
-            
-            # [Fix] Extract text from response object
-            if hasattr(response, 'text'):
-                raw_code = response.text
-            else:
-                raw_code = str(response)
-            
-            # [Debug Print Removed to reduce noise]
-            
-            # [Pre-Healer Cleaning]
-            cleaned_code = raw_code.strip()
-            if cleaned_code.startswith("```python"):
-                cleaned_code = cleaned_code[9:]
-            elif cleaned_code.startswith("```"):
-                cleaned_code = cleaned_code[3:]
-            
-            if cleaned_code.endswith("```"):
-                cleaned_code = cleaned_code[:-3]
-            
-            raw_code = cleaned_code.strip()
-                
-            duration = time.time() - start_time
-            
-            if "def generate" not in raw_code:
-                # Try simple wrapping if missing
-                # raw_code = "def generate():\n" + raw_code # risky
-                pass
-            
-            # Run Healer based on configuration
-            healer_type = test_case.get("healer_type", "Regex") # Default to Regex if not specified
-            
-            if healer_type == "None":
-                healed_code = raw_code
-                fixes = {}
-            elif healer_type == "Regex":
-                healed_code, fixes = regex_healer.heal(raw_code)
-            elif healer_type == "AST":
-                # Pipeline: Regex -> AST
-                temp_code, r_fixes = regex_healer.heal(raw_code)
-                healed_code, a_fixes = ast_healer.heal(temp_code)
-                fixes = {**r_fixes, **a_fixes}
-            else:
-                # Default fallback
-                healed_code, fixes = regex_healer.heal(raw_code)
+            idx = int(choice) - 1
+            if 0 <= idx < len(skills):
+                selected_skill = skills[idx]
+        except: return
 
-            # [Injection] Manual Scaffolding for Benchmark (Only for Ab3/AST or explicit request)
-            # We inject for AST mode or if prompt is Ab2/Ab3 to ensure fair comparison of logic if needed
-            # But strictly speaking, Ab1 might not have these tools. 
-            # Let's inject only if healer is not None, assuming Ab1 (None) implies raw generation testing.
-            if healer_type != "None":
-                domain_lib_path = os.path.join(PROJECT_ROOT, "core", "prompts", "domain_function_library.py")
-                if os.path.exists(domain_lib_path):
-                    try:
-                        with open(domain_lib_path, "r", encoding="utf-8") as f:
-                            domain_lib_code = f.read()
-                        healed_code = domain_lib_code + "\n\n" + healed_code
-                    except Exception as e:
-                        print(f"  ⚠️ Failed to inject domain library: {e}")
-
-            # 3. 驗證代碼 (Validation & Scoring)
-            is_valid, error_msg = validate_python_code(healed_code)
-            
-            mcri_score = 0.0
-            if is_valid:
-                mcri_score = calculate_mcri_score(healed_code, eval_id)
-            
-            # Define PASS: Valid execution
-            status = "PASS" if is_valid else "FAIL" 
-            color = "\033[92m" if status == "PASS" else "\033[91m"
-            reset = "\033[0m"
-            
-            print(f"  Result: {color}{status}{reset} (Time: {duration:.2f}s | Healer: {healer_type} | MCRI: {mcri_score:.1f})")
-            if not is_valid:
-                print(f"  Error: {error_msg}")
-                
-            results.append({
-                "id": eval_id,
-                "ablation": test_case.get("ablation_target", "Unknown"),
-                "status": status,
-                "time": duration,
-                "fixes": fixes,
-                "score": mcri_score
-            })
-            
-        except Exception as e:
-            print(f"  ❌ Runtime Error: {e}")
-            results.append({"id": eval_id, "ablation": test_case.get("ablation_target", "Unknown"), "status": "ERROR", "error": str(e), "score": 0.0})
-
-    # 3. Summary Report
-    print("\n" + "="*60)
-    print("📊 FULL ABLATION BENCHMARK SUMMARY")
-    print("="*60)
+    print("\n[Ablation Filter]")
+    print("[0] Run All Ablations")
+    print("[1] Ab1 (Bare)")
+    print("[2] Ab2 (Regex)")
+    print("[3] Ab3 (AST)")
     
-    # Group by Ablation Target
-    ablations = list(set(r.get("ablation", "Unknown") for r in results))
-    ablations.sort()
+    ab_choice = input("\n👉 Select Ablation (0-3): ").strip()
+    selected_ablation = None
+    if ab_choice == '1': selected_ablation = "Ab1"
+    elif ab_choice == '2': selected_ablation = "Ab2"
+    elif ab_choice == '3': selected_ablation = "Ab3"
     
-    for ab in ablations:
-        group_results = [r for r in results if r.get("ablation") == ab]
-        total = len(group_results)
-        passed = sum(1 for r in group_results if r["status"] == "PASS")
-        avg_score = sum(r.get("score", 0) for r in group_results) / total if total > 0 else 0
-        rate = (passed / total * 100) if total > 0 else 0
-        
-        print(f"[{ab}] Pass Rate: {rate:5.1f}% | Avg Score: {avg_score:4.1f} | Samples: {total}")
-        
-    print("="*60)
+    print("\n[Repetitions for Generation]")
+    rep_choice = input("👉 Enter number of generations per case (default 1): ").strip()
+    try:
+        repeat_count = int(rep_choice)
+        if repeat_count < 1: repeat_count = 1
+    except:
+        repeat_count = 1
+    
+    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count)
 
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument("--evals", default="evals.json", help="Path to evals json file")
+    parser.add_argument("--evals", default="math-problem-generator/evals/evals_full.json", help="Path to evals json file")
+    parser.add_argument("--skill", help="Filter by skill name (partial match supported)")
+    parser.add_argument("--ablation", help="Filter by ablation (Ab1, Ab2, Ab3)")
+    parser.add_argument("--repeat", type=int, default=1, help="Number of generations per test case")
+    parser.add_argument("--menu", action="store_true", help="Show interactive menu")
     args = parser.parse_args()
     
-    # Update global PROJECT_ROOT if needed or pass path
-    run_benchmark(args.evals)
+    if args.skill or args.ablation or args.repeat > 1:
+        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat)
+    else:
+        show_interactive_menu(args.evals)

@@ -1,7 +1,74 @@
-# Skill: jh_數學2上_FourOperationsOfRadicals
+【角色】K12 數學演算法工程師
 
-## Description
-This skill handles operations with radicals, including simplification, addition, subtraction, multiplication, and division (rationalization).
+【任務】
+4: 實作 def generate(level=1, **kwargs)，生成根式化簡運算題目。
+5: 題目結構必須為：
+6: - level=1: 基礎根式四則運算 (單層根號)
+7: - level=2: 雙重根號化簡 ($\sqrt{A+2\sqrt{B}}$) 或有理化運算 (高難度格式)
+返回 dict: {'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}
 
-## Prompt Template
-TODO: Insert prompt template or guidelines here.
+【程式要求】（必須嚴格遵守）
+1. 請寫成兩個函式：
+   - def generate(level=1, **kwargs): 生成題目
+   - def check(user_answer, correct_answer): 檢查答案是否正確
+2. generate 函式要回傳一個字典，包含以下欄位（請照抄 key 名稱）：
+   - 'question_text': 題目文字
+   - 'answer': 空字串 ''
+   - 'correct_answer': 正確答案（必須是字串，例如 "2\sqrt{3}" 或 "5-\sqrt{2}"）
+   - 'mode': 1
+3. check 函式要回傳一個字典，包含：
+   - 'correct': True 或 False
+   - 'result': '正確' 或 '錯誤'
+
+【聰明的 check 函數要求】
+- 必須支援數值相等比較（考慮浮點誤差）
+- 優先字串比對（忽略空格與順序）
+- 再轉數值比對（使用 eval 或自訂解析）
+- 支援同類項順序不同但數值相等的情況
+
+【參考例題】（必須參考此風格，但生成多樣化題目）
+化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})$
+
+【系統已注入的輔助函式（API）】（嚴禁重新定義，直接調用）
+- RadicalOps.simplify_term(coeff, radicand) → (new_coeff, new_radicand)
+- RadicalOps.format_term(coeff, radicand, is_first=True) → 化簡後格式化
+- RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True) → 未化簡格式化（題目用）
+- RadicalOps.format_expression(terms_dict, denominator=1) → 最終答案
+
+【核心規則】（必須嚴格遵守）
+1. 題目必須為：(多項未化簡根式加減括號) + 單純乘法（係數 × 括號內加減根式）
+2. 第一部分：3~4 項未化簡根式加減，使用 format_term_unsimplified 構建
+3. 第二部分：簡單乘法，如 k(√a + √b) 或 k(√c - √d)，k 為小整數
+4. 題目顯示未化簡形式，答案必須已化簡（題目與答案必須不同）
+5. 嚴禁使用 build_polynomial_text、fmt_num、fmt_term 或任何非 RadicalOps 工具
+6. 嚴禁自己 import RadicalOps 或其他模組
+7. 注意 generated string 不要出現 `+ +` 或 `+ -`，正確使用 is_first 參數
+8. 答案必須最簡、無根式分母、合併同類項、常數項在前
+9. question_text 數學式完整用 $...$ 包裹
+10. 只輸出 Python 代碼，無註解、無說明、無 Markdown、無額外文字
+11. 程式碼結束後絕對無任何內容
+
+【強烈建議結構】（模仿此邏輯）
+- 第一部分：選擇 base radicand，乘 k² 構造可化簡項，組成加減括號
+- 第二部分：選擇簡單係數 k 乘一個加減根式括號
+- 用 RadicalOps.format_term_unsimplified 生成各項字串，然後用空字串或單純加號連接（注意符號重複）
+- 注意：format_term_unsimplified 若傳入 is_first=False 會自帶 + 號，請勿重複添加
+- 逐項 simplify_term 化簡後，用 format_expression 得到答案
+
+【輸出範例】（僅供參考，請勿直接抄襲內容或邏輯，僅可參考字典結構與 key 名稱）
+```python
+def generate(level=1, **kwargs):
+    # 你的生成邏輯...
+    return {
+        'question_text': '化簡 $$   (\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})   $$',
+        'answer': '',
+        'correct_answer': '5\sqrt{2} + 3\sqrt{3}',
+        'mode': 1
+    }
+
+def check(user_answer, correct_answer):
+    try:
+        # 簡單數值比較（可擴充）
+        return abs(eval(user_answer) - eval(correct_answer)) < 1e-6
+    except:
+        return str(user_answer).strip() == str(correct_answer).strip()

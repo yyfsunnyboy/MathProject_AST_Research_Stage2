@@ -1,150 +1,92 @@
-【角色】Python Math Generator (K12)
-【任務】實作 `def generate(level=1, **kwargs)`，生成「數的四則運算 (Level 3)」題目。
-【核心要求】**Self-Contained Code (完全自包含)**。禁止 import 任何非標準函式庫。
-【參考例題】
-範例：計算 `[(-2+5)×1/3]÷(-5/2) + |8×(-1/4)-5|`的值。
+【角色】K12 數學演算法工程師
 
-### ⚠️ PYTHON SYNTAX & LOGIC RULES
-1.  **禁止 Import 自定義模組**：❌ `from IntegerOps import ...` (這是錯誤的！)。
-2.  **只能使用標準庫**：✅ `import random`, `import math`, `from fractions import Fraction`。
-3.  **數學運算優先級 (PEMDAS)**：必須使用 Python 的 `eval()` 或 `Fraction` 物件進行運算，**嚴禁**自己寫迴圈處理運算（那樣會忽略優先級）。
-4.  **LaTeX 格式**：
-    -   乘法用 `\times`，除法用 `\div`。
-    -   分數用 `\frac{a}{b}`。
-    -   絕對值用 `\left| ... \right|`。
-    -   **中括號**用 `\left[ ... \right]`。
+【任務】
+實作 def generate(level=1, **kwargs)，生成「數的四則運算 (Level 3)」題目。
+題目必須模仿課本標準結構：混合四則運算、括號、中括號與絕對值，包含分數運算。
+返回 dict: {'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}
 
-### 🏗️ 程式碼範本 (Scaffolding - Complexity Level 3)
-請依照以下結構撰寫程式碼，**將所有輔助函式直接寫在 `generate` 內部**。
-**目標題型**：混合四則運算、括號 `()`、中括號 `[]` 與絕對值 `| |`，包含分數運算。
-範例結構： `[ (n1 op1 n2) op2 n3 ] op3 n4 + | n5 op4 n6 |`
+【程式要求】（必須嚴格遵守）
+1. 請寫成兩個函式：
+   - def generate(level=1, **kwargs): 生成題目
+   - def check(user_answer, correct_answer): 檢查答案是否正確
+2. generate 函式要回傳一個字典，包含以下欄位（請照抄 key 名稱）：
+   - 'question_text': 題目文字
+   - 'answer': 空字串 ''
+   - 'correct_answer': 正確答案（必須是字串，例如 "24" 或 "3/5"；多個答案用逗號分隔）
+   - 'mode': 1
+3. check 函式要回傳一個字典，包含：
+   - 'correct': True 或 False
+   - 'result': '正確' 或 '錯誤'
 
+【聰明的 check 函數要求】
+- 必須支援 1/2 與 0.5 視為相同
+- 優先字串完全比對
+- 再轉 Fraction 或 float 比對（容許 1e-6 誤差）
+- 異常時回退字串比對
+
+【參考例題】（必須參考此風格，但生成多樣化題目）
+計算 $[(-2+5)×1/3]÷(-5/2) + |8×(-1/4)-5|$的值。
+
+【系統已注入的輔助函式（API）】（嚴禁重新定義，直接調用）
+- to_latex(num) → 將數字轉換為 LaTeX 格式（支援整數、分數、帶分數）
+- fmt_num(num, signed=False, op=False) → 格式化數字（負數加括號，支援 signed/op 模式）
+- fmt_term(coeff, power, var='x') → 格式化多項式項（可參考格式風格）
+- safe_eval(expr_str) → 安全計算表達式（支援四則、括號、abs()，自動轉 Fraction）
+
+【核心要求】
+1. **Self-Contained Code**：禁止 import 任何非標準函式庫，只能使用 `import random`, `from fractions import Fraction`。
+2. **數學運算優先級 (PEMDAS)**：必須使用 safe_eval() 或 eval() + Fraction 進行運算，嚴禁自己寫迴圈處理優先級。
+3. **LaTeX 格式**：
+   - 乘法用 \times， 除法用 \div。
+   - 分數用 \frac{a}{b}。
+   - 絕對值用 \left| ... \right|。
+   - 中括號用 \left[ ... \right]。
+4. **確保除法運算 A \div B 中的 A 必須是 B 的倍數**：建議先隨機產生除數與商，再相乘得到被除數。
+5. **必須使用已注入的 API**：答案格式化用 to_latex()，數字格式用 fmt_num()，計算用 safe_eval()。
+
+【核心規則】（必須嚴格遵守）
+1. 題目必須為混合四則運算結構：括號、中括號、絕對值，包含分數。
+2. 至少包含負數、分數、括號優先級。
+3. 數字範圍 -12 ~ 12，非零分母。
+4. 嚴禁生成無意義或無法整除的除法。
+5. 答案必須為最簡分數或整數，使用 Fraction 化簡後以 to_latex() 轉換。
+6. question_text 數學式完整用 $...$ 包裹。
+7. 只輸出 Python 代碼，無註解、無說明、無 Markdown、無額外文字。
+8. 程式碼結束後絕對無任何內容。
+
+【強烈建議結構】（模仿此邏輯）
+- 第一部分：中括號內括號運算 + 乘除結構。
+- 第二部分：絕對值內混合運算。
+- 用 random 產生數字，先確保除法整除（除數 × 商 = 被除數）。
+- 用 safe_eval() 計算答案確保優先級正確。
+- 用 to_latex() 轉換最終答案為 LaTeX 分數格式。
+- 最終題目文字組合為 LaTeX 字串。
+
+【輸出範例】（僅供參考，請勿直接抄襲內容或邏輯，僅可參考字典結構與 key 名稱）
 ```python
-import random
-import math
-from fractions import Fraction
-
 def generate(level=1, **kwargs):
-    # ==========================================
-    # 1. 定義輔助函式 (Self-Contained Utils)
-    # ==========================================
-    def to_latex(num):
-        """將數字轉換為 LaTeX (支援分數、整數)"""
-        if isinstance(num, int): return str(num)
-        if isinstance(num, float): num = Fraction(num).limit_denominator()
-        if isinstance(num, Fraction):
-            # 分母為 1 -> 整數
-            if num.denominator == 1: return str(num.numerator)
-            
-            # 帶分數處理 (無論正負)
-            # abs(num) = whole + rem/den
-            abs_n = abs(num.numerator)
-            den = abs(num.denominator)
-            if abs_n > den: 
-                whole = abs_n // den
-                rem = abs_n % den
-                if rem == 0: return str(whole * (1 if num >= 0 else -1))
-                
-                # 負數帶分數: -1\frac{1}{2}
-                if num < 0:
-                    return rf"-{whole}\frac{{{rem}}}{{{den}}}"
-                else:
-                    return rf"{whole}\frac{{{rem}}}{{{den}}}"
-                    
-            # 真分數
-            if num < 0:
-                return rf"-\frac{{{abs(num.numerator)}}}{{{den}}}"
-            return rf"\frac{{{num.numerator}}}{{{den}}}"
-        return str(num)
-
-    def fmt_term(num):
-        """格式化數字：負數加括號"""
-        s = to_latex(num)
-        return f"({s})" if num < 0 else s
-
-    # ==========================================
-    # 2. 生成邏輯 (Logic - High Complexity)
-    # ==========================================
-    # 目標結構： TERM1 + TERM2
-    # TERM1 = [ (n0 op1 n1) op2 n2 ] op3 n3
-    # TERM2 = | n4 op4 n5 | (隨機決定加還是減)
-    
-    ops_latex = ['+', '-', r'\times', r'\div']
-    ops_py = ['+', '-', '*', '/']
-    
-    # 隨機選擇 5 個運算符 (4個內部 + 1個連接)
-    idx = [random.randint(0, 3) for _ in range(5)]
-    op_main_idx = random.choice([0, 1]) # 只允許 + 或 - 連接兩大項
-
-    # 生成數字 (使用 Fraction 避免精度問題)
-    def rand_frac():
-        # High probability of Fraction (80%)
-        if random.random() < 0.2: 
-            return Fraction(random.randint(-12, 12), 1)
-        return Fraction(random.randint(-10, 10), random.randint(2, 6))
-    
-    # 建立 6 個數字
-    nums = [rand_frac() for _ in range(6)]
-    
-    # --- 避免除以零 ---
-    if ops_py[idx[0]] == '/' and nums[1] == 0: nums[1] = Fraction(1, 1)
-    if ops_py[idx[1]] == '/' and nums[2] == 0: nums[2] = Fraction(1, 1)
-    if ops_py[idx[2]] == '/' and nums[3] == 0: nums[3] = Fraction(1, 1)
-    if ops_py[idx[3]] == '/' and nums[5] == 0: nums[5] = Fraction(1, 1)
-
-    # ---------------------------------------
-    # 核心邏輯：構建對等字串 (Python Eval Str vs LaTeX Show Str)
-    # ---------------------------------------
-    f_nums = [f"Fraction({n.numerator},{n.denominator})" for n in nums]
-    t_nums = [fmt_term(n) for n in nums]
-    
-    # 1. 區塊 A: [ (n0 op1 n1) op2 n2 ] op3 n3
-    #    Inner: (n0 op1 n1)
-    py_inner = f"({f_nums[0]} {ops_py[idx[0]]} {f_nums[1]})"
-    tex_inner = f"({t_nums[0]} {ops_latex[idx[0]]} {t_nums[1]})"
-    
-    #    Mid: [ Inner op2 n2 ]
-    py_mid = f"({py_inner} {ops_py[idx[1]]} {f_nums[2]})"
-    tex_mid = f"\\left[ {tex_inner} {ops_latex[idx[1]]} {t_nums[2]} \\right]"
-    
-    #    Outer: Mid op3 n3
-    py_block_a = f"({py_mid} {ops_py[idx[2]]} {f_nums[3]})"
-    tex_block_a = f"{tex_mid} {ops_latex[idx[2]]} {t_nums[3]}"
-    
-    # 2. 區塊 B: | n4 op4 n5 |
-    py_abs_inner = f"({f_nums[4]} {ops_py[idx[3]]} {f_nums[5]})"
-    py_block_b = f"abs({py_abs_inner})"
-    tex_block_b = f"\\left| {t_nums[4]} {ops_latex[idx[3]]} {t_nums[5]} \\right|"
-
-    # 3. 最終組合: Block A (Main Op) Block B
-    main_op_py = ops_py[op_main_idx]      # + or -
-    main_op_latex = ops_latex[op_main_idx] # + or -
-
-    final_py_expr = f"{py_block_a} {main_op_py} {py_block_b}"
-    final_tex_expr = f"{tex_block_a} {main_op_latex} {tex_block_b}"
-
-    # 計算答案
-    try:
-        ans_val = eval(final_py_expr)
-        
-        # [Filter] 如果答案太醜(分母過大)，或中間過程數字太誇張，就遞迴重抽
-        if ans_val.denominator > 300 or abs(ans_val.numerator) > 5000: 
-            return generate(level, **kwargs)
-            
-    except ZeroDivisionError:
-        return generate(level, **kwargs)
-
-    # ==========================================
-    # 3. 輸出格式 (Output)
-    # ==========================================
-    ans_latex = to_latex(ans_val)
-
+    # 你的單元生成邏輯...
     return {
-        'question_text': f"計算 ${final_tex_expr}$ 的值。",
-        'correct_answer': ans_latex,
-        'answer': ans_latex,
+        'question_text': '計算 $$   [(3 + (-5)) \\div 2 \\times 4 + |6 \\times (-1) - 2|]   $$ 的值。',
+        'answer': '',
+        'correct_answer': '4',
         'mode': 1
     }
-```
-⚠️Output Python code ONLY. No introduction. No comments.
-/no_think
+
+def check(user_answer, correct_answer):
+    try:
+        if str(user_answer).strip() == str(correct_answer).strip():
+            return {'correct': True, 'result': '正確'}
+        
+        ua = Fraction(user_answer) if '/' in str(user_answer) else float(user_answer)
+        ca = Fraction(correct_answer) if '/' in str(correct_answer) else float(correct_answer)
+        
+        if abs(ua - ca) < 1e-6:
+            return {'correct': True, 'result': '正確'}
+        
+        return {'correct': False, 'result': '錯誤'}
+    except:
+        return {
+            'correct': str(user_answer).strip() == str(correct_answer).strip(),
+            'result': '正確' if str(user_answer).strip() == str(correct_answer).strip() else '錯誤'
+        }

@@ -3,14 +3,14 @@
 
 【任務說明】
 請幫我寫一個 Python 程式，用來自動生成數學題目。
-★ 題目主題是：「多項式函數的導數計算」（請務必針對此主題出題，不要生成其他類型的題目）
+★ 題目主題是：「整數四則運算」（包含括號、絕對值、運算優先級）
 這個程式需要隨機產生數字，每次執行都能變換數值。
 請使用跟課本一樣的格式表達數學式子。
 
 【參考例題】
 以下是我們想模仿的題目類型（請參考這個邏輯來寫程式）：
-例題：已知 f(x) = 3x^3 - 5x^2 + 2，求 f'(x) 與 f''(x) 的值。
-答案：9x^2 - 10x, 18x - 10
+範例：計算 `[(-20)+(-10)]÷(-5)×3+|8×(-2)-5|`的值。的值。
+答案：-6
 
 【程式要求】
 1. 請寫成兩個函式：
@@ -29,15 +29,6 @@
 
 4. 請使用 Python 的 standard library (如 random, math) 即可。
    - 🔴 重要：不要使用 sympy、numpy 或其他外部套件
-
-### ⚠️ PYTHON SYNTAX STRICTNESS (反 C 語言指令)
-**Python uses indentation, NOT braces `{}` for blocks.**
-1. ❌ NEVER put a closing brace `}` at the end of the script.
-2. ❌ NEVER use `return { ... };` (semi-colon).
-3. ❌ NEVER use C-style syntax like `};` to end blocks.
-4. ✅ Just end the `def generate` function naturally with indentation.
-5. ✅ Python dictionaries use `{ ... }` INSIDE expressions, not at block level.
-**Violation will cause AST Parse Error and crash the entire pipeline.**
 
 ⚠️ 重要：只輸出 Python 程式碼！
 - ✅ 正確：直接從 import 開始寫

@@ -1,50 +1,82 @@
 {
     "evals": [
         {
-            "eval_id": "math_1a_integer_add",
-            "ablation_target": "Ab3",
+            "eval_id": "math_1a_int_ops_ab1",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab1",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
-            "description": "整數加法 (含負數)",
-            "tags": [
-                "integer",
-                "add",
-                "level1",
-                "negative"
-            ],
-            "difficulty": "easy",
+            "healer_type": "None",
+            "description": "整數運算 Ab1 (Level 1: Bare)",
             "weight": 1.0,
             "timeout_seconds": 30,
-            "max_output_tokens": 1000,
-            "expectations": [
-                "數值範圍 -100 ~ 100",
-                "使用 random.seed() 確保可重現性",
-                "題目包含 fmt_num 處理負數括號",
-                "答案為整數"
-            ]
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
-            "eval_id": "math_1a_integer_mix",
+            "eval_id": "math_1a_int_ops_ab1_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "整數運算 Ab1 (Level 2: Bare)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "整數運算 Ab2 (Level 1: Basic)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab3",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "jh_數學1上_FourArithmeticOperationsOfIntegers_Ab2.txt",
-            "description": "整數四則混合運算",
-            "tags": [
-                "integer",
-                "four-op",
-                "level1",
-                "mixed"
-            ],
-            "difficulty": "medium",
+            "healer_type": "AST",
+            "description": "整數運算 Ab3 (Level 1: Basic)",
+            "weight": 1.0,
+            "timeout_seconds": 30,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab2_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "整數運算 Ab2 (Level 2: Long Chain)",
             "weight": 1.2,
-            "timeout_seconds": 60,
-            "max_output_tokens": 1500,
-            "expectations": [
-                "包含 +, -, *, / 運算符",
-                "使用 clean_latex_output (若有必要)",
-                "Pass Rate > 90% (預期)",
-                "答案為整數或簡單分數"
-            ]
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "math_1a_int_ops_ab3_L2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "整數運算 Ab3 (Level 2: Long Chain)",
+            "weight": 1.2,
+            "timeout_seconds": 45,
+            "generation_kwargs": {
+                "level": 2
+            }
         }
     ]
 }

@@ -181,8 +181,8 @@ class ASTHealer(ast.NodeTransformer):
     
     def visit_FunctionDef(self, node):
         """修復函數定義"""
-        # [V50.2 Shadow Killer] 
-        # 刪除與 PERFECT_UTILS 重複定義的對象，避免 AI 生成劣質版本覆蓋標準庫
+        # [V50.3 Shadow Killer Relaxed] 
+        # 修正：不再無條件刪除與標準庫重名的函數，除非它們是空的或只有 pass
         shadowed_funcs = {
             'fmt_num', 'to_latex', 'clean_latex_output', 'check', 'safe_eval',
             'gcd', 'lcm', 'is_prime', 'get_factors', 'safe_choice',
@@ -193,9 +193,23 @@ class ASTHealer(ast.NodeTransformer):
         }
         
         if node.name in shadowed_funcs:
-            self.fixes += 1
-            logger.info(f"🔪 Shadow Killer: 刪除重複定義的 '{node.name}' (使用 Injected Utils)")
-            return None
+            # 檢查是否為空實作 (Empty or Pass only)
+            is_trivial = False
+            if len(node.body) == 0:
+                is_trivial = True
+            elif len(node.body) == 1 and isinstance(node.body[0], ast.Pass):
+                is_trivial = True
+            elif len(node.body) == 1 and isinstance(node.body[0], ast.Expr) and isinstance(node.body[0].value, ast.Constant):
+                 # Only a docstring
+                is_trivial = True
+                
+            if is_trivial:
+                self.fixes += 1
+                logger.info(f"🔪 Shadow Killer: 刪除空的重複定義 '{node.name}' (使用 Injected Utils)")
+                return None
+            else:
+                logger.info(f"🛡️ Shadow Killer: 保留自定義實作 '{node.name}' (非空函數)")
+
 
         self.generic_visit(node)
         

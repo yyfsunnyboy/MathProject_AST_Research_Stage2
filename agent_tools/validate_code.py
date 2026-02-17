@@ -1,3 +1,29 @@
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# ID: validate_code.py
+# Version: V2.1.0 (Legacy Validator)
+# Last Updated: 2026-02-17
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   本程式是一個輕量級的代碼驗證工具，用於快速測試 Prompt 的生成品質。
+#   與 benchmark.py 相比，它不計算複雜的 MCRI 分數，僅檢查是否能成功執行 (Pass/Fail)。
+#   適合在 Prompt 開發階段進行快速迭代測試。
+#
+# [Scientific Control Strategy]:
+#   - 採用簡化的驗證流程：Syntax Check + Execution Check。
+#
+# [Database Schema Usage]:
+#   1. Read: evals.json
+#   2. Read: PROMPT_DIR (golden_prompts)
+#
+# [Logic Flow]:
+#   1. Load Evals         -> 讀取測試清單。
+#   2. Loop Tests         -> 對每個案例執行 N 次 (Run Count)。
+#   3. AI & Heal          -> 生成代碼並執行 Regex Healer (預設)。
+#   4. Fast Validation    -> 檢查 Python 語法與執行狀態。
+#   5. Statistics         -> 計算並輸出簡易的通過率報告。
+# ==============================================================================
 import sys
 import os
 import json

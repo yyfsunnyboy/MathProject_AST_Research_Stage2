@@ -1,3 +1,30 @@
+# -*- coding: utf-8 -*-
+# ==============================================================================
+# ID: plot_benchmark.py
+# Version: V1.0.0 (Visualization Tool)
+# Last Updated: 2026-02-17
+# Author: Math AI Research Team (Advisor & Student)
+#
+# [Description]:
+#   本程式用於將 benchmark.py 產出的實驗數據可視化，生成柱狀圖 (Bar Chart)。
+#   主要展示不同消融階段 (Ab1 vs Ab2 vs Ab3) 的通過率 (Pass Rate) 差異，
+#   直觀呈現 Healer 機制對模型表現的提升幅度。
+#
+# [Scientific Control Strategy]:
+#   - 視覺化三組對照數據：Bare Prompt, Scaffold, Full Healing。
+#   - 標註關鍵改進點 (Syntax Errors, Format Issues, Reliable)。
+#
+# [Database Schema Usage]:
+#   - No Database interaction.
+#   - Hardcoded data points (currently) or reads from log files.
+#
+# [Logic Flow]:
+#   1. Define Data        -> 設定各實驗組的通過率數據。
+#   2. Setup Plot         -> 設定畫布大小、顏色與樣式。
+#   3. Draw Bars          -> 繪製柱狀圖並標註數值。
+#   4. Annotation         -> 添加箭頭與說明文字，解釋數據變化的原因。
+#   5. Save Image         -> 輸出為 benchmark_result.png。
+# ==============================================================================
 import matplotlib.pyplot as plt
 import os
 

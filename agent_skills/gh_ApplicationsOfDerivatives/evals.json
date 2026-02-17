@@ -1,27 +1,108 @@
 {
     "evals": [
         {
-            "eval_id": "math_gh_derivatives",
+            "eval_id": "gh_deriv_ab1",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "多項式導數 Ab1 (Level 1: Bare)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab1_L2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "多項式導數 Ab1 (Level 2: Bare)",
+            "weight": 2.5,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab1_L3",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab1",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "None",
+            "description": "多項式導數 Ab1 (Level 3: Bare)",
+            "weight": 3.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 3
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "多項式導數 Ab2 (Level 1: 基礎導數)",
+            "weight": 2.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3",
+            "skill_name": "gh_ApplicationsOfDerivatives",
             "ablation_target": "Ab3",
             "model": "qwen3-14b-nothink",
-            "prompt_file": "gh_ApplicationsOfDerivatives_Ab2.txt",
-            "description": "多項式導數與應用 (微積分)",
-            "tags": [
-                "calculus",
-                "derivative",
-                "high-school",
-                "polynomial"
-            ],
-            "difficulty": "hard",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 1: 基礎導數)",
             "weight": 2.0,
-            "timeout_seconds": 120,
-            "max_output_tokens": 2500,
-            "expectations": [
-                "題目為多項式求導",
-                "使用 _differentiate_poly 計算",
-                "答案為標準多項式格式",
-                "無 `++` 或 `+-` 連續符號"
-            ]
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab2_L2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab2",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "Regex",
+            "description": "多項式導數 Ab2 (Level 2: 切線方程式)",
+            "weight": 2.5,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3_L2",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 2: 切線方程式)",
+            "weight": 2.5,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "gh_deriv_ab3_L3",
+            "skill_name": "gh_ApplicationsOfDerivatives",
+            "ablation_target": "Ab3",
+            "model": "qwen3-14b-nothink",
+            "healer_type": "AST",
+            "description": "多項式導數 Ab3 (Level 3: 極值問題)",
+            "weight": 3.0,
+            "timeout_seconds": 90,
+            "generation_kwargs": {
+                "level": 3
+            }
         }
     ]
 }

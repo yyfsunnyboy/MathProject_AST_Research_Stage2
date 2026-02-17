@@ -335,7 +335,7 @@ class MCRI_Evaluator:
     - 產生實驗紀錄與明細資料
     """
     
-    def __init__(self, skill_path: str, ablation_id: int, model_name: str = "gemini-pro"):
+    def __init__(self, skill_path: str, ablation_id: int, model_name: str = "gemini-pro", generation_kwargs: Dict = None):
         """
         初始化評估器
         
@@ -343,35 +343,35 @@ class MCRI_Evaluator:
             skill_path: 技能檔案路徑 (如 skills/gh_ApplicationsOfDerivatives_14b_Ab1.py)
             ablation_id: 消融版本 ID (1=Ab1, 2=Ab2, 3=Ab3)
             model_name: 模型名稱
+            generation_kwargs: 用於傳遞給 generate() 的參數 (e.g. {'level': 2})
         """
         self.skill_path = Path(skill_path)
-        self.ablation_id = ablation_id  # INTEGER: 1, 2, 3
+        self.ablation_id = ablation_id
         self.model_name = model_name
+        self.generation_kwargs = generation_kwargs or {}
         self.version = MCRI_VERSION
         
         # 從檔名提取技能名稱
-        # 檔名格式: gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run01.py
-        # 需要提取的是：gh_ApplicationsOfDerivatives (技能部分，在第一個模型名稱之前)
         filename = self.skill_path.stem
         
-        # 方法：找到 _Ab{1,2,3} 的位置，然後回溯到找到模型名稱
         # 先移除 _run{idx} 部分
         if '_run' in filename:
-            filename = filename.rsplit('_run', 1)[0]  # gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1
+            filename = filename.rsplit('_run', 1)[0]
         
         # 再移除 _Ab{n} 部分
         if '_Ab' in filename:
-            filename = filename.rsplit('_Ab', 1)[0]  # gh_ApplicationsOfDerivatives_qwen2.5-coder-14b
+            filename = filename.rsplit('_Ab', 1)[0]
         
         # 最後移除模型名稱部分 (最後一個 _ 之後)
         if '_' in filename:
-            filename = filename.rsplit('_', 1)[0]  # gh_ApplicationsOfDerivatives
+            filename = filename.rsplit('_', 1)[0]
         
         self.skill_name = filename
         
         self.module = None
         self.generate_func = None
         self.check_func = None
+
     
     def load_skill_module(self) -> bool:
         """
@@ -1496,7 +1496,11 @@ class MCRI_Evaluator:
             with time_limit(DEFAULT_TIMEOUT):
                 # 在安全上下文中執行 generate()，防止互動式輸入
                 with safe_execution_context():
-                    result = self.generate_func()
+                    # [V9.7 Multi-Level Support] Pass kwargs to generate()
+                    if self.generation_kwargs:
+                        result = self.generate_func(**self.generation_kwargs)
+                    else:
+                        result = self.generate_func()
             
             exec_time = time.time() - start_time
             
