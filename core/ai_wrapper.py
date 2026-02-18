@@ -29,7 +29,11 @@ except ImportError:
     HAS_NEW_SDK = False
 
 try:
-    import google.generativeai as old_genai
+    # Suppress deprecation warning for old SDK (we already prioritize new SDK)
+    import warnings
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning, module="google.generativeai")
+        import google.generativeai as old_genai
     HAS_OLD_SDK = True
 except ImportError:
     old_genai = None

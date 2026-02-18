@@ -1,82 +1,76 @@
 {
     "evals": [
         {
-            "eval_id": "math_1a_num_ops_ab1",
+            "eval_id": "numbers_L1_ab1",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab1",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "None",
-            "description": "數的運算 Ab1 (Level 1: Bare)",
-            "weight": 1.0,
+            "description": "數的四則運算 (Level 1) - Ab1",
             "timeout_seconds": 180,
-            "generation_kwargs": {
-                "level": 1
-            }
+            "generation_kwargs": {"level": 1}
         },
         {
-            "eval_id": "math_1a_num_ops_ab1_L2",
+            "eval_id": "numbers_L1_ab2",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab2",
+            "description": "數的四則運算 (Level 1) - Ab2",
+            "timeout_seconds": 180,
+            "generation_kwargs": {"level": 1}
+        },
+        {
+            "eval_id": "numbers_L1_ab3",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab3",
+            "description": "數的四則運算 (Level 1) - Ab3",
+            "timeout_seconds": 180,
+            "generation_kwargs": {"level": 1}
+        },
+        {
+            "eval_id": "numbers_L2_ab1",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab1",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "None",
-            "description": "數的運算 Ab1 (Level 2: Bare)",
-            "weight": 1.2,
-            "timeout_seconds": 300,
-            "generation_kwargs": {
-                "level": 2
-            }
+            "description": "數的四則運算 (Level 2) - Ab1",
+            "timeout_seconds": 240,
+            "generation_kwargs": {"level": 2}
         },
         {
-            "eval_id": "math_1a_num_ops_ab2",
+            "eval_id": "numbers_L2_ab2",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab2",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "Regex",
-            "description": "數的運算 Ab2 (Level 1: Mixed)",
-            "weight": 1.0,
-            "timeout_seconds": 180,
-            "generation_kwargs": {
-                "level": 1
-            }
+            "description": "數的四則運算 (Level 2) - Ab2",
+            "timeout_seconds": 240,
+            "generation_kwargs": {"level": 2}
         },
         {
-            "eval_id": "math_1a_num_ops_ab3",
+            "eval_id": "numbers_L2_ab3",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab3",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "AST",
-            "description": "數的運算 Ab3 (Level 1: Mixed)",
-            "weight": 1.0,
-            "timeout_seconds": 180,
-            "generation_kwargs": {
-                "level": 1
-            }
+            "description": "數的四則運算 (Level 2) - Ab3",
+            "timeout_seconds": 240,
+            "generation_kwargs": {"level": 2}
         },
         {
-            "eval_id": "math_1a_num_ops_ab2_L2",
+            "eval_id": "numbers_L3_ab1",
+            "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+            "ablation_target": "Ab1",
+            "description": "數的四則運算 (Level 3) - Ab1",
+            "timeout_seconds": 300,
+            "generation_kwargs": {"level": 3}
+        },
+        {
+            "eval_id": "numbers_L3_ab2",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab2",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "Regex",
-            "description": "數的運算 Ab2 (Level 2: Nested)",
-            "weight": 1.2,
+            "description": "數的四則運算 (Level 3) - Ab2",
             "timeout_seconds": 300,
-            "generation_kwargs": {
-                "level": 2
-            }
+            "generation_kwargs": {"level": 3}
         },
         {
-            "eval_id": "math_1a_num_ops_ab3_L2",
+            "eval_id": "numbers_L3_ab3",
             "skill_name": "jh_數學1上_FourArithmeticOperationsOfNumbers",
             "ablation_target": "Ab3",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "AST",
-            "description": "數的運算 Ab3 (Level 2: Nested)",
-            "weight": 1.2,
+            "description": "數的四則運算 (Level 3) - Ab3",
             "timeout_seconds": 300,
-            "generation_kwargs": {
-                "level": 2
-            }
+            "generation_kwargs": {"level": 3}
         }
     ]
 }

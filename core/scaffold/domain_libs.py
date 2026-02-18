@@ -108,11 +108,92 @@ class RadicalOps:
 
 class IntegerOps:
     """整數運算工具"""
-    # (預留位置)
-    pass
+    
+    @staticmethod
+    def fmt_num(n):
+        """格式化數字（負數加括號）"""
+        if n < 0:
+            return f"({n})"
+        return str(n)
+    
+    @staticmethod
+    def random_nonzero(min_val, max_val):
+        """產生非零隨機整數"""
+        import random
+        choices = [x for x in range(min_val, max_val + 1) if x != 0]
+        if not choices:
+            return 1  # 如果範圍內沒有非零數，返回 1
+        return random.choice(choices)
+    
+    @staticmethod
+    def safe_eval(expr_str):
+        """安全計算表達式（支援四則、括號、abs()）"""
+        try:
+            # 移除空格
+            expr_str = expr_str.strip()
+            # 使用 eval，但只允許安全的數學運算
+            result = eval(expr_str, {"__builtins__": {"abs": abs}}, {})
+            return result
+        except Exception as e:
+            raise ValueError(f"無法計算表達式: {expr_str}, 錯誤: {e}")
 
 
 class FractionOps:
     """分數運算工具"""
-    # (預留位置)
-    pass
+    
+    @staticmethod
+    def create(value):
+        """建立分數（支援 int/float/str/Fraction 輸入）"""
+        if isinstance(value, Fraction):
+            return value
+        return Fraction(value)
+    
+    @staticmethod
+    def to_latex(frac, mixed=False):
+        """轉成 LaTeX 分數（mixed=True 顯示帶分數）"""
+        if isinstance(frac, (int, float)):
+            frac = Fraction(frac)
+        
+        if not isinstance(frac, Fraction):
+            return str(frac)
+        
+        # 如果是整數
+        if frac.denominator == 1:
+            return str(frac.numerator)
+        
+        # 如果是帶分數格式
+        if mixed and abs(frac.numerator) > frac.denominator:
+            # 正確處理負分數的帶分數：截斷而非向下取整
+            whole = int(frac.numerator / frac.denominator)
+            remainder = abs(frac.numerator - whole * frac.denominator)
+            if remainder == 0:
+                return str(whole)
+            return f"{whole}\\frac{{{remainder}}}{{{frac.denominator}}}"
+        
+        # 一般分數
+        if frac.numerator < 0:
+            return f"-\\frac{{{abs(frac.numerator)}}}{{{frac.denominator}}}"
+        return f"\\frac{{{frac.numerator}}}{{{frac.denominator}}}"
+    
+    @staticmethod
+    def add(a, b):
+        """分數加法"""
+        return FractionOps.create(a) + FractionOps.create(b)
+    
+    @staticmethod
+    def sub(a, b):
+        """分數減法"""
+        return FractionOps.create(a) - FractionOps.create(b)
+    
+    @staticmethod
+    def mul(a, b):
+        """分數乘法"""
+        return FractionOps.create(a) * FractionOps.create(b)
+    
+    @staticmethod
+    def div(a, b):
+        """分數除法"""
+        if b == 0 or (isinstance(b, Fraction) and b.numerator == 0):
+            raise ValueError("除數不能為 0")
+        return FractionOps.create(a) / FractionOps.create(b)
+

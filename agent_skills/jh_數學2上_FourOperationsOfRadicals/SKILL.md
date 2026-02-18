@@ -4,79 +4,128 @@
 - 直接輸出 Python code，沒有任何前言、後語
 - 如果違反，直接 0 分
 
-【第一優先規則】嚴禁寫任何 import 語句！系統已注入 RadicalOps，直接用 RadicalOps.xxx()。
-
 【角色】K12 數學演算法工程師
 
 【任務】
-實作 def generate(level=1, **kwargs)，生成根式化簡運算題目。
+實作 `def generate(level=1, **kwargs)`，生成根式化簡運算題目。
 題目結構必須為：(多項未化簡根式加減括號) + (簡單乘法結構)，用 + 連接。
-返回 dict: {'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}
+返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
 
 【程式要求】（必須嚴格遵守）
-1. 請寫成兩個函式：
-   - def generate(level=1, **kwargs): 生成題目
-   - def check(user_answer, correct_answer): 檢查答案是否正確
-2. generate 函式要回傳一個字典，包含以下欄位（請照抄 key 名稱）：
-   - 'question_text': 題目文字
-   - 'answer': 空字串 ''
-   - 'correct_answer': 正確答案（必須是字串，例如 "2\sqrt{3}" 或 "5-\sqrt{2}"）
-   - 'mode': 1
-3. check 函式要回傳一個字典，包含：
-   - 'correct': True 或 False
-   - 'result': '正確' 或 '錯誤'
+1. **Import 規範**：
+   - ✅ **必須** `import random`
+   - ✅ **必須** `import math`
+   - ❌ **嚴禁** `import RadicalOps` (系統已自動注入，直接使用 `RadicalOps.xxx`)
 
-【參考例題】（必須參考此風格，但生成多樣化題目）
-化簡 $$   (\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})   $$
+2. **核心邏輯**：
+   - 使用 `terms = [(coeff, radicand), ...]` 列表來儲存數學狀態。
+   - **絕對禁止** 解析 LaTeX 字串來獲取數值（例如 `int(term.split(...))` 是被禁止的）。
+   - 計算過程必須純粹基於整數操作 `(coeff, radicand)`。
+   - 只有在最後一步（生成題目文字或答案文字）才調用 `RadicalOps` 進行格式化。
 
-【系統已注入的輔助函式（API）】（嚴禁重新定義，直接調用）
-- RadicalOps.simplify_term(coeff, radicand) → (new_coeff, new_radicand)
-- RadicalOps.format_term(coeff, radicand, is_first=True) → 化簡後格式化
-- RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True) → 未化簡格式化（題目用）
-- RadicalOps.format_expression(terms_dict, denominator=1) → 最終答案
+3. **函數介面**：
+   ```python
+   def generate(level=1, **kwargs):
+       # ... logic ...
+       return {
+           'question_text': str,
+           'answer': '',
+           'correct_answer': str,
+           'mode': 1
+       }
 
-【強制使用 API】（違反者 0 分）
-- 題目項：RadicalOps.format_term_unsimplified
-- 化簡：RadicalOps.simplify_term
-- 答案：RadicalOps.format_expression
-- 必須逐項調用，不能自己寫邏輯
+   def check(user_answer, correct_answer):
+       # 簡單比對字串即可
+       correct = str(user_answer).strip() == str(correct_answer).strip()
+       return {'correct': correct, 'result': '正確' if correct else '錯誤'}
+   ```
 
-【核心規則】（必須嚴格遵守）
-1. 題目必須為：(多項未化簡根式加減括號) + 單純乘法（係數 × 括號內加減根式）
-2. 第一部分：3~4 項未化簡根式加減，使用 format_term_unsimplified 構建
-3. 第二部分：簡單乘法，如 k(√a + √b) 或 k(√c - √d)，k 為小整數
-4. 題目顯示未化簡形式，答案必須已化簡（題目與答案必須不同）
-5. 嚴禁使用 build_polynomial_text、fmt_num、fmt_term 或任何非 RadicalOps 工具
-6. 嚴禁自己 import RadicalOps 或其他模組
-7. 注意 generated string 不要出現 `+ +` 或 `+ -`，正確使用 is_first 參數
-8. 答案必須最簡、無根式分母、合併同類項、常數項在前
-9. question_text 數學式完整用 $$   ...   $$ 包裹
-10. 只輸出 Python 代碼，無註解、無說明、無 Markdown、無額外文字
-11. 程式碼結束後絕對無任何內容
+【系統已注入的輔助函式（API）】（直接調用 `RadicalOps.xxx`）
+- `RadicalOps.simplify_term(coeff, radicand)` → `(new_coeff, new_radicand)`
+- `RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True)` → 未化簡格式化（題目用）
+- `RadicalOps.format_expression(terms_dict, denominator=1)` → 最終答案（自動合併同類項、排序、LaTeX）
 
-【強烈建議結構】（模仿此邏輯）
-- 第一部分：選擇 base radicand，乘 k² 構造可化簡項，組成加減括號
-- 第二部分：選擇簡單係數 k 乘一個加減根式括號
-- 用 RadicalOps.format_term_unsimplified 生成各項字串，然後用空字串或單純加號連接（注意符號重複）
-- 注意：format_term_unsimplified 若傳入 is_first=False 會自帶 + 號，請勿重複添加
-- 逐項 simplify_term 化簡後，用 format_expression 得到答案
+【核心規則】
+1. **題目結構**：
+   - Part 1: 3~4 項未化簡根式加減（例如 `\sqrt{12} + 2\sqrt{27} - \sqrt{8}`）。
+   - Part 2: 簡單乘法（例如 `2(\sqrt{3} + \sqrt{5})`）。
+   - 題目顯示：`化簡 $$(Part1) + Part2$$`
+2. **數值範圍**：
+   - 係數 `coeff`: -5 ~ 5 (非零)
+   - 根號內 `radicand`: 2, 3, 5, 6, 7, 8, 10, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75
+     - 題目中的 `radicand` 必須包含這類「可化簡」的數（如 12, 18, 27, 50）。
+     - 答案中的 `radicand` 必須是最簡根式（如 2, 3, 5...）。
+3. **正確使用 format_expression**：
+   - 必須傳入字典 `terms_dict = {radicand: total_coeff}`。
+   - 嚴禁傳入列表或字串。
 
-【輸出範例】（僅供參考，請勿直接抄襲內容或邏輯，僅可參考字典結構與 key 名稱）
+【強烈建議程式碼結構】
 ```python
+import random
+import math
+# RadicalOps is injected automatically
+
 def generate(level=1, **kwargs):
-    # 你的生成邏輯...
+    # Part 1: Generate Raw Terms (Numerical State)
+    terms1_data = [] # List of (coeff, radicand)
+    for _ in range(random.randint(3, 4)):
+        c = random.choice([x for x in range(-5, 6) if x != 0])
+        r = random.choice([2, 3, 5, 6, 8, 12, 18, 20, 24, 27, 32, 50]) # Mix of simple and simplifiable
+        terms1_data.append((c, r))
+    
+    # Generate Part 1 String
+    part1_strs = []
+    for i, (c, r) in enumerate(terms1_data):
+        is_first = (i == 0)
+        s = RadicalOps.format_term_unsimplified(c, r, is_first)
+        part1_strs.append(s)
+    part1_latex = "".join(part1_strs)
+    
+    # Part 2: Generate Multiplication (Numerical State)
+    k = random.randint(2, 5)
+    r_a = random.choice([2, 3, 5, 7])
+    r_b = random.choice([2, 3, 5, 7])
+    # Structure: k(\sqrt{r_a} + \sqrt{r_b})
+    part2_latex = f"{k}(\\sqrt{{{r_a}}} + \\sqrt{{{r_b}}})"
+    
+    # Question Text
+    question_text = f"化簡 $$({part1_latex}) + {part2_latex}$$"
+    
+    # Calculate Answer (Pure Logic)
+    final_terms = {} # {radicand: total_coeff}
+    
+    # Process Part 1
+    for c, r in terms1_data:
+        new_c, new_r = RadicalOps.simplify_term(c, r)
+        final_terms[new_r] = final_terms.get(new_r, 0) + new_c
+        
+    # Process Part 2: k*sqrt(r_a) + k*sqrt(r_b)
+    # Term A
+    c_a, r_a_sim = RadicalOps.simplify_term(k, r_a)
+    final_terms[r_a_sim] = final_terms.get(r_a_sim, 0) + c_a
+    # Term B
+    c_b, r_b_sim = RadicalOps.simplify_term(k, r_b)
+    final_terms[r_b_sim] = final_terms.get(r_b_sim, 0) + c_b
+    
+    # Format Answer
+    correct_answer = RadicalOps.format_expression(final_terms)
+    
     return {
-        'question_text': '化簡 $(\sqrt{18} + \sqrt{50} - 2\sqrt{8}) + 3(\sqrt{12} + \sqrt{27})$',
+        'question_text': question_text,
         'answer': '',
-        'correct_answer': '5\sqrt{2} + 3\sqrt{3}',
+        'correct_answer': correct_answer,
         'mode': 1
     }
 
 def check(user_answer, correct_answer):
-    try:
-        return abs(eval(user_answer) - eval(correct_answer)) < 1e-6
-    except:
-        return str(user_answer).strip() == str(correct_answer).strip()
+    correct = str(user_answer).strip() == str(correct_answer).strip()
+    return {'correct': correct, 'result': '正確' if correct else '錯誤'}
+```
 
-⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
+【檢查清單】
+✅ 必須 `import random`
+✅ 變數狀態必須是 `(coeff, radicand)` tuple，不能是 string
+✅ 嚴禁 `int(str.split(...))` 這種寫法
+✅ `format_expression` 輸入必須是 Dict
+✅ 輸出 Python code only, no comments
 /no_think

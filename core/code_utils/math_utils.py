@@ -38,6 +38,15 @@ def safe_choice(seq):
     if not seq: return 1
     return random.choice(seq)
 
+def random_nonzero(min_val, max_val):
+    """
+    [Auto-Injected] 產生非零隨機整數
+    """
+    val = 0
+    while val == 0:
+        val = random.randint(min_val, max_val)
+    return val
+
 def to_latex(num):
     """
     將數字轉換為 LaTeX 格式 (支援分數、整數、小數)

@@ -1,3 +1,18 @@
+import multiprocessing
+
+# --- Windows multiprocessing: 必須 module-level ---
+def run_mcri_eval(temp_path, ab_id, model_name, gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue):
+    from scripts.evaluate_mcri import MCRI_Evaluator
+    evaluator = MCRI_Evaluator(temp_path, ablation_id=ab_id, model_name=model_name, generation_kwargs=gen_kwargs)
+    if evaluator.load_skill_module():
+        run_record, run_items = evaluator.run_full_evaluation(sample_index=idx, repetitions=3)
+        run_record['skill_name'] = skill_name
+        run_record['healer_applied'] = 1 if healer_applied else 0
+        run_record['healer_fix_count'] = sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0
+        run_record['notes'] += f" | GenRun:{run_i+1}"
+        result_queue.put((run_record, run_items, None))
+    else:
+        result_queue.put((None, None, 'load_failed'))
 # -*- coding: utf-8 -*-
 # ==============================================================================
 # ID: benchmark.py
@@ -16,98 +31,24 @@
 #   - MCRI Integration: 詳細 L1-L5 評分
 #   - Data Export: SQLite + CSV (Runs, Items, Summary)
 # ==============================================================================
-import config
-    
-    # ... (existing code)
-
-def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None):
-    print(f"🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
-    print(f"Project Root: {PROJECT_ROOT}")
-    print(f"Generations per Case: {repeat_count}")
-    if override_model:
-        print(f"👉 Force Model: {override_model}")
-
-    # ... (load evals logic) ...
-
-    # 4. Main Loop
-    for idx, test_case in enumerate(evals):
-        # Override Model if requested
-        if override_model:
-            test_case['model'] = override_model
-
-        eval_id_base = test_case.get("eval_id", f"case_{idx}")
-        # ... (rest of loop) ...
-        
-
-def show_interactive_menu(evals_file):
-    # ... (existing menu logic) ...
-    # ... (Skills selection) ...
-    # ... (Ablation selection) ...
-
-    # [Model Selection]
-    print("\n[Select Model]")
-    target_models = []
-    
-    try:
-        # Load form Config if available
-        if hasattr(config.Config, 'CODER_PRESETS'):
-            presets = config.Config.CODER_PRESETS
-            for key, val in presets.items():
-                desc = val.get('description', '') or val.get('model', key)
-                target_models.append((key, desc))
-    except Exception as e:
-        print(f"⚠️ Failed to load models from Config: {e}")
-        pass
-    
-    if not target_models:
-        target_models = [
-            ("qwen3-14b-nothink", "Local Finetuned (NoThink)"),
-            ("qwen2.5-coder-14b", "Local Qwen 2.5 14B"),
-            ("gemini-2.0-flash-exp", "Cloud Gemini 2.0")
-        ]
-
-    print("[0] Use Default (Defined in evals.json)")
-    for i, (m_id, m_desc) in enumerate(target_models, 1):
-        print(f"[{i}] {m_id} ({m_desc})")
-        
-    model_choice = input(f"\n👉 Select Model (0-{len(target_models)}): ").strip()
-    selected_model = None
-    if model_choice and model_choice != '0':
-        try:
-            idx = int(model_choice) - 1
-            if 0 <= idx < len(target_models):
-                selected_model = target_models[idx][0]
-        except:
-            pass
-            
-    # [Repetitions]
-    print("\n[Repetitions for Generation]")
-    rep_choice = input(f"👉 Enter number of generations per case (default 1): ").strip()
-    # ...
-
-    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
-
-if __name__ == "__main__":
-    # ... (argparse) ...
-    parser.add_argument("--model", help="Override AI Model (e.g. qwen2.5-coder-14b)")
-    args = parser.parse_args()
-    
-    if args.skill or args.ablation or args.repeat > 1 or args.model:
-        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat, override_model=args.model)
-    else:
-        show_interactive_menu(args.evals)
+import sys
+import os
+import json
+import time
+import argparse
 import uuid
 import shutil
 import sqlite3
 import pandas as pd
-import re # [Fix] Add missing import
+import re
 from datetime import datetime
 
 # 設定專案根目錄
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(PROJECT_ROOT)
 
-from core.ai_wrapper import get_ai_client, call_ai_with_retry
+from config import Config
+from core.ai_wrapper import get_ai_client, call_ai_with_retry, LocalAIClient, GoogleAIClient
 from core.validators.code_validator import validate_python_code
 from core.healers.regex_healer import RegexHealer
 from core.healers.ast_healer import ASTHealer
@@ -125,6 +66,70 @@ except ImportError as e:
     print(f"⚠️ MCRI Import Error: {e}")
     MCRI_AVAILABLE = False
 
+# ==============================================================================
+# Model Selection Menu
+# ==============================================================================
+
+def show_model_selection_menu():
+    """
+    顯示模型選擇菜單
+    
+    Returns:
+        str: 選擇的模型 KEY (如 'qwen3-14b', 'gemini-3-flash')
+    """
+    # 從 Config.CODER_PRESETS 構建模型列表
+    # [白名單] 只顯示實驗用的主要模型，排除 Legacy 模型
+    BENCHMARK_MODELS = ['gemini-3-flash', 'qwen3-14b', 'qwen3-8b']
+    
+    available_models = []
+    model_display_names = {}
+    
+    if hasattr(Config, 'CODER_PRESETS'):
+        for key in BENCHMARK_MODELS:
+            if key in Config.CODER_PRESETS:
+                preset = Config.CODER_PRESETS[key]
+                provider = preset.get('provider', 'unknown')
+                model_name = preset.get('model', key)
+                desc = preset.get('description', key)
+                
+                available_models.append(key)
+                if provider == 'google':
+                    model_display_names[key] = f"☁️  {model_name} ({desc})"
+                else:
+                    model_display_names[key] = f"💻 {model_name} ({desc})"
+    
+    # Fallback if no CODER_PRESETS found
+    if not available_models:
+        available_models = ['qwen3-14b', 'qwen3-8b', 'gemini-3-flash']
+        model_display_names = {
+            'qwen3-14b': '💻 Qwen3-14B (Local)',
+            'qwen3-8b': '💻 Qwen3-8B (Local)',
+            'gemini-3-flash': '☁️  Gemini 3.0 Flash (Cloud)'
+        }
+    
+    print("\n" + "="*70)
+    print("🤖 [模型選擇] 請選擇要使用的 AI 模型")
+    print("="*70)
+    
+    for i, model_key in enumerate(available_models, 1):
+        display_name = model_display_names.get(model_key, model_key)
+        print(f"   [{i}] {display_name}")
+    
+    while True:
+        try:
+            choice = input(f"\n👉 請輸入選項 (1-{len(available_models)}): ").strip()
+            idx = int(choice) - 1
+            if 0 <= idx < len(available_models):
+                selected = available_models[idx]
+                print(f"✅ 已選擇: {model_display_names.get(selected, selected)}")
+                return selected
+            print("❌ 輸入無效，請重試。")
+        except ValueError:
+            print("❌ 請輸入數字。")
+        except KeyboardInterrupt:
+            print("\n⚠️  已取消選擇")
+            return None
+
 def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     """
     從 agent_skills/{skill_name}/ 讀取 Prompt
@@ -141,10 +146,12 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     print(f"⚠️ Prompt file not found: {path}")
     return None
 
-def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1):
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None):
     print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Generations per Case: {repeat_count}")
+    if override_model:
+        print(f"🤖 Override Model: {override_model}")
 
     # ==============================================================================
     # 1. Load Evals (Dynamic Aggregation)
@@ -215,7 +222,29 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     print(f"📋 Loaded {len(evals)} test cases (Dynamic Aggregation).")
 
     # 2. Setup AI & Healers
-    client = get_ai_client()
+    # [V9.7] Support override_model parameter
+    if override_model:
+        # Get preset from Config.CODER_PRESETS
+        if hasattr(Config, 'CODER_PRESETS') and override_model in Config.CODER_PRESETS:
+            preset = Config.CODER_PRESETS[override_model]
+            provider = preset.get('provider', 'local').lower()
+            model_name = preset.get('model', override_model)
+            temperature = preset.get('temperature', 0.1)
+            max_tokens = preset.get('max_tokens', 16384)
+            extra_body = preset.get('extra_body', {})
+            safety_settings = preset.get('safety_settings')
+            
+            # Instantiate client based on provider
+            if provider in ['google', 'gemini']:
+                client = GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
+            else:
+                client = LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
+        else:
+            print(f"⚠️ Model '{override_model}' not found in CODER_PRESETS, using default")
+            client = get_ai_client()
+    else:
+        client = get_ai_client()
+        
     regex_healer = RegexHealer()
     ast_healer = ASTHealer()
 
@@ -260,7 +289,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             
             try:
                 # A. Generate
-                response = call_ai_with_retry(client, skill_prompt, max_retries=3)
+                response = call_ai_with_retry(client, skill_prompt, max_retries=3, timeout=180)
                 if hasattr(response, 'text'):
                     raw_code = response.text
                 else:
@@ -327,7 +356,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
                 # [Debug] Save artifacts for analysis
                 try:
-                    debug_dir = os.path.join(PROJECT_ROOT, "temp")
+                    debug_dir = os.path.join(PROJECT_ROOT, "agent_tools", "temp_code")
                     os.makedirs(debug_dir, exist_ok=True)
                     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                     
@@ -349,29 +378,42 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 # C. Evaluate using MCRI
                 if MCRI_AVAILABLE:
                     temp_name = f"temp_gen_{uuid.uuid4().hex[:8]}.py"
-                    temp_dir = os.path.join(PROJECT_ROOT, "temp_benchmark")
+                    temp_dir = os.path.join(PROJECT_ROOT, "agent_tools", "temp_code")
                     os.makedirs(temp_dir, exist_ok=True)
                     temp_path = os.path.join(temp_dir, temp_name)
+                    # [V6.3 FIX] Inject Metadata Headers for L5 Scoring
+                    header_lines = []
+                    header_lines.append(f"# Created At: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    
+                    if ab_id == 3:
+                        fix_tag = "[Full Healer]"
+                    elif ab_id == 2:
+                        fix_tag = "[Minimal Healer]"
+                    else:
+                        fix_tag = "[Bare]"
+                        
+                    # Calculate fix counts for header
+                    basic_fixes = healer_fixes.get('basic', 0) if healer_fixes else 0
+                    regex_fixes = healer_fixes.get('regex', 0) if healer_fixes else 0
+                    ast_fixes = healer_fixes.get('ast', 0) if healer_fixes else 0
+                    
+                    header_lines.append(f"# Fix Status: {fix_tag} | Fixes: Basic={basic_fixes}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})")
+                    header_lines.append(f"# Performance: {response.latency_ms/1000 if hasattr(response, 'latency_ms') else 0:.2f}s | Tokens: In={response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0}, Out={response.completion_tokens if hasattr(response, 'completion_tokens') else 0}")
+                    header_lines.append("") # Empty line separator
+                    
+                    final_file_content = "\n".join(header_lines) + "\n" + healed_code
                     
                     with open(temp_path, "w", encoding="utf-8") as f:
-                        f.write(healed_code)
-                        
+                        f.write(final_file_content)
                     gen_kwargs = test_case.get("generation_kwargs", {})
-                    evaluator = MCRI_Evaluator(temp_path, ablation_id=ab_id, model_name=test_case.get("model", "unknown"), generation_kwargs=gen_kwargs)
-                    if evaluator.load_skill_module():
-                        run_record, run_items = evaluator.run_full_evaluation(sample_index=idx, repetitions=3)
-                        
-                        run_record['skill_name'] = skill_name
-                        run_record['healer_applied'] = 1 if healer_applied else 0
-                        run_record['healer_fix_count'] = sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0
-                        run_record['notes'] += f" | GenRun:{run_i+1}"
-                        
-                        all_runs.append(run_record)
-                        all_items.extend(run_items)
-                        print(f" -> Score: {run_record['avg_mcri_total']:.1f}")
-                    else:
-                        print(f" -> Load Failed (Score: 0)")
-                        # Create a failed record for statistics
+                    result_queue = multiprocessing.Queue()
+                    p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, test_case.get("model", "unknown"), gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
+                    p.start()
+                    p.join(Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10)
+                    if p.is_alive():
+                        p.terminate()
+                        print(" -> 評分超時 (Timeout)")
+                        # 記錄超時
                         failed_record = {
                             'run_id': str(uuid.uuid4()),
                             'timestamp': datetime.now().isoformat(),
@@ -381,10 +423,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             'sample_index': idx,
                             'score_program_total': 0, 'score_math_total': 0, 'avg_mcri_total': 0,
                             'pass_rate': 0.0, 'fail_count': 3, 'repetitions_planned': 3, 'repetitions_completed': 0,
-                            'notes': "Load Failed (SyntaxError or Import Error)",
+                            'notes': f"評分超時 (>={Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10}s)",
                             'healer_applied': 1 if healer_applied else 0,
                             'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
-                             # Fill other fields with 0
                             'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
                             'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                             'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
@@ -400,8 +441,45 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             'total_tokens': 0, 'latency_ms': 0
                         }
                         all_runs.append(failed_record)
-
-                    
+                    else:
+                        if not result_queue.empty():
+                            run_record, run_items, err = result_queue.get()
+                            if run_record is not None:
+                                all_runs.append(run_record)
+                                all_items.extend(run_items)
+                                print(f" -> Score: {run_record['avg_mcri_total']:.1f}")
+                            else:
+                                print(f" -> Load Failed (Score: 0)")
+                                # Create a failed record for statistics
+                                failed_record = {
+                                    'run_id': str(uuid.uuid4()),
+                                    'timestamp': datetime.now().isoformat(),
+                                    'model_name': test_case.get("model", "unknown"),
+                                    'skill_name': skill_name,
+                                    'ablation_id': ab_id,
+                                    'sample_index': idx,
+                                    'score_program_total': 0, 'score_math_total': 0, 'avg_mcri_total': 0,
+                                    'pass_rate': 0.0, 'fail_count': 3, 'repetitions_planned': 3, 'repetitions_completed': 0,
+                                    'notes': "Load Failed (SyntaxError or Import Error)",
+                                    'healer_applied': 1 if healer_applied else 0,
+                                    'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
+                                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                                    'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
+                                    'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
+                                    'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
+                                    'score_l1_1_syntax': 0, 'score_l1_2_runtime': 0,
+                                    'score_l2_1_contract': 0, 'score_l2_2_purity': 0,
+                                    'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
+                                    'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
+                                    'source_code_path': temp_path,
+                                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
+                                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
+                                    'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
+                                    'total_tokens': 0, 'latency_ms': 0
+                                }
+                                all_runs.append(failed_record)
+                        else:
+                            print(f" -> 評分異常 (No result)")
                     try:
                         os.remove(temp_path)
                     except: pass
@@ -510,7 +588,13 @@ def show_interactive_menu(evals_file):
     except:
         repeat_count = 1
     
-    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count)
+    # Model Selection
+    selected_model = show_model_selection_menu()
+    if not selected_model:
+        print("⚠️  未選擇模型，使用預設模型")
+        selected_model = None
+    
+    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
 
 if __name__ == "__main__":
     import argparse
@@ -519,10 +603,11 @@ if __name__ == "__main__":
     parser.add_argument("--skill", help="Filter by skill name (partial match supported)")
     parser.add_argument("--ablation", help="Filter by ablation (Ab1, Ab2, Ab3)")
     parser.add_argument("--repeat", type=int, default=1, help="Number of generations per test case")
+    parser.add_argument("--model", help="Override AI model (e.g. qwen3-14b, gemini-3-flash)")
     parser.add_argument("--menu", action="store_true", help="Show interactive menu")
     args = parser.parse_args()
     
-    if args.skill or args.ablation or args.repeat > 1:
-        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat)
+    if args.skill or args.ablation or args.repeat > 1 or args.model:
+        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat, override_model=args.model)
     else:
         show_interactive_menu(args.evals)

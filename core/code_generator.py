@@ -79,9 +79,10 @@ def _inject_domain_libs(code_str):
     injected_names = []
     
     # 定義需要注入的 Libs 關鍵字與對應 Class Name
-    # 目前僅支援 RadicalOps
     target_libs = {
-        'RadicalOps': 'RadicalOps'
+        'RadicalOps': 'RadicalOps',
+        'IntegerOps': 'IntegerOps',
+        'FractionOps': 'FractionOps'
     }
     
     # 讀取 domain_libs.py 的內容

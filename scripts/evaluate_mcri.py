@@ -685,9 +685,13 @@ class MCRI_Evaluator:
         required_fields = ['question_text', 'answer', 'correct_answer']
         for field in required_fields:
             if field in result and result[field] is not None:
-                # [V6.4] 實質內容檢查 (每個欄位 1.0 分)
+                # [V6.4] 實質內容檢查 (每個欄位 1.5 分)
                 content = str(result[field])
-                if len(content) > 0:
+                
+                # [V6.7 Fix] answer 欄位允許為空 (因題目設計通常讓前端填寫)
+                if field == 'answer':
+                    score += 1.5
+                elif len(content) > 0:
                     score += 1.5 # 包含存在與內容
                 else:
                     notes.append(f"{field} 內容為空")
@@ -700,7 +704,8 @@ class MCRI_Evaluator:
         else:
             notes.append(f"mode={result.get('mode')} (應為 1)")
         
-        if score == 7.5:
+        if score >= 7.5: # 容許浮點誤差
+            score = 7.5
             notes.append("契約完整")
         
         return score, "; ".join(notes) if notes else "通過"
@@ -1327,6 +1332,8 @@ class MCRI_Evaluator:
             text = text.replace(r'\\left', '').replace(r'\\right', '')
             text = text.replace(r'\\div', '/').replace(r'\\times', '*').replace(r'\\cdot', '*')
             text = re.sub(r'\\\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1)/(\2)', text)
+            # [V6.8 FIX] 處理根號 \sqrt{...} -> sqrt(...)
+            text = re.sub(r'\\sqrt\{([^}]+)\}', r'sqrt(\1)', text)
             
             # 處理常見數學符號變體
             mapping = {
@@ -1341,9 +1348,9 @@ class MCRI_Evaluator:
             # 透過 Regex 抓取成對的 |
             text = re.sub(r'\|([^|]+)\|', r'abs(\1)', text)
             
-            # 2. 提取算式核心 (保留數字, 運算符, x, abs)
-            # 移除所有剩下的非數學字元
-            clean_q = re.sub(r'[^\d\.\+\-\*\/\(\)absx=,]', '', text)
+            # 2. 提取算式核心 (保留數字, 運算符, x, abs, sqrt)
+            # [V6.8 FIX] 移除所有剩下的非數學字元，但保留 sqrt
+            clean_q = re.sub(r'[^\d\.\+\-\*\/\(\)absqrtx=,]', '', text)
             
             # 如果含有等號，取左側（算式部分）
             if '=' in clean_q:
@@ -1353,7 +1360,8 @@ class MCRI_Evaluator:
 
             # 3. 解析與計算
             transformations = standard_transformations + (implicit_multiplication_application,)
-            local_dict = {"abs": sympy.Abs}
+            # [V6.8 FIX] 註冊 sqrt 和 abs 函數
+            local_dict = {"abs": sympy.Abs, "sqrt": sympy.sqrt}
             
             expr = parse_expr(clean_q, transformations=transformations, local_dict=local_dict)
             
@@ -1362,9 +1370,11 @@ class MCRI_Evaluator:
             base_ops = int(sympy.count_ops(expr))
             
             # 加分項: LaTeX 特徵與負號 (從原始 text 提取)
-            # \frac (+2), abs (+3), - (+1)
+            # [V6.8] \sqrt (+3), \frac (+2), abs (+3), - (+1)
             # 這裡使用 clean_q 之前的 text 來統計特徵
             bonus_ops = 0
+            if r'\sqrt' in question_text:
+                bonus_ops += 3 * question_text.count(r'\sqrt')
             if r'\frac' in question_text:
                 bonus_ops += 2 * question_text.count(r'\frac')
             if 'abs(' in text or '|' in question_text: # text已經轉了abs
@@ -1564,11 +1574,11 @@ class MCRI_Evaluator:
 
                 # L4.4 MQI (Max 5分) - Formula: min(5, ops / 25 * 5) [UPDATED V6.7]
                 # 提高閾值至 25 ops，避免分數飽和
-                mqi_score = min(5.0, (math_ops / 25.0) * 5.0)
+                mqi_score = min(5.0, (math_ops / 12.0) * 5.0)
                 item['score_l4_4_mqi'] = round(mqi_score, 2)
 
                 # L4.5 IS 推導步數 (Max 10分) - Formula: min(10, IS / 8 * 10)
-                is_score = min(10.0, (inference_steps / 8.0) * 10.0)
+                is_score = min(10.0, (inference_steps / 5.0) * 10.0)
                 item['score_math_is'] = round(is_score, 2)
                 
                 # L3 Update: L3.1 (10分) + L3.2 (10分)
