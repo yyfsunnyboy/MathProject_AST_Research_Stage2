@@ -125,65 +125,93 @@
             }
         },
         {
-            "eval_id": "math_2a_radicals_ab1",
+            "eval_id": "radicals_L1_ab1",
             "skill_name": "jh_數學2上_FourOperationsOfRadicals",
             "ablation_target": "Ab1",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "None",
-            "description": "根式運算 Ab1 (Bare)",
-            "weight": 1.5,
-            "timeout_seconds": 60
-        },
-        {
-            "eval_id": "math_2a_radicals_ab2",
-            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
-            "ablation_target": "Ab2",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "Regex",
-            "description": "根式運算 Ab2 (Level 1: Basic)",
-            "weight": 1.5,
-            "timeout_seconds": 60,
+            "description": "簡單根式運算 (Level 1) - Ab1",
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
         },
         {
-            "eval_id": "math_2a_radicals_ab3",
+            "eval_id": "radicals_L1_ab2",
             "skill_name": "jh_數學2上_FourOperationsOfRadicals",
-            "ablation_target": "Ab3",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "AST",
-            "description": "根式運算 Ab3 (Level 1: Basic)",
-            "weight": 1.5,
-            "timeout_seconds": 60,
+            "ablation_target": "Ab2",
+            "description": "簡單根式運算 (Level 1) - Ab2",
+            "timeout_seconds": 180,
             "generation_kwargs": {
                 "level": 1
             }
         },
         {
-            "eval_id": "math_2a_radicals_ab2_L2",
+            "eval_id": "radicals_L1_ab3",
             "skill_name": "jh_數學2上_FourOperationsOfRadicals",
-            "ablation_target": "Ab2",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "Regex",
-            "description": "根式運算 Ab2 (Level 2: Double Radical)",
-            "weight": 2.0,
-            "timeout_seconds": 90,
+            "ablation_target": "Ab3",
+            "description": "簡單根式運算 (Level 1) - Ab3",
+            "timeout_seconds": 180,
+            "generation_kwargs": {
+                "level": 1
+            }
+        },
+        {
+            "eval_id": "radicals_L2_ab1",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab1",
+            "description": "中等根式運算 (Level 2) - Ab1",
+            "timeout_seconds": 240,
             "generation_kwargs": {
                 "level": 2
             }
         },
         {
-            "eval_id": "math_2a_radicals_ab3_L2",
+            "eval_id": "radicals_L2_ab2",
             "skill_name": "jh_數學2上_FourOperationsOfRadicals",
-            "ablation_target": "Ab3",
-            "model": "qwen3-14b-nothink",
-            "healer_type": "AST",
-            "description": "根式運算 Ab3 (Level 2: Double Radical)",
-            "weight": 2.0,
-            "timeout_seconds": 90,
+            "ablation_target": "Ab2",
+            "description": "中等根式運算 (Level 2) - Ab2",
+            "timeout_seconds": 240,
             "generation_kwargs": {
                 "level": 2
+            }
+        },
+        {
+            "eval_id": "radicals_L2_ab3",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab3",
+            "description": "中等根式運算 (Level 2) - Ab3",
+            "timeout_seconds": 240,
+            "generation_kwargs": {
+                "level": 2
+            }
+        },
+        {
+            "eval_id": "radicals_L3_ab1",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab1",
+            "description": "困難根式運算 (Level 3) - Ab1",
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 3
+            }
+        },
+        {
+            "eval_id": "radicals_L3_ab2",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab2",
+            "description": "困難根式運算 (Level 3) - Ab2",
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 3
+            }
+        },
+        {
+            "eval_id": "radicals_L3_ab3",
+            "skill_name": "jh_數學2上_FourOperationsOfRadicals",
+            "ablation_target": "Ab3",
+            "description": "困難根式運算 (Level 3) - Ab3",
+            "timeout_seconds": 300,
+            "generation_kwargs": {
+                "level": 3
             }
         },
         {

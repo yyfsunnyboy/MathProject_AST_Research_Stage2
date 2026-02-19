@@ -6,7 +6,9 @@
             "ablation_target": "Ab1",
             "description": "簡單根式運算 (Level 1) - Ab1",
             "timeout_seconds": 180,
-            "generation_kwargs": {"level": 1}
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
             "eval_id": "radicals_L1_ab2",
@@ -14,7 +16,9 @@
             "ablation_target": "Ab2",
             "description": "簡單根式運算 (Level 1) - Ab2",
             "timeout_seconds": 180,
-            "generation_kwargs": {"level": 1}
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
             "eval_id": "radicals_L1_ab3",
@@ -22,7 +26,9 @@
             "ablation_target": "Ab3",
             "description": "簡單根式運算 (Level 1) - Ab3",
             "timeout_seconds": 180,
-            "generation_kwargs": {"level": 1}
+            "generation_kwargs": {
+                "level": 1
+            }
         },
         {
             "eval_id": "radicals_L2_ab1",
@@ -30,7 +36,9 @@
             "ablation_target": "Ab1",
             "description": "中等根式運算 (Level 2) - Ab1",
             "timeout_seconds": 240,
-            "generation_kwargs": {"level": 2}
+            "generation_kwargs": {
+                "level": 2
+            }
         },
         {
             "eval_id": "radicals_L2_ab2",
@@ -38,7 +46,9 @@
             "ablation_target": "Ab2",
             "description": "中等根式運算 (Level 2) - Ab2",
             "timeout_seconds": 240,
-            "generation_kwargs": {"level": 2}
+            "generation_kwargs": {
+                "level": 2
+            }
         },
         {
             "eval_id": "radicals_L2_ab3",
@@ -46,7 +56,9 @@
             "ablation_target": "Ab3",
             "description": "中等根式運算 (Level 2) - Ab3",
             "timeout_seconds": 240,
-            "generation_kwargs": {"level": 2}
+            "generation_kwargs": {
+                "level": 2
+            }
         },
         {
             "eval_id": "radicals_L3_ab1",
@@ -54,7 +66,9 @@
             "ablation_target": "Ab1",
             "description": "困難根式運算 (Level 3) - Ab1",
             "timeout_seconds": 300,
-            "generation_kwargs": {"level": 3}
+            "generation_kwargs": {
+                "level": 3
+            }
         },
         {
             "eval_id": "radicals_L3_ab2",
@@ -62,7 +76,9 @@
             "ablation_target": "Ab2",
             "description": "困難根式運算 (Level 3) - Ab2",
             "timeout_seconds": 300,
-            "generation_kwargs": {"level": 3}
+            "generation_kwargs": {
+                "level": 3
+            }
         },
         {
             "eval_id": "radicals_L3_ab3",
@@ -70,7 +86,9 @@
             "ablation_target": "Ab3",
             "description": "困難根式運算 (Level 3) - Ab3",
             "timeout_seconds": 300,
-            "generation_kwargs": {"level": 3}
+            "generation_kwargs": {
+                "level": 3
+            }
         }
     ]
 }

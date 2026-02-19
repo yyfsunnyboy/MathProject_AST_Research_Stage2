@@ -2181,7 +2181,7 @@ def compute_and_insert_summary(conn: sqlite3.Connection):
 # ========================================
 # CSV 輸出工具
 # ========================================
-def write_experiment_runs_csv(runs: List[Dict], output_path: str):
+def write_experiment_runs_csv(runs: List[Dict], output_path: str, mode='w'):
     """寫入 experiment_runs.csv"""
     import csv
     
@@ -2202,11 +2202,14 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
         'healer_fixes_basic', 'healer_fixes_regex', 'healer_fixes_ast'
     ]
     
+    encoding = 'utf-8-sig' if mode == 'w' else 'utf-8'
+    
     while True:
         try:
-            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+            with open(output_path, mode, newline='', encoding=encoding) as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
+                if mode == 'w':
+                    writer.writeheader()
                 writer.writerows(runs)
             print(f"[OK] 已寫入 CSV: {output_path} ({len(runs)} 筆)")
             break
@@ -2219,7 +2222,7 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
             break
 
 
-def write_evaluation_items_csv(items: List[Dict], output_path: str):
+def write_evaluation_items_csv(items: List[Dict], output_path: str, mode='w'):
     """寫入 evaluation_items.csv"""
     import csv
     
@@ -2238,11 +2241,14 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
         'exec_time_ms'  # [V4.2.2] 執行時間記錄（毫秒）
     ]
     
+    encoding = 'utf-8-sig' if mode == 'w' else 'utf-8'
+    
     while True:
         try:
-            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+            with open(output_path, mode, newline='', encoding=encoding) as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
+                if mode == 'w':
+                    writer.writeheader()
                 writer.writerows(items)
             print(f"[OK] 已寫入 CSV: {output_path} ({len(items)} 筆)")
             break
@@ -2255,7 +2261,7 @@ def write_evaluation_items_csv(items: List[Dict], output_path: str):
             break
 
 
-def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
+def write_ablation_summary_csv(summaries: List[Dict], output_path: str, mode='w'):
     """寫入 ablation_summary.csv"""
     import csv
     
@@ -2268,11 +2274,14 @@ def write_ablation_summary_csv(summaries: List[Dict], output_path: str):
         'p_value_vs_ab1', 'notes'
     ]
     
+    encoding = 'utf-8-sig' if mode == 'w' else 'utf-8'
+    
     while True:
         try:
-            with open(output_path, 'w', newline='', encoding='utf-8-sig') as f:
+            with open(output_path, mode, newline='', encoding=encoding) as f:
                 writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
+                if mode == 'w':
+                    writer.writeheader()
                 writer.writerows(summaries)
             print(f"[OK] 已寫入 CSV: {output_path} ({len(summaries)} 筆)")
             break

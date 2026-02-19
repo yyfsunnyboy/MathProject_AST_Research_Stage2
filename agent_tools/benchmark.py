@@ -154,7 +154,7 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     print(f"⚠️ Prompt file not found: {path}")
     return None
 
-def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False):
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False, forced_run_ts=None):
     print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Generations per Case: {repeat_count}")
@@ -296,7 +296,11 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     
     # [V7.4] Isolated DB per run — each benchmark session gets its own DB file
     # This prevents historical data from accumulating and distorting sample counts.
-    run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    if forced_run_ts:
+        run_ts = forced_run_ts
+    else:
+        run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
     db_filename = f"benchmark_{run_ts}.db"
     db_path = os.path.join(instance_dir, db_filename)
     print(f"🗄️  DB: {db_path}")
@@ -411,31 +415,42 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
                 # [Debug] Save artifacts for analysis
                 try:
-                    # [V7.5] Organized by skill + model (or skill root for all-models run)
+                    # [V10.3] Organized by skill + model (or skill root for all-models run)
+                    curr_model_name = override_model or test_case.get("model", "unknown")
+                    
+                    # Alias mapping for filename
+                    model_alias = curr_model_name
+                    if "gemini" in curr_model_name.lower(): model_alias = "Cloud"
+                    elif "14b" in curr_model_name.lower(): model_alias = "14B"
+                    elif "8b" in curr_model_name.lower(): model_alias = "8B"
+                    
                     if run_in_skill_root:
                         debug_dir = os.path.join(
                             PROJECT_ROOT, "agent_tools", "reports",
                             skill_name, "gen_code"
                         )
                     else:
+                        # Use slug for directory if needed, or alias
+                        # If model_slug is undefined, fallback to alias
+                        d_slug = curr_model_name.replace(" ", "_")
                         debug_dir = os.path.join(
                             PROJECT_ROOT, "agent_tools", "reports",
-                            skill_name, model_slug, "gen_code"
+                            skill_name, d_slug, "gen_code"
                         )
                     os.makedirs(debug_dir, exist_ok=True)
                     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                     
                     # 1. Raw Response (Full Thinking + Code)
                     original_text = response.text if hasattr(response, 'text') else str(response)
-                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_raw.txt"), "w", encoding="utf-8") as f:
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_raw.txt"), "w", encoding="utf-8") as f:
                         f.write(original_text)
                     
                     # 2. Extracted Code (Pre-Heal)
-                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_extracted.py"), "w", encoding="utf-8") as f:
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_extracted.py"), "w", encoding="utf-8") as f:
                         f.write(raw_code)
                     
                     # 3. Healed Code (Final)
-                    with open(os.path.join(debug_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_healed.py"), "w", encoding="utf-8") as f:
+                    with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_healed.py"), "w", encoding="utf-8") as f:
                         f.write(healed_code)
                 except Exception as e:
                     print(f"⚠️ Failed to save debug files: {e}")
@@ -701,20 +716,30 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                      else:
                         prefix += f"_{filter_ablation}"
         
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        # [V10.2] Single CSV file logic: Use run_ts for shared file
+        ts = run_ts
         
         run_file = os.path.join(report_dir, f"{prefix}_runs_{ts}.csv")
         item_file = os.path.join(report_dir, f"{prefix}_items_{ts}.csv")
         sum_file = os.path.join(report_dir, f"{prefix}_summary_{ts}.csv")
         
-        write_experiment_runs_csv(all_runs, run_file)
-        write_evaluation_items_csv(all_items, item_file)
+        # Determine write mode (append if exists)
+        w_mode = 'a' if os.path.exists(run_file) else 'w'
+        
+        write_experiment_runs_csv(all_runs, run_file, mode=w_mode)
+        write_evaluation_items_csv(all_items, item_file, mode=w_mode)
         
         # [V7.3 FIX] Filter summary to only include skills from the current run
         # compute_and_insert_summary reads the ENTIRE DB; we narrow it to current scope.
         current_skills = set(r['skill_name'] for r in all_runs)
-        filtered_summary = [s for s in summary_data if s['skill_name'] in current_skills]
-        write_ablation_summary_csv(filtered_summary, sum_file)
+        current_models = set(r['model_name'] for r in all_runs)
+        
+        # [V10.2] Filter by model too, to avoid duplicating previous models in append mode
+        filtered_summary = [
+            s for s in summary_data 
+            if s['skill_name'] in current_skills and s['model_name'] in current_models
+        ]
+        write_ablation_summary_csv(filtered_summary, sum_file, mode=w_mode)
         
         print(f"\n✅ Results saved to {report_dir}")
         print(f"   - {os.path.basename(run_file)}")
@@ -800,9 +825,12 @@ def show_interactive_menu(evals_file):
         print(f"🚀 開始執行全模型 Benchmark (共 {len(c_presets)} 個模型)")
         print("="*80)
         
+        # [V10.2] Generate shared timestamp for all models in this batch
+        master_run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        
         for i, model_name in enumerate(c_presets, 1):
              print(f"\n[{i}/{len(c_presets)}] 正在測試模型: {model_name} ...")
-             run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=model_name, run_in_skill_root=True)
+             run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=model_name, run_in_skill_root=True, forced_run_ts=master_run_ts)
              print(f"✅ 模型 {model_name} 測試完成。")
              
         print("\n🎉 所有模型測試完畢！")

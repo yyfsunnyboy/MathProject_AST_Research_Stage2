@@ -60,90 +60,71 @@ def update_csv_files(target_model, timestamp_substring):
             writer.writerows(rows)
         print(f"    Updated {count} rows.")
 
-def update_database_split():
-    """
-    Advanced DB Fix:
-    - 18:37 run -> Qwen 3 14B
-    - 19:18 run -> Qwen 3 8B
+def update_database_explicit():
+    """Explicitly update specific DB files to specific models."""
+    targets = [
+        # (DB Filename, Target Model)
+        ("benchmark_20260219_154131.db", "qwen3-14b"),  # Early Qwen Run
+        ("benchmark_20260219_183733.db", "qwen3-8b"),   # Late Qwen Run
+        ("benchmark_20260219_142702.db", "gemini-3-flash") # Earliest Run
+    ]
     
-    Splitting based on timestamp threshold (e.g. 19:00:00).
-    """
-    # Target the mixed DB
-    target_db = "benchmark_20260219_183733.db"
-    db_path = os.path.join(INSTANCE_DIR, target_db)
-    
-    if not os.path.exists(db_path):
-        print(f"DB not found: {db_path}")
-        return
+    for db_name, target_model in targets:
+        db_path = os.path.join(INSTANCE_DIR, db_name)
+        if not os.path.exists(db_path):
+            print(f"Skipping DB (not found): {db_name}")
+            continue
+            
+        print(f"--- Processing Database: {db_name} -> {target_model} ---")
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
         
-    print(f"--- Processing Database: {target_db} ---")
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    try:
-        # Strategy:
-        # Rows with timestamp < '2026-02-19 19:00:00' AND model='unknown' -> qwen3-14b
-        # Rows with timestamp >= '2026-02-19 19:00:00' AND model='unknown' -> qwen3-8b
-        # Or simpler: relying on the run_id creation time implicitly? No, use explicit SQL filter.
-        # But 'timestamp' column format needs verification. Let's assume standard ISO or similar.
-        # Wait, columns are: id, timestamp, ...
-        
-        # 1. Update 14B (Earlier runs)
-        cursor.execute("""
-            UPDATE experiment_runs 
-            SET model_name = 'qwen3-14b' 
-            WHERE skill_name = ? 
-            AND (model_name = 'unknown' OR model_name = 'qwen3-14b') -- Re-apply to ensure
-            AND timestamp < '2026-02-19 19:00:00'
-        """, (SKILL_FOLDER,))
-        rows_14b = cursor.rowcount
-        
-        # 2. Update 8B (Later runs)
-        cursor.execute("""
-            UPDATE experiment_runs 
-            SET model_name = 'qwen3-8b' 
-            WHERE skill_name = ? 
-            AND (model_name = 'unknown') 
-            AND timestamp >= '2026-02-19 19:00:00'
-        """, (SKILL_FOLDER,))
-        rows_8b = cursor.rowcount
-        
-        # 3. Update Summaries (Tricky, summaries usually don't have timestamps? Check schema)
-        # Summary table usually just aggregates. We might need to update by ablation_id/run counts?
-        # Actually, simpler: Update all remaining unknowns to qwen3-8b?
-        # Or better: Assume summary is regenerated or just update blindly based on runs?
-        # Let's just update summaries for both.
-        # There are 3 summaries for 14B and 3 for 8B potentially? 
-        # Actually summary table has 'model_name' as part of key usually.
-        # If they are all 'unknown', we have a collision.
-        # Let's inspect summary table content first? No, let's just try to update based on rowid/insertion order if possible?
-        # For now, let's just print a warning about summary table.
-        
-        conn.commit()
-        print(f"  Updated {rows_14b} rows to qwen3-14b (Time < 19:00)")
-        print(f"  Updated {rows_8b} rows to qwen3-8b (Time >= 19:00)")
-        
-    except Exception as e:
-        print(f"  DB Update failed: {e}")
-    finally:
-        conn.close()
+        try:
+            # Update 'experiment_runs' table
+            cursor.execute(
+                "UPDATE experiment_runs SET model_name = ? WHERE skill_name = ?", 
+                (target_model, SKILL_FOLDER)
+            )
+            updated_rows_runs = cursor.rowcount
+            
+            # Update 'ablation_summary' table if it exists
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='ablation_summary'")
+            if cursor.fetchone():
+                 cursor.execute(
+                    "UPDATE ablation_summary SET model_name = ? WHERE skill_name = ?",
+                    (target_model, SKILL_FOLDER)
+                )
+                 updated_rows_summary = cursor.rowcount
+            else:
+                 updated_rows_summary = 0
+                 
+            conn.commit()
+            print(f"  Updated {updated_rows_runs} runs / {updated_rows_summary} summaries.")
+             
+        except Exception as e:
+            print(f"  Database update failed: {e}")
+        finally:
+            conn.close()
 
 if __name__ == "__main__":
     print("====================================")
-    print(" FIX SCRIPT: Multi-Model Restoration")
+    print(" FIX SCRIPT: Explicit Model Restoration")
     print("====================================")
     
-    # 1. Restore Gemini (Safe) - Timestamp ~15:00-16:00
-    # Found timestamps like 154131, 143247 etc. Let's use specific run timestamp "154131"
-    update_csv_files("gemini-3-flash", "154131")
+    # 1. Fix Gemini (Earliest) ~14:27
+    update_csv_files("gemini-3-flash", "142702")
+    update_csv_files("gemini-3-flash", "143247")
     
-    # 2. Fix Qwen 14B (Safe) - Timestamp ~18:37
-    update_csv_files("qwen3-14b", "183733")
+    # 2. Fix Qwen 14B (Early) ~15:41
+    # [CORRECTION] Previous run labelled this Gemini, restoring to 14B
+    update_csv_files("qwen3-14b", "154131")
     
-    # 3. Fix Qwen 8B (Safe) - Timestamp ~19:18
+    # 3. Fix Qwen 8B (Late) ~18:37 & 19:18
+    # [CORRECTION] Previous run labelled 183733 as 14B, correcting to 8B
+    update_csv_files("qwen3-8b", "183733")
     update_csv_files("qwen3-8b", "191832")
     
-    # 4. Fix Database (Mixed 14B/8B)
-    update_database_split()
+    # 4. Fix Databases (Explicit)
+    update_database_explicit()
     
-    print("\nDone.")
+    print("\nDone. Please check the results.")
