@@ -1,0 +1,63 @@
+def generate(level=1, **kwargs):
+    while True:
+        if level == 1:
+            degree = random.randint(3, 5)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(2, 10)
+            remaining = list(range(degree))
+            random.shuffle(remaining)
+            selected = remaining[:random.randint(2, degree-1)]
+            for idx in selected:
+                coeffs[idx] = random.choice([i for i in range(-10, 11) if i != 0])
+            terms = _coeffs_to_terms(coeffs)
+            deriv = _differentiate_poly(terms, order=1)
+            poly_latex = _poly_to_latex(terms)
+            q = f'求 $f(x) = {poly_latex}$ 的導數 $f\'(x)$。'
+            a = _poly_to_plain(deriv)
+            return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+            
+        elif level == 2:
+            degree = random.randint(3, 5)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(2, 10)
+            remaining = list(range(degree))
+            random.shuffle(remaining)
+            selected = remaining[:random.randint(2, degree-1)]
+            for idx in selected:
+                coeffs[idx] = random.choice([i for i in range(-10, 11) if i != 0])
+            terms = _coeffs_to_terms(coeffs)
+            x0 = random.uniform(-5, 5)
+            y0 = sum(c * (x0 ** p) for c, p in terms)
+            deriv = _differentiate_poly(terms, order=1)
+            slope = sum(c * p * (x0 ** (p-1)) for c, p in deriv)
+            poly_latex = _poly_to_latex(terms)
+            q = f'求過點 $(x_0, y_0) = ({fmt_num(x0)}, {fmt_num(y0)})$ 的切線方程式。'
+            a = f'{fmt_num(slope)}'
+            return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
+            
+        elif level == 3:
+            degree = random.randint(4, 6)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(2, 10)
+            remaining = list(range(degree))
+            random.shuffle(remaining)
+            selected = remaining[:random.randint(2, degree-1)]
+            for idx in selected:
+                coeffs[idx] = random.choice([i for i in range(-10, 11) if i != 0])
+            terms = _coeffs_to_terms(coeffs)
+            deriv1 = _differentiate_poly(terms, order=1)
+            deriv2 = _differentiate_poly(deriv1, order=1)
+            roots = []
+            for c, p in deriv1:
+                if p == 1:
+                    roots.append(-c / 1)
+            if not roots:
+                continue
+            x0 = random.choice(roots)
+            y0 = sum(c * (x0 ** p) for c, p in terms)
+            d1 = sum(c * p * (x0 ** (p-1)) for c, p in deriv1)
+            d2 = sum(c * p * (p-1) * (x0 ** (p-2)) for c, p in deriv2)
+            poly_latex = _poly_to_latex(terms)
+            q = f'求 $f(x) = {poly_latex}$ 的極值，並判別其性質。'
+            a = f'極值點 x={fmt_num(x0)}, 二階導數值={fmt_num(d2)}'
+            return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}

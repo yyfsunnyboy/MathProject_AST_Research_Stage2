@@ -1,0 +1,94 @@
+import random
+import math
+from math import gcd
+from functools import reduce
+
+def generate(level=1, **kwargs):
+    while True:
+        if level == 1:
+            degree = random.randint(3, 5)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(1, 10)
+            remaining_indices = list(range(degree))
+            random.shuffle(remaining_indices)
+            selected_indices = remaining_indices[:random.randint(2, degree-1)]
+            for idx in selected_indices:
+                c = random.randint(-10, 10)
+                while c == 0:
+                    c = random.randint(-10, 10)
+                coeffs[idx] = c
+            terms = _coeffs_to_terms(coeffs)
+            deriv = _differentiate_poly(terms, order=1)
+            poly_latex = _poly_to_latex(terms)
+            deriv_latex = _poly_to_latex(deriv)
+            q = f'求 $f(x) = {poly_latex}$ 的導數 $f\'(x)$。'
+            a = _poly_to_plain(deriv)
+            return {
+                'question_text': q,
+                'correct_answer': a,
+                'answer': a,
+                'mode': 1
+            }
+        elif level == 2:
+            degree = random.randint(3, 5)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(1, 10)
+            remaining_indices = list(range(degree))
+            random.shuffle(remaining_indices)
+            selected_indices = remaining_indices[:random.randint(2, degree-1)]
+            for idx in selected_indices:
+                c = random.randint(-10, 10)
+                while c == 0:
+                    c = random.randint(-10, 10)
+                coeffs[idx] = c
+            terms = _coeffs_to_terms(coeffs)
+            x0 = random.uniform(-5, 5)
+            f_x0 = sum([coeff * (x0 ** (deg)) for coeff, deg in terms])
+            deriv = _differentiate_poly(terms, order=1)
+            m = sum([coeff * (x0 ** (deg-1)) for coeff, deg in deriv])
+            poly_latex = _poly_to_latex(terms)
+            q = f'求過點 $(x_0, y_0) = ({fmt_num(x0)}, {fmt_num(f_x0)})$ 的切線方程式，其中 $f(x) = {poly_latex}$。'
+            a = f'{fmt_num(m)}'
+            return {
+                'question_text': q,
+                'correct_answer': a,
+                'answer': a,
+                'mode': 1
+            }
+        elif level == 3:
+            degree = random.randint(3, 5)
+            coeffs = [0] * (degree + 1)
+            coeffs[degree] = random.randint(1, 10)
+            remaining_indices = list(range(degree))
+            random.shuffle(remaining_indices)
+            selected_indices = remaining_indices[:random.randint(2, degree-1)]
+            for idx in selected_indices:
+                c = random.randint(-10, 10)
+                while c == 0:
+                    c = random.randint(-10, 10)
+                coeffs[idx] = c
+            terms = _coeffs_to_terms(coeffs)
+            deriv1 = _differentiate_poly(terms, order=1)
+            deriv2 = _differentiate_poly(deriv1, order=1)
+            critical_points = []
+            for coeff, deg in deriv1:
+                if deg == 1:
+                    critical_points.append(-coeff / 1)
+                elif deg == 0:
+                    if coeff == 0:
+                        critical_points.append(0)
+            if not critical_points:
+                continue
+            x0 = critical_points[0]
+            f_x0 = sum([coeff * (x0 ** (deg)) for coeff, deg in terms])
+            d1 = sum([coeff * (x0 ** (deg-1)) for coeff, deg in deriv1])
+            d2 = sum([coeff * (x0 ** (deg-1)) for coeff, deg in deriv2])
+            poly_latex = _poly_to_latex(terms)
+            q = f'求 $f(x) = {poly_latex}$ 的極值，並判別其性質。'
+            a = f'極值點 $x = {fmt_num(x0)}$，二階導數值 $f''({x0}) = {fmt_num(d2)}$，為{"極大" if d2 < 0 else "極小"}值'
+            return {
+                'question_text': q,
+                'correct_answer': a,
+                'answer': a,
+                'mode': 1
+            }

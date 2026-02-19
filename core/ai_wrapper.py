@@ -273,24 +273,33 @@ class GoogleAIClient:
                 )
                 end_time = time.perf_counter()
                 
-                # [V3.1] Attach latency to response object (Monkey Patch)
-                try:
-                    response.latency_ms = int((end_time - start_time) * 1000)
-                    
-                    # [V3.1 Metrics Normalization] Ensure prompt_tokens/completion_tokens exist
-                    if response.usage_metadata:
-                        response.prompt_tokens = response.usage_metadata.prompt_token_count
-                        response.completion_tokens = response.usage_metadata.candidates_token_count
-                        response.total_tokens = response.usage_metadata.total_token_count
-                    else:
-                        response.prompt_tokens = 0
-                        response.completion_tokens = 0
-                        response.total_tokens = 0
-                        
-                except Exception as e:
-                    print(f"[WARN] Failed to attach metrics to Google response: {e}")
-                
-                return response
+                # [V3.2 FIX] google.genai response is a frozen protobuf — use wrapper instead of monkey-patch
+                class _ResponseWrapper:
+                    """Wraps a frozen google.genai response and adds computed metrics as plain attributes."""
+                    def __init__(self, raw, latency_ms, prompt_tokens, completion_tokens, total_tokens):
+                        self._raw = raw
+                        self.latency_ms = latency_ms
+                        self.prompt_tokens = prompt_tokens
+                        self.completion_tokens = completion_tokens
+                        self.total_tokens = total_tokens
+                    @property
+                    def text(self):
+                        return self._raw.text
+                    @property
+                    def usage_metadata(self):
+                        return self._raw.usage_metadata
+                    def __getattr__(self, name):
+                        return getattr(self._raw, name)
+
+                computed_latency = int((end_time - start_time) * 1000)
+                if response.usage_metadata:
+                    pt = response.usage_metadata.prompt_token_count or 0
+                    ct = response.usage_metadata.candidates_token_count or 0
+                    tt = response.usage_metadata.total_token_count or 0
+                else:
+                    pt = ct = tt = 0
+
+                return _ResponseWrapper(response, computed_latency, pt, ct, tt)
 
             else:
                 # ---------------------------------------------------------

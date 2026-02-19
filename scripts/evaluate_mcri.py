@@ -1695,7 +1695,7 @@ class MCRI_Evaluator:
         # L2.2 格式純淨度（從 repetitions 中計算）
         
         # 執行所有 repetitions
-        print(f"\n[REPEAT] 執行 {repetitions} 次重複測試...")
+        print(f"\n[REPEAT] 執行 {repetitions} 次 MCRI 評分測試...")
         items = []
         for i in range(repetitions):
             item = self.evaluate_single_repetition(i + 1)

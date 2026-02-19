@@ -111,13 +111,21 @@ def show_model_selection_menu():
     print("🤖 [模型選擇] 請選擇要使用的 AI 模型")
     print("="*70)
     
+    # [NEW] Option 0: Run All
+    print(f"   [0] 🔄 Run All Models (Sequential)")
+
     for i, model_key in enumerate(available_models, 1):
         display_name = model_display_names.get(model_key, model_key)
         print(f"   [{i}] {display_name}")
     
     while True:
         try:
-            choice = input(f"\n👉 請輸入選項 (1-{len(available_models)}): ").strip()
+            choice = input(f"\n👉 請輸入選項 (0-{len(available_models)}): ").strip()
+            
+            if choice == '0':
+                print(f"✅ 已選擇: Run All Models (將依序執行所有模型)")
+                return "ALL"
+
             idx = int(choice) - 1
             if 0 <= idx < len(available_models):
                 selected = available_models[idx]
@@ -146,7 +154,7 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     print(f"⚠️ Prompt file not found: {path}")
     return None
 
-def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None):
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False):
     print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Generations per Case: {repeat_count}")
@@ -272,10 +280,26 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     regex_healer = RegexHealer()
     ast_healer = ASTHealer()
 
+    # [V7.5] Derive a clean model slug for directory naming
+    # e.g. 'qwen3-14b-nothink:latest' -> 'Qwen3_14B', 'gemini-3-flash-preview' -> 'Gemini3_Flash'
+    _raw_slug = override_model or (client.model if hasattr(client, 'model') else "Unknown_Model")
+    _slug = _raw_slug.split(':')[0]          # Remove :latest or :tag
+    _slug = re.sub(r'[^a-zA-Z0-9]+', '_', _slug)  # Replace non-alphanumeric with _
+    _slug = re.sub(r'_+', '_', _slug).strip('_')    # Collapse multiple _
+    model_slug = _slug
+    print(f"📁 Model slug: {model_slug}")
+
+
     # 3. Setup Storage
     instance_dir = os.path.join(PROJECT_ROOT, "instance")
     os.makedirs(instance_dir, exist_ok=True)
-    db_path = os.path.join(instance_dir, "benchmark.db")
+    
+    # [V7.4] Isolated DB per run — each benchmark session gets its own DB file
+    # This prevents historical data from accumulating and distorting sample counts.
+    run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    db_filename = f"benchmark_{run_ts}.db"
+    db_path = os.path.join(instance_dir, db_filename)
+    print(f"🗄️  DB: {db_path}")
     
     if MCRI_AVAILABLE:
         create_database(db_path)
@@ -311,9 +335,12 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         for run_i in range(repeat_count):
             print(f"  🔹 Gen {run_i+1}/{repeat_count}...", end="", flush=True)
             
+            response = None      # [V7.5 FIX] Initialize before try to prevent UnboundLocalError on timeout
+            healer_fixes = None  # [V7.5 FIX] Initialize before try (healer may never run if AI fails)
+            healer_applied = False  # [V7.5 FIX] Same reason
             try:
                 # A. Generate
-                response = call_ai_with_retry(client, skill_prompt, max_retries=3, timeout=180)
+                response = call_ai_with_retry(client, skill_prompt, max_retries=3, timeout=300)
                 if hasattr(response, 'text'):
                     raw_code = response.text
                 else:
@@ -368,9 +395,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     healed_code, _ = _inject_domain_libs(healed_code)
                 elif ablation_target == "Ab3":
                     temp_code, r_fixes = regex_healer.heal(raw_code)
-                    healed_code, a_fixes = ast_healer.heal(temp_code)
-                    a_fixes_dict = {"ast": a_fixes} if isinstance(a_fixes, int) else a_fixes
-                    healer_fixes = {**r_fixes, **a_fixes_dict}
+                    # [FIX] regex_healer.heal() returns stats dict with key 'regex_fix_count', not 'regex'
+                    r_fix_count = r_fixes.get('regex_fix_count', 0) if isinstance(r_fixes, dict) else (r_fixes or 0)
+                    # [FIX] Instantiate ASTHealer fresh per run so self.fixes doesn't accumulate across runs
+                    from core.healers.ast_healer import ASTHealer as _ASTHealer
+                    _fresh_ast = _ASTHealer()
+                    healed_code, a_fix_count = _fresh_ast.heal(temp_code)
+                    healer_fixes = {'basic': 0, 'regex': r_fix_count, 'ast': a_fix_count}
                     healer_applied = True
                     skel = build_calculation_skeleton(skill_name)
                     healed_code = skel + "\n" + healed_code
@@ -380,7 +411,17 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
                 # [Debug] Save artifacts for analysis
                 try:
-                    debug_dir = os.path.join(PROJECT_ROOT, "agent_tools", "temp_code")
+                    # [V7.5] Organized by skill + model (or skill root for all-models run)
+                    if run_in_skill_root:
+                        debug_dir = os.path.join(
+                            PROJECT_ROOT, "agent_tools", "reports",
+                            skill_name, "gen_code"
+                        )
+                    else:
+                        debug_dir = os.path.join(
+                            PROJECT_ROOT, "agent_tools", "reports",
+                            skill_name, model_slug, "gen_code"
+                        )
                     os.makedirs(debug_dir, exist_ok=True)
                     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
                     
@@ -402,7 +443,17 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 # C. Evaluate using MCRI
                 if MCRI_AVAILABLE:
                     temp_name = f"temp_gen_{uuid.uuid4().hex[:8]}.py"
-                    temp_dir = os.path.join(PROJECT_ROOT, "agent_tools", "temp_code")
+                    # [V7.5] temp_dir aligned with gen_code dir
+                    if run_in_skill_root:
+                        temp_dir = os.path.join(
+                            PROJECT_ROOT, "agent_tools", "reports",
+                            skill_name, "gen_code"
+                        )
+                    else:
+                        temp_dir = os.path.join(
+                            PROJECT_ROOT, "agent_tools", "reports",
+                            skill_name, model_slug, "gen_code"
+                        )
                     os.makedirs(temp_dir, exist_ok=True)
                     temp_path = os.path.join(temp_dir, temp_name)
                     # [V6.3 FIX] Inject Metadata Headers for L5 Scoring
@@ -411,7 +462,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     
                     # 1. ID & Model Info
                     header_lines.append(f"# ID: {skill_name}")
-                    model_str = test_case.get("model", "unknown")
+                    model_str = override_model or test_case.get("model", "unknown")
                     strategy_str = "V10.1 Modular Refactored" # [TODO] Dynamic strategy name if possible
                     header_lines.append(f"# Model: {model_str} | Strategy: {strategy_str}")
                     
@@ -435,9 +486,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     header_lines.append(f"# Ablation ID: {ab_tag} | Basic Cleanup: {basic_cleanup} | Advanced Healer: {adv_healer}")
                     
                     # 3. Performance Metrics
-                    latency_val = response.latency_ms/1000 if hasattr(response, 'latency_ms') else 0
-                    tokens_in = response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0
-                    tokens_out = response.completion_tokens if hasattr(response, 'completion_tokens') else 0
+                    latency_val = response.latency_ms/1000 if response and hasattr(response, 'latency_ms') else 0
+                    tokens_in = response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0
+                    tokens_out = response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0
                     header_lines.append(f"# Performance: {latency_val:.2f}s | Tokens: In={tokens_in}, Out={tokens_out}")
                     
                     # 4. Creation Time
@@ -492,8 +543,14 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             'source_code_path': temp_path,
                             'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
                             'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                            'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
-                            'total_tokens': 0, 'latency_ms': 0
+                            'prompt_hash': '', 
+                            'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
+                            'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
+                            'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
+                            'latency_ms': int(response.latency_ms) if response and hasattr(response, 'latency_ms') else 0,
+                            'healer_fixes_basic': healer_fixes.get('basic', 0) if healer_fixes else 0,
+                            'healer_fixes_regex': healer_fixes.get('regex', 0) if healer_fixes else 0,
+                            'healer_fixes_ast': healer_fixes.get('ast', 0) if healer_fixes else 0
                         }
                         all_runs.append(failed_record)
                     else:
@@ -502,10 +559,15 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             if run_record is not None:
                                 # [V7.0 FIX] Inject accurate tokens from response object (bypass header parsing)
                                 if response:
-                                    run_record['latency_ms'] = int(response.latency_ms) if hasattr(response, 'latency_ms') else 0
-                                    run_record['prompt_tokens'] = response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0
-                                    run_record['completion_tokens'] = response.completion_tokens if hasattr(response, 'completion_tokens') else 0
-                                    run_record['total_tokens'] = response.total_tokens if hasattr(response, 'total_tokens') else 0
+                                    run_record['latency_ms'] = int(response.latency_ms) if response and hasattr(response, 'latency_ms') else 0
+                                    run_record['prompt_tokens'] = response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0
+                                    run_record['completion_tokens'] = response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0
+                                    run_record['total_tokens'] = response.total_tokens if response and hasattr(response, 'total_tokens') else 0
+
+                                # [V7.2 FIX] Explicitly set granular healer fix counts for CSV stability
+                                run_record['healer_fixes_basic'] = healer_fixes.get('basic', 0) if healer_fixes else 0
+                                run_record['healer_fixes_regex'] = healer_fixes.get('regex', 0) if healer_fixes else 0
+                                run_record['healer_fixes_ast'] = healer_fixes.get('ast', 0) if healer_fixes else 0
                                 all_runs.append(run_record)
                                 all_items.extend(run_items)
                                 print(f" -> Score: {run_record['avg_mcri_total']:.1f}")
@@ -524,9 +586,6 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     'notes': "Load Failed (SyntaxError or Import Error)",
                                     'healer_applied': 1 if healer_applied else 0,
                                     'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
-                                    'healer_fixes_basic': healer_fixes.get('fixes_basic', 0) if healer_fixes else 0,
-                                    'healer_fixes_regex': healer_fixes.get('fixes_regex', 0) if healer_fixes else 0,
-                                    'healer_fixes_ast': healer_fixes.get('fixes_ast', 0) if healer_fixes else 0,
                                     'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
                                     'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                                     'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
@@ -538,8 +597,14 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     'source_code_path': temp_path,
                                     'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
                                     'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                                    'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
-                                    'total_tokens': 0, 'latency_ms': 0
+                                    'prompt_hash': '', 
+                                    'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
+                                    'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
+                                    'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
+                                    'latency_ms': int(response.latency_ms) if response and hasattr(response, 'latency_ms') else 0,
+                                    'healer_fixes_basic': healer_fixes.get('basic', 0) if healer_fixes else 0,
+                                    'healer_fixes_regex': healer_fixes.get('regex', 0) if healer_fixes else 0,
+                                    'healer_fixes_ast': healer_fixes.get('ast', 0) if healer_fixes else 0
                                 }
                                 all_runs.append(failed_record)
                         else:
@@ -587,8 +652,14 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     'source_code_path': "",
                     'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
                     'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                    'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
-                    'total_tokens': 0, 'latency_ms': 0
+                    'prompt_hash': '', 
+                    'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
+                    'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
+                    'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
+                    'latency_ms': int(response.latency_ms) if response and hasattr(response, 'latency_ms') else 0,
+                    'healer_fixes_basic': healer_fixes.get('basic', 0) if healer_fixes else 0,
+                    'healer_fixes_regex': healer_fixes.get('regex', 0) if healer_fixes else 0,
+                    'healer_fixes_ast': healer_fixes.get('ast', 0) if healer_fixes else 0
                 }
                 all_runs.append(failed_record)
 
@@ -601,7 +672,18 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         conn.close()
         
         # Export CSVs
-        report_dir = os.path.join(PROJECT_ROOT, "agent_tools", "reports")
+        # [V7.5] Organized by skill + model (or skill root for all-models run)
+        _csv_skills = list(set(r['skill_name'] for r in all_runs))
+        _csv_skill_dir = _csv_skills[0] if len(_csv_skills) == 1 else "all_skills"
+        if run_in_skill_root:
+            report_dir = os.path.join(
+                PROJECT_ROOT, "agent_tools", "reports", _csv_skill_dir
+            )
+        else:
+            report_dir = os.path.join(
+                PROJECT_ROOT, "agent_tools", "reports",
+                _csv_skill_dir, model_slug
+            )
         os.makedirs(report_dir, exist_ok=True)
         
         # Determine Prefix based on report_name_prefix or filter
@@ -627,7 +709,12 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         
         write_experiment_runs_csv(all_runs, run_file)
         write_evaluation_items_csv(all_items, item_file)
-        write_ablation_summary_csv(summary_data, sum_file)
+        
+        # [V7.3 FIX] Filter summary to only include skills from the current run
+        # compute_and_insert_summary reads the ENTIRE DB; we narrow it to current scope.
+        current_skills = set(r['skill_name'] for r in all_runs)
+        filtered_summary = [s for s in summary_data if s['skill_name'] in current_skills]
+        write_ablation_summary_csv(filtered_summary, sum_file)
         
         print(f"\n✅ Results saved to {report_dir}")
         print(f"   - {os.path.basename(run_file)}")
@@ -700,12 +787,34 @@ def show_interactive_menu(evals_file):
         repeat_count = 1
     
     # Model Selection
-    selected_model = show_model_selection_menu()
-    if not selected_model:
-        print("⚠️  未選擇模型，使用預設模型")
-        selected_model = None
+    selected_model_or_all = show_model_selection_menu()
     
-    run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
+    if selected_model_or_all == "ALL":
+        # [V7.5 FIX] Use BENCHMARK_MODELS whitelist, not all CODER_PRESETS keys
+        BENCHMARK_MODELS = ['gemini-3-flash', 'qwen3-14b', 'qwen3-8b']
+        c_presets = [k for k in BENCHMARK_MODELS if hasattr(Config, 'CODER_PRESETS') and k in Config.CODER_PRESETS]
+        if not c_presets:
+            c_presets = ['qwen3-8b']
+        
+        print("\n" + "="*80)
+        print(f"🚀 開始執行全模型 Benchmark (共 {len(c_presets)} 個模型)")
+        print("="*80)
+        
+        for i, model_name in enumerate(c_presets, 1):
+             print(f"\n[{i}/{len(c_presets)}] 正在測試模型: {model_name} ...")
+             run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=model_name, run_in_skill_root=True)
+             print(f"✅ 模型 {model_name} 測試完成。")
+             
+        print("\n🎉 所有模型測試完畢！")
+        
+    else:
+        # Single Model
+        selected_model = selected_model_or_all
+        if not selected_model:
+            print("⚠️  未選擇模型，使用預設模型")
+            selected_model = None
+        
+        run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
 
 if __name__ == "__main__":
     import argparse
