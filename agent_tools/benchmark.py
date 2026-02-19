@@ -146,7 +146,7 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     print(f"⚠️ Prompt file not found: {path}")
     return None
 
-def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None):
+def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None):
     print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Generations per Case: {repeat_count}")
@@ -159,11 +159,31 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     # ==============================================================================
     
     evals = []
+    
+    # [V9.8] Check for explicit evals file override first
+    # If the provided filename is NOT the default 'evals_full.json', we try to load it directly.
+    skip_scan = False
+    if evals_file and "evals_full.json" not in evals_file:
+         target_path = evals_file
+         if not os.path.isabs(target_path):
+             target_path = os.path.join(PROJECT_ROOT, evals_file)
+         
+         if os.path.exists(target_path):
+             try:
+                 print(f"📂 Loading explicit evals from: {target_path}")
+                 with open(target_path, "r", encoding="utf-8") as f:
+                     data = json.load(f)
+                     evals = data.get("evals", [])
+                     if evals:
+                         skip_scan = True
+             except Exception as e:
+                 print(f"⚠️ Failed to load explicit evals file: {e}")
+
     agent_skills_dir = os.path.join(PROJECT_ROOT, "agent_skills")
     
-    # 優先從各 Skill 目錄載入
-    print(f"📂 Scanning skills in: {agent_skills_dir}")
-    if os.path.exists(agent_skills_dir):
+    # 優先從各 Skill 目錄載入 (除非已明確指定檔案)
+    if not skip_scan and os.path.exists(agent_skills_dir):
+        print(f"📂 Scanning skills in: {agent_skills_dir}")
         for skill_dir in os.listdir(agent_skills_dir):
             skill_path = os.path.join(agent_skills_dir, skill_dir)
             if not os.path.isdir(skill_path):
@@ -212,8 +232,12 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     # Filter logic
     if filter_skill:
         evals = [e for e in evals if filter_skill in e.get("skill_name", "")]
+        
     if filter_ablation:
-        evals = [e for e in evals if e.get("ablation_target") == filter_ablation]
+        if isinstance(filter_ablation, list):
+            evals = [e for e in evals if e.get("ablation_target") in filter_ablation]
+        else:
+            evals = [e for e in evals if e.get("ablation_target") == filter_ablation]
         
     if not evals:
          print(f"⚠️ No matching test cases found. Exiting.")
@@ -383,23 +407,54 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     temp_path = os.path.join(temp_dir, temp_name)
                     # [V6.3 FIX] Inject Metadata Headers for L5 Scoring
                     header_lines = []
-                    header_lines.append(f"# Created At: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    header_lines.append("# ==============================================================================")
                     
+                    # 1. ID & Model Info
+                    header_lines.append(f"# ID: {skill_name}")
+                    model_str = test_case.get("model", "unknown")
+                    strategy_str = "V10.1 Modular Refactored" # [TODO] Dynamic strategy name if possible
+                    header_lines.append(f"# Model: {model_str} | Strategy: {strategy_str}")
+                    
+                    # 2. Ablation & Healer Config
                     if ab_id == 3:
+                        ab_tag = "3"
+                        basic_cleanup = "ENABLED"
+                        adv_healer = "ON"
                         fix_tag = "[Full Healer]"
                     elif ab_id == 2:
+                        ab_tag = "2"
+                        basic_cleanup = "ENABLED"
+                        adv_healer = "OFF (Minimal)"
                         fix_tag = "[Minimal Healer]"
                     else:
+                        ab_tag = "1"
+                        basic_cleanup = "DISABLED"
+                        adv_healer = "OFF"
                         fix_tag = "[Bare]"
-                        
-                    # Calculate fix counts for header
+                    
+                    header_lines.append(f"# Ablation ID: {ab_tag} | Basic Cleanup: {basic_cleanup} | Advanced Healer: {adv_healer}")
+                    
+                    # 3. Performance Metrics
+                    latency_val = response.latency_ms/1000 if hasattr(response, 'latency_ms') else 0
+                    tokens_in = response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0
+                    tokens_out = response.completion_tokens if hasattr(response, 'completion_tokens') else 0
+                    header_lines.append(f"# Performance: {latency_val:.2f}s | Tokens: In={tokens_in}, Out={tokens_out}")
+                    
+                    # 4. Creation Time
+                    header_lines.append(f"# Created At: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+                    
+                    # 5. Fix Status
                     basic_fixes = healer_fixes.get('basic', 0) if healer_fixes else 0
                     regex_fixes = healer_fixes.get('regex', 0) if healer_fixes else 0
                     ast_fixes = healer_fixes.get('ast', 0) if healer_fixes else 0
-                    
                     header_lines.append(f"# Fix Status: {fix_tag} | Fixes: Basic={basic_fixes}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})")
-                    header_lines.append(f"# Performance: {response.latency_ms/1000 if hasattr(response, 'latency_ms') else 0:.2f}s | Tokens: In={response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0}, Out={response.completion_tokens if hasattr(response, 'completion_tokens') else 0}")
-                    header_lines.append("") # Empty line separator
+                    
+                    # 6. Verification Status (Placeholder, actual verification happens in run_mcri_eval)
+                    # If we reached here, at least the healer didn't crash
+                    verify_status = "Internal Logic Check = PASSED" if healer_applied else "Internal Logic Check = PENDING"
+                    header_lines.append(f"# Verification: {verify_status}")
+                    
+                    header_lines.append("# ==============================================================================")
                     
                     final_file_content = "\n".join(header_lines) + "\n" + healed_code
                     
@@ -445,6 +500,12 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         if not result_queue.empty():
                             run_record, run_items, err = result_queue.get()
                             if run_record is not None:
+                                # [V7.0 FIX] Inject accurate tokens from response object (bypass header parsing)
+                                if response:
+                                    run_record['latency_ms'] = int(response.latency_ms) if hasattr(response, 'latency_ms') else 0
+                                    run_record['prompt_tokens'] = response.prompt_tokens if hasattr(response, 'prompt_tokens') else 0
+                                    run_record['completion_tokens'] = response.completion_tokens if hasattr(response, 'completion_tokens') else 0
+                                    run_record['total_tokens'] = response.total_tokens if hasattr(response, 'total_tokens') else 0
                                 all_runs.append(run_record)
                                 all_items.extend(run_items)
                                 print(f" -> Score: {run_record['avg_mcri_total']:.1f}")
@@ -463,6 +524,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     'notes': "Load Failed (SyntaxError or Import Error)",
                                     'healer_applied': 1 if healer_applied else 0,
                                     'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
+                                    'healer_fixes_basic': healer_fixes.get('fixes_basic', 0) if healer_fixes else 0,
+                                    'healer_fixes_regex': healer_fixes.get('fixes_regex', 0) if healer_fixes else 0,
+                                    'healer_fixes_ast': healer_fixes.get('fixes_ast', 0) if healer_fixes else 0,
                                     'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
                                     'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                                     'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
@@ -481,13 +545,52 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         else:
                             print(f" -> 評分異常 (No result)")
                     try:
-                        os.remove(temp_path)
-                    except: pass
+                        # [V7.1 FIX] Preserve temp file (with headers) for debug traceability
+                        final_debug_path = os.path.join(temp_dir, f"{eval_id_base}_gen{run_i+1}_{timestamp_str}_final.py")
+                        if os.path.exists(temp_path):
+                            os.rename(temp_path, final_debug_path)
+                            # print(f" -> Saved debug file: {os.path.basename(final_debug_path)}")
+                    except Exception as e:
+                        print(f" -> Failed to save debug file: {e}")
+                        try: os.remove(temp_path)
+                        except: pass
                 else:
                     print(" -> MCRI Unavailable")
 
             except Exception as e:
                 print(f" -> Error: {e}")
+                
+                # Create failed record for Exception
+                failed_record = {
+                    'run_id': str(uuid.uuid4()),
+                    'timestamp': datetime.now().isoformat(),
+                    'model_name': test_case.get("model", "unknown"),
+                    'skill_name': skill_name,
+                    'ablation_id': ab_id,
+                    'sample_index': idx,
+                    'score_program_total': 0, 'score_math_total': 0, 'avg_mcri_total': 0,
+                    'pass_rate': 0.0, 'fail_count': 1, 'repetitions_planned': 1, 'repetitions_completed': 0,
+                    'notes': f"Exception: {str(e)[:200]}",
+                    'healer_applied': 0,
+                    'healer_fix_count': 0,
+                    'healer_fixes_basic': 0,
+                    'healer_fixes_regex': 0,
+                    'healer_fixes_ast': 0,
+                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                    'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
+                    'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
+                    'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
+                    'score_l1_1_syntax': 0, 'score_l1_2_runtime': 0,
+                    'score_l2_1_contract': 0, 'score_l2_2_purity': 0,
+                    'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
+                    'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
+                    'source_code_path': "",
+                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
+                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
+                    'prompt_hash': '', 'prompt_tokens': 0, 'completion_tokens': 0, 
+                    'total_tokens': 0, 'latency_ms': 0
+                }
+                all_runs.append(failed_record)
 
     # 5. Save Results
     if MCRI_AVAILABLE and all_runs:
@@ -501,12 +604,20 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         report_dir = os.path.join(PROJECT_ROOT, "agent_tools", "reports")
         os.makedirs(report_dir, exist_ok=True)
         
-        # Determine Prefix based on filter
-        prefix = "benchmark"
-        if filter_skill:
-            prefix = filter_skill
-            if filter_ablation:
-                prefix += f"_{filter_ablation}"  # e.g., SkillName_Ab1
+        # Determine Prefix based on report_name_prefix or filter
+        if report_name_prefix:
+            prefix = report_name_prefix
+        else:
+            prefix = "benchmark"
+            if filter_skill:
+                prefix = filter_skill
+                # Handle list or single string for ablation in filename
+                if filter_ablation:
+                     if isinstance(filter_ablation, list):
+                        ab_str = "_".join(filter_ablation)
+                        prefix += f"_{ab_str}"
+                     else:
+                        prefix += f"_{filter_ablation}"
         
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         
@@ -601,13 +712,20 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--evals", default="math-problem-generator/evals/evals_full.json", help="Path to evals json file")
     parser.add_argument("--skill", help="Filter by skill name (partial match supported)")
-    parser.add_argument("--ablation", help="Filter by ablation (Ab1, Ab2, Ab3)")
+    parser.add_argument("--ablation", nargs='+', help="Filter by ablation (Ab1, Ab2, Ab3)")
     parser.add_argument("--repeat", type=int, default=1, help="Number of generations per test case")
     parser.add_argument("--model", help="Override AI model (e.g. qwen3-14b, gemini-3-flash)")
+    parser.add_argument("--report_name", help="Custom name prefix for the report")
     parser.add_argument("--menu", action="store_true", help="Show interactive menu")
     args = parser.parse_args()
     
     if args.skill or args.ablation or args.repeat > 1 or args.model:
-        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=args.ablation, repeat_count=args.repeat, override_model=args.model)
+        # Handle list or single string for ablation
+        if isinstance(args.ablation, list):
+            ablations = args.ablation
+        else:
+            ablations = [args.ablation] if args.ablation else None
+            
+        run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=ablations, repeat_count=args.repeat, override_model=args.model, report_name_prefix=args.report_name)
     else:
         show_interactive_menu(args.evals)

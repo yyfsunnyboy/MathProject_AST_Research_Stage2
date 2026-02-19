@@ -478,31 +478,27 @@ class MCRI_Evaluator:
                     
                     basic_match = re.search(r'Basic=(\d+)', line)
                     if basic_match:
-                        metadata['fixes_basic'] = int(basic_match.group(1))
+                         metadata['fixes_basic'] = int(basic_match.group(1))
                     
                     regex_match = re.search(r'Regex=(\d+)', line)
                     if regex_match:
-                        metadata['fixes_regex'] = int(regex_match.group(1))
-                    
+                         metadata['fixes_regex'] = int(regex_match.group(1))
+                         
                     ast_match = re.search(r'AST=(\d+)', line)
                     if ast_match:
-                        metadata['fixes_ast'] = int(ast_match.group(1))
-                
-                # Verification: Internal Logic Check = PASSED
+                         metadata['fixes_ast'] = int(ast_match.group(1))
+
+                # [V6.8 New Headers]
                 elif 'Verification:' in line:
                     metadata['verification'] = line.split('Verification:')[-1].strip()
-                
-                # Model: qwen2.5-coder:14b | Strategy: V10.1 Modular Refactored
+                    
                 elif 'Model:' in line:
                     metadata['model_info'] = line.split('Model:')[-1].strip()
-                
-                # Strategy
-                elif 'Strategy:' in line:
-                    metadata['strategy'] = line.split('Strategy:')[-1].strip()
-                
-                # Ablation ID
+                    
                 elif 'Ablation ID:' in line:
                     metadata['ablation_note'] = line.split('Ablation ID:')[-1].strip()
+                elif 'Strategy:' in line:
+                    metadata['strategy'] = line.split('Strategy:')[-1].strip()
         
         except Exception as e:
             print(f"⚠️  提取 metadata 失敗: {e}")
@@ -1572,12 +1568,13 @@ class MCRI_Evaluator:
                 item['score_l4_3_artifacts'] = int((score_l4_3_raw / 15.0) * 5.0)
                 item['score_math_hygiene_score'] = int(score_l4_3_raw)
 
-                # L4.4 MQI (Max 5分) - Formula: min(5, ops / 25 * 5) [UPDATED V6.7]
-                # 提高閾值至 25 ops，避免分數飽和
-                mqi_score = min(5.0, (math_ops / 12.0) * 5.0)
+                # L4.4 MQI (Max 5分) - Formula: min(5, ops / 15 * 5) [UPDATED V7.0]
+                # 調降閾值至 15 ops (符合國中會考難度)，避免分數過低
+                mqi_score = min(5.0, (math_ops / 15.0) * 5.0)
                 item['score_l4_4_mqi'] = round(mqi_score, 2)
 
-                # L4.5 IS 推導步數 (Max 10分) - Formula: min(10, IS / 8 * 10)
+                # L4.5 IS 推導步數 (Max 10分) - Formula: min(10, IS / 5 * 10)
+                # 調降閾值至 5 steps (符合國中會考邏輯深度)
                 is_score = min(10.0, (inference_steps / 5.0) * 10.0)
                 item['score_math_is'] = round(is_score, 2)
                 
@@ -1829,12 +1826,15 @@ class MCRI_Evaluator:
             'batch_id': '',  # 暫時空值
             'golden_prompt_path': '',  # 暫時空值
             'prompt_hash': '',  # 暫時空值
-            'prompt_tokens': 0,  # 暫時 0
-            'completion_tokens': 0,  # 暫時 0
-            'total_tokens': 0,  # 暫時 0
-            'latency_ms': int(avg_exec_time * 1000),  # 轉換為毫秒
-            'healer_applied': 0,  # 暫時 0
-            'healer_fix_count': 0,  # 暫時 0
+            'prompt_tokens': self.metadata.get('tokens_in', 0) if hasattr(self, 'metadata') else 0,
+            'completion_tokens': self.metadata.get('tokens_out', 0) if hasattr(self, 'metadata') else 0,
+            'total_tokens': (self.metadata.get('tokens_in', 0) + self.metadata.get('tokens_out', 0)) if hasattr(self, 'metadata') else 0,
+            'latency_ms': int(float(self.metadata.get('performance', 0)) * 1000) if hasattr(self, 'metadata') and self.metadata.get('performance') else 0,
+            'healer_applied': 1 if self.metadata.get('fix_status', '[Bare]') != '[Bare]' else 0,
+            'healer_fix_count': (self.metadata.get('fixes_basic', 0) + self.metadata.get('fixes_regex', 0) + self.metadata.get('fixes_ast', 0)) if hasattr(self, 'metadata') else 0,
+            'healer_fixes_basic': self.metadata.get('fixes_basic', 0) if hasattr(self, 'metadata') else 0,
+            'healer_fixes_regex': self.metadata.get('fixes_regex', 0) if hasattr(self, 'metadata') else 0,
+            'healer_fixes_ast': self.metadata.get('fixes_ast', 0) if hasattr(self, 'metadata') else 0,
         }
         
         return run_record, items
@@ -1933,7 +1933,10 @@ def create_database(db_path: str):
             total_tokens INTEGER,
             latency_ms INTEGER,
             healer_applied BOOLEAN,
-            healer_fix_count INTEGER
+            healer_fix_count INTEGER,
+            healer_fixes_basic INTEGER,
+            healer_fixes_regex INTEGER,
+            healer_fixes_ast INTEGER
         )
     """)
     
@@ -2022,7 +2025,8 @@ def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
              score_program_total, score_math_total, score_l5_architecture, avg_l4_4_mqi, avg_mcri_total, source_code_path, notes,
              batch_id, golden_prompt_path, prompt_hash,
              prompt_tokens, completion_tokens, total_tokens,
-             latency_ms, healer_applied, healer_fix_count)
+             latency_ms, healer_applied, healer_fix_count,
+             healer_fixes_basic, healer_fixes_regex, healer_fixes_ast)
             VALUES
             (:run_id, :timestamp, :model_name, :skill_name, :ablation_id, :sample_index,
              :code_commit_hash, :python_version, :mcri_version, :model_temperature,
@@ -2034,7 +2038,8 @@ def insert_experiment_runs(conn: sqlite3.Connection, runs: List[Dict]):
              :score_program_total, :score_math_total, :score_l5_architecture, :avg_l4_4_mqi, :avg_mcri_total, :source_code_path, :notes,
              :batch_id, :golden_prompt_path, :prompt_hash,
              :prompt_tokens, :completion_tokens, :total_tokens,
-             :latency_ms, :healer_applied, :healer_fix_count)
+             :latency_ms, :healer_applied, :healer_fix_count,
+             :healer_fixes_basic, :healer_fixes_regex, :healer_fixes_ast)
         """, run)
     
     conn.commit()
@@ -2193,7 +2198,8 @@ def write_experiment_runs_csv(runs: List[Dict], output_path: str):
         'avg_mcri_total', 'source_code_path', 'notes',
         'batch_id', 'golden_prompt_path', 'prompt_hash',
         'prompt_tokens', 'completion_tokens', 'total_tokens',
-        'latency_ms', 'healer_applied', 'healer_fix_count'
+        'latency_ms', 'healer_applied', 'healer_fix_count',
+        'healer_fixes_basic', 'healer_fixes_regex', 'healer_fixes_ast'
     ]
     
     while True:

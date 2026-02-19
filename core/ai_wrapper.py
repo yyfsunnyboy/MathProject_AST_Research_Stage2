@@ -90,12 +90,18 @@ class LocalAIClient:
         # print(f"[DEBUG OLLAMA PAYLOAD]: num_predict={options.get('num_predict')}, num_ctx={options.get('num_ctx')}")
         
         try:
+            # [V3.1] Add Latency Measurement
+            import time
+            start_time = time.perf_counter()
             response = requests.post(self.api_url, json=payload, timeout=1200) # [FIX] Increase timeout for Thinking Models
+            end_time = time.perf_counter()
+            latency_ms = int((end_time - start_time) * 1000)
+
             response.raise_for_status()
             result = response.json()
             
             # [DEBUG] Print raw result from Ollama
-            print(f"[DEBUG OLLAMA RAW]: {str(result)[:500]}")
+            # print(f"[DEBUG OLLAMA RAW]: {str(result)[:500]}")
             
             # 取出 Ollama 回傳的真正內容與 token 計數
             generated_text = result.get("response", "")
@@ -111,14 +117,19 @@ class LocalAIClient:
             
             # 建立一個帶 usage 的 MockResponse（模擬 OpenAI / Gemini 風格）
             class MockResponse:
-                def __init__(self, text, prompt_t, comp_t):
+                def __init__(self, text, prompt_t, comp_t, lat_ms):
                     self.text = text
+                    self.latency_ms = lat_ms # [V3.1] Expose latency_ms directly
                     self.usage = type('Usage', (), {})()   # 簡單的 namespace
                     self.usage.prompt_tokens = prompt_t
                     self.usage.completion_tokens = comp_t
                     self.usage.total_tokens = prompt_t + comp_t
+                    # [Compat] Also expose tokens directly on response for some extractors
+                    self.prompt_tokens = prompt_t
+                    self.completion_tokens = comp_t
+                    self.total_tokens = prompt_t + comp_t
             
-            return MockResponse(generated_text, prompt_tokens, completion_tokens)
+            return MockResponse(generated_text, prompt_tokens, completion_tokens, latency_ms)
             
         except requests.exceptions.RequestException as e:
             error_msg = f"Local AI (Ollama) Error: {str(e)}\n請確認 Ollama 是否正在運行於 {self.api_url}"
@@ -252,11 +263,32 @@ class GoogleAIClient:
                         pass
                 
                 # Call Generate
+                # Call Generate
+                import time
+                start_time = time.perf_counter()
                 response = self.client.models.generate_content(
                     model=self.model_name,
                     contents=prompt,
                     config=final_config
                 )
+                end_time = time.perf_counter()
+                
+                # [V3.1] Attach latency to response object (Monkey Patch)
+                try:
+                    response.latency_ms = int((end_time - start_time) * 1000)
+                    
+                    # [V3.1 Metrics Normalization] Ensure prompt_tokens/completion_tokens exist
+                    if response.usage_metadata:
+                        response.prompt_tokens = response.usage_metadata.prompt_token_count
+                        response.completion_tokens = response.usage_metadata.candidates_token_count
+                        response.total_tokens = response.usage_metadata.total_token_count
+                    else:
+                        response.prompt_tokens = 0
+                        response.completion_tokens = 0
+                        response.total_tokens = 0
+                        
+                except Exception as e:
+                    print(f"[WARN] Failed to attach metrics to Google response: {e}")
                 
                 return response
 
@@ -271,10 +303,29 @@ class GoogleAIClient:
                 )
                 
                 kwargs = {}
-                if self.safety_settings:
-                    kwargs['safety_settings'] = self.safety_settings
+                kwargs['safety_settings'] = self.safety_settings
 
+                import time
+                start_time = time.perf_counter()
                 response = self.model.generate_content(prompt, generation_config=config, **kwargs)
+                end_time = time.perf_counter()
+                
+                # [V3.1] Attach latency (Monkey Patch for Old SDK)
+                try:
+                    response.latency_ms = int((end_time - start_time) * 1000)
+                    # Old SDK usage structure is different, usually response.usage_metadata or response.result.usage_metadata
+                    # But simpler to just catch if not present
+                    if hasattr(response, 'usage_metadata'):
+                        response.prompt_tokens = response.usage_metadata.prompt_token_count
+                        response.completion_tokens = response.usage_metadata.candidates_token_count
+                        response.total_tokens = response.usage_metadata.total_token_count
+                    else:
+                        response.prompt_tokens = 0
+                        response.completion_tokens = 0
+                        response.total_tokens = 0
+                except:
+                    pass
+                    
                 return response
 
         except Exception as e:

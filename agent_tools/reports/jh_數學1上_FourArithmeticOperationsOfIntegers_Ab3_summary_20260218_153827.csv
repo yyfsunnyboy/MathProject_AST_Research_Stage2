@@ -1,2 +1,0 @@
-﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-c0d41fae-3084-4fe4-b39a-68f01368138e,jh_數學1上_FourArithmeticOperationsOfIntegers,3,unknown,3,9,85.37,0.2,84.87,85.87,10.0,4.67,45.5,39.87,17.0,2.2,,-
