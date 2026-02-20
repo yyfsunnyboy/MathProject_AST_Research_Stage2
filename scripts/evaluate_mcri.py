@@ -246,8 +246,110 @@ def analyze_code_robustness(code):
 # MCRI V6.3 Helper Functions
 # ========================================
 
+def _is_polynomial_answer(answer: str) -> bool:
+    """[Polynomial] 判斷答案是否為多項式（含變數字母）"""
+    return bool(re.search(r'[a-zA-Z]', str(answer)))
+
+
+def _verify_polynomial_sympy(question_text: str, correct_answer: str) -> Tuple[float, str]:
+    """
+    [Polynomial SymPy 驗證] 使用 SymPy 驗證多項式答案的數學正確性。
+    策略：從題目提取操作數 A, B 與運算，用 SymPy 計算預期結果，再與 correct_answer 比對。
+    支援格式：
+      - 計算 $(A) op (B)$ → 加減法
+      - 展開並化簡 $(A)(B)$ → 乘法
+      - 若 $(A) + P = B$ / 若 $P - (A) = B$ / 若 $(A) - P = B$ → 求未知多項式
+    """
+    if not HAS_SYMPY:
+        return 0.0, "SymPy 未安裝"
+    try:
+        # 從答案中提取變數 (x, a, b)
+        var_match = re.search(r'[xab](?=[\^\d\-\+]|$)', correct_answer)
+        if not var_match:
+            var_match = re.search(r'[a-z]', correct_answer)
+        var_letter = var_match.group(0) if var_match else 'x'
+        sym_var = sympy.Symbol(var_letter)
+
+        def parse_poly_str(s: str) -> 'sympy.Expr':
+            """將多項式字串 (plain or LaTeX) 解析為 sympy 表達式"""
+            from sympy.parsing.sympy_parser import parse_expr, standard_transformations, implicit_multiplication_application
+            s = str(s).strip()
+            # 還原 LaTeX → sympy-parseable
+            s = re.sub(r'\^\{(\d+)\}', r'**\1', s)  # x^{2} → x**2
+            s = re.sub(r'\^(\d+)', r'**\1', s)         # x^2  → x**2
+            s = s.replace(r'\cdot', '*').replace(r'\times', '*')
+            s = re.sub(r'[^\w\.\+\-\*\(\)\^]', '', s)
+            trans = standard_transformations + (implicit_multiplication_application,)
+            return parse_expr(s, transformations=trans, local_dict={var_letter: sym_var})
+
+        expected_poly = parse_poly_str(correct_answer)
+
+        # 從 question_text 萃取操作模式
+        q_inner = re.sub(r'\$', '', question_text)  # 去掉 $
+        q_inner = re.sub(r'\\[a-zA-Z]+', '', q_inner)  # 去掉 LaTeX 命令 (\frac, etc)
+        
+        computed_poly = None
+
+        # ---- 模式 1: 展開 (A)(B) 乘法 ----
+        mul_match = re.search(r'展開.*?\((.+?)\)\s*\((.+?)\)', q_inner)
+        if mul_match:
+            a_poly = parse_poly_str(mul_match.group(1))
+            b_poly = parse_poly_str(mul_match.group(2))
+            computed_poly = sympy.expand(a_poly * b_poly)
+
+        # ---- 模式 2: 求 P (A) + P = B ----
+        if computed_poly is None:
+            ap_match = re.search(r'\((.+?)\)\s*\+\s*P\s*=\s*(.+?)[,，]', q_inner)
+            if ap_match:
+                a_poly = parse_poly_str(ap_match.group(1))
+                b_poly = parse_poly_str(ap_match.group(2))
+                computed_poly = sympy.expand(b_poly - a_poly)
+
+        # ---- 模式 3: P - (A) = B ----
+        if computed_poly is None:
+            pa_match = re.search(r'P\s*-\s*\((.+?)\)\s*=\s*(.+?)[,，]', q_inner)
+            if pa_match:
+                a_poly = parse_poly_str(pa_match.group(1))
+                b_poly = parse_poly_str(pa_match.group(2))
+                computed_poly = sympy.expand(b_poly + a_poly)
+
+        # ---- 模式 4: (A) - P = B ----
+        if computed_poly is None:
+            ap2_match = re.search(r'\((.+?)\)\s*-\s*P\s*=\s*(.+?)[,，]', q_inner)
+            if ap2_match:
+                a_poly = parse_poly_str(ap2_match.group(1))
+                b_poly = parse_poly_str(ap2_match.group(2))
+                computed_poly = sympy.expand(a_poly - b_poly)
+
+        # ---- 模式 5: 計算 (A) op (B) 加減法 ----
+        if computed_poly is None:
+            calc_match = re.search(r'計算.*?\((.+?)\)\s*([\+\-])\s*\((.+?)\)', q_inner)
+            if calc_match:
+                a_poly = parse_poly_str(calc_match.group(1))
+                op = calc_match.group(2)
+                b_poly = parse_poly_str(calc_match.group(3))
+                computed_poly = sympy.expand(a_poly + b_poly if op == '+' else a_poly - b_poly)
+
+        if computed_poly is None:
+            return 0.0, "多項式模式識別失敗"
+
+        diff = sympy.expand(computed_poly - expected_poly)
+        if diff == 0:
+            return 10.0, "SymPy 多項式驗證通過"
+        return 0.0, f"多項式不匹配: diff={str(diff)[:40]}"
+
+    except Exception as e:
+        return 0.0, f"多項式驗證失敗: {str(e)[:40]}"
+
+
 def evaluate_sympy_verification(question_text: str, correct_answer: str) -> Tuple[float, str]:
     if not HAS_SYMPY: return 0.0, "SymPy 未安裝"
+
+    # [Polynomial Path] 多項式答案走專屬驗證路徑
+    if _is_polynomial_answer(correct_answer):
+        return _verify_polynomial_sympy(question_text, correct_answer)
+
+    # [Numeric Path] 原有數值驗證邏輯
     try:
         def normalize_math(t):
             t = str(t).replace(r'\left', '').replace(r'\right', '').replace(r'\div', '/')
@@ -920,6 +1022,22 @@ class MCRI_Evaluator:
         answer = str(result.get('answer', ''))
         correct_ans = str(result.get('correct_answer', ''))
         
+        # [Polynomial Path] 多項式答案走專屬評分路徑
+        if _is_polynomial_answer(correct_ans):
+            # 多項式中所有係數若為整數 → 滿分 (等同 Integer Bonus)
+            # 係數包含分數 → 8分
+            coeffs_in_ans = re.findall(r'(?<![.\d])(\d+)(?![.\d])', correct_ans)
+            has_fraction = '/' in correct_ans or '.' in correct_ans
+            if has_fraction:
+                score = 8.0
+                notes.append("Polynomial Fraction Coeff(+8)")
+            else:
+                score = 10.0
+                notes.append("Polynomial Integer Coeff Bonus(+10)")
+            # 無需進入數值路徑，直接進行扣分檢查
+            return max(0.0, min(10.0, score)), "; ".join(notes)
+
+        # [Numeric Path] 原有數值評分邏輯
         # 1. 整數檢測 (Base Score)
         # 嘗試解析 answer / correct_answer 是否為整數
         is_integer = False

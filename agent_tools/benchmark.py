@@ -775,7 +775,33 @@ def show_interactive_menu(evals_file):
             evals = data.get("evals", [])
     except Exception as e:
         print(f"❌ Failed to load evals.json: {e}")
-        return
+        # Don't return here, we might find skills in agent_skills
+        evals = []
+
+    # [V9.9] Dynamic Scan: Also load skills from agent_skills directory
+    agent_skills_dir = os.path.join(PROJECT_ROOT, "agent_skills")
+    if os.path.exists(agent_skills_dir):
+        print(f"📂 Scanning skills in: {agent_skills_dir}")
+        for skill_dir in os.listdir(agent_skills_dir):
+            skill_path = os.path.join(agent_skills_dir, skill_dir)
+            if not os.path.isdir(skill_path):
+                continue
+                
+            eval_file = os.path.join(skill_path, "evals.json")
+            if os.path.exists(eval_file):
+                try:
+                    with open(eval_file, "r", encoding="utf-8") as f:
+                        data = json.load(f)
+                        skill_evals = data.get("evals", [])
+                        if skill_evals:
+                            # Verify skill_name is present
+                            for e in skill_evals:
+                                if "skill_name" not in e:
+                                    e["skill_name"] = skill_dir
+                            evals.extend(skill_evals)
+                except Exception as e:
+                    print(f"⚠️ Failed to load {eval_file}: {e}")
+
         
     skills = sorted(list(set(e.get("skill_name", "Unknown") for e in evals if e.get("skill_name"))))
     

@@ -57,7 +57,16 @@ class LocalAIClient:
         self.max_tokens = kwargs.get('max_tokens', 4096)
         self.extra_options = kwargs.get('extra_body', {})
 
-    def generate_content(self, prompt):
+    def generate_content(self, prompt, image_path=None):
+        # [V4.0] Support Vision/Multi-modal
+        images = []
+        if image_path and os.path.exists(image_path):
+            import base64
+            try:
+                with open(image_path, "rb") as f:
+                    images.append(base64.b64encode(f.read()).decode('utf-8'))
+            except Exception as e:
+                logger.error(f"Failed to encode image for Ollama: {e}")
         # 基礎 options
         options = {
             "temperature": self.temperature,
@@ -81,6 +90,8 @@ class LocalAIClient:
             "stream": False,
             "options": options
         }
+        if images:
+            payload["images"] = images
         
         if system_prompt:
             payload["system"] = system_prompt
@@ -206,7 +217,7 @@ class GoogleAIClient:
         else:
             raise ImportError("Critical Error: Neither 'google.genai' (New) nor 'google.generativeai' (Old) SDK is installed.")
 
-    def generate_content(self, prompt):
+    def generate_content(self, prompt, image_path=None):
         try:
             # [DEBUG] Print input config to verify parameter passing
             # print(f"[DEBUG] GoogleAIClient.generate_content called. MaxTokens={self.max_tokens}")
@@ -262,13 +273,22 @@ class GoogleAIClient:
                         print(f"[WARN] Failed to create GenerateContentConfig object: {e}. Using dict config.")
                         pass
                 
-                # Call Generate
+                # Prepare Contents (Handle Vision)
+                contents = [prompt]
+                if image_path and os.path.exists(image_path):
+                    try:
+                        from PIL import Image
+                        img = Image.open(image_path)
+                        contents.append(img)
+                    except Exception as e:
+                        logger.error(f"Failed to load image for Gemini: {e}")
+                
                 # Call Generate
                 import time
                 start_time = time.perf_counter()
                 response = self.client.models.generate_content(
                     model=self.model_name,
-                    contents=prompt,
+                    contents=contents,
                     config=final_config
                 )
                 end_time = time.perf_counter()
@@ -316,7 +336,14 @@ class GoogleAIClient:
 
                 import time
                 start_time = time.perf_counter()
-                response = self.model.generate_content(prompt, generation_config=config, **kwargs)
+                
+                # [Legacy Path] Handle Vision
+                if image_path and os.path.exists(image_path):
+                    import PIL.Image
+                    img = PIL.Image.open(image_path)
+                    response = self.model.generate_content([prompt, img], generation_config=config, **kwargs)
+                else:
+                    response = self.model.generate_content(prompt, generation_config=config, **kwargs)
                 end_time = time.perf_counter()
                 
                 # [V3.1] Attach latency (Monkey Patch for Old SDK)
@@ -371,7 +398,7 @@ def get_ai_client(role='default'):
         logger.warning(f"⚠️ 未知的 Provider: {provider}，強制切換至 Local 模式")
         return LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
 
-def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=False, timeout=None, ablation_id=None):
+def call_ai_with_retry(client, prompt, image_path=None, max_retries=3, retry_delay=5, verbose=False, timeout=None, ablation_id=None):
     """
     [Utility] 帶有自動重試機制的 AI 呼叫函數 (Shared Logic)
     
@@ -422,8 +449,7 @@ def call_ai_with_retry(client, prompt, max_retries=3, retry_delay=5, verbose=Fal
             # [FIX 2026-02-14] Manually manage Executor to avoid blocking on __exit__
             # With `with ThreadPoolExecutor`, it calls shutdown(wait=True) which waits for stuck threads
             executor = ThreadPoolExecutor(max_workers=1)
-            future = executor.submit(client.generate_content, prompt)
-            
+            future = executor.submit(client.generate_content, prompt, image_path=image_path)
             try:
                 response = future.result(timeout=timeout)
                 # Success: Return response and shutdown
