@@ -1,0 +1,2 @@
+﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
+f794c594-12dc-4350-a1dd-846a15c3b6ac,jh_數學2上_FourArithmeticOperationsOfPolynomial,2,gemini-3-flash,6,18,78.13,1.73,76.31,79.95,3.0,5.0,47.0,31.13,17.0,1.68,,-

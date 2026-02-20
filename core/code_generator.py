@@ -82,12 +82,16 @@ def _inject_domain_libs(code_str):
     target_libs = {
         'RadicalOps': 'RadicalOps',
         'IntegerOps': 'IntegerOps',
-        'FractionOps': 'FractionOps'
+        'FractionOps': 'FractionOps',
+        'PolynomialOps': 'PolynomialOps'
     }
     
-    # 讀取 domain_libs.py 的內容
+    # 讀取 domain_function_library.py 作為 Class 定義的統一來源
     try:
-        libs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scaffold', 'domain_libs.py')
+        libs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'prompts', 'domain_function_library.py')
+        if not os.path.exists(libs_path):
+            # Fallback to legacy domain_libs.py
+            libs_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'scaffold', 'domain_libs.py')
         if not os.path.exists(libs_path):
             return code_str, []
             
@@ -116,7 +120,12 @@ def _inject_domain_libs(code_str):
                 code_str = remove_pattern.sub('', code_str)
             
             # 2. 從 libs_source 提取該 Class 的完整源碼
-            extract_pattern = re.compile(rf'(class {class_name}:.*?)(\nclass |\Z)', re.DOTALL)
+            # Stop not only at the next class, but also at top-level string constant assignments
+            # (e.g. FRACTIONOPS_HELPERS = r""" ...) which appear in domain_function_library.py.
+            extract_pattern = re.compile(
+                rf'(class {class_name}:.*?)(\nclass |\n[A-Z_]{{3,}}\s*=\s*r?"""|\Z)',
+                re.DOTALL
+            )
             match = extract_pattern.search(libs_source)
             if match:
                 class_code = match.group(1).strip()
@@ -135,6 +144,15 @@ def _inject_domain_libs(code_str):
                               "format_term = RadicalOps.format_term\n" \
                               "format_term_unsimplified = RadicalOps.format_term_unsimplified\n" \
                               "format_expression = RadicalOps.format_expression\n"
+                elif class_name == 'PolynomialOps':
+                    aliases = "\n\n# [Global Aliases for PolynomialOps]\n" \
+                              "poly_normalize = PolynomialOps.normalize\n" \
+                              "poly_format_latex = PolynomialOps.format_latex\n" \
+                              "poly_format_plain = PolynomialOps.format_plain\n" \
+                              "poly_add = PolynomialOps.add\n" \
+                              "poly_sub = PolynomialOps.sub\n" \
+                              "poly_mul = PolynomialOps.mul\n" \
+                              "poly_random = PolynomialOps.random_poly\n"
                 
                 feature_code += f"{header}{class_code}{aliases}\n"
                 injected_names.append(class_name)
@@ -943,8 +961,9 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     
     # Cloud 模型通常生成質量較高，不需要激進的去說明文字清理（避免誤刪 docstring）
     is_cloud_model = (model_size_class == 'cloud')
-    # [DEBUG 2026-02-13] 強制關閉 strict_mode 以檢查 Qwen 3 輸出
-    clean_code, markdown_cleanup_count = _basic_cleanup(raw_output, strict_mode=False)
+    # [FIX] 恢復 strict_mode 邏輯：Local 模型通常較多話，需要嚴格清理；Cloud 模型則較為精簡
+    strict_cleanup = not is_cloud_model
+    clean_code, markdown_cleanup_count = _basic_cleanup(raw_output, strict_mode=strict_cleanup)
     basic_cleanup_fixes = markdown_cleanup_count
     
     if VERBOSE_LEVEL == 2:

@@ -385,6 +385,10 @@ class MCRI_Evaluator:
             # 1. 提取檔案 metadata
             self.metadata = self._extract_metadata()
             
+            # [V6.8 Fix] 如果 meta 中有更精確的模型名稱，則更新 (優先解決 unknown 問題)
+            if self.metadata.get('model_info') and (self.model_name == "unknown" or self.model_name == "gemini-pro"):
+                self.model_name = self.metadata['model_info']
+            
             # 2. 載入模組（使用安全執行上下文防止全局代碼中的 input() 卡住）
             spec = importlib.util.spec_from_file_location(
                 f"skill_{self.ablation_id}", 
@@ -1878,14 +1882,10 @@ def create_database(db_path: str):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     
-    # 刪除舊表（確保新結構）
-    cursor.execute("DROP TABLE IF EXISTS evaluation_items")  # 先刪附表
-    cursor.execute("DROP TABLE IF EXISTS experiment_runs")
-    cursor.execute("DROP TABLE IF EXISTS ablation_summary")
-    
+    # [FIX] Do NOT drop tables if DB exists, to support appending data in batch runs
     # 1. experiment_runs (主表) - 匹配現有 39 列架構
     cursor.execute("""
-        CREATE TABLE experiment_runs (
+        CREATE TABLE IF NOT EXISTS experiment_runs (
             run_id VARCHAR(36) PRIMARY KEY,
             timestamp DATETIME,
             model_name VARCHAR(50),
@@ -1940,11 +1940,11 @@ def create_database(db_path: str):
         )
     """)
     
-    # 2. evaluation_items (附表)
+    # 2. evaluation_items (附表) - 匹配現有 28 + 2 列架構
     cursor.execute("""
-        CREATE TABLE evaluation_items (
-            item_id TEXT PRIMARY KEY,
-            run_id TEXT,
+        CREATE TABLE IF NOT EXISTS evaluation_items (
+            item_id VARCHAR(36) PRIMARY KEY,
+            run_id VARCHAR(36),
             repetition_index INTEGER,
             generated_question TEXT,
             generated_answer TEXT,
@@ -1981,7 +1981,7 @@ def create_database(db_path: str):
     
     # 3. ablation_summary (彙總表) - 13 欄
     cursor.execute("""
-        CREATE TABLE ablation_summary (
+        CREATE TABLE IF NOT EXISTS ablation_summary (
             summary_id TEXT PRIMARY KEY,
             skill_name TEXT,
             ablation_id INTEGER,

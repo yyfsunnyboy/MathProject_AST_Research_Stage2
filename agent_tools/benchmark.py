@@ -430,12 +430,10 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             skill_name, "gen_code"
                         )
                     else:
-                        # Use slug for directory if needed, or alias
-                        # If model_slug is undefined, fallback to alias
-                        d_slug = curr_model_name.replace(" ", "_")
+                        # [V9.7.2 FIX] Use unified model_slug to avoid qwen3-8b vs qwen3_8b duplication
                         debug_dir = os.path.join(
                             PROJECT_ROOT, "agent_tools", "reports",
-                            skill_name, d_slug, "gen_code"
+                            skill_name, model_slug, "gen_code"
                         )
                     os.makedirs(debug_dir, exist_ok=True)
                     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -528,7 +526,11 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         f.write(final_file_content)
                     gen_kwargs = test_case.get("generation_kwargs", {})
                     result_queue = multiprocessing.Queue()
-                    p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, override_model or test_case.get("model", "unknown"), gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
+                    
+                    # [V9.7.1 FIX] Ensure model_name is never empty
+                    curr_model_name = override_model or test_case.get("model") or "unknown"
+                    
+                    p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, curr_model_name, gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
                     p.start()
                     p.join(Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10)
                     if p.is_alive():
@@ -538,7 +540,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         failed_record = {
                             'run_id': str(uuid.uuid4()),
                             'timestamp': datetime.now().isoformat(),
-                            'model_name': override_model or test_case.get("model", "unknown"),
+                            'model_name': curr_model_name,
                             'skill_name': skill_name,
                             'ablation_id': ab_id,
                             'sample_index': idx,
@@ -592,7 +594,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                 failed_record = {
                                     'run_id': str(uuid.uuid4()),
                                     'timestamp': datetime.now().isoformat(),
-                                    'model_name': override_model or test_case.get("model", "unknown"),
+                                    'model_name': curr_model_name,
                                     'skill_name': skill_name,
                                     'ablation_id': ab_id,
                                     'sample_index': idx,
