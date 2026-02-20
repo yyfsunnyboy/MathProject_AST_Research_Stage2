@@ -528,7 +528,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         f.write(final_file_content)
                     gen_kwargs = test_case.get("generation_kwargs", {})
                     result_queue = multiprocessing.Queue()
-                    p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, test_case.get("model", "unknown"), gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
+                    p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, override_model or test_case.get("model", "unknown"), gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
                     p.start()
                     p.join(Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10)
                     if p.is_alive():
@@ -538,7 +538,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         failed_record = {
                             'run_id': str(uuid.uuid4()),
                             'timestamp': datetime.now().isoformat(),
-                            'model_name': test_case.get("model", "unknown"),
+                            'model_name': override_model or test_case.get("model", "unknown"),
                             'skill_name': skill_name,
                             'ablation_id': ab_id,
                             'sample_index': idx,
@@ -592,7 +592,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                 failed_record = {
                                     'run_id': str(uuid.uuid4()),
                                     'timestamp': datetime.now().isoformat(),
-                                    'model_name': test_case.get("model", "unknown"),
+                                    'model_name': override_model or test_case.get("model", "unknown"),
                                     'skill_name': skill_name,
                                     'ablation_id': ab_id,
                                     'sample_index': idx,
@@ -644,7 +644,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 failed_record = {
                     'run_id': str(uuid.uuid4()),
                     'timestamp': datetime.now().isoformat(),
-                    'model_name': test_case.get("model", "unknown"),
+                    'model_name': override_model or test_case.get("model", "unknown"),
                     'skill_name': skill_name,
                     'ablation_id': ab_id,
                     'sample_index': idx,

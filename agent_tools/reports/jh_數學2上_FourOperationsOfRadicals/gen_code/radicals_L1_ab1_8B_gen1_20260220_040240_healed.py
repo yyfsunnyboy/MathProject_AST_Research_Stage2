@@ -1,0 +1,123 @@
+Okay, I need to create a Python program that generates math problems on the four operations of radicals. The user specified that the problems must be strictly about radicals and not other topics. The program should have two functions: generate and check. Let me break down the requirements.
+
+First, the generate function must return a dictionary with specific keys: 'question_text', 'answer', 'correct_answer', and 'mode'. The question_text should be a LaTeX math expression wrapped in $...$. The correct_answer is a string like "4\\sqrt{2}". The mode is 1.
+
+The check function needs to compare the user's answer with the correct answer, returning a dictionary with 'correct' and 'result' keys. The user provided the check function's structure, so I need to follow that exactly.
+
+Now, the main challenge is generating the problems. The example given is a combination of addition and multiplication of radicals. So the generate function should create expressions involving addition, subtraction, multiplication, and division of radicals, possibly with simplification required.
+
+Let me think about the structure of the problem. The example has two parts: a sum of radicals and a product of binomials. So maybe the problem should have two parts, each with different operations. But I need to make sure that the generated problems are valid and can be simplified.
+
+For generating the radicals, I need to create terms like sqrt(a), sqrt(b), etc. The numbers under the square roots should be integers, possibly with factors that can be simplified. For example, sqrt(18) can be simplified to 3*sqrt(2). However, the problem might require the student to simplify the expression, so the generated problem should have terms that can be combined.
+
+Wait, the example given is a combination of addition and multiplication. So maybe the problem is structured as two parts: one part is a sum of radicals, and another part is a product of binomials. Then the entire expression is the sum of these two parts.
+
+So the generate function needs to create such expressions. Let me outline the steps:
+
+1. Generate two parts: part1 and part2.
+   - Part1 could be a sum of radicals, like sqrt(a) + sqrt(b) - 2*sqrt(c)
+   - Part2 could be a product of two binomials, like (sqrt(d) + sqrt(e))*(sqrt(f) - 1)
+   - Then the entire problem is part1 + part2.
+
+But how to generate these parts? Let's think about the parameters. The level parameter might control the complexity. For level 1, maybe simpler numbers, for higher levels more complex.
+
+But the user hasn't specified how level affects the problem, so perhaps level is just a parameter that can be used to vary the difficulty. However, the example given is a level 1 problem. So maybe level 1 is basic, level 2 more complex.
+
+But since the user hasn't specified, perhaps the generate function can have level as an argument, but the actual implementation can ignore it for now, or use it to vary the numbers.
+
+But the main task is to generate the problem. Let's think about how to create the terms.
+
+For part1: generate a sum of radicals. For example, sqrt(18) + sqrt(50) - 2*sqrt(8). These terms can be simplified, but the problem requires the student to simplify them. However, the generated problem might not have simplified terms, and the correct answer is the simplified version.
+
+Wait, the example's correct answer is the simplified version. So the generate function needs to create an unsimplified expression, and the correct answer is the simplified version.
+
+But how to generate the unsimplified expression? For example, the part1 could be a sum of radicals that can be simplified. So the generate function needs to create terms that can be simplified, and then the correct answer is the simplified version.
+
+But how to generate such terms? Let's think about the numbers under the square roots. They should be integers that have square factors. For example, 18 = 9*2, 50=25*2, 8=4*2. So the terms can be simplified.
+
+So the generate function needs to create terms with numbers that have square factors. Let me think about generating such numbers.
+
+For the part1, perhaps generate three terms: two positive radicals and one negative. For example, sqrt(a) + sqrt(b) - 2*sqrt(c). The numbers a, b, c should be multiples of squares. For example, a could be 2*3^2, b could be 5*2^2, etc.
+
+But how to generate these numbers? Let me think of generating a base number and multiplying by a square. For example, for a term like sqrt(2*3^2), which simplifies to 3*sqrt(2). So the generate function can create numbers that are multiples of squares, so that they can be simplified.
+
+But the problem is that the generated problem's unsimplified version is what the student needs to simplify. So the generate function should create terms that can be simplified, and the correct answer is the simplified version.
+
+So the steps for generating the problem:
+
+1. Generate part1: a sum of radicals. For example, sqrt(a) + sqrt(b) - 2*sqrt(c). Each of a, b, c is a number that can be simplified. For example, a=18, b=50, c=8.
+
+2. Generate part2: a product of two binomials. For example, (sqrt(d) + sqrt(e))*(sqrt(f) - 1). Here, d, e, f are numbers that can be simplified.
+
+Then, the entire problem is part1 + part2. The correct answer is the simplified version of this entire expression.
+
+But how to generate these numbers? Let me think about generating numbers that are multiples of squares. For example, for a term like sqrt(2*3^2), which simplifies to 3*sqrt(2). So the generate function can generate numbers that are multiples of squares, but not perfect squares themselves.
+
+So for generating a, b, c, d, e, f, I can choose a base number (like 2, 3, 5, etc.) and multiply by a square. For example, for a, choose a base (say 2) and multiply by 3^2, resulting in 18. Similarly for others.
+
+But how to generate these numbers in Python? Let me think of using random to select the base and the square factor.
+
+Alternatively, perhaps generate numbers that are multiples of squares, but not perfect squares. For example, generate a number between 2 and 100, check if it has square factors, and if so, use it. But that might be complicated.
+
+Alternatively, generate the numbers as follows:
+
+For each term, generate a square factor (like 2, 3, 5, etc.) and a non-square factor. For example, for sqrt(2*3^2), the square factor is 3^2, and the non-square is 2. So the number is 2*3^2 = 18.
+
+So for generating a number for a term, pick a square factor (like 2^2, 3^2, 5^2, etc.) and multiply by a non-square integer (like 2, 3, 5, etc.), ensuring that the result is not a perfect square.
+
+But how to implement this in Python? Let me think of generating a square factor and a non-square factor.
+
+For example, for the square factor, pick a number from 2, 3, 5, etc., square it. For the non-square factor, pick a number that is not a perfect square. Then multiply them.
+
+But this might be complex. Alternatively, generate a number between 2 and 100, and check if it has any square factors. If it does, use it. Otherwise, try again.
+
+But for simplicity, perhaps generate numbers that are multiples of squares. For example, generate a base number (like 2, 3, 5, etc.) and multiply by a square. For example, for a term, generate a base (say 2) and multiply by 3^2, resulting in 18.
+
+But how to implement this? Let me think of generating the square part and the non-square part.
+
+Let me think of generating for each term:
+
+- Choose a square factor (like 2^2, 3^2, 5^2, etc.)
+- Choose a non-square factor (like 2, 3, 5, etc.)
+- Multiply them to get the number under the square root.
+
+But how to generate these numbers in Python?
+
+Alternatively, for simplicity, generate numbers that are multiples of squares. For example, generate a number between 2 and 100, and check if it's divisible by any square number greater than 1. If yes, use it. Otherwise, try again.
+
+But this might be time-consuming. Alternatively, generate numbers that are products of squares and non-squares.
+
+But perhaps for the purpose of this problem, it's easier to generate numbers that are multiples of squares. For example, generate a number like 2*3^2 = 18, 5*2^2 = 20, etc.
+
+So for generating the numbers under the square roots, I can generate them as follows:
+
+For each term, generate a square factor (like 2^2, 3^2, etc.) and a non-square factor (like 2, 3, 5, etc.), then multiply them. For example, square_factor = 2^2, non_square = 3 → 4*3=12. But wait, 12 is 4*3, which is 2^2 * 3. So sqrt(12) = 2*sqrt(3). That's a valid term.
+
+So for generating the numbers, I can generate square factors and non-square factors. Let me think of how to code this.
+
+But perhaps for simplicity, generate numbers that are multiples of squares. For example, generate a number between 2 and 100, and check if it's divisible by 4, 9, 25, etc. If yes, use it. Otherwise, try again.
+
+But how to implement this in Python? Let me think of writing a helper function to generate such numbers.
+
+Alternatively, for the purpose of this problem, perhaps generate numbers that are multiples of squares, but not perfect squares. For example, generate numbers like 8 (which is 2^3), 12 (2^2*3), 18 (3^2*2), etc.
+
+But how to generate these numbers? Let me think of generating a base number (like 2, 3, 5, etc.) and multiply by a square. For example, for the square part, choose a square like 2^2, 3^2, 5^2, etc., and multiply by a non-square number.
+
+But perhaps for simplicity, generate numbers that are multiples of squares. For example, generate a number between 2 and 100, and check if it has any square factors. If yes, use it. Otherwise, try again.
+
+But how to check for square factors? For example, for a number n, check if it's divisible by 4, 9, 25, etc. If yes, then it has square factors.
+
+But this might be time-consuming. Alternatively, generate numbers that are multiples of squares. For example, generate a square factor (like 4, 9, 25, etc.) and multiply by a non-square number (like 2, 3, 5, etc.), ensuring that the result is not a perfect square.
+
+But how to code this? Let me think of generating square factors and non-square factors.
+
+For example, for square factors, choose from [4, 9, 25, 49, ...], and for non-square factors, choose from [2, 3, 5, 6, 7, etc.]. Multiply them to get the number under the square root.
+
+But how to generate these in Python? Let me think of generating square factors as squares of primes. For example, 2^2=4, 3^2=9, 5^2=25, etc. Then multiply by a non-square number.
+
+But perhaps for simplicity, generate square factors as 4, 9, 25, etc., and non-square factors as 2, 3, 5, etc. Then multiply them to get the number under the square root.
+
+But how to implement this? Let me think of generating for each term:
+
+- square_factor = random.choice([4, 9, 25, 49, 121])  # these are squares of primes
+- non_square = random.choice([2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 31, 33, 34, 35, 37, 38, 39, 41, 42, 43, 46, 47, 49, 51, 53, 55, 57, 58, 59, 61, 62, 65, 66, 67, 69, 71, 73, 74, 77, 78, 79, 82, 83, 85, 86, 87, 89, 91, 93, 94, 95, 97, 101, 102, 103, 105, 106, 107, 109, 111, 113, 114, 115, 118, 119, 121, 122, 123, 125, 127, 129, 131, 133, 134, 137, 138, 139, 141, 142, 143, 145, 146, 147, 149, 151, 153, 154, 155, 157, 158, 159, 161, 163, 165, 166, 167, 169, 171, 173, 174, 175, 177, 178, 179, 182, 183, 185, 186, 187, 189, 191, 193, 194, 195, 197, 198, 199, 201, 202, 203, 205, 206, 207, 209, 211, 213, 214, 215, 217, 218, 219, 221, 222, 223, 226, 227, 229, 231, 233, 235, 237, 238, 239, 245, 246, 247, 249, 253, 254, 257, 258, 259, 261, 262, 265, 266, 267, 269, 271, 273, 274, 275, 277, 278, 279, 281, 282, 283, 285, 286, 287, 289, 291, 293, 294, 295, 297, 298, 299, 301, 302, 303, 305, 306, 307, 309, 311, 313, 314, 315, 317, 318, 319, 321, 323, 325, 326, 327, 329, 331, 333, 334, 335, 337, 338, 339, 341, 343, 345, 346, 347, 349, 351, 353, 354, 355, 357, 358, 359, 361, 362, 363, 365, 366, 367, 369, 371, 373, 374, 375, 377, 378, 379, 381, 382, 383, 385, 386, 387, 389, 391, 393, 394, 395, 397, 398, 399, 401, 402, 403, 405, 406, 407, 409, 411, 413, 414, 415, 417, 418, 419, 421, 422, 423, 425, 426, 427, 429, 431, 433, 434, 435, 437, 438, 439, 441, 442, 443, 445, 446, 447, 449, 451, 453, 454, 455, 457, 458, 459, 461, 462, 463, 465, 466, 467, 469, 471, 473, 474, 475, 477, 478, 479, 481, 482, 483, 485, 486, 487, 489, 491, 493, 494, 495, 497, 498, 499, 501, 502, 503, 505, 506, 507, 509, 511, 513, 514, 515, 517, 518, 519, 521, 522, 523, 525, 526, 527, 529, 531, 533, 534, 535, 537, 538, 539, 541, 542, 543, 545, 546, 547, 549, 551, 553, 554, 555, 557, 558, 559, 561, 562, 563, 565, 566, 567, 569, 571, 573, 574, 575, 577, 578, 579, 581, 582, 583, 585, 586, 587, 589, 591, 593, 594, 595, 597, 598, 599, 601, 602, 603, 605, 606, 607, 609, 611, 613, 614, 615, 617, 618, 619, 621, 622, 623, 625, 626, 627, 629, 631, 633, 634, 635, 637, 638, 639, 641, 642, 643, 645, 646, 647, 649, 651, 653, 654, 655, 657, 658, 659, 661, 662, 663, 665, 666, 667, 669, 671, 673, 674, 675, 677, 678, 679, 681, 682, 683, 685, 686, 687, 689, 691, 693, 694, 695, 697, 698, 699, 701, 702, 703, 705, 706, 707, 709, 711, 713, 714, 715, 717, 718, 719, 721, 722, 723, 725, 726, 727, 729, 731, 733, 734, 735, 737, 738, 739, 741, 742, 743, 745, 746, 747, 749, 751, 753, 754, 755, 757, 758, 759, 761, 762, 763, 765, 766, 767, 769, 771, 773, 774, 775, 777, 778, 779, 781, 782, 783, 785, 786, 787, 789, 791, 793, 794, 795, 797, 798, 799, 801, 802, 803, 805, 806, 807, 809, 811, 813, 814, 815, 817, 818, 819, 821, 822, 823, 825, 826, 827, 829, 831, 833, 834, 835, 837, 838, 839, 841, 842, 843, 845, 846, 847, 849, 851, 853, 854, 855, 857, 858, 859, 861, 862, 863, 865, 866, 867, 869, 871, 873, 874, 875, 877, 878, 879, 881, 882, 883, 885, 886, 887, 889, 891, 893, 894, 895, 897, 898, 899, 901, 902, 903, 905, 906, 907, 909, 911, 913, 914, 915, 917, 918, 919, 921, 922, 923, 925, 926, 927, 929, 931, 933, 934, 935, 937, 938, 939, 941, 942, 943, 945, 946, 947, 949, 951, 953, 954, 955, 957, 958, 959, 961, 962, 963, 965, 966, 967, 969, 971, 973, 974, 975, 977, 978, 979, 981, 982, 983, 985, 986, 987, 989, 991, 993, 994, 995, 997, 998, 999, 1001, 1002, 1003, 1005, 1006, 1007, 1009, 1011, 1013, 1014, 1015, 1017, 1018, 1019, 1021, 1022, 1023, 1025, 1026, 1027, 1029, 1031, 1033, 1034, 1035, 1037, 1038, 1039, 1041, 1042, 1043, 1045, 1046, 1047, 1049, 1051, 1053, 1054, 1055, 1057, 1058, 1059, 1061, 1062, 1063, 1065, 1066, 1067, 1069, 1071, 1073, 1074, 1075, 1077, 1078, 1079, 1081, 1082, 1083, 1085, 1086, 1087, 1089, 1091, 1093, 1094, 1095, 1097, 1098, 1099, 1101, 1102, 1103, 1105, 1106, 1107, 1109, 1111, 1113, 1114, 1115, 1117, 1118, 1119, 1121, 1122, 1123, 1125, 1126, 1127, 1129, 1131, 1133, 1134, 1135, 1137, 1138, 1139, 1141, 1142, 1143, 1145, 1146, 1147, 1149, 1151, 1153, 1154, 1155, 1157, 1158, 1159, 1161, 1162, 1163, 1165, 1166, 1167, 1169, 1171, 1173, 1174, 1175, 1177, 1178, 1179, 1181, 1182, 1183, 1185, 1186, 1187, 1189, 1191, 1193, 1194, 1195, 1197, 1198, 1199, 1201, 1202, 1203, 1205, 1206, 1207, 1209, 1211, 1213, 1214, 1215, 1217, 1218, 1219, 1221, 1222, 1223, 1225, 1226, 1227, 1229, 1231, 1233, 1234, 1235, 1237, 1238, 1239, 1241, 1242, 1243, 1245, 1246, 1247, 1249, 1251, 1253, 1254, 1255, 1257, 1258, 1259, 1261, 1262, 1263, 1265, 1266, 1267, 1269, 1271, 1273, 1274, 1275, 1277, 1278, 1279, 1281, 1282, 1283, 1285, 1286, 1287, 1289, 1291, 1293, 1294, 1295, 1297, 1298, 1299, 1301, 1302, 1303, 1305, 1306, 1307, 1309, 1311, 1313, 1314, 1315, 1317, 1318, 1319, 1321, 1322, 1323, 1325, 1326, 1327, 1329, 1331, 1333, 1334, 1335, 1337, 1338, 1339, 1341, 1342, 1343, 1345, 1346, 1347, 1349, 1351, 1353, 1354, 1355, 1357, 1358, 1359, 1361, 1362, 1363, 1365, 1366, 1367, 1369, 1371, 1373, 1374, 1375, 1377, 1378, 1379, 1381, 1382, 1383, 1385, 1386, 1387, 1389, 1391, 1393, 1394, 1395, 1397, 1398, 1399, 1401, 1402, 1403, 1405, 1406, 1407, 1409, 1411, 1413, 1414, 1415, 1417, 1418, 1419, 1421, 1422, 1423, 1425, 1426, 1427, 1429, 1431, 1433, 1434, 1435, 1437, 1438, 1439, 1441, 1442, 1443, 1445, 1446, 1447, 1449, 1451, 1453, 1454, 1455, 1457, 1458, 1459, 1461, 1462, 1463, 1465, 1466, 1467, 1469, 1471, 1473, 1474, 1475, 1477, 1478, 1479, 1481, 1482, 1483, 1485, 1486, 1487, 1489, 1491, 1493, 1494, 1495, 1497, 1498, 1499, 1501, 1502, 1503, 1505, 1506, 1507, 1509, 1511, 1513, 1514, 1515, 1517, 1518, 1519, 1521, 1522, 1523, 1525, 1526, 1527, 1529, 1531, 1533, 1534, 1535, 1537, 1538, 1539, 1541, 1542, 1543, 1545, 1546, 1547, 1549, 1551, 1553, 1554, 1555, 1557, 1558, 1559, 1561, 1562, 1563, 1565, 1566, 1567, 1569, 1571, 1573, 1574, 1575, 1577, 1578, 1579, 1581, 1582, 1583, 1585, 1586, 1587, 1589, 1591, 1593, 1594, 1595, 1597, 1598, 1599, 1601, 1602, 1603, 1605, 1606, 1607, 1609, 1611, 1613, 1614, 1615, 1617, 1618, 1619, 1621, 1622, 1623, 1625, 1626, 1627, 1629, 1631, 1633, 1634, 1635, 1637, 1638, 1639, 1641, 1642, 1643, 1645, 1646, 1647, 1649, 1651, 1653, 1654, 1655, 1657, 1658, 1659, 1661, 1662, 1663, 1665, 1666, 1667, 1669, 1671, 1673, 1674, 1675, 1677, 1678, 1679, 1681, 1682, 1683, 1685, 1686, 1687, 1689, 1691, 1693, 1694, 1695, 1697, 1698, 1699, 1701, 1702, 1703, 1705, 1706, 1707, 1709, 1711, 1713, 1714, 1715, 1717, 1718, 1719, 1721, 1722, 1723, 1725, 1726, 1727, 1729, 1731, 1733, 1734, 1735, 1737, 1738, 1739, 1741, 1742, 1743, 1745, 1746, 1747, 1749, 1751, 1753, 1754, 1755, 1757, 1758, 1759, 1761, 1762, 1763, 1765, 1766, 1767, 1769, 1771, 1773, 1774, 1775, 1777, 1778, 1779, 1781, 1782, 1783, 1785, 1786, 1787, 1789, 1791, 1793, 1794, 1795, 1797, 1798, 1799, 1801, 1802, 1803, 1805, 1806, 1807, 1809, 1811, 1813, 1814, 1815, 1817, 1818, 1819, 1821, 1822, 1823, 1825, 1826, 1827, 1829, 1831, 1833, 1834, 1835, 1837, 1838, 1839, 1841, 1842, 1843, 1845, 1846, 1847, 1849, 1851, 1853, 1854, 1855, 1857, 1858, 1859, 1861, 1862, 1863, 1865, 1866, 1867, 1869, 1871, 1873, 1874, 1875, 1877, 1878, 1879, 1881, 1882, 1883, 1885, 1886, 1887, 1889, 1891, 1893, 1894, 1895, 1897, 1898, 1899, 1901, 1902, 1903, 1905, 1906, 1907, 1909, 1911, 1913, 1914, 1915, 1917, 1918, 1919, 1921, 1922, 1923, 1925, 1926, 1927, 1929, 1931, 1933, 1934, 1935, 1937, 1938, 1939, 1941, 1942, 1943, 1945, 1946, 1947, 1949, 1951, 1953, 1954, 1955, 1957, 1958, 1959, 1961, 1962, 1963, 1965, 1966, 1967, 1969, 1971, 1973, 1974, 1975, 1977, 1978, 1979, 1981, 1982, 1983, 1985, 1986, 1987, 1989, 1991, 1993, 1994, 1995, 1997, 1998, 1999, 2001, 2002, 2003, 2005, 2006, 2007, 2009, 2011, 2013, 2014, 2015, 2017, 2018, 2019, 2021, 2022, 2023, 2025, 2026, 2027, 2029, 2031, 2033, 2034, 2035, 2037, 2038, 2039, 2041, 2042, 2043, 2045, 2046, 2047, 2049, 2051, 2053, 2054, 2055, 2057, 2058, 2059, 2061, 2062, 2063, 2065, 2066, 2067, 2069, 2071, 2073, 2074, 2075, 2077, 2078, 2079, 2081, 2082, 2083, 2085, 2086, 2087, 2089, 2091, 2093, 2094, 2095, 2097, 2098, 2099, 2101, 2102, 2103, 2105, 2106, 2107, 2109, 2111, 2113, 2114, 2115, 2117, 2118, 2119, 2121, 2122, 2123, 2125, 2126, 2127, 2129, 2131, 2133, 2134, 2135, 2137, 2138, 2139, 2141, 2142, 2143, 2145, 2146, 2147, 2149, 2151, 2153, 2154, 2155, 2157, 2158, 2159, 2161, 2162, 2163, 2165, 2166, 2167, 2169, 2171, 2173, 2174, 2175, 2177, 2178, 2179, 2181, 2182, 2183, 2185, 2186, 2187, 2189, 2191, 2193, 2194, 2195, 2197, 2198, 2199, 2201, 2202, 2203, 2205, 2206, 2207, 2209, 2211, 2213, 2214, 2215, 2217, 2218, 2219, 2221, 2222, 2223, 2225, 2226, 2227, 2229, 2231, 2233, 2234, 2235, 2237, 2238, 2239, 2241, 2242, 2243, 2245, 2246, 2247, 2249, 2251, 2253, 2254, 2255, 2257, 2258, 2259, 2261, 2262, 2263, 2265, 2266, 2267, 2269, 2271, 2273, 2274, 2275, 2277, 2278, 2279, 2281, 2282, 2283, 2285, 2286, 2287, 2289, 2291, 2293, 2294, 2295, 2297, 2298, 2299, 2301, 2302, 2303, 2305, 2306, 2307, 2309, 2311, 2313, 2314, 2315, 2317, 2318, 2319, 2321, 2322, 2323, 2325, 2326, 2327, 2329, 2331, 2333, 2334, 2335, 2337, 2338, 2339, 2341, 2342, 2343, 2345, 2346, 2347, 2349, 2351, 2353, 2354, 2355, 2357, 2358, 2359, 2361, 2362, 2363, 2365, 2366, 2367, 2369, 2371, 2373, 2374, 2375, 2377, 2378, 2379, 2381, 2382, 2383, 2385, 2386, 2387, 2389, 2391, 2393, 2394, 2395, 2397, 2398, 2399, 2401, 2402, 2403, 2405, 2406, 2407, 2409, 2411, 2413, 2414, 2415, 2417, 2418, 2419, 2421, 2422, 2423, 2425, 2426, 2427, 2429, 2431, 2433, 2434, 2435, 2437, 2438, 2439, 2441, 2442, 2443, 2445, 2446, 2447, 2449, 2451, 2453, 2454, 2455, 2457, 2458, 2459, 2461, 2462, 2463, 2465, 2466, 2467, 2469, 2471, 2473, 2474, 2475, 2477, 2478, 2479, 2481, 2482, 2483, 2485, 2486, 2487, 2489, 2491, 2493, 2494, 2495, 2497, 2498, 2499, 2501, 2502, 2503, 2505, 2506, 2507, 2509, 2511, 2513, 2514, 2515, 2517, 2518, 2519, 2521, 2522, 2523, 2525, 2526, 2527, 2529, 2531, 2533, 2534, 2535, 2537, 2538, 2539, 2541, 2542, 2543, 2545, 2546, 2547, 2549, 2551, 2553, 2554, 2555, 2557, 2558, 2559, 2561, 2562, 2563, 2565, 2566, 2567, 2569, 2571, 2573, 2574, 2575, 2577, 2578, 2579, 2581, 2582, 2583, 2585, 2586, 2587, 2589, 2591, 2593, 2594, 2595, 2597, 2598, 2599, 2601, 2602, 2603, 2605, 2606, 2607, 2609, 2611, 2613, 2614, 2615, 2617, 2618, 2619, 2621, 2622, 2623, 2625, 2626, 2627, 2629, 2631, 2633, 2634, 2635, 2637, 2638, 2639, 2641, 2642, 2643, 2645, 2646, 2647, 2649, 2651, 2653, 2654, 2655, 2657, 2658, 2659, 2661, 2662, 2663, 2665, 2666, 2667, 2669, 2671, 2673, 2674, 2675, 2677, 2678, 2679, 2681, 2682, 2683, 2685, 2686, 2687, 2689, 2691, 2693, 2694, 2695, 2697, 2698, 2699, 2701, 2702, 2703, 2705, 2706, 2707, 2709, 2711, 2713, 2714, 2715, 2717, 2718, 2719, 2721, 2722, 2723, 2725, 2726, 2727, 2729, 2731, 2733, 2734, 2735, 2737, 2738, 2739, 2741, 2742, 2743, 2745, 2746, 2747, 2749, 2751, 2753, 2754, 2755, 2757, 2758, 2759, 2761, 2762, 2763, 2765, 2766, 2767, 2769, 2771, 2773, 2774, 2775, 2777, 2778, 2779, 2781, 2782, 2783, 2785, 2786, 2787, 2789, 2791, 2793, 2794, 2795, 2797, 2798, 2799, 2801, 2802, 2803, 2805, 2806, 2807, 2809, 2811, 2813, 2814, 2815, 2817, 2818, 2819, 2821, 2822, 2823, 2825, 2826, 2827, 2829, 2831, 2833, 2834, 2835, 2837, 2838, 2839, 2841, 2842, 2843, 2845, 2846, 2847, 2849, 2851, 2853, 2854, 2855, 2857, 2858, 2859, 2861, 2862, 2863, 2865, 2866, 2867, 2869, 2871, 2873, 2874, 2875, 2877, 2878, 2879, 2881, 2882, 2883, 2885, 2886, 2887, 2889, 2891, 2893, 2894, 2895, 2897, 2898, 2899, 2901, 2902, 2903, 2905, 2906, 2907, 2909, 2911, 2913, 2914, 2915, 2917, 2918, 2919, 2921, 2922, 2923, 2925, 2926, 2927, 2929, 2931, 2933, 2934, 2935, 2937, 2938, 2939, 2941, 2942, 2943, 2945, 2946, 2947, 2949, 2951, 2953, 2954, 2955, 2957, 2958, 2959, 2961, 2962, 2963, 2965, 2966, 2967, 2969, 2971, 2973, 2974, 2975, 2977, 2978, 2979, 2981, 2982, 2983, 2985, 2986, 2987, 2989, 2991, 2993, 2994, 2995, 2997, 2998, 2999, 3001, 3002, 3003, 3005, 3006, 3007, 3009, 3011, 3013, 3014, 3015, 3017, 3018, 3019, 3021, 3022, 3023, 3025, 3026, 3027, 3029, 3031, 3033, 3034, 3035, 3037, 3038, 3039, 3041, 3042, 3043, 3045, 3046, 3047, 3049, 3051, 3053, 3054, 3055, 3057, 3058, 3059, 3061, 3062, 3063, 3065, 3066, 3067, 3069, 3071, 3073, 3074, 3075, 3077, 3078, 3079, 3081, 3082, 3083, 3085, 3086, 3087, 3089, 3091, 3093, 3094, 3095, 3097, 3098, 3099, 3101, 3102, 3103, 3105, 3106, 3107, 3109, 3111, 3113, 3114, 3115, 3117, 3118, 3119, 3121, 3122, 3123, 3125, 3126, 3127, 3129, 3131, 3133, 3134, 3135, 3137, 3138, 3139, 3141, 3142, 3143, 3145, 3146, 3147, 3149, 3151, 3153, 3154, 3155, 3157, 3158, 3159, 3161, 3162, 3163, 3165, 3166, 3167, 3169, 3171, 3173, 3174, 3175, 3177, 3178, 3179, 3181, 3182, 3183, 3185, 3186, 3187, 3189, 3191, 3193, 3194, 3195, 3197, 3198, 3199, 3201, 3202, 3203, 3205, 3206, 3207, 3209, 3211, 3213, 3214, 3215, 3217, 3218, 3219, 3221, 3222, 3223, 3225, 3226, 3227, 3229, 3231, 3233, 3234, 3235, 3237, 3238, 3239, 3241, 3242, 3243, 3245, 3246, 3247, 3249, 3251, 3253, 3254, 3255, 3257, 3258, 3259, 3261, 3262, 3263, 3265, 3266, 3267, 3269, 3271, 3273, 3274, 3275, 3277, 3278, 3279, 3281, 3282, 3283, 3285, 3286, 3287, 3289, 3291, 3293, 3294, 3295, 3297, 3298, 3299, 3301, 3302, 3303, 3305, 3306, 3307, 3309, 3311, 3313, 3314, 3315, 3317, 3318, 3319, 3321, 3322, 3323, 3325, 3326, 3327, 3329, 3331, 3333, 3334, 3335, 3337, 3338, 3339, 3341, 3342, 3343, 3345, 3346, 3347, 3349, 3351, 3353, 3354, 3355, 3357, 3358, 3359, 3361, 3362, 3363, 3365, 3366, 3367, 3369, 3371, 3373, 3374, 3375, 3377, 3378, 3379, 3381, 3382, 3383, 3385, 3386, 3387, 3389, 3391, 3393, 3394, 3395, 3397, 3398, 3399, 3401, 3402, 3403, 3405, 3406, 3407, 3409, 3411, 3413, 3414, 3415, 3417, 3418, 3419, 3421, 3422, 3423, 3425, 3426, 3427, 3429, 3431, 3433, 3434, 3435, 3437, 3438, 3439, 3441, 3442, 3443, 3445, 3446, 3447, 3449, 3451, 3453, 3454, 3455, 3457, 3458, 3459, 3461, 3462, 3463, 3465, 3466, 34

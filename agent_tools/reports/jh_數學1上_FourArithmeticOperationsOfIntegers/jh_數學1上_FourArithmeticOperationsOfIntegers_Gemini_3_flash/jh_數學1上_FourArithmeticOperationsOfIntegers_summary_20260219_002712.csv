@@ -1,4 +1,4 @@
 ﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-2228bfa5-87d9-44b7-b248-1b54156e1557,jh_數學1上_FourArithmeticOperationsOfIntegers,1,unknown,11,33,72.99,0.45,72.68,73.29,10.0,5.0,37.59,35.39,9.59,2.52,,-
-af0a103b-e12a-4c34-965c-cbb429400e38,jh_數學1上_FourArithmeticOperationsOfIntegers,2,unknown,15,45,94.85,0.2,94.74,94.96,10.0,4.96,47.0,47.85,17.0,4.9,0.0,Ab2 vs Ab1: p<0.001 (高度顯著)
-8886ed20-a7a5-4cf8-a69c-7d750cc42b60,jh_數學1上_FourArithmeticOperationsOfIntegers,3,unknown,15,45,97.88,0.18,97.78,97.97,10.0,4.98,50.0,47.88,20.0,4.9,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)
+2228bfa5-87d9-44b7-b248-1b54156e1557,jh_數學1上_FourArithmeticOperationsOfIntegers,1,Gemini_3_flash,11,33,72.99,0.45,72.68,73.29,10.0,5.0,37.59,35.39,9.59,2.52,,-
+af0a103b-e12a-4c34-965c-cbb429400e38,jh_數學1上_FourArithmeticOperationsOfIntegers,2,Gemini_3_flash,15,45,94.85,0.2,94.74,94.96,10.0,4.96,47.0,47.85,17.0,4.9,0.0,Ab2 vs Ab1: p<0.001 (高度顯著)
+8886ed20-a7a5-4cf8-a69c-7d750cc42b60,jh_數學1上_FourArithmeticOperationsOfIntegers,3,Gemini_3_flash,15,45,97.88,0.18,97.78,97.97,10.0,4.98,50.0,47.88,20.0,4.9,0.0,Ab3 vs Ab1: p<0.001 (高度顯著)
