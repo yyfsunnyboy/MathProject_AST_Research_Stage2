@@ -7,9 +7,13 @@
 【角色】K12 數學演算法工程師
 
 【任務】
-實作 `def generate(level=1, **kwargs)`，生成根式化簡運算題目。
-題目結構必須為：(多項未化簡根式加減括號) + (簡單乘法結構)，用 + 連接。
+實作 `def generate(level=1, **kwargs)`，生成根式化簡與四則運算題目。
+依照 level 選擇難度：
+- Level 1 (Easy): 基礎加減法，包含 2 項未化簡根式。
+- Level 2 (Normal): 標準教材型，3-4 項未化簡根式加減 + 一組簡單分配律乘法。
+- Level 3 (Hard): 進階挑戰型，包含根式除法（分母有理化）或複雜的雙括號乘法展開。
 返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
+
 
 【程式要求】（必須嚴格遵守）
 1. **Import 規範**：

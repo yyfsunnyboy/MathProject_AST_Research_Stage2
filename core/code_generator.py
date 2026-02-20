@@ -175,7 +175,7 @@ def _inject_domain_libs(code_str):
             if insert_marker_ai in code_str:
                 code_str = code_str.replace(insert_marker_ai, f"{feature_code}\n\n{insert_marker_ai}")
             else:
-                last_import = 0
+                last_import = -1
                 lines = code_str.split('\n')
                 for i, line in enumerate(lines):
                     if line.startswith('import ') or line.startswith('from '):

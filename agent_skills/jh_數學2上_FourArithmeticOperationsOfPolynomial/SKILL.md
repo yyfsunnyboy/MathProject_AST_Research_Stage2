@@ -16,7 +16,7 @@
    - ❌ **嚴禁** `import PolynomialOps`（系統已自動注入，直接使用 `PolynomialOps.xxx`）
 
 2. **變數規範**：
-   - ✅ **只能**從 `['x', 'a', 'b']` 中選取（其他變數不被評分系統支援）
+   - ✅ **只能**從 `['x']` 中選取
 
 3. **核心邏輯**：
    - 使用**係數列表（降冪順序）**表示多項式：`[3, -2, 1]` = `3x^{2} - 2x + 1`
@@ -70,7 +70,7 @@ import random
 # PolynomialOps is injected automatically
 
 def generate(level=1, **kwargs):
-    var = random.choice(['x', 'a', 'b'])
+    var = 'x'
 
     if level == 1:
         # 加減法 — 課本例題格式
@@ -132,7 +132,7 @@ def check(user_answer, correct_answer):
 
 【檢查清單】
 ✅ 必須 `import random`
-✅ `var = random.choice(['x', 'a', 'b'])` — 只能 x/a/b
+✅ `var = 'x'` — 只能 x
 ✅ Level 2 題目前綴為 `展開並化簡`（課本格式）
 ✅ Level 3 未知數用 `$P$`（課本格式）
 ✅ 答案用 `format_plain`（無空格）

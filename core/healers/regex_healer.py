@@ -395,60 +395,31 @@ class RegexHealer:
     def fix_incorrect_class_method_calls(self, code_str: str) -> tuple:
         """
         [V2.8 Critical Fix] 修復錯誤的類方法調用
-        
-        功能：檢測並修復錯誤的靜態方法調用
-        如果代碼調用 ClassName.method_name() 但該方法是全局函數而非類的方法，
-        則修復為直接調用全局函數
-        
-        例子：
-            INPUT:  result = IntegerOps.fmt_num(x)  # 但 fmt_num 是全局函數
-            OUTPUT: result = fmt_num(x)
-        
-        Args:
-            code_str: 代碼字串
-            
-        Returns:
-            tuple: (fixed_code, fix_count)
+        [V2.8.1 Fix] 已重新啟用特定替換，確保原本 hallucinated 的全球 fmt_num 回歸 IntegerOps.fmt_num
         """
         fix_count = 0
         
-        # 已知的全局函數（在 domain_function_library 中定義但不屬於任何類）
-        global_functions = ['fmt_num', 'to_latex', 'safe_eval']
-        class_names = ['IntegerOps', 'FractionOps', 'RadicalOps', 'CalculusOps']
+        # 定義需要自動補全前綴的函數，以及對應的目標類別
+        method_map = {
+            'fmt_num': 'IntegerOps',
+            'to_latex': 'FractionOps',
+            'format_fraction': 'FractionOps'
+        }
         
-        for class_name in class_names:
-            for func_name in global_functions:
-                # 檢測錯誤的調用模式: ClassName.global_function()
-                pattern = rf'{class_name}\.{func_name}\('
-                
-                if re.search(pattern, code_str):
-                    # 檢查這個函數是否真的在類中定義（檢查類定義內部）
-                    class_pattern = rf'class\s+{class_name}.*?(?=^class\s|^def\s|\Z)'
-                    class_match = re.search(class_pattern, code_str, re.DOTALL | re.MULTILINE)
-                    
-                    if class_match:
-                        class_body = class_match.group(0)
-                        # 檢查函數是否在類體內定義
-                        method_pattern = rf'def\s+{func_name}\('
-                        if not re.search(method_pattern, class_body):
-                            # 函數不在類中，這是錯誤調用，修復它
-                            old_call = f'{class_name}.{func_name}('
-                            new_call = f'{func_name}('
-                            occurrences = code_str.count(old_call)
-                            if occurrences > 0:
-                                code_str = code_str.replace(old_call, new_call)
-                                fix_count += occurrences
-                                print(f"   [RegexHealer V2.8] 修復錯誤調用: {old_call} → {new_call} ({occurrences} 處)")
-                    else:
-                        # 類未定義，直接修復調用
-                        old_call = f'{class_name}.{func_name}('
-                        new_call = f'{func_name}('
-                        occurrences = code_str.count(old_call)
-                        if occurrences > 0:
-                            code_str = code_str.replace(old_call, new_call)
-                            fix_count += occurrences
-                            print(f"   [RegexHealer V2.8] 修復錯誤調用: {old_call} → {new_call} ({occurrences} 處)")
-        
+        for method, class_name in method_map.items():
+            # 查找並替換所有未加前綴的調用
+            # pattern: 匹配 ` method(` 但排除 `.method(`
+            pattern = rf'(?<!\.)\b{method}\s*\('
+            
+            def replacer(match):
+                nonlocal fix_count
+                fix_count += 1
+                return f"{class_name}.{method}("
+            
+            if re.search(pattern, code_str):
+                code_str = re.sub(pattern, replacer, code_str)
+                print(f"   [RegexHealer V2.8] 修復幻覺方法: {method} → {class_name}.{method}")
+
         return code_str, fix_count
 
     def remove_input_calls(self, code_str: str) -> str:
