@@ -13,12 +13,13 @@ class MathEngine:
         self.classifier = SkillClassifier()
         self.scaler = AdaptiveScaler()
 
-    def generate_practice_set(self, input_text=None, image_path=None):
+    def generate_practice_set(self, input_text=None, image_path=None, count=5, model_id=None, ablation_mode=False):
         """
         根據輸入生成依照例題仿製的練習題。
         """
         print("\n" + "="*50)
-        print("🤖 Math Learning Engine: 正在處理您的請求...")
+        mode_label = "🔥 原生 AI 模擬 (Ab1)" if ablation_mode else "🛡️ Math Project 強防護模式 (Ab3)"
+        print(f"🤖 Math Learning Engine: 正在處理您的請求... [{mode_label}]")
         print("="*50)
         
         # 1. 識別技能
@@ -33,9 +34,22 @@ class MathEngine:
             
         print(f"✅ 識別完成: [ {skill_name} ] (耗時: {time.time()-start_time:.1f}s)")
         
-        # 2. 為特定題型生成 5 題
+        # 2. 為特定題型生成題目
         try:
-            problems = self.scaler.generate_custom_problems(skill_name, input_text, count=5)
+            # Fallback for model_id compatibility
+            kwargs = {}
+            if model_id is not None:
+                kwargs['model_id'] = model_id
+                
+            if count > 5:
+                # 判斷大於 5 題就使用 batch 模式
+                response = self.scaler.generate_batch(skill_name, input_text, n=count, ablation_mode=ablation_mode, **kwargs)
+            else:
+                response = self.scaler.generate_custom_problems(skill_name, input_text, count=count, ablation_mode=ablation_mode, **kwargs)
+                
+            problems = response.get("problems", [])
+            debug_meta = response.get("debug_meta", {})
+            
         except Exception as e:
              return {
                 "success": False,
@@ -46,7 +60,8 @@ class MathEngine:
             "success": True,
             "skill": skill_name,
             "original_input": input_text or "[Image]",
-            "problems": problems
+            "problems": problems,
+            "debug_meta": debug_meta
         }
 
 if __name__ == "__main__":

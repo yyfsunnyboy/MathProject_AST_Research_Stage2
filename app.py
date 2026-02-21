@@ -114,11 +114,12 @@ def create_app():
     login_manager.init_app(app)
 
     # 註冊藍圖
-    from core.routes import practice_bp # 導入新的 blueprint
+    from core.routes import practice_bp, live_show_bp # 導入新的 blueprint
     # 修改：移除 url_prefix，讓 API 路由可以直接使用 /api/skills/...
     # 而 admin 頁面路由已經在 routes.py 中定義為 /admin/...
     app.register_blueprint(core_bp)
     app.register_blueprint(practice_bp) # 註冊練習用的 blueprint，沒有前綴
+    app.register_blueprint(live_show_bp) # 註冊科展展演用的 blueprint
     
     # [隱藏路由清單輸出] 暫時註解掉以減少干擾
     # print("--- 目前系統註冊的所有路由清單 ---")

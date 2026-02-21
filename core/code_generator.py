@@ -447,6 +447,9 @@ def _call_ai(prompt, model_config=None):
     else:
         raw_output = str(response)
 
+    # [Qwen3 / DeepSeek] Extract thinking/reasoning content
+    thinking_output = getattr(response, 'thinking', '') or ''
+
     try:
         if hasattr(response, 'usage_metadata'):
             prompt_tokens = response.usage_metadata.prompt_token_count
@@ -457,7 +460,7 @@ def _call_ai(prompt, model_config=None):
     except:
         pass
         
-    return raw_output, prompt_tokens, completion_tokens
+    return raw_output, prompt_tokens, completion_tokens, thinking_output
 
 def _validate_code(final_code):
     """語法驗證"""
@@ -801,6 +804,12 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
             
             log_step_result(3, ast_fixes, f"AST 結構正常" if ast_fixes == 0 else f"修復完成")
             
+            # [V51 ADD] Append logs to a dynamic object returned
+            class ASTStats:
+                pass
+            ast_stats = ASTStats()
+            ast_stats.logs = ast_healer.logs
+            
         except Exception as e:
             if VERBOSE_LEVEL >= 1:
                 print(f"│ ❌ AST 解析失敗: {e}")
@@ -830,12 +839,24 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
                     ast_fixes = 0
 
                 log_step_result(3, ast_fixes, "使用 Regex 修復後的代碼（AST 失敗）")
+                class ASTStats:
+                    pass
+                ast_stats = ASTStats()
+                ast_stats.logs = ast_healer.logs
             else:
                 code_after_ast = code_after_regex
                 ast_fixes = 0
+                class ASTStats:
+                    pass
+                ast_stats = ASTStats()
+                ast_stats.logs = []
     else:
         code_after_ast = code_after_regex
         ast_fixes = 0
+        class ASTStats:
+            pass
+        ast_stats = ASTStats()
+        ast_stats.logs = []
     
     # [NEW 2026-02-08] Step 4.5 + 7.5: Anti-Duplication & Variable-Before-Use Checker (僅 Ab3)
     anti_dup_fixes = 0
@@ -862,13 +883,19 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
             log_step_result(4.5, 0, "跳過（修復失敗，使用 AST 修復後的代碼）")
     
     # 這裡可擴充更多修復統計資訊
+    if ablation_id >= 3:
+        pass
+    
+    total_fixes = regex_fixes + ast_fixes + anti_dup_fixes + var_check_fixes
+    
     garbage_cleaner_count = 0
     removed_list = []
     healer_fixes = regex_fixes + ast_fixes + anti_dup_fixes
     eval_eliminator_count = 0
     healing_duration = 0
     
-    return code_after_anti_dup, regex_fixes, ast_fixes, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration
+    # Return code_after_anti_dup, regex_fixes, ast_fixes, [ast_stats as last element]
+    return code_after_anti_dup, regex_fixes, ast_fixes, ast_stats, garbage_cleaner_count, removed_list, healer_fixes, eval_eliminator_count, healing_duration
 
 
 def _post_ast_fixes(clean_code, skill_id):

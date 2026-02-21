@@ -168,7 +168,7 @@ class Config:
         
         'vision_analyzer': {
             'provider': 'gemini', 
-            'model': 'gemini-1.5-flash' 
+            'model': 'gemini-2.5-flash' 
         },
 
         'default': {

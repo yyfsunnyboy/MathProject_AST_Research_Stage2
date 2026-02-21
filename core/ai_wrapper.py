@@ -117,19 +117,19 @@ class LocalAIClient:
             # 取出 Ollama 回傳的真正內容與 token 計數
             generated_text = result.get("response", "")
             
-            # [Fallback] 針對 Thinking Model (如 Qwen 3 / DeepSeek R1)
-            # 如果 response 為空 (因為截斷或模型特性)，但有 thinking 内容，嘗試從 thinking 中提取
+            # [Fallback] 如果 response 為空，保留空字串，不要將 thinking 倒進來
+            # 因為現在我們已經獨立將 thinking 透過 .thinking 屬性向外傳遞了
             if not generated_text and result.get("thinking"):
-                print("[WARN] Response empty, falling back to 'thinking' content...")
-                # 將 thinking 內容視為生成的文本，後續由 code_generator 的 cleanup 函數去提取代碼
-                generated_text = result.get("thinking")
+                print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
+            thinking_text = result.get("thinking", "")
             prompt_tokens = result.get("prompt_eval_count", 0)
             completion_tokens = result.get("eval_count", 0)
             
             # 建立一個帶 usage 的 MockResponse（模擬 OpenAI / Gemini 風格）
             class MockResponse:
-                def __init__(self, text, prompt_t, comp_t, lat_ms):
+                def __init__(self, text, thinking, prompt_t, comp_t, lat_ms):
                     self.text = text
+                    self.thinking = thinking  # [Qwen3] Raw thinking/reasoning content
                     self.latency_ms = lat_ms # [V3.1] Expose latency_ms directly
                     self.usage = type('Usage', (), {})()   # 簡單的 namespace
                     self.usage.prompt_tokens = prompt_t
@@ -140,7 +140,7 @@ class LocalAIClient:
                     self.completion_tokens = comp_t
                     self.total_tokens = prompt_t + comp_t
             
-            return MockResponse(generated_text, prompt_tokens, completion_tokens, latency_ms)
+            return MockResponse(generated_text, thinking_text, prompt_tokens, completion_tokens, latency_ms)
             
         except requests.exceptions.RequestException as e:
             error_msg = f"Local AI (Ollama) Error: {str(e)}\n請確認 Ollama 是否正在運行於 {self.api_url}"
@@ -152,6 +152,106 @@ class LocalAIClient:
                     self.usage.prompt_tokens = 0
                     self.usage.completion_tokens = 0
             return MockResponse(error_msg)
+
+    def generate_content_stream(self, prompt):
+        """
+        [Ab1 Streaming] 開啟 Ollama stream=True，逐 token 解析。
+        這是一個 generator，每次 yield 一個 dict：
+          {"type": "thought", "text": "..."}   <- <thought>標籤內容
+          {"type": "code",    "text": "..."}   <- 正式輸出內容
+          {"type": "done",    "text": ""}      <- 結束訊號
+          {"type": "error",   "text": "..."}   <- 錯誤訊號
+        """
+        import json as _json
+
+        options = {
+            "temperature": self.temperature,
+            "num_predict": self.max_tokens,
+            "num_ctx": 8192,
+        }
+        if self.extra_options:
+            options.update(self.extra_options)
+
+        system_prompt = None
+        if "system" in options:
+            system_prompt = options.pop("system")
+
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "stream": True,
+            "options": options,
+        }
+        if system_prompt:
+            payload["system"] = system_prompt
+
+        try:
+            with requests.post(
+                self.api_url, json=payload, stream=True, timeout=1200
+            ) as resp:
+                resp.raise_for_status()
+
+                thought_buf = ""
+                code_buf = ""
+                in_thought = False  # True while inside <thought>…</thought>
+
+                for raw_line in resp.iter_lines():
+                    if not raw_line:
+                        continue
+                    try:
+                        chunk = _json.loads(raw_line)
+                    except ValueError:
+                        continue
+
+                    token = chunk.get("response", "")
+                    done  = chunk.get("done", False)
+
+                    if token:
+                        # ── Detect <think> / </think> boundaries (Qwen3 / DeepSeek) ─
+                        thought_buf += token
+
+                        # Flush fully bracketed <think>…</think> segments
+                        while True:
+                            if not in_thought:
+                                open_idx = thought_buf.find("<think>")
+                                if open_idx == -1:
+                                    # Nothing in thought_buf belongs to <think>
+                                    # so it is all code content
+                                    code_buf += thought_buf
+                                    thought_buf = ""
+                                    break
+                                # Code before <think>
+                                if open_idx > 0:
+                                    code_buf += thought_buf[:open_idx]
+                                thought_buf = thought_buf[open_idx + len("<think>"):]
+                                in_thought = True
+                            else:
+                                close_idx = thought_buf.find("</think>")
+                                if close_idx == -1:
+                                    # Still inside <think>, yield what we have so far
+                                    if thought_buf:
+                                        yield {"type": "thought", "text": thought_buf}
+                                        thought_buf = ""
+                                    break
+                                # Yield completed thought segment
+                                yield {"type": "thought", "text": thought_buf[:close_idx]}
+                                thought_buf = thought_buf[close_idx + len("</think>"):]
+                                in_thought = False
+
+                    # Also capture Ollama's top-level "thinking" field (some models)
+                    top_thinking = chunk.get("thinking", "")
+                    if top_thinking:
+                        yield {"type": "thought", "text": top_thinking}
+
+                    if done:
+                        # Flush remaining code buffer
+                        if code_buf.strip():
+                            yield {"type": "code", "text": code_buf}
+                        yield {"type": "done", "text": ""}
+                        return
+
+        except requests.exceptions.RequestException as e:
+            yield {"type": "error", "text": str(e)}
 
 class GoogleAIClient:
     """

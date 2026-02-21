@@ -420,6 +420,28 @@ class RegexHealer:
                 code_str = re.sub(pattern, replacer, code_str)
                 print(f"   [RegexHealer V2.8] 修復幻覺方法: {method} → {class_name}.{method}")
 
+        code_str, fix_count = self.fix_hallucinated_methods(code_str)
+        return code_str, fix_count
+
+    def fix_hallucinated_methods(self, code_str: str) -> tuple:
+        """
+        修復常見的幻覺方法呼叫
+        例如： PolynomialOps.format() -> PolynomialOps.format_latex()
+        """
+        fix_count = 0
+        hallucinations = {
+            'PolynomialOps.format(': 'PolynomialOps.format_latex(',
+            'RadicalOps.format(': 'RadicalOps.format_term(',
+            'poly_format(': 'poly_format_latex('
+        }
+        
+        for bad_call, good_call in hallucinations.items():
+            if bad_call in code_str:
+                count = code_str.count(bad_call)
+                code_str = code_str.replace(bad_call, good_call)
+                fix_count += count
+                print(f"   [RegexHealer V2.9] 修復幻覺方法調用: {bad_call} → {good_call}")
+                
         return code_str, fix_count
 
     def remove_input_calls(self, code_str: str) -> str:
@@ -836,6 +858,10 @@ class RegexHealer:
         # 為了讓 Ab2 也能跑通，我們允許這個 "語法糖" 級別的修復
         code, prefix_fixes = self.fix_missing_class_prefix(code)
         fixes['regex_fix_count'] += prefix_fixes
+
+        # Step 1.9: 修復幻覺方法調用
+        code, hallu_fixes = self.fix_hallucinated_methods(code)
+        fixes['regex_fix_count'] += hallu_fixes
 
         fixes['markdown_removed'] = False
         fixes['syntax_fixed'] = False

@@ -53,6 +53,7 @@ class ASTHealer(ast.NodeTransformer):
         """
         self.fixes = 0
         self.ai_client = ai_client
+        self.logs = []
 
     def visit_BinOp(self, node):
         """修復二元運算符"""
@@ -60,6 +61,7 @@ class ASTHealer(ast.NodeTransformer):
         # 1. 修復次方符號：將 XOR (^) 轉為 Pow (**)
         if isinstance(node.op, ast.BitXor):
             self.fixes += 1
+            self.logs.append("AST Healer: Replaced BitXor (^) with Pow (**)")
             node.op = ast.Pow()
             return node
         return node
@@ -78,6 +80,7 @@ class ASTHealer(ast.NodeTransformer):
             
         if func_name == 'input':
             self.fixes += 1
+            self.logs.append("AST Healer: Removed dangerous input() call")
             logger.warning("💉 AST Healer: 偵測到 input()，正在切除... (Replaced with '0')")
             return ast.Constant(value="0")
         
@@ -90,6 +93,7 @@ class ASTHealer(ast.NodeTransformer):
         
         if isinstance(node.func, ast.Name) and node.func.id in hallucinated_funcs:
             self.fixes += 1
+            self.logs.append(f"AST Healer: Replaced hallucinated function {node.func.id}() with build_polynomial_text()")
             logger.info(f"🔴 偵測到幻覺函數: {node.func.id}() -> build_polynomial_text()")
             node.func.id = 'build_polynomial_text'
             return node
@@ -98,6 +102,7 @@ class ASTHealer(ast.NodeTransformer):
         target_funcs = ['eval', 'exec', 'safe_eval']
         if isinstance(node.func, ast.Name) and node.func.id in target_funcs:
             self.fixes += 1
+            self.logs.append(f"AST Healer: Replaced dangerous function {node.func.id}() with safe_eval()")
             node.func.id = 'safe_eval'
             
             # 強制清洗參數（只保留第一個）
@@ -126,6 +131,7 @@ class ASTHealer(ast.NodeTransformer):
             # 補救空參數（只有在參數確實為空時）
             if not node.args:
                 self.fixes += 1
+                self.logs.append("AST Healer: Injected random integers for empty fmt_num() call")
                 node.args = [
                     ast.Call(
                         func=ast.Attribute(
@@ -172,11 +178,13 @@ class ASTHealer(ast.NodeTransformer):
     def visit_Import(self, node):
         """移除非法 import"""
         self.fixes += 1
+        self.logs.append(f"AST Healer: Removed dangerous import: {ast.unparse(node)}")
         return None
     
     def visit_ImportFrom(self, node):
         """移除非法 from ... import"""
         self.fixes += 1
+        self.logs.append(f"AST Healer: Removed dangerous from...import: {ast.unparse(node)}")
         return None
     
     def visit_FunctionDef(self, node):
@@ -205,6 +213,7 @@ class ASTHealer(ast.NodeTransformer):
                 
             if is_trivial:
                 self.fixes += 1
+                self.logs.append(f"AST Healer: Shadow Killer removed duplicate function definition '{node.name}'")
                 logger.info(f"🔪 Shadow Killer: 刪除空的重複定義 '{node.name}' (使用 Injected Utils)")
                 return None
             else:
@@ -238,6 +247,7 @@ class ASTHealer(ast.NodeTransformer):
                 
                 if is_empty:
                     self.fixes += 1
+                    self.logs.append(f"AST Healer: Removed useless empty function '{node.name}'")
                     return None 
         
         # 2. 檢測內部輔助函數是否缺少默認返回值
@@ -256,6 +266,7 @@ class ASTHealer(ast.NodeTransformer):
                     )
                     node.body.append(default_return)
                     self.fixes += 1
+                    self.logs.append(f"AST Healer: Injected default return statement for function '{node.name}'")
         
         return node
     
@@ -275,6 +286,7 @@ class ASTHealer(ast.NodeTransformer):
             
         if is_infinite:
             self.fixes += 1
+            self.logs.append("AST Healer: Circuit Breaker triggered: Replaced while True with for loop")
             logger.info(f"🛑 熔斷機制啟動: while True -> for loop (1000 runs)")
             
             return ast.For(
@@ -298,6 +310,7 @@ class ASTHealer(ast.NodeTransformer):
             target_tuple = node.targets[0]
             if isinstance(node.value, ast.Call) and isinstance(node.value.func, ast.Name) and node.value.func.id == 'fmt_num':
                 self.fixes += 1
+                self.logs.append("AST Healer: Fixed tuple assignment for fmt_num()")
                 val_var = target_tuple.elts[0]
                 latex_var = target_tuple.elts[1]
                 if node.value.args:
@@ -347,6 +360,7 @@ class ASTHealer(ast.NodeTransformer):
                 if 1 <= e.lineno <= len(lines):
                     removed = lines.pop(e.lineno - 1)
                     self.fixes += 1
+                    self.logs.append(f"AST Healer: Syntax Repair: Removed line {e.lineno} causing SyntaxError")
                     logger.warning(f"🔪 AST Syntax Repair: 刪除語法錯誤行 {e.lineno}: {removed.strip()}")
                     code_str = '\n'.join(lines)
                 else:
@@ -477,6 +491,7 @@ Please fix the logic error based on the error message provided.
             # 5. 更新計數器並返回
             if fixed_code != code_str:
                 self.fixes += 1
+                self.logs.append(f"Semantic Healer: Successfully self-corrected runtime error")
                 logger.info(f"✅ Semantic Healer 應用修正 (Fixes count: {self.fixes})")
                 return fixed_code, True
             else:

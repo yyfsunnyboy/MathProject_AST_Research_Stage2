@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Project — Live Show Dashboard</title>
+    <meta name="description"
+        content="Math Project Live Show: Ab1 (Native LLM) vs Ab3 (Active Healer Engine) ablation comparison dashboard.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+
+    <!-- MathJax -->
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ================================================
+           DESIGN TOKENS  (Aligned with Clean/Clear Style)
+        ================================================ */
+        :root {
+            --bg: #f5f7fa;
+            --panel-bg: #ffffff;
+            --border-subtle: #e9ecef;
+            --text-main: #2c3e50;
+            --text-muted: #6c757d;
+
+            --gemini: #4285F4;
+            --qwen: #0F9D58;
+            --healer: #d35400;
+
+            --ab1-border: #e74c3c;
+            --ab1-glow: rgba(231, 76, 60, 0.08);
+            --ab3-border: #27ae60;
+            --ab3-glow: rgba(39, 174, 96, 0.08);
+
+            --console-bg: #f8f9fa;
+            --console-text: #2c3e50;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        /* ── Body ── */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ── Diagnostic Overlay ── */
+        #transition-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+            gap: 1.5rem;
+        }
+
+        #transition-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #overlay-icon {
+            font-size: 3rem;
+            animation: pulse-icon 1s ease-in-out infinite alternate;
+        }
+
+        #overlay-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-main);
+        }
+
+        #overlay-pipeline {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .overlay-step {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-subtle);
+            background: var(--panel-bg);
+        }
+
+        .overlay-step.active-step {
+            color: #2980b9;
+            border-color: #3498db;
+            background: #e1f0fa;
+        }
+
+        .overlay-color-cloud {
+            color: var(--gemini);
+        }
+
+        .overlay-color-transfer {
+            color: var(--qwen);
+        }
+
+        @keyframes pulse-icon {
+            from {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            to {
+                transform: scale(1.15);
+                opacity: 1;
+            }
+        }
+
+        /* ── Header ── */
+        header {
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-subtle);
+            background: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0 0 0.25rem;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1a252f;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .header-subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        .status-ready {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: 'JetBrains Mono', monospace;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            background-color: #4caf50;
+            border-radius: 50%;
+            box-shadow: 0 0 4px #4caf50;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(76, 175, 80, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(76, 175, 80, 0);
+            }
+        }
+
+        /* ── Pipeline Banner ── */
+        .pipeline-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+        }
+
+        .pipe-step {
+            padding: 0.4rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            font-weight: 600;
+            background: var(--bg);
+        }
+
+        .pipe-step.gemini {
+            color: var(--gemini);
+            border-color: rgba(66, 133, 244, 0.3);
+            background: rgba(66, 133, 244, 0.05);
+        }
+
+        .pipe-step.amber {
+            color: #d35400;
+            border-color: rgba(211, 84, 0, 0.3);
+            background: rgba(211, 84, 0, 0.05);
+        }
+
+        .pipe-step.qwen {
+            color: var(--qwen);
+            border-color: rgba(15, 157, 88, 0.3);
+            background: rgba(15, 157, 88, 0.05);
+        }
+
+        .pipe-arrow {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* ── Multimodal Workstation ── */
+        .workstation {
+            display: grid;
+            grid-template-columns: 3fr 2fr;
+            gap: 1.5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .workstation-left {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ── Skill Diagnostics Card ── */
+        .skill-diagnostics {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            color: #2c3e50;
+            font-family: 'JetBrains Mono', monospace;
+            height: 100%;
+        }
+
+        .sd-header {
+            font-size: 1rem;
+            font-weight: 800;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            color: #1a73e8;
+        }
+
+        .process-log {
+            flex: 1;
+            font-size: 0.8rem;
+            color: #4b5563;
+            overflow-y: auto;
+            margin-bottom: 1rem;
+            background: #f8f9fa;
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem;
+            border-radius: 4px;
+            min-height: 80px;
+        }
+
+        .process-log-line {
+            margin-bottom: 0.25rem;
+        }
+
+        .confidence-meter-container {
+            margin-bottom: 1rem;
+        }
+
+        .cm-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cm-track {
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .cm-fill {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.5s ease-out;
+        }
+
+        .selected-skill-container {
+            text-align: center;
+        }
+
+        .selected-skill-badge {
+            display: inline-block;
+            background: #e1f0fa;
+            color: #2980b9;
+            border: 1px solid #3498db;
+            padding: 0.4rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        .workstation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .model-selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .model-selector-group label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .model-select {
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-subtle);
+            background: #f8f9fa;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .model-select:focus {
+            border-color: #3498db;
+        }
+
+        .canvas-toolbar {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tool-btn {
+            background: #f8f9fa;
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .tool-btn:hover {
+            background: #e9ecef;
+        }
+
+        .tool-btn.active {
+            background: #e1f0fa;
+            color: #2980b9;
+            border-color: #3498db;
+        }
+
+        .canvas-container {
+            width: 100%;
+            height: 125px;
+            border: 2px dashed var(--border-subtle);
+            border-radius: 6px;
+            background-color: #fff;
+            background-image:
+                linear-gradient(#f1f3f5 1px, transparent 1px),
+                linear-gradient(90deg, #f1f3f5 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .canvas-container.dragover {
+            border-color: #3498db;
+            background-color: #f8fbff;
+        }
+
+        canvas#inputCanvas {
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            display: block;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 0.85rem 1.4rem;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input[type="text"]:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        button.action-btn {
+            padding: 0.85rem 1.5rem;
+            border-radius: 6px;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        button#recognizeBtn {
+            background: #f39c12;
+            color: white;
+        }
+
+        button#recognizeBtn:hover {
+            background: #e67e22;
+        }
+
+        button#submitBtn {
+            background: #3498db;
+            color: white;
+        }
+
+        button#submitBtn:hover {
+            background: #2980b9;
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #95a5a6 !important;
+        }
+
+        /* ── Skill Badge in Workstation ── */
+        #detected-skill {
+            display: none;
+            margin-top: 0.5rem;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #27ae60;
+            font-weight: 600;
+        }
+
+        /* ── Main dual panel grid ── */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            padding: 1.5rem 2rem;
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ── Panel card ── */
+        .panel {
+            background: var(--panel-bg);
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            padding: 1.75rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .ab-panel {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            border: 1px solid var(--border-subtle);
+            transition: all 0.3s ease;
+            max-height: 480px;
+            /* Reduced to ~2/3 of previous 800px depending on content, was unspecified max but taking up entire view */
+            overflow-y: auto;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+
+        .ab1-panel::before {
+            background: var(--ab1-border);
+        }
+
+        .ab3-panel::before {
+            background: var(--ab3-border);
+        }
+
+        /* Glow states post-result replaced by simple shadow */
+        .panel.state-failed {
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.15);
+        }
+
+        .panel.state-healed {
+            box-shadow: 0 4px 15px rgba(243, 156, 18, 0.15);
+        }
+
+        .panel.state-success {
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.15);
+        }
+
+        /* ── Panel header ── */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .panel-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem;
+            color: #2c3e50;
+        }
+
+        .panel-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Status Badges ── */
+        .badge {
+            padding: 0.3rem 0.9rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .badge-standby {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .badge-loading {
+            background: #e1f0fa;
+            color: #2980b9;
+        }
+
+        .badge-failed {
+            background: #fdf2f2;
+            color: #c0392b;
+            border: 1px solid #f5c6cb;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .badge-healed {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        /* ── Content boxes ── */
+        .content-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            min-height: 200px;
+        }
+
+        .content-box.hidden {
+            display: none;
+        }
+
+        .math-block {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1.25rem;
+            font-size: 1.1rem;
+            min-height: 80px;
+            border: 1px solid #e9ecef;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #f1f3f5;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #495057;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border: 1px solid #e9ecef;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .healer-log-content {
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            margin: 0;
+            line-height: 1.5;
+            max-height: 100px;
+            /* Reduced to ~2/3 */
+            overflow-y: auto;
+        }
+
+        .section-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.4rem;
+        }
+
+        /* ── Loading skeleton ── */
+        .loader-wrap {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .loader-wrap.hidden {
+            display: none;
+        }
+
+        .skeleton {
+            height: 16px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #e9ecef 25%, #f8f9fa 50%, #e9ecef 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0;
+            }
+
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* ── Stat cards ── */
+        .meta-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .stat-value.text-error {
+            color: #e74c3c;
+        }
+
+        .stat-value.text-warning {
+            color: #f39c12;
+        }
+
+        .stat-value.text-success {
+            color: #27ae60;
+        }
+
+        /* ── FLASH overlay warning ── */
+        .flash-warning {
+            color: #d35400;
+            font-weight: 600;
+        }
+
+        /* ═══════════════════════════════════════
+           ENGINE CONSOLE 
+        ═══════════════════════════════════════ */
+        .monitor-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem;
+            padding: 0 2rem 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .monitor-section-header {
+            grid-column: 1 / -1;
+            padding: 1rem 0 0.5rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .monitor-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            margin: 0;
+        }
+
+        .monitor-panel {
+            background: #ffffff;
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            height: 600px;
+            /* Force uniform height across the 4 blocks */
+            overflow-y: auto;
+        }
+
+        .monitor-node-label {
+            font-weight: 600;
+            font-size: 1rem;
+            margin: 0 0 0.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        /* Progress tracks */
+        .progress-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .monitor-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .progress-track {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            height: 14px;
+        }
+
+        .progress-bar-bg {
+            flex: 1;
+            background: #e9ecef;
+            border-radius: 99px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 99px;
+            background: #3498db;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .progress-fill.cpu {
+            background: #9b59b6;
+        }
+
+        .progress-text {
+            font-size: 0.8rem;
+            color: var(--text-main);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        /* Engine Console log box */
+        .engine-console {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+            padding: 1rem;
+            min-height: 80px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            overflow-y: auto;
+            color: #495057;
+            line-height: 1.5;
+        }
+
+        /* Radar wrapper */
+        .radar-wrapper {
+            position: relative;
+            height: 200px;
+            margin-top: 1rem;
+        }
+
+        /* ── Code Display ── */
+        pre {
+            background: #f8f9fa;
+            padding: 1.25rem;
+            border-radius: 6px;
+            overflow-x: auto;
+            border: 1px solid #e9ecef;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85rem;
+            color: #2c3e50;
+            line-height: 1.5;
+            margin: 0;
+            max-height: 15rem;
+            /* Reduced height to ~2/3 of previous */
+            min-height: 6rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* ── Log Badges ── */
+        .log-badge {
+            display: inline-block;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.4rem;
+            vertical-align: middle;
+        }
+
+        .badge-gemini {
+            background: var(--gemini);
+            color: #fff;
+        }
+
+        .badge-qwen {
+            background: var(--qwen);
+            color: #fff;
+        }
+
+        .badge-healer {
+            background: var(--healer);
+            color: #fff;
+        }
+
+        /* ── Thinking Sandbox (Ab1) ── */
+        .thought-sandbox {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            background: #fff;
+            border: 1px dashed #ccc;
+            display: none;
+        }
+
+        .thought-sandbox.active {
+            display: block;
+        }
+
+        /* ── Logic Diagnosis Panels ── */
+        .diag-panel {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 600px;
+            /* Force uniform height across the 4 blocks */
+        }
+
+        .diag-header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 0.75rem 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #58a6ff;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .diag-header.opt {
+            color: #3fb950;
+        }
+
+        .diag-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            color: #e6edf3;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* Pre format inside diag */
+        .diag-block {
+            margin-bottom: 1rem;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .diag-label {
+            color: #8b949e;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 0.25rem;
+            display: inline-block;
+        }
+
+        .diag-code {
+            color: #e6edf3;
+        }
+
+        .diag-comment {
+            color: #8b949e;
+            font-style: italic;
+        }
+
+        .diag-highlight {
+            color: #ff7b72;
+        }
+
+        .diag-fix {
+            color: #d29922;
+            /* Orange highlight for healer logs */
+        }
+
+        .diag-success {
+            color: #3fb950;
+        }
+
+        .thought-sandbox-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animated ping dot */
+        .ping-dot {
+            position: relative;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #f39c12;
+            animation: pulse-simple 1.5s infinite;
+        }
+
+        @keyframes pulse-simple {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        .thought-sandbox.done .ping-dot {
+            background: #95a5a6;
+            animation: none;
+        }
+
+        #ab1-thought-stream {
+            font-size: 0.85rem;
+            font-style: italic;
+            color: #6c757d;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══ TRANSITION DIAGNOSTIC OVERLAY ═══ -->
+    <div id="transition-overlay">
+        <div id="overlay-icon">☁️</div>
+        <div id="overlay-text" class="overlay-color-cloud">
+            <span class="log-badge badge-gemini">GEMINI</span>
+            [CLOUD] Perceiving Mathematics...
+        </div>
+        <div id="overlay-pipeline">
+            <span class="overlay-step active-step" id="pipe-cloud">CLOUD PERCEPTION</span>
+            <span class="pipe-arrow">→</span>
+            <span class="overlay-step" id="pipe-scaffold">SCAFFOLD INJECTION</span>
+            <span class="pipe-arrow">→</span>
+            <span class="overlay-step" id="pipe-local">LOCAL ENGINE</span>
+        </div>
+    </div>
+
+    <!-- ═══ HEADER ═══ -->
+    <header>
+        <div class="header-title-container">
+            <h1><span style="color: #f39c12; font-size: 1.5rem; text-shadow: 0 0 8px rgba(243,156,18,0.5);">⚡</span>
+                Small but Precise:Outperforming Large Language Models in K12 Mathematics through Engineered Self-Healing
+            </h1>
+            <div class="status-ready">
+                <div class="status-dot"></div>STATUS: READY
+            </div>
+        </div>
+        <div class="header-subtitle">精準致勝：透過工程化自癒機制使小型模型在 K12 數學出題任務中超越雲端大模型</div>
+
+        <!-- Pipeline Banner (SHOWREEL_LOGIC.md) -->
+        <div class="pipeline-banner">
+            <span class="pipe-step gemini">☁️ Cloud Perception</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step amber">📋 Scaffold Injection</span>
+            <span class="pipe-arrow">→</span>
+            <span class="pipe-step qwen">🖥 Local Engine</span>
+        </div>
+
+        <!-- ═══ MULTIMODAL WORKSTATION ═══ -->
+        <div class="workstation">
+            <!-- Left: Multimodal Input -->
+            <div class="workstation-left">
+                <div class="workstation-header">
+                    <div class="canvas-toolbar">
+                        <button type="button" class="tool-btn active" id="tool-pen">✏️ 畫筆</button>
+                        <button type="button" class="tool-btn" id="tool-eraser">🧹 橡皮擦</button>
+                        <div style="width:1px; height:20px; background:var(--border-subtle); margin:0 0.25rem;"></div>
+                        <button type="button" class="tool-btn" id="tool-clear">🗑️ 清空</button>
+                        <label class="tool-btn" style="cursor:pointer;">
+                            🖼️ 匯入圖片
+                            <input type="file" id="image-upload" accept="image/*" style="display:none;">
+                        </label>
+                    </div>
+                </div>
+
+                <div class="canvas-container" id="canvas-container">
+                    <canvas id="inputCanvas"></canvas>
+                </div>
+
+                <form id="genForm" class="input-group">
+                    <input type="text" id="promptInput" placeholder="在此輸入、手寫，或直接 Ctrl+V 貼上數學測驗截圖...">
+                    <button type="submit" id="submitBtn" class="action-btn"
+                        style="background:#95a5a6; cursor:not-allowed;">⚡ 啟動平行運算</button>
+                </form>
+            </div>
+
+            <!-- Right: Skill Diagnostics -->
+            <div class="skill-diagnostics">
+                <div class="sd-header">🧬 Skill DNA Identification</div>
+                <div class="process-log" id="process-log">
+                    <div class="process-log-line" style="color:#9ca3af;">Awaiting input...</div>
+                </div>
+                <div class="confidence-meter-container">
+                    <div class="cm-label">
+                        <span>Alignment Score</span>
+                        <span id="cm-value">0%</span>
+                    </div>
+                    <div class="cm-track">
+                        <div class="cm-fill" id="cm-fill"></div>
+                    </div>
+                </div>
+                <div class="selected-skill-container">
+                    <div class="selected-skill-badge" id="selected-skill-badge">UNKNOWN_SKILL</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ═══ DUAL PANEL MAIN ═══ -->
+    <main>
+        <!-- Left: Ab1 Native LLM -->
+        <div class="panel ab1-panel" id="panel-ab1">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Ab1 — Native LLM</div>
+                    <div class="panel-subtitle">Zero-shot · No Scaffold · No Healer</div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
+                    <div id="badge-ab1" class="badge badge-standby">STANDBY</div>
+                    <select id="model-select-ab1" class="model-select"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
+                        <option value="gemini-3-flash" selected>Gemini-3-Flash</option>
+                        <option value="qwen3-8b">Qwen3-8B</option>
+                        <option value="qwen3-14b">Qwen3-14B</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading skeleton -->
+            <div id="loader-ab1" class="loader-wrap hidden">
+                <div class="skeleton" style="width:80%"></div>
+                <div class="skeleton" style="width:55%"></div>
+                <div class="skeleton" style="width:90%"></div>
+                <div class="skeleton" style="width:65%"></div>
+            </div>
+
+            <!-- Result -->
+            <div id="result-ab1" class="content-box hidden">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="section-label">Generated Problem</div>
+                        <button class="action-btn"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
+                            onclick="document.getElementById('submitBtn').click();">
+                            下一題
+                        </button>
+                    </div>
+                    <div id="math-ab1" class="math-block"></div>
+                </div>
+                <div>
+                    <div class="section-label">Raw Output / Error</div>
+                    <pre id="code-ab1" class="code-block"></pre>
+                </div>
+            </div>
+
+            <!-- Thinking Sandbox (Ab1 <thought> stream) -->
+            <div id="thought-sandbox" class="thought-sandbox">
+                <div class="thought-sandbox-header">
+                    <span class="ping-dot"></span>
+                    Qwen3 Mental Sandbox (Reasoning...)
+                </div>
+                <div id="ab1-thought-stream" class="italic text-gray-400 text-sm leading-relaxed"></div>
+            </div>
+
+            <!-- Stats -->
+            <div class="meta-stats">
+                <div class="stat-card">
+                    <div id="time-ab1" class="stat-value">--</div>
+                    <div class="stat-label">AI Latency</div>
+                </div>
+                <div class="stat-card">
+                    <div id="fix-ab1" class="stat-value">0</div>
+                    <div class="stat-label">Healer Fixes</div>
+                </div>
+                <div class="stat-card" style="border-color: rgba(239,68,68,0.35)">
+                    <div id="mcri-ab1" class="stat-value text-error">--</div>
+                    <div class="stat-label">MCRI Grade</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Ab3 Active Healer -->
+        <div class="panel ab3-panel" id="panel-ab3">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Ab3 — Active Healer</div>
+                    <div class="panel-subtitle">@SKILL.md Scaffold · AST + Regex Repair</div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
+                    <div id="badge-ab3" class="badge badge-standby">STANDBY</div>
+                    <select id="model-select-ab3" class="model-select"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
+                        <option value="gemini-3-flash">Gemini-3-Flash</option>
+                        <option value="qwen3-8b" selected>Qwen3-8B</option>
+                        <option value="qwen3-14b">Qwen3-14B</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Loading skeleton -->
+            <div id="loader-ab3" class="loader-wrap hidden">
+                <div class="skeleton" style="width:80%"></div>
+                <div class="skeleton" style="width:55%"></div>
+                <div class="skeleton" style="width:90%"></div>
+                <div class="skeleton" style="width:65%"></div>
+            </div>
+
+            <!-- Result -->
+            <div id="result-ab3" class="content-box hidden">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="section-label">Generated Problem</div>
+                        <button class="action-btn"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
+                            onclick="document.getElementById('submitBtn').click();">
+                            下一題
+                        </button>
+                    </div>
+                    <div id="math-ab3" class="math-block"></div>
+                    <div id="ans-ab3"
+                        style="text-align:center;color:var(--text-muted);margin-top:0.5rem;font-family:'JetBrains Mono',monospace;font-size:0.85rem;">
+                    </div>
+                </div>
+                <div>
+                    <div class="section-label">Healer Trace</div>
+                    <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="meta-stats">
+                <div class="stat-card">
+                    <div id="time-ab3" class="stat-value">--</div>
+                    <div class="stat-label">AI Latency</div>
+                </div>
+                <div class="stat-card" style="border-color:rgba(255,109,0,0.35)">
+                    <div id="fix-ab3" class="stat-value text-warning">--</div>
+                    <div class="stat-label">Healer Fixes</div>
+                </div>
+                <div class="stat-card" style="border-color:rgba(16,185,129,0.35)">
+                    <div id="mcri-ab3" class="stat-value text-success">--</div>
+                    <div class="stat-label">MCRI Grade</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ═══ ENGINE CONSOLE (The Pulse Console) ═══ -->
+    <div class="monitor-section">
+        <div class="monitor-section-header">
+            <h3 class="monitor-title">SYSTEM.MONITOR — ENGINE DIAGNOSTICS</h3>
+        </div>
+
+        <!-- Left: Baseline Hub -->
+        <div class="diag-panel">
+            <div class="diag-header">[BASELINE: BARE_PROMPT]</div>
+            <div class="diag-content" id="diag-ab1-content">
+                <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
+            </div>
+        </div>
+
+        <!-- Ab1 Node -->
+        <div class="monitor-panel">
+            <h4 class="monitor-node-label" style="color:#ef4444;text-shadow:0 0 8px #ef4444;">[ Ab1 Node — Native ]</h4>
+
+            <div class="progress-row">
+                <span class="monitor-label">GPU · AI Inference Time</span>
+                <div class="progress-track">
+                    <div class="progress-bar-bg">
+                        <div id="bar-ab1-gpu" class="progress-fill"></div>
+                    </div>
+                    <span id="text-ab1-gpu" class="progress-text">0.0s</span>
+                </div>
+            </div>
+
+            <div class="progress-row">
+                <span class="monitor-label">CPU · Code Execution Time</span>
+                <div class="progress-track">
+                    <div class="progress-bar-bg">
+                        <div id="bar-ab1-cpu" class="progress-fill cpu"></div>
+                    </div>
+                    <span id="text-ab1-cpu" class="progress-text">0.0s</span>
+                </div>
+            </div>
+
+            <div>
+                <span class="monitor-label">Kernel Log</span>
+                <div id="log-ab1" class="engine-console">AWAITING EXECUTION...</div>
+            </div>
+
+            <div class="radar-wrapper">
+                <canvas id="radarAb1"></canvas>
+            </div>
+        </div>
+
+        <!-- Ab3 Node -->
+        <div class="monitor-panel">
+            <h4 class="monitor-node-label" style="color:#10b981;text-shadow:0 0 8px #10b981;">[ Ab3 Node — Active Healer
+                ]</h4>
+
+            <div class="progress-row">
+                <span class="monitor-label">GPU · AI Inference Time</span>
+                <div class="progress-track">
+                    <div class="progress-bar-bg">
+                        <div id="bar-ab3-gpu" class="progress-fill"></div>
+                    </div>
+                    <span id="text-ab3-gpu" class="progress-text">0.0s</span>
+                </div>
+            </div>
+
+            <div class="progress-row">
+                <span class="monitor-label">CPU · Code Execution Time</span>
+                <div class="progress-track">
+                    <div class="progress-bar-bg">
+                        <div id="bar-ab3-cpu" class="progress-fill cpu"></div>
+                    </div>
+                    <span id="text-ab3-cpu" class="progress-text">0.0s</span>
+                </div>
+            </div>
+
+            <div>
+                <span class="monitor-label">Healer Trace Log</span>
+                <div id="log-ab3" class="engine-console">AWAITING EXECUTION...</div>
+            </div>
+
+            <div class="radar-wrapper">
+                <canvas id="radarAb3"></canvas>
+            </div>
+        </div>
+
+        <!-- Right: Evolution Hub -->
+        <div class="diag-panel">
+            <div class="diag-header opt">[OPTIMIZED: SCAFFOLD_GUIDED]</div>
+            <div class="diag-content" id="diag-ab3-content">
+                <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════
+           CHART.JS — MCRI RADAR (LAB_SPEC.md)
+           Axes: Syntax · Logic · Rendering · Stability
+        ═══════════════════════════════════════════ */
+        Chart.defaults.color = '#3a4a3a';
+        Chart.defaults.font.family = "'JetBrains Mono', monospace";
+
+        const radarOpts = (borderColor, bgColor) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0, max: 100,
+                    angleLines: { color: 'rgba(0,0,0,0.1)' },
+                    grid: { color: 'rgba(0,0,0,0.1)' },
+                    pointLabels: { color: '#2c3e50', font: { size: 9 } },
+                    ticks: { display: false, stepSize: 25 }
+                }
+            },
+            plugins: { legend: { display: false } }
+        });
+
+        const RADAR_LABELS = ['Syntax', 'Logic', 'Rendering', 'Stability'];
+        const EMPTY_DATA = [0, 0, 0, 0];
+
+        const chartAb1 = new Chart(document.getElementById('radarAb1'), {
+            type: 'radar',
+            data: {
+                labels: RADAR_LABELS,
+                datasets: [{ data: EMPTY_DATA, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.15)', borderWidth: 2, pointRadius: 3 }]
+            },
+            options: radarOpts('#e74c3c', 'rgba(231,76,60,0.15)')
+        });
+
+        const chartAb3 = new Chart(document.getElementById('radarAb3'), {
+            type: 'radar',
+            data: {
+                labels: RADAR_LABELS,
+                datasets: [{ data: EMPTY_DATA, borderColor: '#27ae60', backgroundColor: 'rgba(39,174,96,0.15)', borderWidth: 2, pointRadius: 3 }]
+            },
+            options: radarOpts('#27ae60', 'rgba(39,174,96,0.15)')
+        });
+
+        /* ═══════════════════════════════════════════
+           HELPER UTILITIES
+        ═══════════════════════════════════════════ */
+        const GPU_MAX = 60, CPU_MAX = 5;
+
+        function setBar(barId, textId, val, maxVal) {
+            const pct = Math.min((val / maxVal) * 100, 100);
+            document.getElementById(barId).style.width = pct + '%';
+            document.getElementById(textId).textContent = val.toFixed(2) + 's';
+        }
+
+        function setBadge(id, cls, text) {
+            const el = document.getElementById(id);
+            el.className = 'badge ' + cls;
+            el.textContent = text;
+        }
+
+        function startLoading(target) {
+            // Keep result panel visible so prompts shown in code blocks remain visible
+            document.getElementById('result-' + target).classList.remove('hidden');
+            // Inject a small skeleton loader into the math block
+            document.getElementById('math-' + target).innerHTML = '<div class="loader-wrap" style="padding:1rem 0;"><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:55%"></div><div class="skeleton" style="width:90%"></div></div>';
+
+            // Hide the old full-panel loader just in case
+            const oldLoader = document.getElementById('loader-' + target);
+            if (oldLoader) oldLoader.classList.add('hidden');
+
+            const ans = document.getElementById('ans-' + target);
+            if (ans) ans.textContent = '';
+
+            setBadge('badge-' + target, 'badge-loading', 'COMPUTING...');
+            document.getElementById('panel-' + target).className = 'panel ' + (target === 'ab1' ? 'ab1' : 'ab3') + '-panel';
+            document.getElementById('panel-' + target).classList.remove('state-failed', 'state-healed', 'state-success');
+        }
+
+        function updateRadar(chart, mcri) {
+            if (!mcri) return;
+            chart.data.datasets[0].data = [
+                mcri.syntax_score ?? 0,
+                mcri.logic_score ?? 0,
+                mcri.render_score ?? 0,
+                mcri.stability_score ?? 0
+            ];
+            chart.update();
+        }
+
+        /* ═══════════════════════════════════════════
+           DIAGNOSTIC PANEL HELPERS
+        ═══════════════════════════════════════════ */
+        function createDiagBlock(label, content, customClass = '') {
+            return `<div class="diag-block"><div class="diag-label">${label}</div><div class="${customClass}">${content}</div></div>`;
+        }
+
+        /* ═══════════════════════════════════════════
+           RENDER RESULT
+        ═══════════════════════════════════════════ */
+        function renderResult(target, data) {
+            const isAb1 = target === 'ab1';
+            document.getElementById('loader-' + target).classList.add('hidden');
+            const panel = document.getElementById('panel-' + target);
+
+            // Diagnostic Panel References
+            const diagContent = document.getElementById(`diag-${target}-content`);
+
+            if (!data || data.error) {
+                // FAILED state
+                const errMsg = data?.error || 'Unknown error';
+                document.getElementById('result-' + target).classList.remove('hidden');
+                document.getElementById('math-' + target).innerHTML = '<span style="color:#e74c3c">⚠ ' + errMsg + '</span>';
+                if (document.getElementById('code-' + target)) {
+                    document.getElementById('code-' + target).textContent = errMsg;
+                }
+                setBadge('badge-' + target, 'badge-failed', '⛔ FAILED');
+                panel.classList.add('state-failed');
+
+                document.getElementById('log-' + target).innerHTML =
+                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
+
+                // Diagnostic Error
+                if (diagContent) {
+                    diagContent.innerHTML = createDiagBlock('SYSTEM FATAL ERROR', errMsg, 'diag-highlight');
+                    requestAnimationFrame(() => diagContent.scrollTop = diagContent.scrollHeight);
+                }
+                return;
+            }
+
+            // SUCCESS
+            const res = data;
+            document.getElementById('result-' + target).classList.remove('hidden');
+            document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
+
+            if (isAb1) {
+                document.getElementById('code-ab1').textContent = res.healer_logs?.join('\n') || res.raw_code || '';
+            } else {
+                document.getElementById('code-ab3').textContent = res.healer_logs?.join('\n') || '';
+                if (res.answer !== undefined) {
+                    document.getElementById('ans-ab3').textContent = '答案 = ' + res.answer;
+                }
+            }
+
+            // Diagnostic Panel Population
+            if (diagContent) {
+                let diagHtml = '';
+
+                // Escape HTML tags to render safely in pre blocks
+                const escapeHtml = (unsafe) => {
+                    return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                };
+
+                if (isAb1) {
+                    // Left Panel (Baseline Hub - Ab1)
+
+                    // thought_stream: the AI's <thought> tag content
+                    const rawThinking = res.thinking || '';
+                    const barePrompt = res.bare_prompt || '(Empty)';
+                    const ab1FinalCode = res.raw_code || '';
+
+                    diagHtml += createDiagBlock('BARE_PROMPT', escapeHtml(barePrompt), 'diag-comment');
+                    if (rawThinking) {
+                        diagHtml += createDiagBlock('THOUGHT_STREAM', escapeHtml(rawThinking), 'diag-comment');
+                    }
+                    diagHtml += createDiagBlock('[FINAL_EXECUTABLE_CODE]', escapeHtml(ab1FinalCode), 'diag-code');
+
+                } else {
+                    // Right Panel (Evolution Hub - Ab3)
+                    const scaffoldPrompt = res.scaffold_prompt || '(Empty)';
+                    const rawCode = res.raw_code || '';
+
+                    const fixLogs = res.healer_logs || [];
+                    const fixLogStr = fixLogs.join('\\n');
+
+                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${rawCode}` : rawCode;
+
+                    diagHtml += createDiagBlock('SCAFFOLD_PROMPT', escapeHtml(scaffoldPrompt), 'diag-comment');
+
+                    // raw_code colored gray in CSS (use diag-comment)
+                    diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
+
+                    if (fixLogs.length > 0) {
+                        // healer_fix_logs colored orange in CSS (diag-fix)
+                        diagHtml += createDiagBlock('HEALER_FIX_LOGS', escapeHtml(fixLogStr), 'diag-fix');
+                    }
+
+                    // ab3_final_code with green glowing border (use diag-success css)
+                    diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(finalCode), 'diag-success');
+                }
+
+                diagContent.innerHTML = diagHtml;
+                // Auto-scroll to bottom
+                requestAnimationFrame(() => {
+                    diagContent.style.scrollBehavior = 'smooth';
+                    diagContent.scrollTop = diagContent.scrollHeight;
+                });
+            }
+
+            // Stats
+            const gpuTime = res.ai_inference_time_sec ?? 0;
+            const cpuTime = res.cpu_execution_time_sec ?? 0;
+            const totalFixes = res.fixes ?? 0;
+            const mcriScore = res.mcri?.total_score != null ? res.mcri.total_score.toFixed(1) : '--';
+
+            document.getElementById('time-' + target).textContent = gpuTime.toFixed(2) + 's';
+            document.getElementById('fix-' + target).textContent = totalFixes;
+            document.getElementById('mcri-' + target).textContent = mcriScore !== '--' ? mcriScore + '%' : '--';
+
+            // Progress bars
+            setBar('bar-' + target + '-gpu', 'text-' + target + '-gpu', gpuTime, GPU_MAX);
+            setBar('bar-' + target + '-cpu', 'text-' + target + '-cpu', cpuTime, CPU_MAX);
+
+            // Radar chart
+            if (!isAb1) updateRadar(chartAb3, res.mcri);
+            else updateRadar(chartAb1, res.mcri);
+
+            // Badge + glow state
+            if (!isAb1 && totalFixes > 0) {
+                setBadge('badge-ab3', 'badge-healed', '🛡 HEALED BY ACTIVE HEALER');
+                panel.classList.add('state-healed');
+                document.getElementById('log-ab3').innerHTML =
+                    '<span class="log-badge badge-healer">HEALER</span> <span class="flash-warning">🚨 [SYSTEM ALERT]: 偵測到 LaTeX / 邏輯瑕疵，已自動套用正規修正。(' + totalFixes + ' RULES APPLIED)</span>';
+            } else if (!isAb1) {
+                setBadge('badge-ab3', 'badge-success', '✅ PASS (NO FIXES)');
+                panel.classList.add('state-success');
+                document.getElementById('log-ab3').innerHTML =
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
+            } else {
+                setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
+                panel.classList.add('state-success');
+                document.getElementById('log-ab1').innerHTML =
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
+            }
+
+            // Re-typeset MathJax
+            if (window.MathJax) MathJax.typesetPromise();
+
+            // Ab1: render <think> content from raw_code into thought sandbox
+            if (isAb1) renderThinkContent(res.raw_code || '');
+        }
+
+        /* ═══════════════════════════════════════════
+           TRANSITION DIAGNOSTIC ANIMATION
+           Phase 1: CLOUD PERCEPTION  (Gemini)
+           Phase 2: SCAFFOLD INJECTION (Amber)
+           Phase 3: LOCAL ENGINE       (Qwen)
+           Phase 4: SYSTEM READY
+        ═══════════════════════════════════════════ */
+        async function simulatePipeline() {
+            const overlay = document.getElementById('transition-overlay');
+            const overlayText = document.getElementById('overlay-text');
+            const pipeCloud = document.getElementById('pipe-cloud');
+            const pipeScaffold = document.getElementById('pipe-scaffold');
+            const pipeLocal = document.getElementById('pipe-local');
+            const log1 = document.getElementById('log-ab1');
+            const log3 = document.getElementById('log-ab3');
+
+            log1.innerHTML = 'AWAITING EXECUTION...';
+            log3.innerHTML = 'AWAITING EXECUTION...';
+            document.getElementById('diag-ab1-content').innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
+            document.getElementById('diag-ab3-content').innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
+
+            const activate = (el) => {
+                [pipeCloud, pipeScaffold, pipeLocal].forEach(e => e.classList.remove('active-step'));
+                el.classList.add('active-step');
+            };
+
+            // Phase 1 — Cloud Perception
+            overlay.classList.add('active');
+            document.getElementById('overlay-icon').textContent = '☁️';
+            overlayText.className = 'overlay-color-cloud';
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [CLOUD] Perceiving Mathematics via Gemini Flash...';
+            activate(pipeCloud);
+            await new Promise(r => setTimeout(r, 1100));
+
+            // Phase 2 — Scaffold Injection
+            document.getElementById('overlay-icon').textContent = '📋';
+            overlayText.className = '';
+            overlayText.style.color = '#f59e0b';
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [SCAFFOLD] Injecting @SKILL.md Prompt Architecture...';
+            activate(pipeScaffold);
+            await new Promise(r => setTimeout(r, 1000));
+
+            // Phase 3 — Local Engine
+            document.getElementById('overlay-icon').textContent = '🖥';
+            overlayText.className = 'overlay-color-transfer';
+            overlayText.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> [LOCAL] Dispatching to Qwen-8B Logic Engine...';
+            activate(pipeLocal);
+            await new Promise(r => setTimeout(r, 1000));
+
+            // Dismiss overlay
+            overlay.classList.remove('active');
+            await new Promise(r => setTimeout(r, 350));
+
+            // Phase 4 — Boot logs
+            log1.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#3498db">> [LOCAL] Initializing Qwen-8B (Zero-shot)...</span>';
+            log3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#3498db">> [LOCAL] Initializing Qwen-8B (Active Healer)...</span>';
+            await new Promise(r => setTimeout(r, 500));
+            log3.innerHTML += '<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#8e44ad">> [SCAFFOLD] @SKILL.md System Prompts loaded.</span>';
+            await new Promise(r => setTimeout(r, 400));
+            log1.innerHTML += '<br><span style="color:#27ae60">> [SYSTEM] Ready. Awaiting generation...</span>';
+            log3.innerHTML += '<br><span style="color:#27ae60">> [SYSTEM] Ready. Active Healer armed.</span>';
+            await new Promise(r => setTimeout(r, 300));
+        }
+
+        /* ═══════════════════════════════════════════
+           API FETCH
+        ═══════════════════════════════════════════ */
+        async function fetchParams(text, isAb1, modelId) {
+            try {
+                const res = await fetch('/api/generate_live', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: text, ablation_mode: isAb1, model_id: modelId })
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                return await res.json();
+            } catch (e) {
+                return { error: e.message };
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+           AB1 THOUGHT DISPLAY  (post-hoc from raw_code, no extra Ollama call)
+        ═══════════════════════════════════════════ */
+        function renderThinkContent(rawCode) {
+            const sandboxEl = document.getElementById('thought-sandbox');
+            const thoughtBox = document.getElementById('ab1-thought-stream');
+            if (!sandboxEl || !thoughtBox || !rawCode) return;
+
+            // Extract all <think>...</think> blocks from raw LLM output
+            const pattern = /<think>([\s\S]*?)<\/think>/gi;
+            const matches = [];
+            let m;
+            while ((m = pattern.exec(rawCode)) !== null) {
+                matches.push(m[1].trim());
+            }
+
+            if (matches.length === 0) {
+                // No think tags found – hide sandbox
+                sandboxEl.classList.remove('active');
+                return;
+            }
+
+            thoughtBox.textContent = matches.join('\n\n---\n\n');
+            sandboxEl.classList.add('active', 'done');  // done = ping stops blinking
+            thoughtBox.scrollTop = 0;
+        }
+
+        function resetThoughtSandbox() {
+            const sandboxEl = document.getElementById('thought-sandbox');
+            const thoughtBox = document.getElementById('ab1-thought-stream');
+            if (!sandboxEl || !thoughtBox) return;
+            sandboxEl.classList.remove('active', 'done');
+            thoughtBox.textContent = '';
+        }
+
+        /* ═══════════════════════════════════════════
+           MULTIMODAL WORKSTATION LOGIC
+        ═══════════════════════════════════════════ */
+        const canvas = document.getElementById('inputCanvas');
+        const ctx = canvas.getContext('2d');
+        const container = document.getElementById('canvas-container');
+        let isDrawing = false;
+        let isEraser = false;
+        let hasCanvasContent = false;
+
+        function updateSubmitState() {
+            const input = document.getElementById('promptInput').value.trim();
+            const btn = document.getElementById('submitBtn');
+            if (!input && !hasCanvasContent) {
+                btn.style.background = '#95a5a6';
+                btn.style.cursor = 'not-allowed';
+            } else {
+                btn.style.background = ''; // Use default CSS
+                btn.style.cursor = 'pointer';
+            }
+        }
+
+        document.getElementById('promptInput').addEventListener('input', updateSubmitState);
+
+        // Resize config
+        function resizeCanvas() {
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.lineWidth = isEraser ? 20 : 3;
+            ctx.strokeStyle = isEraser ? '#ffffff' : '#2c3e50';
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Tools
+        const toolPen = document.getElementById('tool-pen');
+        const toolEraser = document.getElementById('tool-eraser');
+
+        function setTool(eraserMode) {
+            isEraser = eraserMode;
+            toolPen.classList.toggle('active', !isEraser);
+            toolEraser.classList.toggle('active', isEraser);
+            ctx.lineWidth = isEraser ? 20 : 3;
+            // Use globalCompositeOperation for real erasing so the grid shows through
+            ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+        }
+        toolPen.addEventListener('click', () => setTool(false));
+        toolEraser.addEventListener('click', () => setTool(true));
+
+        document.getElementById('tool-clear').addEventListener('click', () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasCanvasContent = false;
+            updateSubmitState();
+            document.getElementById('promptInput').value = '';
+            if (typeof resetDiagnostics === 'function') resetDiagnostics();
+        });
+
+        // Drawing events
+        function getPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            if (e.touches && e.touches.length > 0) {
+                return { x: e.touches[0].clientX - rect.left, y: e.touches[0].clientY - rect.top };
+            }
+            return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+
+        function startPosition(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            if (!isEraser) ctx.strokeStyle = '#2c3e50'; // Ensure color is correct when drawing
+            draw(e);
+        }
+
+        function endPosition() {
+            isDrawing = false;
+            ctx.beginPath();
+            if (!isEraser) {
+                hasCanvasContent = true;
+                updateSubmitState();
+            }
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault(); // prevent scrolling on touch
+            const pos = getPos(e);
+            ctx.lineTo(pos.x, pos.y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(pos.x, pos.y);
+            if (!isEraser) {
+                hasCanvasContent = true;
+                updateSubmitState();
+            }
+        }
+
+        canvas.addEventListener('mousedown', startPosition);
+        canvas.addEventListener('mouseup', endPosition);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseout', endPosition);
+
+        canvas.addEventListener('touchstart', startPosition, { passive: false });
+        canvas.addEventListener('touchend', endPosition);
+        canvas.addEventListener('touchmove', draw, { passive: false });
+
+        // Image Handling (Paste/Upload/Drag)
+        function drawImageOnCanvas(img) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Calculate scale to fit within canvas while maintaining aspect ratio
+            const scale = Math.min(canvas.width / img.width, canvas.height / img.height);
+            const w = img.width * scale;
+            const h = img.height * scale;
+            const x = (canvas.width - w) / 2;
+            const y = (canvas.height - h) / 2;
+
+            // Draw image
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.drawImage(img, x, y, w, h);
+
+            // Keep tool state consistent
+            setTool(isEraser);
+            hasCanvasContent = true;
+            updateSubmitState();
+        }
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => drawImageOnCanvas(img);
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Paste event
+        window.addEventListener('paste', (e) => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') === 0) {
+                    const blob = item.getAsFile();
+                    handleFile(blob);
+                }
+            }
+        });
+
+        // File input
+        document.getElementById('image-upload').addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        // Drag and Drop
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            container.classList.add('dragover');
+        });
+        container.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            container.classList.remove('dragover');
+        });
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            container.classList.remove('dragover');
+            if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        /* ═══════════════════════════════════════════
+           SKILL DIAGNOSTICS LOGIC
+        ═══════════════════════════════════════════ */
+        async function typeWriterLog(msg, color = '#2c3e50') {
+            const logBox = document.getElementById('process-log');
+            if (logBox.innerHTML.includes('Awaiting input')) {
+                logBox.innerHTML = '';
+            }
+            const line = document.createElement('div');
+            line.className = 'process-log-line';
+            line.style.color = color;
+            logBox.appendChild(line);
+
+            for (let i = 0; i < msg.length; i++) {
+                line.textContent += msg[i];
+                logBox.scrollTop = logBox.scrollHeight;
+                await new Promise(r => setTimeout(r, 15));
+            }
+        }
+
+        function updateConfidence(pct) {
+            document.getElementById('cm-fill').style.width = pct + '%';
+            document.getElementById('cm-value').textContent = pct + '%';
+        }
+
+        function setSkillBadge(skillName) {
+            const badge = document.getElementById('selected-skill-badge');
+            // If it's a real skill, add the Double Helix icon
+            if (skillName && skillName !== "Unknown") {
+                badge.innerHTML = `🧬 ${skillName}`;
+            } else {
+                badge.textContent = skillName;
+            }
+            badge.style.opacity = '1';
+        }
+
+        function resetDiagnostics() {
+            document.getElementById('process-log').innerHTML = '<div class="process-log-line" style="color:#9ca3af;">Awaiting input...</div>';
+            updateConfidence(0);
+            const badge = document.getElementById('selected-skill-badge');
+            badge.style.opacity = '0';
+            badge.textContent = 'UNKNOWN_SKILL';
+        }
+
+        /* ═══════════════════════════════════════════
+           FORM SUBMIT & OCR INTEGRATION
+        ═══════════════════════════════════════════ */
+        document.getElementById('genForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            let input = document.getElementById('promptInput').value.trim();
+            const btn = document.getElementById('submitBtn');
+
+            if (!input && !hasCanvasContent) {
+                alert('請輸入題目或在畫布上繪製/貼上圖片！');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⚙️ Computing...';
+
+            // Ready engine logs
+            const log1 = document.getElementById('log-ab1');
+            const log3 = document.getElementById('log-ab3');
+            log1.innerHTML = 'AWAITING EXECUTION...';
+            log3.innerHTML = 'AWAITING EXECUTION...';
+
+            resetDiagnostics();
+
+            log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+
+            // Prepare unified payload
+            let payload = {};
+            if (hasCanvasContent) {
+                // Create a temporary canvas to composite a white background
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.fillStyle = '#ffffff';
+                tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tempCtx.drawImage(canvas, 0, 0);
+
+                payload.image_data = tempCanvas.toDataURL('image/png');
+            } else if (input) {
+                payload.text_data = input;
+            }
+
+            try {
+                // Send to unified classification endpoint
+                const res = await fetch('/api/classify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const result = await res.json();
+
+                if (result.success) {
+                    input = result.ocr_text; // use recognized or passed text
+                    document.getElementById('promptInput').value = input; // populate UI
+
+                    // Render process logs from backend with typewriter effect
+                    let currentConfidence = 10;
+                    const logCount = result.process_logs ? result.process_logs.length : 1;
+                    const confidenceStep = Math.floor(90 / logCount);
+
+                    if (result.process_logs) {
+                        for (const msg of result.process_logs) {
+                            const isErr = msg.includes('Failed') || msg.includes('Unknown');
+                            const isSucc = msg.includes('Complete') || msg.includes('Found');
+                            const color = isErr ? '#e74c3c' : (isSucc ? '#27ae60' : '#3498db');
+
+                            await typeWriterLog(msg, color);
+                            currentConfidence += confidenceStep;
+                            updateConfidence(Math.min(currentConfidence, 95));
+                        }
+                    }
+
+                    // Final diagnostic updates
+                    updateConfidence(result.confidence_scores);
+                    setSkillBadge(result.skill_id);
+                    await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
+
+                    log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+
+                    // [NEW] Inject Prompt Previews into Code Blocks
+                    if (result.bare_prompt) {
+                        const codeAb1 = document.getElementById('code-ab1');
+                        codeAb1.textContent = "=== BARE PROMPT PREVIEW ===\\n" + result.bare_prompt;
+                        codeAb1.style.color = "var(--text-muted)";
+                    }
+                    if (result.scaffold_prompt) {
+                        const codeAb3 = document.getElementById('code-ab3');
+                        codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
+                        codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
+                    }
+
+                    // Show result panels early so user can read the prompts
+                    document.getElementById('result-ab1').classList.remove('hidden');
+                    document.getElementById('result-ab3').classList.remove('hidden');
+                    document.getElementById('math-ab1').innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待生成...</span>';
+                    document.getElementById('math-ab3').innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待生成...</span>';
+                } else {
+                    throw new Error(result.error || '不明錯誤');
+                }
+            } catch (e) {
+                alert('辨識失敗: ' + e.message);
+                btn.disabled = false;
+                btn.innerHTML = '⚡ 啟動平行運算';
+                return;
+            }
+
+            // Transition animation
+            await simulatePipeline();
+
+            // Start loading state for both panels
+            startLoading('ab1');
+            startLoading('ab3');
+
+            // Reset thought sandbox before each run
+            resetThoughtSandbox();
+
+            // Sequential JSON generation requests (Ab3 first, then Ab1)
+            try {
+                // 1. Run Ab3 (Healer) first
+                const modelIdAb3 = document.getElementById('model-select-ab3').value;
+                const r2 = await fetchParams(input, false, modelIdAb3);
+                renderResult('ab3', r2);
+            } catch (err) {
+                renderResult('ab3', { error: err.message });
+            }
+
+            try {
+                // 2. Run Ab1 (Native) second
+                const modelIdAb1 = document.getElementById('model-select-ab1').value;
+                const r1 = await fetchParams(input, true, modelIdAb1);
+                renderResult('ab1', r1);
+            } catch (err) {
+                renderResult('ab1', { error: err.message });
+            }
+
+            btn.disabled = false;
+            btn.innerHTML = '⚡ 啟動平行運算';
+            hasCanvasContent = false; // reset flag after submission
+            updateSubmitState();
+        });
+    </script>
+</body>
+
+</html>

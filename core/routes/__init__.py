@@ -12,6 +12,7 @@
 from flask import Blueprint
 core_bp = Blueprint('core', __name__, template_folder='../../templates')
 practice_bp = Blueprint('practice', __name__)
+live_show_bp = Blueprint('live_show', __name__)
 
-# 這一行會去讀取你的 admin.py
-from . import auth, admin, practice, classroom, analysis, exam
+# 這一行會去讀取你的 admin.py 與 live_show.py 等等
+from . import auth, admin, practice, classroom, analysis, exam, live_show
