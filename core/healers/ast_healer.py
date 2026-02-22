@@ -220,6 +220,17 @@ class ASTHealer(ast.NodeTransformer):
                 logger.info(f"🛡️ Shadow Killer: 保留自定義實作 '{node.name}' (非空函數)")
 
 
+        # [NEW] 強制刪除清單 (Forbidden local duplicates)
+        forbidden_helper_funcs = {
+            'format_poly', 'format_polynomial_latex', 'format_term', 'poly_to_latex', 'build_poly', 'build_polynomial', 'format_polynomial'
+        }
+        
+        if node.name in forbidden_helper_funcs:
+            self.fixes += 1
+            self.logs.append(f"AST Healer: Shadow Killer forcefully removed forbidden helper function '{node.name}'")
+            logger.info(f"🔪 Shadow Killer: 強制刪除違規本地函數 '{node.name}' (應使用全域資源)")
+            return None
+
         self.generic_visit(node)
         
         # 1. 移除明顯的虛函數 [V47.13 CONSERVATIVE FIX]
@@ -344,11 +355,6 @@ class ASTHealer(ast.NodeTransformer):
         Returns:
             tuple: (修復後代碼, 修復次數)
         """
-        # 預檢查：如果不包含需要修復的關鍵字，直接跳過
-        keywords_need_ast = ['eval', 'exec', 'while True', '^', 'import ', '    def ']
-        if not any(kw in code_str for kw in keywords_need_ast):
-            return code_str, 0
-        
         # [V51.0] Iterative Syntax Repair (Syntax De-Noising)
         # 嘗試刪除導致語法錯誤的行（如 Thinking Leakage, 亂碼符號）
         for attempt in range(5):
@@ -375,6 +381,37 @@ class ASTHealer(ast.NodeTransformer):
             new_tree = self.visit(tree)
             ast.fix_missing_locations(new_tree)
             
+            # [V52.0 Core Safety Net] 保證 generate() 函數存在
+            # 這是為了防範嚴重的幻覺，導致整個模組缺失進入點 (MCRI 會因 Load Failed 全盤掛掉)
+            has_generate = any(isinstance(node, ast.FunctionDef) and node.name == 'generate' for node in new_tree.body)
+            if not has_generate:
+                self.fixes += 1
+                self.logs.append("AST Healer: Critical Hallucination - Injected missing generate() fallback.")
+                logger.error("🛑 偵測到致命性幻覺：完全缺失 generate() 函式。正在啟動【最後防線】注入備用函式...")
+                
+                # 動態建構 fallback generate()
+                # def generate(): return "Fallback due to hallucination", "\\text{Failed}"
+                fallback_func = ast.FunctionDef(
+                    name='generate',
+                    args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
+                    body=[
+                        ast.Return(
+                            value=ast.Tuple(
+                                elts=[
+                                    ast.Constant(value="Fallback due to severe hallucination"),
+                                    ast.Constant(value="\\text{Failed}")
+                                ],
+                                ctx=ast.Load()
+                            )
+                        )
+                    ],
+                    decorator_list=[],
+                    returns=None,
+                    type_comment=None
+                )
+                new_tree.body.append(fallback_func)
+                ast.fix_missing_locations(new_tree)
+
             new_code = ast.unparse(new_tree)
             
             # 📌 【方案 A】驗證 ast.unparse() 的輸出是否有效

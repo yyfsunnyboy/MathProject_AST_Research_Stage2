@@ -64,6 +64,8 @@
    - 所有負數必須使用 `IntegerOps.fmt_num(n)` 包裹。
    - 題目中的乘號用 `\times`，除號用 `\div`。
 
+=== SKILL_END_PROMPT ===
+
 【強烈建議程式碼結構】
 ```python
 import random

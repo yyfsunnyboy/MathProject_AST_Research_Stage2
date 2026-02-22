@@ -74,6 +74,15 @@ def generate_live():
 
         # ── Map problems[0] fields for the frontend ───────────────────────
         problems = output.get("problems", [])
+        
+        # 確保不論成功與否，前端終端機都能拿到 raw_code 與 final_code 進行診斷
+        output["raw_text"] = dm.get("raw_text", dm.get("raw_code", ""))
+        output["raw_code"] = dm.get("raw_code", "")
+        output["final_code"] = dm.get("final_code", "")
+        output["file_path"] = dm.get("file_path", "")
+        output["bare_prompt"] = dm.get("bare_prompt", "")
+        output["scaffold_prompt"] = dm.get("scaffold_prompt", "")
+
         if problems:
             first = problems[0]
             if "error" in first:
@@ -82,7 +91,6 @@ def generate_live():
                 q_text = first.get("question_text", "")
                 output["problem"] = q_text
                 output["answer"]  = first.get("correct_answer", "")
-                output["raw_code"] = dm.get("raw_code", "")
 
                 # MCRI scoring
                 hygiene = first.get("_mcri_hygiene_score", 0) or 0
@@ -122,12 +130,7 @@ def stream_thought_ab1():
                         content_type='text/event-stream')
 
     # 建構 Ab1 zero-shot prompt（與 scaler.py 保持一致）
-    ab1_prompt = (
-        f"請寫一個名為 `generate(level=1)` 的 Python 函式，回傳包含題目的字典。\n"
-        f"字典格式必須要有 `question_text` 與 `correct_answer`。\n"
-        f"請參考以下例題的風格隨機出題：\n{prompt_text}\n"
-        f"直接印出含 generate(level) 的 Python 程式碼，不需解釋。"
-    )
+    ab1_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{prompt_text}\n直接輸出代碼。"
 
     def generate_sse():
         try:
@@ -236,20 +239,41 @@ def classify_input():
             confidence = 98
             
             # [NEW] Generate Prompt Previews
-            bare_prompt = (
-                f"請寫一個名為 `generate(level=1)` 的 Python 函式，回傳包含題目的字典。\\n"
-                f"字典格式必須要有 `question_text` 與 `correct_answer`。\\n"
-                f"請參考以下例題的風格隨機出題：\\n{ocr_text}\\n"
-                f"直接印出含 generate(level) 的 Python 程式碼，不需解釋。"
-            )
-            
             try:
                 skill_path = engine.scaler._get_skill_path(skill_name)
+                
+                ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md")
+                if os.path.exists(ab1_prompt_path):
+                    with open(ab1_prompt_path, "r", encoding="utf-8") as f:
+                        ab1_template = f.read()
+                    import re
+                    bare_prompt = re.sub(
+                        r"【參考例題】.*?【程式要求】", 
+                        f"【參考例題】\n{ocr_text}\n\n【程式要求】", 
+                        ab1_template, 
+                        flags=re.DOTALL
+                    )
+                else:
+                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{ocr_text}\n直接輸出代碼。"
+
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 if os.path.exists(skill_md_path):
                     with open(skill_md_path, "r", encoding="utf-8") as f:
                         skill_spec = f.read()
-                    scaffold_prompt = f"{skill_spec}\\n\\n[系統會自動在此注入難度動態調整與安全運算防護網指令...]"
+                    # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
+                    skill_spec_distilled = skill_spec.split("=== SKILL_END_PROMPT ===")[0]
+                    scaffold_prompt = f"""{skill_spec_distilled}  # 這是過濾掉範例後的 SKILL.md 精華
+
+[任務] 模仿下列 DNA 結構撰寫 `generate()` 函式。
+[目標例題 DNA]: {ocr_text}
+
+[⚠️ 關鍵指令]
+1. 嚴禁 使用 `if level == ...` 結構。
+2. 函式內 必須 直接實作與例題相同的運算邏輯。
+3. 變數初始化：請在函式第一行先定義 `question_text = ""` 以確保安全。
+4. 題目格式：數學式必須用 `$...$` 包裹 (例如 `question_text = f"計算 $({{a_latex}}) + ({{b_latex}})$。"`)。
+5. 輸出：只需產出 `import random` 開始的代碼。
+"""
                 else:
                     scaffold_prompt = "[SKILL.md 未找到]"
             except Exception as e:
@@ -274,4 +298,66 @@ def classify_input():
             "success": False,
             "error": str(e),
             "traceback": traceback.format_exc()
+        }), 500
+
+@live_show_bp.route('/api/run_generated_code', methods=['POST'])
+def run_generated_code():
+    """
+    API: 接受已生成的 Python 程式碼並執行，用於「下一題」即時功能，避免重新呼叫 LLM
+    """
+    data = request.json
+    if not data:
+        return jsonify({"success": False, "error": "No data provided."}), 400
+        
+    code = data.get("code")
+    file_path = data.get("file_path")
+    
+    if file_path and os.path.exists(file_path):
+        with open(file_path, "r", encoding="utf-8") as f:
+            code = f.read()
+            
+    if not code:
+        return jsonify({"success": False, "error": "No code or valid file_path provided."}), 400
+    level = data.get("level", 1)
+    ablation_mode = data.get("ablation_mode", False)
+    
+    start_time = time.time()
+    try:
+        engine = get_engine()
+        
+        # 執行程式碼
+        res = engine.scaler._execute_code(code, level=level)
+        
+        # MCRI Hygiene Eval
+        hygiene = 0
+        if "question_text" in res:
+            try:
+                from scripts.evaluate_mcri import evaluate_math_hygiene
+                h_score, _ = evaluate_math_hygiene(res["question_text"])
+                hygiene = h_score
+            except:
+                hygiene = 0
+                
+        output = {
+            "success": True,
+            "problem": res.get("question_text", ""),
+            "answer": res.get("correct_answer", ""),
+            "api_time": time.time() - start_time,
+            "mcri": {
+                "syntax_score":    min(100, max(0, hygiene)),
+                "logic_score":     min(100, max(0, hygiene - 5)),
+                "render_score":    min(100, max(0, hygiene + 5)),
+                "stability_score": 100 if not ablation_mode else 40,
+                "total_score":     hygiene
+            }
+        }
+        return jsonify(output)
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False, 
+            "error": str(e),
+            "traceback": traceback.format_exc(),
+            "api_time": time.time() - start_time
         }), 500

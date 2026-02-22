@@ -984,7 +984,9 @@
             border-radius: 8px;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            overflow: auto;
+            resize: horizontal;
+            min-width: 300px;
             height: 600px;
             /* Force uniform height across the 4 blocks */
         }
@@ -1236,7 +1238,7 @@
                         <div class="section-label">Generated Problem</div>
                         <button class="action-btn"
                             style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
-                            onclick="document.getElementById('submitBtn').click();">
+                            onclick="runNextQuestion('ab1');">
                             下一題
                         </button>
                     </div>
@@ -1307,7 +1309,7 @@
                         <div class="section-label">Generated Problem</div>
                         <button class="action-btn"
                             style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
-                            onclick="document.getElementById('submitBtn').click();">
+                            onclick="runNextQuestion('ab3');">
                             下一題
                         </button>
                     </div>
@@ -1480,6 +1482,7 @@
            HELPER UTILITIES
         ═══════════════════════════════════════════ */
         const GPU_MAX = 60, CPU_MAX = 5;
+        let lastFinalFilePath = { ab1: null, ab3: null };
 
         function setBar(barId, textId, val, maxVal) {
             const pct = Math.min((val / maxVal) * 100, 100);
@@ -1546,17 +1549,19 @@
                 document.getElementById('result-' + target).classList.remove('hidden');
                 document.getElementById('math-' + target).innerHTML = '<span style="color:#e74c3c">⚠ ' + errMsg + '</span>';
                 if (document.getElementById('code-' + target)) {
-                    document.getElementById('code-' + target).textContent = errMsg;
+                    document.getElementById('code-' + target).textContent = "⛔ Fatal Error: \n" + errMsg + "\n\n=== RAW AI TEXT (Hallucination) ===\n" + (data.raw_text || data.raw_code || "");
                 }
                 setBadge('badge-' + target, 'badge-failed', '⛔ FAILED');
                 panel.classList.add('state-failed');
 
+                const badgeStr = (target === 'ab1') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
                 document.getElementById('log-' + target).innerHTML =
-                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
+                    badgeStr + ' <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
 
                 // Diagnostic Error
                 if (diagContent) {
-                    diagContent.innerHTML = createDiagBlock('SYSTEM FATAL ERROR', errMsg, 'diag-highlight');
+                    diagContent.innerHTML = createDiagBlock('SYSTEM FATAL ERROR', errMsg, 'diag-highlight') +
+                        createDiagBlock('RAW_TEXT (FAILED TO HEAL)', (data.raw_text || data.raw_code || ""), 'diag-comment');
                     requestAnimationFrame(() => diagContent.scrollTop = diagContent.scrollHeight);
                 }
                 return;
@@ -1568,9 +1573,9 @@
             document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
 
             if (isAb1) {
-                document.getElementById('code-ab1').textContent = res.healer_logs?.join('\n') || res.raw_code || '';
+                document.getElementById('code-ab1').textContent = res.final_code || res.raw_code || '';
             } else {
-                document.getElementById('code-ab3').textContent = res.healer_logs?.join('\n') || '';
+                document.getElementById('code-ab3').textContent = res.final_code || '';
                 if (res.answer !== undefined) {
                     document.getElementById('ans-ab3').textContent = '答案 = ' + res.answer;
                 }
@@ -1590,10 +1595,8 @@
 
                     // thought_stream: the AI's <thought> tag content
                     const rawThinking = res.thinking || '';
-                    const barePrompt = res.bare_prompt || '(Empty)';
                     const ab1FinalCode = res.raw_code || '';
 
-                    diagHtml += createDiagBlock('BARE_PROMPT', escapeHtml(barePrompt), 'diag-comment');
                     if (rawThinking) {
                         diagHtml += createDiagBlock('THOUGHT_STREAM', escapeHtml(rawThinking), 'diag-comment');
                     }
@@ -1601,15 +1604,12 @@
 
                 } else {
                     // Right Panel (Evolution Hub - Ab3)
-                    const scaffoldPrompt = res.scaffold_prompt || '(Empty)';
                     const rawCode = res.raw_code || '';
 
                     const fixLogs = res.healer_logs || [];
                     const fixLogStr = fixLogs.join('\\n');
 
                     const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${rawCode}` : rawCode;
-
-                    diagHtml += createDiagBlock('SCAFFOLD_PROMPT', escapeHtml(scaffoldPrompt), 'diag-comment');
 
                     // raw_code colored gray in CSS (use diag-comment)
                     diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
@@ -1664,7 +1664,17 @@
                 setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
                 panel.classList.add('state-success');
                 document.getElementById('log-ab1').innerHTML =
-                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
+                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
+            }
+
+            // Update last final code for the Next Question button
+            lastFinalFilePath[target] = res.file_path || null;
+
+            // [NEW] Overwrite the diagnostic panel with the actual generated code instead of the prompt
+            if (isAb1 && res.final_code) {
+                document.getElementById('code-ab1').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
+            } else if (!isAb1 && res.final_code) {
+                document.getElementById('code-ab3').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
             }
 
             // Re-typeset MathJax
@@ -1672,6 +1682,61 @@
 
             // Ab1: render <think> content from raw_code into thought sandbox
             if (isAb1) renderThinkContent(res.raw_code || '');
+        }
+
+        async function runNextQuestion(target) {
+            const filePath = lastFinalFilePath[target];
+            if (!filePath) {
+                alert("尚未生成程式碼或沒有可用的程式碼。");
+                return;
+            }
+
+            const btn = document.querySelector(`#result-${target} .action-btn`);
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '生成中...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/run_generated_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        file_path: filePath,
+                        level: 1,
+                        ablation_mode: target === 'ab1'
+                    })
+                });
+
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+
+                if (data.error) throw new Error(data.error);
+
+                document.getElementById('math-' + target).innerHTML = data.problem || '(no problem rendered)';
+                if (target === 'ab3' && data.answer !== undefined) {
+                    document.getElementById('ans-' + target).textContent = '答案 = ' + data.answer;
+                }
+
+                // Update CPU latency
+                const cpuTime = data.api_time ?? 0;
+                setBar('bar-' + target + '-cpu', 'text-' + target + '-cpu', cpuTime, CPU_MAX);
+
+                // Update Radar and MCRI
+                if (data.mcri) {
+                    const chart = target === 'ab1' ? chartAb1 : chartAb3;
+                    updateRadar(chart, data.mcri);
+                    const mcriScore = data.mcri.total_score != null ? data.mcri.total_score.toFixed(1) : '--';
+                    document.getElementById('mcri-' + target).textContent = mcriScore !== '--' ? mcriScore + '%' : '--';
+                }
+
+                if (window.MathJax) MathJax.typesetPromise();
+
+            } catch (err) {
+                alert(`下一題生成失敗: ${err.message}`);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         }
 
         /* ═══════════════════════════════════════════
@@ -1728,8 +1793,15 @@
             await new Promise(r => setTimeout(r, 350));
 
             // Phase 4 — Boot logs
-            log1.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#3498db">> [LOCAL] Initializing Qwen-8B (Zero-shot)...</span>';
-            log3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#3498db">> [LOCAL] Initializing Qwen-8B (Active Healer)...</span>';
+            const m1_val = document.getElementById('model-select-ab1').value;
+            const m3_val = document.getElementById('model-select-ab3').value;
+            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            const name1 = m1_val.includes('gemini') ? 'Gemini-3-Flash' : (m1_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
+            const name3 = m3_val.includes('gemini') ? 'Gemini-3-Flash' : (m3_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
+
+            log1.innerHTML = `${badge1} <span style="color:#3498db">> [NATIVE] Initializing ${name1} (Zero-shot)...</span>`;
+            log3.innerHTML = `${badge3} <span style="color:#3498db">> [LOCAL] Initializing ${name3} (Active Healer)...</span>`;
             await new Promise(r => setTimeout(r, 500));
             log3.innerHTML += '<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#8e44ad">> [SCAFFOLD] @SKILL.md System Prompts loaded.</span>';
             await new Promise(r => setTimeout(r, 400));
@@ -2128,24 +2200,19 @@
             // Reset thought sandbox before each run
             resetThoughtSandbox();
 
-            // Sequential JSON generation requests (Ab3 first, then Ab1)
-            try {
-                // 1. Run Ab3 (Healer) first
-                const modelIdAb3 = document.getElementById('model-select-ab3').value;
-                const r2 = await fetchParams(input, false, modelIdAb3);
-                renderResult('ab3', r2);
-            } catch (err) {
-                renderResult('ab3', { error: err.message });
-            }
+            // Parallel JSON generation requests
+            const modelIdAb3 = document.getElementById('model-select-ab3').value;
+            const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
-            try {
-                // 2. Run Ab1 (Native) second
-                const modelIdAb1 = document.getElementById('model-select-ab1').value;
-                const r1 = await fetchParams(input, true, modelIdAb1);
-                renderResult('ab1', r1);
-            } catch (err) {
-                renderResult('ab1', { error: err.message });
-            }
+            const p3 = fetchParams(input, false, modelIdAb3)
+                .then(r2 => renderResult('ab3', r2))
+                .catch(err => renderResult('ab3', { error: err.message }));
+
+            const p1 = fetchParams(input, true, modelIdAb1)
+                .then(r1 => renderResult('ab1', r1))
+                .catch(err => renderResult('ab1', { error: err.message }));
+
+            await Promise.all([p3, p1]);
 
             btn.disabled = false;
             btn.innerHTML = '⚡ 啟動平行運算';

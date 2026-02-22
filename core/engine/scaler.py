@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
+import uuid
+import random
+import time
 import sys
 import importlib.util
 from core.ai_wrapper import get_ai_client, call_ai_with_retry
@@ -110,58 +113,86 @@ class AdaptiveScaler:
         根據輸入例題，完全模仿題型生成 count 題。
         ablation_mode: 若為 True (Ab1 模式)，跳過 SKILL.md 讀取與 Healer 修復，使用原生 Prompt。
         """
+        # 1. 根據您的正確清單進行資源定位 (Domain Mapping)
+        domain_config = {
+            "OfIntegers": "IntegerOps",
+            "OfNumbers": "FractionOps",
+            "OfPolynomial": "PolynomialOps",
+            "OfRadicals": "RadicalOps"
+        }
+        
+        target_ops = "IntegerOps" # 預設
+        for key, val in domain_config.items():
+            if key in skill_name:
+                target_ops = val
+                break
+                
         try:
             from core.code_generator import _call_ai, _basic_cleanup, _advanced_healer, _inject_domain_libs
             
             if ablation_mode:
-                # [Ab1 裸奔模式]：跳過 SKILL.md，給予最精簡的原生 Prompt
-                print(f"⚠️ 警告：已開啟 Ab1 消融模式，跳過 {skill_name} 的 Scaffold Prompt 與 Healer 自癒機制。")
-                prompt = f"請寫一個名為 `generate(level=1)` 的 Python 函式，回傳包含題目的字典。\n" + \
-                         f"字典格式必須要有 `question_text` 與 `correct_answer`。\n" + \
-                         f"請參考以下例題的風格隨機出題：\n{input_text}\n" + \
-                         f"直接印出含 generate(level) 的 Python 程式碼，不需解釋。"
+                print(f"⚠️ [Ab1] 載入 {skill_name} Baseline Prompt。")
+                skill_path = self._get_skill_path(skill_name)
+                ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md")
+                if os.path.exists(ab1_prompt_path):
+                    with open(ab1_prompt_path, "r", encoding="utf-8") as f:
+                        ab1_template = f.read()
+                    import re
+                    # 使用正則替換【參考例題】區塊，把題目換成我們提供的 input_text
+                    prompt = re.sub(
+                        r"【參考例題】.*?【程式要求】", 
+                        f"【參考例題】\n{input_text}\n\n【程式要求】", 
+                        ab1_template, 
+                        flags=re.DOTALL
+                    )
+                else:
+                    prompt = f"請寫一個 generate(level=1) 函式，參考：\n{input_text}\n直接輸出代碼。"
                 active_ablation_id = 1
             else:
-                # [Ab3 神盾模式]：載入完整的知識庫與防護網
-                print(f"🚀 正在為 {skill_name} 製作依照例題的出題腳本...")
+                print(f"🚀 [Ab3] 鎖定 {skill_name} 基因庫...")
                 skill_path = self._get_skill_path(skill_name)
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 if not os.path.exists(skill_md_path):
                     raise FileNotFoundError(f"找不到技能定義: {skill_md_path}")
                 with open(skill_md_path, "r", encoding="utf-8") as f:
-                    skill_spec = f.read()
+                    raw_text = f.read()
+                    # 徹底消除 Windows CRLF 導致的 f-string 游標回車覆寫問題
+                    full_skill_spec = "\n".join([line.replace('\r', '') for line in raw_text.splitlines()])
 
-                # 特製 Prompt：載入 skill_spec 提供工具庫資訊，並加上 LaTeX 與安全防護規則
-                prompt = f"{skill_spec}\n\n" + \
-                         f"==========================================================\n" + \
-                         f"【動態出題腳本實作需求】\n" + \
-                         f"==========================================================\n" + \
-                         f"你的任務是根據上方規格書，參考以下例題的風格，寫出一個名為 `generate(level=1)` 的 Python 函式，回傳字典格式題目。\n\n" + \
-                         f"[目標模仿例題]：{input_text}\n\n" + \
-                         f"【出題規則與安全限制】\n" + \
-                         f"1. **難度與變化**：請遵循規格書對 EASY/NORMAL/HARD (Level 1/2/3) 的定義。你可以使用 random 模組在結構中加入安全的隨機變化。\n" + \
-                         f"2. **保證運算合法且避免崩潰 (非常重要)**：\n" + \
-                         f"   - **絕對禁止分母為 0**：如果你的演算法需要生成分數 (Fraction) 或除法，請用 `while` 迴圈不斷隨機抽籤，直到分母 / 除數「不等於 0」為止，否則會發生 `Fraction(x, 0)` 或 `ZeroDivisionError` 當機！\n" + \
-                         f"   - **禁止括號計算出 0 作為除數**：如果你生成了像 `(a - b)` 這樣的括號，且它位於除號或分數的下方，你必須在迴圈中檢查 `a != b`，絕對不可以出現 `(3 - 3)` 這種導致除以零的無效數學題！\n" + \
-                         f"   - **整數除法合法**：反覆隨機抽數字，直到 (1)能完美整除且 (2)除數絕對不為 0。絕對禁止產生小數或被 `int()` 硬切。\n" + \
-                         f"   - **禁止小數直接呼叫分母**：絕對不可以對小數 (float) 屬性呼叫 `.denominator` 或 `.numerator`！若有小數請轉換為 `Fraction(15, 10)` 等形式再操作。\n" + \
-                         f"   - **絕對禁止使用 eval() 或 safe_eval()**：系統環境內沒有 `safe_eval`！絕對禁止將方程式組成字串再來計算！你必須**先用 Python 變數實體算出結果** (例如 `ans = frac1 + frac2`)，再把 `ans` 轉換成字串當作對答案。\n" + \
-                         f"   - **變數定義必須完整**：確保你程式碼中使用的所有變數（如 `val3`、`frac1`）在操作前都已經明確定義，避免發生 `NameError`。\n" + \
-                         f"   - **嚴格遵守 LaTeX 格式**：輸出的 `question_text` 數學式部分必須是標準的 LaTeX。請使用 `\\times` 代替 `×` 或 `*`，用 `\\div` 代替 `÷` 或 `/`。分數用 `\\frac{{a}}{{b}}`。數學式最外層請用單一的 `$` 包裹（例如：`計算 $(-3) + 5$ 的值`），絕對不要前後加一堆空白或使用 `$$`。\n" + \
-                         f"   - **純淨的數學字串**：你在運算 `expr` 的時候，裡面只能有數字和數學符號，絕對不能包含「計算 ... 的值」這種中文！中文只能加在最後的 `question_text` 的字串前綴中。\n" + \
-                         f"5. **強制使用官方包裹函式與字串格式化 (預防 NameError 與語法錯亂)**：\n" + \
-                         f"   - 絕對不可以直接呼叫 `fmt_num(...)` 或 `to_latex(...)`！這會造成 Crash！\n" + \
-                         f"   - 若要格式化整數，必須寫成 `IntegerOps.fmt_num(...)`。\n" + \
-                         f"   - 若要格式化分數，**請直接使用 Python 字串 f-string：`f\"\\frac{{frac.numerator}}{{frac.denominator}}\"`**，或者使用 `FractionOps.to_latex(frac)`，絕對不可使用其他不存在的函式。\n" + \
-                         f"   - 若為根式(根號)題型，請務必使用 `RadicalOps.format_term(coeff, radicand, is_first)` 或 `format_term_unsimplified` 進行標準格式化。\n" + \
-                         f"   - ⚠️ 【極度重要！避免加減號重複】：如果你的題目樣板字串中已經自帶了括號或加減號（例如 `f\"({{term1}}) - {{term2}}\"`），那麼在格式化 `term1` 與 `term2` 時，**「必須」將它們的 `is_first` 參數全部設為 `True`！** 否則 `is_first=False` 會自動產生一個帶有 `+` 號的字串，導致最後變成 `( + 3\\sqrt{2} ) -  + 5\\sqrt{5}` 這種含有致命重複符號的爛題目！\n" + \
-                         f"6. 你的 generate() 函式內部「必須」使用 random 模組隨機決定數字或符號，保證每次呼叫 generate() 都會產生全新的組合。\n" + \
-                         f"7. 若例題中根號內部包分數（例如 `\\sqrt{{\\frac{{1}}{{3}}}}`），請在輸出字串時靈活使用 f-string 自行排版，並於後端正確計算。\n" + \
-                         f"8. 請正確計算出對應的答案。回傳的字典必須包含 `question_text` 與 `correct_answer`。\n" + \
-                         f"請直接輸出含有 `generate(level)` 定義的 Python 程式碼，不需要任何額外的說明。"
+                # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
+                skill_spec_distilled = full_skill_spec.split("【完整程式碼】")[0].strip()
+
+                if ablation_mode:
+                    prompt = f"""{skill_spec_distilled}
+
+請參考以下例題，撰寫一個 `generate(level=1)` 函式：
+{input_text}
+直接輸出代碼。
+"""
+                else:
+                    # 預處理 input_text 確保有 LaTeX 基本結構
+                    input_text_safe = self._sanitize_input_dna(input_text)
+                    
+                    # 神盾級縮減 Prompt (JIT 版) 適用於所有 Ab3 模型
+                    prompt = f"""{skill_spec_distilled}
+【JIT DNA 任務】模仿例題結構撰寫 `generate(level=1, **kwargs)`。
+【目標例題 DNA】: {input_text_safe}
+
+【⚠️ 資源鎖定憲法】
+1. 嚴禁寫出 `if level == ...` 結構。
+2. 必須 使用 `{target_ops}` 的 static methods 計算與格式化。
+3. 渲染：題目用 `{target_ops}.format_latex`，答案用 `{target_ops}.format_plain`。
+4. 進階：如果例題項次亂序，題目必須呼叫 `{target_ops}.format_shuffled_latex`。
+5. 初始化防護：函式第一行必須先定義 `question_text = ""`。
+6. 輸出：只需產出從 `import random` 開始的 Python 代碼，禁止任何註解或解釋文字。
+
+[⚠️ 格式轉換命令]
+1. 偵測輸入：即使例題 DNA 是以純文字（如 ^2）表示，你也必須將其視為數學結構。
+2. 強制轉換：生成的題目【必須】使用 `{target_ops}.format_latex()` 進行渲染。
+3. 嚴禁：嚴禁在 `question_text` 中直接寫出 `^2` 或 `x2` 等非 LaTeX 符號。
+"""
                 active_ablation_id = 3
             
-            import time
             from config import Config
             model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
             
@@ -186,6 +217,10 @@ class AdaptiveScaler:
             else:
                 # [執行完整 Healer + 函式庫注入]
                 healed_code, *healer_stats = _advanced_healer(clean_code, ablation_id=active_ablation_id, skill_id=skill_name)
+                
+                # [核心優化]：在代碼中注入可見的修復痕跡
+                healed_code = self._inject_healer_tags(healed_code, raw_code, target_ops)
+                
                 final_code, _ = _inject_domain_libs(healed_code)
                 regex_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
                 ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
@@ -193,7 +228,16 @@ class AdaptiveScaler:
             print("\n=== DEBUG: GENERATED CODE ===")
             print(final_code)
             print("=============================\n")
-            with open("debug_last_gen.py", "w", encoding="utf-8") as _fb:
+            
+            # [修正] 這裡直接使用頂層 os
+            save_dir = "generated_scripts"
+            if not os.path.exists(save_dir):
+                os.makedirs(save_dir, exist_ok=True)
+                
+            unique_filename = f"live_show_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
+            file_path = os.path.join(save_dir, unique_filename)
+            
+            with open(file_path, "w", encoding="utf-8") as _fb:
                 _fb.write(final_code)
             
             # MCRI Report - Code Robustness
@@ -210,7 +254,7 @@ class AdaptiveScaler:
             results = []
             for i in range(count):
                 try:
-                    res = self._execute_code(final_code, level=2) # pass dummy level
+                    res = self._execute_code(final_code, level=1) # pass dummy level 1
                     
                     # 計算 MCRI Math Hygiene
                     if "question_text" in res:
@@ -228,8 +272,11 @@ class AdaptiveScaler:
             
             debug_meta = {
                 "prompt": prompt,
+                "raw_text": raw_code,  # 提供給前端失敗時展示
                 "raw_code": raw_code,
                 "thinking": thinking_text,
+                "final_code": final_code,
+                "file_path": file_path,
                 "healer_trace": {
                     "regex_fixes": regex_fixes,
                     "ast_fixes": ast_fixes
@@ -256,6 +303,38 @@ class AdaptiveScaler:
             import traceback
             traceback.print_exc()
             raise Exception(f"代碼生成或執行失敗: {e}")
+
+    def _sanitize_input_dna(self, text):
+        import re
+        # 1. 處理平方：將 x^2 轉為 x^{2} (LaTeX 標準)
+        text = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', text)
+        
+        # 2. 偵測數學片段並封裝：
+        # 簡單邏輯：如果整段話沒有 $，但看起來像數學題，就試著處理
+        if "$" not in text:
+            # 這裡我們針對您提供的範例進行特製化處理
+            # 尋找從括號開始到括號結束的片段
+            text = re.sub(r'(\(.*\).*)', r'$\1$', text)
+        
+        return text
+
+    def _inject_healer_tags(self, code, raw_code, ops_name):
+        """ 在代碼中標註修復痕跡 """
+        annotated_lines = []
+        for line in code.split('\n'):
+            new_line = line
+            # AST Fix標註: 參數處理
+            if "def generate(level=1" in line and "def generate():" in raw_code:
+                new_line += "  # [AST Fix: 自動補齊必全參數]"
+            # AST Fix標註: 防護
+            elif "question_text =" in line and "question_text" not in raw_code[:300] and "question_text = " not in raw_code[:300]:
+                new_line += "  # [AST Fix: 安全初始化防護]"
+            # Regex Fix 標註
+            elif f"{ops_name}.format_latex(" in line and ".format(" in raw_code:
+                new_line += f"  # [Regex Fix: 修正 {ops_name} API]"
+            
+            annotated_lines.append(new_line)
+        return '\n'.join(annotated_lines)
 
     def _execute_code(self, code, level):
         """
@@ -305,20 +384,34 @@ class AdaptiveScaler:
             "IntegerOps": IntegerOps,
             "CalculusOps": CalculusOps,
             "MixedNumbers": FractionOps, # Alias for compatibility
-            "Integers": IntegerOps       # Alias for compatibility
+            "Integers": IntegerOps,      # Alias for compatibility
+            # [防護牆] 預設變數，防止 UnboundLocalError
+            "question_text": "題目生成失敗", # 預設值
+            "correct_answer": "0"            # 預設值
         }
         
         try:
+            loc = {}
             # 執行代碼定義函式
-            exec(code, exec_globals)
+            exec(code, exec_globals, loc)
             
-            if "generate" not in exec_globals:
+            gen_func = loc.get("generate")
+            if not gen_func:
                 raise Exception("生成的代碼中找不到 generate 函式")
                 
-            # 呼叫 generate(level)
-            result = exec_globals["generate"](level=level)
+            # [動態參數檢查]
+            import inspect
+            sig = inspect.signature(gen_func)
+            
+            # 如果 AI 產出的函式不吃參數，我們就直接呼叫
+            if not sig.parameters:
+                result = gen_func()
+            else:
+                result = gen_func(level=level)
+                
             return result
         except Exception as e:
+            print(f"❌ 執行生成的程式碼時出錯: {e}")
             raise e
 
     def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False):

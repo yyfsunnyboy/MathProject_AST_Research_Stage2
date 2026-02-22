@@ -818,13 +818,15 @@ class PolynomialOps:
         return list(coeffs[i:])
 
     @staticmethod
-    def format_latex(coeffs, var='x'):
-        '''係數列表 (降冪) → LaTeX 字串，例: [3,-2,1] → "3x^{2} - 2x + 1"'''
+    def format_latex(coeffs, var='x', shuffle=False):
+        '''係數列表 (降冪) → LaTeX 字串，支援打亂項次，例: [3,-2,1] → "3x^{2} - 2x + 1" (或亂序)'''
+        import random
         coeffs = PolynomialOps.normalize(coeffs)
         if all(c == 0 for c in coeffs):
             return '0'
         degree = len(coeffs) - 1
-        parts = []
+        
+        terms = []
         for i, c in enumerate(coeffs):
             d = degree - i
             if c == 0:
@@ -837,18 +839,72 @@ class PolynomialOps:
                 var_str = f'{coeff_str}{var}'
             else:
                 var_str = f'{coeff_str}{var}^{{{d}}}'
-            sign_str = ('-' if c < 0 else '') if not parts else (' - ' if c < 0 else ' + ')
+            terms.append((c, var_str))
+            
+        if shuffle:
+            random.shuffle(terms)
+            
+        parts = []
+        for i, (c, var_str) in enumerate(terms):
+            if i == 0:
+                sign_str = '-' if c < 0 else ''
+            else:
+                sign_str = ' - ' if c < 0 else ' + '
             parts.append(f'{sign_str}{var_str}')
+            
         return ''.join(parts) if parts else '0'
 
     @staticmethod
-    def format_plain(coeffs, var='x'):
-        '''係數列表 (降冪) → 純文字字串（用於答案），例: [3,-2,1] → "3x^2-2x+1"'''
+    def format_shuffled_latex(coeffs, var='x'):
+        '''
+        與 format_latex 類似，但會隨機打亂項次順序，增加教學難度。
+        例：[1, 0, -3, 2] -> 可能產出 "-3x + x^{3} + 2"
+        '''
+        coeffs = PolynomialOps.normalize(coeffs)
+        if all(c == 0 for c in coeffs): return '0'
+        
+        degree = len(coeffs) - 1
+        terms_data = []
+        
+        for i, c in enumerate(coeffs):
+            d = degree - i
+            if c == 0: continue
+            
+            abs_c = abs(c)
+            # 處理係數與變數
+            coeff_str = '' if abs_c == 1 and d > 0 else str(abs_c)
+            if d == 0: var_str = str(abs_c)
+            elif d == 1: var_str = f'{coeff_str}{var}'
+            else: var_str = f'{coeff_str}{var}^{{{d}}}'
+            
+            # 儲存單項資料 (不含前導加號)
+            terms_data.append({'val': var_str, 'is_neg': c < 0})
+        
+        # --- 核心：隨機打亂項次 ---
+        import random
+        random.shuffle(terms_data)
+        
+        # 組合字串
+        res_parts = []
+        for i, t in enumerate(terms_data):
+            if i == 0:
+                sign = "-" if t['is_neg'] else ""
+            else:
+                sign = " - " if t['is_neg'] else " + "
+            res_parts.append(f"{sign}{t['val']}")
+            
+        return "".join(res_parts)
+
+    @staticmethod
+    def format_plain(coeffs, var='x', shuffle=False):
+        '''係數列表 (降冪) → 純文字字串（用於答案），支援打亂項次，例: [3,-2,1] → "3x^2-2x+1" (或亂序)'''
+        import random
         coeffs = PolynomialOps.normalize(coeffs)
         if all(c == 0 for c in coeffs):
             return '0'
         degree = len(coeffs) - 1
-        parts = []
+        
+        terms = []
         for i, c in enumerate(coeffs):
             d = degree - i
             if c == 0:
@@ -861,8 +917,19 @@ class PolynomialOps:
                 var_str = f'{coeff_str}{var}'
             else:
                 var_str = f'{coeff_str}{var}^{d}'
-            sign_str = ('-' if c < 0 else '') if not parts else ('-' if c < 0 else '+')
+            terms.append((c, var_str))
+            
+        if shuffle:
+            random.shuffle(terms)
+            
+        parts = []
+        for i, (c, var_str) in enumerate(terms):
+            if i == 0:
+                sign_str = '-' if c < 0 else ''
+            else:
+                sign_str = '-' if c < 0 else '+'
             parts.append(f'{sign_str}{var_str}')
+            
         return ''.join(parts) if parts else '0'
 
     @staticmethod

@@ -805,6 +805,10 @@ def show_interactive_menu(evals_file):
         
     skills = sorted(list(set(e.get("skill_name", "Unknown") for e in evals if e.get("skill_name"))))
     
+    # 暫時隱藏微積分模組 (目前專注重點為國中數學)
+    if "gh_ApplicationsOfDerivatives" in skills:
+        skills.remove("gh_ApplicationsOfDerivatives")
+    
     print("[0] Run All Skills")
     for i, skill in enumerate(skills, 1):
         print(f"[{i}] {skill}")

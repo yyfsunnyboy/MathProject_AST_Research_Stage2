@@ -105,6 +105,8 @@
 11. 只輸出 Python 代碼，無說明、無 Markdown、無額外文字
 12. 程式碼結束後絕對無任何內容
 
+=== SKILL_END_PROMPT ===
+
 【強烈建議結構】（請模仿此邏輯）
 ```python
 import random

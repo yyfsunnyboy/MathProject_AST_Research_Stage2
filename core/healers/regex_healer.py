@@ -427,20 +427,21 @@ class RegexHealer:
         """
         修復常見的幻覺方法呼叫
         例如： PolynomialOps.format() -> PolynomialOps.format_latex()
+        [V2.9.1 FIX] 使用 Regex 以包容函數與括號間可能出現的空白
         """
         fix_count = 0
-        hallucinations = {
-            'PolynomialOps.format(': 'PolynomialOps.format_latex(',
-            'RadicalOps.format(': 'RadicalOps.format_term(',
-            'poly_format(': 'poly_format_latex('
+        hallucinations_regex = {
+            r'PolynomialOps\.format\s*\(': 'PolynomialOps.format_latex(',
+            r'RadicalOps\.format\s*\(': 'RadicalOps.format_term(',
+            r'poly_format\s*\(': 'poly_format_latex('
         }
         
-        for bad_call, good_call in hallucinations.items():
-            if bad_call in code_str:
-                count = code_str.count(bad_call)
-                code_str = code_str.replace(bad_call, good_call)
+        for bad_pattern, good_call in hallucinations_regex.items():
+            if re.search(bad_pattern, code_str):
+                count = len(re.findall(bad_pattern, code_str))
+                code_str = re.sub(bad_pattern, good_call, code_str)
                 fix_count += count
-                print(f"   [RegexHealer V2.9] 修復幻覺方法調用: {bad_call} → {good_call}")
+                print(f"   [RegexHealer] 修復幻覺方法調用: {bad_pattern} → {good_call}")
                 
         return code_str, fix_count
 

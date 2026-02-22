@@ -63,6 +63,8 @@
    - 必須傳入字典 `terms_dict = {radicand: total_coeff}`。
    - 嚴禁傳入列表或字串。
 
+=== SKILL_END_PROMPT ===
+
 【強烈建議程式碼結構】
 ```python
 import random

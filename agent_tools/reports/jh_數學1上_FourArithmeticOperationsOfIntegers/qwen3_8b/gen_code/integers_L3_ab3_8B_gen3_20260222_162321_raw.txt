@@ -1,0 +1,11 @@
+```python
+def check(user_answer, correct_answer):
+    try:
+        if str(user_answer).strip() == str(correct_answer).strip():
+            return {'correct': True, 'result': '正確'}
+        if abs(float(user_answer) - float(correct_answer)) < 1e-6:
+            return {'correct': True, 'result': '正確'}
+    except:
+        pass
+    return {'correct': False, 'result': '錯誤'}
+```

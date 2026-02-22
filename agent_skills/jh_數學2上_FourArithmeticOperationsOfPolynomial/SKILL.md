@@ -45,6 +45,8 @@
 - `PolynomialOps.mul(c1, c2)` → 乘法
 - `PolynomialOps.random_poly(degree, range_val=(-5,5))` → 隨機係數（最高項非零）
 
+=== SKILL_END_PROMPT ===
+
 【課本例題風格】
 **Level 1**（加減法）：
 ```
