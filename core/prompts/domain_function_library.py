@@ -131,9 +131,6 @@ class IntegerOps:
         if not available:
             raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
         return random.choice(available)
-
-    # Alias for random_nonzero
-    rand_nz = random_nonzero
     
     @staticmethod
     def is_divisible(a, b):
@@ -602,9 +599,6 @@ class IntegerOps:
         if not available:
             raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
         return random.choice(available)
-
-    # Alias for random_nonzero
-    rand_nz = random_nonzero
 
     @staticmethod
     def is_divisible(a, b):

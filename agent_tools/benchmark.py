@@ -155,11 +155,11 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     return None
 
 def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False, forced_run_ts=None):
-    print("[Benchmark] Starting Math Problem Generator Benchmark (Deep Analysis)...")
+    print("🚀 Starting Math Problem Generator Benchmark (Deep Analysis)...")
     print(f"Project Root: {PROJECT_ROOT}")
     print(f"Generations per Case: {repeat_count}")
     if override_model:
-        print(f"[Model] Override Model: {override_model}")
+        print(f"🤖 Override Model: {override_model}")
 
     # ==============================================================================
     # 1. Load Evals (Dynamic Aggregation)
@@ -185,13 +185,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                      if evals:
                          skip_scan = True
              except Exception as e:
-                 print(f"[Warning] Failed to load explicit evals file: {e}")
+                 print(f"⚠️ Failed to load explicit evals file: {e}")
 
     agent_skills_dir = os.path.join(PROJECT_ROOT, "agent_skills")
     
     # 優先從各 Skill 目錄載入 (除非已明確指定檔案)
     if not skip_scan and os.path.exists(agent_skills_dir):
-        print(f"[Evals] Scanning skills in: {agent_skills_dir}")
+        print(f"📂 Scanning skills in: {agent_skills_dir}")
         for skill_dir in os.listdir(agent_skills_dir):
             skill_path = os.path.join(agent_skills_dir, skill_dir)
             if not os.path.isdir(skill_path):
@@ -210,11 +210,11 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     e["skill_name"] = skill_dir
                             evals.extend(skill_evals)
                 except Exception as e:
-                    print(f"[Warning] Failed to load {eval_file}: {e}")
+                    print(f"⚠️ Failed to load {eval_file}: {e}")
 
     # Fallback: 如果什麼都沒掃到，才嘗試讀舊的 evals_full.json
     if not evals:
-        print("[Warning] No skill-specific evals found. Trying fallback to evals_full.json...")
+        print("⚠️ No skill-specific evals found. Trying fallback to evals_full.json...")
         if os.path.isabs(evals_file):
             evals_path = evals_file
         else:
@@ -234,7 +234,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     data = json.load(f)
                     evals = data.get("evals", [])
             except Exception as e:
-                print(f"[Error] Failed to load fallback evals.json: {e}")
+                print(f"❌ Failed to load fallback evals.json: {e}")
                 return
 
     # Filter logic
@@ -248,10 +248,10 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             evals = [e for e in evals if e.get("ablation_target") == filter_ablation]
         
     if not evals:
-         print(f"[Warning] No matching test cases found. Exiting.")
+         print(f"⚠️ No matching test cases found. Exiting.")
          return
 
-    print(f"[Cases] Loaded {len(evals)} test cases (Dynamic Aggregation).")
+    print(f"📋 Loaded {len(evals)} test cases (Dynamic Aggregation).")
 
     # 2. Setup AI & Healers
     # [V9.7] Support override_model parameter
@@ -272,7 +272,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             else:
                 client = LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)
         else:
-            print(f"[Warning] Model '{override_model}' not found in CODER_PRESETS, using default")
+            print(f"⚠️ Model '{override_model}' not found in CODER_PRESETS, using default")
             client = get_ai_client()
     else:
         client = get_ai_client()
@@ -287,7 +287,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     _slug = re.sub(r'[^a-zA-Z0-9]+', '_', _slug)  # Replace non-alphanumeric with _
     _slug = re.sub(r'_+', '_', _slug).strip('_')    # Collapse multiple _
     model_slug = _slug
-    print(f"[Evals] Model slug: {model_slug}")
+    print(f"📁 Model slug: {model_slug}")
 
 
     # 3. Setup Storage
@@ -303,7 +303,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         
     db_filename = f"benchmark_{run_ts}.db"
     db_path = os.path.join(instance_dir, db_filename)
-    print(f"[DB]  DB: {db_path}")
+    print(f"🗄️  DB: {db_path}")
     
     if MCRI_AVAILABLE:
         create_database(db_path)

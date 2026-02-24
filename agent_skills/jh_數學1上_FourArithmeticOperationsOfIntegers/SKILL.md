@@ -84,27 +84,34 @@ def generate(level=1, **kwargs):
         r_min, r_max = -100, 100
         div_max = 30
         
+    def rand_nz(a, b):
+        choices = [x for x in range(a, b+1) if x != 0 and x not in [1, -1]]
+        if not choices: return 2
+        return random.choice(choices)
+
+    fmt = IntegerOps.fmt_num
+
     if level == 1:
         # Level 1: A / B or A * B
         op = random.choice(['*', '/'])
         if op == '*':
-            a = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-            b = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            a = rand_nz(-15, 15)
+            b = rand_nz(-10, 10)
             question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"
             ans = a * b
         else:
-            b = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-            ans = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            b = rand_nz(-15, 15)
+            ans = rand_nz(-10, 10)
             a = b * ans
             question_text = f"計算 $${fmt(a)} \\div {fmt(b)}$$ 的值。"
             
     elif level == 2:
         # Level 2: A / B * C (Like user's example: 72 ÷ (-8) × 3)
-        b = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-        temp_ans = random.choice([x for x in range(-15, 16) if abs(x) > 1])
+        b = rand_nz(-15, 15)
+        temp_ans = rand_nz(-15, 15)
         a = b * temp_ans  # Ensuring a / b is an integer
         
-        c = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+        c = rand_nz(-10, 10)
         
         # Decide order: A / B * C  or  A * B / C
         if random.choice([True, False]):
@@ -112,34 +119,34 @@ def generate(level=1, **kwargs):
             ans = (a // b) * c
         else:
             # For A * B / C, ensure (A*B) is divisible by C
-            c2 = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-            ans2 = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            c2 = rand_nz(-15, 15)
+            ans2 = rand_nz(-10, 10)
             prod = c2 * ans2
             # Find factors for prod
-            a2 = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            a2 = rand_nz(-10, 10)
             # Just do something simpler: A * B / C where B is divisible by C
-            q = random.choice([x for x in range(-5, 6) if abs(x) > 1])
+            q = rand_nz(-5, 5)
             b2 = c2 * q
-            a2 = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            a2 = rand_nz(-10, 10)
             question_text = f"計算 $${fmt(a2)} \\times {fmt(b2)} \\div {fmt(c2)}$$ 的值。"
             ans = a2 * (b2 // c2)
 
     else:
         # Level 3: A * B + C / D or A - B / C * D
         if random.choice([True, False]):
-            a = random.choice([x for x in range(-10, 11) if abs(x) > 1])
-            b = random.choice([x for x in range(-10, 11) if abs(x) > 1])
-            d = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-            q = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            a = rand_nz(-10, 10)
+            b = rand_nz(-10, 10)
+            d = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
             c = d * q
             question_text = f"計算 $${fmt(a)} \\times {fmt(b)} + {fmt(c)} \\div {fmt(d)}$$ 的值。"
             ans = a * b + (c // d)
         else:
-            a = random.choice([x for x in range(-20, 21) if abs(x) > 1])
-            c = random.choice([x for x in range(-15, 16) if abs(x) > 1])
-            q = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            a = rand_nz(-20, 20)
+            c = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
             b = c * q
-            d = random.choice([x for x in range(-10, 11) if abs(x) > 1])
+            d = rand_nz(-10, 10)
             question_text = f"計算 $${fmt(a)} - {fmt(b)} \\div {fmt(c)} \\times {fmt(d)}$$ 的值。"
             ans = a - (b // c) * d
 
