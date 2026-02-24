@@ -160,7 +160,8 @@ class AdaptiveScaler:
                     full_skill_spec = "\n".join([line.replace('\r', '') for line in raw_text.splitlines()])
 
                 # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
-                skill_spec_distilled = full_skill_spec.split("【完整程式碼】")[0].strip()
+                import re
+                skill_spec_distilled = re.split(r"=== SKILL_END_PROMPT ===|【強烈建議程式碼結構】|【完整程式碼】", full_skill_spec)[0].strip()
 
                 if ablation_mode:
                     prompt = f"""{skill_spec_distilled}
