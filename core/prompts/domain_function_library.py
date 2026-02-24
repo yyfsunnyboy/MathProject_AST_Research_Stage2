@@ -161,7 +161,7 @@ class IntegerOps:
     @staticmethod
     def format_latex(val):
         """格式化為 LaTeX 輸出，為了與 PolynomialOps/RadicalOps 介面一致"""
-        return str(val)
+        return IntegerOps.fmt_num(val)
         
     @staticmethod
     def format_plain(val):
@@ -586,6 +586,11 @@ class IntegerOps:
         if n < 0:
             return f"({n})"
         return str(n)
+
+    @staticmethod
+    def format_latex(val):
+        '''格式化為 LaTeX 代碼，與 PolynomialOps 和 RadicalOps 介面保持一致 (等同於 fmt_num)'''
+        return IntegerOps.fmt_num(val)
 
     @staticmethod
     def random_nonzero(min_val, max_val):
