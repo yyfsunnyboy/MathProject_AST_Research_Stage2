@@ -2066,11 +2066,10 @@
             line.style.color = color;
             logBox.appendChild(line);
 
-            for (let i = 0; i < msg.length; i++) {
-                line.textContent += msg[i];
-                logBox.scrollTop = logBox.scrollHeight;
-                await new Promise(r => setTimeout(r, 15));
-            }
+            // 超高速渲染，如果字數少直接印出，不要慢慢跑
+            line.textContent = msg;
+            logBox.scrollTop = logBox.scrollHeight;
+            await new Promise(r => setTimeout(r, 2)); // 極短的視覺停頓讓 DOM 更新
         }
 
         function updateConfidence(pct) {
