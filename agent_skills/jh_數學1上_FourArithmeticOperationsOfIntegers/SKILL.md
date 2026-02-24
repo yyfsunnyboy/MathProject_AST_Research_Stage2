@@ -21,7 +21,7 @@
 
 2. **核心邏輯**：
    - 使用標準 Python 運算生成數值。
-   - **絕對禁止** 使用 `eval` 處理未經信任的字串（但可用 `IntegerOps.safe_eval`）。
+   - **絕對禁止** 使用 `eval` 或 `safe_eval` 處理未經信任的字串，請強制使用原本的變數自己算出答案，不要偷懶把 `question_text` 丟進任何 `eval`。
    - 確保除法整除：先生成 `divisor` 和 `quotient`，再反推 `dividend`。
 
 3. **函數介面**：
@@ -49,7 +49,6 @@
 
 【系統已注入的輔助函式（API）】（直接調用 `IntegerOps.xxx`）
 - `IntegerOps.fmt_num(n)` → 格式化數字（負數自動加括號，如 `(-5)`）
-- `IntegerOps.safe_eval(expr)` → 安全計算表達式
 - `IntegerOps.rand_nz(a, b)` → 隨機生成 a 到 b 之間的非零、非 ±1 整數
 
 【核心規則】
