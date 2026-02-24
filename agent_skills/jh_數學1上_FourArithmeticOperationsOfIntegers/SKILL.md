@@ -16,8 +16,8 @@
 1. **Import 規範**：
    - ✅ **必須** `import random`
    - ✅ **必須** `import math`
-   - ✅ **必須** `from fractions import Fraction` (若需要)
    - ❌ **嚴禁** `import IntegerOps` (系統已自動注入，直接使用 `IntegerOps.xxx`)
+   - ❌ **嚴禁** 引入 `fractions.Fraction` 或產生分數（本單元為整數四則運算）。
 
 2. **核心邏輯**：
    - 使用標準 Python 運算生成數值。
