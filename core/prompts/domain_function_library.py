@@ -150,6 +150,9 @@ class IntegerOps:
             'min': min,
         }
         expr = expr.replace('[', '(').replace(']', ')')
+        expr = expr.replace('\\times', '*').replace('\\div', '/')
+        expr = expr.replace('{', '').replace('}', '')
+        expr = expr.replace(' ', '')
         try:
             return eval(expr, safe_dict)
         except Exception as e:
