@@ -1,0 +1,2 @@
+﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
+3ccf14e0-36f5-4cb2-93b4-9ddc94deb984,jh_數學1上_FourArithmeticOperationsOfIntegers,1,gemini-3-flash,3,6,48.41,41.92,-55.73,152.55,6.67,3.33,25.0,23.41,6.33,1.41,,-
