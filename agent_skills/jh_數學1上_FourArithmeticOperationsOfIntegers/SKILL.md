@@ -85,62 +85,74 @@ def generate(level=1, **kwargs):
         div_max = 30
         
     def rand_nz(a, b):
-        choices = [x for x in range(a, b+1) if x != 0]
-        if not choices: return 1
+        choices = [x for x in range(a, b+1) if x != 0 and x not in [1, -1]]
+        if not choices: return 2
         return random.choice(choices)
 
-    # Part 1: Complex Division [(a*m + b) / divisor]
-    divisor = rand_nz(2, div_max)
-    quotient = rand_nz(-15, 15)
-    dividend = divisor * quotient
-    
-    m = rand_nz(2, 5)
-    a_approx = dividend // m
-    if a_approx == 0: a_approx = 5
-    a = rand_nz(a_approx - 5, a_approx + 5)
-    b = dividend - (a * m)
-    
-    # 格式化 Part 1
     fmt = IntegerOps.fmt_num
-    part1_str = f"[({fmt(a)} \\times {fmt(m)}) + {fmt(b)}] \\div {fmt(divisor)}"
-    part1_val = quotient
-    
-    # Part 2: Absolute Value |d*e - f + g|
-    d = rand_nz(-10, 15)
-    e = rand_nz(-10, 10)
-    f = rand_nz(1, 20)
-    g = rand_nz(-10, 10)
-    
-    if level == 1:
-        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)}|"
-        part2_val = abs(d * e - f)
-    else:
-        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)} + {fmt(g)}|"
-        part2_val = abs(d * e - f + g)
 
-    # Part 3: Extra Term (h*i - j)
-    h = rand_nz(-10, 10)
-    i = rand_nz(2, 5)
-    j = rand_nz(1, 10)
-    part3_str = f"({fmt(h)} \\times {fmt(i)} - {fmt(j)})"
-    part3_val = h * i - j
-        
-    # Final Assembly
-    k = rand_nz(-50, 50)
-    
     if level == 1:
-        question_text = f"計算 $${part1_str} + {part2_str}$$ 的值。"
-        ans = part1_val + part2_val
+        # Level 1: A / B or A * B
+        op = random.choice(['*', '/'])
+        if op == '*':
+            a = rand_nz(-15, 15)
+            b = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"
+            ans = a * b
+        else:
+            b = rand_nz(-15, 15)
+            ans = rand_nz(-10, 10)
+            a = b * ans
+            question_text = f"計算 $${fmt(a)} \\div {fmt(b)}$$ 的值。"
+            
     elif level == 2:
-        question_text = f"計算 $${part1_str} - {part2_str} + {part3_str}$$ 的值。"
-        ans = part1_val - part2_val + part3_val
-    else:
-        question_text = f"計算 $$- {part1_str} + {part2_str} - {part3_str} + {fmt(k)}$$ 的值。"
-        ans = -part1_val + part2_val - part3_val + k
+        # Level 2: A / B * C (Like user's example: 72 ÷ (-8) × 3)
+        b = rand_nz(-15, 15)
+        temp_ans = rand_nz(-15, 15)
+        a = b * temp_ans  # Ensuring a / b is an integer
         
+        c = rand_nz(-10, 10)
+        
+        # Decide order: A / B * C  or  A * B / C
+        if random.choice([True, False]):
+            question_text = f"計算 $${fmt(a)} \\div {fmt(b)} \\times {fmt(c)}$$ 的值。"
+            ans = (a // b) * c
+        else:
+            # For A * B / C, ensure (A*B) is divisible by C
+            c2 = rand_nz(-15, 15)
+            ans2 = rand_nz(-10, 10)
+            prod = c2 * ans2
+            # Find factors for prod
+            a2 = rand_nz(-10, 10)
+            # Just do something simpler: A * B / C where B is divisible by C
+            q = rand_nz(-5, 5)
+            b2 = c2 * q
+            a2 = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a2)} \\times {fmt(b2)} \\div {fmt(c2)}$$ 的值。"
+            ans = a2 * (b2 // c2)
+
+    else:
+        # Level 3: A * B + C / D or A - B / C * D
+        if random.choice([True, False]):
+            a = rand_nz(-10, 10)
+            b = rand_nz(-10, 10)
+            d = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
+            c = d * q
+            question_text = f"計算 $${fmt(a)} \\times {fmt(b)} + {fmt(c)} \\div {fmt(d)}$$ 的值。"
+            ans = a * b + (c // d)
+        else:
+            a = rand_nz(-20, 20)
+            c = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
+            b = c * q
+            d = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a)} - {fmt(b)} \\div {fmt(c)} \\times {fmt(d)}$$ 的值。"
+            ans = a - (b // c) * d
+
     return {
         'question_text': question_text,
-        'answer': '',       # 必須為空字串
+        'answer': '',
         'correct_answer': str(int(ans)),
         'mode': 1
     }
