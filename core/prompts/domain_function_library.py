@@ -120,8 +120,12 @@ class IntegerOps:
     @staticmethod
     def fmt_num(n):
         """格式化數字，為負數自動加括號"""
-        if n < 0:
-            return f"({n})"
+        try:
+            if float(n) < 0:
+                return f"({n})"
+        except (ValueError, TypeError):
+            if str(n).strip().startswith("-"):
+                return f"({n})"
         return str(n)
     
     @staticmethod
@@ -583,8 +587,12 @@ class IntegerOps:
             IntegerOps.fmt_num(-5)  → "(-5)"
             IntegerOps.fmt_num(0)   → "0"
         '''
-        if n < 0:
-            return f"({n})"
+        try:
+            if float(n) < 0:
+                return f"({n})"
+        except (ValueError, TypeError):
+            if str(n).strip().startswith("-"):
+                return f"({n})"
         return str(n)
 
     @staticmethod
