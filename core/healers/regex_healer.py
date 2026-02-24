@@ -38,6 +38,7 @@
 
 import re
 import logging
+from typing import Tuple, Dict
 
 logger = logging.getLogger(__name__)
 
@@ -822,6 +823,107 @@ class RegexHealer:
             cleaned_lines.append(line)
         return '\n'.join(cleaned_lines)
 
+    def fix_fstring_latex_braces(self, code: str) -> str:
+        """
+        [V2.9.5 NEW] 修復 f-string 中 LaTeX 花括號未轉義的問題
+        
+        問題：Qwen3 生成 f"...\\sqrt{{n}..." 而沒有正確轉義 `}` → `}}`
+              導致 SyntaxError: f-string: single '}' is not allowed
+        
+        策略：
+        1. 先嘗試 compile()，沒有 f-string 錯誤就直接退出（不影響正常代碼）
+        2. 若有 f-string 錯誤，利用 SyntaxError 的 lineno 定位問題行
+        3. 對問題行中所有 f-string，掃描未匹配的 `}` 並替換為 `}}`
+        """
+        if 'f"' not in code and "f'" not in code:
+            return code
+        
+        try:
+            compile(code, '<string>', 'exec')
+            return code  # No error, nothing to fix
+        except SyntaxError as e:
+            err_msg = str(e)
+            if 'f-string' not in err_msg and "'}'" not in err_msg and '"{" was never closed' not in err_msg:
+                return code  # Not an f-string brace error
+            lineno = e.lineno
+            if lineno is None:
+                return code
+
+        # We have an f-string error at lineno. Fix it.
+        lines = code.split('\n')
+        # SyntaxError lineno is 1-indexed
+        problem_line_idx = lineno - 1
+        if problem_line_idx < 0 or problem_line_idx >= len(lines):
+            return code
+        
+        # Strategy: on the problem line, find each f-string and fix unmatched }
+        original_line = lines[problem_line_idx]
+        
+        def fix_fstring_braces(fstr_content: str) -> str:
+            """Escape lone } inside an f-string by replacing them with }}"""
+            result = []
+            i = 0
+            depth = 0  # expression nesting depth
+            while i < len(fstr_content):
+                c = fstr_content[i]
+                if c == '{':
+                    if i + 1 < len(fstr_content) and fstr_content[i+1] == '{':
+                        # Escaped {{ - emit as-is
+                        result.append('{{')
+                        i += 2
+                        continue
+                    else:
+                        depth += 1
+                        result.append(c)
+                        i += 1
+                        continue
+                elif c == '}':
+                    if i + 1 < len(fstr_content) and fstr_content[i+1] == '}':
+                        # Escaped }} - emit as-is
+                        result.append('}}')
+                        i += 2
+                        continue
+                    elif depth > 0:
+                        # Closing an expression
+                        depth -= 1
+                        result.append(c)
+                        i += 1
+                        continue
+                    else:
+                        # Lone } that isn't closing any expression → escape it
+                        result.append('}}')
+                        i += 1
+                        continue
+                else:
+                    result.append(c)
+                    i += 1
+            return ''.join(result)
+        
+        # Parse the line and fix any f-strings we find
+        # Simple approach: find f"..." or f'...' substrings and apply fixer
+        import re
+        def fix_line_fstrings(line):
+            # Match f"..." and f'...' (non-greedy, handle escaped quotes)
+            def replacer(m):
+                quote = m.group(1)  # " or '
+                content = m.group(2)
+                fixed = fix_fstring_braces(content)
+                return f'f{quote}{fixed}{quote}'
+            
+            line = re.sub(r'f"((?:[^"\\]|\\.)*)"', lambda m: f'f"{fix_fstring_braces(m.group(1))}"', line)
+            line = re.sub(r"f'((?:[^'\\]|\\.)*)'", lambda m: f"f'{fix_fstring_braces(m.group(1))}'", line)
+            return line
+        
+        fixed_line = fix_line_fstrings(original_line)
+        if fixed_line != original_line:
+            lines[problem_line_idx] = fixed_line
+            code = '\n'.join(lines)
+            print(f"🔧 [RegexHealer V2.9.5] 修復 f-string 花括號 (line {lineno})")
+            logger.info(f"[RegexHealer V2.9.5] Fixed f-string brace escaping at line {lineno}")
+        
+        return code
+
+
     def heal_minimal(self, code: str) -> Tuple[str, Dict[str, int]]:
         """
         僅進行最小幅度的修復，用於 Ab2 (Regex Only)
@@ -864,10 +966,14 @@ class RegexHealer:
         code, hallu_fixes = self.fix_hallucinated_methods(code)
         fixes['regex_fix_count'] += hallu_fixes
 
+        # Step 2.0: f-string 花括號修復 (V2.9.5 NEW)
+        code = self.fix_fstring_latex_braces(code)
+
         fixes['markdown_removed'] = False
         fixes['syntax_fixed'] = False
 
         return code, fixes
+
 
 
 # ==============================================================================

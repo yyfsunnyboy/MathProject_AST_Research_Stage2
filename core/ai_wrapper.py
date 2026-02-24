@@ -88,6 +88,7 @@ class LocalAIClient:
             "model": self.model,
             "prompt": prompt,
             "stream": False,
+            "think": False,  # [V5.0 Qwen3 Fix] Disable deep thinking mode to prevent timeout
             "options": options
         }
         if images:
@@ -119,9 +120,10 @@ class LocalAIClient:
             
             # [Fallback] 如果 response 為空，保留空字串，不要將 thinking 倒進來
             # 因為現在我們已經獨立將 thinking 透過 .thinking 屬性向外傳遞了
-            if not generated_text and result.get("thinking"):
-                print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
             thinking_text = result.get("thinking", "")
+            if not generated_text and thinking_text:
+                print("[WARN] Response empty, but 'thinking' content exists. Emitting thinking as code fallback.")
+                generated_text = thinking_text
             prompt_tokens = result.get("prompt_eval_count", 0)
             completion_tokens = result.get("eval_count", 0)
             

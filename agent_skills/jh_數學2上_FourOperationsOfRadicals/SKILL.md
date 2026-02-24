@@ -63,6 +63,17 @@
    - 必須傳入字典 `terms_dict = {radicand: total_coeff}`。
    - 嚴禁傳入列表或字串。
 
+4. **⚠️ F-string LaTeX 安全規則（違反者 0 分）**：
+   - 在 Python f-string 內，`{` 和 `}` 都是特殊字元，必須寫成 `{{` 和 `}}`。
+   - **嚴禁**直接在 f-string 裡寫複雜的 `\\frac{分子}{分母}` 結構，因為括號層數極易出錯。
+   - ✅ **正確做法**：先定義 `numer` 和 `denom` 字串，再組合：
+     ```python
+     numer = f"{a}\\sqrt{{{b}}} + {c}\\sqrt{{{d}}}"
+     denom = f"\\sqrt{{{b}}} + \\sqrt{{{d}}}"
+     part2_latex = f"\\frac{{{numer}}}{{{denom}}}"
+     ```
+   - ❌ **禁止做法**：`f"\\frac{{{a}\\sqrt{{{b}}}...}{{\\sqrt...}}"` （超過 2 層巢狀必分拆）
+
 === SKILL_END_PROMPT ===
 
 【強烈建議程式碼結構】

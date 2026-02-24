@@ -92,7 +92,7 @@ class Config:
         'qwen3-14b': {
             'provider': 'local',
             'model': 'qwen3-14b-nothink:latest', # [Updated] User specific custom model
-            'temperature': 0.1,                  # [Note] Keep slight creativity to avoid logic loops
+            'temperature': 0.7,                  # [Note] Keep slight creativity to avoid logic loops
             'max_tokens': 2048,                  # User requested 2048 to prevent truncation
             'extra_body': {
                 'num_ctx': 32768,
@@ -111,7 +111,7 @@ class Config:
         'qwen2.5-coder-14b': {
             'provider': 'local',
             'model': 'qwen2.5-coder:14b', 
-            'temperature': 0.1,
+            'temperature': 0.7,
             'max_tokens': 2048,
             'extra_body': {
                 'num_ctx': 16384,
@@ -131,8 +131,8 @@ class Config:
         'qwen3-8b': {
             'provider': 'local',
             'model': 'qwen3:8b',          # User's Qwen 3 8B model
-            'temperature': 0.1,           # Low temp for stability
-            'max_tokens': 2048,           # User requested 2048 to prevent truncation
+            'temperature': 0.7,           # Low temp for stability
+            'max_tokens': 8192,           # Increased to 8192 because Qwen3 uses extensive <think> blocks that easily hit 2048 and truncate.
             'extra_body': {
                 'num_ctx': 32768,
                 'num_gpu': -1,

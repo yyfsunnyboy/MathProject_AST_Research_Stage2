@@ -352,6 +352,10 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 
                 # B. Heal & Extract Code
                 # [Robust Extraction] Search for code blocks anywhere in the text
+                
+                # [V50.1] 完全剔除 <think> 區塊，防止 Qwen3-8B 的中文思考過程干擾代碼提取
+                raw_code = re.sub(r'<think>.*?</think>', '', raw_code, flags=re.DOTALL)
+                
                 cleaned_code = raw_code.strip()
                 
                 # [V9.8 Robust Extraction]
@@ -373,6 +377,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     if start_index > 0:
                         # Keep only from the first code token onwards
                          cleaned_code = cleaned_code[start_index:]
+                elif "```" not in cleaned_code:
+                    # If absolutely no code block fences and no python keywords, perhaps it's pure logic or didn't generate code.
+                    pass
                 
                 # 3. Cleanup Fences (Double Safety)
                 cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)
