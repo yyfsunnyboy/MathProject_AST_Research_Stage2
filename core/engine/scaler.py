@@ -387,6 +387,7 @@ class AdaptiveScaler:
             "Integers": IntegerOps,      # Alias for compatibility
             "format_latex": IntegerOps.fmt_num if IntegerOps else str,  # [Polyfill 植入]
             "fmt_num": IntegerOps.fmt_num if IntegerOps else str,       # [Polyfill 植入]
+            "rand_nz": IntegerOps.rand_nz if IntegerOps else None,      # [Polyfill 植入]
             # [防護牆] 預設變數，防止 UnboundLocalError
             "question_text": "題目生成失敗", # 預設值
             "correct_answer": "0"            # 預設值
