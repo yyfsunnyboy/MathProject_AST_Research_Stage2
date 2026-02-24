@@ -537,10 +537,9 @@
             font-weight: 600;
         }
 
-        /* ── Main dual panel grid ── */
+        /* ── Main dual panel flex layout (changed from grid to support horizontal resizing) ── */
         main {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            display: flex;
             gap: 1.5rem;
             padding: 1.5rem 2rem;
             flex: 1;
@@ -561,6 +560,10 @@
             position: relative;
             overflow: hidden;
             transition: box-shadow 0.3s ease;
+            flex: 1;
+            /* allow flex items to grow by default */
+            min-width: 300px;
+            /* Important for resizing to not squish completely */
         }
 
         .ab-panel {
@@ -574,8 +577,9 @@
             border: 1px solid var(--border-subtle);
             transition: all 0.3s ease;
             max-height: 480px;
-            /* Reduced to ~2/3 of previous 800px depending on content, was unspecified max but taking up entire view */
-            overflow-y: auto;
+            overflow: auto;
+            resize: horizontal;
+            /* Added to support horizontal resizing like diag-panels */
         }
 
         .panel::before {
@@ -923,15 +927,14 @@
             background: #f8f9fa;
             padding: 1.25rem;
             border-radius: 6px;
-            overflow-x: auto;
+            overflow: auto;
+            resize: vertical;
             border: 1px solid #e9ecef;
             font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.85rem;
             color: #2c3e50;
             line-height: 1.5;
             margin: 0;
-            max-height: 15rem;
-            /* Reduced height to ~2/3 of previous */
             min-height: 6rem;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -1573,9 +1576,9 @@
             document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
 
             if (isAb1) {
-                document.getElementById('code-ab1').textContent = res.final_code || res.raw_code || '';
+                document.getElementById('code-ab1').textContent = res.bare_prompt || res.raw_code || '';
             } else {
-                document.getElementById('code-ab3').textContent = res.final_code || '';
+                document.getElementById('code-ab3').textContent = res.scaffold_prompt || res.raw_code || '';
                 if (res.answer !== undefined) {
                     document.getElementById('ans-ab3').textContent = '答案 = ' + res.answer;
                 }
@@ -1672,9 +1675,25 @@
 
             // [NEW] Overwrite the diagnostic panel with the actual generated code instead of the prompt
             if (isAb1 && res.final_code) {
-                document.getElementById('code-ab1').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
+                // Remove the line that overwrote the main panel 'code-ab1'
+                // document.getElementById('code-ab1').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
+
+                // Add the generated code directly to the diagHtml
+                diagHtml += createDiagBlock('[FINAL_EXECUTABLE_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
             } else if (!isAb1 && res.final_code) {
-                document.getElementById('code-ab3').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
+                // Remove the line that overwrote the main panel 'code-ab3'
+                // document.getElementById('code-ab3').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
+
+                // Add the generated code directly to the diagHtml
+                diagHtml += createDiagBlock('[PRODUCTION_READY_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
+            }
+
+            // Re-apply diagHtml to the content panel so our new blocks are appended
+            if (diagContent) {
+                diagContent.innerHTML = diagHtml;
+                requestAnimationFrame(() => {
+                    diagContent.scrollTop = diagContent.scrollHeight;
+                });
             }
 
             // Re-typeset MathJax
