@@ -61,9 +61,12 @@
    - Level 1: -20 ~ 20
    - Level 2: -50 ~ 50
    - Level 3: -100 ~ 100
-3. **格式化要求**：
+3. **格式化與 LaTeX 渲染要求**：
    - 所有負數必須使用 `IntegerOps.fmt_num(n)` 包裹。
    - 題目中的乘號用 `\times`，除號用 `\div`。
+   - ⚠️ **極度重要**：最後的算式字串【必須】用雙錢號 `$$` 包起來，否則前端無法渲染！
+     ✅ 正確範例：`question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"`
+     ❌ 錯誤範例：`question_text = f"計算 {fmt(a)} \\times {fmt(b)} 的值。"`
 
 === SKILL_END_PROMPT ===
 
