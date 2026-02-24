@@ -50,6 +50,7 @@
 【系統已注入的輔助函式（API）】（直接調用 `IntegerOps.xxx`）
 - `IntegerOps.fmt_num(n)` → 格式化數字（負數自動加括號，如 `(-5)`）
 - `IntegerOps.safe_eval(expr)` → 安全計算表達式
+- `IntegerOps.rand_nz(a, b)` → 隨機生成 a 到 b 之間的非零、非 ±1 整數
 
 【核心規則】
 1. **題目結構**：

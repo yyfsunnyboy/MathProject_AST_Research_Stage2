@@ -125,12 +125,12 @@ class IntegerOps:
         return str(n)
     
     @staticmethod
-    def random_nonzero(min_val, max_val):
-        """生成非零隨機整數"""
-        available = [x for x in range(min_val, max_val + 1) if x != 0]
-        if not available:
-            raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
-        return random.choice(available)
+    def rand_nz(a, b):
+        """生成非零、非 ±1 的隨機整數"""
+        choices = [x for x in range(a, b + 1) if x != 0 and x not in [1, -1]]
+        if not choices:
+            return 2
+        return random.choice(choices)
     
     @staticmethod
     def is_divisible(a, b):
@@ -599,6 +599,14 @@ class IntegerOps:
         if not available:
             raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
         return random.choice(available)
+
+    @staticmethod
+    def rand_nz(a, b):
+        '''生成非零、非 ±1 的隨機整數'''
+        choices = [x for x in range(a, b + 1) if x != 0 and x not in [1, -1]]
+        if not choices:
+            return 2
+        return random.choice(choices)
 
     @staticmethod
     def is_divisible(a, b):

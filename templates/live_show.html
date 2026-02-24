@@ -1750,7 +1750,9 @@
                 if (window.MathJax) MathJax.typesetPromise();
 
             } catch (err) {
-                alert(`下一題生成失敗: ${err.message}`);
+                // Show the error cleanly inside the problem box instead of an ugly alert
+                document.getElementById('math-' + target).innerHTML = `<span style="color: #e74c3c;">⚠️ 生成失敗: ${err.message}</span>`;
+                document.getElementById('ans-' + target).textContent = '答案 = (N/A)';
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;

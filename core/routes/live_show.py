@@ -360,4 +360,4 @@ def run_generated_code():
             "error": str(e),
             "traceback": traceback.format_exc(),
             "api_time": time.time() - start_time
-        }), 500
+        }), 200
