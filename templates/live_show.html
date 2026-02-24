@@ -1535,6 +1535,11 @@
             return `<div class="diag-block"><div class="diag-label">${label}</div><div class="${customClass}">${content}</div></div>`;
         }
 
+        // Escape HTML tags to render safely in pre blocks
+        function escapeHtml(unsafe) {
+            return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
         /* ═══════════════════════════════════════════
            RENDER RESULT
         ═══════════════════════════════════════════ */
@@ -1587,11 +1592,6 @@
             // Diagnostic Panel Population
             if (diagContent) {
                 let diagHtml = '';
-
-                // Escape HTML tags to render safely in pre blocks
-                const escapeHtml = (unsafe) => {
-                    return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-                };
 
                 if (isAb1) {
                     // Left Panel (Baseline Hub - Ab1)
