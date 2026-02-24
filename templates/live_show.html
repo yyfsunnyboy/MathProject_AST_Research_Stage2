@@ -1673,27 +1673,26 @@
             // Update last final code for the Next Question button
             lastFinalFilePath[target] = res.file_path || null;
 
-            // [NEW] Overwrite the diagnostic panel with the actual generated code instead of the prompt
-            if (isAb1 && res.final_code) {
-                // Remove the line that overwrote the main panel 'code-ab1'
-                // document.getElementById('code-ab1').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
-
-                // Add the generated code directly to the diagHtml
-                diagHtml += createDiagBlock('[FINAL_EXECUTABLE_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
-            } else if (!isAb1 && res.final_code) {
-                // Remove the line that overwrote the main panel 'code-ab3'
-                // document.getElementById('code-ab3').textContent = "=== GENERATED FINAL CODE (ACTUAL) ===\n\n" + res.final_code;
-
-                // Add the generated code directly to the diagHtml
-                diagHtml += createDiagBlock('[PRODUCTION_READY_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
-            }
-
-            // Re-apply diagHtml to the content panel so our new blocks are appended
+            // [NEW] Append the actual generated code to the bottom diagnostic panel instead of overwriting the prompt
             if (diagContent) {
-                diagContent.innerHTML = diagHtml;
-                requestAnimationFrame(() => {
-                    diagContent.scrollTop = diagContent.scrollHeight;
-                });
+                let codeBlockSuffixHtml = '';
+                if (isAb1 && res.final_code) {
+                    codeBlockSuffixHtml = createDiagBlock('[FINAL_EXECUTABLE_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
+                } else if (!isAb1 && res.final_code) {
+                    codeBlockSuffixHtml = createDiagBlock('[PRODUCTION_READY_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
+                }
+
+                if (codeBlockSuffixHtml) {
+                    // Create a temporary container to append the HTML safely without overwriting previous HTML
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = codeBlockSuffixHtml;
+                    while (tempDiv.firstChild) {
+                        diagContent.appendChild(tempDiv.firstChild);
+                    }
+                    requestAnimationFrame(() => {
+                        diagContent.scrollTop = diagContent.scrollHeight;
+                    });
+                }
             }
 
             // Re-typeset MathJax

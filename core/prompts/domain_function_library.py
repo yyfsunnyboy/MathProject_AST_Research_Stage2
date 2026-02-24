@@ -78,6 +78,18 @@ class FractionOps:
                 return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
+
+    # 為了與其他 Ops (PolynomialOps/RadicalOps/IntegerOps) 保持一致
+    format_latex = to_latex
+    
+    @staticmethod
+    def format_plain(val):
+        """格式化為純文字輸出"""
+        if isinstance(val, Fraction):
+            if val.denominator == 1:
+                return str(val.numerator)
+            return f"{val.numerator}/{val.denominator}"
+        return str(val)
     
     @staticmethod
     def add(a, b):
@@ -142,6 +154,16 @@ class IntegerOps:
             return eval(expr, safe_dict)
         except Exception as e:
             raise ValueError(f"Invalid expression: {expr}. Error: {e}")
+
+    @staticmethod
+    def format_latex(val):
+        """格式化為 LaTeX 輸出，為了與 PolynomialOps/RadicalOps 介面一致"""
+        return str(val)
+        
+    @staticmethod
+    def format_plain(val):
+        """格式化為純文字輸出，為了與 PolynomialOps/RadicalOps 介面一致"""
+        return str(val)
 
 
 class RadicalOps:
@@ -502,6 +524,18 @@ class FractionOps:
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
 
+    # 為了與其他 Ops (PolynomialOps/RadicalOps/IntegerOps) 保持一致
+    format_latex = to_latex
+
+    @staticmethod
+    def format_plain(val):
+        '''格式化為純文字輸出'''
+        if isinstance(val, Fraction):
+            if val.denominator == 1:
+                return str(val.numerator)
+            return f"{val.numerator}/{val.denominator}"
+        return str(val)
+
     @staticmethod
     def add(a, b):
         '''分數加法'''
@@ -589,7 +623,18 @@ class IntegerOps:
             return eval(expr, safe_dict)
         except Exception as e:
             raise ValueError(f"Invalid expression: {expr}. Error: {e}")
+
+    @staticmethod
+    def format_latex(val):
+        '''格式化為 LaTeX 輸出，為了與 PolynomialOps/RadicalOps 介面一致'''
+        return str(val)
+        
+    @staticmethod
+    def format_plain(val):
+        '''格式化為純文字輸出，為了與 PolynomialOps/RadicalOps 介面一致'''
+        return str(val)
 """
+
 
 # ============================================================================
 # [V2.5 新增] RadicalOps - 根號標準函數庫
