@@ -179,7 +179,7 @@ class AdaptiveScaler:
 【目標例題 DNA】: {input_text_safe}
 
 【⚠️ 資源鎖定憲法】
-1. 嚴禁寫出 `if level == ...` 結構。
+1. 嚴禁寫出 `if level == ...` 結構。必須完全、絕對地模仿【目標例題 DNA】的「運算符號結構」與「難度層次」，無視檔案上半段對 Level 1 的簡單定義。
 2. 必須 使用 `{target_ops}` 的 static methods 計算與格式化。
 3. 渲染：題目用 `{target_ops}.format_latex`，答案用 `{target_ops}.format_plain`。
 4. 進階：如果例題項次亂序，題目必須呼叫 `{target_ops}.format_shuffled_latex`。
