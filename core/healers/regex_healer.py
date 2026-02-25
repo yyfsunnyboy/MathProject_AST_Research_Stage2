@@ -59,17 +59,13 @@ class RegexHealer:
             'latex_format', '_format_term_with_parentheses'
         ]
         
-        # [V2.5] 依賴映射表 - 自動注入規則
-        # [V3.5] 依賴映射表 - 自動注入規則
-        # [2026-02-14 Critical Fix] 禁用自動 import domain_function_library
-        # 因為我們現在使用 Scaffolding 機制直接將這些函數注入到生成代碼的頂部
-        # 所以不需要額外 import，否則會導致運行時錯誤 (ImportError)
+        # [2026-02-25 Update] 支援 Dynamic Math Prompt Assembler 動態載入
         self.dependency_map = {
-            # "IntegerOps": "from domain_function_library import IntegerOps", # Disabled
-            # "FractionOps": "from domain_function_library import FractionOps", # Disabled
-            # "RadicalOps":  "from domain_function_library import RadicalOps", # Disabled
-            # "CalculusOps": "from domain_function_library import CalculusOps", # Disabled
-            # "fmt_num":     "from domain_function_library import fmt_num", # Disabled
+            "IntegerOps": "from core.prompts.domain_function_library import IntegerOps",
+            "FractionOps": "from core.prompts.domain_function_library import FractionOps",
+            "PolyOps": "from core.prompts.domain_function_library import PolynomialOps as PolyOps",
+            "RadicalOps": "from core.prompts.domain_function_library import RadicalOps",
+            "fractions": "import fractions",
         }
 
     def remove_trailing_artifacts(self, code_str: str) -> str:
@@ -355,7 +351,7 @@ class RegexHealer:
         removed_count = 0
         
         # 針對常見的 domain 類別檢查重複定義
-        class_names = ['IntegerOps', 'FractionOps', 'RadicalOps', 'CalculusOps']
+        class_names = ['IntegerOps', 'FractionOps', 'RadicalOps', 'CalculusOps', 'PolyOps', 'PolynomialOps']
         
         for class_name in class_names:
             # 使用 regex 找到所有該類的定義

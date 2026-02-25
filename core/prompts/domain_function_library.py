@@ -39,18 +39,23 @@ class FractionOps:
     """分數運算模組 - 精確處理分數與浮點數混合運算"""
     
     @staticmethod
-    def create(value):
+    def create(value, den=None):
         """
         建立分數，具備「型別智慧」
+        - 如果提供兩個參數 (num, den)，直接建立 Fraction(num, den)
         - 如果輸入是 float，先轉 str 再轉 Fraction（避免浮點精度誤差）
         - 支援 str 輸入（如 "-0.6"）
         - 支援 Fraction、int、float 輸入
         
         範例：
+            FractionOps.create(3, 2)    → Fraction(3, 2)
             FractionOps.create(-0.6)    → Fraction(-3, 5)
             FractionOps.create("-0.6")  → Fraction(-3, 5)
             FractionOps.create(3)       → Fraction(3, 1)
         """
+        if den is not None:
+            return Fraction(value, den)
+        
         if isinstance(value, float):
             value_str = str(value)
             return Fraction(value_str).limit_denominator(10000)

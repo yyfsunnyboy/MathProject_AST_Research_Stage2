@@ -53,7 +53,7 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
 
 【程式要求】
 1. 請寫成兩個函式：
-   - `def generate(level=1, **kwargs)`: 生成題目
+   - `def generate(**kwargs)`: 生成題目
    - `def check(user_answer, correct_answer)`: 檢查答案是否正確
 
 2. `generate` 函式要回傳一個字典 (Dictionary)，包含以下欄位（請照抄 key 名稱）：
@@ -89,7 +89,7 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
 BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER_SPEC 生成數學題目生成函數。
 
 要求：
-1. 實作函數：def generate(level=1, **kwargs)
+1. 實作函數：def generate(**kwargs)
 2. ⚠️ 回傳字典格式（必須同時包含雙鍵）：
    return {'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}
 3. 只輸出 Python 代碼，不要有任何說明或 Markdown 標記
@@ -153,34 +153,64 @@ BARE_MINIMAL_PROMPT = r"""你是 Python 程式設計師。請根據以下 MASTER
 # 完整的 UNIVERSAL_GEN_CODE_PROMPT（針對 14B 模型優化的鷹架版）
 # ==============================================================================
 
-UNIVERSAL_GEN_CODE_PROMPT = """【角色】K12 數學演算法工程師
+UNIVERSAL_GEN_CODE_PROMPT = """【絕對禁止輸出 thinking 或任何非 code 內容】
+【角色】K12 數學程式碼實作員 (使用專用工具庫)
 
 【任務】
-實作 `def generate(level=1, **kwargs)` 函數，根據 MASTER_SPEC 生成數學問題的完整 Python 代碼。
-該函數應返回 dict: {{'question_text': str, 'correct_answer': str, 'answer': str, 'mode': 1}}
+實作 def generate(**kwargs)，生成整數四則運算題目。
+題目結構必須模仿下列 DNA：計算(-60)÷[(-7)×2-1]的值。
+（括號內混合運算 + 絕對值 + 除法整除）
+根據 [實作食譜] 撰寫 Python 代碼。你必須使用系統提供的 `IntegerOps` 類別。
+返回 dict: {{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}}
+
+【系統已注入的工具庫 (必須使用)】
+1. `IntegerOps.rand_nz(a, b)`: 生成非零、非 ±1 的隨機整數。
+2. `IntegerOps.fmt_num(n)`: 自動處理負數括號 (回傳字串)。
+3. `to_latex(num)`: 轉為 LaTeX 分數格式。
+
+【IntegerOps 使用範例】（請模仿這種寫法）
+a = random.randint(-20, 20)
+b = IntegerOps.rand_nz(2, 10)          # 非零、非±1 的整數
+a_str = IntegerOps.fmt_num(a)          # 負數會變成 "(-5)"
+question_part = f"{{a_str}} \\times {{b}}"
 
 【參考範例】(請模仿此題型風格生成)
 {textbook_example_section}
 
-【預載工具 API 手冊】(環境已實作，請直接調用，無需重新定義)
+【實作食譜】
+{recipe_from_gemini}
 
-1. **基礎工具**
-   - `fmt_num(n) -> str`: 格式化數字
-   - `to_latex(n) -> str`: 轉 LaTeX 格式
-   - `clean_latex_output(latex_str) -> str`: LaTeX 格式清洗和包裹 (自動添加 $)
+【代碼規範】
+- 嚴禁自行定義 random.randint，統一使用 IntegerOps。
+- 嚴禁定義 class。
+- 計算完成後，務必先用 IntegerOps.fmt_num 轉成字串再組裝 question_text。
+- 必須返回字典 {{'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}}
+- 🚨 如果任何一行不是有效 Python 程式碼，整個輸出視為 0 分。
 
+請嚴格遵循以下骨架（只需替換數字與運算符）：
+import random
+from fractions import Fraction
 
-【核心規則】
-1. ✅ shuffle + slice 避免無限迴圈
-2. ✅ 數學式用 $ 包裹
-3. ✅ 答案純結果，不含符號
-4. ✅ Data Flow: coeffs -> terms -> 計算 -> plain text
-5. ✅ 只輸出代碼
-
-⚠️ **返回格式檢查**
-• 必須返回字典 {{'question_text': q, 'correct_answer': a, 'answer': a, 'mode': 1}}
-• correct_answer 必須是字串
-• question_text 數學式必須用 $ 包裹
+def generate(**kwargs):
+    question_text = ""
+    
+    # 第一部分：括號內混合運算
+    a = random.randint(-50, 50)
+    b = IntegerOps.rand_nz(2, 15)
+    c = random.randint(-20, 20)
+    part1 = f"({{IntegerOps.fmt_num(a)}} \\times {{b}} {{op1}} {{IntegerOps.fmt_num(c)}})"
+    
+    # 第二部分：絕對值
+    d = random.randint(-30, 30)
+    part2 = f"\\left|{{IntegerOps.fmt_num(d)}}\\right|"
+    
+    # 組合題目
+    question_text = f"計算 $${{part1}} \\div {{part2}}$$ 的值。"
+    
+    # 計算正確答案（自己算，不要用 eval）
+    # ...
+    
+    return {{'question_text': question_text, 'answer': '', 'correct_answer': str(result), 'mode': 1}}
 """
 
 
@@ -368,7 +398,7 @@ class PromptBuilder:
 
 ⚠️ 規則：
 1. 直接調用上述函數，禁止重新定義
-2. 你只需實現 `def generate(level=1, **kwargs)`
+2. 你只需實現 `def generate(**kwargs)`
 3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
 """
                     logger.info(f"   ✅ Domain 函數庫注入: {required_domains}")
@@ -427,7 +457,7 @@ class PromptBuilder:
 
 ⚠️ 規則：
 1. 直接調用上述函數，禁止重新定義
-2. 你只需實現 `def generate(level=1, **kwargs)`
+2. 你只需實現 `def generate(**kwargs)`
 3. 答案格式：純多項式逗號分隔，例 "6x-5, 6"（禁止包含 f'(x)= 或換行）
 """
                         logger.info(f"   ✅ Domain Stubs 注入: {required_domains}")
@@ -455,12 +485,13 @@ class PromptBuilder:
             
             # 對 UNIVERSAL_GEN_CODE_PROMPT 進行格式化
             universal_prompt_with_example = UNIVERSAL_GEN_CODE_PROMPT.format(
-                textbook_example_section=textbook_example_section
+                textbook_example_section=textbook_example_section,
+                recipe_from_gemini=clean_spec
             )
             
             # 最終組裝
-            # universal_prompt + domain_stubs + tool_selection + master_spec
-            prompt = universal_prompt_with_example + domain_injection + tool_selection_protocol + f"\n\n### MASTER_SPEC:\n{clean_spec}"
+            # universal_prompt + domain_stubs + tool_selection (實作食譜已在模板中)
+            prompt = universal_prompt_with_example + domain_injection + tool_selection_protocol
             
             logger.info(f"Prompt Ab{ablation_id} - Optimized Stub Mode")
             logger.info(f"   Universal Prompt: {len(universal_prompt_with_example)} chars")
@@ -527,7 +558,7 @@ class PromptBuilder:
 
             spec_dict = yaml.safe_load(clean_input)
             
-            # 移除會誤導模型的「實作指引」
+            # 移除會誤導模型的「實作指引」（保留 recipe 供第二階段使用）
             keys_to_remove = ['construction', 'implementation_checklist', 'formatting', 'variables']
             
             # 保留 templates 裡的 name 和 complexity_requirements，但移除內部的實作細節

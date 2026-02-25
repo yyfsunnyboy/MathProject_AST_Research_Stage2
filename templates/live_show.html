@@ -40,8 +40,10 @@
             --text-muted: #6c757d;
 
             --gemini: #4285F4;
-            --qwen: #0F9D58;
-            --healer: #d35400;
+            --qwen-14b: #F4B400;
+            --qwen-8b: #0F9D58;
+            --qwen: var(--qwen-8b);
+            --healer: #FF6D00;
 
             --ab1-border: #e74c3c;
             --ab1-glow: rgba(231, 76, 60, 0.08);
@@ -249,9 +251,9 @@
         }
 
         .pipe-step.amber {
-            color: #d35400;
-            border-color: rgba(211, 84, 0, 0.3);
-            background: rgba(211, 84, 0, 0.05);
+            color: var(--healer);
+            border-color: rgba(255, 109, 0, 0.3);
+            background: rgba(255, 109, 0, 0.05);
         }
 
         .pipe-step.qwen {
@@ -803,7 +805,7 @@
 
         /* ── FLASH overlay warning ── */
         .flash-warning {
-            color: #d35400;
+            color: var(--healer);
             font-weight: 600;
         }
 
@@ -1220,8 +1222,9 @@
                     <select id="model-select-ab1" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
                         <option value="gemini-3-flash" selected>Gemini-3-Flash</option>
-                        <option value="qwen3-8b">Qwen3-8B</option>
-                        <option value="qwen3-14b">Qwen3-14B</option>
+                        <option value="pause" style="color: #e74c3c; font-weight: bold;">⏸ 暫停測試</option>
+                        <option value="qwen3-8b">Qwen-8B</option>
+                        <option value="qwen3-14b">Qwen-14B</option>
                     </select>
                 </div>
             </div>
@@ -1257,7 +1260,7 @@
             <div id="thought-sandbox" class="thought-sandbox">
                 <div class="thought-sandbox-header">
                     <span class="ping-dot"></span>
-                    Qwen3 Mental Sandbox (Reasoning...)
+                    Qwen Mental Sandbox (Reasoning...)
                 </div>
                 <div id="ab1-thought-stream" class="italic text-gray-400 text-sm leading-relaxed"></div>
             </div>
@@ -1291,8 +1294,8 @@
                     <select id="model-select-ab3" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
                         <option value="gemini-3-flash">Gemini-3-Flash</option>
-                        <option value="qwen3-8b" selected>Qwen3-8B</option>
-                        <option value="qwen3-14b">Qwen3-14B</option>
+                        <option value="qwen3-8b" selected>Qwen-8B</option>
+                        <option value="qwen3-14b">Qwen-14B</option>
                     </select>
                 </div>
             </div>
@@ -1661,8 +1664,9 @@
             } else if (!isAb1) {
                 setBadge('badge-ab3', 'badge-success', '✅ PASS (NO FIXES)');
                 panel.classList.add('state-success');
+                const badgeStr = document.getElementById('model-select-ab3').value.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
                 document.getElementById('log-ab3').innerHTML =
-                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
+                    badgeStr + ' <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
             } else {
                 setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
                 panel.classList.add('state-success');
@@ -1815,8 +1819,8 @@
             // Phase 4 — Boot logs
             const m1_val = document.getElementById('model-select-ab1').value;
             const m3_val = document.getElementById('model-select-ab3').value;
-            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
-            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : (m1_val === 'qwen3-14b' ? '<span class="log-badge" style="background:var(--qwen-14b);color:#fff;">QWEN-14B</span>' : '<span class="log-badge badge-qwen">QWEN-8B</span>');
+            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : (m3_val === 'qwen3-14b' ? '<span class="log-badge" style="background:var(--qwen-14b);color:#fff;">QWEN-14B</span>' : '<span class="log-badge badge-qwen">QWEN-8B</span>');
             const name1 = m1_val.includes('gemini') ? 'Gemini-3-Flash' : (m1_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
             const name3 = m3_val.includes('gemini') ? 'Gemini-3-Flash' : (m3_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
 
@@ -2227,9 +2231,20 @@
                 .then(r2 => renderResult('ab3', r2))
                 .catch(err => renderResult('ab3', { error: err.message }));
 
-            const p1 = fetchParams(input, true, modelIdAb1)
-                .then(r1 => renderResult('ab1', r1))
-                .catch(err => renderResult('ab1', { error: err.message }));
+            let p1;
+            if (modelIdAb1 === 'pause') {
+                document.getElementById('loader-ab1').classList.add('hidden');
+                document.getElementById('result-ab1').classList.remove('hidden');
+                document.getElementById('math-ab1').innerHTML = '<span style="color:#e74c3c; font-weight:bold;">⏸ 測試已暫停 (Pause Mode)</span>';
+                document.getElementById('code-ab1').textContent = '--- Ab1 Testing Paused ---';
+                setBadge('badge-ab1', 'badge-standby', '⏸ PAUSED');
+                document.getElementById('log-ab1').innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab1 Native LLM testing is paused.</span>';
+                p1 = Promise.resolve();
+            } else {
+                p1 = fetchParams(input, true, modelIdAb1)
+                    .then(r1 => renderResult('ab1', r1))
+                    .catch(err => renderResult('ab1', { error: err.message }));
+            }
 
             await Promise.all([p3, p1]);
 

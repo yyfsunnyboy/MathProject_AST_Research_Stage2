@@ -22,7 +22,11 @@ class UnifiedCleanupHealer:
     # 預定義的工具函數/類名稱（來自 build_calculation_skeleton）
     PREDEFINED_NAMES = {
         'IntegerOps',
-        'FractionOps',  # Add other ops if needed
+        'FractionOps',
+        'PolyOps',
+        'RadicalOps',
+        'PolynomialOps',
+        'CalculusOps',
         'fmt_num',
         'to_latex',
         'clean_latex_output',

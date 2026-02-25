@@ -1,83 +1,26 @@
-```python
-【絕對禁止輸出 thinking 或任何非 code 內容】
-- 嚴禁寫任何思考過程、解釋、註解
-- 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
-- 直接輸出 Python code，沒有任何前言、後語
-- 如果違反，直接 0 分
+# Skill: jh_數學1上_FourArithmeticOperationsOfIntegers
 
-【角色】K12 數學演算法工程師
+## [DOMAIN_API]
+- `IntegerOps.fmt_num(n)`: 將負數自動加括號，例: -5 變成 (-5)。（注意：回傳字串，絕對不可將此字串再拿去計算）
+- `IntegerOps.rand_nz(a, b)`: 隨機生成 a 到 b 之間的非零、非 ±1 整數。
 
-【任務】
-實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
-題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)。
-返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
+## [NUMERICAL_SPEC]
+- 必須使用標準 Python 運算生成數值（+、-、*、//），確保除法先決定商數與除數再反推被除數以達到整除。
+- 絕對禁止使用 `eval` 或 `safe_eval` 處理 `question_text` 字串求值。
+- **數學計算與字串排版分離**：必須先完成所有整數純數字計算，最後組裝文字時再呼叫 `IntegerOps.fmt_num(n)`。
+- 運算元範圍依難度分層：
+  - Level 1 (兩項): 範圍 -20 ~ 20
+  - Level 2 (三項混合): 範圍 -50 ~ 50
+  - Level 3 (四項混合): 範圍 -100 ~ 100
+- 題目中的乘號用 `\times`，除號用 `\div`。
+- 最後的算式字串【必須】用雙錢號 `$$...$$` 包起來。例子：`question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"`
 
-【程式要求】（必須嚴格遵守）
-1. **Import 規範**：
-   - ✅ **必須** `import random`
-   - ✅ **必須** `import math`
-   - ❌ **嚴禁** `import IntegerOps` (系統已自動注入，直接使用 `IntegerOps.xxx`)
-   - ❌ **嚴禁** 引入 `fractions.Fraction` 或產生分數（本單元為整數四則運算）。
-
-2. **核心邏輯**：
-   - 使用標準 Python 運算生成數值。
-   - **絕對禁止** 使用 `eval` 或 `safe_eval` 處理未經信任的字串，請強制使用原本的變數自己算出答案，不要偷懶把 `question_text` 丟進任何 `eval`。
-   - 確保除法整除：先生成 `divisor` 和 `quotient`，再反推 `dividend`。
-   - **數學計算與字串排版必須完全分離**：請將所有數值的加減乘除計算完畢後，再使用 `IntegerOps.fmt_num()` 轉換為字串。**絕對禁止將 `fmt_num()` 的結果（字串）拿去做數學運算（如相除 `str / int`）**。
-
-3. **函數介面**：
-   ```python
-   def generate(level=1, **kwargs):
-       # ... logic ...
-       return {
-           'question_text': str,
-           'answer': '',           # 必須為空字串，前端會自動處理
-           'correct_answer': str,
-           'mode': 1
-       }
-
-   def check(user_answer, correct_answer):
-       # 簡單比對字串即可
-       try:
-           if str(user_answer).strip() == str(correct_answer).strip():
-               return {'correct': True, 'result': '正確'}
-           if float(user_answer) == float(correct_answer):
-               return {'correct': True, 'result': '正確'}
-       except:
-           pass
-       return {'correct': False, 'result': '錯誤'}
-   ```
-
-【系統已注入的輔助函式（API）】（直接調用 `IntegerOps.xxx`）
-- `IntegerOps.fmt_num(n)` → 格式化數字（負數自動加括號，如 `(-5)`）
-- `IntegerOps.rand_nz(a, b)` → 隨機生成 a 到 b 之間的非零、非 ±1 整數
-
-【核心規則】
-1. **題目結構**：
-   - Level 1: Part 1 + Part 2
-   - Level 2: Part 1 - Part 2 + Part 3
-   - Level 3: -Part 1 + Part 2 - Part 3 + K
-2. **數值範圍**：
-   - Level 1: -20 ~ 20
-   - Level 2: -50 ~ 50
-   - Level 3: -100 ~ 100
-3. **格式化與 LaTeX 渲染要求**：
-   - 所有負數必須使用 `IntegerOps.fmt_num(n)` 包裹。
-   - 題目中的乘號用 `\times`，除號用 `\div`。
-   - ⚠️ **極度重要**：最後的算式字串【必須】用雙錢號 `$$` 包起來，否則前端無法渲染！
-     ✅ 正確範例：`question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"`
-     ❌ 錯誤範例：`question_text = f"計算 {fmt(a)} \\times {fmt(b)} 的值。"`
-
-=== SKILL_END_PROMPT ===
-
-【強烈建議程式碼結構】
+## [LEGACY_CODE_DNA]
 ```python
 import random
 import math
-# IntegerOps is injected automatically
 
 def generate(level=1, **kwargs):
-    # 1. Scaling
     if level == 1:
         r_min, r_max = -20, 20
         div_max = 10
@@ -96,7 +39,6 @@ def generate(level=1, **kwargs):
     fmt = IntegerOps.fmt_num
 
     if level == 1:
-        # Level 1: A / B or A * B
         op = random.choice(['*', '/'])
         if op == '*':
             a = rand_nz(-15, 15)
@@ -110,25 +52,16 @@ def generate(level=1, **kwargs):
             question_text = f"計算 $${fmt(a)} \\div {fmt(b)}$$ 的值。"
             
     elif level == 2:
-        # Level 2: A / B * C (Like user's example: 72 ÷ (-8) × 3)
         b = rand_nz(-15, 15)
         temp_ans = rand_nz(-15, 15)
-        a = b * temp_ans  # Ensuring a / b is an integer
-        
+        a = b * temp_ans
         c = rand_nz(-10, 10)
         
-        # Decide order: A / B * C  or  A * B / C
         if random.choice([True, False]):
             question_text = f"計算 $${fmt(a)} \\div {fmt(b)} \\times {fmt(c)}$$ 的值。"
             ans = (a // b) * c
         else:
-            # For A * B / C, ensure (A*B) is divisible by C
             c2 = rand_nz(-15, 15)
-            ans2 = rand_nz(-10, 10)
-            prod = c2 * ans2
-            # Find factors for prod
-            a2 = rand_nz(-10, 10)
-            # Just do something simpler: A * B / C where B is divisible by C
             q = rand_nz(-5, 5)
             b2 = c2 * q
             a2 = rand_nz(-10, 10)
@@ -136,7 +69,6 @@ def generate(level=1, **kwargs):
             ans = a2 * (b2 // c2)
 
     else:
-        # Level 3: A * B + C / D or A - B / C * D
         if random.choice([True, False]):
             a = rand_nz(-10, 10)
             b = rand_nz(-10, 10)
@@ -170,7 +102,4 @@ def check(user_answer, correct_answer):
     except:
         pass
     return {'correct': False, 'result': '錯誤'}
-
-❌ 輸出 Markdown 代碼塊 → 直接寫 code
-⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
-/no_think
+```

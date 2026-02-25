@@ -75,9 +75,11 @@ class SkillClassifier:
             if result in self.skills:
                 return result
             else:
-                # 模糊比對
+                # 模糊比對 (優化：擷取真正的核心特徵，如 FourArithmeticOperationsOfIntegers)
                 for s in self.skills:
-                    if s.lower() in result.lower():
+                    core_name = s.split("_")[-1].lower()
+                    # 無論是 LLM 給出包含前綴的完整字串，或是只給出後綴，都能正確對應
+                    if core_name in result.lower() or s.lower() in result.lower():
                         return s
                 return "Unknown"
                 

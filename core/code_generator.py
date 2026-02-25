@@ -400,8 +400,8 @@ def _call_ai(prompt, model_config=None):
         # 使用提供的模型配置创建 AI 客户端
         provider = model_config.get('provider', 'local').lower()
         model_name = model_config.get('model', 'qwen2.5-coder:7b')
-        temperature = model_config.get('temperature', 0.1)
-        max_tokens = model_config.get('max_tokens', 2048)
+        temperature = model_config.get('temperature', 0.7)
+        max_tokens = model_config.get('max_tokens', 8192)
         extra_body = model_config.get('extra_body', {})
         safety_settings = model_config.get('safety_settings') # [ADD] Ensure safety settings passed
         

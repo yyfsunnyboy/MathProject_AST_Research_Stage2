@@ -239,9 +239,9 @@ def classify_input():
             confidence = 98
             
             # [NEW] Generate Prompt Previews
+            skill_path = engine.scaler._get_skill_path(skill_name)
+            
             try:
-                skill_path = engine.scaler._get_skill_path(skill_name)
-                
                 ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md")
                 if os.path.exists(ab1_prompt_path):
                     with open(ab1_prompt_path, "r", encoding="utf-8") as f:
@@ -257,25 +257,57 @@ def classify_input():
                     bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{ocr_text}\n直接輸出代碼。"
 
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
+                clean_tools = ""
                 if os.path.exists(skill_md_path):
                     with open(skill_md_path, "r", encoding="utf-8") as f:
-                        skill_spec = f.read()
-                    # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
-                    skill_spec_distilled = skill_spec.split("=== SKILL_END_PROMPT ===")[0]
-                    scaffold_prompt = f"""{skill_spec_distilled}  # 這是過濾掉範例後的 SKILL.md 精華
+                        content = f.read()
 
-[任務] 模仿下列 DNA 結構撰寫 `generate()` 函式。
-[目標例題 DNA]: {ocr_text}
+                    # [反重力核心]：過濾 SKILL.md，只留工具說明
+                    if "## [LEGACY_CODE_DNA]" in content:
+                        clean_tools = content.split("## [LEGACY_CODE_DNA]")[0]
+                    else:
+                        # 如果沒標籤，就拿前 500 字
+                        clean_tools = content[:500]
+                
+                # fallback if clean_tools is empty or unhelpful
+                if not clean_tools or len(clean_tools.strip()) < 10:
+                    if "FourArithmeticOperationsOfIntegers" in skill_name:
+                        clean_tools = "- IntegerOps.fmt_num(n): 將負數加上括號，例: -5 變成 (-5)。\n- IntegerOps.rand_nz(a, b): 產生介於 a, b 之間的非零整數。"
+                    elif "FourArithmeticOperationsOfNumbers" in skill_name:
+                        clean_tools = "- to_latex(n): 將 Fraction(n, d) 自動約分並轉換為 LaTeX 格式的分數字串。\n- Fraction(n, d): Python 內建的分數運算類別。"
+                    elif "FourArithmeticOperationsOfPolynomial" in skill_name:
+                        clean_tools = "- PolynomialOps.gen_poly(...): 產生隨機多項式。\n- PolynomialOps.fmt_poly(...): 格式化多項式字串，自動合併同類項。"
+                    elif "RadicalOperations" in skill_name:
+                        clean_tools = "- RadicalOps.simplify(n): 化簡根式。\n- RadicalOps.fmt_sqrt(n): 格式化根式字串，根號下不能為負。"
+                    else:
+                        clean_tools = "- 這是基本題型，請使用基礎四則運算與 random 套件。"
 
-[⚠️ 關鍵指令]
-1. 嚴禁 使用 `if level == ...` 結構。
-2. 函式內 必須 直接實作與例題相同的運算邏輯。
-3. 變數初始化：請在函式第一行先定義 `question_text = ""` 以確保安全。
-4. 題目格式：數學式必須用 `$...$` 包裹 (例如 `question_text = f"計算 $({{a_latex}}) + ({{b_latex}})$。"`)。
-5. 輸出：只需產出 `import random` 開始的代碼。
+                scaffold_prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
+
+【1. 可用工具 (Domain API)】
+{clean_tools.strip()}
+
+【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
+- **目標結構**：{ocr_text}
+- **執行步驟**：
+[等待 Architect 提供 Step-by-Step Logic Recipe...]
+
+【3. 執行憲法】
+- **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
+- **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
+- **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
+- **渲染規範**：數學式必須用 $$...$$ 包裹。
+
+【代碼起點】
+import random
+# (由後端根據 skill 自動注入 import，如 from fractions import Fraction)
+
+def generate(**kwargs):
+    question_text = ""
+    # 步驟一：計算區 (僅限原始數值運算)
+
+    # 步驟二：排版區 (僅在此區調用 fmt_num / format_latex 等字串格式化)
 """
-                else:
-                    scaffold_prompt = "[SKILL.md 未找到]"
             except Exception as e:
                 scaffold_prompt = f"Error loading SKILL.md: {e}"
         else:
@@ -361,3 +393,196 @@ def run_generated_code():
             "traceback": traceback.format_exc(),
             "api_time": time.time() - start_time
         }), 200
+
+@live_show_bp.route('/api/architect_to_coder', methods=['POST'])
+def architect_to_coder():
+    """
+    API: 端到端管線 (Architect -> Qwen Coder)
+    """
+    data = request.json
+    if not data:
+        return jsonify({"success": False, "error": "No data provided."}), 400
+
+    image_data = data.get("image_data")
+    text_data = data.get("text_data")
+    
+    start_time = time.time()
+    process_logs = []
+    
+    try:
+        process_logs.append("> 🌟 Initiating Architect Pipeline (Vision + Logic + JSON)...")
+        from core.ai_wrapper import get_ai_client
+        from config import Config
+        import re
+        from core.prompt_architect import ARCHITECT_SYSTEM_PROMPT
+
+        temp_path = None
+        if image_data:
+            if "base64," in image_data:
+                image_data = image_data.split("base64,")[1]
+            image_bytes = base64.b64decode(image_data)
+            temp_dir = os.path.join(Config.UPLOAD_FOLDER, "temp_canvas")
+            os.makedirs(temp_dir, exist_ok=True)
+            temp_path = os.path.join(temp_dir, f"canvas_{uuid.uuid4().hex}.png")
+            with open(temp_path, "wb") as f:
+                f.write(image_bytes)
+        elif not text_data:
+            return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
+
+        # === 步驟 1: 呼叫 Architect (Gemini) ===
+        process_logs.append("> 🧠 Sending to Gemini Architect (Vision & Logic Deconstruction)...")
+        architect_client = get_ai_client('architect')
+        
+        user_prompt = "請分析以下題目（圖片或文字），並嚴格按照 JSON 格式回傳 OCR、分類、與食譜。"
+        if text_data:
+            user_prompt += f"\n\n題目文字：{text_data}"
+            
+        full_prompt = ARCHITECT_SYSTEM_PROMPT + "\n\n" + user_prompt
+        
+        if temp_path:
+            response = architect_client.generate_content(full_prompt, image_path=temp_path)
+            os.remove(temp_path)
+        else:
+            response = architect_client.generate_content(full_prompt)
+            
+        json_str = response.text.strip()
+        
+        # 把被 Markdown codeblock 包覆的部分去掉
+        json_str = re.sub(r'^```json\s*', '', json_str)
+        json_str = re.sub(r'```\s*$', '', json_str)
+        
+        try:
+            architect_output = json.loads(json_str)
+        except Exception as e:
+            process_logs.append(f"> ❌ Failed to parse JSON: {e}")
+            architect_output = {
+                "ocr_result": text_data or "Unknown",
+                "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+                "logic_recipe": ["[解析失敗] 隨機整數四則"],
+                "variable_plan": "res = a + b",
+                "latex_template": "{a} + {b}",
+                "special_notes": ""
+            }
+        
+        ocr_text = architect_output.get("ocr_result", "")
+        skill_name = architect_output.get("skill_name", "jh_數學1上_FourArithmeticOperationsOfIntegers")
+        logic_recipe = architect_output.get("logic_recipe", [])
+        
+        process_logs.append(f"> 📄 OCR Extracted: {ocr_text[:30] + ('...' if len(ocr_text)>30 else '')}")
+        process_logs.append(f"> ✅ Skill Aligned: {skill_name}")
+        process_logs.append(f"> 📝 Logic Recipe Generated ({len(logic_recipe)} steps)")
+        
+        # === 步驟 2: 組合 SCAFFOLD PROMPT ===
+        engine = get_engine()
+        bare_prompt = ""
+        scaffold_prompt = ""
+        
+        try:
+            skill_path = engine.scaler._get_skill_path(skill_name)
+            skill_md_path = os.path.join(skill_path, "SKILL.md")
+            
+            clean_tools = ""
+            if os.path.exists(skill_md_path):
+                with open(skill_md_path, "r", encoding="utf-8") as f:
+                    content = f.read()
+
+                # [反重力核心]：過濾 SKILL.md，只留工具說明
+                if "## [LEGACY_CODE_DNA]" in content:
+                    clean_tools = content.split("## [LEGACY_CODE_DNA]")[0]
+                else:
+                    # 如果沒標籤，就拿前 500 字
+                    clean_tools = content[:500]
+            
+            # fallback if clean_tools is empty or unhelpful
+            if not clean_tools or len(clean_tools.strip()) < 10:
+                if "FourArithmeticOperationsOfIntegers" in skill_name:
+                    clean_tools = "- IntegerOps.fmt_num(n): 將負數加上括號，例: -5 變成 (-5)。\n- IntegerOps.rand_nz(a, b): 產生介於 a, b 之間的非零整數。"
+                elif "FourArithmeticOperationsOfNumbers" in skill_name:
+                    clean_tools = "- to_latex(n): 將 Fraction(n, d) 自動約分並轉換為 LaTeX 格式的分數字串。\n- Fraction(n, d): Python 內建的分數運算類別。"
+                elif "FourArithmeticOperationsOfPolynomial" in skill_name:
+                    clean_tools = "- PolynomialOps.gen_poly(...): 產生隨機多項式。\n- PolynomialOps.fmt_poly(...): 格式化多項式字串，自動合併同類項。"
+                elif "RadicalOperations" in skill_name:
+                    clean_tools = "- RadicalOps.simplify(n): 化簡根式。\n- RadicalOps.fmt_sqrt(n): 格式化根式字串，根號下不能為負。"
+                else:
+                    clean_tools = "- 這是基本題型，請使用基礎四則運算與 random 套件。"
+            
+            recipe_text = "\n".join(logic_recipe)
+            
+            scaffold_prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
+
+【1. 可用工具 (Domain API)】
+{clean_tools.strip()}
+
+【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
+- **目標結構**：{ocr_text}
+- **執行步驟**：
+{recipe_text}
+
+【3. 執行憲法】
+- **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
+- **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
+- **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
+- **渲染規範**：數學式必須用 $$...$$ 包裹。
+
+【代碼起點】
+import random
+# (由後端根據 skill 自動注入 import，如 from fractions import Fraction)
+
+def generate(**kwargs):
+    question_text = ""
+    # 步驟一：計算區 (僅限原始數值運算)
+
+    # 步驟二：排版區 (僅在此區調用 fmt_num / format_latex 等字串格式化)
+"""
+        except Exception as e:
+            scaffold_prompt = f"Error loading SKILL.md: {e}"
+            
+        ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md") if 'skill_path' in locals() else None
+        if ab1_prompt_path and os.path.exists(ab1_prompt_path):
+            with open(ab1_prompt_path, "r", encoding="utf-8") as f:
+                ab1_template = f.read()
+            bare_prompt = re.sub(
+                r"【參考例題】.*?【程式要求】", 
+                f"【參考例題】\n{ocr_text}\n\n【程式要求】", 
+                ab1_template, 
+                flags=re.DOTALL
+            )
+        else:
+            bare_prompt = f"請寫一個 generate() 函式，參考：\n{ocr_text}\n直接輸出代碼。"
+
+        # === 步驟 3: 呼叫 Coder (Qwen) ===
+        process_logs.append("> 💻 Relegating code generation to Qwen-8B Local Coder...")
+        coder_client = get_ai_client('coder')
+        code_resp = coder_client.generate_content(scaffold_prompt)
+        final_code = code_resp.text.strip()
+        
+        if final_code.startswith("```"):
+            lines = final_code.split("\n")
+            if lines[0].startswith("```"):
+                lines = lines[1:]
+            if lines and lines[-1].startswith("```"):
+                lines = lines[:-1]
+            final_code = "\n".join(lines)
+            
+        process_logs.append("> 🚀 Coder completed generation.")
+
+        return jsonify({
+            "success": True,
+            "architect_json": architect_output,
+            "ocr_text": ocr_text,
+            "skill_id": skill_name,
+            "process_logs": process_logs,
+            "scaffold_prompt": scaffold_prompt,
+            "bare_prompt": bare_prompt,
+            "generated_code": final_code,
+            "api_time": time.time() - start_time
+        })
+
+    except Exception as e:
+        import traceback
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "traceback": traceback.format_exc()
+        }), 500
+

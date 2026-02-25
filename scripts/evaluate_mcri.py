@@ -1915,7 +1915,7 @@ class MCRI_Evaluator:
             'code_commit_hash': '',  # 暫時空值
             'python_version': f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
             'mcri_version': self.version,
-            'model_temperature': 0.7,  # 預設值
+            'model_temperature': next((preset.get('temperature', 0.7) for key, preset in Config.CODER_PRESETS.items() if preset.get('model') == self.model_name or key == self.model_name), 0.7),
             'repetitions_planned': repetitions,
             'repetitions_completed': len(items),
             'fail_count': fail_count,
