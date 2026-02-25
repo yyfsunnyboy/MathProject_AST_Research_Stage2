@@ -175,22 +175,32 @@ class AdaptiveScaler:
                     input_text_safe = self._sanitize_input_dna(input_text)
                     
                     # 神盾級縮減 Prompt (JIT 版) 適用於所有 Ab3 模型
-                    prompt = f"""{skill_spec_distilled}
-【JIT DNA 任務】模仿例題結構撰寫 `generate(level=1, **kwargs)`。
-【目標例題 DNA】: {input_text_safe}
+                    prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
 
-【⚠️ 資源鎖定憲法】
-1. 嚴禁寫出 `if level == ...` 結構。必須完全、絕對地模仿【目標例題 DNA】的「運算符號結構」與「難度層次」，無視檔案上半段對 Level 1 的簡單定義。
-2. 必須 使用 `{target_ops}` 的 static methods 計算與格式化。
-3. 渲染：題目用 `{target_ops}.format_latex`，答案用 `{target_ops}.format_plain`。
-4. 進階：如果例題項次亂序，題目必須呼叫 `{target_ops}.format_shuffled_latex`。
-5. 初始化防護：函式第一行必須先定義 `question_text = ""`。
-6. 輸出：只需產出從 `import random` 開始的 Python 代碼，禁止任何註解或解釋文字。
+【1. 可用工具 (Domain API)】
+{skill_spec_distilled}
 
-[⚠️ 格式轉換命令]
-1. 偵測輸入：即使例題 DNA 是以純文字（如 ^2）表示，你也必須將其視為數學結構。
-2. 強制轉換：生成的題目【必須】使用 `{target_ops}.format_latex()` 進行渲染。
-3. 嚴禁：嚴禁在 `question_text` 中直接寫出 `^2` 或 `x2` 等非 LaTeX 符號。
+【2. 施工食譜 (MASTER_SPEC)】
+{input_text_safe}
+
+【3. 執行憲法 (不可撼動)】
+1. **先計算，後排版**：嚴禁將格式化後的字串（如 "(-5)"）參與 `+ - * / //` 運算。
+2. **類型防禦**：分數運算必須全程使用 `Fraction`，嚴禁產生 `float`。
+3. **渲染要求**：題目必須包含雙錢號 `$$...$$`，且絕對值符號必須轉義為 `\\left|` 與 `\\right|`。
+4. **禁止字母湯**：只准使用食譜中定義的 v1~v5 變數，嚴禁自行定義 a-z。
+
+【代碼起點】
+import random
+import math
+# (根據 skill 自動注入 import)
+
+def generate(**kwargs):
+    question_text = ""
+    # 步驟一：計算區 (純數值運算)
+
+    # 步驟二：排版區 (呼叫 API 渲染 question_text)
+
+    # 步驟三：回傳結果 (correct_answer 必須為字串)
 """
                 active_ablation_id = 3
             

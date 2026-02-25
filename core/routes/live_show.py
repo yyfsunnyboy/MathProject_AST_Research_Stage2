@@ -208,16 +208,24 @@ def classify_input():
             # 1. Vision OCR
             from core.ai_wrapper import get_ai_client
             vision_client = get_ai_client('vision_analyzer')
-            ocr_prompt = """你現在是數學結構分析師。當使用者提供圖片或文字 DNA 時，你必須產出三段式的食譜 (MASTER_SPEC)。【嚴禁輸出其他廢話】。
-請絕對遵守這三個硬性零件的格式：
-1. **變數槽位 (Variable Slots)**：明確指出需要幾個變數，範圍為何，如何確保整除或非零。
-例如：「定義 $v1, v2, v3, v4$ 為原始整數。其中 $v1, v2$ 範圍 $-10 \sim 15$，$v3, v4$ 用於除法，須確保 $v3 = v4 \\times k$ 以達成整除。」
-2. **原子運算步驟 (Atomic Logic)**：寫出純 Python 的數學算式，確保不會產生浮點數誤差。
-例如：「第一步：ans = (v1 + v2) * v3。第二步：如果 ans < 0 則如何...」
-3. **渲染範本 (Rendering Template)**：提供一個包含 $$ 符號的 f-string 模板，並指名呼叫哪個 API（如 fmt_num 或 format_latex）。
-例如：「使用 question_text = f"計算 $${f(v1)} + {f(v2)} \\times {f(v3)}$$"，其中 f 為 IntegerOps.fmt_num。」
+            ocr_prompt = """【角色】數學命題架構師 (Architect)
+【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
 
-現在，請辨識這張圖片中的數學式或題目文字，並嚴格按照上述三段式格式輸出分析結果："""
+【輸出規範：MASTER_SPEC】
+你必須產出以下三個區塊，嚴禁廢話：
+
+1. **變數定義 (Variable Slots)**:
+   - 限制變數數量在 5 個以內 (v1~v5)。
+   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
+2. **純數值計算邏輯 (Raw Logic)**:
+   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 涉及分數必須指名使用 `Fraction(n, d)`。
+3. **渲染範本 (Rendering Template)**:
+   - 提供一個 f-string 模板。
+   - 例：`question_text = f"計算 $${f(v1)} \\times {f(v2)} + \\left| {f(v3)} \\times {f(v4)} - {f(v5)} \\right|$$ 的值。"`
+   - 提醒 Coder 呼叫 `f = IntegerOps.fmt_num` 或 `f = FractionOps.format_latex`。
+
+現在，請辨識這張圖片中的數學結構DNA，並嚴格按照上述三段式格式輸出 MASTER_SPEC："""
             
             vision_resp = vision_client.generate_content(ocr_prompt, image_path=temp_path)
             ocr_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
@@ -233,16 +241,24 @@ def classify_input():
             from core.ai_wrapper import get_ai_client
             text_client = get_ai_client('vision_analyzer') # we can reuse the same model config for text logic
             
-            ocr_prompt = """你現在是數學結構分析師。當使用者提供文字 DNA 時，你必須產出三段式的食譜 (MASTER_SPEC)。【嚴禁輸出其他廢話】。
-請絕對遵守這三個硬性零件的格式：
-1. **變數槽位 (Variable Slots)**：明確指出需要幾個變數，範圍為何，如何確保整除或非零。
-例如：「定義 $v1, v2, v3, v4$ 為原始整數。其中 $v1, v2$ 範圍 $-10 \sim 15$，$v3, v4$ 用於除法，須確保 $v3 = v4 \\times k$ 以達成整除。」
-2. **原子運算步驟 (Atomic Logic)**：寫出純 Python 的數學算式，確保不會產生浮點數誤差。
-例如：「第一步：ans = (v1 + v2) * v3。第二步：如果 ans < 0 則如何...」
-3. **渲染範本 (Rendering Template)**：提供一個包含 $$ 符號的 f-string 模板，並指名呼叫哪個 API（如 fmt_num 或 format_latex）。
-例如：「使用 question_text = f"計算 $${f(v1)} + {f(v2)} \\times {f(v3)}$$"，其中 f 為 IntegerOps.fmt_num。」
+            ocr_prompt = """【角色】數學命題架構師 (Architect)
+【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
 
-現在，請根據以下使用者輸入的目標例題，嚴格按照上述三段式格式輸出分析結果：
+【輸出規範：MASTER_SPEC】
+你必須產出以下三個區塊，嚴禁廢話：
+
+1. **變數定義 (Variable Slots)**:
+   - 限制變數數量在 5 個以內 (v1~v5)。
+   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
+2. **純數值計算邏輯 (Raw Logic)**:
+   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 涉及分數必須指名使用 `Fraction(n, d)`。
+3. **渲染範本 (Rendering Template)**:
+   - 提供一個 f-string 模板。
+   - 例：`question_text = f"計算 $${f(v1)} \\times {f(v2)} + \\left| {f(v3)} \\times {f(v4)} - {f(v5)} \\right|$$ 的值。"`
+   - 提醒 Coder 呼叫 `f = IntegerOps.fmt_num` 或 `f = FractionOps.format_latex`。
+
+現在，請根據以下使用者輸入的目標例題 (DNA)，嚴格按照上述三段式格式輸出 MASTER_SPEC：
 目標例題：""" + text_data.strip()
 
             resp = text_client.generate_content(ocr_prompt)
