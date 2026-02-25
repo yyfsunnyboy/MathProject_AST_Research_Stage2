@@ -208,7 +208,16 @@ def classify_input():
             # 1. Vision OCR
             from core.ai_wrapper import get_ai_client
             vision_client = get_ai_client('vision_analyzer')
-            ocr_prompt = "請幫我辨識這張圖片中的數學式或題目文字。只輸出辨識到的純文字，不需要任何額外的解釋或Markdown標記。如果裡面有未知變數請照實輸出。"
+            ocr_prompt = """你現在是數學結構分析師。當使用者提供圖片或文字 DNA 時，你必須產出三段式的食譜 (MASTER_SPEC)。【嚴禁輸出其他廢話】。
+請絕對遵守這三個硬性零件的格式：
+1. **變數槽位 (Variable Slots)**：明確指出需要幾個變數，範圍為何，如何確保整除或非零。
+例如：「定義 $v1, v2, v3, v4$ 為原始整數。其中 $v1, v2$ 範圍 $-10 \sim 15$，$v3, v4$ 用於除法，須確保 $v3 = v4 \\times k$ 以達成整除。」
+2. **原子運算步驟 (Atomic Logic)**：寫出純 Python 的數學算式，確保不會產生浮點數誤差。
+例如：「第一步：ans = (v1 + v2) * v3。第二步：如果 ans < 0 則如何...」
+3. **渲染範本 (Rendering Template)**：提供一個包含 $$ 符號的 f-string 模板，並指名呼叫哪個 API（如 fmt_num 或 format_latex）。
+例如：「使用 question_text = f"計算 $${f(v1)} + {f(v2)} \\times {f(v3)}$$"，其中 f 為 IntegerOps.fmt_num。」
+
+現在，請辨識這張圖片中的數學式或題目文字，並嚴格按照上述三段式格式輸出分析結果："""
             
             vision_resp = vision_client.generate_content(ocr_prompt, image_path=temp_path)
             ocr_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
@@ -220,9 +229,25 @@ def classify_input():
                 os.remove(temp_path)
         
         elif text_data:
-            process_logs.append("> 📝 Detected Text Payload. Skipping OCR Phase.")
-            ocr_text = text_data.strip()
+            process_logs.append("> 📝 Detected Text Payload. Generating MASTER_SPEC via Gemini Text Model...")
+            from core.ai_wrapper import get_ai_client
+            text_client = get_ai_client('vision_analyzer') # we can reuse the same model config for text logic
             
+            ocr_prompt = """你現在是數學結構分析師。當使用者提供文字 DNA 時，你必須產出三段式的食譜 (MASTER_SPEC)。【嚴禁輸出其他廢話】。
+請絕對遵守這三個硬性零件的格式：
+1. **變數槽位 (Variable Slots)**：明確指出需要幾個變數，範圍為何，如何確保整除或非零。
+例如：「定義 $v1, v2, v3, v4$ 為原始整數。其中 $v1, v2$ 範圍 $-10 \sim 15$，$v3, v4$ 用於除法，須確保 $v3 = v4 \\times k$ 以達成整除。」
+2. **原子運算步驟 (Atomic Logic)**：寫出純 Python 的數學算式，確保不會產生浮點數誤差。
+例如：「第一步：ans = (v1 + v2) * v3。第二步：如果 ans < 0 則如何...」
+3. **渲染範本 (Rendering Template)**：提供一個包含 $$ 符號的 f-string 模板，並指名呼叫哪個 API（如 fmt_num 或 format_latex）。
+例如：「使用 question_text = f"計算 $${f(v1)} + {f(v2)} \\times {f(v3)}$$"，其中 f 為 IntegerOps.fmt_num。」
+
+現在，請根據以下使用者輸入的目標例題，嚴格按照上述三段式格式輸出分析結果：
+目標例題：""" + text_data.strip()
+
+            resp = text_client.generate_content(ocr_prompt)
+            ocr_text = resp.text.strip() if hasattr(resp, 'text') else str(resp)
+
         else:
             return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
 
@@ -247,14 +272,15 @@ def classify_input():
                     with open(ab1_prompt_path, "r", encoding="utf-8") as f:
                         ab1_template = f.read()
                     import re
+                    # 注意：現在 ocr_text 是落落長的 MASTER_SPEC，我們只把開頭的目標 DNA 抽出來給 Ab1 比較公平
                     bare_prompt = re.sub(
                         r"【參考例題】.*?【程式要求】", 
-                        f"【參考例題】\n{ocr_text}\n\n【程式要求】", 
+                        f"【參考例題】\n根據以下結構產生類似題目：\n{text_data if text_data else '請參考上述圖片結構'}\n\n【程式要求】", 
                         ab1_template, 
                         flags=re.DOTALL
                     )
                 else:
-                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{ocr_text}\n直接輸出代碼。"
+                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{text_data if text_data else '請參考上述圖片結構'}\n直接輸出代碼。"
 
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 clean_tools = ""
@@ -288,9 +314,9 @@ def classify_input():
 {clean_tools.strip()}
 
 【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
-- **目標結構**：{ocr_text}
-- **執行步驟**：
-[等待 Architect 提供 Step-by-Step Logic Recipe...]
+這是一位架構師為您提取的精準架構，請您「直接翻譯並實作」成 Python 代碼：
+
+{ocr_text}
 
 【3. 執行憲法】
 - **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
