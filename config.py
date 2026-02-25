@@ -92,7 +92,7 @@ class Config:
         'qwen3-14b': {
             'provider': 'local',
             'model': 'qwen3-14b-nothink:latest', # [Updated] User specific custom model
-            'temperature': 0.3,                  # [Note] Keep slight creativity to avoid logic loops
+            'temperature': 0.2,                  # [Note] Keep slight creativity to avoid logic loops
             'max_tokens': 2048,                  # User requested 2048 to prevent truncation
             'extra_body': {
                 'num_ctx': 32768,
@@ -111,7 +111,7 @@ class Config:
         'qwen2.5-coder-14b': {
             'provider': 'local',
             'model': 'qwen2.5-coder:14b', 
-            'temperature': 0.7,
+            'temperature': 0.2,
             'max_tokens': 2048,
             'extra_body': {
                 'num_ctx': 16384,

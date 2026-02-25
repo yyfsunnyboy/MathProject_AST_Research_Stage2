@@ -108,10 +108,11 @@ class AdaptiveScaler:
             traceback.print_exc()
             raise Exception(f"代碼生成或執行失敗: {e}")
 
-    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False):
+    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False, master_spec=None):
         """
         根據輸入例題，完全模仿題型生成 count 題。
         ablation_mode: 若為 True (Ab1 模式)，跳過 SKILL.md 讀取與 Healer 修復，使用原生 Prompt。
+        master_spec: 從前端 /api/classify 預先生成的 Architect 食譜，避免重複呼叫。
         """
         # 1. 根據您的正確清單進行資源定位 (Domain Mapping)
         domain_config = {
@@ -171,8 +172,47 @@ class AdaptiveScaler:
 直接輸出代碼。
 """
                 else:
-                    # 預處理 input_text 確保有 LaTeX 基本結構
-                    input_text_safe = self._sanitize_input_dna(input_text)
+                    # =========================================================
+                    # [Trinity Architecture: 第一棒 Architect]
+                    # 動態呼叫 Gemini 分析師，將 raw input_text 轉為 MASTER_SPEC
+                    # =========================================================
+                    if master_spec:
+                        print(f"✅ [Architect] 使用前端已生成之 MASTER_SPEC！跳過 Gemini API 呼叫...")
+                        master_spec_text = master_spec
+                    else:
+                        try:
+                            print(f"🧠 [Architect] 請求 Gemini 解析結構 DNA...")
+                            from core.ai_wrapper import get_ai_client
+                            architect_client = get_ai_client('architect')
+                            
+                            architect_prompt = f"""【角色】數學命題架構師 (Architect)
+【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
+
+【輸出規範：MASTER_SPEC】
+你必須產出以下三個區塊，嚴禁廢話：
+
+1. **變數定義 (Variable Slots)**:
+   - 限制變數數量在 5 個以內 (v1~v5)。
+   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
+2. **純數值計算邏輯 (Raw Logic)**:
+   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 涉及分數必須指名使用 `Fraction(n, d)`。
+3. **渲染範本 (Rendering Template)**:
+   - 提供一個 f-string 模板。
+   - 例：`question_text = f"計算 $${{f(v1)}} \\times {{f(v2)}} + \\left| {{f(v3)}} \\times {{f(v4)}} - {{f(v5)}} \\right|$$ 的值。"`
+   - 提醒 Coder 呼叫 `{target_ops}.fmt_num` 或 `{target_ops}.format_latex` (依技能而定)。
+
+現在，請根據以下使用者輸入的目標例題 (DNA)，嚴格按照上述三段式格式輸出 MASTER_SPEC：
+目標例題：{input_text.strip()}"""
+
+                            resp = architect_client.generate_content(architect_prompt)
+                            master_spec_text = resp.text.strip() if hasattr(resp, 'text') else str(resp)
+                            if master_spec_text.startswith("Error:"):
+                                raise ValueError(master_spec_text)
+                            print(f"✅ [Architect] MASTER_SPEC 產出完成！長度: {len(master_spec_text)} 字元")
+                        except Exception as e:
+                            print(f"❌ [Architect] 結構分析失敗，退回原始文字: {str(e)[:100]}...")
+                            master_spec_text = self._sanitize_input_dna(input_text)
                     
                     # 神盾級縮減 Prompt (JIT 版) 適用於所有 Ab3 模型
                     prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
@@ -181,7 +221,7 @@ class AdaptiveScaler:
 {skill_spec_distilled}
 
 【2. 施工食譜 (MASTER_SPEC)】
-{input_text_safe}
+{master_spec_text}
 
 【3. 執行憲法 (不可撼動)】
 1. **先計算，後排版**：嚴禁將格式化後的字串（如 "(-5)"）參與 `+ - * / //` 運算。

@@ -205,72 +205,68 @@ def classify_input():
                 f.write(image_bytes)
 
             process_logs.append("> 👁️ Sending to Gemini Vision Model for OCR...")
-            # 1. Vision OCR
+            # 1. Vision OCR (Basic Text Extraction)
             from core.ai_wrapper import get_ai_client
             vision_client = get_ai_client('vision_analyzer')
-            ocr_prompt = """【角色】數學命題架構師 (Architect)
-【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
-
-【輸出規範：MASTER_SPEC】
-你必須產出以下三個區塊，嚴禁廢話：
-
-1. **變數定義 (Variable Slots)**:
-   - 限制變數數量在 5 個以內 (v1~v5)。
-   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
-2. **純數值計算邏輯 (Raw Logic)**:
-   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
-   - 涉及分數必須指名使用 `Fraction(n, d)`。
-3. **渲染範本 (Rendering Template)**:
-   - 提供一個 f-string 模板。
-   - 例：`question_text = f"計算 $${f(v1)} \\times {f(v2)} + \\left| {f(v3)} \\times {f(v4)} - {f(v5)} \\right|$$ 的值。"`
-   - 提醒 Coder 呼叫 `f = IntegerOps.fmt_num` 或 `f = FractionOps.format_latex`。
-
-現在，請辨識這張圖片中的數學結構DNA，並嚴格按照上述三段式格式輸出 MASTER_SPEC："""
+            ocr_prompt = "請幫我辨識這張圖片中的數學式或題目文字。只輸出辨識到的純文字，不需要任何額外的解釋或Markdown標記。如果裡面有未知變數請照實輸出。"
             
             vision_resp = vision_client.generate_content(ocr_prompt, image_path=temp_path)
-            ocr_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
+            plain_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
             
-            display_text = ocr_text[:30] + "..." if len(ocr_text) > 30 else ocr_text
+            display_text = plain_text[:30] + "..." if len(plain_text) > 30 else plain_text
             process_logs.append(f"> 📄 OCR Extraction Complete: [{display_text}]")
             
-            if os.path.exists(temp_path): 
-                os.remove(temp_path)
+            try:
+                if os.path.exists(temp_path): 
+                    os.remove(temp_path)
+            except Exception as e:
+                process_logs.append(f"> ⚠️ Skipping image cleanup due to file lock: {e}")
         
         elif text_data:
-            process_logs.append("> 📝 Detected Text Payload. Generating MASTER_SPEC via Gemini Text Model...")
-            from core.ai_wrapper import get_ai_client
-            text_client = get_ai_client('vision_analyzer') # we can reuse the same model config for text logic
-            
-            ocr_prompt = """【角色】數學命題架構師 (Architect)
-【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
-
-【輸出規範：MASTER_SPEC】
-你必須產出以下三個區塊，嚴禁廢話：
-
-1. **變數定義 (Variable Slots)**:
-   - 限制變數數量在 5 個以內 (v1~v5)。
-   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
-2. **純數值計算邏輯 (Raw Logic)**:
-   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
-   - 涉及分數必須指名使用 `Fraction(n, d)`。
-3. **渲染範本 (Rendering Template)**:
-   - 提供一個 f-string 模板。
-   - 例：`question_text = f"計算 $${f(v1)} \\times {f(v2)} + \\left| {f(v3)} \\times {f(v4)} - {f(v5)} \\right|$$ 的值。"`
-   - 提醒 Coder 呼叫 `f = IntegerOps.fmt_num` 或 `f = FractionOps.format_latex`。
-
-現在，請根據以下使用者輸入的目標例題 (DNA)，嚴格按照上述三段式格式輸出 MASTER_SPEC：
-目標例題：""" + text_data.strip()
-
-            resp = text_client.generate_content(ocr_prompt)
-            ocr_text = resp.text.strip() if hasattr(resp, 'text') else str(resp)
+            process_logs.append("> 📝 Detected Text Payload. Skipping OCR Phase.")
+            plain_text = text_data.strip()
 
         else:
             return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
 
+        # === [NEW] 步驟 1.5: 呼叫 Architect 解析 MASTER_SPEC ===
+        process_logs.append("> 🧠 Calling Architect to construct MASTER_SPEC...")
+        try:
+            from core.ai_wrapper import get_ai_client
+            architect_client = get_ai_client('architect')
+            architect_prompt = f"""【角色】數學命題架構師 (Architect)
+【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
+
+【輸出規範：MASTER_SPEC】
+你必須產出以下三個區塊，嚴禁廢話：
+
+1. **變數定義 (Variable Slots)**:
+   - 限制變數數量在 5 個以內 (v1~v5)。
+   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
+2. **純數值計算邏輯 (Raw Logic)**:
+   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 涉及分數必須指名使用 `Fraction(n, d)`。
+3. **渲染範本 (Rendering Template)**:
+   - 提供一個 f-string 模板。
+   - 例：`question_text = f"計算 $${{f(v1)}} \\times {{f(v2)}} + \\left| {{f(v3)}} \\times {{f(v4)}} - {{f(v5)}} \\right|$$ 的值。"`
+   - 提醒 Coder 呼叫 對應技能的 format 函數。
+
+現在，請根據這段數學 DNA，嚴格按照上述格式輸出 MASTER_SPEC：
+{plain_text}"""
+            
+            arch_resp = architect_client.generate_content(architect_prompt)
+            master_spec = arch_resp.text.strip() if hasattr(arch_resp, 'text') else str(arch_resp)
+            if master_spec.startswith("Error:"):
+                raise ValueError(master_spec)
+            process_logs.append("> ✅ MASTER_SPEC Built Successfully.")
+        except Exception as e:
+            process_logs.append(f"> ⚠️ Architect Parse Failed: {str(e)[:100]}...")
+            master_spec = plain_text
+
         process_logs.append("> 🧠 Extracting semantic markers for DNA alignment...")
         # 2. 分類 Skill
         engine = get_engine()
-        skill_name = engine.classifier.classify(input_text=ocr_text)
+        skill_name = engine.classifier.classify(input_text=plain_text)
         
         bare_prompt = ""
         scaffold_prompt = ""
@@ -288,15 +284,15 @@ def classify_input():
                     with open(ab1_prompt_path, "r", encoding="utf-8") as f:
                         ab1_template = f.read()
                     import re
-                    # 注意：現在 ocr_text 是落落長的 MASTER_SPEC，我們只把開頭的目標 DNA 抽出來給 Ab1 比較公平
+                    # 使用 plain_text 給 Ab1
                     bare_prompt = re.sub(
                         r"【參考例題】.*?【程式要求】", 
-                        f"【參考例題】\n根據以下結構產生類似題目：\n{text_data if text_data else '請參考上述圖片結構'}\n\n【程式要求】", 
+                        f"【參考例題】\n根據以下結構產生類似題目：\n{plain_text}\n\n【程式要求】", 
                         ab1_template, 
                         flags=re.DOTALL
                     )
                 else:
-                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{text_data if text_data else '請參考上述圖片結構'}\n直接輸出代碼。"
+                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{plain_text}\n直接輸出代碼。"
 
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 clean_tools = ""
@@ -332,7 +328,7 @@ def classify_input():
 【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
 這是一位架構師為您提取的精準架構，請您「直接翻譯並實作」成 Python 代碼：
 
-{ocr_text}
+{master_spec}
 
 【3. 執行憲法】
 - **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
@@ -358,7 +354,8 @@ def generate(**kwargs):
 
         return jsonify({
             "success": True,
-            "ocr_text": ocr_text,
+            "ocr_text": plain_text,  # 回傳純文字給 textbox
+            "master_spec": master_spec,
             "skill_id": skill_name,
             "confidence_scores": confidence,
             "process_logs": process_logs,

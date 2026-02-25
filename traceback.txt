@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "E:\Python\MathProject_AST_Research\core\routes\live_show.py", line 220, in classify_input
+    if os.path.exists(temp_path):
+    ^^^^^^^^^^^^^^^^^^^^
+PermissionError: [WinError 32] 程序無法存取檔案，因為檔案正由另一個程序使用。: 'E:\\Python\\MathProject_AST_Research\\uploads\\temp_canvas\\canvas_91fecf82b1bf4c46b72fbdc8a3831746.png'

@@ -13,7 +13,7 @@ class MathEngine:
         self.classifier = SkillClassifier()
         self.scaler = AdaptiveScaler()
 
-    def generate_practice_set(self, input_text=None, image_path=None, count=5, model_id=None, ablation_mode=False):
+    def generate_practice_set(self, input_text=None, image_path=None, count=5, model_id=None, ablation_mode=False, master_spec=None):
         """
         根據輸入生成依照例題仿製的練習題。
         """
@@ -40,6 +40,8 @@ class MathEngine:
             kwargs = {}
             if model_id is not None:
                 kwargs['model_id'] = model_id
+            if master_spec is not None:
+                kwargs['master_spec'] = master_spec
                 
             if count > 5:
                 # 判斷大於 5 題就使用 batch 模式
