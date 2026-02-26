@@ -140,8 +140,16 @@ def show_model_selection_menu():
 
 def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     """
-    從 agent_skills/{skill_name}/ 讀取 Prompt
+    優先從 experiments/golden_prompts/temp 讀取 Prompt，若無則 fallback 到 agent_skills
     """
+    ab_id = "Ab1" if ablation_target == "Ab1" else "Ab2"
+    golden_path = os.path.join(PROJECT_ROOT, "experiments", "golden_prompts", "temp", f"{skill_name}_{ab_id}.txt")
+    
+    if os.path.exists(golden_path):
+        with open(golden_path, "r", encoding="utf-8") as f:
+            return f.read()
+
+    # Fallback logic
     if ablation_target == "Ab1":
         path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "experiments", "ab1_bare_prompt.md")
     else:
@@ -151,7 +159,7 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
         with open(path, "r", encoding="utf-8") as f:
             return f.read()
             
-    print(f"⚠️ Prompt file not found: {path}")
+    print(f"⚠️ Prompt file not found: {path} nor {golden_path}")
     return None
 
 def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False, forced_run_ts=None):
@@ -344,7 +352,10 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             healer_applied = False  # [V7.5 FIX] Same reason
             try:
                 # A. Generate
-                response = call_ai_with_retry(client, skill_prompt, max_retries=3, timeout=300)
+                # [NEW] Check logic without `/no_think` as it might be causing infinite generation loops
+                final_prompt = skill_prompt.strip() + "\n\n/no_think"
+                
+                response = call_ai_with_retry(client, final_prompt, max_retries=3, timeout=300)
                 if hasattr(response, 'text'):
                     raw_code = response.text
                 else:

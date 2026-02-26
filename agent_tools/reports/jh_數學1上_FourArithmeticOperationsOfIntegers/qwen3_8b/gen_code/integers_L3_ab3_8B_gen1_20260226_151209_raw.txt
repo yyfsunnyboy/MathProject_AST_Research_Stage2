@@ -1,0 +1,135 @@
+# 數學題目生成器（整數四則運算）
+
+## 題目生成邏輯說明
+
+### 1. 數值範圍
+- Level 1 (兩項): -20 ~ 20
+- Level 2 (三項混合): -50 ~ 50
+- Level 3 (四項混合): -100 ~ 100
+
+### 2. 運算符
+- 乘法：`\\times`
+- 除法：`\\div`
+
+### 3. 題目格式
+- 使用 `$$...$$` 包裝算式
+- 負數自動加括號：`(-5)`
+
+### 4. 數值生成
+- 使用 `IntegerOps.rand_nz(a, b)` 生成非零、非 ±1 的整數
+- 除法時先計算商數與除數，再反推被除數以確保整除
+
+## 生成範例
+
+```python
+import random
+import math
+
+def generate(level=1, **kwargs):
+    if level == 1:
+        r_min, r_max = -20, 20
+        div_max = 10
+    elif level == 2:
+        r_min, r_max = -50, 50
+        div_max = 20
+    else:
+        r_min, r_max = -100, 100
+        div_max = 30
+        
+    def rand_nz(a, b):
+        choices = [x for x in range(a, b+1) if x != 0 and x not in [1, -1]]
+        if not choices: return 2
+        return random.choice(choices)
+
+    fmt = IntegerOps.fmt_num
+
+    if level == 1:
+        op = random.choice(['*', '/'])
+        if op == '*':
+            a = rand_nz(-15, 15)
+            b = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"
+            ans = a * b
+        else:
+            b = rand_nz(-15, 15)
+            ans = rand_nz(-10, 10)
+            a = b * ans
+            question_text = f"計算 $${fmt(a)} \\div {fmt(b)}$$ 的值。"
+            
+    elif level == 2:
+        b = rand_nz(-15, 15)
+        temp_ans = rand_nz(-15, 15)
+        a = b * temp_ans
+        c = rand_nz(-10, 10)
+        
+        if random.choice([True, False]):
+            question_text = f"計算 $${fmt(a)} \\div {fmt(b)} \\times {fmt(c)}$$ 的值。"
+            ans = (a // b) * c
+        else:
+            c2 = rand_nz(-15, 15)
+            q = rand_nz(-5, 5)
+            b2 = c2 * q
+            a2 = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a2)} \\times {fmt(b2)} \\div {fmt(c2)}$$ 的值。"
+            ans = a2 * (b2 // c2)
+
+    else:
+        if random.choice([True, False]):
+            a = rand_nz(-10, 10)
+            b = rand_nz(-10, 10)
+            d = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
+            c = d * q
+            question_text = f"計算 $${fmt(a)} \\times {fmt(b)} + {fmt(c)} \\div {fmt(d)}$$ 的值。"
+            ans = a * b + (c // d)
+        else:
+            a = rand_nz(-20, 20)
+            c = rand_nz(-15, 15)
+            q = rand_nz(-10, 10)
+            b = c * q
+            d = rand_nz(-10, 10)
+            question_text = f"計算 $${fmt(a)} - {fmt(b)} \\div {fmt(c)} \\times {fmt(d)}$$ 的值。"
+            ans = a - (b // c) * d
+
+    return {
+        'question_text': question_text,
+        'answer': '',
+        'correct_answer': str(int(ans)),
+        'mode': 1
+    }
+
+def check(user_answer, correct_answer):
+    try:
+        if str(user_answer).strip() == str(correct_answer).strip():
+            return {'correct': True, 'result': '正確'}
+        if abs(float(user_answer) - float(correct_answer)) < 1e-6:
+            return {'correct': True, 'result': '正確'}
+    except:
+        pass
+    return {'correct': False, 'result': '錯誤'}
+```
+
+## 使用範例
+
+```python
+# 生成 Level 1 題目
+question = generate(level=1)
+print(question['question_text'])  # 輸出：計算 $(-5) \times (3)$ 的值。
+print(question['correct_answer'])  # 輸出：-15
+
+# 生成 Level 2 題目
+question = generate(level=2)
+print(question['question_text'])  # 輸出：計算 $(-60) \div (-5) \times (4)$ 的值。
+print(question['correct_answer'])  # 輸出：48
+
+# 生成 Level 3 題目
+question = generate(level=3)
+print(question['question_text'])  # 輸出：計算 $(-10) \times (7) + (-60) \div (-15)$ 的值。
+print(question['correct_answer'])  # 輸出：-70
+```
+
+## 注意事項
+1. 所有計算必須使用標準 Python 運算符（+、-、*、//）
+2. 除法時必須先計算商數與除數，再反推被除數以確保整除
+3. 禁止使用 `eval` 或 `safe_eval` 處理 `question_text` 字串求值
+4. 數學計算與字串排版必須分離，最後才呼叫 `IntegerOps.fmt_num(n)` 格式化數值

@@ -83,7 +83,7 @@ class AdaptiveScaler:
                 skill_spec = f.read()
             
             # 呼叫 AI (這裡我們跳過 DB logging，直接拿 code)
-            prompt = f"{skill_spec}\n\n【特別要求】請生成難度為 {difficulty_names.get(level)} 的題目內容。"
+            prompt = f"{skill_spec}\n\n【特別要求】請生成難度為 {difficulty_names.get(level)} 的題目內容。\n\n/no_think"
             
             # [Fix] 使用 Qwen3-8B 作為預設發案模型
             from config import Config
@@ -108,7 +108,7 @@ class AdaptiveScaler:
             traceback.print_exc()
             raise Exception(f"代碼生成或執行失敗: {e}")
 
-    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False, master_spec=None):
+    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False, master_spec=None, image_path=None):
         """
         根據輸入例題，完全模仿題型生成 count 題。
         ablation_mode: 若為 True (Ab1 模式)，跳過 SKILL.md 讀取與 Healer 修復，使用原生 Prompt。
@@ -191,15 +191,16 @@ class AdaptiveScaler:
 【輸出規範：MASTER_SPEC】
 你必須產出以下三個區塊，嚴禁廢話：
 
-1. **變數定義 (Variable Slots)**:
-   - 限制變數數量在 5 個以內 (v1~v5)。
-   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
+1. **邏輯塊與符號隨機化 (Logic Blocks)**:
+   - 符號必須隨機化：如 `op = random.choice(['+', '-', '*', '/'])` 或是其他隨機運算子，並對應 LaTeX 符號。
+   - 結構安全與整除：先計算子區塊結果為 d。若 op 為除法，必須由「商 * 除數」反推被除數（例如 `v1 = d * random.randint(2, 10)`）；若為其他則依難度隨機。
+   - 將 Level 的範圍限制直接合併進此處，決定變數的數值範圍。
 2. **純數值計算邏輯 (Raw Logic)**:
-   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 寫出完整的 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
    - 涉及分數必須指名使用 `Fraction(n, d)`。
 3. **渲染範本 (Rendering Template)**:
-   - 提供一個 f-string 模板。
-   - 例：`question_text = f"計算 $${{f(v1)}} \\times {{f(v2)}} + \\left| {{f(v3)}} \\times {{f(v4)}} - {{f(v5)}} \\right|$$ 的值。"`
+   - 提供一個 f-string 模板，配合對應技能的 format 函數（例如 IntegerOps.fmt_num 處理負數括號）。
+   - 例：`question_text = f"計算 $${{IntegerOps.fmt_num(v1)}} {{op_latex}} \\\\left[ {{IntegerOps.fmt_num(v2)}} \\\\times {{v3}} - {{v4}} \\\\right]$$ 的值。"`
    - 提醒 Coder 呼叫 `{target_ops}.fmt_num` 或 `{target_ops}.format_latex` (依技能而定)。
 
 現在，請根據以下使用者輸入的目標例題 (DNA)，嚴格按照上述三段式格式輸出 MASTER_SPEC：
@@ -226,8 +227,10 @@ class AdaptiveScaler:
 【3. 執行憲法 (不可撼動)】
 1. **先計算，後排版**：嚴禁將格式化後的字串（如 "(-5)"）參與 `+ - * / //` 運算。
 2. **類型防禦**：分數運算必須全程使用 `Fraction`，嚴禁產生 `float`。
-3. **渲染要求**：題目必須包含雙錢號 `$$...$$`，且絕對值符號必須轉義為 `\\left|` 與 `\\right|`。
-4. **禁止字母湯**：只准使用食譜中定義的 v1~v5 變數，嚴禁自行定義 a-z。
+3. **渲染要求**：題目必須包含雙錢號 `$$...$$`，且絕對值符號必須轉義為 `\\\\left|` 與 `\\\\right|`。
+4. **絕對禁止字母湯**：只准使用食譜中定義的 v1~v5 變數，嚴禁自行定義 a-z。
+5. **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
+6. **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
 
 【代碼起點】
 import random
@@ -247,8 +250,10 @@ def generate(**kwargs):
             from config import Config
             model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
             
+            prompt = prompt.strip() + "\n\n/no_think"
+            
             start_ai = time.time()
-            raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
+            raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config, image_path=image_path)
             ai_inference_time_sec = time.time() - start_ai
             
             clean_code, _ = _basic_cleanup(raw_code)
@@ -468,13 +473,13 @@ def generate(**kwargs):
             print(f"❌ 執行生成的程式碼時出錯: {e}")
             raise e
 
-    def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False):
+    def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False, **kwargs):
         """
         新增批量模式 (直接用 Python 迴圈高速產出 100 題)
         """
         print(f"🔄 正在為 {skill_name} 生產 {n} 題 (單次 AI 呼叫 + Python 高速迴圈)...")
         # 直接呼叫一次 custom_problems，要求他回傳 n 題，這也是在本地 Python 環境中跑 n 次 generate()
-        batches = self.generate_custom_problems(skill_name, input_text, count=n, model_id='qwen3-8b', ablation_mode=ablation_mode)
+        batches = self.generate_custom_problems(skill_name, input_text, count=n, ablation_mode=ablation_mode, **kwargs)
         return batches
 
 if __name__ == "__main__":

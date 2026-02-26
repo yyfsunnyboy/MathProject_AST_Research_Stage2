@@ -210,6 +210,9 @@ def generate_ab2_prompt(skill_id: str, master_spec: str, textbook_example: Textb
 """
             prompt = prompt.replace("### MASTER_SPEC:", textbook_ref + "### MASTER_SPEC:")
         
+        # [NEW] Append the strict no-think and no-markdown constraints for Qwen
+        prompt += "\n\n❌ 輸出 Markdown 代碼塊 → 直接寫 code\n⚠️ Output Python code ONLY. No introduction. No comments. No thinking.\n/no_think"
+
         logger.info(f"   ✅ Ab2 Prompt 生成完成 ({len(prompt)} chars)")
         return prompt
     except Exception as e:

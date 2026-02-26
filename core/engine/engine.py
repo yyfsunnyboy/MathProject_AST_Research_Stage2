@@ -42,6 +42,8 @@ class MathEngine:
                 kwargs['model_id'] = model_id
             if master_spec is not None:
                 kwargs['master_spec'] = master_spec
+            if image_path is not None:
+                kwargs['image_path'] = image_path
                 
             if count > 5:
                 # 判斷大於 5 題就使用 batch 模式

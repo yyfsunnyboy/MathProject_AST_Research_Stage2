@@ -1221,8 +1221,8 @@
                     <div id="badge-ab1" class="badge badge-standby">STANDBY</div>
                     <select id="model-select-ab1" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
-                        <option value="gemini-3-flash" selected>Gemini-3-Flash</option>
-                        <option value="pause" style="color: #e74c3c; font-weight: bold;">⏸ 暫停測試</option>
+                        <option value="pause" selected style="color: #e74c3c; font-weight: bold;">⏸ 暫停測試</option>
+                        <option value="gemini-3-flash">Gemini-3-Flash</option>
                         <option value="qwen3-8b">Qwen-8B</option>
                         <option value="qwen3-14b">Qwen-14B</option>
                     </select>
@@ -2122,16 +2122,29 @@
             btn.disabled = true;
             btn.innerHTML = '⚙️ Computing...';
 
+            // Fetch models early to know if we need to show perception engine logs for them
+            const modelIdAb1 = document.getElementById('model-select-ab1').value;
+            const modelIdAb3 = document.getElementById('model-select-ab3').value;
+
             // Ready engine logs
             const log1 = document.getElementById('log-ab1');
             const log3 = document.getElementById('log-ab3');
-            log1.innerHTML = 'AWAITING EXECUTION...';
-            log3.innerHTML = 'AWAITING EXECUTION...';
 
             resetDiagnostics();
 
-            log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
-            log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            if (modelIdAb1 === 'pause') {
+                log1.innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab1 Native LLM testing is paused.</span>';
+            } else {
+                log1.innerHTML = 'AWAITING EXECUTION...';
+                log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            }
+
+            if (modelIdAb3 === 'pause') {
+                log3.innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab3 Healer testing is paused.</span>';
+            } else {
+                log3.innerHTML = 'AWAITING EXECUTION...';
+                log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            }
 
             // Prepare unified payload
             let payload = {};
@@ -2187,19 +2200,23 @@
                     setSkillBadge(result.skill_id);
                     await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
 
-                    log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-                    log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-
-                    // [NEW] Inject Prompt Previews into Code Blocks
-                    if (result.bare_prompt) {
-                        const codeAb1 = document.getElementById('code-ab1');
-                        codeAb1.textContent = "=== BARE PROMPT PREVIEW ===\\n" + result.bare_prompt;
-                        codeAb1.style.color = "var(--text-muted)";
+                    if (modelIdAb1 !== 'pause') {
+                        log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                        // [NEW] Inject Prompt Previews into Code Blocks
+                        if (result.bare_prompt) {
+                            const codeAb1 = document.getElementById('code-ab1');
+                            codeAb1.textContent = "=== BARE PROMPT PREVIEW ===\\n" + result.bare_prompt;
+                            codeAb1.style.color = "var(--text-muted)";
+                        }
                     }
-                    if (result.scaffold_prompt) {
-                        const codeAb3 = document.getElementById('code-ab3');
-                        codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
-                        codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
+
+                    if (modelIdAb3 !== 'pause') {
+                        log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                        if (result.scaffold_prompt) {
+                            const codeAb3 = document.getElementById('code-ab3');
+                            codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
+                            codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
+                        }
                     }
 
                     // Show result panels early so user can read the prompts
@@ -2228,24 +2245,24 @@
             resetThoughtSandbox();
 
             // Parallel JSON generation requests
-            const modelIdAb3 = document.getElementById('model-select-ab3').value;
-            const modelIdAb1 = document.getElementById('model-select-ab1').value;
+            const modelIdAb3_submit = document.getElementById('model-select-ab3').value;
+            const modelIdAb1_submit = document.getElementById('model-select-ab1').value;
 
-            const p3 = fetchParams(input, false, modelIdAb3, result.master_spec)
+            const p3 = fetchParams(input, false, modelIdAb3_submit, result.master_spec)
                 .then(r2 => renderResult('ab3', r2))
                 .catch(err => renderResult('ab3', { error: err.message }));
 
             let p1;
-            if (modelIdAb1 === 'pause') {
+            if (modelIdAb1_submit === 'pause') {
                 document.getElementById('loader-ab1').classList.add('hidden');
                 document.getElementById('result-ab1').classList.remove('hidden');
                 document.getElementById('math-ab1').innerHTML = '<span style="color:#e74c3c; font-weight:bold;">⏸ 測試已暫停 (Pause Mode)</span>';
                 document.getElementById('code-ab1').textContent = '--- Ab1 Testing Paused ---';
                 setBadge('badge-ab1', 'badge-standby', '⏸ PAUSED');
-                document.getElementById('log-ab1').innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab1 Native LLM testing is paused.</span>';
+                // Removed the setting of log-ab1 here since we already set it initially to avoid flickering
                 p1 = Promise.resolve();
             } else {
-                p1 = fetchParams(input, true, modelIdAb1)
+                p1 = fetchParams(input, true, modelIdAb1_submit)
                     .then(r1 => renderResult('ab1', r1))
                     .catch(err => renderResult('ab1', { error: err.message }));
             }

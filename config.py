@@ -61,7 +61,7 @@ class Config:
         # 1. Google Gemini (Cloud)
         'gemini-3-flash': {
             'provider': 'google',
-            'model': 'gemini-3-flash-preview',
+            'model': 'gemini-2.5-flash',
             'temperature': 0.1,
             'max_tokens': 65536,
             'description': 'Gemini 3.0 Flash Preview (SOTA Cloud)',
@@ -91,11 +91,11 @@ class Config:
         # 2. Qwen 3 14B (Local) [Thinking Disabled via Modelfile]
         'qwen3-14b': {
             'provider': 'local',
-            'model': 'qwen3-14b-nothink:latest', # [Updated] User specific custom model
+            'model': 'qwen3:14b', # [Updated] Standard Qwen3 14B model
             'temperature': 0.2,                  # [Note] Keep slight creativity to avoid logic loops
             'max_tokens': 2048,                  # User requested 2048 to prevent truncation
             'extra_body': {
-                'num_ctx': 32768,
+                'num_ctx': 8192,
                 'num_gpu': -1,            
                 'num_batch': 512,         
                 'num_thread': 8,

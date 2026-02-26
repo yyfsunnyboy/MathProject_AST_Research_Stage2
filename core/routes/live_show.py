@@ -49,11 +49,27 @@ def generate_live():
     ablation_mode = data.get("ablation_mode", False)
     count = data.get("count", 1)
     model_id = data.get("model_id", "qwen3-8b")
+    master_spec = data.get("master_spec")
     
+    image_path = None
+    if input_text.startswith('[Image]'):
+        import base64, uuid, os
+        b64_data = input_text.split(',', 1)[1] if ',' in input_text else input_text.replace('[Image] ', '')
+        try:
+            img_bytes = base64.b64decode(b64_data)
+            os.makedirs("uploads", exist_ok=True)
+            img_name = f"live_generate_{uuid.uuid4().hex[:6]}.jpg"
+            image_path = os.path.join("uploads", img_name)
+            with open(image_path, "wb") as f:
+                f.write(img_bytes)
+            input_text = "請根據提供之圖片生成類似題型。"
+        except Exception as e:
+            print(f"Failed to decode image in generate_live: {e}")
+
     start_time = time.time()
     try:
         engine = get_engine()
-        output = engine.generate_practice_set(input_text=input_text, count=count, ablation_mode=ablation_mode, model_id=model_id)
+        output = engine.generate_practice_set(input_text=input_text, image_path=image_path, count=count, ablation_mode=ablation_mode, model_id=model_id, master_spec=master_spec)
         output["api_time"] = time.time() - start_time
 
         # ── Flatten debug_meta fields for the frontend ────────────────────
@@ -130,7 +146,7 @@ def stream_thought_ab1():
                         content_type='text/event-stream')
 
     # 建構 Ab1 zero-shot prompt（與 scaler.py 保持一致）
-    ab1_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{prompt_text}\n直接輸出代碼。"
+    ab1_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{prompt_text}\n直接輸出代碼。\n\n/no_think"
 
     def generate_sse():
         try:
@@ -206,11 +222,17 @@ def classify_input():
 
             process_logs.append("> 👁️ Sending to Gemini Vision Model for OCR...")
             # 1. Vision OCR (Basic Text Extraction)
-            from core.ai_wrapper import get_ai_client
+            from core.ai_wrapper import get_ai_client, call_ai_with_retry
             vision_client = get_ai_client('vision_analyzer')
             ocr_prompt = "請幫我辨識這張圖片中的數學式或題目文字。只輸出辨識到的純文字，不需要任何額外的解釋或Markdown標記。如果裡面有未知變數請照實輸出。"
             
-            vision_resp = vision_client.generate_content(ocr_prompt, image_path=temp_path)
+            vision_resp = call_ai_with_retry(
+                client=vision_client,
+                prompt=ocr_prompt,
+                image_path=temp_path,
+                max_retries=1,
+                timeout=30 # Add a strict timeout for OCR
+            )
             plain_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
             
             display_text = plain_text[:30] + "..." if len(plain_text) > 30 else plain_text
@@ -232,29 +254,34 @@ def classify_input():
         # === [NEW] 步驟 1.5: 呼叫 Architect 解析 MASTER_SPEC ===
         process_logs.append("> 🧠 Calling Architect to construct MASTER_SPEC...")
         try:
-            from core.ai_wrapper import get_ai_client
+            from core.ai_wrapper import get_ai_client, call_ai_with_retry
             architect_client = get_ai_client('architect')
             architect_prompt = f"""【角色】數學命題架構師 (Architect)
 【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
 
 【輸出規範：MASTER_SPEC】
-你必須產出以下三個區塊，嚴禁廢話：
+請以 Markdown 標題與條列式輸出 MASTER_SPEC，嚴禁使用 JSON。你必須產出以下三個區塊，嚴禁廢話：
 
-1. **變數定義 (Variable Slots)**:
-   - 限制變數數量在 5 個以內 (v1~v5)。
-   - 明確範圍與約束（例如：v3 必須是 v4 的倍數以確保整除）。
-2. **純數值計算邏輯 (Raw Logic)**:
-   - 寫出 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+1. **變數定義**：
+   - 符號必須隨機化：如 `op = random.choice(['+', '-', '*', '/'])` 或是其他隨機運算子，並對應 LaTeX 符號。
+   - 將 Level 的範圍限制直接合併進此處，決定變數的數值範圍。
+2. **計算邏輯**：
+   - 寫出完整的 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
+   - 結構安全與整除：先計算子區塊結果為 d。若 op 為除法，必須由「商 * 除數」反推被除數（例如 `v1 = d * random.randint(2, 10)`）；若為其他則依難度隨機。
    - 涉及分數必須指名使用 `Fraction(n, d)`。
-3. **渲染範本 (Rendering Template)**:
-   - 提供一個 f-string 模板。
-   - 例：`question_text = f"計算 $${{f(v1)}} \\times {{f(v2)}} + \\left| {{f(v3)}} \\times {{f(v4)}} - {{f(v5)}} \\right|$$ 的值。"`
-   - 提醒 Coder 呼叫 對應技能的 format 函數。
+3. **渲染範本**：
+   - 提供一個 f-string 模板，配合對應技能的 format 函數（例如 IntegerOps.fmt_num 處理負數括號）。
+   - 例：`question_text = f"計算 $${{IntegerOps.fmt_num(v1)}} {{op_latex}} \\\\left[ {{IntegerOps.fmt_num(v2)}} \\\\times {{v3}} - {{v4}} \\\\right]$$ 的值。"`
 
 現在，請根據這段數學 DNA，嚴格按照上述格式輸出 MASTER_SPEC：
 {plain_text}"""
             
-            arch_resp = architect_client.generate_content(architect_prompt)
+            arch_resp = call_ai_with_retry(
+                client=architect_client,
+                prompt=architect_prompt,
+                max_retries=1,
+                timeout=30 # strict timeout for Architect
+            )
             master_spec = arch_resp.text.strip() if hasattr(arch_resp, 'text') else str(arch_resp)
             if master_spec.startswith("Error:"):
                 raise ValueError(master_spec)
@@ -333,6 +360,9 @@ def classify_input():
 【3. 執行憲法】
 - **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
 - **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
+- **絕對禁止字母湯**：嚴禁定義 a, b, c, d... 等無意義變數，必須統一使用 v1, v2, v3...。
+- **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
+- **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
 - **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
 - **渲染規範**：數學式必須用 $$...$$ 包裹。
 
@@ -352,6 +382,11 @@ def generate(**kwargs):
             process_logs.append("> ⚠️ DNA Match Failed: Falling back to Unknown.")
             confidence = 30
 
+        if bare_prompt:
+            bare_prompt = bare_prompt.strip() + "\n\n/no_think"
+        if scaffold_prompt:
+            scaffold_prompt = scaffold_prompt.strip() + "\n\n/no_think"
+        
         return jsonify({
             "success": True,
             "ocr_text": plain_text,  # 回傳純文字給 textbox
@@ -472,7 +507,7 @@ def architect_to_coder():
         process_logs.append("> 🧠 Sending to Gemini Architect (Vision & Logic Deconstruction)...")
         architect_client = get_ai_client('architect')
         
-        user_prompt = "請分析以下題目（圖片或文字），並嚴格按照 JSON 格式回傳 OCR、分類、與食譜。"
+        user_prompt = "請分析以下題目（圖片或文字），並嚴格以 Markdown 標题與條列式輸出 MASTER_SPEC，嚴禁使用 JSON。你必須產出：變數定義、計算邏輯、渲染範本三部分。"
         if text_data:
             user_prompt += f"\n\n題目文字：{text_data}"
             
@@ -484,32 +519,17 @@ def architect_to_coder():
         else:
             response = architect_client.generate_content(full_prompt)
             
-        json_str = response.text.strip()
+        master_spec_md = response.text.strip()
         
-        # 把被 Markdown codeblock 包覆的部分去掉
-        json_str = re.sub(r'^```json\s*', '', json_str)
-        json_str = re.sub(r'```\s*$', '', json_str)
+        # 由於改用 Markdown 輸出，這裡不再嘗試 JSON 解析，直接把結果傳給前端及後續。
+        # 原本的 skill_name 也可由引擎的分類器來分類處理，如前一支 API 的方式
+        engine = get_engine()
+        ocr_text = text_data or "Image content processed"
+        skill_name = engine.classifier.classify(input_text=ocr_text)
         
-        try:
-            architect_output = json.loads(json_str)
-        except Exception as e:
-            process_logs.append(f"> ❌ Failed to parse JSON: {e}")
-            architect_output = {
-                "ocr_result": text_data or "Unknown",
-                "skill_name": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-                "logic_recipe": ["[解析失敗] 隨機整數四則"],
-                "variable_plan": "res = a + b",
-                "latex_template": "{a} + {b}",
-                "special_notes": ""
-            }
-        
-        ocr_text = architect_output.get("ocr_result", "")
-        skill_name = architect_output.get("skill_name", "jh_數學1上_FourArithmeticOperationsOfIntegers")
-        logic_recipe = architect_output.get("logic_recipe", [])
-        
+        process_logs.append(f"> ✅ Formatted Markdown Spec Built.")
         process_logs.append(f"> 📄 OCR Extracted: {ocr_text[:30] + ('...' if len(ocr_text)>30 else '')}")
         process_logs.append(f"> ✅ Skill Aligned: {skill_name}")
-        process_logs.append(f"> 📝 Logic Recipe Generated ({len(logic_recipe)} steps)")
         
         # === 步驟 2: 組合 SCAFFOLD PROMPT ===
         engine = get_engine()
@@ -545,21 +565,22 @@ def architect_to_coder():
                 else:
                     clean_tools = "- 這是基本題型，請使用基礎四則運算與 random 套件。"
             
-            recipe_text = "\n".join(logic_recipe)
-            
             scaffold_prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
 
 【1. 可用工具 (Domain API)】
 {clean_tools.strip()}
 
 【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
-- **目標結構**：{ocr_text}
-- **執行步驟**：
-{recipe_text}
+這是一位架構師為您提取的精準架構，請您「直接翻譯並實作」成 Python 代碼：
+
+{master_spec_md}
 
 【3. 執行憲法】
 - **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
 - **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
+- **絕對禁止字母湯**：嚴禁定義 a, b, c, d... 等無意義變數，必須統一使用 v1, v2, v3...。
+- **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
+- **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
 - **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
 - **渲染規範**：數學式必須用 $$...$$ 包裹。
 
@@ -590,6 +611,11 @@ def generate(**kwargs):
             bare_prompt = f"請寫一個 generate() 函式，參考：\n{ocr_text}\n直接輸出代碼。"
 
         # === 步驟 3: 呼叫 Coder (Qwen) ===
+        if bare_prompt:
+            bare_prompt = bare_prompt.strip() + "\n\n/no_think"
+        if scaffold_prompt:
+            scaffold_prompt = scaffold_prompt.strip() + "\n\n/no_think"
+            
         process_logs.append("> 💻 Relegating code generation to Qwen-8B Local Coder...")
         coder_client = get_ai_client('coder')
         code_resp = coder_client.generate_content(scaffold_prompt)
@@ -607,7 +633,7 @@ def generate(**kwargs):
 
         return jsonify({
             "success": True,
-            "architect_json": architect_output,
+            "architect_json": {"master_spec_md": master_spec_md},  # 回傳 MD 字串，相容前端所需結構
             "ocr_text": ocr_text,
             "skill_id": skill_name,
             "process_logs": process_logs,

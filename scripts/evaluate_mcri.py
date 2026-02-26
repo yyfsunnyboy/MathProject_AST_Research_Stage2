@@ -151,21 +151,28 @@ def safe_execution_context():
     return SafeExecutionContext()
 
 
+import _thread
+import threading
+
 @contextmanager
 def time_limit(seconds: int):
     """
     跨平台超時控制
-    Windows 不支援 signal.alarm，使用替代方案
+    Windows 不支援 signal.alarm，使用 _thread.interrupt_main() 強制中斷
     """
     def timeout_handler():
         raise TimeoutError(f"執行超過 {seconds} 秒")
     
     if sys.platform == 'win32':
-        # Windows: 使用簡單計時器（非精確）
-        start_time = time.time()
-        yield
-        if time.time() - start_time > seconds:
-            raise TimeoutError(f"執行超過 {seconds} 秒")
+        # Windows: 使用 Timer 執行緒強制觸發 KeyboardInterrupt
+        timer = threading.Timer(seconds, _thread.interrupt_main)
+        timer.start()
+        try:
+            yield
+        except KeyboardInterrupt:
+            timeout_handler()
+        finally:
+            timer.cancel()
     else:
         # Unix: 使用 signal
         signal.signal(signal.SIGALRM, lambda s, f: timeout_handler())

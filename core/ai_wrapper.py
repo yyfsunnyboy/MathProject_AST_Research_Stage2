@@ -547,27 +547,9 @@ def call_ai_with_retry(client, prompt, image_path=None, max_retries=3, retry_del
             if attempt > 0 and verbose:
                  print(f"   🔄 AI 生成重試 (Attempt {attempt+1}/{max_retries})...")
             
-            # [執行請求 with Timeout Protection]
-            # [FIX 2026-02-14] Manually manage Executor to avoid blocking on __exit__
-            # With `with ThreadPoolExecutor`, it calls shutdown(wait=True) which waits for stuck threads
-            executor = ThreadPoolExecutor(max_workers=1)
-            future = executor.submit(client.generate_content, prompt, image_path=image_path)
-            try:
-                response = future.result(timeout=timeout)
-                # Success: Return response and shutdown
-                executor.shutdown(wait=False)
-                return response
-            except FuturesTimeoutError:
-                # Timeout: Kill/Abandon the stuck thread immediately
-                # Don't wait for it to finish (that defeats the purpose of timeout)
-                future.cancel()
-                executor.shutdown(wait=False, cancel_futures=True)
-                raise TimeoutError(f"AI request timed out after {timeout} seconds")
-            except Exception as e:
-                # Other error
-                executor.shutdown(wait=False)
-                raise e
-            
+            # [執行請求] 直接同步呼叫，移除 ThreadPoolExecutor 以避免 Python 原生線程卡死
+            response = client.generate_content(prompt, image_path=image_path)
+            return response
         except Exception as e:
             last_exception = e
             if verbose:

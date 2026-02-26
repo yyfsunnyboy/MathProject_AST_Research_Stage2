@@ -388,12 +388,13 @@ def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False
     
     return prompt, topic, textbook_example
 
-def _call_ai(prompt, model_config=None):
+def _call_ai(prompt, model_config=None, image_path=None):
     """呼叫 AI 並回傳 raw_output, prompt_tokens, completion_tokens
     
     Args:
         prompt: 提示文本
         model_config: [NEW] 可选的模型配置字典，如果提供则使用，否则使用默认的 'coder' 角色
+        image_path: [NEW] 可选的图像路径，用于多模态视觉生成
     """
     # [NEW FIX 2026-02-06] 如果提供了 model_config，使用它；否则使用默认的 'coder' 角色
     if model_config:
@@ -424,7 +425,8 @@ def _call_ai(prompt, model_config=None):
     try:
         response = call_ai_with_retry(
             client=client, 
-            prompt=prompt, 
+            prompt=prompt,
+            image_path=image_path,
             max_retries=3, 
             retry_delay=5, 
             verbose=(VERBOSE_LEVEL >= 1)
