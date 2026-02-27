@@ -1,2 +1,0 @@
-﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-452e9efe-3102-459c-9584-13db914a3907,jh_數學2上_FourOperationsOfRadicals,1,Test_Model_Fix,3,3,3.5,6.06,-11.56,18.56,0.0,0.0,3.5,0.0,2.5,0.0,,-

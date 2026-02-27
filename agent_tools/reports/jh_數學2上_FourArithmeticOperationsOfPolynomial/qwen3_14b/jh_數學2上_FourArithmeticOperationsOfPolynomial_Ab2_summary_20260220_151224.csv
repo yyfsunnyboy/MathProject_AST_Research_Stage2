@@ -1,2 +1,0 @@
-﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-71d487d6-7f78-4065-b851-c8f4bdc6fdee,jh_數學2上_FourArithmeticOperationsOfPolynomial,2,qwen3-14b,6,18,87.94,4.03,83.72,92.17,10.0,5.0,47.0,40.94,17.0,2.39,,-

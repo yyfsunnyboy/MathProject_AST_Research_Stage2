@@ -6,11 +6,11 @@
 
 ## 1. 技術管線視覺化 (The Technical Pipeline)
 
-### **第一幕：感知層 (Multimodal Input)**
-- **動作**: 演示 Classifier 辨識手寫照片或螢幕截圖。
+### **第一幕：感知層 (Multimodal Input - Gemini Cloud)**
+- **動作**: 演示 Gemini 辨識手寫照片或螢幕截圖，並由 Gemini 鎖定相關技能。
 - **視覺亮點**: 
     - 右上角 `🧬 Skill DNA Identification` 區塊即時跳動。
-    - 顯示 `DNA Sequence` (辨識過程) 與最後鎖定的 `Target Skill`。
+    - 顯示 `DNA Sequence` (Gemini 辨識過程) 與最後鎖定的 `Target Skill`。
 
 ### **第二幕：基因注入層 (Prompt Scaffold Injection)**
 - **動作**: 展示系統如何自動檢索 `@SKILL.md` 並將「教學約束」注入 Prompt。

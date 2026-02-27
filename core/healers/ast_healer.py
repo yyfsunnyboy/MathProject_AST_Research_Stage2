@@ -389,17 +389,26 @@ class ASTHealer(ast.NodeTransformer):
                 self.logs.append("AST Healer: Critical Hallucination - Injected missing generate() fallback.")
                 logger.error("🛑 偵測到致命性幻覺：完全缺失 generate() 函式。正在啟動【最後防線】注入備用函式...")
                 
-                # 為了避免 Python 版本相容性問題 (AST nodes 結構差異與屬性缺失)，直接使用 ast.parse
-                fallback_str = '''
-def generate(level=1, **kwargs):
-    return {
-        "question_text": "Fallback due to severe hallucination",
-        "answer": "",
-        "correct_answer": "\\text{Failed}",
-        "mode": 1
-    }
-'''
-                fallback_func = ast.parse(fallback_str).body[0]
+                # 動態建構 fallback generate()
+                # def generate(): return "Fallback due to hallucination", "\\text{Failed}"
+                fallback_func = ast.FunctionDef(
+                    name='generate',
+                    args=ast.arguments(posonlyargs=[], args=[], kwonlyargs=[], kw_defaults=[], defaults=[]),
+                    body=[
+                        ast.Return(
+                            value=ast.Dict(
+                                keys=[ast.Constant(value="question_text"), ast.Constant(value="correct_answer")],
+                                values=[
+                                    ast.Constant(value="Fallback due to severe hallucination"),
+                                    ast.Constant(value="\\text{Failed}")
+                                ]
+                            )
+                        )
+                    ],
+                    decorator_list=[],
+                    returns=None,
+                    type_comment=None
+                )
                 new_tree.body.append(fallback_func)
                 ast.fix_missing_locations(new_tree)
 

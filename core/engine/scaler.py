@@ -83,12 +83,12 @@ class AdaptiveScaler:
                 skill_spec = f.read()
             
             # 呼叫 AI (這裡我們跳過 DB logging，直接拿 code)
-            prompt = f"{skill_spec}\n\n【特別要求】請生成難度為 {difficulty_names.get(level)} 的題目內容。\n\n/no_think"
+            prompt = f"{skill_spec}\n\n【特別要求】請生成難度為 {difficulty_names.get(level)} 的題目內容。"
             
             # [Fix] 使用 Qwen3-8B 作為預設發案模型
             from config import Config
             model_config = Config.CODER_PRESETS.get('qwen3-8b')
-            raw_code, _, _ = _call_ai(prompt, model_config=model_config)
+            raw_code, _, _, _ = _call_ai(prompt, model_config=model_config)
             
             # 2. 清理與修復
             # [Fix] _basic_cleanup 回傳的是 (code, fixes_count)
@@ -108,11 +108,10 @@ class AdaptiveScaler:
             traceback.print_exc()
             raise Exception(f"代碼生成或執行失敗: {e}")
 
-    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False, master_spec=None, image_path=None):
+    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False):
         """
         根據輸入例題，完全模仿題型生成 count 題。
         ablation_mode: 若為 True (Ab1 模式)，跳過 SKILL.md 讀取與 Healer 修復，使用原生 Prompt。
-        master_spec: 從前端 /api/classify 預先生成的 Architect 食譜，避免重複呼叫。
         """
         # 1. 根據您的正確清單進行資源定位 (Domain Mapping)
         domain_config = {
@@ -160,9 +159,12 @@ class AdaptiveScaler:
                     # 徹底消除 Windows CRLF 導致的 f-string 游標回車覆寫問題
                     full_skill_spec = "\n".join([line.replace('\r', '') for line in raw_text.splitlines()])
 
-                # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
+                # 使用明確的切斷錨點，截取基礎規則與 LIVESHOW 區段
+                skill_spec_distilled = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+
                 import re
-                skill_spec_distilled = re.split(r"=== SKILL_END_PROMPT ===|【強烈建議程式碼結構】|【完整程式碼】", full_skill_spec)[0].strip()
+                live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', full_skill_spec)
+                live_show_content = live_show_match.group(1).strip() if live_show_match else ""
 
                 if ablation_mode:
                     prompt = f"""{skill_spec_distilled}
@@ -172,91 +174,66 @@ class AdaptiveScaler:
 直接輸出代碼。
 """
                 else:
-                    # =========================================================
-                    # [Trinity Architecture: 第一棒 Architect]
-                    # 動態呼叫 Gemini 分析師，將 raw input_text 轉為 MASTER_SPEC
-                    # =========================================================
-                    if master_spec:
-                        print(f"✅ [Architect] 使用前端已生成之 MASTER_SPEC！跳過 Gemini API 呼叫...")
-                        master_spec_text = master_spec
-                    else:
-                        try:
-                            print(f"🧠 [Architect] 請求 Gemini 解析結構 DNA...")
-                            from core.ai_wrapper import get_ai_client
-                            architect_client = get_ai_client('architect')
-                            
-                            architect_prompt = f"""【角色】數學命題架構師 (Architect)
-【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
-
-【輸出規範：MASTER_SPEC】
-你必須產出以下三個區塊，嚴禁廢話：
-
-1. **邏輯塊與符號隨機化 (Logic Blocks)**:
-   - 符號必須隨機化：如 `op = random.choice(['+', '-', '*', '/'])` 或是其他隨機運算子，並對應 LaTeX 符號。
-   - 結構安全與整除：先計算子區塊結果為 d。若 op 為除法，必須由「商 * 除數」反推被除數（例如 `v1 = d * random.randint(2, 10)`）；若為其他則依難度隨機。
-   - 將 Level 的範圍限制直接合併進此處，決定變數的數值範圍。
-2. **純數值計算邏輯 (Raw Logic)**:
-   - 寫出完整的 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
-   - 涉及分數必須指名使用 `Fraction(n, d)`。
-3. **渲染範本 (Rendering Template)**:
-   - 提供一個 f-string 模板，配合對應技能的 format 函數（例如 IntegerOps.fmt_num 處理負數括號）。
-   - 例：`question_text = f"計算 $${{IntegerOps.fmt_num(v1)}} {{op_latex}} \\\\left[ {{IntegerOps.fmt_num(v2)}} \\\\times {{v3}} - {{v4}} \\\\right]$$ 的值。"`
-   - 提醒 Coder 呼叫 `{target_ops}.fmt_num` 或 `{target_ops}.format_latex` (依技能而定)。
-
-現在，請根據以下使用者輸入的目標例題 (DNA)，嚴格按照上述三段式格式輸出 MASTER_SPEC：
-目標例題：{input_text.strip()}"""
-
-                            resp = architect_client.generate_content(architect_prompt)
-                            master_spec_text = resp.text.strip() if hasattr(resp, 'text') else str(resp)
-                            if master_spec_text.startswith("Error:"):
-                                raise ValueError(master_spec_text)
-                            print(f"✅ [Architect] MASTER_SPEC 產出完成！長度: {len(master_spec_text)} 字元")
-                        except Exception as e:
-                            print(f"❌ [Architect] 結構分析失敗，退回原始文字: {str(e)[:100]}...")
-                            master_spec_text = self._sanitize_input_dna(input_text)
+                    # 預處理 input_text 確保有 LaTeX 基本結構
+                    input_text_safe = self._sanitize_input_dna(input_text)
                     
-                    # 神盾級縮減 Prompt (JIT 版) 適用於所有 Ab3 模型
-                    prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
+                    # 注入動態題目數據 (進行變數替換)
+                    live_show_content = live_show_content.replace('{{TARGET_QUESTION}}', input_text_safe)
+                    # Note: {{TARGET_ANSWER}} replacement might need actual answer extraction if available, for now left as is or replace with dummy
+                    live_show_content = live_show_content.replace('{{TARGET_ANSWER}}', '...')
 
-【1. 可用工具 (Domain API)】
-{skill_spec_distilled}
-
-【2. 施工食譜 (MASTER_SPEC)】
-{master_spec_text}
-
-【3. 執行憲法 (不可撼動)】
-1. **先計算，後排版**：嚴禁將格式化後的字串（如 "(-5)"）參與 `+ - * / //` 運算。
-2. **類型防禦**：分數運算必須全程使用 `Fraction`，嚴禁產生 `float`。
-3. **渲染要求**：題目必須包含雙錢號 `$$...$$`，且絕對值符號必須轉義為 `\\\\left|` 與 `\\\\right|`。
-4. **絕對禁止字母湯**：只准使用食譜中定義的 v1~v5 變數，嚴禁自行定義 a-z。
-5. **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
-6. **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
-
-【代碼起點】
-import random
-import math
-# (根據 skill 自動注入 import)
-
-def generate(**kwargs):
-    question_text = ""
-    # 步驟一：計算區 (純數值運算)
-
-    # 步驟二：排版區 (呼叫 API 渲染 question_text)
-
-    # 步驟三：回傳結果 (correct_answer 必須為字串)
-"""
+                    prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
+                    
                 active_ablation_id = 3
             
             from config import Config
             model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
             
-            prompt = prompt.strip() + "\n\n/no_think"
+            print("=== [DEBUG] 發送給 LLM 的 PROMPT 內容 ===")
+            print(prompt)
+            print("========================================")
             
             start_ai = time.time()
-            raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config, image_path=image_path)
+            raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
             ai_inference_time_sec = time.time() - start_ai
             
-            clean_code, _ = _basic_cleanup(raw_code)
+            # 🚨 教授的「思維搶救」：如果正文是空的，但思考區有東西，就拿思考區來救災！
+            if not raw_code.strip() and thinking_text.strip():
+                print("[SYSTEM] 偵測到正文為空，啟動『思維區內容搶救』...")
+                raw_code = thinking_text 
+            
+            # 🚨 關鍵偵錯點 1：印出「絕對原始」的回應
+            print("=== [DEBUG] RAW LLM OUTPUT ===")
+            print(repr(raw_code))
+            print("==============================")
+            
+            import re
+            # 2. 處理 <think> 標籤
+            if '<think>' in raw_code:
+                cleaned_text = re.sub(r'<think>.*?</think>', '', raw_code, flags=re.DOTALL).strip()
+            else:
+                cleaned_text = raw_code.strip()
+                
+            # 3. 提取 Markdown 中的 Python 區塊
+            code_match = re.search(r'```python\s*(.*?)\s*```', cleaned_text, re.DOTALL)
+            if code_match:
+                final_code_to_healer = code_match.group(1).strip()
+            else:
+                final_code_to_healer = cleaned_text.strip()
+                # fallback for partial markdown blocks
+                final_code_to_healer = re.sub(r'^(\s*)```python\s*\n', '', final_code_to_healer, flags=re.MULTILINE)
+                final_code_to_healer = re.sub(r'^(\s*)```\s*\n', '', final_code_to_healer, flags=re.MULTILINE)
+                final_code_to_healer = re.sub(r'\n(\s*)```\s*$', '', final_code_to_healer, flags=re.MULTILINE)
+            
+            # 🚨 關鍵偵錯點 2：檢查送給 Healer 的內容是否為空
+            print(f"=== [DEBUG] SENDING TO HEALER (Length: {len(final_code_to_healer)}) ===")
+            print(final_code_to_healer)
+            print("=====================================================================")
+            
+            if not final_code_to_healer:
+                print("[FATAL ERROR] 傳給 Healer 的字串是空的！API 萃取邏輯有 Bug！")
+            
+            clean_code = final_code_to_healer
             
             if ablation_mode:
                 # [完全跳過 Healer] Ab1 實驗精神：只做基礎字串清理，保留 AI 生成的所有原生邏輯錯誤/套件缺失
@@ -441,9 +418,6 @@ def generate(**kwargs):
             "CalculusOps": CalculusOps,
             "MixedNumbers": FractionOps, # Alias for compatibility
             "Integers": IntegerOps,      # Alias for compatibility
-            "format_latex": IntegerOps.fmt_num if IntegerOps else str,  # [Polyfill 植入]
-            "fmt_num": IntegerOps.fmt_num if IntegerOps else str,       # [Polyfill 植入]
-            "rand_nz": IntegerOps.rand_nz if hasattr(IntegerOps, 'rand_nz') else None,      # [Polyfill 植入]
             # [防護牆] 預設變數，防止 UnboundLocalError
             "question_text": "題目生成失敗", # 預設值
             "correct_answer": "0"            # 預設值
@@ -473,13 +447,13 @@ def generate(**kwargs):
             print(f"❌ 執行生成的程式碼時出錯: {e}")
             raise e
 
-    def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False, **kwargs):
+    def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False):
         """
         新增批量模式 (直接用 Python 迴圈高速產出 100 題)
         """
         print(f"🔄 正在為 {skill_name} 生產 {n} 題 (單次 AI 呼叫 + Python 高速迴圈)...")
         # 直接呼叫一次 custom_problems，要求他回傳 n 題，這也是在本地 Python 環境中跑 n 次 generate()
-        batches = self.generate_custom_problems(skill_name, input_text, count=n, ablation_mode=ablation_mode, **kwargs)
+        batches = self.generate_custom_problems(skill_name, input_text, count=n, model_id='qwen3-8b', ablation_mode=ablation_mode)
         return batches
 
 if __name__ == "__main__":

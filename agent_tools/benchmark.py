@@ -140,16 +140,8 @@ def show_model_selection_menu():
 
 def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     """
-    優先從 experiments/golden_prompts/temp 讀取 Prompt，若無則 fallback 到 agent_skills
+    從 agent_skills/{skill_name}/ 讀取 Prompt
     """
-    ab_id = "Ab1" if ablation_target == "Ab1" else "Ab2"
-    golden_path = os.path.join(PROJECT_ROOT, "experiments", "golden_prompts", "temp", f"{skill_name}_{ab_id}.txt")
-    
-    if os.path.exists(golden_path):
-        with open(golden_path, "r", encoding="utf-8") as f:
-            return f.read()
-
-    # Fallback logic
     if ablation_target == "Ab1":
         path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "experiments", "ab1_bare_prompt.md")
     else:
@@ -157,9 +149,37 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
     
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
-            return f.read()
+            full_text = f.read()
             
-    print(f"⚠️ Prompt file not found: {path} nor {golden_path}")
+        if ablation_target != "Ab1" and "SKILL.md" in path:
+            # 實作區塊裁剪：保留法規區與 BENCHMARK 專用區
+            
+            # 1. 提取核心法規區 (=== 之前的部分)
+            base_rules = full_text.split('=== SKILL_END_PROMPT ===')[0]
+            
+            # 2. 使用 Regex 提取 BENCHMARK 區塊內容
+            benchmark_match = re.search(
+                r'\[\[MODE:BENCHMARK\]\](.*?)\[\[END_MODE:BENCHMARK\]\]', 
+                full_text, 
+                re.DOTALL
+            )
+            
+            if not benchmark_match:
+                raise ValueError(f"無法在 {path} 中找到 BENCHMARK 標記區塊！")
+                
+            benchmark_content = benchmark_match.group(1).strip()
+            
+            # 3. 組合最終 Benchmark 指令
+            final_prompt = f"{base_rules}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}"
+            
+            # 移除可能殘留的 LIVESHOW 標記 (防禦性編寫)
+            final_prompt = re.sub(r'\[\[MODE:LIVESHOW\]\].*?\[\[END_MODE:LIVESHOW\]\]', '', final_prompt, flags=re.DOTALL)
+            
+            return final_prompt
+            
+        return full_text
+            
+    print(f"⚠️ Prompt file not found: {path}")
     return None
 
 def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", filter_skill=None, filter_ablation=None, repeat_count=1, override_model=None, report_name_prefix=None, run_in_skill_root=False, forced_run_ts=None):
@@ -352,10 +372,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             healer_applied = False  # [V7.5 FIX] Same reason
             try:
                 # A. Generate
-                # [NEW] Check logic without `/no_think` as it might be causing infinite generation loops
-                final_prompt = skill_prompt.strip() + "\n\n/no_think"
-                
-                response = call_ai_with_retry(client, final_prompt, max_retries=3, timeout=300)
+                response = call_ai_with_retry(client, skill_prompt, max_retries=3, timeout=300)
                 if hasattr(response, 'text'):
                     raw_code = response.text
                 else:
@@ -363,10 +380,6 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 
                 # B. Heal & Extract Code
                 # [Robust Extraction] Search for code blocks anywhere in the text
-                
-                # [V50.1] 完全剔除 <think> 區塊，防止 Qwen3-8B 的中文思考過程干擾代碼提取
-                raw_code = re.sub(r'<think>.*?</think>', '', raw_code, flags=re.DOTALL)
-                
                 cleaned_code = raw_code.strip()
                 
                 # [V9.8 Robust Extraction]
@@ -388,9 +401,6 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     if start_index > 0:
                         # Keep only from the first code token onwards
                          cleaned_code = cleaned_code[start_index:]
-                elif "```" not in cleaned_code:
-                    # If absolutely no code block fences and no python keywords, perhaps it's pure logic or didn't generate code.
-                    pass
                 
                 # 3. Cleanup Fences (Double Safety)
                 cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)

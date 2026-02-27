@@ -9,7 +9,7 @@ class SkillClassifier:
     """
     SkillClassifier 負責將使用者輸入的題目 (文字或影像) 對應到系統中的 agent_skill。
     """
-    def __init__(self, model_role='default'):
+    def __init__(self, model_role='classifier'):
         self.client = get_ai_client(model_role)
         self.skills = self._discover_skills()
 
@@ -75,11 +75,9 @@ class SkillClassifier:
             if result in self.skills:
                 return result
             else:
-                # 模糊比對 (優化：擷取真正的核心特徵，如 FourArithmeticOperationsOfIntegers)
+                # 模糊比對
                 for s in self.skills:
-                    core_name = s.split("_")[-1].lower()
-                    # 無論是 LLM 給出包含前綴的完整字串，或是只給出後綴，都能正確對應
-                    if core_name in result.lower() or s.lower() in result.lower():
+                    if s.lower() in result.lower():
                         return s
                 return "Unknown"
                 

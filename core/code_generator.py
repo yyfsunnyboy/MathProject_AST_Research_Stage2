@@ -388,21 +388,20 @@ def _build_prompt(skill_id, ablation_id, db_master_spec, use_golden_prompt=False
     
     return prompt, topic, textbook_example
 
-def _call_ai(prompt, model_config=None, image_path=None):
+def _call_ai(prompt, model_config=None):
     """呼叫 AI 並回傳 raw_output, prompt_tokens, completion_tokens
     
     Args:
         prompt: 提示文本
         model_config: [NEW] 可选的模型配置字典，如果提供则使用，否则使用默认的 'coder' 角色
-        image_path: [NEW] 可选的图像路径，用于多模态视觉生成
     """
     # [NEW FIX 2026-02-06] 如果提供了 model_config，使用它；否则使用默认的 'coder' 角色
     if model_config:
         # 使用提供的模型配置创建 AI 客户端
         provider = model_config.get('provider', 'local').lower()
         model_name = model_config.get('model', 'qwen2.5-coder:7b')
-        temperature = model_config.get('temperature', 0.7)
-        max_tokens = model_config.get('max_tokens', 8192)
+        temperature = model_config.get('temperature', 0.1)
+        max_tokens = model_config.get('max_tokens', 2048)
         extra_body = model_config.get('extra_body', {})
         safety_settings = model_config.get('safety_settings') # [ADD] Ensure safety settings passed
         
@@ -425,8 +424,7 @@ def _call_ai(prompt, model_config=None, image_path=None):
     try:
         response = call_ai_with_retry(
             client=client, 
-            prompt=prompt,
-            image_path=image_path,
+            prompt=prompt, 
             max_retries=3, 
             retry_delay=5, 
             verbose=(VERBOSE_LEVEL >= 1)
@@ -630,33 +628,70 @@ def _basic_cleanup(code, strict_mode=True):
     """
     old_code = code
     
-    # [V50.1] 完全剔除 <think> 區塊，防止 Qwen3-8B 的中文思考過程干擾代碼提取
-    code = re.sub(r'<think>.*?</think>', '', code, flags=re.DOTALL)
+    # Step 1: 移除 markdown 標記 (總是執行)
+    code = re.sub(r'^(\s*)```python\s*\n', '', code, flags=re.MULTILINE)
+    code = re.sub(r'^(\s*)```\s*\n', '', code, flags=re.MULTILINE)
+    code = re.sub(r'\n(\s*)```\s*$', '', code, flags=re.MULTILINE)
     
-    # 1. Try Markdown Fences first
-    code_block_match = re.search(r'```python\s*(.*?)```', code, re.DOTALL)
-    if code_block_match:
-        cleaned_code = code_block_match.group(1).strip()
-    else:
-        code_block_match = re.search(r'```\s*(.*?)```', code, re.DOTALL)
-        if code_block_match:
-            cleaned_code = code_block_match.group(1).strip()
-        else:
-            cleaned_code = code.strip()
-
-    # 2. Aggressive Prelude Stripper for models that skip markdown fences
-    match_start = re.search(r'^(import|from|def\s+)', cleaned_code, re.MULTILINE)
-    if match_start:
-        start_index = match_start.start()
-        if start_index > 0:
-            cleaned_code = cleaned_code[start_index:]
+    # Step 2: 移除尾部說明文字（僅 strict_mode 執行）
+    # Step 2: 移除尾部說明文字（僅 strict_mode 執行）
+    # [Unknown Fix 2026-02-15] Aggressive Cleanup for Chatty Models (Gemini/Qwen)
+    # 強制移除代碼前後的對話內容，只保留核心代碼
+    
+    lines = code.split('\n')
+    cleaned_lines = []
+    found_code_start = False
+    
+    # 定義 Python 代碼的強特徵關鍵字 (Strong Signal)
+    code_starters = ('import ', 'from ', 'def ', 'class ', '@', '#', 'if __name__')
+    
+    # 掃描並過濾
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        
+        # 1. 尚未找到代碼開始：檢查是否為代碼行
+        if not found_code_start:
+            # 如果是空行，跳過
+            if not stripped:
+                continue
+                
+            # 如果是強特徵關鍵字，標記開始
+            if stripped.startswith(code_starters):
+                found_code_start = True
+                cleaned_lines.append(line)
+                continue
             
-    # 3. Cleanup loose Fences (Double Safety)
-    cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)
-    cleaned_code = re.sub(r'^```\s*', '', cleaned_code, flags=re.MULTILINE)
-    cleaned_code = re.sub(r'```$', '', cleaned_code.strip(), flags=re.MULTILINE)
+            # 如果是賦值語句 (且不是中文說明)，可能也是代碼
+            # 但為了安全，我們傾向於相信 Strong Signal，或者包含 '=', 'return' 等
+            if '=' in stripped and not re.search(r'[\u4e00-\u9fff]', stripped):
+                 found_code_start = True
+                 cleaned_lines.append(line)
+                 continue
+            
+            # 其他情況：視為 Intro Text (對話)，丟棄！
+            # (例如: "Here is the code...", "以下是...")
+            continue
+            
+        else:
+            # 2. 已經在代碼區塊內：檢查是否為結尾說明 (Outro)
+            # 如果遇到明顯的 Markdown 標題 (###) 或長段中文說明，且不是註解，則截斷
+            
+            # Exclude: Generate 結尾的文字
+            if stripped.startswith('###') or stripped.startswith('Note:') or stripped.startswith('Explanation:'):
+                break
+                
+            # 如果是純中文說明且沒有 #，視為結束
+            if re.match(r'^[\u4e00-\u9fff]', stripped) and not stripped.startswith('#'):
+                 # 雙重確認：有些字串可能包含中文
+                 # 如果行內有 quote ('或")，可能是合法的 python string
+                 if not ("'" in stripped or '"' in stripped):
+                     break
+            
+            cleaned_lines.append(line)
     
-    code = cleaned_code.strip()
+    # 重組代碼
+    code = '\n'.join(cleaned_lines).strip()
+    
     return code, 1 if code != old_code else 0
 
 

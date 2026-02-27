@@ -48,38 +48,74 @@ L_BRACKET = r"\left["  # 左中括號
 R_BRACKET = r"\right]" # 右中括號
 
 def generate(level=1, **kwargs):
-    def rand_nz(a, b):
-        choices = [x for x in range(a, b+1) if x != 0 and x not in [1, -1]]
-        if not choices: return 2
-        return random.choice(choices)
-
-    fmt = fmt_num
-
     # ==========================================
-    # 生成 A / B * C (Ensuring A/B is an integer)
+    # 1. 生成 Term 1: [ (A op1 B) op2 C ] (逆向生成)
     # ==========================================
-    b = rand_nz(-15, 15)
-    temp_ans = rand_nz(-15, 15)
-    a = b * temp_ans  # Ensuring a / b is an integer
-    c = rand_nz(-10, 10)
+    op1 = random.choice(['+', '-', '*', '/'])
+    op2 = random.choice(['+', '-', '*', '/'])
     
-    # Decide order: A ÷ B × C  or  A × B ÷ C
-    if random.choice([True, False]):
-        question_text = f"計算 $${fmt(a)} \\div {fmt(b)} \\times {fmt(c)}$$ 的值。"
-        ans = (a // b) * c
+    # [Step 1] 逆推 op2 (外層)
+    C = random.choice([x for x in range(-10, 11) if x != 0])
+    if op2 == '/':
+        target_term1 = random.choice([x for x in range(-15, 16) if x != 0])
+        val_inner = target_term1 * C 
     else:
-        # A * B / C, ensure (A*B) is divisible by C
-        c2 = rand_nz(-15, 15)
-        ans2 = rand_nz(-10, 10)
-        q = rand_nz(-5, 5)
-        b2 = c2 * q
-        a2 = rand_nz(-10, 10)
-        question_text = f"計算 $${fmt(a2)} \\times {fmt(b2)} \\div {fmt(c2)}$$ 的值。"
-        ans = a2 * (b2 // c2)
+        val_inner = random.choice([x for x in range(-30, 31) if x != 0])
+        if op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
 
+    # [Step 2] 逆推 op1 (內層)
+    B = random.choice([x for x in range(-10, 11) if x != 0])
+    if op1 == '/':
+        A = val_inner * B
+    elif op1 == '*':
+        # 乘法重置
+        A = random.choice([x for x in range(-10, 11) if x != 0])
+        B = random.choice([x for x in range(-10, 11) if x != 0])
+        val_inner = A * B
+        if op2 == '/':
+             if C == 0 or val_inner % C != 0: C = 1
+             target_term1 = val_inner // C
+        elif op2 == '+': target_term1 = val_inner + C
+        elif op2 == '-': target_term1 = val_inner - C
+        elif op2 == '*': target_term1 = val_inner * C
+    elif op1 == '+': A = val_inner - B
+    elif op1 == '-': A = val_inner + B
+
+    # ==========================================
+    # 2. 生成 Term 2: | D op3 E | 
+    # ==========================================
+    op3 = random.choice(['+', '-', '*']) 
+    D = random.choice([x for x in range(-15, 16) if x != 0])
+    E = random.choice([x for x in range(-15, 16) if x != 0])
+    
+    val_term2_raw = eval(f"{D} {op3} {E}")
+    result_term2 = abs(int(val_term2_raw))
+
+    # ==========================================
+    # 3. 組合與格式化 (CRITICAL FIX: 分段組裝)
+    # ==========================================
+    op_main = random.choice(['+', '-'])
+    final_val = target_term1 + result_term2 if op_main == '+' else target_term1 - result_term2
+    
+    # 格式化數字
+    str_A, str_B, str_C = fmt_num(A), fmt_num(B), fmt_num(C)
+    str_D, str_E = fmt_num(D), fmt_num(E)
+    
+    # 1. 先組裝純數學 LaTeX 字串 (不含 $)
+    term1_latex = f"{L_BRACKET} ({str_A} {OP_LATEX[op1]} {str_B}) {OP_LATEX[op2]} {str_C} {R_BRACKET}"
+    term2_latex = f"{L_ABS} {str_D} {OP_LATEX[op3]} {str_E} {R_ABS}"
+    
+    math_expression = f"{term1_latex} {OP_LATEX[op_main]} {term2_latex}"
+    
+    # 2. 再組裝成題目句子 (明確加入 $，且前後留空白)
+    # 注意：這裡不使用 clean_latex_output，避免它干擾我們已經手動加好的 $
+    q = f"計算 ${math_expression}$ 的值。"
+    
     return {
-        'question_text': question_text,
-        'correct_answer': str(int(ans)),
-        'answer': '',
+        'question_text': q,
+        'correct_answer': str(final_val),
+        'answer': str(final_val),
         'mode': 1
     }

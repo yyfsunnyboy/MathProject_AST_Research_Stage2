@@ -39,23 +39,18 @@ class FractionOps:
     """分數運算模組 - 精確處理分數與浮點數混合運算"""
     
     @staticmethod
-    def create(value, den=None):
+    def create(value):
         """
         建立分數，具備「型別智慧」
-        - 如果提供兩個參數 (num, den)，直接建立 Fraction(num, den)
         - 如果輸入是 float，先轉 str 再轉 Fraction（避免浮點精度誤差）
         - 支援 str 輸入（如 "-0.6"）
         - 支援 Fraction、int、float 輸入
         
         範例：
-            FractionOps.create(3, 2)    → Fraction(3, 2)
             FractionOps.create(-0.6)    → Fraction(-3, 5)
             FractionOps.create("-0.6")  → Fraction(-3, 5)
             FractionOps.create(3)       → Fraction(3, 1)
         """
-        if den is not None:
-            return Fraction(value, den)
-        
         if isinstance(value, float):
             value_str = str(value)
             return Fraction(value_str).limit_denominator(10000)
@@ -82,18 +77,6 @@ class FractionOps:
                 sign = "-" if val < 0 else ""
                 return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
-        return str(val)
-
-    # 為了與其他 Ops (PolynomialOps/RadicalOps/IntegerOps) 保持一致
-    format_latex = to_latex
-    
-    @staticmethod
-    def format_plain(val):
-        """格式化為純文字輸出"""
-        if isinstance(val, Fraction):
-            if val.denominator == 1:
-                return str(val.numerator)
-            return f"{val.numerator}/{val.denominator}"
         return str(val)
     
     @staticmethod
@@ -125,21 +108,17 @@ class IntegerOps:
     @staticmethod
     def fmt_num(n):
         """格式化數字，為負數自動加括號"""
-        try:
-            if float(n) < 0:
-                return f"({n})"
-        except (ValueError, TypeError):
-            if str(n).strip().startswith("-"):
-                return f"({n})"
+        if n < 0:
+            return f"({n})"
         return str(n)
     
     @staticmethod
-    def rand_nz(a, b):
-        """生成非零、非 ±1 的隨機整數"""
-        choices = [x for x in range(a, b + 1) if x != 0 and x not in [1, -1]]
-        if not choices:
-            return 2
-        return random.choice(choices)
+    def random_nonzero(min_val, max_val):
+        """生成非零隨機整數"""
+        available = [x for x in range(min_val, max_val + 1) if x != 0]
+        if not available:
+            raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
+        return random.choice(available)
     
     @staticmethod
     def is_divisible(a, b):
@@ -159,23 +138,10 @@ class IntegerOps:
             'min': min,
         }
         expr = expr.replace('[', '(').replace(']', ')')
-        expr = expr.replace('\\times', '*').replace('\\div', '/')
-        expr = expr.replace('{', '').replace('}', '')
-        expr = expr.replace(' ', '')
         try:
             return eval(expr, safe_dict)
         except Exception as e:
             raise ValueError(f"Invalid expression: {expr}. Error: {e}")
-
-    @staticmethod
-    def format_latex(val):
-        """格式化為 LaTeX 輸出，為了與 PolynomialOps/RadicalOps 介面一致"""
-        return IntegerOps.fmt_num(val)
-        
-    @staticmethod
-    def format_plain(val):
-        """格式化為純文字輸出，為了與 PolynomialOps/RadicalOps 介面一致"""
-        return str(val)
 
 
 class RadicalOps:
@@ -536,18 +502,6 @@ class FractionOps:
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
 
-    # 為了與其他 Ops (PolynomialOps/RadicalOps/IntegerOps) 保持一致
-    format_latex = to_latex
-
-    @staticmethod
-    def format_plain(val):
-        '''格式化為純文字輸出'''
-        if isinstance(val, Fraction):
-            if val.denominator == 1:
-                return str(val.numerator)
-            return f"{val.numerator}/{val.denominator}"
-        return str(val)
-
     @staticmethod
     def add(a, b):
         '''分數加法'''
@@ -592,18 +546,9 @@ class IntegerOps:
             IntegerOps.fmt_num(-5)  → "(-5)"
             IntegerOps.fmt_num(0)   → "0"
         '''
-        try:
-            if float(n) < 0:
-                return f"({n})"
-        except (ValueError, TypeError):
-            if str(n).strip().startswith("-"):
-                return f"({n})"
+        if n < 0:
+            return f"({n})"
         return str(n)
-
-    @staticmethod
-    def format_latex(val):
-        '''格式化為 LaTeX 代碼，與 PolynomialOps 和 RadicalOps 介面保持一致 (等同於 fmt_num)'''
-        return IntegerOps.fmt_num(val)
 
     @staticmethod
     def random_nonzero(min_val, max_val):
@@ -612,14 +557,6 @@ class IntegerOps:
         if not available:
             raise ValueError(f"No non-zero integers in range [{min_val}, {max_val}]")
         return random.choice(available)
-
-    @staticmethod
-    def rand_nz(a, b):
-        '''生成非零、非 ±1 的隨機整數'''
-        choices = [x for x in range(a, b + 1) if x != 0 and x not in [1, -1]]
-        if not choices:
-            return 2
-        return random.choice(choices)
 
     @staticmethod
     def is_divisible(a, b):
@@ -652,18 +589,7 @@ class IntegerOps:
             return eval(expr, safe_dict)
         except Exception as e:
             raise ValueError(f"Invalid expression: {expr}. Error: {e}")
-
-    @staticmethod
-    def format_latex(val):
-        '''格式化為 LaTeX 輸出，為了與 PolynomialOps/RadicalOps 介面一致'''
-        return str(val)
-        
-    @staticmethod
-    def format_plain(val):
-        '''格式化為純文字輸出，為了與 PolynomialOps/RadicalOps 介面一致'''
-        return str(val)
 """
-
 
 # ============================================================================
 # [V2.5 新增] RadicalOps - 根號標準函數庫

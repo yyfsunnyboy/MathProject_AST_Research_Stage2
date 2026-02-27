@@ -188,9 +188,7 @@ def call_llm(model_key, prompt_text, ablation_id=None):
     
     provider = model_config.get('provider')
     model_name = model_config.get('model')
-    extra_body = model_config.get('extra_body', {})
-    temperature = model_config.get('temperature', 0.7)
-    max_tokens = model_config.get('max_tokens', 8192)   
+    temperature = model_config.get('temperature', 0.1)
     
     client = None
     

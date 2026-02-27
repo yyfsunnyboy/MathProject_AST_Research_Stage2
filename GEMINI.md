@@ -61,5 +61,10 @@
     - 強制使用 `\left(` 與 `\right)` 處理括號。
     - 確保所有數學符號通過渲染檢核，避免破圖。
 
+- **Live Show 分設架構 (Hybrid Architecture)**:
+    - **OCR & Classification**: 必須由 **Gemini (Cloud)** 執行，確保 100% 辨識準確率。
+    - **Practice Generation**: 由 **Qwen (Local)** 執行，展示本地算力與 Healer 修正能力。
+    - **禁止** 使用 Qwen 進行初次題目辨識與技能分類，以避免 Live Show 出現分類不準確的風險。
+
 - **數據回傳要求**:
     - 每次生成必須包含 `debug_meta` 物件，內含：`latency_ms` (延遲)、`healer_fix_count` (修復次數) 與 `MCRI_score` (可靠性評分)。

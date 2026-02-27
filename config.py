@@ -61,7 +61,7 @@ class Config:
         # 1. Google Gemini (Cloud)
         'gemini-3-flash': {
             'provider': 'google',
-            'model': 'gemini-2.5-flash',
+            'model': 'gemini-3-flash-preview',
             'temperature': 0.1,
             'max_tokens': 65536,
             'description': 'Gemini 3.0 Flash Preview (SOTA Cloud)',
@@ -91,11 +91,11 @@ class Config:
         # 2. Qwen 3 14B (Local) [Thinking Disabled via Modelfile]
         'qwen3-14b': {
             'provider': 'local',
-            'model': 'qwen3:14b', # [Updated] Standard Qwen3 14B model
-            'temperature': 0.2,                  # [Note] Keep slight creativity to avoid logic loops
+            'model': 'qwen3-14b-nothink:latest', # [Updated] User specific custom model
+            'temperature': 0.1,                  # [Note] Keep slight creativity to avoid logic loops
             'max_tokens': 2048,                  # User requested 2048 to prevent truncation
             'extra_body': {
-                'num_ctx': 8192,
+                'num_ctx': 32768,
                 'num_gpu': -1,            
                 'num_batch': 512,         
                 'num_thread': 8,
@@ -111,7 +111,7 @@ class Config:
         'qwen2.5-coder-14b': {
             'provider': 'local',
             'model': 'qwen2.5-coder:14b', 
-            'temperature': 0.2,
+            'temperature': 0.1,
             'max_tokens': 2048,
             'extra_body': {
                 'num_ctx': 16384,
@@ -130,20 +130,35 @@ class Config:
         # 4. Qwen 3 8B (Local) [Thinking Allowed]
         'qwen3-8b': {
             'provider': 'local',
-            'model': 'qwen3:8b',          # User's Qwen 3 8B model
-            'temperature': 0.1,           # Low temp for stability
-            'max_tokens': 8192,           # Increased to 8192 because Qwen3 uses extensive <think> blocks that easily hit 2048 and truncate.
+            'model': 'qwen3:8b',          
+            'temperature': 0.1,           
+            'max_tokens': 2048,           
             'extra_body': {
-                'num_ctx': 32768,
+                'num_ctx': 4096,          # [X Elite Optimization] Reduced from 8192 to 4096 for RAM stability
                 'num_gpu': -1,
-                'num_batch': 1024,        # 8B is lighter, can handle larger batch
+                'num_batch': 512,        
                 'num_thread': 8,
                 'keep_alive': "30m",
                 'top_k': 40,
                 'top_p': 0.95,
                 'repeat_penalty': 1.1,
             },
-            'description': 'Qwen3-8B (Thinking Allowed)'
+            'description': 'Qwen3-8B (Memory Tuned)'
+        },
+
+        # 5. Qwen 2.5 1.5B (Local) [Ultra Lightweight Fallback]
+        'qwen2.5-1.5b': {
+            'provider': 'local',
+            'model': 'qwen2.5-coder:1.5b', 
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 4096,
+                'num_gpu': -1,
+                'num_batch': 512,
+                'keep_alive': "30m",
+            },
+            'description': 'Qwen 2.5 Coder 1.5B (Ultra-Stable Fallback)'
         }
     }
 
@@ -158,8 +173,8 @@ class Config:
             'max_tokens': 1500,
         },
         
-        # 預設工程師 (Qwen 3)
-        'coder': CODER_PRESETS['qwen3-14b'], 
+        # 預設工程師 (Qwen 3 Tuned for RAM)
+        'coder': CODER_PRESETS['qwen3-8b'], 
         
         'tutor': {
             'provider': 'local',
@@ -171,7 +186,17 @@ class Config:
             'model': 'gemini-2.5-flash' 
         },
 
-        'default': CODER_PRESETS['qwen3-8b']
+        'classifier': {
+            'provider': 'google',
+            'model': 'gemini-2.5-flash',
+            'temperature': 0.1,
+            'max_tokens': 500
+        },
+
+        'default': {
+            'provider': 'local',
+            'model': 'qwen3-14b-nothink:latest'
+        }
     }
 
     # --- [Cloud] Google Gemini API Key ---

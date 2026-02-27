@@ -1,26 +1,81 @@
-# Skill: jh_數學1上_FourArithmeticOperationsOfIntegers
+```python
+【角色】K12 數學演算法工程師
 
-## [DOMAIN_API]
-- `IntegerOps.fmt_num(n)`: 將負數自動加括號，例: -5 變成 (-5)。（注意：回傳字串，絕對不可將此字串再拿去計算）
-- `IntegerOps.rand_nz(a, b)`: 隨機生成 a 到 b 之間的非零、非 ±1 整數。
+【任務】
+實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
+題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)。
+返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
 
-## [NUMERICAL_SPEC]
-- 必須使用標準 Python 運算生成數值（+、-、*、//），確保除法先決定商數與除數再反推被除數以達到整除。
-- 絕對禁止使用 `eval` 或 `safe_eval` 處理 `question_text` 字串求值。
-- **數學計算與字串排版分離**：必須先完成所有整數純數字計算，最後組裝文字時再呼叫 `IntegerOps.fmt_num(n)`。
-- 運算元範圍依難度分層：
-  - Level 1 (兩項): 範圍 -20 ~ 20
-  - Level 2 (三項混合): 範圍 -50 ~ 50
-  - Level 3 (四項混合): 範圍 -100 ~ 100
-- 題目中的乘號用 `\times`，除號用 `\div`。
-- 最後的算式字串【必須】用雙錢號 `$$...$$` 包起來。例子：`question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"`
+【程式要求】（必須嚴格遵守）
+1. **Import 規範**：
+   - ✅ **必須** `import random`
+   - ✅ **必須** `import math`
+   - ✅ **必須** `from fractions import Fraction` (若需要)
+   - ❌ **嚴禁** `import IntegerOps` (系統已自動注入，直接使用 `IntegerOps.xxx`)
 
-## [LEGACY_CODE_DNA]
+2. **核心邏輯**：
+   - 使用標準 Python 運算生成數值。
+   - **絕對禁止** 使用 `eval` 處理未經信任的字串（但可用 `IntegerOps.safe_eval`）。
+   - 確保除法整除：先生成 `divisor` 和 `quotient`，再反推 `dividend`。
+
+3. **函數介面**：
+   ```python
+   def generate(level=1, **kwargs):
+       # ... logic ...
+       return {
+           'question_text': str,
+           'answer': '',           # 必須為空字串，前端會自動處理
+           'correct_answer': str,
+           'mode': 1
+       }
+
+   def check(user_answer, correct_answer):
+       # 簡單比對字串即可
+       try:
+           if str(user_answer).strip() == str(correct_answer).strip():
+               return {'correct': True, 'result': '正確'}
+           if float(user_answer) == float(correct_answer):
+               return {'correct': True, 'result': '正確'}
+       except:
+           pass
+       return {'correct': False, 'result': '錯誤'}
+   ```
+
+【系統已注入的輔助函式（API）】（直接調用 `IntegerOps.xxx`）
+- `IntegerOps.fmt_num(n)` → 格式化負數加括號。
+- `IntegerOps.random_nonzero(min_val, max_val)` → 生成指定範圍內且「絕對不為 0」的整數。
+- `IntegerOps.safe_eval(expr)` → 安全計算表達式
+
+=== SKILL_END_PROMPT ===
+
+# [[MODE:BENCHMARK]]
+【絕對禁止輸出 thinking 或任何非 code 內容】
+- 嚴禁寫任何思考過程、解釋、註解
+- 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
+- 直接輸出 Python code，沒有任何前言、後語
+- 如果違反，直接 0 分
+
+【核心規則】
+1. **題目結構**：
+   - Level 1: Part 1 + Part 2
+   - Level 2: Part 1 - Part 2 + Part 3
+   - Level 3: -Part 1 + Part 2 - Part 3 + K
+2. **數值範圍**：
+   - Level 1: -20 ~ 20
+   - Level 2: -50 ~ 50
+   - Level 3: -100 ~ 100
+3. **格式化要求**：
+   - 所有負數必須使用 `IntegerOps.fmt_num(n)` 包裹。
+   - 題目中的乘號用 `\times`，除號用 `\div`。
+
+【強烈建議程式碼結構】
 ```python
 import random
 import math
+# IntegerOps is injected automatically
 
 def generate(level=1, **kwargs):
+    # 1. Scaling
     if level == 1:
         r_min, r_max = -20, 20
         div_max = 10
@@ -32,63 +87,62 @@ def generate(level=1, **kwargs):
         div_max = 30
         
     def rand_nz(a, b):
-        choices = [x for x in range(a, b+1) if x != 0 and x not in [1, -1]]
-        if not choices: return 2
+        choices = [x for x in range(a, b+1) if x != 0]
+        if not choices: return 1
         return random.choice(choices)
 
+    # Part 1: Complex Division [(a*m + b) / divisor]
+    divisor = rand_nz(2, div_max)
+    quotient = rand_nz(-15, 15)
+    dividend = divisor * quotient
+    
+    m = rand_nz(2, 5)
+    a_approx = dividend // m
+    if a_approx == 0: a_approx = 5
+    a = rand_nz(a_approx - 5, a_approx + 5)
+    b = dividend - (a * m)
+    
+    # 格式化 Part 1
     fmt = IntegerOps.fmt_num
-
+    part1_str = f"[({fmt(a)} \\times {fmt(m)}) + {fmt(b)}] \\div {fmt(divisor)}"
+    part1_val = quotient
+    
+    # Part 2: Absolute Value |d*e - f + g|
+    d = rand_nz(-10, 15)
+    e = rand_nz(-10, 10)
+    f = rand_nz(1, 20)
+    g = rand_nz(-10, 10)
+    
     if level == 1:
-        op = random.choice(['*', '/'])
-        if op == '*':
-            a = rand_nz(-15, 15)
-            b = rand_nz(-10, 10)
-            question_text = f"計算 $${fmt(a)} \\times {fmt(b)}$$ 的值。"
-            ans = a * b
-        else:
-            b = rand_nz(-15, 15)
-            ans = rand_nz(-10, 10)
-            a = b * ans
-            question_text = f"計算 $${fmt(a)} \\div {fmt(b)}$$ 的值。"
-            
-    elif level == 2:
-        b = rand_nz(-15, 15)
-        temp_ans = rand_nz(-15, 15)
-        a = b * temp_ans
-        c = rand_nz(-10, 10)
-        
-        if random.choice([True, False]):
-            question_text = f"計算 $${fmt(a)} \\div {fmt(b)} \\times {fmt(c)}$$ 的值。"
-            ans = (a // b) * c
-        else:
-            c2 = rand_nz(-15, 15)
-            q = rand_nz(-5, 5)
-            b2 = c2 * q
-            a2 = rand_nz(-10, 10)
-            question_text = f"計算 $${fmt(a2)} \\times {fmt(b2)} \\div {fmt(c2)}$$ 的值。"
-            ans = a2 * (b2 // c2)
-
+        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)}|"
+        part2_val = abs(d * e - f)
     else:
-        if random.choice([True, False]):
-            a = rand_nz(-10, 10)
-            b = rand_nz(-10, 10)
-            d = rand_nz(-15, 15)
-            q = rand_nz(-10, 10)
-            c = d * q
-            question_text = f"計算 $${fmt(a)} \\times {fmt(b)} + {fmt(c)} \\div {fmt(d)}$$ 的值。"
-            ans = a * b + (c // d)
-        else:
-            a = rand_nz(-20, 20)
-            c = rand_nz(-15, 15)
-            q = rand_nz(-10, 10)
-            b = c * q
-            d = rand_nz(-10, 10)
-            question_text = f"計算 $${fmt(a)} - {fmt(b)} \\div {fmt(c)} \\times {fmt(d)}$$ 的值。"
-            ans = a - (b // c) * d
+        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)} + {fmt(g)}|"
+        part2_val = abs(d * e - f + g)
 
+    # Part 3: Extra Term (h*i - j)
+    h = rand_nz(-10, 10)
+    i = rand_nz(2, 5)
+    j = rand_nz(1, 10)
+    part3_str = f"({fmt(h)} \\times {fmt(i)} - {fmt(j)})"
+    part3_val = h * i - j
+        
+    # Final Assembly
+    k = rand_nz(-50, 50)
+    
+    if level == 1:
+        question_text = f"計算 $${part1_str} + {part2_str}$$ 的值。"
+        ans = part1_val + part2_val
+    elif level == 2:
+        question_text = f"計算 $${part1_str} - {part2_str} + {part3_str}$$ 的值。"
+        ans = part1_val - part2_val + part3_val
+    else:
+        question_text = f"計算 $$- {part1_str} + {part2_str} - {part3_str} + {fmt(k)}$$ 的值。"
+        ans = -part1_val + part2_val - part3_val + k
+        
     return {
         'question_text': question_text,
-        'answer': '',
+        'answer': '',       # 必須為空字串
         'correct_answer': str(int(ans)),
         'mode': 1
     }
@@ -100,6 +154,45 @@ def check(user_answer, correct_answer):
         if abs(float(user_answer) - float(correct_answer)) < 1e-6:
             return {'correct': True, 'result': '正確'}
     except:
-        pass
-    return {'correct': False, 'result': '錯誤'}
-```
+❌ 輸出 Markdown 代碼塊 → 直接寫 code
+⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
+/no_think        
+[[END_MODE:BENCHMARK]]
+
+[[MODE:LIVESHOW]]
+【任務：代碼補全】
+請直接實作 Python 函式。嚴禁任何解釋或 <think> 標籤。
+
+【核心規範】
+1. **LaTeX 顯示**：題目字串必須使用 `\times` (乘) 與 `\div` (除)。
+2. **負數格式**：所有負數必須經過 `fmt(n)` 處理。
+3. **整除邏輯**：若有除法，必須先生成 `divisor` 與 `quotient`。
+
+【範例題目】：{{TARGET_QUESTION}}
+
+【實作模板】
+```python
+import random
+import math
+
+def generate(level=1, **kwargs):
+    fmt = IntegerOps.fmt_num
+    
+    # 1. 變數生成 (例如 a = random.randint(-10, 10))
+    # 若有除法：b = IntegerOps.random_nonzero(2, 10); q = random.randint(2, 10); a = b * q
+    
+    # 2. 正確答案計算 (ans)
+    
+    # 3. LaTeX 題目字串 (display_expr)
+    # 範例參考: f"{fmt(a)} \times {fmt(b)} \div {fmt(c)}"
+    
+    return {
+        'question_text': f"計算 $${display_expr}$$ 的值。",
+        'answer': '',
+        'correct_answer': str(int(ans)),
+        'mode': 1
+    }
+
+def check(user_answer, correct_answer):
+    return {'correct': str(user_answer).strip() == str(correct_answer).strip()}
+[[END_MODE:LIVESHOW]]

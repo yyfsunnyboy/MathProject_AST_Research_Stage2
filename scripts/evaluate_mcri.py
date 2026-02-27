@@ -151,28 +151,21 @@ def safe_execution_context():
     return SafeExecutionContext()
 
 
-import _thread
-import threading
-
 @contextmanager
 def time_limit(seconds: int):
     """
     跨平台超時控制
-    Windows 不支援 signal.alarm，使用 _thread.interrupt_main() 強制中斷
+    Windows 不支援 signal.alarm，使用替代方案
     """
     def timeout_handler():
         raise TimeoutError(f"執行超過 {seconds} 秒")
     
     if sys.platform == 'win32':
-        # Windows: 使用 Timer 執行緒強制觸發 KeyboardInterrupt
-        timer = threading.Timer(seconds, _thread.interrupt_main)
-        timer.start()
-        try:
-            yield
-        except KeyboardInterrupt:
-            timeout_handler()
-        finally:
-            timer.cancel()
+        # Windows: 使用簡單計時器（非精確）
+        start_time = time.time()
+        yield
+        if time.time() - start_time > seconds:
+            raise TimeoutError(f"執行超過 {seconds} 秒")
     else:
         # Unix: 使用 signal
         signal.signal(signal.SIGALRM, lambda s, f: timeout_handler())
@@ -1922,7 +1915,7 @@ class MCRI_Evaluator:
             'code_commit_hash': '',  # 暫時空值
             'python_version': f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
             'mcri_version': self.version,
-            'model_temperature': next((preset.get('temperature', 0.7) for key, preset in Config.CODER_PRESETS.items() if preset.get('model') == self.model_name or key == self.model_name), 0.7),
+            'model_temperature': 0.7,  # 預設值
             'repetitions_planned': repetitions,
             'repetitions_completed': len(items),
             'fail_count': fail_count,

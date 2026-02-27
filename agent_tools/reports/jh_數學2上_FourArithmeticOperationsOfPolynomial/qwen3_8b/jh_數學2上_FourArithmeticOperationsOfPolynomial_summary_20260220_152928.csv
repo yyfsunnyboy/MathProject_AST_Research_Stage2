@@ -1,4 +1,0 @@
-﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-a442b071-c580-471a-be80-dfc3ad2c4305,jh_數學2上_FourArithmeticOperationsOfPolynomial,1,qwen3-8b,3,3,25.13,43.53,-83.0,133.26,1.0,1.67,12.83,12.3,3.5,0.96,,-
-6ba1ab55-39f4-40ee-bebd-20d4114f952b,jh_數學2上_FourArithmeticOperationsOfPolynomial,2,qwen3-8b,3,9,88.37,5.03,75.88,100.86,10.0,5.0,47.0,41.37,17.0,2.26,0.066774,Ab2 vs Ab1: p=0.067 (無顯著差異)
-89280373-b870-4ea1-8238-4956b6f2e7e3,jh_數學2上_FourArithmeticOperationsOfPolynomial,3,qwen3-8b,3,9,90.22,2.89,83.06,97.39,10.0,5.0,50.0,40.22,20.0,2.22,0.061031,Ab3 vs Ab1: p=0.061 (無顯著差異)

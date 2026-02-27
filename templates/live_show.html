@@ -40,10 +40,8 @@
             --text-muted: #6c757d;
 
             --gemini: #4285F4;
-            --qwen-14b: #F4B400;
-            --qwen-8b: #0F9D58;
-            --qwen: var(--qwen-8b);
-            --healer: #FF6D00;
+            --qwen: #0F9D58;
+            --healer: #d35400;
 
             --ab1-border: #e74c3c;
             --ab1-glow: rgba(231, 76, 60, 0.08);
@@ -171,7 +169,7 @@
 
         h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.25rem;
             font-weight: 800;
             color: #1a252f;
             display: flex;
@@ -179,11 +177,23 @@
             gap: 0.5rem;
         }
 
+        #process-log {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #2c3e50;
+            line-height: 1.5;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100px;
+            overflow-y: auto;
+        }
+
         .header-subtitle {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: var(--text-muted);
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.75rem;
         }
 
         .status-ready {
@@ -230,9 +240,9 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            margin-bottom: 0.8rem;
+            margin-bottom: 0.5rem;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             flex-wrap: wrap;
         }
 
@@ -251,9 +261,9 @@
         }
 
         .pipe-step.amber {
-            color: var(--healer);
-            border-color: rgba(255, 109, 0, 0.3);
-            background: rgba(255, 109, 0, 0.05);
+            color: #d35400;
+            border-color: rgba(211, 84, 0, 0.3);
+            background: rgba(211, 84, 0, 0.05);
         }
 
         .pipe-step.qwen {
@@ -299,7 +309,7 @@
             flex-direction: column;
             color: #2c3e50;
             font-family: 'JetBrains Mono', monospace;
-            height: 100%;
+            /* Remove height: 100% to stop dynamic flex stretch */
         }
 
         .sd-header {
@@ -312,16 +322,16 @@
         }
 
         .process-log {
-            flex: 1;
+            height: 100px;
+            /* Fixed height for scrollbar */
             font-size: 0.8rem;
             color: #4b5563;
             overflow-y: auto;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
             background: #f8f9fa;
             border: 1px solid #e5e7eb;
-            padding: 0.5rem;
+            padding: 0.75rem;
             border-radius: 4px;
-            min-height: 60px;
         }
 
         .process-log-line {
@@ -329,7 +339,7 @@
         }
 
         .confidence-meter-container {
-            margin-bottom: 1rem;
+            margin-bottom: 0.5rem;
         }
 
         .cm-label {
@@ -418,8 +428,8 @@
             background: #f8f9fa;
             border: 1px solid var(--border-subtle);
             border-radius: 4px;
-            padding: 0.4rem 0.75rem;
-            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
             cursor: pointer;
             color: var(--text-main);
             transition: all 0.2s;
@@ -440,7 +450,7 @@
 
         .canvas-container {
             width: 100%;
-            height: 85px;
+            height: 80px;
             border: 2px dashed var(--border-subtle);
             border-radius: 6px;
             background-color: #fff;
@@ -473,12 +483,12 @@
 
         input[type="text"] {
             flex: 1;
-            padding: 0.6rem 1rem;
+            padding: 0.55rem 1rem;
             border-radius: 6px;
             border: 1px solid #ccc;
             background: #fff;
             color: var(--text-main);
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-family: inherit;
             outline: none;
             transition: border-color 0.2s, box-shadow 0.2s;
@@ -490,10 +500,10 @@
         }
 
         button.action-btn {
-            padding: 0.6rem 1.2rem;
+            padding: 0.55rem 1rem;
             border-radius: 6px;
             border: none;
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: 600;
             font-family: inherit;
             cursor: pointer;
@@ -539,11 +549,12 @@
             font-weight: 600;
         }
 
-        /* ── Main dual panel flex layout (changed from grid to support horizontal resizing) ── */
+        /* ── Main dual panel grid ── */
         main {
-            display: flex;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
-            padding: 1rem 1.5rem;
+            padding: 1.5rem 2rem;
             flex: 1;
             max-width: 1400px;
             margin: 0 auto;
@@ -562,10 +573,6 @@
             position: relative;
             overflow: hidden;
             transition: box-shadow 0.3s ease;
-            flex: 1;
-            /* allow flex items to grow by default */
-            min-width: 300px;
-            /* Important for resizing to not squish completely */
         }
 
         .ab-panel {
@@ -579,9 +586,8 @@
             border: 1px solid var(--border-subtle);
             transition: all 0.3s ease;
             max-height: 480px;
-            overflow: auto;
-            resize: horizontal;
-            /* Added to support horizontal resizing like diag-panels */
+            /* Reduced to ~2/3 of previous 800px depending on content, was unspecified max but taking up entire view */
+            overflow-y: auto;
         }
 
         .panel::before {
@@ -803,9 +809,31 @@
             color: #27ae60;
         }
 
-        /* ── FLASH overlay warning ── */
+        /* ── FLASH overlay animation ── */
+        @keyframes healerFlashGlow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7);
+                border-color: #f39c12;
+            }
+
+            70% {
+                box-shadow: 0 0 0 15px rgba(243, 156, 18, 0);
+                border-color: #f39c12;
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
+                border-color: #e9ecef;
+            }
+        }
+
+        .healer-flash {
+            animation: healerFlashGlow 1.5s ease-out 2;
+            border-color: #f39c12 !important;
+        }
+
         .flash-warning {
-            color: var(--healer);
+            color: #d35400;
             font-weight: 600;
         }
 
@@ -929,14 +957,15 @@
             background: #f8f9fa;
             padding: 1.25rem;
             border-radius: 6px;
-            overflow: auto;
-            resize: vertical;
+            overflow-x: auto;
             border: 1px solid #e9ecef;
             font-family: 'Fira Code', 'Consolas', monospace;
             font-size: 0.85rem;
             color: #2c3e50;
             line-height: 1.5;
             margin: 0;
+            max-height: 15rem;
+            /* Reduced height to ~2/3 of previous */
             min-height: 6rem;
             white-space: pre-wrap;
             word-wrap: break-word;
@@ -1221,10 +1250,10 @@
                     <div id="badge-ab1" class="badge badge-standby">STANDBY</div>
                     <select id="model-select-ab1" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
-                        <option value="pause" selected style="color: #e74c3c; font-weight: bold;">⏸ 暫停測試</option>
+                        <option value="pause" selected>暫停測試</option>
                         <option value="gemini-3-flash">Gemini-3-Flash</option>
-                        <option value="qwen3-8b">Qwen-8B</option>
-                        <option value="qwen3-14b">Qwen-14B</option>
+                        <option value="qwen3-8b">Qwen3-8B</option>
+                        <option value="qwen3-14b">Qwen3-14B</option>
                     </select>
                 </div>
             </div>
@@ -1251,19 +1280,12 @@
                     <div id="math-ab1" class="math-block"></div>
                 </div>
                 <div>
-                    <div class="section-label">Ab1 Bare Prompt</div>
+                    <div class="section-label">Ab1 BARE PROMPT</div>
                     <pre id="code-ab1" class="code-block"></pre>
                 </div>
             </div>
 
-            <!-- Thinking Sandbox (Ab1 <thought> stream) -->
-            <div id="thought-sandbox" class="thought-sandbox">
-                <div class="thought-sandbox-header">
-                    <span class="ping-dot"></span>
-                    Qwen Mental Sandbox (Reasoning...)
-                </div>
-                <div id="ab1-thought-stream" class="italic text-gray-400 text-sm leading-relaxed"></div>
-            </div>
+
 
             <!-- Stats -->
             <div class="meta-stats">
@@ -1294,8 +1316,8 @@
                     <select id="model-select-ab3" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
                         <option value="gemini-3-flash">Gemini-3-Flash</option>
-                        <option value="qwen3-8b" selected>Qwen-8B</option>
-                        <option value="qwen3-14b">Qwen-14B</option>
+                        <option value="qwen3-8b" selected>Qwen3-8B</option>
+                        <option value="qwen3-14b">Qwen3-14B</option>
                     </select>
                 </div>
             </div>
@@ -1325,7 +1347,7 @@
                     </div>
                 </div>
                 <div>
-                    <div class="section-label">Ab2/Ab3 Scaffold Prompt</div>
+                    <div class="section-label">Ab2/Ab3 SCAFFOLD PROMPT</div>
                     <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
                 </div>
             </div>
@@ -1538,11 +1560,6 @@
             return `<div class="diag-block"><div class="diag-label">${label}</div><div class="${customClass}">${content}</div></div>`;
         }
 
-        // Escape HTML tags to render safely in pre blocks
-        function escapeHtml(unsafe) {
-            return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
         /* ═══════════════════════════════════════════
            RENDER RESULT
         ═══════════════════════════════════════════ */
@@ -1559,9 +1576,9 @@
                 const errMsg = data?.error || 'Unknown error';
                 document.getElementById('result-' + target).classList.remove('hidden');
                 document.getElementById('math-' + target).innerHTML = '<span style="color:#e74c3c">⚠ ' + errMsg + '</span>';
-                if (document.getElementById('code-' + target)) {
-                    document.getElementById('code-' + target).textContent = "⛔ Fatal Error: \n" + errMsg + "\n\n=== RAW AI TEXT (Hallucination) ===\n" + (data.raw_text || data.raw_code || "");
-                }
+
+                // [MODIFIED] Do not overwrite source code box on failure. Keep the prompt visible.
+
                 setBadge('badge-' + target, 'badge-failed', '⛔ FAILED');
                 panel.classList.add('state-failed');
 
@@ -1583,10 +1600,8 @@
             document.getElementById('result-' + target).classList.remove('hidden');
             document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
 
-            if (isAb1) {
-                document.getElementById('code-ab1').textContent = res.bare_prompt || res.raw_code || '';
-            } else {
-                document.getElementById('code-ab3').textContent = res.scaffold_prompt || res.raw_code || '';
+            if (!isAb1) {
+                // [MODIFIED] Do not overwrite source code box on success. Keep the prompt visible.
                 if (res.answer !== undefined) {
                     document.getElementById('ans-ab3').textContent = '答案 = ' + res.answer;
                 }
@@ -1596,12 +1611,17 @@
             if (diagContent) {
                 let diagHtml = '';
 
+                // Escape HTML tags to render safely in pre blocks
+                const escapeHtml = (unsafe) => {
+                    return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+                };
+
                 if (isAb1) {
                     // Left Panel (Baseline Hub - Ab1)
 
                     // thought_stream: the AI's <thought> tag content
                     const rawThinking = res.thinking || '';
-                    const ab1FinalCode = res.raw_code || '';
+                    const ab1FinalCode = res.final_code || res.raw_code || '';
 
                     if (rawThinking) {
                         diagHtml += createDiagBlock('THOUGHT_STREAM', escapeHtml(rawThinking), 'diag-comment');
@@ -1615,7 +1635,7 @@
                     const fixLogs = res.healer_logs || [];
                     const fixLogStr = fixLogs.join('\\n');
 
-                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${rawCode}` : rawCode;
+                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${res.final_code || rawCode}` : (res.final_code || rawCode);
 
                     // raw_code colored gray in CSS (use diag-comment)
                     diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
@@ -1664,9 +1684,8 @@
             } else if (!isAb1) {
                 setBadge('badge-ab3', 'badge-success', '✅ PASS (NO FIXES)');
                 panel.classList.add('state-success');
-                const badgeStr = document.getElementById('model-select-ab3').value.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
                 document.getElementById('log-ab3').innerHTML =
-                    badgeStr + ' <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
             } else {
                 setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
                 panel.classList.add('state-success');
@@ -1676,28 +1695,6 @@
 
             // Update last final code for the Next Question button
             lastFinalFilePath[target] = res.file_path || null;
-
-            // [NEW] Append the actual generated code to the bottom diagnostic panel instead of overwriting the prompt
-            if (diagContent) {
-                let codeBlockSuffixHtml = '';
-                if (isAb1 && res.final_code) {
-                    codeBlockSuffixHtml = createDiagBlock('[FINAL_EXECUTABLE_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
-                } else if (!isAb1 && res.final_code) {
-                    codeBlockSuffixHtml = createDiagBlock('[PRODUCTION_READY_CODE (ACTUAL)]', escapeHtml(res.final_code), 'diag-success');
-                }
-
-                if (codeBlockSuffixHtml) {
-                    // Create a temporary container to append the HTML safely without overwriting previous HTML
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = codeBlockSuffixHtml;
-                    while (tempDiv.firstChild) {
-                        diagContent.appendChild(tempDiv.firstChild);
-                    }
-                    requestAnimationFrame(() => {
-                        diagContent.scrollTop = diagContent.scrollHeight;
-                    });
-                }
-            }
 
             // Re-typeset MathJax
             if (window.MathJax) MathJax.typesetPromise();
@@ -1754,9 +1751,7 @@
                 if (window.MathJax) MathJax.typesetPromise();
 
             } catch (err) {
-                // Show the error cleanly inside the problem box instead of an ugly alert
-                document.getElementById('math-' + target).innerHTML = `<span style="color: #e74c3c;">⚠️ 生成失敗: ${err.message}</span>`;
-                document.getElementById('ans-' + target).textContent = '答案 = (N/A)';
+                alert(`下一題生成失敗: ${err.message}`);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -1819,8 +1814,8 @@
             // Phase 4 — Boot logs
             const m1_val = document.getElementById('model-select-ab1').value;
             const m3_val = document.getElementById('model-select-ab3').value;
-            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : (m1_val === 'qwen3-14b' ? '<span class="log-badge" style="background:var(--qwen-14b);color:#fff;">QWEN-14B</span>' : '<span class="log-badge badge-qwen">QWEN-8B</span>');
-            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : (m3_val === 'qwen3-14b' ? '<span class="log-badge" style="background:var(--qwen-14b);color:#fff;">QWEN-14B</span>' : '<span class="log-badge badge-qwen">QWEN-8B</span>');
+            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
             const name1 = m1_val.includes('gemini') ? 'Gemini-3-Flash' : (m1_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
             const name3 = m3_val.includes('gemini') ? 'Gemini-3-Flash' : (m3_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
 
@@ -1837,16 +1832,12 @@
         /* ═══════════════════════════════════════════
            API FETCH
         ═══════════════════════════════════════════ */
-        async function fetchParams(text, isAb1, modelId, masterSpec = null) {
+        async function fetchParams(text, isAb1, modelId) {
             try {
-                const bodyJson = { prompt: text, ablation_mode: isAb1, model_id: modelId };
-                if (masterSpec) {
-                    bodyJson.master_spec = masterSpec;
-                }
                 const res = await fetch('/api/generate_live', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyJson)
+                    body: JSON.stringify({ prompt: text, ablation_mode: isAb1, model_id: modelId })
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 return await res.json();
@@ -2074,12 +2065,9 @@
             const line = document.createElement('div');
             line.className = 'process-log-line';
             line.style.color = color;
-            logBox.appendChild(line);
-
-            // 超高速渲染，如果字數少直接印出，不要慢慢跑
             line.textContent = msg;
+            logBox.appendChild(line);
             logBox.scrollTop = logBox.scrollHeight;
-            await new Promise(r => setTimeout(r, 2)); // 極短的視覺停頓讓 DOM 更新
         }
 
         function updateConfidence(pct) {
@@ -2122,29 +2110,16 @@
             btn.disabled = true;
             btn.innerHTML = '⚙️ Computing...';
 
-            // Fetch models early to know if we need to show perception engine logs for them
-            const modelIdAb1 = document.getElementById('model-select-ab1').value;
-            const modelIdAb3 = document.getElementById('model-select-ab3').value;
-
             // Ready engine logs
             const log1 = document.getElementById('log-ab1');
             const log3 = document.getElementById('log-ab3');
+            log1.innerHTML = 'AWAITING EXECUTION...';
+            log3.innerHTML = 'AWAITING EXECUTION...';
 
             resetDiagnostics();
 
-            if (modelIdAb1 === 'pause') {
-                log1.innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab1 Native LLM testing is paused.</span>';
-            } else {
-                log1.innerHTML = 'AWAITING EXECUTION...';
-                log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
-            }
-
-            if (modelIdAb3 === 'pause') {
-                log3.innerHTML = '<span style="color:#e74c3c">> [SYSTEM] Ab3 Healer testing is paused.</span>';
-            } else {
-                log3.innerHTML = 'AWAITING EXECUTION...';
-                log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
-            }
+            log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
 
             // Prepare unified payload
             let payload = {};
@@ -2200,23 +2175,19 @@
                     setSkillBadge(result.skill_id);
                     await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
 
-                    if (modelIdAb1 !== 'pause') {
-                        log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-                        // [NEW] Inject Prompt Previews into Code Blocks
-                        if (result.bare_prompt) {
-                            const codeAb1 = document.getElementById('code-ab1');
-                            codeAb1.textContent = "=== BARE PROMPT PREVIEW ===\\n" + result.bare_prompt;
-                            codeAb1.style.color = "var(--text-muted)";
-                        }
-                    }
+                    log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
 
-                    if (modelIdAb3 !== 'pause') {
-                        log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-                        if (result.scaffold_prompt) {
-                            const codeAb3 = document.getElementById('code-ab3');
-                            codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
-                            codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
-                        }
+                    // [NEW] Inject Prompt Previews into Code Blocks
+                    if (result.bare_prompt) {
+                        const codeAb1 = document.getElementById('code-ab1');
+                        codeAb1.textContent = "=== BARE PROMPT PREVIEW ===\\n" + result.bare_prompt;
+                        codeAb1.style.color = "var(--text-muted)";
+                    }
+                    if (result.scaffold_prompt) {
+                        const codeAb3 = document.getElementById('code-ab3');
+                        codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
+                        codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
                     }
 
                     // Show result panels early so user can read the prompts
@@ -2234,7 +2205,7 @@
                 return;
             }
 
-            // Transition animation bypassed per request
+            // Transition animation bypassed completely
             // await simulatePipeline();
 
             // Start loading state for both panels
@@ -2245,34 +2216,33 @@
             resetThoughtSandbox();
 
             // Parallel JSON generation requests
-            const modelIdAb3_submit = document.getElementById('model-select-ab3').value;
-            const modelIdAb1_submit = document.getElementById('model-select-ab1').value;
+            const modelIdAb3 = document.getElementById('model-select-ab3').value;
+            const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
-            const p3 = fetchParams(input, false, modelIdAb3_submit, result.master_spec)
+            const p3 = fetchParams(input, false, modelIdAb3)
                 .then(r2 => renderResult('ab3', r2))
                 .catch(err => renderResult('ab3', { error: err.message }));
 
-            let p1;
-            if (modelIdAb1_submit === 'pause') {
-                document.getElementById('loader-ab1').classList.add('hidden');
-                document.getElementById('result-ab1').classList.remove('hidden');
-                document.getElementById('math-ab1').innerHTML = '<span style="color:#e74c3c; font-weight:bold;">⏸ 測試已暫停 (Pause Mode)</span>';
-                document.getElementById('code-ab1').textContent = '--- Ab1 Testing Paused ---';
-                setBadge('badge-ab1', 'badge-standby', '⏸ PAUSED');
-                // Removed the setting of log-ab1 here since we already set it initially to avoid flickering
-                p1 = Promise.resolve();
-            } else {
-                p1 = fetchParams(input, true, modelIdAb1_submit)
+            const p1 = (modelIdAb1 === 'pause')
+                ? Promise.resolve({
+                    success: true,
+                    raw_code: document.getElementById('code-ab1').textContent, // keep the preview
+                    final_code: "=== PAUSED ===\nToken Generation Skipped.",
+                    fixes: 0,
+                    ai_inference_time_sec: 0,
+                    cpu_execution_time_sec: 0,
+                    mcri: { total_score: 0 }
+                }).then(r1 => renderResult('ab1', r1))
+                : fetchParams(input, true, modelIdAb1)
                     .then(r1 => renderResult('ab1', r1))
                     .catch(err => renderResult('ab1', { error: err.message }));
-            }
 
-            await Promise.all([p3, p1]);
-
-            btn.disabled = false;
-            btn.innerHTML = '⚡ 啟動平行運算';
-            hasCanvasContent = false; // reset flag after submission
-            updateSubmitState();
+            Promise.all([p1, p3]).then(() => {
+                btn.disabled = false;
+                btn.innerHTML = '⚡ 啟動平行運算';
+                hasCanvasContent = false; // reset flag after submission
+                updateSubmitState();
+            });
         });
     </script>
 </body>

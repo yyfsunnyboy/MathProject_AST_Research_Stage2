@@ -49,27 +49,11 @@ def generate_live():
     ablation_mode = data.get("ablation_mode", False)
     count = data.get("count", 1)
     model_id = data.get("model_id", "qwen3-8b")
-    master_spec = data.get("master_spec")
     
-    image_path = None
-    if input_text.startswith('[Image]'):
-        import base64, uuid, os
-        b64_data = input_text.split(',', 1)[1] if ',' in input_text else input_text.replace('[Image] ', '')
-        try:
-            img_bytes = base64.b64decode(b64_data)
-            os.makedirs("uploads", exist_ok=True)
-            img_name = f"live_generate_{uuid.uuid4().hex[:6]}.jpg"
-            image_path = os.path.join("uploads", img_name)
-            with open(image_path, "wb") as f:
-                f.write(img_bytes)
-            input_text = "請根據提供之圖片生成類似題型。"
-        except Exception as e:
-            print(f"Failed to decode image in generate_live: {e}")
-
     start_time = time.time()
     try:
         engine = get_engine()
-        output = engine.generate_practice_set(input_text=input_text, image_path=image_path, count=count, ablation_mode=ablation_mode, model_id=model_id, master_spec=master_spec)
+        output = engine.generate_practice_set(input_text=input_text, count=count, ablation_mode=ablation_mode, model_id=model_id)
         output["api_time"] = time.time() - start_time
 
         # ── Flatten debug_meta fields for the frontend ────────────────────
@@ -101,21 +85,33 @@ def generate_live():
 
         if problems:
             first = problems[0]
-            if "error" in first:
+            if not isinstance(first, dict):
+                output["error"] = f"Invalid problem format: {type(first)}"
+            elif "error" in first:
                 output["error"] = first["error"]
+            elif "question_text" not in first:
+                output["error"] = "Missing question_text in problem output."
             else:
                 q_text = first.get("question_text", "")
                 output["problem"] = q_text
                 output["answer"]  = first.get("correct_answer", "")
 
-                # MCRI scoring
+                # MCRI scoring normalization (V10.5 Justice Logic)
+                # Hygiene raw score is 15.0 max. Normalize to 100%.
                 hygiene = first.get("_mcri_hygiene_score", 0) or 0
+                norm_hygiene = (hygiene / 15.0) * 100
+                
+                # Robustness mapping: ROBUST=100, MODERATE=70, RISKY=30, Unknown=50
+                robust_map = {"ROBUST": 100, "MODERATE": 70, "NEUTRAL": 50, "RISKY": 30, "SYNTAX_ERROR": 0}
+                robust_grade = mcri_report.get('robustness_grade', 'NEUTRAL')
+                arch_score = robust_map.get(robust_grade, 50)
+
                 output["mcri"] = {
-                    "syntax_score":    min(100, max(0, hygiene)),
-                    "logic_score":     min(100, max(0, hygiene - 5)),
-                    "render_score":    min(100, max(0, hygiene + 5)),
-                    "stability_score": 100 if not ablation_mode else 40,
-                    "total_score":     hygiene
+                    "syntax_score":    min(100, max(0, norm_hygiene)),
+                    "logic_score":     min(100, max(0, arch_score)),
+                    "render_score":    min(100, max(0, norm_hygiene + 5 if hygiene > 10 else norm_hygiene)),
+                    "stability_score": 100 if not ablation_mode else (40 if robust_grade != "ROBUST" else 80),
+                    "total_score":     round((norm_hygiene * 0.4 + arch_score * 0.4 + (100 if not ablation_mode else 40) * 0.2), 1)
                 }
 
         return jsonify(output)
@@ -146,7 +142,7 @@ def stream_thought_ab1():
                         content_type='text/event-stream')
 
     # 建構 Ab1 zero-shot prompt（與 scaler.py 保持一致）
-    ab1_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{prompt_text}\n直接輸出代碼。\n\n/no_think"
+    ab1_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{prompt_text}\n直接輸出代碼。"
 
     def generate_sse():
         try:
@@ -221,79 +217,31 @@ def classify_input():
                 f.write(image_bytes)
 
             process_logs.append("> 👁️ Sending to Gemini Vision Model for OCR...")
-            # 1. Vision OCR (Basic Text Extraction)
-            from core.ai_wrapper import get_ai_client, call_ai_with_retry
+            # 1. Vision OCR
+            from core.ai_wrapper import get_ai_client
             vision_client = get_ai_client('vision_analyzer')
             ocr_prompt = "請幫我辨識這張圖片中的數學式或題目文字。只輸出辨識到的純文字，不需要任何額外的解釋或Markdown標記。如果裡面有未知變數請照實輸出。"
             
-            vision_resp = call_ai_with_retry(
-                client=vision_client,
-                prompt=ocr_prompt,
-                image_path=temp_path,
-                max_retries=1,
-                timeout=30 # Add a strict timeout for OCR
-            )
-            plain_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
+            vision_resp = vision_client.generate_content(ocr_prompt, image_path=temp_path)
+            ocr_text = vision_resp.text.strip() if hasattr(vision_resp, 'text') else str(vision_resp)
             
-            display_text = plain_text[:30] + "..." if len(plain_text) > 30 else plain_text
+            display_text = ocr_text[:30] + "..." if len(ocr_text) > 30 else ocr_text
             process_logs.append(f"> 📄 OCR Extraction Complete: [{display_text}]")
             
-            try:
-                if os.path.exists(temp_path): 
-                    os.remove(temp_path)
-            except Exception as e:
-                process_logs.append(f"> ⚠️ Skipping image cleanup due to file lock: {e}")
+            if os.path.exists(temp_path): 
+                os.remove(temp_path)
         
         elif text_data:
             process_logs.append("> 📝 Detected Text Payload. Skipping OCR Phase.")
-            plain_text = text_data.strip()
-
+            ocr_text = text_data.strip()
+            
         else:
             return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
-
-        # === [NEW] 步驟 1.5: 呼叫 Architect 解析 MASTER_SPEC ===
-        process_logs.append("> 🧠 Calling Architect to construct MASTER_SPEC...")
-        try:
-            from core.ai_wrapper import get_ai_client, call_ai_with_retry
-            architect_client = get_ai_client('architect')
-            architect_prompt = f"""【角色】數學命題架構師 (Architect)
-【任務】將「題目 DNA」轉化為「Master Spec 施工食譜」。
-
-【輸出規範：MASTER_SPEC】
-請以 Markdown 標題與條列式輸出 MASTER_SPEC，嚴禁使用 JSON。你必須產出以下三個區塊，嚴禁廢話：
-
-1. **變數定義**：
-   - 符號必須隨機化：如 `op = random.choice(['+', '-', '*', '/'])` 或是其他隨機運算子，並對應 LaTeX 符號。
-   - 將 Level 的範圍限制直接合併進此處，決定變數的數值範圍。
-2. **計算邏輯**：
-   - 寫出完整的 Python 運算式。例：`ans = v1 * v2 + abs(v3 * v4 - v5)`。
-   - 結構安全與整除：先計算子區塊結果為 d。若 op 為除法，必須由「商 * 除數」反推被除數（例如 `v1 = d * random.randint(2, 10)`）；若為其他則依難度隨機。
-   - 涉及分數必須指名使用 `Fraction(n, d)`。
-3. **渲染範本**：
-   - 提供一個 f-string 模板，配合對應技能的 format 函數（例如 IntegerOps.fmt_num 處理負數括號）。
-   - 例：`question_text = f"計算 $${{IntegerOps.fmt_num(v1)}} {{op_latex}} \\\\left[ {{IntegerOps.fmt_num(v2)}} \\\\times {{v3}} - {{v4}} \\\\right]$$ 的值。"`
-
-現在，請根據這段數學 DNA，嚴格按照上述格式輸出 MASTER_SPEC：
-{plain_text}"""
-            
-            arch_resp = call_ai_with_retry(
-                client=architect_client,
-                prompt=architect_prompt,
-                max_retries=1,
-                timeout=30 # strict timeout for Architect
-            )
-            master_spec = arch_resp.text.strip() if hasattr(arch_resp, 'text') else str(arch_resp)
-            if master_spec.startswith("Error:"):
-                raise ValueError(master_spec)
-            process_logs.append("> ✅ MASTER_SPEC Built Successfully.")
-        except Exception as e:
-            process_logs.append(f"> ⚠️ Architect Parse Failed: {str(e)[:100]}...")
-            master_spec = plain_text
 
         process_logs.append("> 🧠 Extracting semantic markers for DNA alignment...")
         # 2. 分類 Skill
         engine = get_engine()
-        skill_name = engine.classifier.classify(input_text=plain_text)
+        skill_name = engine.classifier.classify(input_text=ocr_text)
         
         bare_prompt = ""
         scaffold_prompt = ""
@@ -303,94 +251,54 @@ def classify_input():
             confidence = 98
             
             # [NEW] Generate Prompt Previews
-            skill_path = engine.scaler._get_skill_path(skill_name)
-            
             try:
+                skill_path = engine.scaler._get_skill_path(skill_name)
+                
                 ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md")
                 if os.path.exists(ab1_prompt_path):
                     with open(ab1_prompt_path, "r", encoding="utf-8") as f:
                         ab1_template = f.read()
                     import re
-                    # 使用 plain_text 給 Ab1
                     bare_prompt = re.sub(
                         r"【參考例題】.*?【程式要求】", 
-                        f"【參考例題】\n根據以下結構產生類似題目：\n{plain_text}\n\n【程式要求】", 
+                        f"【參考例題】\n{ocr_text}\n\n【程式要求】", 
                         ab1_template, 
                         flags=re.DOTALL
                     )
                 else:
-                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{plain_text}\n直接輸出代碼。"
+                    bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{ocr_text}\n直接輸出代碼。"
 
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
-                clean_tools = ""
                 if os.path.exists(skill_md_path):
                     with open(skill_md_path, "r", encoding="utf-8") as f:
-                        content = f.read()
+                        skill_spec = f.read()
+                    # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
+                    skill_spec_distilled = skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
 
-                    # [反重力核心]：過濾 SKILL.md，只留工具說明
-                    if "## [LEGACY_CODE_DNA]" in content:
-                        clean_tools = content.split("## [LEGACY_CODE_DNA]")[0]
-                    else:
-                        # 如果沒標籤，就拿前 500 字
-                        clean_tools = content[:500]
-                
-                # fallback if clean_tools is empty or unhelpful
-                if not clean_tools or len(clean_tools.strip()) < 10:
-                    if "FourArithmeticOperationsOfIntegers" in skill_name:
-                        clean_tools = "- IntegerOps.fmt_num(n): 將負數加上括號，例: -5 變成 (-5)。\n- IntegerOps.rand_nz(a, b): 產生介於 a, b 之間的非零整數。"
-                    elif "FourArithmeticOperationsOfNumbers" in skill_name:
-                        clean_tools = "- to_latex(n): 將 Fraction(n, d) 自動約分並轉換為 LaTeX 格式的分數字串。\n- Fraction(n, d): Python 內建的分數運算類別。"
-                    elif "FourArithmeticOperationsOfPolynomial" in skill_name:
-                        clean_tools = "- PolynomialOps.gen_poly(...): 產生隨機多項式。\n- PolynomialOps.fmt_poly(...): 格式化多項式字串，自動合併同類項。"
-                    elif "RadicalOperations" in skill_name:
-                        clean_tools = "- RadicalOps.simplify(n): 化簡根式。\n- RadicalOps.fmt_sqrt(n): 格式化根式字串，根號下不能為負。"
-                    else:
-                        clean_tools = "- 這是基本題型，請使用基礎四則運算與 random 套件。"
+                    import re
+                    live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', skill_spec)
+                    live_show_content = live_show_match.group(1).strip() if live_show_match else ""
 
-                scaffold_prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
+                    # 預處理 input_text 確保有 LaTeX 基本結構 (Using a simplified version of scaler's sanitize)
+                    input_text_safe = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', ocr_text)
+                    if "$" not in input_text_safe:
+                        input_text_safe = re.sub(r'(\(.*\).*)', r'$\1$', input_text_safe)
 
-【1. 可用工具 (Domain API)】
-{clean_tools.strip()}
+                    live_show_content = live_show_content.replace('{{TARGET_QUESTION}}', input_text_safe)
+                    live_show_content = live_show_content.replace('{{TARGET_ANSWER}}', '...')
 
-【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
-這是一位架構師為您提取的精準架構，請您「直接翻譯並實作」成 Python 代碼：
-
-{master_spec}
-
-【3. 執行憲法】
-- **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
-- **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
-- **絕對禁止字母湯**：嚴禁定義 a, b, c, d... 等無意義變數，必須統一使用 v1, v2, v3...。
-- **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
-- **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
-- **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
-- **渲染規範**：數學式必須用 $$...$$ 包裹。
-
-【代碼起點】
-import random
-# (由後端根據 skill 自動注入 import，如 from fractions import Fraction)
-
-def generate(**kwargs):
-    question_text = ""
-    # 步驟一：計算區 (僅限原始數值運算)
-
-    # 步驟二：排版區 (僅在此區調用 fmt_num / format_latex 等字串格式化)
-"""
+                    scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
+                else:
+                    scaffold_prompt = "[SKILL.md 未找到]"
             except Exception as e:
                 scaffold_prompt = f"Error loading SKILL.md: {e}"
         else:
             process_logs.append("> ⚠️ DNA Match Failed: Falling back to Unknown.")
             confidence = 30
 
-        if bare_prompt:
-            bare_prompt = bare_prompt.strip() + "\n\n/no_think"
-        if scaffold_prompt:
-            scaffold_prompt = scaffold_prompt.strip() + "\n\n/no_think"
-        
         return jsonify({
             "success": True,
-            "ocr_text": plain_text,  # 回傳純文字給 textbox
-            "master_spec": master_spec,
+            "ocr_text": ocr_text,
             "skill_id": skill_name,
             "confidence_scores": confidence,
             "process_logs": process_logs,
@@ -450,11 +358,11 @@ def run_generated_code():
             "answer": res.get("correct_answer", ""),
             "api_time": time.time() - start_time,
             "mcri": {
-                "syntax_score":    min(100, max(0, hygiene)),
-                "logic_score":     min(100, max(0, hygiene - 5)),
-                "render_score":    min(100, max(0, hygiene + 5)),
+                "syntax_score":    min(100, max(0, (hygiene / 15.0) * 100)),
+                "logic_score":     90 if not ablation_mode else 50,
+                "render_score":    min(100, max(0, (hygiene / 15.0) * 100 + 5)),
                 "stability_score": 100 if not ablation_mode else 40,
-                "total_score":     hygiene
+                "total_score":     round(((hygiene / 15.0) * 100 * 0.6 + (100 if not ablation_mode else 40) * 0.4), 1)
             }
         }
         return jsonify(output)
@@ -466,188 +374,4 @@ def run_generated_code():
             "error": str(e),
             "traceback": traceback.format_exc(),
             "api_time": time.time() - start_time
-        }), 200
-
-@live_show_bp.route('/api/architect_to_coder', methods=['POST'])
-def architect_to_coder():
-    """
-    API: 端到端管線 (Architect -> Qwen Coder)
-    """
-    data = request.json
-    if not data:
-        return jsonify({"success": False, "error": "No data provided."}), 400
-
-    image_data = data.get("image_data")
-    text_data = data.get("text_data")
-    
-    start_time = time.time()
-    process_logs = []
-    
-    try:
-        process_logs.append("> 🌟 Initiating Architect Pipeline (Vision + Logic + JSON)...")
-        from core.ai_wrapper import get_ai_client
-        from config import Config
-        import re
-        from core.prompt_architect import ARCHITECT_SYSTEM_PROMPT
-
-        temp_path = None
-        if image_data:
-            if "base64," in image_data:
-                image_data = image_data.split("base64,")[1]
-            image_bytes = base64.b64decode(image_data)
-            temp_dir = os.path.join(Config.UPLOAD_FOLDER, "temp_canvas")
-            os.makedirs(temp_dir, exist_ok=True)
-            temp_path = os.path.join(temp_dir, f"canvas_{uuid.uuid4().hex}.png")
-            with open(temp_path, "wb") as f:
-                f.write(image_bytes)
-        elif not text_data:
-            return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
-
-        # === 步驟 1: 呼叫 Architect (Gemini) ===
-        process_logs.append("> 🧠 Sending to Gemini Architect (Vision & Logic Deconstruction)...")
-        architect_client = get_ai_client('architect')
-        
-        user_prompt = "請分析以下題目（圖片或文字），並嚴格以 Markdown 標题與條列式輸出 MASTER_SPEC，嚴禁使用 JSON。你必須產出：變數定義、計算邏輯、渲染範本三部分。"
-        if text_data:
-            user_prompt += f"\n\n題目文字：{text_data}"
-            
-        full_prompt = ARCHITECT_SYSTEM_PROMPT + "\n\n" + user_prompt
-        
-        if temp_path:
-            response = architect_client.generate_content(full_prompt, image_path=temp_path)
-            os.remove(temp_path)
-        else:
-            response = architect_client.generate_content(full_prompt)
-            
-        master_spec_md = response.text.strip()
-        
-        # 由於改用 Markdown 輸出，這裡不再嘗試 JSON 解析，直接把結果傳給前端及後續。
-        # 原本的 skill_name 也可由引擎的分類器來分類處理，如前一支 API 的方式
-        engine = get_engine()
-        ocr_text = text_data or "Image content processed"
-        skill_name = engine.classifier.classify(input_text=ocr_text)
-        
-        process_logs.append(f"> ✅ Formatted Markdown Spec Built.")
-        process_logs.append(f"> 📄 OCR Extracted: {ocr_text[:30] + ('...' if len(ocr_text)>30 else '')}")
-        process_logs.append(f"> ✅ Skill Aligned: {skill_name}")
-        
-        # === 步驟 2: 組合 SCAFFOLD PROMPT ===
-        engine = get_engine()
-        bare_prompt = ""
-        scaffold_prompt = ""
-        
-        try:
-            skill_path = engine.scaler._get_skill_path(skill_name)
-            skill_md_path = os.path.join(skill_path, "SKILL.md")
-            
-            clean_tools = ""
-            if os.path.exists(skill_md_path):
-                with open(skill_md_path, "r", encoding="utf-8") as f:
-                    content = f.read()
-
-                # [反重力核心]：過濾 SKILL.md，只留工具說明
-                if "## [LEGACY_CODE_DNA]" in content:
-                    clean_tools = content.split("## [LEGACY_CODE_DNA]")[0]
-                else:
-                    # 如果沒標籤，就拿前 500 字
-                    clean_tools = content[:500]
-            
-            # fallback if clean_tools is empty or unhelpful
-            if not clean_tools or len(clean_tools.strip()) < 10:
-                if "FourArithmeticOperationsOfIntegers" in skill_name:
-                    clean_tools = "- IntegerOps.fmt_num(n): 將負數加上括號，例: -5 變成 (-5)。\n- IntegerOps.rand_nz(a, b): 產生介於 a, b 之間的非零整數。"
-                elif "FourArithmeticOperationsOfNumbers" in skill_name:
-                    clean_tools = "- to_latex(n): 將 Fraction(n, d) 自動約分並轉換為 LaTeX 格式的分數字串。\n- Fraction(n, d): Python 內建的分數運算類別。"
-                elif "FourArithmeticOperationsOfPolynomial" in skill_name:
-                    clean_tools = "- PolynomialOps.gen_poly(...): 產生隨機多項式。\n- PolynomialOps.fmt_poly(...): 格式化多項式字串，自動合併同類項。"
-                elif "RadicalOperations" in skill_name:
-                    clean_tools = "- RadicalOps.simplify(n): 化簡根式。\n- RadicalOps.fmt_sqrt(n): 格式化根式字串，根號下不能為負。"
-                else:
-                    clean_tools = "- 這是基本題型，請使用基礎四則運算與 random 套件。"
-            
-            scaffold_prompt = f"""【指令】直接輸出 Python Code，嚴禁任何解釋。
-
-【1. 可用工具 (Domain API)】
-{clean_tools.strip()}
-
-【2. 目標 DNA 與邏輯食譜 (MASTER_SPEC)】
-這是一位架構師為您提取的精準架構，請您「直接翻譯並實作」成 Python 代碼：
-
-{master_spec_md}
-
-【3. 執行憲法】
-- **強制規範**：先計算，後排版。所有數學運算必須在格式化之前完成。
-- **類型防禦**：嚴禁將格式化後的字串參與數學運算。若為分數題，所有變數必須初始化為 `Fraction(val)`，嚴禁直接使用 `/` 讓整數相除產生 float。
-- **絕對禁止字母湯**：嚴禁定義 a, b, c, d... 等無意義變數，必須統一使用 v1, v2, v3...。
-- **LaTeX 安全**：所有 LaTeX 標籤必須雙斜線轉義（如 \\\\times, \\\\div, \\\\left[, \\\\right]），嚴禁使用單反斜線，確保 Python 字串解析正確。
-- **整除保證**：除法運算必須由「商 * 除數」反推被除數，嚴禁直接 /。
-- **多樣性**：最終答案絕對值必須在 2 到 200 之間，嚴禁產出答案為 0 或 1。
-- **渲染規範**：數學式必須用 $$...$$ 包裹。
-
-【代碼起點】
-import random
-# (由後端根據 skill 自動注入 import，如 from fractions import Fraction)
-
-def generate(**kwargs):
-    question_text = ""
-    # 步驟一：計算區 (僅限原始數值運算)
-
-    # 步驟二：排版區 (僅在此區調用 fmt_num / format_latex 等字串格式化)
-"""
-        except Exception as e:
-            scaffold_prompt = f"Error loading SKILL.md: {e}"
-            
-        ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md") if 'skill_path' in locals() else None
-        if ab1_prompt_path and os.path.exists(ab1_prompt_path):
-            with open(ab1_prompt_path, "r", encoding="utf-8") as f:
-                ab1_template = f.read()
-            bare_prompt = re.sub(
-                r"【參考例題】.*?【程式要求】", 
-                f"【參考例題】\n{ocr_text}\n\n【程式要求】", 
-                ab1_template, 
-                flags=re.DOTALL
-            )
-        else:
-            bare_prompt = f"請寫一個 generate() 函式，參考：\n{ocr_text}\n直接輸出代碼。"
-
-        # === 步驟 3: 呼叫 Coder (Qwen) ===
-        if bare_prompt:
-            bare_prompt = bare_prompt.strip() + "\n\n/no_think"
-        if scaffold_prompt:
-            scaffold_prompt = scaffold_prompt.strip() + "\n\n/no_think"
-            
-        process_logs.append("> 💻 Relegating code generation to Qwen-8B Local Coder...")
-        coder_client = get_ai_client('coder')
-        code_resp = coder_client.generate_content(scaffold_prompt)
-        final_code = code_resp.text.strip()
-        
-        if final_code.startswith("```"):
-            lines = final_code.split("\n")
-            if lines[0].startswith("```"):
-                lines = lines[1:]
-            if lines and lines[-1].startswith("```"):
-                lines = lines[:-1]
-            final_code = "\n".join(lines)
-            
-        process_logs.append("> 🚀 Coder completed generation.")
-
-        return jsonify({
-            "success": True,
-            "architect_json": {"master_spec_md": master_spec_md},  # 回傳 MD 字串，相容前端所需結構
-            "ocr_text": ocr_text,
-            "skill_id": skill_name,
-            "process_logs": process_logs,
-            "scaffold_prompt": scaffold_prompt,
-            "bare_prompt": bare_prompt,
-            "generated_code": final_code,
-            "api_time": time.time() - start_time
-        })
-
-    except Exception as e:
-        import traceback
-        return jsonify({
-            "success": False,
-            "error": str(e),
-            "traceback": traceback.format_exc()
         }), 500
-

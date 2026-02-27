@@ -1,4 +1,0 @@
-﻿summary_id,skill_name,ablation_id,model_name,sample_count,total_runs,mean_mcri_total,std_mcri_total,ci95_lower,ci95_upper,mean_l3_external,mean_l4_numeric,mean_program_total,mean_math_total,mean_l5_architecture,mean_l4_mqi,p_value_vs_ab1,notes
-82cb31a3-424b-4912-89b4-e46f69eb71b9,jh_數學2上_FourOperationsOfRadicals,1,qwen3-8b,15,24,36.2,40.26,13.91,58.49,3.2,2.0,17.4,18.8,5.07,2.0,,-
-9c3f3e10-61bf-498a-a17e-a554fe194247,jh_數學2上_FourOperationsOfRadicals,2,qwen3-8b,15,45,93.76,0.95,93.23,94.28,7.89,5.0,47.0,46.76,17.0,5.0,6e-06,Ab2 vs Ab1: p<0.001 (高度顯著)
-1c02fdf3-b48a-470b-a601-e943f8c8f507,jh_數學2上_FourOperationsOfRadicals,3,qwen3-8b,15,45,96.96,0.17,96.86,97.05,8.0,5.0,50.0,46.96,20.0,5.0,3e-06,Ab3 vs Ab1: p<0.001 (高度顯著)
