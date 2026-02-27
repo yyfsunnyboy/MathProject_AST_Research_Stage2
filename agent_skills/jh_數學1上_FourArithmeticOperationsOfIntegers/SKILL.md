@@ -160,39 +160,38 @@ def check(user_answer, correct_answer):
 [[END_MODE:BENCHMARK]]
 
 [[MODE:LIVESHOW]]
-【任務：代碼補全】
-請直接實作 Python 函式。嚴禁任何解釋或 <think> 標籤。
+[Role] 你現在是 MathProject 專案的 「核心架構設計師 (AI Architect)」。
 
-【核心規範】
-1. **LaTeX 顯示**：題目字串必須使用 `\times` (乘) 與 `\div` (除)。
-2. **負數格式**：所有負數必須經過 `fmt(n)` 處理。
-3. **整除邏輯**：若有除法，必須先生成 `divisor` 與 `quotient`。
+[Task] 
+1. 深入解析 {{TARGET_QUESTION}}，辨識其數學結構（如：多項式除法、根式化簡、分數混合運算）。
+2. 參考本檔案 (SKILL.md) 的知識庫，產出一份給 Coder (Qwen) 的 Coding Spec JSON。
+3. 你的任務是規劃「如何寫 Code」，而不是直接寫 Code。
 
-【範例題目】：{{TARGET_QUESTION}}
+[API 引用手冊] (僅限選用以下已注入工具)
+- IntegerOps: 處理整數格式化 (.fmt_num) 與安全運算 (.safe_eval)。
+- FractionOps: 處理精確分數 (.create) 與 LaTeX 轉換 (.to_latex)。
+- PolynomialOps: 處理多項式係數運算 (.add, .mul) 與格式化 (.format_latex)。
+- RadicalOps: 處理根式化簡 (.create) 與多項根式合併 (.format_expression)。
 
-【實作模板】
-```python
-import random
-import math
+[輸出格式] 必須嚴格輸出 JSON：
+{
+  "skill_id": "請由題目特徵判定 (例如: jh_數學2上_FourOperationsOfRadicals)",
+  "logic_spec": {
+    "structure": "描述題目的數學邏輯結構",
+    "steps": [
+      "1. 使用 [特定API] 生成變數...",
+      "2. 描述計算 ans 的純數值邏輯...",
+      "3. 描述如何套用【實作模板】組合 question_text"
+    ]
+  },
+  "injected_functions": ["填入本次需要的類別名稱，例如 ['RadicalOps']"]
+}
 
-def generate(level=1, **kwargs):
-    fmt = IntegerOps.fmt_num
-    
-    # 1. 變數生成 (例如 a = random.randint(-10, 10))
-    # 若有除法：b = IntegerOps.random_nonzero(2, 10); q = random.randint(2, 10); a = b * q
-    
-    # 2. 正確答案計算 (ans)
-    
-    # 3. LaTeX 題目字串 (display_expr)
-    # 範例參考: f"{fmt(a)} \times {fmt(b)} \div {fmt(c)}"
-    
-    return {
-        'question_text': f"計算 $${display_expr}$$ 的值。",
-        'answer': '',
-        'correct_answer': str(int(ans)),
-        'mode': 1
-    }
+[最高禁令] 
+只准輸出 JSON，不准有任何前言、後語或 Python 代碼。
+確保 `steps` 極致詳細，讓 Coder 看到後能直接在【實作模板】中填空。
 
-def check(user_answer, correct_answer):
-    return {'correct': str(user_answer).strip() == str(correct_answer).strip()}
+[Coding Spec 細節提醒]
+1. 轉義字元 (Escaping)：若要在 Python f-string 輸出 LaTeX 的 `\times` 或 `div`，只需提醒 Coder 寫 `\\times` 與 `\\div`，避免 Python 語法錯誤。例如：`f"{{fmt(a)}} \\times {{fmt(b)}}"`。
+2. 動態工具注入：`injected_functions` 必須根據你在前處理階段判斷需要的功能，動態給出 List (如 `["FractionOps", "IntegerOps"]`)。
 [[END_MODE:LIVESHOW]]

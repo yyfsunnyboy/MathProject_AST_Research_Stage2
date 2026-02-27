@@ -25,3 +25,6 @@ scipy
 sympy
 antlr4-python3-runtime
 PyYAML
+torch
+torchvision
+pix2text

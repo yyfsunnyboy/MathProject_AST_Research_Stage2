@@ -188,13 +188,75 @@ class AdaptiveScaler:
             
             from config import Config
             model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
-            
-            print("=== [DEBUG] 發送給 LLM 的 PROMPT 內容 ===")
-            print(prompt)
-            print("========================================")
+            gemini_config = Config.CODER_PRESETS.get('gemini-3-flash') or Config.MODEL_ROLES['architect']
             
             start_ai = time.time()
-            raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
+            if not ablation_mode:
+                print("========================================")
+                print("☁️ [第一步] Gemini 產出 Spec...")
+                print("========================================")
+                spec_raw, _, _, _ = _call_ai(prompt, model_config=gemini_config)
+                
+                # 簡單提取與解析 JSON
+                import json
+                import re
+                try:
+                    json_match = re.search(r'```json\s*(.*?)\s*```', spec_raw, re.DOTALL)
+                    spec_str = json_match.group(1).strip() if json_match else spec_raw.strip()
+                    gemini_spec_json = json.loads(spec_str)
+                except Exception as e:
+                    print(f"⚠️ [JSON Decode Error] 無法解析 Gemini Spec, Fallback 盲測...\n{spec_raw}")
+                    gemini_spec_json = {
+                        "skill_id": skill_name, 
+                        "logic_spec": {"Failed to Parse": spec_raw}
+                    }
+                
+                print("========================================")
+                print("📥 [第二步] 從 Domain Library 提取 API Stubs...")
+                print("========================================")
+                from core.prompts.domain_function_library import get_required_domains, get_domain_helpers_code
+                
+                skill_id = gemini_spec_json.get("skill_id") or skill_name
+                required_domains = get_required_domains(skill_id)
+                api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
+                
+                
+                print("========================================")
+                print("🖥️ [第三步] 把 Spec 與 API 說明餵給 Qwen3 實作...")
+                print("========================================")
+                # 1. 抓取知識庫
+                knowledge = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+                # 2. 抓取 BENCHMARK 實作模板
+                benchmark_match = re.search(r'\[\[MODE:BENCHMARK\]\]([\s\S]*?)\[\[END_MODE:BENCHMARK\]\]', full_skill_spec)
+                benchmark = benchmark_match.group(1).strip() if benchmark_match else ""
+                
+                qwen_scaffold = f"""
+# Math-Master 核心開發任務
+
+【1. 數學基因 (From SKILL.md)】
+{knowledge}
+
+【2. 題目執行藍圖 (From Gemini Spec)】
+- 邏輯步驟：{json.dumps(gemini_spec_json.get('logic_spec', {}).get('steps', []), ensure_ascii=False, indent=2)}
+- 目標題型：{gemini_spec_json.get('skill_id', skill_name)}
+
+【3. 實作規範與模板 (From BENCHMARK)】
+{benchmark}
+
+【4. 標準工具箱 (API Stubs)】
+{api_stubs}
+
+請開始實作 generate 與 check 函數，直接輸出 Python code，不需要解釋。
+"""
+                print("=== [DEBUG] 發送給 Qwen 的 PROMPT 內容 ===")
+                print(qwen_scaffold)
+                print("========================================")
+                raw_code, _, _, thinking_text = _call_ai(qwen_scaffold, model_config=model_config)
+            else:
+                print("=== [DEBUG] 發送給 LLM (Native) 的 PROMPT 內容 ===")
+                print(prompt)
+                print("========================================")
+                raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
             ai_inference_time_sec = time.time() - start_ai
             
             # 🚨 教授的「思維搶救」：如果正文是空的，但思考區有東西，就拿思考區來救災！
