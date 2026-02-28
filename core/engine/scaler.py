@@ -163,8 +163,8 @@ class AdaptiveScaler:
                 skill_spec_distilled = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
 
                 import re
-                live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', full_skill_spec)
-                live_show_content = live_show_match.group(1).strip() if live_show_match else ""
+                benchmark_match = re.search(r'\[\[MODE:BENCHMARK\]\]([\s\S]*?)\[\[END_MODE:BENCHMARK\]\]', full_skill_spec)
+                benchmark_content = benchmark_match.group(1).strip() if benchmark_match else ""
 
                 if ablation_mode:
                     prompt = f"""{skill_spec_distilled}
@@ -177,11 +177,6 @@ class AdaptiveScaler:
                     # 預處理 input_text 確保有 LaTeX 基本結構
                     input_text_safe = self._sanitize_input_dna(input_text)
                     
-                    # 注入動態題目數據 (進行變數替換)
-                    live_show_content = live_show_content.replace('{{TARGET_QUESTION}}', input_text_safe)
-                    # Note: {{TARGET_ANSWER}} replacement might need actual answer extraction if available, for now left as is or replace with dummy
-                    live_show_content = live_show_content.replace('{{TARGET_ANSWER}}', '...')
-
                     # 套用物理剪裁 (apply_strict_mirroring)
                     try:
                         from core.routes.live_show import apply_strict_mirroring
@@ -189,7 +184,15 @@ class AdaptiveScaler:
                     except ImportError:
                         pass
 
-                    prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}\n\n【重要指示】
+                    prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}\n\n【動態目標題型參考】\n{input_text_safe}
+
+【最高實作準則】
+1. 你必須嚴格遵循上述 BENCHMARK 中的題目結構。
+2. 必須調用 IntegerOps.fmt_num 處理所有負數。
+3. 題目中的乘號與除號必須使用 \\times 與 \\div。
+4. 直接輸出 JSON 格式的邏輯藍圖。
+
+【重要指示】
 請務必將包含邏輯藍圖的輸出結果，包裹在 ```json 和 ``` 之間。
 JSON 格式必須嚴格遵循以下規範：
 {{
@@ -197,10 +200,14 @@ JSON 格式必須嚴格遵循以下規範：
   "logic_spec": {{
     "structure": "A * B + C / D",
     "operator_sequence": ["times", "plus", "divide"],
-    "constraints": "描述各變數的限制，例如: A, C 為負整數，B, D 為正整數，且 C 為 D 的倍數"
+    "constraints": "描述各變數的限制，例如: A, C 為負整數，B, D 為正整數，且 C 為 D 的倍數",
+    "steps": [
+      "必須使用 IntegerOps.fmt_num 代入所需數字",
+      "嚴禁出現題型參考中沒有的算式結構或符號（例如沒有絕對值就嚴禁使用 abs() 或 |）"
+    ]
   }}
 }}
-[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須拆解原題的『算子順序』與『括號位置』，並在 JSON 中明確規定 Coder 只能在這些位置填入新數字。"""
+[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須從 SKILL.md 提取對應的 Domain API 調用規範寫入 steps，並針對當前題型寫下禁用哪些算子。"""
                     
                 active_ablation_id = 3
             
@@ -427,6 +434,10 @@ JSON 格式必須嚴格遵循以下規範：
 
     def _sanitize_input_dna(self, text):
         import re
+        
+        # 0. 處理 LaTeX 轉義，確保送給 AI 的字串不會因為 Python 解析遇到 \d, \t 而報錯
+        text = text.replace(r'\div', r'\\div').replace(r'\times', r'\\times')
+        
         # 1. 處理平方：將 x^2 轉為 x^{2} (LaTeX 標準)
         text = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', text)
         

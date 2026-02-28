@@ -126,8 +126,8 @@ def generate_live():
 
             knowledge = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
             import re
-            benchmark_match = re.search(r'\[\[MODE:BENCHMARK\]\]([\s\S]*?)\[\[END_MODE:BENCHMARK\]\]', full_skill_spec)
-            benchmark = benchmark_match.group(1).strip() if benchmark_match else ""
+            live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', full_skill_spec)
+            live_show_content = live_show_match.group(1).strip() if live_show_match else ""
 
             # 2. 獲取 API Stubs
             from core.prompts.domain_function_library import get_required_domains, get_domain_helpers_code
@@ -139,6 +139,14 @@ def generate_live():
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
                 
             # 4. 組裝 Scaffold Prompt
+            
+            # 動態防止腦補：如果 structure 簡單（例如長度不長，沒有複雜括號），加上禁止分段的硬指令
+            structure_str = str(json_spec.get('structure', ''))
+            op_seq = json_spec.get('operator_sequence', [])
+            anti_hallucination = ""
+            if (isinstance(op_seq, list) and len(op_seq) <= 2) or ("(" not in structure_str and "Part" not in structure_str):
+                anti_hallucination = "【防止腦補指令】\n絕對禁止實施分段生成邏輯 (Part 1/2/3)，請直接依據藍圖生成簡單單層算式！\n"
+            
             scaffold_prompt = f"""
 # Math-Master 核心開發任務
 
@@ -147,21 +155,20 @@ def generate_live():
 
 【2. 題目執行藍圖 (From Gemini/VL Spec)】
 - 算式結構：{json_spec.get('structure', '')}
-- 算子順序：{json_spec.get('operator_sequence', [])}
+- 算子順序：{op_seq}
 - 變數約束：{json_spec.get('constraints', '')}
+- 實作規範 (steps)：{json_spec.get('steps', json_spec.get('logic_spec', {}).get('steps', '無'))}
 - 目標題型：{skill_id}
 
-【3. 實作規範與模板 (From BENCHMARK)】
-{benchmark}
-
-【4. 標準工具箱 (API Stubs)】
+{anti_hallucination}
+【3. 標準工具箱 (API Stubs)】
 {api_stubs}
 """
             # 5. 準備 Qwen3-VL 呼叫
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
-            system_prompt = f"你現在是頂級 Python 工程師。請觀察左側圖片中的算式結構，並嚴格參考提供的【SCAFFOLD PROMPT】與【Coding Spec JSON】，寫出一個具備 generate() 函式的 Python 腳本。確保生成的題目結構與圖片中的原題完全同構（Isomorphic），直接輸出 Python 程式碼，不需要解釋。\n\n【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+            system_prompt = f"你現在是頂級 Python 工程師。請觀察左側圖片中的算式結構，並嚴格參考提供的【SCAFFOLD PROMPT】與【Coding Spec JSON】，寫出一個具備 generate() 函式的 Python 腳本。確保生成的題目結構與圖片中的原題完全同構（Isomorphic），直接輸出 Python 程式碼，不需要解釋。\n\n『注意：嚴禁模仿任何歷史範例結構。你唯一的實作依據是【題目執行藍圖】。』\n\n【SCAFFOLD PROMPT】\n{scaffold_prompt}"
             
             payload = {
                 "model": model_name,
@@ -445,10 +452,14 @@ def classify_input():
   "spec": {{
     "structure": "A \\div B \\times C",
     "operator_sequence": ["divide", "times"],
-    "constraints": "A 為正整數，B, C 為負整數"
+    "constraints": "A 為正整數，B, C 為負整數",
+    "steps": [
+      "必須使用 IntegerOps.fmt_num 代入所需數字",
+      "嚴禁使用 abs() 或 | 符號"
+    ]
   }}
 }}
-[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須拆解原題的『算子順序』與『括號位置』，並在 JSON 中明確規定 Coder 只能在這些位置填入新數字。
+[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須從 SKILL.md 目錄或已知概念的【程式要求】中提取對應的 Domain API (如 IntegerOps) 調用規範，並將其寫入 JSON 的 spec.steps 中。此外，針對當前題型，嚴禁出現哪些算子（如：若圖片沒絕對值，則必須寫下「嚴禁使用 abs() 或 | 符號」）也必須寫在 steps 中。
 """
                 msg_content = [
                     {"type": "text", "text": prompt_text},
@@ -474,10 +485,14 @@ def classify_input():
   "spec": {{
     "structure": "例如 A \\div B \\times C",
     "operator_sequence": ["divide", "times"],
-    "constraints": "精確寫出約束條件"
+    "constraints": "精確寫出約束條件",
+    "steps": [
+      "使用對應的 Domain API",
+      "嚴格限制的算式或符號"
+    ]
   }}
 }}
-[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須拆解原題的『算子順序』與『括號位置』，並在 JSON 中明確規定 Coder 只能在這些位置填入新數字。
+[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須從 SKILL.md 目錄或已知概念的【程式要求】中提取對應的 Domain API 調用規範，並將其寫入 JSON 的 spec.steps 中。此外，針對當前題型，嚴禁出現哪些算子（例如沒出現絕對值，就必須明確列為禁用）也必須寫在 steps 中。
 """
                 msg_content = prompt_text
 

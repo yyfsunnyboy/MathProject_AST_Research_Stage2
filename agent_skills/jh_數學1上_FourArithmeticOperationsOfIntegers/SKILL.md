@@ -1,11 +1,6 @@
 ```python
 【角色】K12 數學演算法工程師
 
-【任務】
-實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
-題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)。
-返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
-
 【程式要求】（必須嚴格遵守）
 1. **Import 規範**：
    - ✅ **必須** `import random`
@@ -49,6 +44,12 @@
 === SKILL_END_PROMPT ===
 
 # [[MODE:BENCHMARK]]
+
+【任務】
+實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
+題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)。
+返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
+
 【絕對禁止輸出 thinking 或任何非 code 內容】
 - 嚴禁寫任何思考過程、解釋、註解
 - 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
@@ -161,6 +162,10 @@ def check(user_answer, correct_answer):
 
 [[MODE:LIVESHOW]]
 [Role] 你現在是 MathProject 專案的 「核心架構設計師 (AI Architect)」。
+
+[核心任務]
+你必須根據「DNA 邏輯藍圖 (JSON Spec)」實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
+你的目標是產出一個與例題「同構 (Isomorphic)」的 Python 出題腳本。
 
 [Task] 
 1. 深入解析 {{TARGET_QUESTION}}，辨識其數學結構（如：多項式除法、根式化簡、分數混合運算）。
