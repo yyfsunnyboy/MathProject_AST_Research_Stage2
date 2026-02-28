@@ -166,23 +166,23 @@ def check(user_answer, correct_answer):
 [輸入來源] {{OCR_RESULT}}
 
 [核心策略]
-小模型在遇到複雜結構時，如果依靠純 `if/else` 很容易寫錯邏輯。
-因此，我們回歸 **「傻瓜字串替換 (Safe String Evaluation)」** 策略。
-為了避開 Sandbox 中 `eval()` 解析 `abs()` 失敗的 Bug，**請完全禁止在 `eval()` 內執行 `abs()`。**
+小模型在遇到各種未知結構 (絕對值、括號、巢狀) 時，如果給出太死板的範例容易「背答案」。
+請採用 **「積木組裝替換法 (Lego Block Assembly)」**，並嚴格遵守以下安全規範：
+**絕對禁止在 `eval()` 內直接執行 `abs()`，以避開 Sandbox 錯誤。**
 
-1. **結構鏡像與分塊 (Structural Mirroring & Chunking)**：
-   - 看到圖片裡的絕對值 `|...|`，把裡面的運算定義為一個 `inner_str`。
-   - 看到圖片裡的中括號 `[...]`，把裡面的運算定義為一個 `bracket_str`。
-   - 替換好變數後，分別使用 `eval()` 算出各區塊的值。
+1. **化整為零 (Divide and Conquer)**：
+   - 不要試圖寫一個巨大的 `ans = eval(...)`。
+   - 看到 `|絕對值|`，就獨立寫一行算出 `val_abs = abs(eval("..."))`。
+   - 看到 `[中括號]`，就獨立寫一行算出 `val_bracket = eval("...")`。
+   - 看到 `(小括號)`，也獨立寫一行算出 `val_paren = eval("...")`。
 
-2. **安全絕對值處理 (Safe Absolute Value)**：
-   - 使用 `eval()` 算出絕對值內部的數值後，**使用 Python 原生的 `abs()` 函數過濾**。
-   - 範例：`part_abs = abs(eval(inner_str))`
+2. **變數拼裝 (Variable Assembling)**：
+   - 最後把算出來的 `val_abs`, `val_bracket` 等這些「積木」，用 f-string 拼湊成最終算式 `ans = eval(f"{val_abs} + {val_bracket}")`。
 
 3. **暴力重試 (Retry Loop)**：
    - 依然保留 `for` 迴圈機制，利用 CPU 快速試錯來保證整除。
 
-[實作範例：針對結構 |(-5) * 3 - 4 * 2| + [28 / (-7) - (-3)]]
+[實作範例：通用骨架 (請根據 {{OCR_RESULT}} 的實際圖片結構自由變形)]
 ```python
 import random
 import math
@@ -194,38 +194,40 @@ def generate(level=1, **kwargs):
     # 不管題目長短，直接跑 3000 次測試
     for _ in range(3000):
         
-        # [Step 2: 隨機生成變數 (依據圖片結構 7 個數字)]
-        v1 = IntegerOps.random_nonzero(-15, 15)  # 對應 -5
-        v2 = IntegerOps.random_nonzero(2, 9)     # 對應 3
-        v3 = IntegerOps.random_nonzero(2, 9)     # 對應 4
-        v4 = IntegerOps.random_nonzero(2, 9)     # 對應 2
-        v5 = IntegerOps.random_nonzero(-30, 30)  # 對應 28
-        v6 = IntegerOps.random_nonzero(-10, 10)  # 對應 -7
-        v7 = IntegerOps.random_nonzero(-10, 10)  # 對應 -3
+        # [Step 2: 隨機生成變數 (依據圖片結構有幾個數字就生成幾個)]
+        v1 = IntegerOps.random_nonzero(-30, 30)
+        v2 = IntegerOps.random_nonzero(2, 9)
+        v3 = IntegerOps.random_nonzero(-15, 15)
+        # ... 依此類推
         
-        # [Step 3: 隨機生成運算符 (5個符號)]
-        op1 = random.choice(['*', '/'])
-        op2 = random.choice(['+', '-'])
-        op3 = random.choice(['*', '/'])
-        op4 = random.choice(['+', '-']) # 兩個區塊之間的加號
-        op5 = random.choice(['*', '/'])
-        op6 = random.choice(['+', '-'])
+        # [Step 3: 隨機生成運算符 (依據圖片結構有幾個符號就生成幾個)]
+        op1 = random.choice(['+', '-'])
+        op2 = random.choice(['*', '/'])
+        # ... 依此類推
         
         try:
-            # [Step 4: 安全字串運算分塊 (Safe Chunked Eval)]
+            # [Step 4: 積木組裝替換 (Lego Block Assembly)]
+            # 這裡只是一個概念展示！請依照你目前看到的圖片結構，靈活組裝！
             
-            # 區塊 A: 絕對值內部 (-5) * 3 - 4 * 2
-            inner_str = f"({v1}) {op1} {v2} {op2} {v3} {op3} {v4}"
-            val_inner = eval(inner_str)
-            # 安全轉換絕對值
-            part_abs = abs(val_inner)
+            # 假設圖片裡有一個絕對值區塊
+            # val_abs = abs(eval(f"({v1}) {op1} {v2}"))
             
-            # 區塊 B: 中括號內部 [28 / (-7) - (-3)]
-            bracket_str = f"{v5} {op5} ({v6}) {op6} ({v7})"
-            part_bracket = eval(bracket_str)
+            # 假設圖片裡有一個中括號區塊 (把算好的絕對值塞進去)
+            # val_bracket = eval(f"{v3} {op2} {val_abs}")
             
-            # 總和計算 (part_abs 和 part_bracket 之間的運算)
-            ans = eval(f"{part_abs} {op4} {part_bracket}")
+            # 最終答案組合
+            # ans = eval(f"({v1}) * {val_bracket} + {v3}") 
+            
+            # ---------------------------------------------------------
+            # 以下為實際填寫區 (請根據圖片自行發揮，勿抄寫上方註解範例)
+            
+            # 積木 1: ...
+            
+            # 積木 2: ...
+            
+            ans = eval(...) # 最終計算
+            
+            # ---------------------------------------------------------
             
             # [Step 5: 黃金判斷 - 是否整除?]
             # 檢查是否為整數 (允許些微浮點誤差)
@@ -241,16 +243,13 @@ def generate(level=1, **kwargs):
                 
                 l_op1 = to_latex(op1)
                 l_op2 = to_latex(op2)
-                l_op3 = to_latex(op3)
-                l_op4 = to_latex(op4)
-                l_op5 = to_latex(op5)
-                l_op6 = to_latex(op6)
+                # ...
                 
-                # 填入 LaTeX (使用 fmt 處理負號)
-                str_abs = f"|{fmt(v1)} {l_op1} {fmt(v2)} {l_op2} {fmt(v3)} {l_op3} {fmt(v4)}|"
-                str_bracket = f"\\left[ {fmt(v5)} {l_op5} {fmt(v6)} {l_op6} {fmt(v7)} \\right]"
+                # 填入 LaTeX (使用 fmt 處理負號，請模仿原圖結構)
+                # str_abs = f"|{fmt(v1)} {l_op1} {fmt(v2)}|"
+                # math_str = f"{str_abs} {l_op2} {fmt(v3)}"
                 
-                math_str = f"{str_abs} {l_op4} {str_bracket}"
+                math_str = ... # 最終 LaTeX 字串
                 
                 question_text = r"計算 $$" + math_str + r"$$ 的值。"
                 
@@ -259,7 +258,7 @@ def generate(level=1, **kwargs):
                     'correct_answer': str(final_ans),
                     'mode': 1
                 }
-        except (ZeroDivisionError, SyntaxError): # Add SyntaxError for robustness with eval
+        except (ZeroDivisionError, SyntaxError):
             continue
             
     # 保底機制
