@@ -159,7 +159,23 @@ class Config:
                 'keep_alive': "30m",
             },
             'description': 'Qwen 2.5 Coder 1.5B (Ultra-Stable Fallback)'
-        }
+        },
+        # 6. Qwen3-VL 8B (Local) [Vision-Enabled Architecture]
+        'qwen3-vl-8b': {
+            'provider': 'local',
+            'model': 'qwen3-vl:8b-instruct-q4_k_m', 
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 8192,          # 視覺模型需要較大的上下文空間
+                'num_gpu': -1,            # 強制使用 5060 Ti 全速運行
+                'num_thread': 8,
+                'keep_alive': "60m",      # 演示時建議保持模型常駐
+                'top_k': 20,
+                'top_p': 0.9,
+            },
+            'description': 'Qwen3-VL 8B (Visual Reasoning Engine)'
+        },
     }
 
     # ★ 系統角色指派
@@ -174,22 +190,28 @@ class Config:
         },
         
         # 預設工程師 (Qwen 3 Tuned for RAM)
-        'coder': CODER_PRESETS['qwen3-8b'], 
-        
+        # 'coder': CODER_PRESETS['qwen3-8b'], 
+
+        # 預設工程師也可以直接同步換成 VL 版本，達成「視角即代碼」
+        'coder': CODER_PRESETS['qwen3-vl-8b'],
+                
         'tutor': {
             'provider': 'local',
             'model': 'phi3.5'
         },
         
-        'vision_analyzer': {
-            'provider': 'gemini', 
-            'model': 'gemini-2.5-flash' 
-        },
+        # 將視覺分析器從 Gemini 換成在地化的 Qwen3-VL
+        'vision_analyzer': CODER_PRESETS['qwen3-vl-8b'],
+
+        # 'vision_analyzer': {
+        #     'provider': 'gemini', 
+        #     'model': 'gemini-2.5-flash' 
+        # },
 
         'classifier': {
             'provider': 'google',
             'model': 'gemini-2.5-flash',
-            'temperature': 0.1,
+            'temperature': 0.3,
             'max_tokens': 500
         },
 

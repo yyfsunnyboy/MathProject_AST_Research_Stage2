@@ -182,7 +182,25 @@ class AdaptiveScaler:
                     # Note: {{TARGET_ANSWER}} replacement might need actual answer extraction if available, for now left as is or replace with dummy
                     live_show_content = live_show_content.replace('{{TARGET_ANSWER}}', '...')
 
-                    prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
+                    # 套用物理剪裁 (apply_strict_mirroring)
+                    try:
+                        from core.routes.live_show import apply_strict_mirroring
+                        skill_spec_distilled = apply_strict_mirroring(skill_spec_distilled, input_text_safe)
+                    except ImportError:
+                        pass
+
+                    prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}\n\n【重要指示】
+請務必將包含邏輯藍圖的輸出結果，包裹在 ```json 和 ``` 之間。
+JSON 格式必須嚴格遵循以下規範：
+{{
+  "skill_id": "{skill_name}",
+  "logic_spec": {{
+    "structure": "A * B + C / D",
+    "operator_sequence": ["times", "plus", "divide"],
+    "constraints": "描述各變數的限制，例如: A, C 為負整數，B, D 為正整數，且 C 為 D 的倍數"
+  }}
+}}
+[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須拆解原題的『算子順序』與『括號位置』，並在 JSON 中明確規定 Coder 只能在這些位置填入新數字。"""
                     
                 active_ablation_id = 3
             
@@ -191,11 +209,16 @@ class AdaptiveScaler:
             gemini_config = Config.CODER_PRESETS.get('gemini-3-flash') or Config.MODEL_ROLES['architect']
             
             start_ai = time.time()
+            spec_raw = ""
             if not ablation_mode:
                 print("========================================")
                 print("☁️ [第一步] Gemini 產出 Spec...")
                 print("========================================")
-                spec_raw, _, _, _ = _call_ai(prompt, model_config=gemini_config)
+                try:
+                    spec_raw, _, _, _ = _call_ai(prompt, model_config=gemini_config)
+                except Exception as e:
+                    print(f"⚠️ [API Fallback] Gemini 啟動失敗 ({str(e).splitlines()[0]})，改由本地 {model_id} 擔任 Architect 代打...")
+                    spec_raw, _, _, _ = _call_ai(prompt, model_config=model_config)
                 
                 # 簡單提取與解析 JSON
                 import json
@@ -237,7 +260,9 @@ class AdaptiveScaler:
 {knowledge}
 
 【2. 題目執行藍圖 (From Gemini Spec)】
-- 邏輯步驟：{json.dumps(gemini_spec_json.get('logic_spec', {}).get('steps', []), ensure_ascii=False, indent=2)}
+- 算式結構：{gemini_spec_json.get('logic_spec', {}).get('structure', '')}
+- 算子順序：{gemini_spec_json.get('logic_spec', {}).get('operator_sequence', [])}
+- 變數約束：{gemini_spec_json.get('logic_spec', {}).get('constraints', '')}
 - 目標題型：{gemini_spec_json.get('skill_id', skill_name)}
 
 【3. 實作規範與模板 (From BENCHMARK)】
@@ -382,6 +407,7 @@ class AdaptiveScaler:
                 },
                 "bare_prompt": prompt if ablation_mode else "",
                 "scaffold_prompt": prompt if not ablation_mode else "",
+                "gemini_raw_spec": spec_raw,
                 "healer_logs": getattr(healer_stats[-1], "logs", []) if healer_stats and hasattr(healer_stats[-1], "logs") else [],
                 "performance": {
                     "ai_inference_time_sec": round(ai_inference_time_sec, 2),

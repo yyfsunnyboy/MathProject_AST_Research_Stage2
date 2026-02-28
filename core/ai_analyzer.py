@@ -171,7 +171,8 @@ def configure_gemini(api_key, model_name):
         import os
         api_key = os.environ.get('GEMINI_API_KEY')
         if not api_key:
-            raise ValueError("GEMINI_API_KEY is not set in environment variables or config")
+            print("[WARN] GEMINI_API_KEY is not set. Gemini features will be disabled natively, continuing with Offline mode.")
+            return
     
     if hasattr(genai, 'configure'):
         # Old SDK

@@ -32,7 +32,7 @@ class SkillClassifier:
         """
         skills_str = "\n".join([f"- {s}" for s in self.skills])
         return f"""你是一個數學題目分類專家。
-你的任務是閱讀使用者提供的數學題目（文字或圖片內容），並從下方的「技能清單」中選擇一個最符合該題目的技能名稱。
+你的任務是閱讀使用者提供的「LaTeX 數學公式或題目文字」，並從下方的「技能清單」中選擇一個最符合該題目的技能名稱。
 
 【技能清單】
 {skills_str}
@@ -40,7 +40,7 @@ class SkillClassifier:
 【分類規則】
 1. 只輸出技能名稱，不要有任何其他解釋或標點符號。
 2. 如果題目完全不屬於清單中的任何一項，請輸出 "Unknown"。
-3. 優先根據數學結構判斷（例如：看到根號選 FourOperationsOfRadicals）。
+3. 優先根據數學結構判斷（例如：看到 \\sqrt 或根號選 FourOperationsOfRadicals）。
 
 請開始分類："""
 
@@ -58,31 +58,40 @@ class SkillClassifier:
             prompt += f"\n\n題目內容：{input_text}"
         
         try:
-            # 視圖模式下調用 AI
-            response = call_ai_with_retry(
-                self.client, 
-                prompt, 
-                image_path=image_path,
-                max_retries=2,
-                verbose=False
-            )
+            # --- 修改點：改為呼叫本地 Qwen3 ---
+            # 參考 scaler.py 中的 _call_ai 邏輯
+            from core.code_generator import _call_ai
+            from config import Config
             
-            result = response.text.strip()
-            # 清洗結果，防止 AI 輸出 Markdown 或贅字
+            # 使用環境中已定義的 qwen3-8b 配置，並特別限制它的輸出字數（分類不需要長文）
+            model_config = Config.CODER_PRESETS.get('qwen3-8b').copy()
+            model_config['max_tokens'] = 120 # 強制截斷思考區塊，防止無限生成卡死超過1分鐘
+            
+            print(f">>> 🧠 本地 Qwen3 正在進行技能 DNA 比對...")
+            # 呼叫本地推理
+            raw_response, _, _, _ = _call_ai(prompt, model_config=model_config)
+            
+            # 2. 清洗結果 (移除思考區塊與標點)
+            import re
+            # 移除 <think> 標籤內容 (Qwen3-8B-Instruct 常見輸出)
+            clean_res = re.sub(r'<think>.*?</think>', '', raw_response, flags=re.DOTALL).strip()
+            
+            # 🚨 加固點 2：只提取英文字母與數字 (Skill ID 的標準格式)
+            # 避免 AI 輸出 "結果是：RadicalOps" 或 "Skill: RadicalOps."
+            match = re.search(r'[a-zA-Z0-9_]{5,}', clean_res) # 假設 Skill ID 至少 5 個字
+            result = match.group(0) if match else clean_res
             result = re.sub(r'[`"\'\s]', '', result)
             
-            # 驗證是否在清單中
+            # 3. 驗證與回傳 (保持原有的模糊比對邏輯)
             if result in self.skills:
                 return result
-            else:
-                # 模糊比對
-                for s in self.skills:
-                    if s.lower() in result.lower():
-                        return s
-                return "Unknown"
+            for s in self.skills:
+                if s.lower() in result.lower():
+                    return s
+            return "Unknown"
                 
         except Exception as e:
-            print(f"分類失敗: {e}")
+            print(f"本地分類失敗: {e}")
             return "Unknown"
 
 if __name__ == "__main__":

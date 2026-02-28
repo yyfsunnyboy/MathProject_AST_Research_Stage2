@@ -1145,6 +1145,108 @@
             max-height: 200px;
             overflow-y: auto;
         }
+
+        /* --- Vanilla Bootstrap-like Modal --- */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1050;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            outline: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-dialog {
+            width: 90%;
+            max-width: 800px;
+            background: #212529;
+            color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #343a40;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .btn-close-white {
+            background: transparent;
+            border: none;
+            color: #f8f9fa;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1rem;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+
+        /* 讓小圓鈕正確顯示且具備懸停效果 */
+        .rounded-circle {
+            transition: all 0.2s ease;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            outline: none;
+        }
+
+        .rounded-circle:hover {
+            background: rgba(243, 156, 18, 0.1) !important;
+            transform: scale(1.1);
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3);
+        }
+
+        /* 確保 Modal 彈窗在最上層 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            /* 提高層級，確保在所有面板之上 */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            /* 加深背景遮罩 */
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.show {
+            display: flex !important;
+        }
+
+        /* 讓 JSON 顯示區塊看起來像駭客終端機 */
+        #jsonDisplayArea {
+            max-height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #333 #000;
+        }
     </style>
 </head>
 
@@ -1347,27 +1449,37 @@
                     </div>
                 </div>
                 <div>
-                    <div class="section-label">Ab2/Ab3 SCAFFOLD PROMPT</div>
-                    <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
+                    <div>
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <h5 class="section-label" style="margin-bottom:0; font-size:0.85rem;">🛡️ Math Project 鷹架
+                                (Ab3)</h5>
+                            <button class="btn rounded-circle" onclick="showGeminiJson()"
+                                title="查看 Gemini Coding Spec (JSON)"
+                                style="width:32px; height:32px; padding:0; border-radius: 50%; background: transparent; border: 1px solid #f39c12; color: #f39c12; cursor: pointer;">
+                                <span style="font-size: 14px; font-weight:bold;">{ }</span>
+                            </button>
+                        </div>
+                        <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Stats -->
-            <div class="meta-stats">
-                <div class="stat-card">
-                    <div id="time-ab3" class="stat-value">--</div>
-                    <div class="stat-label">AI Latency</div>
-                </div>
-                <div class="stat-card" style="border-color:rgba(255,109,0,0.35)">
-                    <div id="fix-ab3" class="stat-value text-warning">--</div>
-                    <div class="stat-label">Healer Fixes</div>
-                </div>
-                <div class="stat-card" style="border-color:rgba(16,185,129,0.35)">
-                    <div id="mcri-ab3" class="stat-value text-success">--</div>
-                    <div class="stat-label">MCRI Grade</div>
+                <!-- Stats -->
+                <div class="meta-stats">
+                    <div class="stat-card">
+                        <div id="time-ab3" class="stat-value">--</div>
+                        <div class="stat-label">AI Latency</div>
+                    </div>
+                    <div class="stat-card" style="border-color:rgba(255,109,0,0.35)">
+                        <div id="fix-ab3" class="stat-value text-warning">--</div>
+                        <div class="stat-label">Healer Fixes</div>
+                    </div>
+                    <div class="stat-card" style="border-color:rgba(16,185,129,0.35)">
+                        <div id="mcri-ab3" class="stat-value text-success">--</div>
+                        <div class="stat-label">MCRI Grade</div>
+                    </div>
                 </div>
             </div>
-        </div>
     </main>
 
     <!-- ═══ ENGINE CONSOLE (The Pulse Console) ═══ -->
@@ -1462,7 +1574,70 @@
         </div>
     </div>
 
+    <!-- ═══ JSON VIEWER MODAL ═══ -->
+    <div id="jsonModal" class="modal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title" id="jsonModalTitle" style="color: #f8f9fa;">🧬 Logic Spec (JSON)</h5>
+                    <button type="button" class="btn-close-white" onclick="closeGeminiJson()">×</button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-secondary" id="jsonModalDesc"
+                        style="font-size:0.85rem; color: #adb5bd; margin-bottom: 1rem;">
+                        <!-- Dynamic Text Injected Here -->
+                    </p>
+                    <pre id="jsonDisplayArea"
+                        style="color: #00ff00; background: #000; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.85rem; border:1px solid #333;"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        // 全域變數，暫存目前的 JSON 資料與來源架構師
+        let currentGeminiJson = "";
+        let currentArchitect = "Gemini 3 Flash";
+
+        function showGeminiJson() {
+            const displayArea = document.getElementById('jsonDisplayArea');
+            const titleArea = document.getElementById('jsonModalTitle');
+            const descArea = document.getElementById('jsonModalDesc');
+
+            if (currentArchitect === "Qwen3-VL") {
+                titleArea.innerHTML = "🧬 Qwen3-VL Logic Spec (JSON)";
+                descArea.innerHTML = "這是由 Qwen3-VL 視覺神經中樞解讀圖片後產出的 DNA 結構化規格，也是單一多模態大腦親自出題的嚴格藍圖依據：";
+            } else {
+                titleArea.innerHTML = "🧬 Gemini Coding Spec (JSON)";
+                descArea.innerHTML = "這是由 Gemini 3 Flash 解讀題目後產出的結構化規格，將作為本地端模型出題的依據：";
+            }
+            const modal = document.getElementById('jsonModal');
+
+            if (!currentGeminiJson || currentGeminiJson === "") {
+                displayArea.innerText = "// 尚未接收到 Gemini 的 Coding Spec...\n// 請先啟動平行運算。";
+                displayArea.style.color = "#666";
+            } else {
+                try {
+                    let rawContent = currentGeminiJson;
+                    // 強力清洗 Markdown 標籤
+                    rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
+
+                    const parsed = JSON.parse(rawContent);
+                    displayArea.innerText = JSON.stringify(parsed, null, 4);
+                    displayArea.style.color = "#00ff00"; // 成功時顯示綠色
+                } catch (e) {
+                    // 如果不是純 JSON，就直接顯示原始文字
+                    displayArea.innerText = currentGeminiJson;
+                    displayArea.style.color = "#f39c12";
+                }
+            }
+            modal.classList.add('show');
+        }
+
+        function closeGeminiJson() {
+            document.getElementById('jsonModal').classList.remove('show');
+        }
+
         /* ═══════════════════════════════════════════
            CHART.JS — MCRI RADAR (LAB_SPEC.md)
            Axes: Syntax · Logic · Rendering · Stability
@@ -1657,6 +1832,19 @@
                 });
             }
 
+            // [NEW] Capture JSON Source Origin and Output
+            if (!isAb1) {
+                if (res.gemini_raw_spec) {
+                    currentGeminiJson = res.gemini_raw_spec;
+                } else if (res.raw_code && !res.gemini_raw_spec) {
+                    currentGeminiJson = ""; // fallback
+                }
+
+                if (res.architect_model) {
+                    currentArchitect = res.architect_model;
+                }
+            }
+
             // Stats
             const gpuTime = res.ai_inference_time_sec ?? 0;
             const cpuTime = res.cpu_execution_time_sec ?? 0;
@@ -1832,12 +2020,12 @@
         /* ═══════════════════════════════════════════
            API FETCH
         ═══════════════════════════════════════════ */
-        async function fetchParams(text, isAb1, modelId) {
+        async function fetchParams(text, isAb1, modelId, skillId, imageData = null, jsonSpec = null) {
             try {
                 const res = await fetch('/api/generate_live', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: text, ablation_mode: isAb1, model_id: modelId })
+                    body: JSON.stringify({ prompt: text, ablation_mode: isAb1, model_id: modelId, skill_id: skillId, image_data: imageData, json_spec: jsonSpec })
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 return await res.json();
@@ -2118,12 +2306,21 @@
 
             resetDiagnostics();
 
-            log1.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
-            log3.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Perception Engine...</span>';
+            log1.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
+            log3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
 
             // Prepare unified payload
             let payload = {};
+
+            // --- 全域變數控制 ---
+            let isAnalyzing = false;
+            let resolvedSkillId = null;
+            let resolvedJsonSpec = null;
+
             if (hasCanvasContent) {
+                if (isAnalyzing) return; // 狀態鎖定：如果正在辨識中，則跳過
+                isAnalyzing = true;
+
                 // Create a temporary canvas to composite a white background
                 const tempCanvas = document.createElement('canvas');
                 tempCanvas.width = canvas.width;
@@ -2133,7 +2330,8 @@
                 tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
                 tempCtx.drawImage(canvas, 0, 0);
 
-                payload.image_data = tempCanvas.toDataURL('image/png');
+                // 壓縮影像 (JPEG 0.8) 以提升本地傳輸效能
+                payload.image_data = tempCanvas.toDataURL('image/jpeg', 0.8);
             } else if (input) {
                 payload.text_data = input;
             }
@@ -2145,6 +2343,8 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                isAnalyzing = false;
 
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const result = await res.json();
@@ -2173,10 +2373,19 @@
                     // Final diagnostic updates
                     updateConfidence(result.confidence_scores);
                     setSkillBadge(result.skill_id);
+                    resolvedSkillId = result.skill_id;
+                    resolvedJsonSpec = result.json_spec;
                     await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
 
-                    log1.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-                    log3.innerHTML += `<br><span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    log1.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    log3.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+
+                    // [NEW] Capture Gemini JSON Logic Spec
+                    if (result.json_spec) {
+                        currentGeminiJson = JSON.stringify(result.json_spec, null, 2);
+                    } else {
+                        currentGeminiJson = "";
+                    }
 
                     // [NEW] Inject Prompt Previews into Code Blocks
                     if (result.bare_prompt) {
@@ -2219,7 +2428,7 @@
             const modelIdAb3 = document.getElementById('model-select-ab3').value;
             const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
-            const p3 = fetchParams(input, false, modelIdAb3)
+            const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, payload.image_data, resolvedJsonSpec)
                 .then(r2 => renderResult('ab3', r2))
                 .catch(err => renderResult('ab3', { error: err.message }));
 
@@ -2233,7 +2442,7 @@
                     cpu_execution_time_sec: 0,
                     mcri: { total_score: 0 }
                 }).then(r1 => renderResult('ab1', r1))
-                : fetchParams(input, true, modelIdAb1)
+                : fetchParams(input, true, modelIdAb1, resolvedSkillId, payload.image_data, resolvedJsonSpec)
                     .then(r1 => renderResult('ab1', r1))
                     .catch(err => renderResult('ab1', { error: err.message }));
 

@@ -13,7 +13,7 @@ class MathEngine:
         self.classifier = SkillClassifier()
         self.scaler = AdaptiveScaler()
 
-    def generate_practice_set(self, input_text=None, image_path=None, count=5, model_id=None, ablation_mode=False):
+    def generate_practice_set(self, input_text=None, image_path=None, count=5, model_id=None, ablation_mode=False, skill_name=None):
         """
         根據輸入生成依照例題仿製的練習題。
         """
@@ -24,7 +24,8 @@ class MathEngine:
         
         # 1. 識別技能
         start_time = time.time()
-        skill_name = self.classifier.classify(input_text=input_text, image_path=image_path)
+        if not skill_name:
+            skill_name = self.classifier.classify(input_text=input_text, image_path=image_path)
         
         if skill_name == "Unknown":
             return {
