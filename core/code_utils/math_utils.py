@@ -205,8 +205,10 @@ def safe_eval(expr_str):
         raise TypeError(f"Unsupported type: {node}")
 
     try:
-        # 預處理：將 LaTeX 運算符轉回 Python
-        clean_expr = str(expr_str).replace('\\times', '*').replace('\\div', '/')
+        # [Fallback Polyfill] 為了壓制 AI 發瘋硬要呼叫 safe_eval 的幻覺，並且處理 LaTeX 語法
+        # 先將 LaTeX 符號與括號清理乾淨，轉為純 Python 計算式
+        clean_expr = str(expr_str).replace('\\div', '/').replace('\\times', '*')
+        clean_expr = clean_expr.replace('\\', '') # 移除殘留的反斜線
         # 解析並計算
         result = _eval(ast.parse(clean_expr, mode='eval').body)
         

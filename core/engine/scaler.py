@@ -97,6 +97,9 @@ class AdaptiveScaler:
             # [Fix] 預設使用 ablation_id=3 (AST Healed) 以獲得最高成功率
             healed_code, *healer_stats = _advanced_healer(clean_code, ablation_id=3, skill_id=skill_name)
             
+            # 在執行代碼前，將 AI 產出的單反斜線 LaTeX 符號保護起來
+            healed_code = healed_code.replace('\\div', '\\\\div').replace('\\times', '\\\\times')
+            
             # 3. 注入 Libs
             # [Fix] _inject_domain_libs 回傳的是 (code, injected_list)
             final_code, _ = _inject_domain_libs(healed_code)
@@ -348,6 +351,9 @@ JSON 格式必須嚴格遵循以下規範：
                 # [核心優化]：在代碼中注入可見的修復痕跡
                 healed_code = self._inject_healer_tags(healed_code, raw_code, target_ops)
                 
+                # 在執行代碼前，將 AI 產出的單反斜線 LaTeX 符號保護起來
+                healed_code = healed_code.replace('\\div', '\\\\div').replace('\\times', '\\\\times')
+                
                 final_code, _ = _inject_domain_libs(healed_code)
                 regex_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
                 ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
@@ -491,8 +497,10 @@ JSON 格式必須嚴格遵循以下規範：
         def _safe_eval_polyfill(expr):
             try:
                 import re
+                # 解決 fmt_num 帶來的括號問題
+                s = str(expr).replace('(', '').replace(')', '')
                 # 替換常見的全形或人類可讀符號，並清除 LaTeX (如 \left, \right)
-                s = str(expr).replace('×', '*').replace('÷', '/').replace('＋', '+').replace('－', '-')
+                s = s.replace('×', '*').replace('÷', '/').replace('＋', '+').replace('－', '-')
                 s = s.replace('\\times', '*').replace('\\div', '/').replace('\\cdot', '*')
                 s = s.replace('\\left', '').replace('\\right', '')
                 # 將 \frac{a}{b} 或 \frac(a)(b) 轉回 (a)/(b)
@@ -523,11 +531,24 @@ JSON 格式必須嚴格遵循以下規範：
         }
         
         try:
-            loc = {}
-            # 執行代碼定義函式
-            exec(code, exec_globals, loc)
+            import tempfile
             
-            gen_func = loc.get("generate")
+            # 1. 強制寫入硬碟，避開記憶體快取
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
+                f.write(code)
+                tmp_path = f.name
+            
+            # 2. 強制重載模組 (Importlib Reload)
+            spec = importlib.util.spec_from_file_location("dynamic_module", tmp_path)
+            foo = importlib.util.module_from_spec(spec)
+            
+            # 將防呆變數與函式庫注入至模組的命名空間
+            foo.__dict__.update(exec_globals)
+            
+            # 強制從硬碟執行載入
+            spec.loader.exec_module(foo)
+            
+            gen_func = getattr(foo, "generate", None)
             if not gen_func:
                 raise Exception("生成的代碼中找不到 generate 函式")
                 

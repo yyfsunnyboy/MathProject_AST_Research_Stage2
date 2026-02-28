@@ -137,38 +137,28 @@ def generate_live():
             # 3. DNA 物理裁剪 (apply_strict_mirroring)
             ocr_text = json_spec.get("ocr_text", input_text or "")
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
+            
+            # 動態注入 OCR 結果
+            live_show_content = live_show_content.replace("{{OCR_RESULT}}", ocr_text)
+            
+            # 【基因+任務】組合提取 (完全封殺 BENCHMARK)
+            final_scaffold = knowledge + "\n" + live_show_content
                 
-            # 4. 組裝 Scaffold Prompt
-            
-            # 動態防止腦補：如果 structure 簡單（例如長度不長，沒有複雜括號），加上禁止分段的硬指令
-            structure_str = str(json_spec.get('structure', ''))
-            op_seq = json_spec.get('operator_sequence', [])
-            anti_hallucination = ""
-            if (isinstance(op_seq, list) and len(op_seq) <= 2) or ("(" not in structure_str and "Part" not in structure_str):
-                anti_hallucination = "【防止腦補指令】\n絕對禁止實施分段生成邏輯 (Part 1/2/3)，請直接依據藍圖生成簡單單層算式！\n"
-            
+            # 4. 組裝 Scaffold Prompt 
             scaffold_prompt = f"""
 # Math-Master 核心開發任務
 
 【1. 數學基因 (From SKILL.md)】
-{knowledge}
+{final_scaffold}
 
-【2. 題目執行藍圖 (From Gemini/VL Spec)】
-- 算式結構：{json_spec.get('structure', '')}
-- 算子順序：{op_seq}
-- 變數約束：{json_spec.get('constraints', '')}
-- 實作規範 (steps)：{json_spec.get('steps', json_spec.get('logic_spec', {}).get('steps', '無'))}
-- 目標題型：{skill_id}
-
-{anti_hallucination}
-【3. 標準工具箱 (API Stubs)】
+【2. 標準工具箱 (API Stubs)】
 {api_stubs}
 """
             # 5. 準備 Qwen3-VL 呼叫
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
-            system_prompt = f"你現在是頂級 Python 工程師。請觀察左側圖片中的算式結構，並嚴格參考提供的【SCAFFOLD PROMPT】與【Coding Spec JSON】，寫出一個具備 generate() 函式的 Python 腳本。確保生成的題目結構與圖片中的原題完全同構（Isomorphic），直接輸出 Python 程式碼，不需要解釋。\n\n『注意：嚴禁模仿任何歷史範例結構。你唯一的實作依據是【題目執行藍圖】。』\n\n【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+            system_prompt = f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構。嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n\n【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n\n請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n【SCAFFOLD PROMPT】\n{scaffold_prompt}"
             
             payload = {
                 "model": model_name,
@@ -183,7 +173,8 @@ def generate_live():
                 "options": {
                     "temperature": vl_config.get("temperature", 0.1),
                     "num_ctx": 4096,  # 針對單行算式小圖優化，減少記憶體碎片
-                    "num_gpu": -1
+                    "num_gpu": -1,
+                    "keep_alive": 0
                 }
             }
 
@@ -675,8 +666,8 @@ def classify_input():
                     if "$" not in input_text_safe:
                         input_text_safe = re.sub(r'(\(.*\).*)', r'$\1$', input_text_safe)
 
-                    live_show_content = live_show_content.replace('{{TARGET_QUESTION}}', input_text_safe)
-                    live_show_content = live_show_content.replace('{{TARGET_ANSWER}}', '...')
+                    # 動態注入 OCR 結果
+                    live_show_content = live_show_content.replace('{{OCR_RESULT}}', input_text_safe)
                     
                     # 應用物理裁切，確保不必要的規則（如絕對值）在沒有出現對應符號時被移除
                     skill_spec_distilled = apply_strict_mirroring(skill_spec_distilled, ocr_text)

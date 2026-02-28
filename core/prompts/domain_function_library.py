@@ -137,11 +137,15 @@ class IntegerOps:
             'max': max,
             'min': min,
         }
-        expr = expr.replace('[', '(').replace(']', ')')
+        # 先將 LaTeX 符號與括號清理乾淨，轉為純 Python 計算式
+        clean_expr = str(expr).replace('\\div', '/').replace('\\times', '*')
+        clean_expr = clean_expr.replace('\\', '') # 移除殘留的反斜線
+        # 移除方括號並替換為括號（如果需要）
+        clean_expr = clean_expr.replace('[', '(').replace(']', ')')
         try:
-            return eval(expr, safe_dict)
+            return eval(clean_expr, safe_dict)
         except Exception as e:
-            raise ValueError(f"Invalid expression: {expr}. Error: {e}")
+            raise ValueError(f"Invalid expression: {expr} (cleaned: {clean_expr}). Error: {e}")
 
 
 class RadicalOps:
@@ -583,12 +587,15 @@ class IntegerOps:
             'max': max,
             'min': min,
         }
+        # 先將 LaTeX 符號與括號清理乾淨，轉為純 Python 計算式
+        clean_expr = str(expr).replace('\\div', '/').replace('\\times', '*')
+        clean_expr = clean_expr.replace('\\', '') # 移除殘留的反斜線
         # 移除方括號並替換為括號（如果需要）
-        expr = expr.replace('[', '(').replace(']', ')')
+        clean_expr = clean_expr.replace('[', '(').replace(']', ')')
         try:
-            return eval(expr, safe_dict)
+            return eval(clean_expr, safe_dict)
         except Exception as e:
-            raise ValueError(f"Invalid expression: {expr}. Error: {e}")
+            raise ValueError(f"Invalid expression: {expr} (cleaned: {clean_expr}). Error: {e}")
 """
 
 # ============================================================================

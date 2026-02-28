@@ -161,42 +161,115 @@ def check(user_answer, correct_answer):
 [[END_MODE:BENCHMARK]]
 
 [[MODE:LIVESHOW]]
-[Role] 你現在是 MathProject 專案的 「核心架構設計師 (AI Architect)」。
+[Role] MathProject 動態出題引擎
 
-[核心任務]
-你必須根據「DNA 邏輯藍圖 (JSON Spec)」實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
-你的目標是產出一個與例題「同構 (Isomorphic)」的 Python 出題腳本。
+[輸入來源] {{OCR_RESULT}}
 
-[Task] 
-1. 深入解析 {{TARGET_QUESTION}}，辨識其數學結構（如：多項式除法、根式化簡、分數混合運算）。
-2. 參考本檔案 (SKILL.md) 的知識庫，產出一份給 Coder (Qwen) 的 Coding Spec JSON。
-3. 你的任務是規劃「如何寫 Code」，而不是直接寫 Code。
+[核心策略]
+小模型在遇到複雜結構時，如果依靠純 `if/else` 很容易寫錯邏輯。
+因此，我們回歸 **「傻瓜字串替換 (Safe String Evaluation)」** 策略。
+為了避開 Sandbox 中 `eval()` 解析 `abs()` 失敗的 Bug，**請完全禁止在 `eval()` 內執行 `abs()`。**
 
-[API 引用手冊] (僅限選用以下已注入工具)
-- IntegerOps: 處理整數格式化 (.fmt_num) 與安全運算 (.safe_eval)。
-- FractionOps: 處理精確分數 (.create) 與 LaTeX 轉換 (.to_latex)。
-- PolynomialOps: 處理多項式係數運算 (.add, .mul) 與格式化 (.format_latex)。
-- RadicalOps: 處理根式化簡 (.create) 與多項根式合併 (.format_expression)。
+1. **結構鏡像與分塊 (Structural Mirroring & Chunking)**：
+   - 看到圖片裡的絕對值 `|...|`，把裡面的運算定義為一個 `inner_str`。
+   - 看到圖片裡的中括號 `[...]`，把裡面的運算定義為一個 `bracket_str`。
+   - 替換好變數後，分別使用 `eval()` 算出各區塊的值。
 
-[輸出格式] 必須嚴格輸出 JSON：
-{
-  "skill_id": "請由題目特徵判定 (例如: jh_數學2上_FourOperationsOfRadicals)",
-  "logic_spec": {
-    "structure": "描述題目的數學邏輯結構",
-    "steps": [
-      "1. 使用 [特定API] 生成變數...",
-      "2. 描述計算 ans 的純數值邏輯...",
-      "3. 描述如何套用【實作模板】組合 question_text"
-    ]
-  },
-  "injected_functions": ["填入本次需要的類別名稱，例如 ['RadicalOps']"]
-}
+2. **安全絕對值處理 (Safe Absolute Value)**：
+   - 使用 `eval()` 算出絕對值內部的數值後，**使用 Python 原生的 `abs()` 函數過濾**。
+   - 範例：`part_abs = abs(eval(inner_str))`
 
-[最高禁令] 
-只准輸出 JSON，不准有任何前言、後語或 Python 代碼。
-確保 `steps` 極致詳細，讓 Coder 看到後能直接在【實作模板】中填空。
+3. **暴力重試 (Retry Loop)**：
+   - 依然保留 `for` 迴圈機制，利用 CPU 快速試錯來保證整除。
 
-[Coding Spec 細節提醒]
-1. 轉義字元 (Escaping)：若要在 Python f-string 輸出 LaTeX 的 `\times` 或 `div`，只需提醒 Coder 寫 `\\times` 與 `\\div`，避免 Python 語法錯誤。例如：`f"{{fmt(a)}} \\times {{fmt(b)}}"`。
-2. 動態工具注入：`injected_functions` 必須根據你在前處理階段判斷需要的功能，動態給出 List (如 `["FractionOps", "IntegerOps"]`)。
+[實作範例：針對結構 |(-5) * 3 - 4 * 2| + [28 / (-7) - (-3)]]
+```python
+import random
+import math
+
+def generate(level=1, **kwargs):
+    fmt = IntegerOps.fmt_num
+    
+    # [Step 1: 定義重試迴圈]
+    # 不管題目長短，直接跑 3000 次測試
+    for _ in range(3000):
+        
+        # [Step 2: 隨機生成變數 (依據圖片結構 7 個數字)]
+        v1 = IntegerOps.random_nonzero(-15, 15)  # 對應 -5
+        v2 = IntegerOps.random_nonzero(2, 9)     # 對應 3
+        v3 = IntegerOps.random_nonzero(2, 9)     # 對應 4
+        v4 = IntegerOps.random_nonzero(2, 9)     # 對應 2
+        v5 = IntegerOps.random_nonzero(-30, 30)  # 對應 28
+        v6 = IntegerOps.random_nonzero(-10, 10)  # 對應 -7
+        v7 = IntegerOps.random_nonzero(-10, 10)  # 對應 -3
+        
+        # [Step 3: 隨機生成運算符 (5個符號)]
+        op1 = random.choice(['*', '/'])
+        op2 = random.choice(['+', '-'])
+        op3 = random.choice(['*', '/'])
+        op4 = random.choice(['+', '-']) # 兩個區塊之間的加號
+        op5 = random.choice(['*', '/'])
+        op6 = random.choice(['+', '-'])
+        
+        try:
+            # [Step 4: 安全字串運算分塊 (Safe Chunked Eval)]
+            
+            # 區塊 A: 絕對值內部 (-5) * 3 - 4 * 2
+            inner_str = f"({v1}) {op1} {v2} {op2} {v3} {op3} {v4}"
+            val_inner = eval(inner_str)
+            # 安全轉換絕對值
+            part_abs = abs(val_inner)
+            
+            # 區塊 B: 中括號內部 [28 / (-7) - (-3)]
+            bracket_str = f"{v5} {op5} ({v6}) {op6} ({v7})"
+            part_bracket = eval(bracket_str)
+            
+            # 總和計算 (part_abs 和 part_bracket 之間的運算)
+            ans = eval(f"{part_abs} {op4} {part_bracket}")
+            
+            # [Step 5: 黃金判斷 - 是否整除?]
+            # 檢查是否為整數 (允許些微浮點誤差)
+            if abs(ans - round(ans)) < 1e-6:
+                final_ans = int(round(ans))
+                
+                # [Step 6: 成功！組裝 LaTeX]
+                # 定義符號轉換 helper
+                def to_latex(op):
+                    if op == '*': return '\\times'
+                    if op == '/': return '\\div'
+                    return op
+                
+                l_op1 = to_latex(op1)
+                l_op2 = to_latex(op2)
+                l_op3 = to_latex(op3)
+                l_op4 = to_latex(op4)
+                l_op5 = to_latex(op5)
+                l_op6 = to_latex(op6)
+                
+                # 填入 LaTeX (使用 fmt 處理負號)
+                str_abs = f"|{fmt(v1)} {l_op1} {fmt(v2)} {l_op2} {fmt(v3)} {l_op3} {fmt(v4)}|"
+                str_bracket = f"\\left[ {fmt(v5)} {l_op5} {fmt(v6)} {l_op6} {fmt(v7)} \\right]"
+                
+                math_str = f"{str_abs} {l_op4} {str_bracket}"
+                
+                question_text = r"計算 $$" + math_str + r"$$ 的值。"
+                
+                return {
+                    'question_text': question_text,
+                    'correct_answer': str(final_ans),
+                    'mode': 1
+                }
+        except (ZeroDivisionError, SyntaxError): # Add SyntaxError for robustness with eval
+            continue
+            
+    # 保底機制
+    return {'question_text': "Error", 'correct_answer': "0", 'mode': 1}
+
+def check(user_answer, correct_answer):
+    try:
+        if str(user_answer).strip() == str(correct_answer).strip(): return {'correct': True, 'result': '正確'}
+        if abs(float(user_answer) - float(correct_answer)) < 1e-6: return {'correct': True, 'result': '正確'}
+    except: pass
+    return {'correct': False, 'result': '錯誤'}
 [[END_MODE:LIVESHOW]]
+```

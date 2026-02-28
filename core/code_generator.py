@@ -619,6 +619,61 @@ def _log_experiment(**kwargs):
         except:
             pass
 
+def regex_healer_v2(raw_code):
+    """
+    [Regex Fix: LaTeX 轉義保護]
+    防止 \div 變成 \d (非法轉義)
+    模式 A: 將單反斜線 LaTeX 符號轉為雙反斜線
+    模式 B: 強制將包含 LaTeX 符號的字串轉換為原始字串 (Raw String)
+    回傳: (processed_code, fix_count)
+    """
+    import re
+    fix_count = 0
+    processed_code = raw_code
+    
+    # 計算模式 A 需要替換的次數
+    fix_count += processed_code.count('\\div') + processed_code.count('\\times')
+    processed_code = processed_code.replace('\\div', '\\\\div').replace('\\times', '\\\\times')
+    
+    # 模式 B: 強制將包含 LaTeX 符號的字串轉換為原始字串 (Raw String)
+    # 尋找 "..." 或 '...' 裡面含有 \div 或 \times 的，在其引號前補上 r
+    processed_code, c = re.subn(r'(?<!r)(["\'])(.*?\\(?:div|times).*?\1)', r'r\1\2', processed_code)
+    fix_count += c
+    
+    # [Regex Fix: 終極轉義修復]
+    # 1. 偵測所有在 safe_eval 內的反斜線，將其物理替換為 python 可理解的符號
+    # 這是因為 safe_eval 的輸入不需要 LaTeX 格式，只需要純運算邏輯
+    def replace_safe_eval(m):
+        inner = m.group(1).replace('\\\\div', '/').replace('\\div', '/').replace('\\\\times', '*').replace('\\times', '*')
+        return f"IntegerOps.safe_eval('{inner}')"
+        
+    processed_code, c = re.subn(
+        r'IntegerOps\.safe_eval\(f?"(.*?)"\)', 
+        replace_safe_eval, 
+        processed_code
+    )
+    fix_count += c
+    
+    # 2. 自動修正 question_text 中的單反斜線
+    # 尋找非 raw string 且包含 \div 的字串，強制補上 r
+    processed_code, c = re.subn(r'(?<!r)(["\'])(.*?\\div.*?\1)', r'r\1\2', processed_code)
+    fix_count += c
+    
+    # 3. [Regex Fix: LaTeX 運算去汙]
+    # 將所有在 safe_eval() 括號內的 LaTeX 符號轉為 Python 運算子
+    # 這是最後一道防線，捕捉針對任何物件呼叫的 safe_eval
+    def ultimate_replace_safe_eval(m):
+        return m.group(0).replace('\\times', '*').replace('\\div', '/').replace('\\\\', '\\')
+        
+    processed_code, c = re.subn(
+        r"safe_eval\((.*?)\)", 
+        ultimate_replace_safe_eval, 
+        processed_code
+    )
+    fix_count += c
+    
+    return processed_code, fix_count
+
 def _basic_cleanup(code, strict_mode=True):
     """移除 markdown 標記與尾部說明文字（Qwen 違規檢測與移除）
     
@@ -626,6 +681,15 @@ def _basic_cleanup(code, strict_mode=True):
         code: 原始代碼
         strict_mode: 是否執行嚴格的尾部說明文字清理 (預設 True，Cloud 模型建議 False)
     """
+    # 執行 LaTeX 保護
+    code, regex_v2_fixes = regex_healer_v2(code)
+    
+    # 強行確保 question_text 裡的變數被正確包裝
+    if "question_text = r" in code and "{{" not in code:
+        # 這是為了防止 AI 忘記在 Raw string 裡處理變數嵌入
+        code = code.replace(r"$$", f"$$\" + f\"{{...}}\" + r\"$$") # 這裡需要 Antigravity 根據 logic_spec 動態修正
+        regex_v2_fixes += 1
+    
     old_code = code
     
     # Step 1: 移除 markdown 標記 (總是執行)
@@ -692,7 +756,10 @@ def _basic_cleanup(code, strict_mode=True):
     # 重組代碼
     code = '\n'.join(cleaned_lines).strip()
     
-    return code, 1 if code != old_code else 0
+    cleanup_fixes = 1 if code != old_code else 0
+    total_fixes = regex_v2_fixes + cleanup_fixes
+    
+    return code, total_fixes
 
 
 def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
@@ -735,6 +802,23 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
             log_fix_detail("2.3  Tuple Return Fixer", "skip", "🔍 檢查返回格式")
             log_fix_detail("2.35 Answer Format Fixer", "fixed" if regex_fixes > 1 else "skip",
                           "🔍 檢查答案格式")
+
+    # [Healer Check: 硬編碼獵殺]
+    if "question_text = r" in code_after_regex and "fmt(" not in code_after_regex and "{" not in code_after_regex:
+        raise ValueError("Healer: Detected Hard-coded string! You must use f-string with variables.")
+        
+    # 檢查是否有直接賦值數字 (例如 v1 = 8)
+    if re.search(r'\b[a-zA-Z_]\w*\s*=\s*-?\d+\s*(\n|#)', code_after_regex):
+        if "level=" not in code_after_regex and "max_retries" not in code_after_regex:
+            raise ValueError("Healer: Detected HARD-CODED numbers! You MUST use IntegerOps.random_nonzero().")
+
+    # [NEW FIX: Healer 強制注入 Check Function]
+    if ablation_id >= 3:
+        if "def check" not in code_after_regex:
+            code_after_regex += "\n\ndef check(user_answer, correct_answer):\n    try:\n        return {'correct': str(user_answer).strip() == str(correct_answer).strip(), 'result': '自動補全比對'}\n    except:\n        return {'correct': False, 'result': '錯誤'}"
+            regex_fixes += 1
+            if VERBOSE_LEVEL == 2:
+                log_fix_detail("2.6 Check Function Injector", "fixed", "✅ 成功補全缺漏的 check 函式")
     
     log_step_result(2, regex_fixes, f"代碼長度: {len(code_before_regex)} → {len(code_after_regex)} 字符")
     
@@ -990,8 +1074,7 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     is_cloud_model = (model_size_class == 'cloud')
     # [FIX] 恢復 strict_mode 邏輯：Local 模型通常較多話，需要嚴格清理；Cloud 模型則較為精簡
     strict_cleanup = not is_cloud_model
-    clean_code, markdown_cleanup_count = _basic_cleanup(raw_output, strict_mode=strict_cleanup)
-    basic_cleanup_fixes = markdown_cleanup_count
+    clean_code, basic_cleanup_fixes = _basic_cleanup(raw_output, strict_mode=strict_cleanup)
     
     if VERBOSE_LEVEL == 2:
         code_len_after = len(clean_code)
