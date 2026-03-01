@@ -672,6 +672,13 @@ def regex_healer_v2(raw_code):
     )
     fix_count += c
     
+    # 4. [Regex Fix: Unterminated string literal]
+    # 修復 LLM 產生的多行字串 (如 f'計算 \n\n 的值。') 導致的 SyntaxError
+    # 將跨行的單引號/雙引號字串自動轉換為三引號字串 (''' 或 """)
+    processed_code, c1 = re.subn(r"(f?)(['])((?:[^'\\]|\\.)*?\n(?:[^'\\]|\\.)*?)[']", r"\1'''\3'''", processed_code)
+    processed_code, c2 = re.subn(r'(f?)(["])((?:[^"\\]|\\.)*?\n(?:[^"\\]|\\.)*?)["]', r'\1"""\3"""', processed_code)
+    fix_count += c1 + c2
+    
     return processed_code, fix_count
 
 def _basic_cleanup(code, strict_mode=True):

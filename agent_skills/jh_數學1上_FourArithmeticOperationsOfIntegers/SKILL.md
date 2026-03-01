@@ -163,7 +163,7 @@ def check(user_answer, correct_answer):
 [[MODE:LIVESHOW]]
 [Role] MathProject 動態出題引擎
 
-[輸入來源] {{OCR_RESULT}}
+[範例題型] {{OCR_RESULT}}
 
 [核心策略]
 小模型在遇到各種未知結構 (絕對值、括號、巢狀) 時，如果給出太死板的範例容易「背答案」。
@@ -182,7 +182,7 @@ def check(user_answer, correct_answer):
 3. **暴力重試 (Retry Loop)**：
    - 依然保留 `for` 迴圈機制，利用 CPU 快速試錯來保證整除。
 
-[實作範例：通用骨架 (請根據 {{OCR_RESULT}} 的實際圖片結構自由變形)]
+[實作範例：通用骨架 (請根據 {{OCR_RESULT}} 的實際結構自由變形)]
 ```python
 import random
 import math
@@ -194,32 +194,38 @@ def generate(level=1, **kwargs):
     # 不管題目長短，直接跑 3000 次測試
     for _ in range(3000):
         
-        # [Step 2: 隨機生成變數 (依據圖片結構有幾個數字就生成幾個)]
-        v1 = IntegerOps.random_nonzero(-30, 30)
-        v2 = IntegerOps.random_nonzero(2, 9)
-        v3 = IntegerOps.random_nonzero(-15, 15)
-        # ... 依此類推
+        # [Step 2: 隨機生成變數 (依據範例題型有幾個數字就生成幾個)]
+        # v1: 主數值，範圍大
+        v1 = IntegerOps.random_nonzero(-20, 20) 
         
-        # [Step 3: 隨機生成運算符 (依據圖片結構有幾個符號就生成幾個)]
+        # v2: 乘除因子，範圍小但包含負數 (增加難度！)
+        v2 = IntegerOps.random_nonzero(-9, 9)   
+        
+        # v3, v4, v5: 混合使用，讓題目充滿變化
+        v3 = IntegerOps.random_nonzero(-15, 15)
+        v4 = IntegerOps.random_nonzero(-9, 9)
+        v5 = IntegerOps.random_nonzero(-10, 10)
+        
+        # [Step 3: 隨機生成運算符 (依據範例題型有幾個符號就生成幾個)]
         op1 = random.choice(['+', '-'])
         op2 = random.choice(['*', '/'])
         # ... 依此類推
         
         try:
             # [Step 4: 積木組裝替換 (Lego Block Assembly)]
-            # 這裡只是一個概念展示！請依照你目前看到的圖片結構，靈活組裝！
+            # 這裡只是一個概念展示！請依照你目前看到的範例題型，靈活組裝！
             
-            # 假設圖片裡有一個絕對值區塊
+            # 假設範例題型裡有一個絕對值區塊
             # val_abs = abs(eval(f"({v1}) {op1} {v2}"))
             
-            # 假設圖片裡有一個中括號區塊 (把算好的絕對值塞進去)
+            # 假設範例題型裡有一個中括號區塊 (把算好的絕對值塞進去)
             # val_bracket = eval(f"{v3} {op2} {val_abs}")
             
             # 最終答案組合
             # ans = eval(f"({v1}) * {val_bracket} + {v3}") 
             
             # ---------------------------------------------------------
-            # 以下為實際填寫區 (請根據圖片自行發揮，勿抄寫上方註解範例)
+            # 以下為實際填寫區 (請根據範例題型自行發揮，勿抄寫上方註解範例)
             
             # 積木 1: ...
             

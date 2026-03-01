@@ -344,7 +344,39 @@ JSON 格式必須嚴格遵循以下規範：
                 dummy_stats.logs = []
                 healer_stats = [dummy_stats]
                 print("⚠️ [Ab1 模式] 已繞過 _advanced_healer 與 _inject_domain_libs。")
+                ab2_result = None
             else:
+                # --- [NEW] Ab2 Interception (Scaffold Prompt, No Healer) ---
+                ab2_result = {}
+                ab2_save_dir = "generated_scripts"
+                if not os.path.exists(ab2_save_dir):
+                    os.makedirs(ab2_save_dir, exist_ok=True)
+                ab2_filename = f"scaler_{int(time.time())}_{uuid.uuid4().hex[:6]}_ab2.py"
+                ab2_file_path = os.path.join(ab2_save_dir, ab2_filename)
+                with open(ab2_file_path, "w", encoding="utf-8") as _fb:
+                    _fb.write(clean_code)
+                
+                try:
+                    cpu_start_ab2 = time.time()
+                    ab2_exe_res = self._execute_code(clean_code, level=level)
+                    try:
+                        from scripts.evaluate_mcri import evaluate_math_hygiene
+                        if "question_text" in ab2_exe_res:
+                            h_score, _ = evaluate_math_hygiene(ab2_exe_res["question_text"])
+                            ab2_exe_res["_mcri_hygiene_score"] = h_score
+                    except:
+                        pass
+                    ab2_result = ab2_exe_res
+                    ab2_result["cpu_execution_time_sec"] = time.time() - cpu_start_ab2
+                except Exception as e:
+                    ab2_result = {"error": f"執行錯誤: {e}", "cpu_execution_time_sec": time.time() - cpu_start_ab2}
+                
+                ab2_result["file_path"] = ab2_file_path
+                ab2_result["ai_inference_time_sec"] = ai_inference_time_sec
+                ab2_result["raw_code"] = clean_code    # scaffold code, before Healer
+                ab2_result["final_code"] = clean_code  # no Healer applied for Ab2
+                # --- /Ab2 Interception ---
+                
                 # [執行完整 Healer + 函式庫注入]
                 healed_code, *healer_stats = _advanced_healer(clean_code, ablation_id=active_ablation_id, skill_id=skill_name)
                 
@@ -427,9 +459,9 @@ JSON 格式必須嚴格遵循以下規範：
                     "cpu_execution_time_sec": round(cpu_execution_time_sec, 4)
                 }
             }
-            
             return {
                 "problems": results,
+                "ab2_result": ab2_result if not ablation_mode else None,
                 "debug_meta": debug_meta
             }
 
@@ -453,6 +485,9 @@ JSON 格式必須嚴格遵循以下規範：
             # 這裡我們針對您提供的範例進行特製化處理
             # 尋找從括號開始到括號結束的片段
             text = re.sub(r'(\(.*\).*)', r'$\1$', text)
+        
+        # 3. [V51.1 防禦] 過濾掉真實換行，避免 LLM 產生帶有真實換行的單引號字串 (導致 SyntaxError)
+        text = text.replace('\n', ' ').replace('\r', '')
         
         return text
 

@@ -50,6 +50,7 @@ class MathEngine:
                 
             problems = response.get("problems", [])
             debug_meta = response.get("debug_meta", {})
+            ab2_result = response.get("ab2_result")
             
         except Exception as e:
              return {
@@ -62,7 +63,8 @@ class MathEngine:
             "skill": skill_name,
             "original_input": input_text or "[Image]",
             "problems": problems,
-            "debug_meta": debug_meta
+            "debug_meta": debug_meta,
+            "ab2_result": ab2_result
         }
 
 if __name__ == "__main__":

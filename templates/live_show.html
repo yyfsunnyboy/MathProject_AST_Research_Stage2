@@ -549,14 +549,14 @@
             font-weight: 600;
         }
 
-        /* ── Main dual panel grid ── */
+        /* ── Main triple panel grid ── */
         main {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1.5rem;
             padding: 1.5rem 2rem;
             flex: 1;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             width: 100%;
         }
@@ -601,6 +601,11 @@
 
         .ab1-panel::before {
             background: var(--ab1-border);
+        }
+
+        .ab2-panel::before {
+            background: #f39c12;
+            /* Amber for Ab2 */
         }
 
         .ab3-panel::before {
@@ -842,10 +847,10 @@
         ═══════════════════════════════════════ */
         .monitor-section {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr;
             gap: 1.5rem;
             padding: 0 2rem 2rem;
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
 
@@ -1146,6 +1151,209 @@
             overflow-y: auto;
         }
 
+        /* ─────────────────────────── PLAN B: ABLATION COMPARISON ──────────────── */
+        .comparison-section {
+            background: var(--bg-main);
+            border-top: 2px solid var(--border-subtle);
+            padding: 1.5rem 2rem 2rem;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .comparison-section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .comparison-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            letter-spacing: 0.5px;
+        }
+
+        .comparison-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .comparison-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        /* SCORE ROW */
+        .cmp-score-card {
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
+            padding: 1.25rem 1.5rem;
+            background: var(--panel-bg);
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.3s;
+        }
+
+        .cmp-score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .cmp-score-card.ab1::before {
+            background: #e74c3c;
+        }
+
+        .cmp-score-card.ab2::before {
+            background: #f39c12;
+        }
+
+        .cmp-score-card.ab3::before {
+            background: #27ae60;
+        }
+
+        .cmp-score-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .cmp-score-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .cmp-score-label.ab1 {
+            color: #e74c3c;
+        }
+
+        .cmp-score-label.ab2 {
+            color: #f39c12;
+        }
+
+        .cmp-score-label.ab3 {
+            color: #27ae60;
+        }
+
+        .cmp-mcri-big {
+            font-size: 2.5rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .cmp-mcri-big.ab1 {
+            color: #e74c3c;
+        }
+
+        .cmp-mcri-big.ab2 {
+            color: #f39c12;
+        }
+
+        .cmp-mcri-big.ab3 {
+            color: #27ae60;
+        }
+
+        .cmp-mini-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .cmp-mini-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .cmp-mini-val {
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .cmp-mini-label {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .cmp-winner-badge {
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 99px;
+            font-weight: 700;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* CODE ROW */
+        .cmp-code-card {
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: #0d1117;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .cmp-code-header {
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cmp-code-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .cmp-code-title.ab1 {
+            color: #ff7b7b;
+        }
+
+        .cmp-code-title.ab2 {
+            color: #f39c12;
+        }
+
+        .cmp-code-title.ab3 {
+            color: #3fb950;
+        }
+
+        .cmp-code-body {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: #e6edf3;
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-y: auto;
+            max-height: 280px;
+            line-height: 1.6;
+        }
+
+        /* ──────────── END PLAN B ──────────── */
+
         /* --- Vanilla Bootstrap-like Modal --- */
         .modal {
             display: none;
@@ -1278,17 +1486,8 @@
                 <div class="status-dot"></div>STATUS: READY
             </div>
         </div>
-        <div class="header-subtitle">精準致勝：透過工程化自癒機制使小型模型在 K12 數學出題任務中超越雲端大模型</div>
-
-        <!-- Pipeline Banner (SHOWREEL_LOGIC.md) -->
-        <div class="pipeline-banner">
-            <span class="pipe-step gemini">☁️ Cloud Perception</span>
-            <span class="pipe-arrow">→</span>
-            <span class="pipe-step amber">📋 Scaffold Injection</span>
-            <span class="pipe-arrow">→</span>
-            <span class="pipe-step qwen">🖥 Local Engine</span>
-        </div>
-
+        <div class="header-subtitle" style="font-size:1.25rem; font-weight:800; letter-spacing:0.02em;">
+            精準致勝：透過工程化自癒機制使小型模型在 K12 數學出題任務中超越雲端大模型</div>
         <!-- ═══ MULTIMODAL WORKSTATION ═══ -->
         <div class="workstation">
             <!-- Left: Multimodal Input -->
@@ -1346,7 +1545,7 @@
             <div class="panel-header">
                 <div>
                     <div class="panel-title">Ab1 — Native LLM</div>
-                    <div class="panel-subtitle">Zero-shot · No Scaffold · No Healer</div>
+                    <div class="panel-subtitle">Bare Prompt · No Scaffold · No Healer</div>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
                     <div id="badge-ab1" class="badge badge-standby">STANDBY</div>
@@ -1381,27 +1580,89 @@
                     </div>
                     <div id="math-ab1" class="math-block"></div>
                 </div>
-                <div>
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
                     <div class="section-label">Ab1 BARE PROMPT</div>
                     <pre id="code-ab1" class="code-block"></pre>
                 </div>
+
+                <!-- Stats -->
+                <div class="meta-stats">
+                    <div class="stat-card">
+                        <div id="time-ab1" class="stat-value">--</div>
+                        <div class="stat-label">AI Latency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="fix-ab1" class="stat-value">0</div>
+                        <div class="stat-label">Healer Fixes</div>
+                    </div>
+                    <div class="stat-card" style="border-color: rgba(239,68,68,0.35)">
+                        <div id="mcri-ab1" class="stat-value text-error">--</div>
+                        <div class="stat-label">MCRI Grade</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle: Ab2 Scaffold Prompt (No Healer) -->
+        <div class="panel ab2-panel" id="panel-ab2">
+            <div class="panel-header">
+                <div>
+                    <div class="panel-title">Ab2 — Scaffold Prompt</div>
+                    <div class="panel-subtitle">@SKILL.md Scaffold · <b style="color:#d35400;">No Healer</b></div>
+                </div>
+                <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
+                    <div id="badge-ab2" class="badge badge-standby">STANDBY</div>
+                    <div class="model-select"
+                        style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #fdf2f2; font-size: 0.75rem; color: #c0392b; cursor: not-allowed;"
+                        title="與 Ab3 連動，共用同一份生成程式碼">
+                        🔗 綁定 Ab3 模型
+                    </div>
+                </div>
             </div>
 
+            <!-- Loading skeleton -->
+            <div id="loader-ab2" class="loader-wrap hidden">
+                <div class="skeleton" style="width:80%"></div>
+                <div class="skeleton" style="width:55%"></div>
+                <div class="skeleton" style="width:90%"></div>
+                <div class="skeleton" style="width:65%"></div>
+            </div>
 
+            <!-- Result -->
+            <div id="result-ab2" class="content-box hidden">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="section-label">Generated Problem</div>
+                        <button class="action-btn"
+                            style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
+                            onclick="runNextQuestion('ab2');">
+                            下一題
+                        </button>
+                    </div>
+                    <div id="math-ab2" class="math-block"></div>
+                    <div id="ans-ab2"
+                        style="text-align:center;color:var(--text-muted);margin-top:0.5rem;font-family:'JetBrains Mono',monospace;font-size:0.85rem;">
+                    </div>
+                </div>
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h5 class="section-label" style="margin-bottom:0.5rem; font-size:0.85rem;">Ab2 Scaffold Prompt</h5>
+                    <pre id="code-ab2" class="code-block"></pre>
+                </div>
 
-            <!-- Stats -->
-            <div class="meta-stats">
-                <div class="stat-card">
-                    <div id="time-ab1" class="stat-value">--</div>
-                    <div class="stat-label">AI Latency</div>
-                </div>
-                <div class="stat-card">
-                    <div id="fix-ab1" class="stat-value">0</div>
-                    <div class="stat-label">Healer Fixes</div>
-                </div>
-                <div class="stat-card" style="border-color: rgba(239,68,68,0.35)">
-                    <div id="mcri-ab1" class="stat-value text-error">--</div>
-                    <div class="stat-label">MCRI Grade</div>
+                <!-- Stats -->
+                <div class="meta-stats">
+                    <div class="stat-card">
+                        <div id="time-ab2" class="stat-value">--</div>
+                        <div class="stat-label">AI Latency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div id="fix-ab2" class="stat-value text-error">0</div>
+                        <div class="stat-label">Healer Fixes</div>
+                    </div>
+                    <div class="stat-card" style="border-color: rgba(239,68,68,0.35)">
+                        <div id="mcri-ab2" class="stat-value text-error">--</div>
+                        <div class="stat-label">MCRI Grade</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1411,7 +1672,7 @@
             <div class="panel-header">
                 <div>
                     <div class="panel-title">Ab3 — Active Healer</div>
-                    <div class="panel-subtitle">@SKILL.md Scaffold · AST + Regex Repair</div>
+                    <div class="panel-subtitle">@SKILL.md Scaffold · <b style="color:#d35400;">Full Healer</b></div>
                 </div>
                 <div style="display:flex; flex-direction:column; align-items:flex-end; gap:0.5rem;">
                     <div id="badge-ab3" class="badge badge-standby">STANDBY</div>
@@ -1448,20 +1709,10 @@
                         style="text-align:center;color:var(--text-muted);margin-top:0.5rem;font-family:'JetBrains Mono',monospace;font-size:0.85rem;">
                     </div>
                 </div>
-                <div>
-                    <div>
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                            <h5 class="section-label" style="margin-bottom:0; font-size:0.85rem;">🛡️ Math Project 鷹架
-                                (Ab3)</h5>
-                            <button class="btn rounded-circle" onclick="showGeminiJson()"
-                                title="查看 Gemini Coding Spec (JSON)"
-                                style="width:32px; height:32px; padding:0; border-radius: 50%; background: transparent; border: 1px solid #f39c12; color: #f39c12; cursor: pointer;">
-                                <span style="font-size: 14px; font-weight:bold;">{ }</span>
-                            </button>
-                        </div>
-                        <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
-                    </div>
+                <div style="flex-grow: 1; display: flex; flex-direction: column;">
+                    <h5 class="section-label" style="margin-bottom:0.5rem; font-size:0.85rem;">Ab2 Scaffold Prompt +
+                        Healer</h5>
+                    <pre id="code-ab3" class="code-block" style="color:var(--text-muted)"></pre>
                 </div>
 
                 <!-- Stats -->
@@ -1482,165 +1733,175 @@
             </div>
     </main>
 
-    <!-- ═══ ENGINE CONSOLE (The Pulse Console) ═══ -->
-    <div class="monitor-section">
-        <div class="monitor-section-header">
-            <h3 class="monitor-title">SYSTEM.MONITOR — ENGINE DIAGNOSTICS</h3>
+
+
+    <!-- ═══ ABLATION COMPARISON SECTION (Plan B) ═══ -->
+    <div class="comparison-section">
+        <div class="comparison-section-header">
+            <h3 class="comparison-title">ABLATION.COMPARE — SIDE-BY-SIDE RESULT</h3>
+            <span class="comparison-subtitle">Ab1 (Native) &nbsp;▶&nbsp; Ab2 (Scaffold) &nbsp;▶&nbsp; Ab3
+                (Healed)</span>
         </div>
 
-        <!-- Left: Baseline Hub -->
-        <div class="diag-panel">
-            <div class="diag-header">[BASELINE: BARE_PROMPT]</div>
-            <div class="diag-content" id="diag-ab1-content">
-                <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
-            </div>
-        </div>
+        <!-- ROW 1: THREE monitor-panels (stats + radar) -->
+        <div class="comparison-row" style="align-items: stretch;">
 
-        <!-- Ab1 Node -->
-        <div class="monitor-panel">
-            <h4 class="monitor-node-label" style="color:#ef4444;text-shadow:0 0 8px #ef4444;">[ Ab1 Node — Native ]</h4>
-
-            <div class="progress-row">
-                <span class="monitor-label">GPU · AI Inference Time</span>
-                <div class="progress-track">
-                    <div class="progress-bar-bg">
-                        <div id="bar-ab1-gpu" class="progress-fill"></div>
+            <!-- Ab1 monitor-panel -->
+            <div class="monitor-panel">
+                <h4 class="monitor-node-label" style="color:#ef4444;text-shadow:0 0 8px #ef4444;">[ Ab1 Node — Native ]
+                </h4>
+                <div class="progress-row">
+                    <span class="monitor-label">GPU · AI Inference Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab1-gpu" class="progress-fill"></div>
+                        </div>
+                        <span id="cmp-text-ab1-gpu" class="progress-text">0.0s</span>
                     </div>
-                    <span id="text-ab1-gpu" class="progress-text">0.0s</span>
+                </div>
+                <div class="progress-row">
+                    <span class="monitor-label">CPU · Code Execution Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab1-cpu" class="progress-fill cpu"></div>
+                        </div>
+                        <span id="cmp-text-ab1-cpu" class="progress-text">0.0s</span>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                    <span class="monitor-label">MCRI Score</span>
+                    <span id="cmp-mcri-ab1"
+                        style="font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:800; color:#ef4444;">--</span>
+                </div>
+                <div>
+                    <span class="monitor-label">Kernel Log</span>
+                    <div id="cmp-log-ab1" class="engine-console">AWAITING EXECUTION...</div>
+                </div>
+                <div class="radar-wrapper">
+                    <canvas id="cmpRadarAb1"></canvas>
                 </div>
             </div>
 
-            <div class="progress-row">
-                <span class="monitor-label">CPU · Code Execution Time</span>
-                <div class="progress-track">
-                    <div class="progress-bar-bg">
-                        <div id="bar-ab1-cpu" class="progress-fill cpu"></div>
+            <!-- Ab2 monitor-panel -->
+            <div class="monitor-panel">
+                <h4 class="monitor-node-label" style="color:#f39c12;text-shadow:0 0 8px #f39c12;">[ Ab2 Node — Scaffold
+                    Prompt ]</h4>
+                <div class="progress-row">
+                    <span class="monitor-label">GPU · AI Inference Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab2-gpu" class="progress-fill" style="background:#f39c12;"></div>
+                        </div>
+                        <span id="cmp-text-ab2-gpu" class="progress-text">0.0s</span>
                     </div>
-                    <span id="text-ab1-cpu" class="progress-text">0.0s</span>
+                </div>
+                <div class="progress-row">
+                    <span class="monitor-label">CPU · Code Execution Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab2-cpu" class="progress-fill cpu"
+                                style="background:linear-gradient(90deg,#f39c12,#e67e22);"></div>
+                        </div>
+                        <span id="cmp-text-ab2-cpu" class="progress-text">0.0s</span>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                    <span class="monitor-label">MCRI Score</span>
+                    <span id="cmp-mcri-ab2"
+                        style="font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:800; color:#f39c12;">--</span>
+                </div>
+                <div>
+                    <span class="monitor-label">Scaffold Log</span>
+                    <div id="cmp-log-ab2" class="engine-console">AWAITING EXECUTION...</div>
+                </div>
+                <div class="radar-wrapper">
+                    <canvas id="cmpRadarAb2"></canvas>
                 </div>
             </div>
 
-            <div>
-                <span class="monitor-label">Kernel Log</span>
-                <div id="log-ab1" class="engine-console">AWAITING EXECUTION...</div>
-            </div>
-
-            <div class="radar-wrapper">
-                <canvas id="radarAb1"></canvas>
+            <!-- Ab3 monitor-panel -->
+            <div class="monitor-panel">
+                <h4 class="monitor-node-label" style="color:#10b981;text-shadow:0 0 8px #10b981;">[ Ab3 Node — Active
+                    Healer ]</h4>
+                <div class="progress-row">
+                    <span class="monitor-label">GPU · AI Inference Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab3-gpu" class="progress-fill"></div>
+                        </div>
+                        <span id="cmp-text-ab3-gpu" class="progress-text">0.0s</span>
+                    </div>
+                </div>
+                <div class="progress-row">
+                    <span class="monitor-label">CPU · Code Execution Time</span>
+                    <div class="progress-track">
+                        <div class="progress-bar-bg">
+                            <div id="cmp-bar-ab3-cpu" class="progress-fill cpu"></div>
+                        </div>
+                        <span id="cmp-text-ab3-cpu" class="progress-text">0.0s</span>
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.5rem;">
+                    <span class="monitor-label">MCRI Score</span>
+                    <span id="cmp-mcri-ab3"
+                        style="font-family:'JetBrains Mono',monospace; font-size:1.4rem; font-weight:800; color:#10b981;">--</span>
+                </div>
+                <div>
+                    <span class="monitor-label">Healer Trace Log</span>
+                    <div id="cmp-log-ab3" class="engine-console">AWAITING EXECUTION...</div>
+                </div>
+                <div class="radar-wrapper">
+                    <canvas id="cmpRadarAb3"></canvas>
+                </div>
             </div>
         </div>
 
-        <!-- Ab3 Node -->
-        <div class="monitor-panel">
-            <h4 class="monitor-node-label" style="color:#10b981;text-shadow:0 0 8px #10b981;">[ Ab3 Node — Active Healer
-                ]</h4>
+        <!-- ROW 2: THREE diag-panels (code viewers) -->
+        <div class="comparison-row" id="cmp-score-row" style="align-items: stretch; margin-top: 1rem;">
 
-            <div class="progress-row">
-                <span class="monitor-label">GPU · AI Inference Time</span>
-                <div class="progress-track">
-                    <div class="progress-bar-bg">
-                        <div id="bar-ab3-gpu" class="progress-fill"></div>
-                    </div>
-                    <span id="text-ab3-gpu" class="progress-text">0.0s</span>
+            <!-- Ab1 diag-panel -->
+            <div class="diag-panel" style="height: 320px; min-width: unset; resize: none;">
+                <div class="diag-header" style="color:#ff7b7b;">
+                    [BASELINE: BARE_PROMPT — Ab1]
+                    <span id="cmp-winner-badge-ab1" class="cmp-winner-badge"
+                        style="display:none; margin-left:auto;">WINNER</span>
+                </div>
+                <div class="diag-content" id="cmp-diag-ab1">
+                    <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
                 </div>
             </div>
 
-            <div class="progress-row">
-                <span class="monitor-label">CPU · Code Execution Time</span>
-                <div class="progress-track">
-                    <div class="progress-bar-bg">
-                        <div id="bar-ab3-cpu" class="progress-fill cpu"></div>
-                    </div>
-                    <span id="text-ab3-cpu" class="progress-text">0.0s</span>
+            <!-- Ab2 diag-panel -->
+            <div class="diag-panel" style="height: 320px; min-width: unset; resize: none;">
+                <div class="diag-header" style="color:#f39c12;">
+                    [SCAFFOLD_ONLY: NO_HEALER — Ab2]
+                    <span id="cmp-winner-badge-ab2" class="cmp-winner-badge"
+                        style="display:none; margin-left:auto;">WINNER</span>
+                </div>
+                <div class="diag-content" id="cmp-diag-ab2">
+                    <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
                 </div>
             </div>
 
-            <div>
-                <span class="monitor-label">Healer Trace Log</span>
-                <div id="log-ab3" class="engine-console">AWAITING EXECUTION...</div>
-            </div>
-
-            <div class="radar-wrapper">
-                <canvas id="radarAb3"></canvas>
-            </div>
-        </div>
-
-        <!-- Right: Evolution Hub -->
-        <div class="diag-panel">
-            <div class="diag-header opt">[OPTIMIZED: SCAFFOLD_GUIDED]</div>
-            <div class="diag-content" id="diag-ab3-content">
-                <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
+            <!-- Ab3 diag-panel -->
+            <div class="diag-panel" style="height: 320px; min-width: unset; resize: none;">
+                <div class="diag-header opt">
+                    [OPTIMIZED: SCAFFOLD_GUIDED — Ab3]
+                    <span id="cmp-winner-badge-ab3" class="cmp-winner-badge"
+                        style="display:none; margin-left:auto;">WINNER</span>
+                </div>
+                <div class="diag-content" id="cmp-diag-ab3">
+                    <div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- ═══ JSON VIEWER MODAL ═══ -->
-    <div id="jsonModal" class="modal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content bg-dark">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title" id="jsonModalTitle" style="color: #f8f9fa;">🧬 Logic Spec (JSON)</h5>
-                    <button type="button" class="btn-close-white" onclick="closeGeminiJson()">×</button>
-                </div>
-                <div class="modal-body">
-                    <p class="small text-secondary" id="jsonModalDesc"
-                        style="font-size:0.85rem; color: #adb5bd; margin-bottom: 1rem;">
-                        <!-- Dynamic Text Injected Here -->
-                    </p>
-                    <pre id="jsonDisplayArea"
-                        style="color: #00ff00; background: #000; padding: 10px; border-radius: 5px; overflow-x: auto; font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 0.85rem; border:1px solid #333;"></pre>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
-        // 全域變數，暫存目前的 JSON 資料與來源架構師
-        let currentGeminiJson = "";
-        let currentArchitect = "Gemini 3 Flash";
-
-        function showGeminiJson() {
-            const displayArea = document.getElementById('jsonDisplayArea');
-            const titleArea = document.getElementById('jsonModalTitle');
-            const descArea = document.getElementById('jsonModalDesc');
-
-            if (currentArchitect === "Qwen3-VL") {
-                titleArea.innerHTML = "🧬 Qwen3-VL Logic Spec (JSON)";
-                descArea.innerHTML = "這是由 Qwen3-VL 視覺神經中樞解讀圖片後產出的 DNA 結構化規格，也是單一多模態大腦親自出題的嚴格藍圖依據：";
-            } else {
-                titleArea.innerHTML = "🧬 Gemini Coding Spec (JSON)";
-                descArea.innerHTML = "這是由 Gemini 3 Flash 解讀題目後產出的結構化規格，將作為本地端模型出題的依據：";
-            }
-            const modal = document.getElementById('jsonModal');
-
-            if (!currentGeminiJson || currentGeminiJson === "") {
-                displayArea.innerText = "// 尚未接收到 Gemini 的 Coding Spec...\n// 請先啟動平行運算。";
-                displayArea.style.color = "#666";
-            } else {
-                try {
-                    let rawContent = currentGeminiJson;
-                    // 強力清洗 Markdown 標籤
-                    rawContent = rawContent.replace(/```json/g, "").replace(/```/g, "").trim();
-
-                    const parsed = JSON.parse(rawContent);
-                    displayArea.innerText = JSON.stringify(parsed, null, 4);
-                    displayArea.style.color = "#00ff00"; // 成功時顯示綠色
-                } catch (e) {
-                    // 如果不是純 JSON，就直接顯示原始文字
-                    displayArea.innerText = currentGeminiJson;
-                    displayArea.style.color = "#f39c12";
-                }
-            }
-            modal.classList.add('show');
-        }
-
-        function closeGeminiJson() {
-            document.getElementById('jsonModal').classList.remove('show');
-        }
-
         /* ═══════════════════════════════════════════
-           CHART.JS — MCRI RADAR (LAB_SPEC.md)
-           Axes: Syntax · Logic · Rendering · Stability
+        CHART.JS — MCRI RADAR (LAB_SPEC.md)
+        Axes: Syntax · Logic · Rendering · Stability
         ═══════════════════════════════════════════ */
         Chart.defaults.color = '#3a4a3a';
         Chart.defaults.font.family = "'JetBrains Mono', monospace";
@@ -1663,34 +1924,72 @@
         const RADAR_LABELS = ['Syntax', 'Logic', 'Rendering', 'Stability'];
         const EMPTY_DATA = [0, 0, 0, 0];
 
-        const chartAb1 = new Chart(document.getElementById('radarAb1'), {
-            type: 'radar',
-            data: {
-                labels: RADAR_LABELS,
-                datasets: [{ data: EMPTY_DATA, borderColor: '#e74c3c', backgroundColor: 'rgba(231,76,60,0.15)', borderWidth: 2, pointRadius: 3 }]
+        // chartAb1 / chartAb3 removed — radars now live in ABLATION.COMPARE section (cmpChartAb1/2/3)
+
+        // Comparison section radars (dark background)
+        const cmpRadarOpts = (borderColor, bgColor) => ({
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    min: 0, max: 100,
+                    angleLines: { color: 'rgba(255,255,255,0.1)' },
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    pointLabels: { color: '#adbac7', font: { size: 9 } },
+                    ticks: { display: false, stepSize: 25 }
+                }
             },
-            options: radarOpts('#e74c3c', 'rgba(231,76,60,0.15)')
+            plugins: { legend: { display: false } }
         });
 
-        const chartAb3 = new Chart(document.getElementById('radarAb3'), {
+        const cmpChartAb1 = new Chart(document.getElementById('cmpRadarAb1'), {
             type: 'radar',
             data: {
                 labels: RADAR_LABELS,
-                datasets: [{ data: EMPTY_DATA, borderColor: '#27ae60', backgroundColor: 'rgba(39,174,96,0.15)', borderWidth: 2, pointRadius: 3 }]
+                datasets: [{
+                    data: EMPTY_DATA, borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.15)', borderWidth: 2,
+                    pointRadius: 3
+                }]
             },
-            options: radarOpts('#27ae60', 'rgba(39,174,96,0.15)')
+            options: cmpRadarOpts('#ef4444', 'rgba(239,68,68,0.15)')
+        });
+
+        const cmpChartAb2 = new Chart(document.getElementById('cmpRadarAb2'), {
+            type: 'radar',
+            data: {
+                labels: RADAR_LABELS,
+                datasets: [{
+                    data: EMPTY_DATA, borderColor: '#f39c12', backgroundColor: 'rgba(243,156,18,0.15)', borderWidth: 2,
+                    pointRadius: 3
+                }]
+            },
+            options: cmpRadarOpts('#f39c12', 'rgba(243,156,18,0.15)')
+        });
+
+        const cmpChartAb3 = new Chart(document.getElementById('cmpRadarAb3'), {
+            type: 'radar',
+            data: {
+                labels: RADAR_LABELS,
+                datasets: [{
+                    data: EMPTY_DATA, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.15)', borderWidth: 2,
+                    pointRadius: 3
+                }]
+            },
+            options: cmpRadarOpts('#10b981', 'rgba(16,185,129,0.15)')
         });
 
         /* ═══════════════════════════════════════════
-           HELPER UTILITIES
+        HELPER UTILITIES
         ═══════════════════════════════════════════ */
         const GPU_MAX = 60, CPU_MAX = 5;
         let lastFinalFilePath = { ab1: null, ab3: null };
 
         function setBar(barId, textId, val, maxVal) {
+            const b = document.getElementById(barId), t = document.getElementById(textId);
+            if (!b || !t) return; // guard for removed elements
             const pct = Math.min((val / maxVal) * 100, 100);
-            document.getElementById(barId).style.width = pct + '%';
-            document.getElementById(textId).textContent = val.toFixed(2) + 's';
+            b.style.width = pct + '%';
+            t.textContent = val.toFixed(2) + 's';
         }
 
         function setBadge(id, cls, text) {
@@ -1703,7 +2002,7 @@
             // Keep result panel visible so prompts shown in code blocks remain visible
             document.getElementById('result-' + target).classList.remove('hidden');
             // Inject a small skeleton loader into the math block
-            document.getElementById('math-' + target).innerHTML = '<div class="loader-wrap" style="padding:1rem 0;"><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:55%"></div><div class="skeleton" style="width:90%"></div></div>';
+            document.getElementById('math-' + target).innerHTML = `<div class="loader-wrap" style="padding:1rem 0;"><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:55%"></div><div class="skeleton" style="width:90%"></div></div>`;
 
             // Hide the old full-panel loader just in case
             const oldLoader = document.getElementById('loader-' + target);
@@ -1713,7 +2012,8 @@
             if (ans) ans.textContent = '';
 
             setBadge('badge-' + target, 'badge-loading', 'COMPUTING...');
-            document.getElementById('panel-' + target).className = 'panel ' + (target === 'ab1' ? 'ab1' : 'ab3') + '-panel';
+            const pClass = target === 'ab1' ? 'ab1-panel' : (target === 'ab2' ? 'ab2-panel' : 'ab3-panel');
+            document.getElementById('panel-' + target).className = 'panel ' + pClass;
             document.getElementById('panel-' + target).classList.remove('state-failed', 'state-healed', 'state-success');
         }
 
@@ -1729,17 +2029,23 @@
         }
 
         /* ═══════════════════════════════════════════
-           DIAGNOSTIC PANEL HELPERS
+        DIAGNOSTIC PANEL HELPERS
         ═══════════════════════════════════════════ */
         function createDiagBlock(label, content, customClass = '') {
-            return `<div class="diag-block"><div class="diag-label">${label}</div><div class="${customClass}">${content}</div></div>`;
+            return `<div class="diag-block">
+        <div class="diag-label">${label}</div>
+        <div class="${customClass}">${content}</div>
+    </div>`;
         }
 
         /* ═══════════════════════════════════════════
-           RENDER RESULT
+        RENDER RESULT
         ═══════════════════════════════════════════ */
         function renderResult(target, data) {
             const isAb1 = target === 'ab1';
+            const isAb2 = target === 'ab2';
+            const isAb3 = target === 'ab3';
+
             document.getElementById('loader-' + target).classList.add('hidden');
             const panel = document.getElementById('panel-' + target);
 
@@ -1758,8 +2064,10 @@
                 panel.classList.add('state-failed');
 
                 const badgeStr = (target === 'ab1') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
-                document.getElementById('log-' + target).innerHTML =
-                    badgeStr + ' <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
+                const logElement = document.getElementById('log-' + target);
+                if (logElement) {
+                    logElement.innerHTML = badgeStr + ' <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
+                }
 
                 // Diagnostic Error
                 if (diagContent) {
@@ -1775,21 +2083,36 @@
             document.getElementById('result-' + target).classList.remove('hidden');
             document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
 
-            if (!isAb1) {
-                // [MODIFIED] Do not overwrite source code box on success. Keep the prompt visible.
+            if (isAb2 || isAb3) {
                 if (res.answer !== undefined) {
-                    document.getElementById('ans-ab3').textContent = '答案 = ' + res.answer;
+                    const ansEl = document.getElementById('ans-' + target);
+                    if (ansEl) ansEl.textContent = '答案 = ' + res.answer;
+                }
+
+                // Display the actual generated code in the UI block
+                const codeEl = document.getElementById('code-' + target);
+                if (codeEl && res.final_code) {
+                    codeEl.textContent = res.final_code;
+                    codeEl.style.color = "var(--text-main)"; // Reset color from preview styling
+                } else if (codeEl && res.raw_code) {
+                    codeEl.textContent = res.raw_code;
+                    codeEl.style.color = "var(--text-main)";
                 }
             }
 
-            // Diagnostic Panel Population
-            if (diagContent) {
-                let diagHtml = '';
+            // Diagnostic Panel Population (Ab1 & Ab3 only, Ab2 has console logs handled below)
+            let ab2DiagHtml = '';
+            // Escape HTML tags to render safely in pre blocks
+            const escapeHtml = (unsafe) => {
+                return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g,
+                    "&quot;").replace(/'/g, "&#039;");
+            };
 
-                // Escape HTML tags to render safely in pre blocks
-                const escapeHtml = (unsafe) => {
-                    return (unsafe || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-                };
+            if (isAb2) {
+                const rawCode = res.raw_code || res.final_code || '';
+                ab2DiagHtml += createDiagBlock('[UNHEALED_SCAFFOLD_CODE]', escapeHtml(rawCode), 'diag-comment');
+            } else if (diagContent) {
+                let diagHtml = '';
 
                 if (isAb1) {
                     // Left Panel (Baseline Hub - Ab1)
@@ -1803,14 +2126,15 @@
                     }
                     diagHtml += createDiagBlock('[FINAL_EXECUTABLE_CODE]', escapeHtml(ab1FinalCode), 'diag-code');
 
-                } else {
+                } else if (isAb3) {
                     // Right Panel (Evolution Hub - Ab3)
                     const rawCode = res.raw_code || '';
 
                     const fixLogs = res.healer_logs || [];
                     const fixLogStr = fixLogs.join('\\n');
 
-                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${res.final_code || rawCode}` : (res.final_code || rawCode);
+                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${res.final_code || rawCode}` :
+                        (res.final_code || rawCode);
 
                     // raw_code colored gray in CSS (use diag-comment)
                     diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
@@ -1833,7 +2157,7 @@
             }
 
             // [NEW] Capture JSON Source Origin and Output
-            if (!isAb1) {
+            if (isAb3) {
                 if (res.gemini_raw_spec) {
                     currentGeminiJson = res.gemini_raw_spec;
                 } else if (res.raw_code && !res.gemini_raw_spec) {
@@ -1859,25 +2183,35 @@
             setBar('bar-' + target + '-gpu', 'text-' + target + '-gpu', gpuTime, GPU_MAX);
             setBar('bar-' + target + '-cpu', 'text-' + target + '-cpu', cpuTime, CPU_MAX);
 
-            // Radar chart
-            if (!isAb1) updateRadar(chartAb3, res.mcri);
-            else updateRadar(chartAb1, res.mcri);
+            // Radar charts now handled in updateComparisonSection via cmpChartAb1/2/3
 
-            // Badge + glow state
-            if (!isAb1 && totalFixes > 0) {
+            if (isAb3 && totalFixes > 0) {
                 setBadge('badge-ab3', 'badge-healed', '🛡 HEALED BY ACTIVE HEALER');
                 panel.classList.add('state-healed');
-                document.getElementById('log-ab3').innerHTML =
-                    '<span class="log-badge badge-healer">HEALER</span> <span class="flash-warning">🚨 [SYSTEM ALERT]: 偵測到 LaTeX / 邏輯瑕疵，已自動套用正規修正。(' + totalFixes + ' RULES APPLIED)</span>';
-            } else if (!isAb1) {
+                const logAb3h = document.getElementById('log-ab3');
+                if (logAb3h) logAb3h.innerHTML = '<span class="log-badge badge-healer">HEALER</span> <span class="flash-warning">🚨 [SYSTEM ALERT]: 偵測到 LaTeX / 邏輯瑕疵，已自動套用正規修正。(' + totalFixes + ' RULES APPLIED)</span>';
+            } else if (isAb3) {
                 setBadge('badge-ab3', 'badge-success', '✅ PASS (NO FIXES)');
                 panel.classList.add('state-success');
-                document.getElementById('log-ab3').innerHTML =
-                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
+                const logAb3 = document.getElementById('log-ab3');
+                if (logAb3) logAb3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
+            } else if (isAb2) {
+                setBadge('badge-ab2', 'badge-success', '✅ GENERATED');
+                panel.classList.add('state-success');
+                const logAb2 = document.getElementById('log-ab2');
+                if (logAb2) logAb2.innerHTML =
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#e67e22">>> [SCAFFOLD OUTPUT] Executing Native String (No Safety Guards)...</span>';
+            } else if (res.is_paused) {
+                setBadge('badge-ab1', 'badge-failed', '⏸ PAUSED');
+                panel.classList.add('state-failed'); // Or a distinct paused style if you have one
+                const logAb1 = document.getElementById('log-ab1');
+                if (logAb1) logAb1.innerHTML =
+                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> TEST PAUSED. Token Generation Skipped.</span>';
             } else {
                 setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
                 panel.classList.add('state-success');
-                document.getElementById('log-ab1').innerHTML =
+                const logAb1 = document.getElementById('log-ab1');
+                if (logAb1) logAb1.innerHTML =
                     '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
             }
 
@@ -1889,6 +2223,104 @@
 
             // Ab1: render <think> content from raw_code into thought sandbox
             if (isAb1) renderThinkContent(res.raw_code || '');
+
+            // [PLAN B] Update the Ablation Comparison section
+            updateComparisonSection(target, res);
+        }
+
+        /* ═══════════════════════════════════════════
+        ABLATION COMPARISON UPDATER (Plan B)
+        ═══════════════════════════════════════════ */
+        function updateComparisonSection(target, res) {
+            const mcriScore = res.mcri?.total_score != null ? res.mcri.total_score.toFixed(1) + '%' : '--';
+            const gpuTime = res.ai_inference_time_sec ?? 0;
+            const cpuTime = res.cpu_execution_time_sec ?? 0;
+            const fixes = res.fixes ?? 0;
+
+            // ── diag-panel: code viewer (bottom row) ──
+            const cmpDiag = document.getElementById('cmp-diag-' + target);
+            if (cmpDiag) {
+                const finalCode = res.final_code || res.raw_code || '// (no code captured)';
+                const escapeHtml = (s) => (s || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                let diagHtml = '';
+                if (target === 'ab3') {
+                    const rawCode = res.raw_code || '';
+                    const fixLogs = res.healer_logs || [];
+                    diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
+                    if (fixLogs.length > 0)
+                        diagHtml += createDiagBlock('HEALER_FIX_LOGS', escapeHtml(fixLogs.join('\n')), 'diag-fix');
+                    diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(res.final_code || rawCode),
+                        'diag-success');
+                } else if (target === 'ab2') {
+                    diagHtml += createDiagBlock('[UNHEALED_SCAFFOLD_CODE]', escapeHtml(finalCode), 'diag-comment');
+                } else {
+                    const thinking = res.thinking || '';
+                    if (thinking) diagHtml += createDiagBlock('THOUGHT_STREAM', escapeHtml(thinking), 'diag-comment');
+                    diagHtml += createDiagBlock('[FINAL_EXECUTABLE_CODE]', escapeHtml(finalCode), 'diag-code');
+                }
+                cmpDiag.innerHTML = diagHtml;
+                requestAnimationFrame(() => cmpDiag.scrollTop = cmpDiag.scrollHeight);
+            }
+
+            // ── monitor-panel: progress bars (top row) ──
+            const safeSetBar = (barId, textId, val, maxVal) => {
+                const b = document.getElementById(barId), t = document.getElementById(textId);
+                if (b && t) {
+                    b.style.width = Math.min((val / maxVal) * 100, 100) + '%'; t.textContent = val.toFixed(2) +
+                        's';
+                }
+            };
+            safeSetBar('cmp-bar-' + target + '-gpu', 'cmp-text-' + target + '-gpu', gpuTime, GPU_MAX);
+            safeSetBar('cmp-bar-' + target + '-cpu', 'cmp-text-' + target + '-cpu', cpuTime, CPU_MAX);
+
+            // ── monitor-panel: MCRI score ──
+            const cmpMcri = document.getElementById('cmp-mcri-' + target);
+            if (cmpMcri) cmpMcri.textContent = mcriScore;
+
+            // ── monitor-panel: log console ──
+            const cmpLog = document.getElementById('cmp-log-' + target);
+            if (cmpLog) {
+                if (target === 'ab3') {
+                    cmpLog.innerHTML = fixes > 0
+                        ? `<span class="log-badge badge-healer">HEALER</span> <span class="flash-warning">🚨 ${fixes} FIX(ES)
+                APPLIED — MCRI: ${mcriScore}</span>`
+                        : `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#10b981">>> SYSTEM OPTIMAL. NO REPAIRS.
+                MCRI: ${mcriScore}</span>`;
+                } else if (target === 'ab2') {
+                    cmpLog.innerHTML = `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SCAFFOLD
+                ONLY] No Healer. MCRI: ${mcriScore}</span>`;
+                } else {
+                    cmpLog.innerHTML = `<span class="log-badge badge-gemini">QWEN</span> <span style="color:#ef4444">>>
+                [NATIVE-BARE] No Scaffold. MCRI: ${mcriScore}</span>`;
+                }
+            }
+
+            // ── monitor-panel: radar chart ──
+            const cmpChartMap = { ab1: cmpChartAb1, ab2: cmpChartAb2, ab3: cmpChartAb3 };
+            if (cmpChartMap[target]) updateRadar(cmpChartMap[target], res.mcri);
+
+            highlightWinner();
+        }
+
+
+        function highlightWinner() {
+            const ids = ['ab1', 'ab2', 'ab3'];
+            const scores = ids.map(id => {
+                const el = document.getElementById('cmp-mcri-' + id);
+                if (!el || el.textContent === '--') return -1;
+                return parseFloat(el.textContent) || -1;
+            });
+
+            const maxScore = Math.max(...scores);
+            if (maxScore <= 0) return; ids.forEach((id, i) => {
+                const badge = document.getElementById('cmp-winner-badge-' + id);
+                if (!badge) return;
+                if (scores[i] === maxScore && scores[i] > 0) {
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
         }
 
         async function runNextQuestion(target) {
@@ -1930,8 +2362,8 @@
 
                 // Update Radar and MCRI
                 if (data.mcri) {
-                    const chart = target === 'ab1' ? chartAb1 : chartAb3;
-                    updateRadar(chart, data.mcri);
+                    const cmpChartMap = { ab1: cmpChartAb1, ab2: cmpChartAb2, ab3: cmpChartAb3 };
+                    if (cmpChartMap[target]) updateRadar(cmpChartMap[target], data.mcri);
                     const mcriScore = data.mcri.total_score != null ? data.mcri.total_score.toFixed(1) : '--';
                     document.getElementById('mcri-' + target).textContent = mcriScore !== '--' ? mcriScore + '%' : '--';
                 }
@@ -1947,11 +2379,11 @@
         }
 
         /* ═══════════════════════════════════════════
-           TRANSITION DIAGNOSTIC ANIMATION
-           Phase 1: CLOUD PERCEPTION  (Gemini)
-           Phase 2: SCAFFOLD INJECTION (Amber)
-           Phase 3: LOCAL ENGINE       (Qwen)
-           Phase 4: SYSTEM READY
+        TRANSITION DIAGNOSTIC ANIMATION
+        Phase 1: CLOUD PERCEPTION (Gemini)
+        Phase 2: SCAFFOLD INJECTION (Amber)
+        Phase 3: LOCAL ENGINE (Qwen)
+        Phase 4: SYSTEM READY
         ═══════════════════════════════════════════ */
         async function simulatePipeline() {
             const overlay = document.getElementById('transition-overlay');
@@ -1962,10 +2394,12 @@
             const log1 = document.getElementById('log-ab1');
             const log3 = document.getElementById('log-ab3');
 
-            log1.innerHTML = 'AWAITING EXECUTION...';
-            log3.innerHTML = 'AWAITING EXECUTION...';
-            document.getElementById('diag-ab1-content').innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
-            document.getElementById('diag-ab3-content').innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
+            if (log1) log1.innerHTML = 'AWAITING EXECUTION...';
+            if (log3) log3.innerHTML = 'AWAITING EXECUTION...';
+            const diagAb1 = document.getElementById('diag-ab1-content');
+            const diagAb3 = document.getElementById('diag-ab3-content');
+            if (diagAb1) diagAb1.innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
+            if (diagAb3) diagAb3.innerHTML = '<div class="diag-comment">AWAITING SYSTEM INITIALIZATION...</div>';
 
             const activate = (el) => {
                 [pipeCloud, pipeScaffold, pipeLocal].forEach(e => e.classList.remove('active-step'));
@@ -1976,7 +2410,7 @@
             overlay.classList.add('active');
             document.getElementById('overlay-icon').textContent = '☁️';
             overlayText.className = 'overlay-color-cloud';
-            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [CLOUD] Perceiving Mathematics via Gemini Flash...';
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [CLOUD] Perceiving Mathematics via Gemini Flash...';;
             activate(pipeCloud);
             await new Promise(r => setTimeout(r, 1100));
 
@@ -1984,14 +2418,14 @@
             document.getElementById('overlay-icon').textContent = '📋';
             overlayText.className = '';
             overlayText.style.color = '#f59e0b';
-            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [SCAFFOLD] Injecting @SKILL.md Prompt Architecture...';
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [SCAFFOLD] Injecting @SKILL.md Prompt Architecture...';;
             activate(pipeScaffold);
             await new Promise(r => setTimeout(r, 1000));
 
             // Phase 3 — Local Engine
             document.getElementById('overlay-icon').textContent = '🖥';
             overlayText.className = 'overlay-color-transfer';
-            overlayText.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> [LOCAL] Dispatching to Qwen-8B Logic Engine...';
+            overlayText.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> [LOCAL] Dispatching to Qwen-8B Logic Engine...';;
             activate(pipeLocal);
             await new Promise(r => setTimeout(r, 1000));
 
@@ -2018,14 +2452,17 @@
         }
 
         /* ═══════════════════════════════════════════
-           API FETCH
+        API FETCH
         ═══════════════════════════════════════════ */
         async function fetchParams(text, isAb1, modelId, skillId, imageData = null, jsonSpec = null) {
             try {
                 const res = await fetch('/api/generate_live', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: text, ablation_mode: isAb1, model_id: modelId, skill_id: skillId, image_data: imageData, json_spec: jsonSpec })
+                    body: JSON.stringify({
+                        prompt: text, ablation_mode: isAb1, model_id: modelId, skill_id: skillId,
+                        image_data: imageData, json_spec: jsonSpec
+                    })
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 return await res.json();
@@ -2035,7 +2472,7 @@
         }
 
         /* ═══════════════════════════════════════════
-           AB1 THOUGHT DISPLAY  (post-hoc from raw_code, no extra Ollama call)
+        AB1 THOUGHT DISPLAY (post-hoc from raw_code, no extra Ollama call)
         ═══════════════════════════════════════════ */
         function renderThinkContent(rawCode) {
             const sandboxEl = document.getElementById('thought-sandbox');
@@ -2057,7 +2494,7 @@
             }
 
             thoughtBox.textContent = matches.join('\n\n---\n\n');
-            sandboxEl.classList.add('active', 'done');  // done = ping stops blinking
+            sandboxEl.classList.add('active', 'done'); // done = ping stops blinking
             thoughtBox.scrollTop = 0;
         }
 
@@ -2070,7 +2507,7 @@
         }
 
         /* ═══════════════════════════════════════════
-           MULTIMODAL WORKSTATION LOGIC
+        MULTIMODAL WORKSTATION LOGIC
         ═══════════════════════════════════════════ */
         const canvas = document.getElementById('inputCanvas');
         const ctx = canvas.getContext('2d');
@@ -2243,7 +2680,7 @@
         });
 
         /* ═══════════════════════════════════════════
-           SKILL DIAGNOSTICS LOGIC
+        SKILL DIAGNOSTICS LOGIC
         ═══════════════════════════════════════════ */
         async function typeWriterLog(msg, color = '#2c3e50') {
             const logBox = document.getElementById('process-log');
@@ -2275,7 +2712,7 @@
         }
 
         function resetDiagnostics() {
-            document.getElementById('process-log').innerHTML = '<div class="process-log-line" style="color:#9ca3af;">Awaiting input...</div>';
+            document.getElementById('process-log').innerHTML = '<div class="process-log-line" style="color:#9ca3af;"> Awaiting input...</div>';
             updateConfidence(0);
             const badge = document.getElementById('selected-skill-badge');
             badge.style.opacity = '0';
@@ -2283,7 +2720,7 @@
         }
 
         /* ═══════════════════════════════════════════
-           FORM SUBMIT & OCR INTEGRATION
+        FORM SUBMIT & OCR INTEGRATION
         ═══════════════════════════════════════════ */
         document.getElementById('genForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -2298,16 +2735,16 @@
             btn.disabled = true;
             btn.innerHTML = '⚙️ Computing...';
 
-            // Ready engine logs
+            // Ready engine logs (null-safe: log-ab1/ab3 may not exist after layout cleanup)
             const log1 = document.getElementById('log-ab1');
             const log3 = document.getElementById('log-ab3');
-            log1.innerHTML = 'AWAITING EXECUTION...';
-            log3.innerHTML = 'AWAITING EXECUTION...';
+            if (log1) log1.innerHTML = 'AWAITING EXECUTION...';
+            if (log3) log3.innerHTML = 'AWAITING EXECUTION...';
 
             resetDiagnostics();
 
-            log1.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
-            log3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
+            if (log1) log1.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
+            if (log3) log3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SYSTEM] Engaging Local Perception Engine...</span>';
 
             // Prepare unified payload
             let payload = {};
@@ -2377,15 +2814,11 @@
                     resolvedJsonSpec = result.json_spec;
                     await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
 
-                    log1.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
-                    log3.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    if (log1) log1.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span
+                            style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
+                    if (log3) log3.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span
+                            style="color:#27ae60">>> [SYSTEM] Skill Mode: ${result.skill_id}</span>`;
 
-                    // [NEW] Capture Gemini JSON Logic Spec
-                    if (result.json_spec) {
-                        currentGeminiJson = JSON.stringify(result.json_spec, null, 2);
-                    } else {
-                        currentGeminiJson = "";
-                    }
 
                     // [NEW] Inject Prompt Previews into Code Blocks
                     if (result.bare_prompt) {
@@ -2395,14 +2828,20 @@
                     }
                     if (result.scaffold_prompt) {
                         const codeAb3 = document.getElementById('code-ab3');
-                        codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\\n" + result.scaffold_prompt;
+                        codeAb3.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\n" + result.scaffold_prompt;
                         codeAb3.style.color = "#d35400"; // display scaffold in orange to distinguish it
+
+                        const codeAb2 = document.getElementById('code-ab2');
+                        codeAb2.textContent = "=== SCAFFOLD PROMPT PREVIEW ===\n" + result.scaffold_prompt;
+                        codeAb2.style.color = "#d35400";
                     }
 
                     // Show result panels early so user can read the prompts
                     document.getElementById('result-ab1').classList.remove('hidden');
+                    document.getElementById('result-ab2').classList.remove('hidden');
                     document.getElementById('result-ab3').classList.remove('hidden');
                     document.getElementById('math-ab1').innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待生成...</span>';
+                    document.getElementById('math-ab2').innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待生成...</span>';
                     document.getElementById('math-ab3').innerHTML = '<span style="color:var(--text-muted);font-style:italic;">等待生成...</span>';
                 } else {
                     throw new Error(result.error || '不明錯誤');
@@ -2419,6 +2858,7 @@
 
             // Start loading state for both panels
             startLoading('ab1');
+            startLoading('ab2');
             startLoading('ab3');
 
             // Reset thought sandbox before each run
@@ -2428,13 +2868,25 @@
             const modelIdAb3 = document.getElementById('model-select-ab3').value;
             const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
-            const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, payload.image_data, resolvedJsonSpec)
-                .then(r2 => renderResult('ab3', r2))
-                .catch(err => renderResult('ab3', { error: err.message }));
+            const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, payload.image_data,
+                resolvedJsonSpec)
+                .then(r2 => {
+                    if (r2.ab2_result) {
+                        renderResult('ab2', r2.ab2_result);
+                    } else {
+                        renderResult('ab2', { error: 'Ab2 interception failed or not supported in this mode.' });
+                    }
+                    renderResult('ab3', r2);
+                })
+                .catch(err => {
+                    renderResult('ab2', { error: err.message });
+                    renderResult('ab3', { error: err.message });
+                });
 
             const p1 = (modelIdAb1 === 'pause')
                 ? Promise.resolve({
                     success: true,
+                    is_paused: true,
                     raw_code: document.getElementById('code-ab1').textContent, // keep the preview
                     final_code: "=== PAUSED ===\nToken Generation Skipped.",
                     fixes: 0,

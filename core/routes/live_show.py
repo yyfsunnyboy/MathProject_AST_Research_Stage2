@@ -201,30 +201,92 @@ def generate_live():
                 
             # 7. Execute Code to get output dict identical to `scaler.py` format
             cpu_start = time.time()
-            problems_result = []
+            
+            # --- [NEW] Ab2 Interception (Scaffold Prompt, No Healer) ---
+            ab2_result = {}
+            ab2_save_dir = "generated_scripts"
+            if not os.path.exists(ab2_save_dir):
+                os.makedirs(ab2_save_dir, exist_ok=True)
+            ab2_filename = f"live_show_{int(time.time())}_{uuid.uuid4().hex[:6]}_ab2.py"
+            ab2_file_path = os.path.join(ab2_save_dir, ab2_filename)
+            with open(ab2_file_path, "w", encoding="utf-8") as _fb:
+                _fb.write(final_code)
+                
             try:
-                exe_res = scaler._execute_code(final_code, level=1)
+                ab2_exe_res = scaler._execute_code(final_code, level=1)
                 try:
                     from scripts.evaluate_mcri import evaluate_math_hygiene
+                    if "question_text" in ab2_exe_res:
+                        h_score, _ = evaluate_math_hygiene(ab2_exe_res["question_text"])
+                        ab2_exe_res["_mcri_hygiene_score"] = h_score
+                except:
+                    pass
+                ab2_result = ab2_exe_res
+            except Exception as e:
+                ab2_result = {"error": f"執行錯誤: {e}"}
+            
+            ab2_result["file_path"] = ab2_file_path
+            ab2_result["ai_inference_time_sec"] = ai_inference_time_sec
+            ab2_result["cpu_execution_time_sec"] = time.time() - cpu_start
+            ab2_result["raw_code"] = final_code   # preserve code for diag panel
+            ab2_result["final_code"] = final_code # no healer applied
+            
+            # --- Resume Ab3 (Full Healer) ---
+            cpu_start_ab3 = time.time()
+            problems_result = []
+            
+            # [FIX] 真正執行 Healer，讓 Ab3 擁有自癒能力
+            from core.code_generator import _advanced_healer
+            healed_code = final_code
+            regex_fixes = 0
+            ast_fixes = 0
+            try:
+                healed_code, *healer_stats = _advanced_healer(final_code, ablation_id=3, skill_id=skill_id)
+                # 提取修復次數
+                regex_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
+                ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
+                print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes} ===")
+            except Exception as e:
+                import traceback
+                print(f"=== [VL Pipeline Healer] CRASHED ===")
+                traceback.print_exc()
+                healed_code = final_code
+            
+            # 將單反斜線 LaTeX 符號保護起來
+            healed_code = healed_code.replace('\\div', '\\\\div').replace('\\times', '\\\\times')
+            
+            try:
+                exe_res = scaler._execute_code(healed_code, level=1)
+                # 使用 V6.7 evaluate_live_code 計分
+                try:
+                    from scripts.evaluate_mcri import evaluate_live_code
                     if "question_text" in exe_res:
-                        h_score, _ = evaluate_math_hygiene(exe_res["question_text"])
-                        exe_res["_mcri_hygiene_score"] = h_score
+                        _live_mcri = evaluate_live_code(
+                            code=healed_code,
+                            exec_result=exe_res,
+                            healer_trace={"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
+                            ablation_mode=False
+                        )
+                        exe_res["_live_mcri"] = _live_mcri
+                        exe_res["_mcri_hygiene_score"] = _live_mcri["breakdown"].get("l4_3_hygiene", 15.0)
                 except:
                     pass
                 problems_result.append(exe_res)
             except Exception as e:
                 problems_result.append({"error": f"執行錯誤: {e}"})
                 
+            cpu_execution_time_sec = time.time() - cpu_start_ab3
+                
             cpu_execution_time_sec = time.time() - cpu_start
             
-            # 8. 儲存原始碼以供「下一題」功能調用
+            # 8. 儲存原始碼以供「下一題」功能調用 (儲存 Healed 版本)
             save_dir = "generated_scripts"
             if not os.path.exists(save_dir):
                 os.makedirs(save_dir, exist_ok=True)
             unique_filename = f"live_show_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
             file_path = os.path.join(save_dir, unique_filename)
             with open(file_path, "w", encoding="utf-8") as _fb:
-                _fb.write(final_code)
+                _fb.write(healed_code)
             
             output = {
                 "problems": problems_result,
@@ -234,15 +296,16 @@ def generate_live():
                         "cpu_execution_time_sec": cpu_execution_time_sec
                     },
                     "raw_code": raw_out,
-                    "final_code": final_code,
+                    "final_code": healed_code,
                     "file_path": file_path,
                     "bare_prompt": "",
                     "scaffold_prompt": system_prompt,
                     "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
                     "architect_model": "Qwen3-VL",
-                    "healer_trace": {"regex_fixes": 0, "ast_fixes": 0},
-                    "mcri_report": {"robustness_grade": "MODERATE", "robustness_reason": "Visual Generation (Healer Bypassed for VL Pipeline)"}
-                }
+                    "healer_trace": {"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
+                    "mcri_report": {"robustness_grade": "MODERATE", "robustness_reason": "Visual Generation with Full Healer"}
+                },
+                "ab2_result": ab2_result
             }
         else:
             engine = get_engine()
@@ -292,23 +355,92 @@ def generate_live():
                 output["problem"] = q_text
                 output["answer"]  = first.get("correct_answer", "")
 
-                # MCRI scoring normalization (V10.5 Justice Logic)
-                # Hygiene raw score is 15.0 max. Normalize to 100%.
-                hygiene = first.get("_mcri_hygiene_score", 0) or 0
-                norm_hygiene = (hygiene / 15.0) * 100
-                
-                # Robustness mapping: ROBUST=100, MODERATE=70, RISKY=30, Unknown=50
-                robust_map = {"ROBUST": 100, "MODERATE": 70, "NEUTRAL": 50, "RISKY": 30, "SYNTAX_ERROR": 0}
-                robust_grade = mcri_report.get('robustness_grade', 'NEUTRAL')
-                arch_score = robust_map.get(robust_grade, 50)
+                # ── V6.7 MCRI 真實評分 ──────────────────────────────────────
+                _live_mcri = first.get("_live_mcri")
+                if _live_mcri:
+                    output["mcri"] = {
+                        "syntax_score":    _live_mcri["syntax_score"],
+                        "logic_score":     _live_mcri["logic_score"],
+                        "render_score":    _live_mcri["render_score"],
+                        "stability_score": _live_mcri["stability_score"],
+                        "total_score":     _live_mcri["total_score"],
+                        "breakdown":       _live_mcri.get("breakdown", {}),
+                    }
+                else:
+                    _final_code_str = dm.get("final_code", "")
+                    _healer_trace = dm.get("healer_trace", {})
+                    try:
+                        from scripts.evaluate_mcri import evaluate_live_code
+                        _live_mcri = evaluate_live_code(
+                            code=_final_code_str,
+                            exec_result=first,
+                            healer_trace=_healer_trace,
+                            ablation_mode=ablation_mode
+                        )
+                        output["mcri"] = {
+                            "syntax_score":    _live_mcri["syntax_score"],
+                            "logic_score":     _live_mcri["logic_score"],
+                            "render_score":    _live_mcri["render_score"],
+                            "stability_score": _live_mcri["stability_score"],
+                            "total_score":     _live_mcri["total_score"],
+                            "breakdown":       _live_mcri.get("breakdown", {}),
+                        }
+                    except Exception as _mcri_err:
+                        import traceback as _tb
+                        output["_mcri_error"] = f"{type(_mcri_err).__name__}: {_mcri_err}\n{_tb.format_exc()[:500]}"
+                        robust_grade = mcri_report.get('robustness_grade', 'NEUTRAL')
+                        robust_map = {"ROBUST": 90, "MODERATE": 65, "NEUTRAL": 50, "UNKNOWN": 50, "RISKY": 30, "SYNTAX_ERROR": 0}
+                        arch_score = robust_map.get(robust_grade, 50)
+                        output["mcri"] = {
+                            "syntax_score": arch_score, "logic_score": arch_score,
+                            "render_score": arch_score, "stability_score": arch_score,
+                            "total_score":  arch_score,
+                        }
 
-                output["mcri"] = {
-                    "syntax_score":    min(100, max(0, norm_hygiene)),
-                    "logic_score":     min(100, max(0, arch_score)),
-                    "render_score":    min(100, max(0, norm_hygiene + 5 if hygiene > 10 else norm_hygiene)),
-                    "stability_score": 100 if not ablation_mode else (40 if robust_grade != "ROBUST" else 80),
-                    "total_score":     round((norm_hygiene * 0.4 + arch_score * 0.4 + (100 if not ablation_mode else 40) * 0.2), 1)
+        # ── Normalize ab2_result to match frontend renderResult expectations ──
+        raw_ab2 = output.get("ab2_result")
+        if raw_ab2 and isinstance(raw_ab2, dict) and "error" not in raw_ab2:
+            _ab2_live_mcri = raw_ab2.get("_live_mcri")
+            if not _ab2_live_mcri:
+                try:
+                    from scripts.evaluate_mcri import evaluate_live_code
+                    _ab2_live_mcri = evaluate_live_code(
+                        code=raw_ab2.get("raw_code", ""),
+                        exec_result=raw_ab2,
+                        healer_trace={}, # No healer for Ab2
+                        ablation_mode=False # Ab2 is scaffold, so it benefits from the 80 base stability
+                    )
+                except Exception:
+                    ab2_hygiene = raw_ab2.get("_mcri_hygiene_score", 0) or 0
+                    ab2_norm_hygiene = (ab2_hygiene / 15.0) * 100
+                    _ab2_live_mcri = {
+                        "syntax_score":    min(100, max(0, ab2_norm_hygiene)),
+                        "logic_score":     50,  
+                        "render_score":    min(100, max(0, ab2_norm_hygiene)),
+                        "stability_score": 60,
+                        "total_score":     round((ab2_norm_hygiene * 0.4 + 50 * 0.4 + 60 * 0.2), 1),
+                        "breakdown":       {}
+                    }
+
+            output["ab2_result"] = {
+                "problem":                raw_ab2.get("question_text", "(Ab2 — scaffold prompt result)"),
+                "answer":                 raw_ab2.get("correct_answer", ""),
+                "raw_code":               raw_ab2.get("raw_code", ""),
+                "final_code":             raw_ab2.get("raw_code", ""),   # No Healer for Ab2
+                "file_path":              raw_ab2.get("file_path", ""),
+                "ai_inference_time_sec":  raw_ab2.get("ai_inference_time_sec", 0),
+                "cpu_execution_time_sec": raw_ab2.get("cpu_execution_time_sec", 0),
+                "fixes":                  0,   # No Healer
+                "healer_logs":            [],
+                "mcri": {
+                    "syntax_score":    _ab2_live_mcri["syntax_score"],
+                    "logic_score":     _ab2_live_mcri["logic_score"],
+                    "render_score":    _ab2_live_mcri["render_score"],
+                    "stability_score": _ab2_live_mcri["stability_score"],
+                    "total_score":     _ab2_live_mcri["total_score"],
+                    "breakdown":       _ab2_live_mcri.get("breakdown", {}),
                 }
+            }
 
         return jsonify(output)
     except Exception as e:
@@ -736,28 +868,41 @@ def run_generated_code():
         # 執行程式碼
         res = engine.scaler._execute_code(code, level=level)
         
-        # MCRI Hygiene Eval
-        hygiene = 0
+        # ── V6.7 MCRI 真實評分（下一題路徑）──────────────────────
+        live_mcri_result = None
         if "question_text" in res:
             try:
-                from scripts.evaluate_mcri import evaluate_math_hygiene
-                h_score, _ = evaluate_math_hygiene(res["question_text"])
-                hygiene = h_score
-            except:
-                hygiene = 0
-                
+                from scripts.evaluate_mcri import evaluate_live_code
+                live_mcri_result = evaluate_live_code(
+                    code=code,
+                    exec_result=res,
+                    healer_trace={},
+                    ablation_mode=ablation_mode
+                )
+            except Exception:
+                live_mcri_result = None
+
+        if live_mcri_result:
+            mcri_payload = {
+                "syntax_score":    live_mcri_result["syntax_score"],
+                "logic_score":     live_mcri_result["logic_score"],
+                "render_score":    live_mcri_result["render_score"],
+                "stability_score": live_mcri_result["stability_score"],
+                "total_score":     live_mcri_result["total_score"],
+                "breakdown":       live_mcri_result.get("breakdown", {}),
+            }
+        else:
+            mcri_payload = {
+                "syntax_score": 50, "logic_score": 50,
+                "render_score": 50, "stability_score": 50, "total_score": 50
+            }
+
         output = {
             "success": True,
             "problem": res.get("question_text", ""),
             "answer": res.get("correct_answer", ""),
             "api_time": time.time() - start_time,
-            "mcri": {
-                "syntax_score":    min(100, max(0, (hygiene / 15.0) * 100)),
-                "logic_score":     90 if not ablation_mode else 50,
-                "render_score":    min(100, max(0, (hygiene / 15.0) * 100 + 5)),
-                "stability_score": 100 if not ablation_mode else 40,
-                "total_score":     round(((hygiene / 15.0) * 100 * 0.6 + (100 if not ablation_mode else 40) * 0.4), 1)
-            }
+            "mcri": mcri_payload
         }
         return jsonify(output)
         
