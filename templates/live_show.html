@@ -2051,6 +2051,7 @@
         ═══════════════════════════════════════════ */
         const GPU_MAX = 60, CPU_MAX = 5;
         let lastFinalFilePath = { ab1: null, ab3: null };
+        let lastHealerFixes = { ab1: 0, ab2: 0, ab3: 0 };
         let latestExpectedProfile = null;
 
         function setBar(barId, textId, val, maxVal) {
@@ -2285,6 +2286,7 @@
 
             // Update last final code for the Next Question button
             lastFinalFilePath[target] = res.file_path || null;
+            lastHealerFixes[target] = totalFixes;
 
             // Re-typeset MathJax
             if (window.MathJax) MathJax.typesetPromise();
@@ -2407,7 +2409,12 @@
                     body: JSON.stringify({
                         file_path: filePath,
                         level: 1,
-                        ablation_mode: target === 'ab1'
+                        ablation_mode: target === 'ab1',
+                        target,
+                        healer_trace: {
+                            regex_fixes: target === 'ab3' ? (lastHealerFixes.ab3 || 0) : 0,
+                            ast_fixes: 0
+                        }
                     })
                 });
 

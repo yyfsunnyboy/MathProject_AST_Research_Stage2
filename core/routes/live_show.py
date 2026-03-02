@@ -1583,6 +1583,10 @@ def run_generated_code():
         return jsonify({"success": False, "error": "No code or valid file_path provided."}), 400
     level = data.get("level", 1)
     ablation_mode = data.get("ablation_mode", False)
+    healer_trace = data.get("healer_trace") if isinstance(data.get("healer_trace"), dict) else {}
+    if not healer_trace:
+        fixes_from_payload = data.get("fixes", 0) or 0
+        healer_trace = {"regex_fixes": int(fixes_from_payload), "ast_fixes": 0}
     
     start_time = time.time()
     try:
@@ -1601,7 +1605,7 @@ def run_generated_code():
                 live_mcri_result = evaluate_live_code(
                     code=code,
                     exec_result=res,
-                    healer_trace={},
+                    healer_trace=healer_trace,
                     ablation_mode=ablation_mode
                 )
             except Exception:
@@ -1627,6 +1631,7 @@ def run_generated_code():
             "problem": res.get("question_text", ""),
             "answer": res.get("correct_answer", ""),
             "api_time": time.time() - start_time,
+            "fixes": (healer_trace.get("regex_fixes", 0) or 0) + (healer_trace.get("ast_fixes", 0) or 0),
             "mcri": mcri_payload
         }
         return jsonify(output)

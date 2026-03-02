@@ -2749,15 +2749,16 @@ def evaluate_live_code(
     c_answer = str(exec_result.get("correct_answer", ""))
 
     breakdown = {}
+    ast_tree = None
 
     # ── 維度 1: syntax_score ─────────────────────────────────────────
     l1_score = 0.0
     try:
         import ast as _ast
-        _ast.parse(code)
+        ast_tree = _ast.parse(code)
         l1_score += 4.0
         forbidden = {"eval", "exec"}
-        used = {node.id for node in _ast.walk(_ast.parse(code))
+        used = {node.id for node in _ast.walk(ast_tree)
                 if isinstance(node, _ast.Name) and node.id in forbidden}
         if not used:
             l1_score += 3.5
@@ -2782,10 +2783,37 @@ def evaluate_live_code(
     # 核心原則：不重新 exec 程式碼（環境缺少 IntegerOps / safe_eval polyfill）
     # 改用三層信號：exec成功(60) + check存在(20) + SymPy/整數驗算(20)
     has_check = bool(re.search(r'^\s*def check\s*\(', code, re.MULTILINE))
+    check_body_ok = False
+    if ast_tree is not None:
+        for node in ast.walk(ast_tree):
+            if isinstance(node, ast.FunctionDef) and node.name == "check":
+                meaningful_stmts = [
+                    stmt for stmt in node.body
+                    if not (isinstance(stmt, ast.Pass) or isinstance(stmt, ast.Expr) and isinstance(getattr(stmt, "value", None), ast.Constant) and isinstance(getattr(stmt.value, "value", None), str))
+                ]
+                check_body_ok = len(meaningful_stmts) > 0
+                break
     breakdown["has_check_fn"] = has_check
+    breakdown["check_body_ok"] = check_body_ok
 
-    exec_base   = 60.0 if (q_text.strip() and c_answer.strip()) else 0.0
-    check_bonus = 20.0 if has_check else 0.0
+    has_question = bool(q_text.strip())
+    has_correct = bool(c_answer.strip())
+    has_answer = bool(answer.strip())
+    has_math_signal = bool(re.search(r'[\d\+\-\*/=×÷]', q_text))
+
+    exec_base = 0.0
+    if has_question and has_correct:
+        exec_base += 35.0
+    if has_answer:
+        exec_base += 10.0
+    if has_math_signal:
+        exec_base += 15.0
+
+    check_bonus = 0.0
+    if has_check:
+        check_bonus += 10.0
+    if check_body_ok:
+        check_bonus += 10.0
 
     # Layer 3: SymPy 優先，整數答案 fallback
     answer_bonus = 0.0
@@ -2856,7 +2884,7 @@ def evaluate_live_code(
     if not ablation_mode:
         # Ab3: 基礎分 80，體現 Scaffold 確定性
         if robust_status == "ROBUST":
-            stability_score = 100.0
+            stability_score = 100.0 if total_fixes > 0 else 92.0
         elif total_fixes > 0:
             stability_score = 90.0    # Healer 修正，展示自癒能力
         else:
@@ -2879,6 +2907,11 @@ def evaluate_live_code(
         stability_score * 0.25,
         1
     )
+
+    # 防止 Live Show 評分飽和：只有具備真正自癒跡象時才保留 100 分
+    if total_score >= 99.95:
+        if not (breakdown.get("l3_sympy_ok", False) and total_fixes > 0):
+            total_score = 99.0
 
     return {
         "syntax_score":    syntax_score,
