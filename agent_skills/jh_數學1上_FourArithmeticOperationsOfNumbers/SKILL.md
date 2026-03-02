@@ -39,16 +39,16 @@
 
 
 【參考例題與風格】（必須參考此風格，但生成多樣化題目）
-計算 $$   \left[(-2+5) \times \frac{1}{3}\right] \div \left(-\frac{5}{2}\right) + \left|8 \times \left(-\frac{1}{4}\right) - 5\right|   $$ 的值。
+計算 $   \left[(-2+5) \times \frac{1}{3}\right] \div \left(-\frac{5}{2}\right) + \left|8 \times \left(-\frac{1}{4}\right) - 5\right|   $ 的值。
 
 【LaTeX 格式要求】（必須嚴格遵守）
 1. 乘法用 \times，除法用 \div
 2. 分數用 \frac{分子}{分母}
 3. 絕對值必須使用 \left| ... \right|
 4. 中括號用 \left[ ... \right]
-5. ⚠️ 數學式完整用 $$   ...   $$ 包裹（注意前後有空格）
+5. ⚠️ 數學式完整用 $   ...   $ 包裹（注意前後有空格）
 6. 負數分數：\left(-\frac{5}{2}\right) 或 -\frac{5}{2}
-7. LaTeX 語法嚴格：$$ 符號只能出現在最外層
+7. LaTeX 語法嚴格：$ 符號只能出現在最外層
 
 【LaTeX 字符串警告】（最常見錯誤，必看）
 ⚠️ Python 字符串中的反斜杠必須雙寫：
@@ -150,7 +150,7 @@ def generate(level=1, **kwargs):
     
     part3_str = f"\\left|{c} \\times {to_latex(frac3)} - {d}\\right|"
     
-    question_text = f"計算 $$   {part1_str} \\div {part2_str} + {part3_str}   $$ 的值。"
+    question_text = f"計算 $   {part1_str} \\div {part2_str} + {part3_str}   $ 的值。"
     
     # Calculate answer using standard operators
     val1 = (a + b) * frac1
@@ -203,7 +203,7 @@ def generate(level=1, **kwargs):
 ❌ **輸出 Markdown 代碼塊** → 不要寫 ```python，直接寫代碼！
 ❌ 分數 LaTeX 寫錯：應該是 \frac{1}{2} 不是 1/2
 ❌ 負分數括號遺漏：應該是 \left(-\frac{5}{2}\right)
-❌ 使用單個 $ 而非 $$   ...   $$ → 格式不統一
+❌ 使用單個 $ 而非 $   ...   $ → 格式不統一
 ❌ check 函數返回布爾值而非字典 → 系統錯誤
 ❌ 答案未化簡：必須用 Fraction 自動化簡
 ❌ 寫中文註解 → 違反規定

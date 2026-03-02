@@ -32,6 +32,556 @@ def get_engine():
         from core.engine.engine import MathEngine
         _engine_instance = MathEngine()
     return _engine_instance
+
+
+def _normalize_math_text(text):
+    if not text:
+        return ""
+    normalized = str(text)
+    replacements = {
+        "×": "*", "✕": "*", "\u00d7": "*", "\\times": "*",
+        "÷": "/", "\u00f7": "/", "\\div": "/",
+        "（": "(", "）": ")", "［": "[", "］": "]",
+        "【": "[", "】": "]", "｛": "{", "｝": "}",
+        "－": "-", "﹣": "-", "−": "-", "＋": "+", "｜": "|",
+    }
+    for src, dst in replacements.items():
+        normalized = normalized.replace(src, dst)
+    return normalized
+
+
+def _scan_number_spans(compact_expr):
+    spans = []
+    i = 0
+    while i < len(compact_expr):
+        ch = compact_expr[i]
+        if ch.isdigit():
+            j = i
+            while j < len(compact_expr) and compact_expr[j].isdigit():
+                j += 1
+            spans.append((i, j, False))
+            i = j
+            continue
+
+        if ch == '-' and i + 1 < len(compact_expr) and compact_expr[i + 1].isdigit():
+            prev = compact_expr[i - 1] if i > 0 else ''
+            unary = (i == 0 or prev in '([+*/')
+            if unary:
+                j = i + 1
+                while j < len(compact_expr) and compact_expr[j].isdigit():
+                    j += 1
+                spans.append((i, j, True))
+                i = j
+                continue
+        i += 1
+    return spans
+
+
+def _count_binary_ops(compact_expr):
+    sequence = []
+    prev = ""
+    for idx, ch in enumerate(compact_expr):
+        if ch not in "+-*/":
+            prev = ch
+            continue
+
+        is_unary_minus = ch == "-" and (idx == 0 or prev in "([+-*/")
+        if is_unary_minus:
+            prev = ch
+            continue
+
+        if ch == "+":
+            sequence.append("plus")
+        elif ch == "-":
+            sequence.append("minus")
+        elif ch == "*":
+            sequence.append("times")
+        elif ch == "/":
+            sequence.append("divide")
+        prev = ch
+    counts = {
+        "plus": sequence.count("plus"),
+        "minus": sequence.count("minus"),
+        "times": sequence.count("times"),
+        "divide": sequence.count("divide"),
+    }
+    return sequence, counts
+
+
+def _extract_enclosed_segments(compact_expr, left_ch, right_ch):
+    segments = []
+    stack = []
+    for i, ch in enumerate(compact_expr):
+        if ch == left_ch:
+            stack.append(i)
+        elif ch == right_ch and stack:
+            start = stack.pop()
+            if len(stack) == 0:
+                segments.append(compact_expr[start + 1:i])
+    return segments
+
+
+def _extract_abs_segments(compact_expr):
+    segments = []
+    opens = []
+    for i, ch in enumerate(compact_expr):
+        if ch == '|':
+            if opens:
+                start = opens.pop()
+                segments.append(compact_expr[start + 1:i])
+            else:
+                opens.append(i)
+    return segments
+
+
+def _segment_stats(segment_expr):
+    seq, counts = _count_binary_ops(segment_expr)
+    number_spans = _scan_number_spans(segment_expr)
+    return {
+        "numbers": len(number_spans),
+        "ops": len(seq),
+        "plus": counts["plus"],
+        "minus": counts["minus"],
+        "times": counts["times"],
+        "divide": counts["divide"],
+    }
+
+
+def _build_structural_profile(text):
+    norm = _normalize_math_text(text)
+    compact = "".join(norm.split())
+    sequence, counts = _count_binary_ops(compact)
+    number_spans = _scan_number_spans(compact)
+
+    bracket_segments = _extract_enclosed_segments(compact, '[', ']')
+    abs_segments = _extract_abs_segments(compact)
+
+    bracket_stats = [_segment_stats(seg) for seg in bracket_segments]
+    abs_stats = [_segment_stats(seg) for seg in abs_segments]
+
+    return {
+        "normalized": compact,
+        "operator_sequence": sequence,
+        "operator_count": len(sequence),
+        "counts": counts,
+        "number_count": len(number_spans),
+        "bracket_count": len(bracket_segments),
+        "abs_count": len(abs_segments),
+        "bracket_stats": bracket_stats,
+        "abs_stats": abs_stats,
+        "has_abs": len(abs_segments) > 0,
+        "has_square_brackets": len(bracket_segments) > 0,
+        "has_parentheses": "(" in compact and ")" in compact,
+        "has_parenthesized_negative": "(-" in compact,
+    }
+
+
+def _extract_operator_fingerprint(text):
+    return _build_structural_profile(text)
+
+
+def _build_isomorphic_constraints(source_text, json_spec=None):
+    fp = _build_structural_profile(source_text)
+    seq_text = " -> ".join(fp["operator_sequence"]) if fp["operator_sequence"] else "none"
+    forbidden_ops = [
+        op for op in ("plus", "minus", "times", "divide")
+        if fp["counts"].get(op, 0) == 0
+    ]
+
+    lines = [
+        f"1) 運算子順序必須完全一致：{seq_text}",
+        f"2) 二元運算子總數必須一致：{fp['operator_count']}",
+        f"2.1) 數字總數必須一致：{fp['number_count']}",
+        f"2.2) 加減乘除統計必須一致：+={fp['counts']['plus']}, -={fp['counts']['minus']}, ×={fp['counts']['times']}, ÷={fp['counts']['divide']}",
+    ]
+
+    if fp["has_square_brackets"]:
+        lines.append("3) 必須保留中括號結構 []，不得改成一般括號或移除。")
+        lines.append(f"3.1) 中括號區塊數量必須一致：{fp['bracket_count']}")
+        for idx, st in enumerate(fp["bracket_stats"], start=1):
+            lines.append(
+                f"3.{idx+1}) 第{idx}個中括號內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
+            )
+    else:
+        lines.append("3) 禁止新增中括號 []。")
+
+    if fp["has_abs"]:
+        lines.append("4) 必須保留絕對值符號 | |，不可省略。")
+        lines.append(f"4.1) 絕對值區塊數量必須一致：{fp['abs_count']}")
+        for idx, st in enumerate(fp["abs_stats"], start=1):
+            lines.append(
+                f"4.{idx+1}) 第{idx}個絕對值內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
+            )
+    else:
+        lines.append("4) 禁止新增絕對值符號 | | 或 abs()。")
+
+    if fp["has_parenthesized_negative"]:
+        lines.append("5) 負數必須以括號形式表達（例如 (-7)）。")
+    else:
+        lines.append("5) 不可為了湊格式而新增多餘的負數括號。")
+
+    if forbidden_ops:
+        lines.append(f"6) 禁止新增未出現的運算子：{', '.join(forbidden_ops)}")
+
+    if json_spec and isinstance(json_spec, dict):
+        structure = json_spec.get("structure") or ""
+        if structure:
+            lines.append(f"7) 參考結構：{structure}")
+
+    block = "\n".join(lines)
+    return block, fp
+
+
+def _select_liveshow_structure_template(fp):
+    if fp.get("has_abs"):
+        template_id = "T3_ABS_MIXED"
+        template_text = (
+            "題型骨架 T3（含絕對值）：| A op1 B | op2 C op3 D\n"
+            "- 絕對值符號必須保留\n"
+            "- 內外層運算子順序不可改\n"
+            "- 負數格式必須使用 IntegerOps.fmt_num()"
+        )
+        return template_id, template_text
+
+    if fp.get("has_square_brackets"):
+        template_id = "T2_BRACKETED_NESTED"
+        template_text = (
+            "題型骨架 T2（雙中括號巢狀）：[ ... ] op [ ... ]\n"
+            "- 左右兩側都必須保留中括號\n"
+            "- 中括號內可含小括號與多步運算\n"
+            "- 最外層只允許原題出現的運算子"
+        )
+        return template_id, template_text
+
+    template_id = "T1_LINEAR_MIXED"
+    template_text = (
+        "題型骨架 T1（線性混合）：A op1 B op2 C ...\n"
+        "- 不新增絕對值、不新增中括號\n"
+        "- 僅保留原題已有的小括號樣式\n"
+        "- 運算子序列與數量必須同構"
+    )
+    return template_id, template_text
+
+
+def _extract_math_expr_from_question(question_text):
+    if not question_text:
+        return ""
+    import re
+    m = re.search(r'\$(.*?)\$', str(question_text))
+    if m:
+        return m.group(1).strip()
+    return str(question_text).strip()
+
+
+def _to_eval_expression_template(expr):
+    norm = _normalize_math_text(expr or "")
+    compact = "".join(norm.split())
+    compact = compact.replace("[", "(").replace("]", ")")
+
+    out = []
+    abs_open = False
+    for ch in compact:
+        if ch == '|':
+            if not abs_open:
+                out.append('abs(')
+                abs_open = True
+            else:
+                out.append(')')
+                abs_open = False
+        else:
+            out.append(ch)
+
+    if abs_open:
+        out.append(')')
+    return "".join(out)
+
+
+def _recompute_correct_answer_from_question(question_text):
+    import re
+    expr = _extract_math_expr_from_question(question_text)
+    if not expr:
+        return None
+
+    eval_expr = _to_eval_expression_template(expr)
+    if not re.fullmatch(r"[0-9+\-*/().aabs]+", eval_expr):
+        return None
+
+    try:
+        val = eval(eval_expr, {"__builtins__": {}}, {"abs": abs})
+    except Exception:
+        return None
+
+    try:
+        fval = float(val)
+    except Exception:
+        return None
+
+    if abs(fval - round(fval)) < 1e-6:
+        return str(int(round(fval)))
+    return str(fval)
+
+
+def _collapse_double_numeric_parentheses(expr_text):
+    import re
+    if not expr_text:
+        return expr_text, 0
+
+    out = str(expr_text)
+    total_replacements = 0
+    for _ in range(8):
+        new_out, count = re.subn(r'\(\s*\(\s*(-?\d+)\s*\)\s*\)', r'(\1)', out)
+        total_replacements += count
+        if new_out == out:
+            break
+        out = new_out
+    return out, total_replacements
+
+
+def _enforce_negative_parentheses(expr_text):
+    """
+    將顯示算式中的「單元負數常數」統一為括號格式：
+    -3 -> (-3)
+    但已經是 (-3) 的不重複包裝。
+    """
+    if not expr_text:
+        return expr_text, 0
+
+    compact = "".join(str(expr_text).split())
+    out = []
+    changes = 0
+    i = 0
+
+    while i < len(compact):
+        ch = compact[i]
+        if ch == '-':
+            prev = compact[i - 1] if i > 0 else ''
+            unary = (i == 0 or prev in '+-*/([|')
+            if unary:
+                j = i + 1
+                if j < len(compact) and compact[j].isdigit():
+                    while j < len(compact) and compact[j].isdigit():
+                        j += 1
+
+                    already_wrapped = (prev == '(' and j < len(compact) and compact[j] == ')')
+                    token = compact[i:j]
+                    if already_wrapped:
+                        out.append(token)
+                    else:
+                        out.append(f"({token})")
+                        changes += 1
+                    i = j
+                    continue
+
+        out.append(ch)
+        i += 1
+
+    return "".join(out), changes
+
+
+def _sanitize_question_text_display(question_text, return_report=False):
+    import re
+    if not question_text:
+        return (question_text, {"double_paren_fixes": 0}) if return_report else question_text
+
+    text = str(question_text)
+    m = re.search(r'\$(.*?)\$', text)
+    total_fixes = 0
+    total_neg_wraps = 0
+    if m:
+        inner = m.group(1)
+        fixed_inner, fix_count = _collapse_double_numeric_parentheses(inner)
+        total_fixes += fix_count
+        fixed_inner_2, wrap_count = _enforce_negative_parentheses(fixed_inner)
+        total_neg_wraps += wrap_count
+        sanitized = text[:m.start(1)] + fixed_inner_2 + text[m.end(1):]
+    else:
+        sanitized, fix_count = _collapse_double_numeric_parentheses(text)
+        total_fixes += fix_count
+        sanitized, wrap_count = _enforce_negative_parentheses(sanitized)
+        total_neg_wraps += wrap_count
+
+    if return_report:
+        return sanitized, {
+            "double_paren_fixes": total_fixes,
+            "negative_wrap_fixes": total_neg_wraps,
+        }
+    return sanitized
+
+
+def _optimize_live_execution_code(code_text):
+    """
+    Live Show 執行優化：
+    - 壓低超大重試迴圈上限，避免 CPU latency 被 3000+ 次重試拖高
+    - 去除 time.sleep 人為延遲
+    """
+    import re
+
+    code = code_text or ""
+
+    def _shrink_for_range(m):
+        var_name = m.group(1)
+        n = int(m.group(2))
+        capped = 120 if n > 120 else n
+        return f"for {var_name} in range({capped})"
+
+    code = re.sub(
+        r"for\s+([A-Za-z_][A-Za-z0-9_]*)\s+in\s+range\((\d{3,6})\)",
+        _shrink_for_range,
+        code,
+    )
+
+    def _cap_while_limit(m):
+        prefix = m.group(1)
+        n = int(m.group(2))
+        capped = 120 if n > 120 else n
+        return f"{prefix}{capped}"
+
+    code = re.sub(
+        r"(while\s+[A-Za-z_][A-Za-z0-9_]*\s*<\s*)(\d{3,6})",
+        _cap_while_limit,
+        code,
+    )
+
+    code = re.sub(r"\btime\.sleep\s*\([^\)]*\)", "pass", code)
+    return code
+
+
+def _is_expression_isomorphic(expected_fp, generated_expr):
+    if not generated_expr:
+        return False
+    got_fp = _build_structural_profile(generated_expr)
+    if got_fp.get("operator_sequence") != expected_fp.get("operator_sequence"):
+        return False
+    if got_fp.get("number_count") != expected_fp.get("number_count"):
+        return False
+    if got_fp.get("counts") != expected_fp.get("counts"):
+        return False
+    if got_fp.get("has_abs") != expected_fp.get("has_abs"):
+        return False
+    if got_fp.get("has_square_brackets") != expected_fp.get("has_square_brackets"):
+        return False
+    if got_fp.get("abs_count") != expected_fp.get("abs_count"):
+        return False
+    if got_fp.get("bracket_count") != expected_fp.get("bracket_count"):
+        return False
+    if got_fp.get("bracket_stats") != expected_fp.get("bracket_stats"):
+        return False
+    if got_fp.get("abs_stats") != expected_fp.get("abs_stats"):
+        return False
+    return True
+
+
+def _profile_diff_summary(expected_fp, generated_expr):
+    got_fp = _build_structural_profile(generated_expr or "")
+    diffs = []
+
+    if got_fp.get("operator_sequence") != expected_fp.get("operator_sequence"):
+        diffs.append(f"operator_sequence: expected={expected_fp.get('operator_sequence')} got={got_fp.get('operator_sequence')}")
+    if got_fp.get("number_count") != expected_fp.get("number_count"):
+        diffs.append(f"number_count: expected={expected_fp.get('number_count')} got={got_fp.get('number_count')}")
+    if got_fp.get("counts") != expected_fp.get("counts"):
+        diffs.append(f"op_counts: expected={expected_fp.get('counts')} got={got_fp.get('counts')}")
+    if got_fp.get("bracket_count") != expected_fp.get("bracket_count"):
+        diffs.append(f"bracket_count: expected={expected_fp.get('bracket_count')} got={got_fp.get('bracket_count')}")
+    if got_fp.get("abs_count") != expected_fp.get("abs_count"):
+        diffs.append(f"abs_count: expected={expected_fp.get('abs_count')} got={got_fp.get('abs_count')}")
+    if got_fp.get("bracket_stats") != expected_fp.get("bracket_stats"):
+        diffs.append("bracket_stats mismatch")
+    if got_fp.get("abs_stats") != expected_fp.get("abs_stats"):
+        diffs.append("abs_stats mismatch")
+
+    return diffs
+
+
+def _build_isomorphic_fallback_code(ocr_text):
+    norm = _normalize_math_text(ocr_text)
+    compact = "".join(norm.split())
+
+    spans = _scan_number_spans(compact)
+
+    if not spans:
+        return ""
+
+    eval_parts = []
+    math_parts = []
+    cursor = 0
+    idx = 1
+    var_specs = []
+    for start, end, unary_minus in spans:
+        left = compact[cursor:start]
+        token = compact[start:end]
+        eval_parts.append(left)
+        math_parts.append(left)
+
+        var_name = f"v{idx}"
+        eval_parts.append("{" + var_name + "}")
+        wrapped = (start - 1 >= 0 and end < len(compact) and compact[start - 1] == '(' and compact[end] == ')')
+        source_negative = token.startswith('-')
+
+        if wrapped:
+            math_parts.append("{" + var_name + "}")
+        else:
+            math_parts.append("{fmt(" + var_name + ")}")
+
+        var_specs.append((var_name, source_negative))
+
+        cursor = end
+        idx += 1
+
+    tail = compact[cursor:]
+    eval_parts.append(tail)
+    math_parts.append(tail)
+
+    eval_template = "".join(eval_parts)
+    math_template = "".join(math_parts)
+    math_template = math_template.replace("*", "\\\\times").replace("/", "\\\\div")
+    eval_template = _to_eval_expression_template(eval_template)
+
+    assign_lines = []
+    for var_name, source_negative in var_specs:
+        if source_negative:
+            assign_lines.append(f"        {var_name} = IntegerOps.random_nonzero(-20, -1)")
+        else:
+            assign_lines.append(f"        {var_name} = IntegerOps.random_nonzero(1, 20)")
+
+    assign_block = "\n".join(assign_lines)
+
+    code = f'''import random
+import math
+
+def generate(level=1, **kwargs):
+    fmt = IntegerOps.fmt_num
+    for _ in range(3000):
+{assign_block}
+        try:
+            eval_str = f"{eval_template}"
+            ans = IntegerOps.safe_eval(eval_str)
+            if abs(ans - round(ans)) < 1e-6:
+                final_ans = int(round(ans))
+                math_str = f"{math_template}"
+                question_text = "計算 $" + math_str + "$ 的值。"
+                return {{
+                    'question_text': question_text,
+                    'correct_answer': str(final_ans),
+                    'mode': 1
+                }}
+        except Exception:
+            continue
+    return {{'question_text': 'Error', 'correct_answer': '0', 'mode': 1}}
+
+def check(user_answer, correct_answer):
+    try:
+        if str(user_answer).strip() == str(correct_answer).strip():
+            return {{'correct': True, 'result': '正確'}}
+        if abs(float(user_answer) - float(correct_answer)) < 1e-6:
+            return {{'correct': True, 'result': '正確'}}
+    except Exception:
+        pass
+    return {{'correct': False, 'result': '錯誤'}}
+'''
+    return code
+
+
 def apply_strict_mirroring(scaffold, ocr_text):
     """
     更強力的過濾器：只要沒出現符號，就刪除整行包含關鍵字的指令
@@ -137,6 +687,8 @@ def generate_live():
             # 3. DNA 物理裁剪 (apply_strict_mirroring)
             ocr_text = json_spec.get("ocr_text", input_text or "")
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
+            iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
+            template_id, template_text = _select_liveshow_structure_template(fp)
             
             # 動態注入 OCR 結果
             live_show_content = live_show_content.replace("{{OCR_RESULT}}", ocr_text)
@@ -153,6 +705,13 @@ def generate_live():
 
 【2. 標準工具箱 (API Stubs)】
 {api_stubs}
+
+【3. 題型同構硬性約束】
+{iso_block}
+
+【4. 題型骨架模板（必須採用）】
+Template: {template_id}
+{template_text}
 """
             # 5. 準備 Qwen3-VL 呼叫
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
@@ -201,6 +760,10 @@ def generate_live():
                 
             # 7. Execute Code to get output dict identical to `scaler.py` format
             cpu_start = time.time()
+            expected_fp = _build_structural_profile(ocr_text)
+            generated_fp = {}
+            iso_isomorphic = False
+            ab2_exec_code = _optimize_live_execution_code(final_code)
             
             # --- [NEW] Ab2 Interception (Scaffold Prompt, No Healer) ---
             ab2_result = {}
@@ -212,8 +775,26 @@ def generate_live():
             with open(ab2_file_path, "w", encoding="utf-8") as _fb:
                 _fb.write(final_code)
                 
+            ab2_cpu_start = time.time()
             try:
-                ab2_exe_res = scaler._execute_code(final_code, level=1)
+                ab2_exe_res = scaler._execute_code(ab2_exec_code, level=1)
+                ab2_exec_elapsed = time.time() - ab2_cpu_start
+                if "question_text" in ab2_exe_res:
+                    sanitized_q, sanitize_report = _sanitize_question_text_display(
+                        ab2_exe_res.get("question_text", ""),
+                        return_report=True
+                    )
+                    ab2_exe_res["question_text"] = sanitized_q
+                    ab2_exe_res["_display_sanitize_report"] = sanitize_report
+                if "question_text" in ab2_exe_res:
+                    old_ans = ab2_exe_res.get("correct_answer", "")
+                    fixed_ans = _recompute_correct_answer_from_question(ab2_exe_res.get("question_text", ""))
+                    if fixed_ans is not None:
+                        ab2_exe_res["correct_answer"] = fixed_ans
+                        ab2_exe_res["_answer_recomputed"] = True
+                        if str(old_ans) != str(fixed_ans):
+                            ab2_exe_res["_answer_recomputed_from"] = str(old_ans)
+                            ab2_exe_res["_answer_recomputed_to"] = str(fixed_ans)
                 try:
                     from scripts.evaluate_mcri import evaluate_math_hygiene
                     if "question_text" in ab2_exe_res:
@@ -223,17 +804,23 @@ def generate_live():
                     pass
                 ab2_result = ab2_exe_res
             except Exception as e:
+                ab2_exec_elapsed = time.time() - ab2_cpu_start
                 ab2_result = {"error": f"執行錯誤: {e}"}
             
             ab2_result["file_path"] = ab2_file_path
             ab2_result["ai_inference_time_sec"] = ai_inference_time_sec
-            ab2_result["cpu_execution_time_sec"] = time.time() - cpu_start
-            ab2_result["raw_code"] = final_code   # preserve code for diag panel
-            ab2_result["final_code"] = final_code # no healer applied
+            ab2_result["cpu_execution_time_sec"] = ab2_exec_elapsed
+            
+            # [NEW] Prepend api_stubs to BOTH final executed code AND the raw code shown on UI
+            final_code_with_stubs = api_stubs + "\n\n" + final_code
+            ab2_result["raw_code"] = final_code_with_stubs
+            ab2_result["final_code"] = final_code_with_stubs # no healer applied
             
             # --- Resume Ab3 (Full Healer) ---
+            # Ab3 CPU time = Healer + Execution (must always be ≥ Ab2)
             cpu_start_ab3 = time.time()
             problems_result = []
+            ab3_exec_elapsed = 0.0
             
             # [FIX] 真正執行 Healer，讓 Ab3 擁有自癒能力
             from core.code_generator import _advanced_healer
@@ -245,6 +832,8 @@ def generate_live():
                 # 提取修復次數
                 regex_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
                 ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
+                ast_stats = healer_stats[2] if len(healer_stats) > 2 else None
+                detail_logs = getattr(ast_stats, "logs", []) if ast_stats else []
                 print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes} ===")
             except Exception as e:
                 import traceback
@@ -252,17 +841,70 @@ def generate_live():
                 traceback.print_exc()
                 healed_code = final_code
             
-            # 將單反斜線 LaTeX 符號保護起來
-            healed_code = healed_code.replace('\\div', '\\\\div').replace('\\times', '\\\\times')
-            
             try:
-                exe_res = scaler._execute_code(healed_code, level=1)
+                healed_exec_code = _optimize_live_execution_code(healed_code)
+                exe_res = scaler._execute_code(healed_exec_code, level=1)
+                if "question_text" in exe_res:
+                    sanitized_q, sanitize_report = _sanitize_question_text_display(
+                        exe_res.get("question_text", ""),
+                        return_report=True
+                    )
+                    exe_res["question_text"] = sanitized_q
+                    if sanitize_report.get("double_paren_fixes", 0) > 0:
+                        detail_logs = detail_logs if 'detail_logs' in locals() else []
+                        detail_logs.append(f"[DISPLAY_SANITIZE] collapsed {sanitize_report['double_paren_fixes']} nested numeric parenthesis pattern(s).")
+                    if sanitize_report.get("negative_wrap_fixes", 0) > 0:
+                        detail_logs = detail_logs if 'detail_logs' in locals() else []
+                        detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {sanitize_report['negative_wrap_fixes']} bare negative literal(s) with parentheses.")
+
+                generated_expr = _extract_math_expr_from_question(exe_res.get("question_text", ""))
+                if not _is_expression_isomorphic(expected_fp, generated_expr):
+                    detail_logs = detail_logs if 'detail_logs' in locals() else []
+                    detail_logs.append("[ISO_GUARD] primary output profile mismatch.")
+                    for d in _profile_diff_summary(expected_fp, generated_expr):
+                        detail_logs.append(f"[ISO_GUARD] {d}")
+
+                    fallback_code = _build_isomorphic_fallback_code(ocr_text)
+                    if fallback_code:
+                        healed_code = fallback_code
+                        healed_exec_code = _optimize_live_execution_code(healed_code)
+                        exe_res = scaler._execute_code(healed_exec_code, level=1)
+                        if "question_text" in exe_res:
+                            sanitized_q2, sanitize_report2 = _sanitize_question_text_display(
+                                exe_res.get("question_text", ""),
+                                return_report=True
+                            )
+                            exe_res["question_text"] = sanitized_q2
+                            if sanitize_report2.get("double_paren_fixes", 0) > 0:
+                                detail_logs.append(f"[DISPLAY_SANITIZE] collapsed {sanitize_report2['double_paren_fixes']} nested numeric parenthesis pattern(s) after fallback.")
+                            if sanitize_report2.get("negative_wrap_fixes", 0) > 0:
+                                detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {sanitize_report2['negative_wrap_fixes']} bare negative literal(s) after fallback.")
+                        detail_logs.append("[ISO_GUARD] LLM output drift detected; switched to deterministic isomorphic fallback.")
+                        generated_expr_2 = _extract_math_expr_from_question(exe_res.get("question_text", ""))
+                        if not _is_expression_isomorphic(expected_fp, generated_expr_2):
+                            for d in _profile_diff_summary(expected_fp, generated_expr_2):
+                                detail_logs.append(f"[ISO_GUARD][FALLBACK_FAIL] {d}")
+                            raise ValueError("ISO_GUARD fallback failed: generated structure still not isomorphic")
+
+                generated_expr_final = _extract_math_expr_from_question(exe_res.get("question_text", ""))
+                generated_fp = _build_structural_profile(generated_expr_final)
+                iso_isomorphic = _is_expression_isomorphic(expected_fp, generated_expr_final)
+                old_ans = exe_res.get("correct_answer", "")
+                fixed_ans = _recompute_correct_answer_from_question(exe_res.get("question_text", ""))
+                if fixed_ans is not None:
+                    exe_res["correct_answer"] = fixed_ans
+                    detail_logs = detail_logs if 'detail_logs' in locals() else []
+                    detail_logs.append("[ANS_GUARD] correct_answer recomputed from displayed expression.")
+                    if str(old_ans) != str(fixed_ans):
+                        detail_logs.append(f"[ANS_GUARD] correct_answer changed: {old_ans} -> {fixed_ans}")
+                ab3_exec_elapsed = time.time() - cpu_start_ab3
+
                 # 使用 V6.7 evaluate_live_code 計分
                 try:
                     from scripts.evaluate_mcri import evaluate_live_code
                     if "question_text" in exe_res:
                         _live_mcri = evaluate_live_code(
-                            code=healed_code,
+                            code=healed_exec_code,
                             exec_result=exe_res,
                             healer_trace={"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
                             ablation_mode=False
@@ -273,11 +915,10 @@ def generate_live():
                     pass
                 problems_result.append(exe_res)
             except Exception as e:
+                ab3_exec_elapsed = time.time() - cpu_start_ab3
                 problems_result.append({"error": f"執行錯誤: {e}"})
                 
-            cpu_execution_time_sec = time.time() - cpu_start_ab3
-                
-            cpu_execution_time_sec = time.time() - cpu_start
+            cpu_execution_time_sec = ab3_exec_elapsed
             
             # 8. 儲存原始碼以供「下一題」功能調用 (儲存 Healed 版本)
             save_dir = "generated_scripts"
@@ -296,20 +937,39 @@ def generate_live():
                         "cpu_execution_time_sec": cpu_execution_time_sec
                     },
                     "raw_code": raw_out,
-                    "final_code": healed_code,
+                    "final_code": api_stubs + "\n\n" + healed_code,
                     "file_path": file_path,
                     "bare_prompt": "",
                     "scaffold_prompt": system_prompt,
                     "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
                     "architect_model": "Qwen3-VL",
                     "healer_trace": {"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
+                    "healer_logs": detail_logs if 'detail_logs' in locals() else [],
+                    "iso_profile_expected": expected_fp,
+                    "iso_profile_generated": generated_fp,
+                    "iso_isomorphic": iso_isomorphic,
                     "mcri_report": {"robustness_grade": "MODERATE", "robustness_reason": "Visual Generation with Full Healer"}
                 },
                 "ab2_result": ab2_result
             }
         else:
             engine = get_engine()
-            output = engine.generate_practice_set(input_text=input_text, count=count, ablation_mode=ablation_mode, model_id=model_id, skill_name=skill_id)
+            enriched_input = input_text
+            if not ablation_mode:
+                iso_block = ""
+                if isinstance(json_spec, dict):
+                    iso_block = json_spec.get("isomorphic_constraints", "")
+                if not iso_block:
+                    iso_block, _ = _build_isomorphic_constraints(input_text, json_spec if isinstance(json_spec, dict) else None)
+                enriched_input = f"{input_text}\n\n【題型同構硬性約束】\n{iso_block}"
+
+            output = engine.generate_practice_set(
+                input_text=enriched_input,
+                count=count,
+                ablation_mode=ablation_mode,
+                model_id=model_id,
+                skill_name=skill_id
+            )
             
         output["api_time"] = time.time() - start_time
 
@@ -319,15 +979,28 @@ def generate_live():
         healer_trace = dm.get("healer_trace", {})
         mcri_report  = dm.get("mcri_report", {})
 
+        # Ab2 metrics (from the nested ab2_result if available)
+        ab2_res = output.get("ab2_result", {})
+        ab2_dm = ab2_res.get("debug_meta", {})
+        ab2_perf = ab2_dm.get("performance", {})
+        
+        output["ab2_ai_inference_time_sec"] = ab2_perf.get("ai_inference_time_sec", 0)
+        output["ab2_cpu_execution_time_sec"] = ab2_perf.get("cpu_execution_time_sec", 0)
+
+        # Ab3 metrics (standard fields)
         output["ai_inference_time_sec"]  = perf.get("ai_inference_time_sec", 0)
         output["cpu_execution_time_sec"] = perf.get("cpu_execution_time_sec", 0)
         output["thinking"] = dm.get("thinking", "")
         output["fixes"]    = (healer_trace.get("regex_fixes", 0) or 0) + (healer_trace.get("ast_fixes", 0) or 0)
-        output["healer_logs"] = [
+        
+        # Merge basic trace counts with detailed logs
+        base_logs = [
             f"regex_fixes: {healer_trace.get('regex_fixes', 0)}",
             f"ast_fixes: {healer_trace.get('ast_fixes', 0)}",
             f"robustness: {mcri_report.get('robustness_grade', 'N/A')}",
         ]
+        detail_logs = dm.get("healer_logs", [])
+        output["healer_logs"] = base_logs + detail_logs
 
         # ── Map problems[0] fields for the frontend ───────────────────────
         problems = output.get("problems", [])
@@ -341,6 +1014,9 @@ def generate_live():
         output["scaffold_prompt"] = dm.get("scaffold_prompt", "")
         output["gemini_raw_spec"] = dm.get("gemini_raw_spec", "")
         output["architect_model"] = dm.get("architect_model", "Gemini 3 Flash")
+        output["iso_profile_expected"] = dm.get("iso_profile_expected", {})
+        output["iso_profile_generated"] = dm.get("iso_profile_generated", {})
+        output["iso_isomorphic"] = dm.get("iso_isomorphic", None)
 
         if problems:
             first = problems[0]
@@ -354,6 +1030,19 @@ def generate_live():
                 q_text = first.get("question_text", "")
                 output["problem"] = q_text
                 output["answer"]  = first.get("correct_answer", "")
+
+                if not output.get("iso_profile_expected") and isinstance(json_spec, dict):
+                    output["iso_profile_expected"] = (
+                        json_spec.get("structural_profile")
+                        or json_spec.get("operator_fingerprint")
+                        or {}
+                    )
+
+                if output.get("iso_profile_expected") and q_text:
+                    _expr = _extract_math_expr_from_question(q_text)
+                    _gen_profile = _build_structural_profile(_expr)
+                    output["iso_profile_generated"] = _gen_profile
+                    output["iso_isomorphic"] = _is_expression_isomorphic(output["iso_profile_expected"], _expr)
 
                 # ── V6.7 MCRI 真實評分 ──────────────────────────────────────
                 _live_mcri = first.get("_live_mcri")
@@ -626,7 +1315,11 @@ def classify_input():
             # 準備 Ollama Chat API Payload (Compatible with both image and pure Text messages)
             msg_dict = {"role": "user", "content": prompt_text}
             if image_data:
-                msg_dict["images"] = [image_data]
+                # [Fix] Ollama Chat API requires raw base64, not the data URI scheme.
+                b64_str = image_data
+                if "base64," in b64_str:
+                    b64_str = b64_str.split("base64,")[1]
+                msg_dict["images"] = [b64_str]
                 
             payload = {
                 "model": model_name,
@@ -675,6 +1368,22 @@ def classify_input():
                                 "operator_sequence": parsed_res.get("operator_sequence"),
                                 "constraints": parsed_res.get("constraints")
                             }
+                        
+                        # [新修復] 將 OCR 提取出來的 * 和 / 替換為 LaTeX 格式
+                        ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
+
+                        iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
+                        template_id, template_text = _select_liveshow_structure_template(op_fp)
+                        if not isinstance(json_spec, dict):
+                            json_spec = {}
+                        json_spec["isomorphic_constraints"] = iso_constraints
+                        json_spec["operator_fingerprint"] = op_fp
+                        json_spec["structural_profile"] = op_fp
+                        json_spec["structure_template_id"] = template_id
+                        json_spec["structure_template_text"] = template_text
+                        process_logs.append(
+                            f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, ops={op_fp.get('operator_count', 0)}, []={op_fp.get('bracket_count', 0)}, ||={op_fp.get('abs_count', 0)}"
+                        )
 
                         # 1. 字典硬覆寫 (Hard Mapping)
                         HARD_MAPPING = {
@@ -807,6 +1516,19 @@ def classify_input():
                     scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
                 else:
                     scaffold_prompt = "[SKILL.md 未找到]"
+
+                iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec if isinstance(json_spec, dict) else None)
+                template_id, template_text = _select_liveshow_structure_template(op_fp)
+                if isinstance(json_spec, dict):
+                    json_spec["isomorphic_constraints"] = iso_constraints
+                    json_spec["operator_fingerprint"] = op_fp
+                    json_spec["structural_profile"] = op_fp
+                    json_spec["structure_template_id"] = template_id
+                    json_spec["structure_template_text"] = template_text
+                scaffold_prompt += (
+                    f"\n\n【題型同構硬性約束】\n{iso_constraints}"
+                    f"\n\n【題型骨架模板（必須採用）】\nTemplate: {template_id}\n{template_text}"
+                )
                     
             except Exception as e:
                 scaffold_prompt = f"Error loading SKILL.md: {e}"
@@ -827,7 +1549,8 @@ def classify_input():
             "process_logs": process_logs,
             "bare_prompt": bare_prompt,
             "scaffold_prompt": scaffold_prompt,
-            "json_spec": json_spec
+            "json_spec": json_spec,
+            "structural_profile": json_spec.get("structural_profile", {}) if isinstance(json_spec, dict) else {}
         })
 
     except Exception as e:
@@ -867,6 +1590,8 @@ def run_generated_code():
         
         # 執行程式碼
         res = engine.scaler._execute_code(code, level=level)
+        if "question_text" in res:
+            res["question_text"] = _sanitize_question_text_display(res.get("question_text", ""))
         
         # ── V6.7 MCRI 真實評分（下一題路徑）──────────────────────
         live_mcri_result = None

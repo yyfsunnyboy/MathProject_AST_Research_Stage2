@@ -280,7 +280,7 @@
         /* ── Multimodal Workstation ── */
         .workstation {
             display: grid;
-            grid-template-columns: 3fr 2fr;
+            grid-template-columns: 3fr 2fr 166px;
             gap: 1.5rem;
             max-width: 1400px;
             margin: 0 auto;
@@ -379,6 +379,65 @@
             font-weight: 700;
             opacity: 0;
             transition: opacity 0.5s;
+        }
+
+        .structure-compare {
+            margin-top: 0.75rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #f8f9fa;
+            padding: 0.6rem;
+        }
+
+        .structure-title {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #4b5563;
+            margin-bottom: 0.35rem;
+        }
+
+        .structure-status {
+            font-size: 0.72rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .structure-status.ok {
+            color: #16a34a;
+        }
+
+        .structure-status.fail {
+            color: #dc2626;
+        }
+
+        .structure-line {
+            font-size: 0.72rem;
+            color: #374151;
+            line-height: 1.35;
+            white-space: pre-wrap;
+            word-break: break-word;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .mirror-narrow-frame {
+            position: relative;
+            width: 166px;
+            min-width: 166px;
+            max-width: 166px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 0.55rem;
+            text-align: left;
+            align-self: stretch;
+        }
+
+        .mirror-narrow-frame .structure-compare {
+            margin-top: 0;
+            border: none;
+            background: transparent;
+            padding: 0;
         }
 
         .workstation-header {
@@ -1535,6 +1594,15 @@
                     <div class="selected-skill-badge" id="selected-skill-badge">UNKNOWN_SKILL</div>
                 </div>
             </div>
+
+            <div class="mirror-narrow-frame">
+                <div class="structure-compare" id="structure-compare">
+                    <div class="structure-title">🧪 Complexity Mirror</div>
+                    <div class="structure-status" id="structure-status">等待生成...</div>
+                    <div class="structure-line" id="structure-expected">Expected: -</div>
+                    <div class="structure-line" id="structure-generated">Generated: -</div>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -1983,6 +2051,7 @@
         ═══════════════════════════════════════════ */
         const GPU_MAX = 60, CPU_MAX = 5;
         let lastFinalFilePath = { ab1: null, ab3: null };
+        let latestExpectedProfile = null;
 
         function setBar(barId, textId, val, maxVal) {
             const b = document.getElementById(barId), t = document.getElementById(textId);
@@ -2058,6 +2127,14 @@
                 document.getElementById('result-' + target).classList.remove('hidden');
                 document.getElementById('math-' + target).innerHTML = '<span style="color:#e74c3c">⚠ ' + errMsg + '</span>';
 
+                if (isAb3) {
+                    updateStructureCompare({
+                        iso_profile_expected: latestExpectedProfile,
+                        iso_profile_generated: null,
+                        iso_isomorphic: false
+                    });
+                }
+
                 // [MODIFIED] Do not overwrite source code box on failure. Keep the prompt visible.
 
                 setBadge('badge-' + target, 'badge-failed', '⛔ FAILED');
@@ -2083,21 +2160,18 @@
             document.getElementById('result-' + target).classList.remove('hidden');
             document.getElementById('math-' + target).innerHTML = res.problem || '(no problem rendered)';
 
+            if (isAb3) {
+                updateStructureCompare(res);
+            }
+
             if (isAb2 || isAb3) {
                 if (res.answer !== undefined) {
                     const ansEl = document.getElementById('ans-' + target);
                     if (ansEl) ansEl.textContent = '答案 = ' + res.answer;
                 }
 
-                // Display the actual generated code in the UI block
-                const codeEl = document.getElementById('code-' + target);
-                if (codeEl && res.final_code) {
-                    codeEl.textContent = res.final_code;
-                    codeEl.style.color = "var(--text-main)"; // Reset color from preview styling
-                } else if (codeEl && res.raw_code) {
-                    codeEl.textContent = res.raw_code;
-                    codeEl.style.color = "var(--text-main)";
-                }
+                // [MODIFIED V45.8] Do not overwrite `code-target` with generated code so the Prompt template stays visible.
+                // The generated code is already displayed in the bottom Diagnostic Panel.
             }
 
             // Diagnostic Panel Population (Ab1 & Ab3 only, Ab2 has console logs handled below)
@@ -2128,24 +2202,18 @@
 
                 } else if (isAb3) {
                     // Right Panel (Evolution Hub - Ab3)
-                    const rawCode = res.raw_code || '';
-
+                    const finalCode = res.final_code || res.raw_code || '';
                     const fixLogs = res.healer_logs || [];
                     const fixLogStr = fixLogs.join('\\n');
-
-                    const finalCode = (fixLogs.length > 0) ? `(Healer Output Applied)\\n${res.final_code || rawCode}` :
-                        (res.final_code || rawCode);
-
-                    // raw_code colored gray in CSS (use diag-comment)
-                    diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
 
                     if (fixLogs.length > 0) {
                         // healer_fix_logs colored orange in CSS (diag-fix)
                         diagHtml += createDiagBlock('HEALER_FIX_LOGS', escapeHtml(fixLogStr), 'diag-fix');
+                        // ab3_final_code with green glowing border (use diag-success css)
+                        diagHtml += createDiagBlock('[PRODUCTION_READY_CODE] (Healer Output Applied)', escapeHtml(finalCode), 'diag-success');
+                    } else {
+                        diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(finalCode), 'diag-success');
                     }
-
-                    // ab3_final_code with green glowing border (use diag-success css)
-                    diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(finalCode), 'diag-success');
                 }
 
                 diagContent.innerHTML = diagHtml;
@@ -2244,13 +2312,10 @@
                 const escapeHtml = (s) => (s || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 let diagHtml = '';
                 if (target === 'ab3') {
-                    const rawCode = res.raw_code || '';
                     const fixLogs = res.healer_logs || [];
-                    diagHtml += createDiagBlock('RAW_CODE', escapeHtml(rawCode), 'diag-comment');
                     if (fixLogs.length > 0)
                         diagHtml += createDiagBlock('HEALER_FIX_LOGS', escapeHtml(fixLogs.join('\n')), 'diag-fix');
-                    diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(res.final_code || rawCode),
-                        'diag-success');
+                    diagHtml += createDiagBlock('[PRODUCTION_READY_CODE]', escapeHtml(finalCode), 'diag-success');
                 } else if (target === 'ab2') {
                     diagHtml += createDiagBlock('[UNHEALED_SCAFFOLD_CODE]', escapeHtml(finalCode), 'diag-comment');
                 } else {
@@ -2700,6 +2765,43 @@
             document.getElementById('cm-value').textContent = pct + '%';
         }
 
+        function summarizeProfile(profile) {
+            if (!profile || typeof profile !== 'object' || !profile.counts) {
+                return '-';
+            }
+            const c = profile.counts || {};
+            return `nums=${profile.number_count ?? 0}, ops=${profile.operator_count ?? 0}, []=${profile.bracket_count ?? 0}, ||=${profile.abs_count ?? 0}, +=${c.plus ?? 0}, -=${c.minus ?? 0}, ×=${c.times ?? 0}, ÷=${c.divide ?? 0}`;
+        }
+
+        function updateStructureCompare(res) {
+            const statusEl = document.getElementById('structure-status');
+            const expEl = document.getElementById('structure-expected');
+            const genEl = document.getElementById('structure-generated');
+            if (!statusEl || !expEl || !genEl) return;
+
+            const expected = res?.iso_profile_expected || latestExpectedProfile;
+            const generated = res?.iso_profile_generated;
+            const iso = res?.iso_isomorphic;
+
+            if (expected) {
+                latestExpectedProfile = expected;
+            }
+
+            expEl.textContent = `Expected: ${summarizeProfile(expected)}`;
+            genEl.textContent = `Generated: ${summarizeProfile(generated)}`;
+
+            statusEl.classList.remove('ok', 'fail');
+            if (iso === true) {
+                statusEl.textContent = '✅ Isomorphic Match';
+                statusEl.classList.add('ok');
+            } else if (iso === false) {
+                statusEl.textContent = '❌ Structure Drift Detected';
+                statusEl.classList.add('fail');
+            } else {
+                statusEl.textContent = '等待生成...';
+            }
+        }
+
         function setSkillBadge(skillName) {
             const badge = document.getElementById('selected-skill-badge');
             // If it's a real skill, add the Double Helix icon
@@ -2717,6 +2819,15 @@
             const badge = document.getElementById('selected-skill-badge');
             badge.style.opacity = '0';
             badge.textContent = 'UNKNOWN_SKILL';
+            const statusEl = document.getElementById('structure-status');
+            const expEl = document.getElementById('structure-expected');
+            const genEl = document.getElementById('structure-generated');
+            if (statusEl) {
+                statusEl.textContent = '等待生成...';
+                statusEl.classList.remove('ok', 'fail');
+            }
+            if (expEl) expEl.textContent = 'Expected: -';
+            if (genEl) genEl.textContent = 'Generated: -';
         }
 
         /* ═══════════════════════════════════════════
@@ -2789,6 +2900,14 @@
                 if (result.success) {
                     input = result.ocr_text; // use recognized or passed text
                     document.getElementById('promptInput').value = input; // populate UI
+
+                    if (result.structural_profile) {
+                        updateStructureCompare({
+                            iso_profile_expected: result.structural_profile,
+                            iso_profile_generated: null,
+                            iso_isomorphic: null
+                        });
+                    }
 
                     // Render process logs from backend with typewriter effect
                     let currentConfidence = 10;

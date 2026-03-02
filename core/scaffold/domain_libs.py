@@ -110,6 +110,15 @@ class IntegerOps:
     """整數運算工具"""
     
     @staticmethod
+    def op_to_latex(op_str):
+        """將基礎運算符號轉成國中課本 LaTeX 顯示"""
+        if op_str == '*': 
+            return '\\times'
+        if op_str == '/': 
+            return '\\div'
+        return op_str
+    
+    @staticmethod
     def fmt_num(n):
         """格式化數字（負數加括號）"""
         if n < 0:

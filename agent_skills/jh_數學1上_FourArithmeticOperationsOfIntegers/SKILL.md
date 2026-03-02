@@ -132,13 +132,13 @@ def generate(level=1, **kwargs):
     k = rand_nz(-50, 50)
     
     if level == 1:
-        question_text = f"計算 $${part1_str} + {part2_str}$$ 的值。"
+        question_text = f"計算 ${part1_str} + {part2_str}$ 的值。"
         ans = part1_val + part2_val
     elif level == 2:
-        question_text = f"計算 $${part1_str} - {part2_str} + {part3_str}$$ 的值。"
+        question_text = f"計算 ${part1_str} - {part2_str} + {part3_str}$ 的值。"
         ans = part1_val - part2_val + part3_val
     else:
-        question_text = f"計算 $$- {part1_str} + {part2_str} - {part3_str} + {fmt(k)}$$ 的值。"
+        question_text = f"計算 $- {part1_str} + {part2_str} - {part3_str} + {fmt(k)}$ 的值。"
         ans = -part1_val + part2_val - part3_val + k
         
     return {
@@ -161,120 +161,165 @@ def check(user_answer, correct_answer):
 [[END_MODE:BENCHMARK]]
 
 [[MODE:LIVESHOW]]
-[Role] MathProject 動態出題引擎
+[Role] MathProject LiveShow 結構同構出題引擎（Qwen-8B-VL 專用）
 
 [範例題型] {{OCR_RESULT}}
 
-[核心策略]
-小模型在遇到各種未知結構 (絕對值、括號、巢狀) 時，如果給出太死板的範例容易「背答案」。
-請採用 **「積木組裝替換法 (Lego Block Assembly)」**，並嚴格遵守以下安全規範：
-**絕對禁止在 `eval()` 內直接執行 `abs()`，以避開 Sandbox 錯誤。**
+[最高優先原則]
+你不是在「自由出題」，你是在「同構模仿」。
+必須複製原例題的結構複雜度，而不是只複製主題。
 
-1. **化整為零 (Divide and Conquer)**：
-   - 不要試圖寫一個巨大的 `ans = eval(...)`。
-   - 看到 `|絕對值|`，就獨立寫一行算出 `val_abs = abs(eval("..."))`。
-   - 看到 `[中括號]`，就獨立寫一行算出 `val_bracket = eval("...")`。
-   - 看到 `(小括號)`，也獨立寫一行算出 `val_paren = eval("...")`。
+--------------------------------------------------
+【A. 硬性同構規範（必須同時滿足）】
+--------------------------------------------------
+1) 全式層級
+- 總數字數量必須一致。
+- 總二元運算子數量必須一致。
+- 加減乘除各自的數量必須一致。
+- 二元運算子順序必須一致。
 
-2. **變數拼裝 (Variable Assembling)**：
-   - 最後把算出來的 `val_abs`, `val_bracket` 等這些「積木」，用 f-string 拼湊成最終算式 `ans = eval(f"{val_abs} + {val_bracket}")`。
+2) 中括號層級
+- 中括號區塊數量必須一致。
+- 每一個中括號區塊內：
+  - 數字數量一致
+  - 運算子總數一致
+  - 加減乘除分布一致
 
-3. **暴力重試 (Retry Loop)**：
-   - 依然保留 `for` 迴圈機制，利用 CPU 快速試錯來保證整除。
+3) 絕對值層級
+- 絕對值區塊數量必須一致。
+- 每一個絕對值區塊內：
+  - 數字數量一致
+  - 運算子總數一致
+  - 加減乘除分布一致
 
-[實作範例：通用骨架 (請根據 {{OCR_RESULT}} 的實際結構自由變形)]
-```python
+4) 括號與負數表達
+- 若例題出現 (-n) 形式，生成題也必須保留負數括號風格。
+- 禁止新增/刪除絕對值與中括號。
+
+--------------------------------------------------
+【B. 計算字串與顯示字串一致性（致命規則）】
+--------------------------------------------------
+1) 必須先得到「唯一計算來源」eval_str。
+2) math_str 必須由同一套變數與同一運算拓撲構成。
+3) 禁止計算 A 式、顯示 B 式。
+
+錯誤示例（禁止）：
+- ans 用 val1+val2 算，math_str 卻顯示另一組運算。
+
+正確示例（必須）：
+- eval_str 和 math_str 只差在運算符顯示（*→\\times, /→\\div）與 fmt_num。
+
+--------------------------------------------------
+【C. Qwen-8B-VL 特化規範（避免跑偏）】
+--------------------------------------------------
+1) 輸出必須是 Python code ONLY。
+   - 禁止 markdown fence
+   - 禁止思考文字
+   - 禁止解釋段落
+
+2) 禁止重定義系統注入工具：
+   - 禁止自建 class IntegerOps
+   - 禁止覆蓋 IntegerOps.safe_eval / fmt_num / op_to_latex
+
+3) 必須使用：
+   - IntegerOps.random_nonzero
+   - IntegerOps.fmt_num
+   - IntegerOps.safe_eval
+
+4) 必須輸出函式：
+   - generate(level=1, **kwargs)
+   - check(user_answer, correct_answer)
+
+--------------------------------------------------
+【D. 生成演算法（必做步驟）】
+--------------------------------------------------
+Step D1: 讀取 {{OCR_RESULT}}，建立結構模板。
+- 只替換數字，不替換結構符號。
+- 結構符號包含：[]、| |、()、+ - * /
+
+Step D2: 將例題中的每個常數位置映射成變數 v1, v2, ...
+- 常數是可替換點。
+- 結構與運算位置不是可替換點。
+
+Step D3: 依原始常數正負號，給變數取值範圍。
+- 原常數為負：v_i 取負整數範圍
+- 原常數為正：v_i 取正整數範圍
+
+Step D4: 組出 eval_str（純 Python 可計算）。
+- 若有絕對值段，eval_str 必須以 abs(...) 實作該段。
+- 不可在 eval_str 使用 \\times/\\div。
+
+Step D5: 組出 math_str（LaTeX 顯示）。
+- 乘號顯示為 \\times
+- 除號顯示為 \\div
+- 數字顯示用 fmt_num
+
+Step D6: 驗證
+- safe_eval(eval_str) 可執行
+- 結果為整數（或符合系統要求）
+- 若失敗 continue 重試
+
+Step D7: 回傳
+- question_text = "計算 $" + math_str + "$ 的值。"
+- correct_answer = str(int(final_ans))
+
+--------------------------------------------------
+【E. 禁止事項（違反即視為失敗）】
+--------------------------------------------------
+- 禁止 random.choice 改運算子（會破壞同構）。
+- 禁止任意新增 abs()、[]、() 層級。
+- 禁止把 [] 結構改寫成純線性算式。
+- 禁止把 |a op b| 改成 a op b（或反之）。
+
+--------------------------------------------------
+【F. 可直接遵循的骨架】
+--------------------------------------------------
 import random
 import math
 
 def generate(level=1, **kwargs):
     fmt = IntegerOps.fmt_num
-    
-    # [Step 1: 定義重試迴圈]
-    # 不管題目長短，直接跑 3000 次測試
+
     for _ in range(3000):
-        
-        # [Step 2: 隨機生成變數 (依據範例題型有幾個數字就生成幾個)]
-        # v1: 主數值，範圍大
-        v1 = IntegerOps.random_nonzero(-20, 20) 
-        
-        # v2: 乘除因子，範圍小但包含負數 (增加難度！)
-        v2 = IntegerOps.random_nonzero(-9, 9)   
-        
-        # v3, v4, v5: 混合使用，讓題目充滿變化
-        v3 = IntegerOps.random_nonzero(-15, 15)
-        v4 = IntegerOps.random_nonzero(-9, 9)
-        v5 = IntegerOps.random_nonzero(-10, 10)
-        
-        # [Step 3: 隨機生成運算符 (依據範例題型有幾個符號就生成幾個)]
-        op1 = random.choice(['+', '-'])
-        op2 = random.choice(['*', '/'])
-        # ... 依此類推
-        
+        # 1) 依原始常數位置產生變數（只換數字，不動結構）
+        # v1, v2, ... 根據原例題正負號選區間
+
         try:
-            # [Step 4: 積木組裝替換 (Lego Block Assembly)]
-            # 這裡只是一個概念展示！請依照你目前看到的範例題型，靈活組裝！
-            
-            # 假設範例題型裡有一個絕對值區塊
-            # val_abs = abs(eval(f"({v1}) {op1} {v2}"))
-            
-            # 假設範例題型裡有一個中括號區塊 (把算好的絕對值塞進去)
-            # val_bracket = eval(f"{v3} {op2} {val_abs}")
-            
-            # 最終答案組合
-            # ans = eval(f"({v1}) * {val_bracket} + {v3}") 
-            
-            # ---------------------------------------------------------
-            # 以下為實際填寫區 (請根據範例題型自行發揮，勿抄寫上方註解範例)
-            
-            # 積木 1: ...
-            
-            # 積木 2: ...
-            
-            ans = eval(...) # 最終計算
-            
-            # ---------------------------------------------------------
-            
-            # [Step 5: 黃金判斷 - 是否整除?]
-            # 檢查是否為整數 (允許些微浮點誤差)
+            # 2) eval_str：可計算版本（* /，必要時 abs(...)）
+            eval_str = "..."
+
+            # 3) math_str：顯示版本（\\times / \\div + fmt_num）
+            math_str = "..."
+
+            ans = IntegerOps.safe_eval(eval_str)
             if abs(ans - round(ans)) < 1e-6:
                 final_ans = int(round(ans))
-                
-                # [Step 6: 成功！組裝 LaTeX]
-                # 定義符號轉換 helper
-                def to_latex(op):
-                    if op == '*': return '\\times'
-                    if op == '/': return '\\div'
-                    return op
-                
-                l_op1 = to_latex(op1)
-                l_op2 = to_latex(op2)
-                # ...
-                
-                # 填入 LaTeX (使用 fmt 處理負號，請模仿原圖結構)
-                # str_abs = f"|{fmt(v1)} {l_op1} {fmt(v2)}|"
-                # math_str = f"{str_abs} {l_op2} {fmt(v3)}"
-                
-                math_str = ... # 最終 LaTeX 字串
-                
-                question_text = r"計算 $$" + math_str + r"$$ 的值。"
-                
                 return {
-                    'question_text': question_text,
+                    'question_text': '計算 $' + math_str + '$ 的值。',
+                    'answer': '',
                     'correct_answer': str(final_ans),
                     'mode': 1
                 }
-        except (ZeroDivisionError, SyntaxError):
+        except Exception:
             continue
-            
-    # 保底機制
-    return {'question_text': "Error", 'correct_answer': "0", 'mode': 1}
+
+    return {'question_text': 'Error', 'answer': '', 'correct_answer': '0', 'mode': 1}
 
 def check(user_answer, correct_answer):
     try:
-        if str(user_answer).strip() == str(correct_answer).strip(): return {'correct': True, 'result': '正確'}
-        if abs(float(user_answer) - float(correct_answer)) < 1e-6: return {'correct': True, 'result': '正確'}
-    except: pass
+        if str(user_answer).strip() == str(correct_answer).strip():
+            return {'correct': True, 'result': '正確'}
+        if abs(float(user_answer) - float(correct_answer)) < 1e-6:
+            return {'correct': True, 'result': '正確'}
+    except Exception:
+        pass
     return {'correct': False, 'result': '錯誤'}
+
+--------------------------------------------------
+【G. 最終輸出要求】
+--------------------------------------------------
+- 只輸出 Python 原始碼。
+- 不要輸出任何額外文字。
+- 不要輸出 markdown。
 [[END_MODE:LIVESHOW]]
 ```

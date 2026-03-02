@@ -53,7 +53,7 @@
 1. **題目結構**：
    - Part 1: 3~4 項未化簡根式加減（例如 `\sqrt{12} + 2\sqrt{27} - \sqrt{8}`）。
    - Part 2: 簡單乘法（例如 `2(\sqrt{3} + \sqrt{5})`）。
-   - 題目顯示：`化簡 $$(Part1) + Part2$$`
+   - 題目顯示：`化簡 $(Part1) + Part2$`
 2. **數值範圍**：
    - 係數 `coeff`: -5 ~ 5 (非零)
    - 根號內 `radicand`: 2, 3, 5, 6, 7, 8, 10, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75
@@ -95,7 +95,7 @@ def generate(level=1, **kwargs):
     part2_latex = f"{k}(\\sqrt{{{r_a}}} + \\sqrt{{{r_b}}})"
     
     # Question Text
-    question_text = f"化簡 $$({part1_latex}) + {part2_latex}$$"
+    question_text = f"化簡 $({part1_latex}) + {part2_latex}$"
     
     # Calculate Answer (Pure Logic)
     final_terms = {} # {radicand: total_coeff}

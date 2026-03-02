@@ -176,13 +176,27 @@ class ASTHealer(ast.NodeTransformer):
         return node
     
     def visit_Import(self, node):
-        """移除非法 import"""
-        self.fixes += 1
-        self.logs.append(f"AST Healer: Removed dangerous import: {ast.unparse(node)}")
-        return None
+        """移除非法 import，但保留安全的數學相關模組"""
+        safe_modules = {'math', 'random', 'fractions', 'decimal', 're'}
+        new_names = [alias for alias in node.names if alias.name.split('.')[0] in safe_modules]
+        
+        if len(new_names) < len(node.names):
+            self.fixes += 1
+            removed = [alias.name for alias in node.names if alias not in new_names]
+            self.logs.append(f"AST Healer: Removed dangerous import(s): {', '.join(removed)}")
+            
+        if not new_names:
+            return None
+            
+        node.names = new_names
+        return node
     
     def visit_ImportFrom(self, node):
-        """移除非法 from ... import"""
+        """移除非法 from ... import，但保留安全的數學相關模組"""
+        safe_modules = {'math', 'random', 'fractions', 'decimal', 're', 'typing'}
+        if node.module and node.module.split('.')[0] in safe_modules:
+            return node
+            
         self.fixes += 1
         self.logs.append(f"AST Healer: Removed dangerous from...import: {ast.unparse(node)}")
         return None

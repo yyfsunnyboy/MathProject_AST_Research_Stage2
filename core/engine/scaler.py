@@ -374,7 +374,9 @@ JSON 格式必須嚴格遵循以下規範：
                 ab2_result["file_path"] = ab2_file_path
                 ab2_result["ai_inference_time_sec"] = ai_inference_time_sec
                 ab2_result["raw_code"] = clean_code    # scaffold code, before Healer
-                ab2_result["final_code"] = clean_code  # no Healer applied for Ab2
+                
+                # [NEW] Prepend api_stubs to Ab2's final code so the UI sees the injected functions
+                ab2_result["final_code"] = api_stubs + "\n\n" + clean_code  # no Healer applied for Ab2
                 # --- /Ab2 Interception ---
                 
                 # [執行完整 Healer + 函式庫注入]
@@ -453,7 +455,7 @@ JSON 格式必須嚴格遵循以下規範：
                 "bare_prompt": prompt if ablation_mode else "",
                 "scaffold_prompt": prompt if not ablation_mode else "",
                 "gemini_raw_spec": spec_raw,
-                "healer_logs": getattr(healer_stats[-1], "logs", []) if healer_stats and hasattr(healer_stats[-1], "logs") else [],
+                "healer_logs": getattr(healer_stats[2], "logs", []) if len(healer_stats) > 2 and hasattr(healer_stats[2], "logs") else [],
                 "performance": {
                     "ai_inference_time_sec": round(ai_inference_time_sec, 2),
                     "cpu_execution_time_sec": round(cpu_execution_time_sec, 4)
