@@ -65,7 +65,7 @@ def _scan_number_spans(compact_expr):
 
         if ch == '-' and i + 1 < len(compact_expr) and compact_expr[i + 1].isdigit():
             prev = compact_expr[i - 1] if i > 0 else ''
-            unary = (i == 0 or prev in '([+*/')
+            unary = (i == 0 or prev in '([{|+*/')
             if unary:
                 j = i + 1
                 while j < len(compact_expr) and compact_expr[j].isdigit():
@@ -85,7 +85,7 @@ def _count_binary_ops(compact_expr):
             prev = ch
             continue
 
-        is_unary_minus = ch == "-" and (idx == 0 or prev in "([+-*/")
+        is_unary_minus = ch == "-" and (idx == 0 or prev in "([{|+-*/")
         if is_unary_minus:
             prev = ch
             continue
@@ -154,9 +154,13 @@ def _build_structural_profile(text):
     number_spans = _scan_number_spans(compact)
 
     bracket_segments = _extract_enclosed_segments(compact, '[', ']')
+    # 新增：也抓取大括號 {} 區塊併入統計（或可獨立統計，但通常視為高等級括號）
+    brace_segments = _extract_enclosed_segments(compact, '{', '}')
+    all_bracket_segments = bracket_segments + brace_segments
+
     abs_segments = _extract_abs_segments(compact)
 
-    bracket_stats = [_segment_stats(seg) for seg in bracket_segments]
+    bracket_stats = [_segment_stats(seg) for seg in all_bracket_segments]
     abs_stats = [_segment_stats(seg) for seg in abs_segments]
 
     return {
@@ -165,14 +169,15 @@ def _build_structural_profile(text):
         "operator_count": len(sequence),
         "counts": counts,
         "number_count": len(number_spans),
-        "bracket_count": len(bracket_segments),
+        "bracket_count": len(all_bracket_segments),
         "abs_count": len(abs_segments),
         "bracket_stats": bracket_stats,
         "abs_stats": abs_stats,
         "has_abs": len(abs_segments) > 0,
-        "has_square_brackets": len(bracket_segments) > 0,
+        "has_square_brackets": len(all_bracket_segments) > 0,
         "has_parentheses": "(" in compact and ")" in compact,
         "has_parenthesized_negative": "(-" in compact,
+        "has_braces": len(brace_segments) > 0,
     }
 
 
@@ -272,11 +277,18 @@ def _extract_math_expr_from_question(question_text):
         return m.group(1).strip()
     return str(question_text).strip()
 
-
 def _to_eval_expression_template(expr):
-    norm = _normalize_math_text(expr or "")
+    import re
+    # 預保護修補：暫時隱藏 f-string 佔位符 {v1}, {v2}... 避免被誤轉
+    temp = re.sub(r'\{v(\d+)\}', r'__V\1__', expr or "")
+    
+    norm = _normalize_math_text(temp)
     compact = "".join(norm.split())
-    compact = compact.replace("[", "(").replace("]", ")")
+
+    # 1. 移除不影響數學結構但干擾演算的排版 LaTeX 指令
+    compact = compact.replace('\\left', '').replace('\\right', '').replace('\\text', '')
+    # 2. 將所有類括號統一轉為圓括號 (此時大括號只剩數學大括號)
+    compact = compact.replace("[", "(").replace("]", ")").replace("{", "(").replace("}", ")")
 
     out = []
     abs_open = False
@@ -293,7 +305,11 @@ def _to_eval_expression_template(expr):
 
     if abs_open:
         out.append(')')
-    return "".join(out)
+        
+    final_expr = "".join(out)
+    # 3. 還原 f-string 佔位符
+    final_expr = re.sub(r'__V(\d+)__', r'{v\1}', final_expr)
+    return final_expr
 
 
 def _recompute_correct_answer_from_question(question_text):
@@ -509,9 +525,12 @@ def _build_isomorphic_fallback_code(ocr_text):
     var_specs = []
     for start, end, unary_minus in spans:
         left = compact[cursor:start]
+        # 轉義大括號，避免干擾後續生成的 f-string 佔位符
+        left_escaped = left.replace("{", "{{").replace("}", "}}")
+        
         token = compact[start:end]
-        eval_parts.append(left)
-        math_parts.append(left)
+        eval_parts.append(left_escaped)
+        math_parts.append(left_escaped)
 
         var_name = f"v{idx}"
         eval_parts.append("{" + var_name + "}")
@@ -529,20 +548,31 @@ def _build_isomorphic_fallback_code(ocr_text):
         idx += 1
 
     tail = compact[cursor:]
-    eval_parts.append(tail)
-    math_parts.append(tail)
+    tail_escaped = tail.replace("{", "{{").replace("}", "}}")
+    eval_parts.append(tail_escaped)
+    math_parts.append(tail_escaped)
 
     eval_template = "".join(eval_parts)
     math_template = "".join(math_parts)
-    math_template = math_template.replace("*", "\\\\times").replace("/", "\\\\div")
+    math_template = math_template.replace("\\", "\\\\").replace("*", "\\\\times").replace("/", "\\\\div")
     eval_template = _to_eval_expression_template(eval_template)
+    eval_template = eval_template.replace("\\", "\\\\")
 
-    assign_lines = []
-    for var_name, source_negative in var_specs:
-        if source_negative:
-            assign_lines.append(f"        {var_name} = IntegerOps.random_nonzero(-20, -1)")
+    assign_lines = ["        vars_dict = {}"]
+    for i, (var_name, source_negative) in enumerate(var_specs):
+        if i == 0:
+            vmin, vmax = 1, 200
+        elif i == 1:
+            vmin, vmax = 1, 10
+        elif i == 2:
+            vmin, vmax = 1, 20
         else:
-            assign_lines.append(f"        {var_name} = IntegerOps.random_nonzero(1, 20)")
+            vmin, vmax = 1, 15
+            
+        if source_negative:
+            assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-{vmax}, -{vmin})")
+        else:
+            assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero({vmin}, {vmax})")
 
     assign_block = "\n".join(assign_lines)
 
@@ -551,22 +581,101 @@ import math
 
 def generate(level=1, **kwargs):
     fmt = IntegerOps.fmt_num
-    for _ in range(3000):
+    
+    last_ans = None
+    last_math_str = None
+    
+    for attempt in range(25):
 {assign_block}
+        _o1_healed = False
+
+        # 智慧型倒算法 (Intelligent Reverse Calculation) 的結構同構攔截與縮放
         try:
-            eval_str = f"{eval_template}"
-            ans = IntegerOps.safe_eval(eval_str)
-            if abs(ans - round(ans)) < 1e-6:
-                final_ans = int(round(ans))
-                math_str = f"{math_template}"
-                question_text = "計算 $" + math_str + "$ 的值。"
+            eval_str_init = "{eval_template}"
+            
+            # 使用 Fraction 強制保留精確分母
+            for k, v in vars_dict.items():
+                key1 = chr(123) + k + chr(125)
+                key2 = chr(123) + "fmt(" + k + ")" + chr(125)
+                frac_str = "Fraction(" + str(v) + ", 1)"
+                eval_str_init = eval_str_init.replace(key1, frac_str)
+                eval_str_init = eval_str_init.replace(key2, frac_str)
+                
+            ans_init = safe_eval(eval_str_init)
+            
+            # 若第一波計算產生分數，代表存在除法截斷。
+            # 直接將結構中的「第一個變數」乘上分母，強制使得整組式中存在能夠被整除的公倍數，實現完美的 O(1) 倒算法！
+            if type(ans_init).__name__ == "Fraction" and ans_init.denominator != 1:
+                # [保護機制] 如果隨機出的分母過大（例如幾百萬），乘回 v1 會導致出現天文數字。
+                # 國中範圍的分母通常在 1000 以內。超過 1000 直接拒絕，讓外層迴圈重新隨機洗牌。
+                if ans_init.denominator > 1000:
+                    continue
+                    
+                # 取得第一個生成的變數名 (例如 v1) 並將它乘上剛剛算出來的分母
+                first_var = "{var_specs[0][0]}" if {len(var_specs)} > 0 else None
+                if first_var:
+                    vars_dict[first_var] = vars_dict[first_var] * ans_init.denominator
+                    _o1_healed = True
+                    
+            # 變數縮放完成後，重新組裝字串與算式
+            eval_str = "{eval_template}"
+            math_str = "{math_template}"
+            
+            for k, v in vars_dict.items():
+                key1 = chr(123) + k + chr(125)
+                key2 = chr(123) + "fmt(" + k + ")" + chr(125)
+                
+                # 最終答案計算也用 Fraction 以確保絕對精確
+                frac_str = "Fraction(" + str(v) + ", 1)"
+                eval_str = eval_str.replace(key1, frac_str)
+                eval_str = eval_str.replace(key2, frac_str)
+                
+                math_str = math_str.replace(key1, str(v))
+                math_str = math_str.replace(key2, IntegerOps.fmt_num(v))
+                
+            ans = safe_eval(eval_str)
+            
+            last_ans = ans
+            last_math_str = math_str
+            
+            if type(ans).__name__ == "Fraction":
+                if ans.denominator == 1:
+                    return {{
+                        'question_text': "計算 $" + math_str + "$ 的值。",
+                        'correct_answer': str(ans.numerator),
+                        'mode': 1,
+                        '_o1_healed': _o1_healed
+                    }}
+            elif abs(ans - round(ans)) < 1e-6:
                 return {{
-                    'question_text': question_text,
-                    'correct_answer': str(final_ans),
-                    'mode': 1
+                    'question_text': "計算 $" + math_str + "$ 的值。",
+                    'correct_answer': str(int(round(ans))),
+                    'mode': 1,
+                    '_o1_healed': _o1_healed
                 }}
+            
         except Exception:
+            import traceback
+            traceback.print_exc()
             continue
+            
+    # 如果極端情況 25 次都找不到，退避到最後一次結果
+    if last_ans is not None:
+        if type(last_ans).__name__ == "Fraction":
+            if last_ans.denominator == 1:
+                final_ans = str(last_ans.numerator)
+            else:
+                final_ans = f"{{last_ans.numerator}}/{{last_ans.denominator}}"
+        else:
+            final_ans = f"{{last_ans:.2f}}"
+        return {{
+            'question_text': "計算 $" + last_math_str + "$ 的值。",
+            'correct_answer': final_ans,
+            'mode': 1,
+            '_o1_healed': False
+        }}
+
+        
     return {{'question_text': 'Error', 'correct_answer': '0', 'mode': 1}}
 
 def check(user_answer, correct_answer):
@@ -802,6 +911,11 @@ Template: {template_id}
                         ab2_exe_res["_mcri_hygiene_score"] = h_score
                 except:
                     pass
+                if ab2_exe_res.get("_o1_healed"):
+                    ab2_exe_res.setdefault("healer_trace", {"regex_fixes": 0, "ast_fixes": 0})
+                    ab2_exe_res["healer_trace"]["ast_fixes"] += 1
+                    ab2_exe_res.setdefault("healer_logs", [])
+                    ab2_exe_res["healer_logs"].append("[O(1)_HEALER] Intelligently scaled variables to force perfect division (Native).")
                 ab2_result = ab2_exe_res
             except Exception as e:
                 ab2_exec_elapsed = time.time() - ab2_cpu_start
@@ -897,6 +1011,12 @@ Template: {template_id}
                     detail_logs.append("[ANS_GUARD] correct_answer recomputed from displayed expression.")
                     if str(old_ans) != str(fixed_ans):
                         detail_logs.append(f"[ANS_GUARD] correct_answer changed: {old_ans} -> {fixed_ans}")
+                        
+                if exe_res.get("_o1_healed"):
+                    ast_fixes += 1
+                    detail_logs = detail_logs if 'detail_logs' in locals() else []
+                    detail_logs.append("[O(1)_HEALER] Intelligently scaled variables to force perfect division.")
+                    
                 ab3_exec_elapsed = time.time() - cpu_start_ab3
 
                 # 使用 V6.7 evaluate_live_code 計分

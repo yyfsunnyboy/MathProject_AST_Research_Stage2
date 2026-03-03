@@ -534,18 +534,24 @@ JSON 格式必須嚴格遵循以下規範：
         def _safe_eval_polyfill(expr):
             try:
                 import re
-                # 解決 fmt_num 帶來的括號問題
-                s = str(expr).replace('(', '').replace(')', '')
+                from fractions import Fraction
+                
+                class MyFrac:
+                    def __init__(self, n): self.n = n
+                    def __call__(self, d): return Fraction(self.n, d)
+
+                s = str(expr)
                 # 替換常見的全形或人類可讀符號，並清除 LaTeX (如 \left, \right)
                 s = s.replace('×', '*').replace('÷', '/').replace('＋', '+').replace('－', '-')
                 s = s.replace('\\times', '*').replace('\\div', '/').replace('\\cdot', '*')
                 s = s.replace('\\left', '').replace('\\right', '')
-                # 將 \frac{a}{b} 或 \frac(a)(b) 轉回 (a)/(b)
-                s = s.replace('\\{', '(').replace('\\}', ')').replace('{', '(').replace('}', ')')
-                s = re.sub(r'\\frac\(([^)]+)\)\(([^)]+)\)', r'((\1)/(\2))', s)
                 
-                # 放棄危險正則表達式，直接 eval (讓它變回原始狀態)
-                return eval(s, {"__builtins__": {}}, {"Fraction": Fraction, "abs": abs})
+                # 將 \frac{a}{b} 或 \frac(a)(b) 轉為 Fraction 進行精準有理數計算
+                s = s.replace('\\{', '(').replace('\\}', ')').replace('{', '(').replace('}', ')')
+                s = s.replace('\\frac', 'MyFrac')
+                
+                # 放棄危險正則表達式，直接 eval
+                return eval(s, {"__builtins__": {}}, {"Fraction": Fraction, "abs": abs, "MyFrac": MyFrac})
             except Exception as e:
                 raise Exception(f"safe_eval 計算失敗 ({expr}): 轉換後為 '{s}', 錯誤: {e}")
                 

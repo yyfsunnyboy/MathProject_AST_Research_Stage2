@@ -241,9 +241,12 @@ Step D2: 將例題中的每個常數位置映射成變數 v1, v2, ...
 - 常數是可替換點。
 - 結構與運算位置不是可替換點。
 
-Step D3: 依原始常數正負號，給變數取值範圍。
-- 原常數為負：v_i 取負整數範圍
-- 原常數為正：v_i 取正整數範圍
+Step D3: 依變數順序與原始常數正負號，給變數取值範圍。
+- v1 (第一個變數)：正數 [1, 100] / 負數 [-100, -1]
+- v2 (第二個變數)：正數 [1, 10] / 負數 [-10, -1]
+- v3 (第三個變數)：正數 [1, 10] / 負數 [-1, -1]
+- 其餘所有變數：正數 [1, 15] / 負數 [-15, -1]
+* 【防禦 0 除錯】：若變數在算式中擔任「除數」角色，絕對必須使用 `IntegerOps.random_nonzero(min, max)` 生成，嚴禁產出 0 造成 ZeroDivisionError。為求安全，強制所有變數皆使用 `IntegerOps.random_nonzero` 產生。
 
 Step D4: 組出 eval_str（純 Python 可計算）。
 - 若有絕對值段，eval_str 必須以 abs(...) 實作該段。
@@ -254,10 +257,10 @@ Step D5: 組出 math_str（LaTeX 顯示）。
 - 除號顯示為 \\div
 - 數字顯示用 fmt_num
 
-Step D6: 驗證
-- safe_eval(eval_str) 可執行
-- 結果為整數（或符合系統要求）
-- 若失敗 continue 重試
+Step D6: O(1) 智慧型倒算法與驗證
+- 建立 eval_str_init 將變數代入，並使用 Fraction(...) 預先計算。
+- 若 `ans.denominator != 1`，則將分母乘回 `v1` 以強制整除。
+- 測試算式是否能得出完美整數。
 
 Step D7: 回傳
 - question_text = "計算 $" + math_str + "$ 的值。"
@@ -276,20 +279,31 @@ Step D7: 回傳
 --------------------------------------------------
 import random
 import math
+from fractions import Fraction
 
 def generate(level=1, **kwargs):
     fmt = IntegerOps.fmt_num
 
-    for _ in range(3000):
+    for _ in range(25):
         # 1) 依原始常數位置產生變數（只換數字，不動結構）
-        # v1, v2, ... 根據原例題正負號選區間
-
+        # v1, v2, ... 根據原例題正負號與 D3 的區間規範生成
+        
+        _o1_healed = False
         try:
-            # 2) eval_str：可計算版本（* /，必要時 abs(...)）
-            eval_str = "..."
-
-            # 3) math_str：顯示版本（\\times / \\div + fmt_num）
-            math_str = "..."
+            # 2) 預先測試算式，使用 Fraction 保留除法分母以攔截截斷
+            # 代入變數，建立 eval_str_init (例如: Fraction(v1, v2 + v3))
+            ans_init = IntegerOps.safe_eval("...") # 你的預先計算字串
+            
+            # 3) 智慧型倒算法 (O(1) 攔截)：遇到除不盡，直接把分母乘回第一個變數
+            if type(ans_init).__name__ == "Fraction" and ans_init.denominator != 1:
+                if ans_init.denominator > 1000:
+                    continue
+                v1 = v1 * ans_init.denominator
+                _o1_healed = True
+                
+            # 4) 變數縮放完成後，重新組裝真正的字串
+            eval_str = "..." # 純 Python 計算字串 (例如 v1 / (v2+v3))
+            math_str = "..." # LaTeX 顯示字串 (例如 fmt(v1) \\div (fmt(v2)+fmt(v3)))
 
             ans = IntegerOps.safe_eval(eval_str)
             if abs(ans - round(ans)) < 1e-6:
@@ -298,7 +312,8 @@ def generate(level=1, **kwargs):
                     'question_text': '計算 $' + math_str + '$ 的值。',
                     'answer': '',
                     'correct_answer': str(final_ans),
-                    'mode': 1
+                    'mode': 1,
+                    '_o1_healed': _o1_healed
                 }
         except Exception:
             continue

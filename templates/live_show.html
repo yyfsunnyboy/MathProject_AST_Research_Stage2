@@ -2424,7 +2424,7 @@
                 if (data.error) throw new Error(data.error);
 
                 document.getElementById('math-' + target).innerHTML = data.problem || '(no problem rendered)';
-                if (target === 'ab3' && data.answer !== undefined) {
+                if (data.answer !== undefined) {
                     document.getElementById('ans-' + target).textContent = '答案 = ' + data.answer;
                 }
 
