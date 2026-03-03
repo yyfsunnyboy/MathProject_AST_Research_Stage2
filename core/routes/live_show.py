@@ -1100,7 +1100,9 @@ Template: {template_id}
         mcri_report  = dm.get("mcri_report", {})
 
         # Ab2 metrics (from the nested ab2_result if available)
-        ab2_res = output.get("ab2_result", {})
+        ab2_res = output.get("ab2_result")
+        if not isinstance(ab2_res, dict):
+            ab2_res = {}
         ab2_dm = ab2_res.get("debug_meta", {})
         ab2_perf = ab2_dm.get("performance", {})
         
