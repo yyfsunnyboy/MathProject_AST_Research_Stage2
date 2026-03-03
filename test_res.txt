@@ -144,7 +144,7 @@ class AdaptiveScaler:
                     # 使用正則替換【參考例題】區塊，把題目換成我們提供的 input_text
                     prompt = re.sub(
                         r"【參考例題】.*?【程式要求】", 
-                        lambda _m: f"【參考例題】\n{input_text}\n\n【程式要求】", 
+                        f"【參考例題】\n{input_text}\n\n【程式要求】", 
                         ab1_template, 
                         flags=re.DOTALL
                     )
