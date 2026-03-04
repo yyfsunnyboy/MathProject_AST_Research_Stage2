@@ -10,13 +10,16 @@ def generate(level=1, **kwargs):
     for attempt in range(25):
         vars_dict = {}
         vars_dict['v1'] = IntegerOps.random_nonzero(1, 200)
-        vars_dict['v2'] = IntegerOps.random_nonzero(-10, -1)
-        vars_dict['v3'] = IntegerOps.random_nonzero(-20, -1)
+        vars_dict['v2'] = IntegerOps.random_nonzero(1, 10)
+        vars_dict['v3'] = IntegerOps.random_nonzero(1, 20)
+        vars_dict['v4'] = IntegerOps.random_nonzero(1, 15)
+        vars_dict['v5'] = IntegerOps.random_nonzero(1, 15)
+        vars_dict['v6'] = IntegerOps.random_nonzero(1, 15)
         _o1_healed = False
 
         # 智慧型倒算法 (Intelligent Reverse Calculation) 的結構同構攔截與縮放
         try:
-            eval_str_init = "{v1}/({v2})*({v3})"
+            eval_str_init = "(-\\frac(({v1}))(({v2})))-(-\\frac(({v3}))(({v4}))+\\frac(({v5}))(({v6})))"
             
             # 使用 Fraction 強制保留精確分母
             for k, v in vars_dict.items():
@@ -37,14 +40,14 @@ def generate(level=1, **kwargs):
                     continue
                     
                 # 取得第一個生成的變數名 (例如 v1) 並將它乘上剛剛算出來的分母
-                first_var = "v1" if 3 > 0 else None
+                first_var = "v1" if 6 > 0 else None
                 if first_var:
                     vars_dict[first_var] = vars_dict[first_var] * ans_init.denominator
                     _o1_healed = True
                     
             # 變數縮放完成後，重新組裝字串與算式
-            eval_str = "{v1}/({v2})*({v3})"
-            math_str = "{fmt(v1)}\\div({v2})\\times({v3})"
+            eval_str = "(-\\frac(({v1}))(({v2})))-(-\\frac(({v3}))(({v4}))+\\frac(({v5}))(({v6})))"
+            math_str = "(-\\frac{{{fmt(v1)}}}{{{fmt(v2)}}})-(-\\frac{{{fmt(v3)}}}{{{fmt(v4)}}}+\\frac{{{fmt(v5)}}}{{{fmt(v6)}}})"
             
             for k, v in vars_dict.items():
                 key1 = chr(123) + k + chr(125)

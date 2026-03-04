@@ -440,4 +440,6 @@ app = create_app()
 
 if __name__ == '__main__':
     # 加入 use_reloader=False 以防止寫入檔案時伺服器自動重啟
-    app.run(debug=True, host='0.0.0.0',port=5000, use_reloader=False)
+    host = os.environ.get('HOST', '127.0.0.1')
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=True, host=host, port=port, use_reloader=False)
