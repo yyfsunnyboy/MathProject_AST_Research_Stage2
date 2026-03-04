@@ -15,10 +15,52 @@ import json
 import os
 import base64
 import uuid
+import re
 from PIL import Image  # 新增：用於處理影像對象
 import io             # 新增：用於 Base64 轉換
 import requests       # 確保網路模組為檔案域全域可用
 from config import Config # 新增：供 Qwen3-VL 讀取模型參數
+from core.healers.live_show_healer import (
+    sanitize_question_text_display as _sanitize_question_text_display,
+    build_readable_healer_logs as _build_readable_healer_logs,
+    force_fraction_answer_text as _force_fraction_answer_text,
+    infer_fraction_display_mode as _infer_fraction_display_mode_impl,
+    has_decimal_number as _has_decimal_number_impl,
+    format_fraction_mixed_display as _format_fraction_mixed_display_impl,
+    init_healer_trace as _init_healer_trace_impl,
+    recompute_regex_totals as _recompute_regex_totals_impl,
+    apply_sanitize_report_to_trace as _apply_sanitize_report_to_trace_impl,
+    apply_display_report_to_trace as _apply_display_report_to_trace_impl,
+    add_o1_fix as _add_o1_fix_impl,
+    sanitize_result_question as _sanitize_result_question_impl,
+    format_result_question_display as _format_result_question_display_impl,
+    recompute_result_answer as _recompute_result_answer_impl,
+    maybe_add_o1_fix as _maybe_add_o1_fix_impl,
+)
+from core.code_utils.live_show_math_utils import (
+    _normalize_math_text,
+    _scan_number_spans,
+    _count_binary_ops,
+    _extract_enclosed_segments,
+    _extract_abs_segments,
+    _segment_stats,
+    _build_structural_profile,
+    _extract_operator_fingerprint,
+    _build_isomorphic_constraints,
+    _select_liveshow_structure_template,
+    _extract_math_expr_from_question,
+    _to_eval_expression_template,
+    _recompute_correct_answer_from_question,
+    _is_expression_isomorphic,
+    _profile_diff_summary,
+)
+from core.healers.live_show_iso_guard import (
+    evaluate_iso_style_guard as _evaluate_iso_style_guard_impl,
+    append_iso_style_guard_logs as _append_iso_style_guard_logs_impl,
+    append_fallback_switch_log as _append_fallback_switch_log_impl,
+)
+from core.skill_policies import get_skill_policy, normalize_skill_id
+from core.routes.live_show_pipeline import run_ab2_interception, run_ab3_full_healer, assemble_visual_output
 # (舊有 Pix2Text 套件已移除，OCR 全權交由 Qwen3-VL 處理)
 
 # 從 __init__.py 匯入已註冊的 Blueprint
@@ -26,6 +68,9 @@ from . import live_show_bp
 
 # 全局初始化 MathEngine (延遲載入以避免循環引用)
 _engine_instance = None
+_LIVE_FILE_DISPLAY_MODE = {}
+
+
 def get_engine():
     global _engine_instance
     if _engine_instance is None:
@@ -34,394 +79,27 @@ def get_engine():
     return _engine_instance
 
 
-def _normalize_math_text(text):
-    if not text:
-        return ""
-    normalized = str(text)
-    replacements = {
-        "×": "*", "✕": "*", "\u00d7": "*", "\\times": "*",
-        "÷": "/", "\u00f7": "/", "\\div": "/",
-        "（": "(", "）": ")", "［": "[", "］": "]",
-        "【": "[", "】": "]", "｛": "{", "｝": "}",
-        "－": "-", "﹣": "-", "−": "-", "＋": "+", "｜": "|",
-    }
-    for src, dst in replacements.items():
-        normalized = normalized.replace(src, dst)
-    return normalized
-
-
-def _scan_number_spans(compact_expr):
-    spans = []
-    i = 0
-    while i < len(compact_expr):
-        ch = compact_expr[i]
-        if ch.isdigit():
-            j = i
-            while j < len(compact_expr) and compact_expr[j].isdigit():
-                j += 1
-            spans.append((i, j, False))
-            i = j
-            continue
-
-        if ch == '-' and i + 1 < len(compact_expr) and compact_expr[i + 1].isdigit():
-            prev = compact_expr[i - 1] if i > 0 else ''
-            unary = (i == 0 or prev in '([{|+*/')
-            if unary:
-                j = i + 1
-                while j < len(compact_expr) and compact_expr[j].isdigit():
-                    j += 1
-                spans.append((i, j, True))
-                i = j
-                continue
-        i += 1
-    return spans
-
-
-def _count_binary_ops(compact_expr):
-    sequence = []
-    prev = ""
-    for idx, ch in enumerate(compact_expr):
-        if ch not in "+-*/":
-            prev = ch
-            continue
-
-        is_unary_minus = ch == "-" and (idx == 0 or prev in "([{|+-*/")
-        if is_unary_minus:
-            prev = ch
-            continue
-
-        if ch == "+":
-            sequence.append("plus")
-        elif ch == "-":
-            sequence.append("minus")
-        elif ch == "*":
-            sequence.append("times")
-        elif ch == "/":
-            sequence.append("divide")
-        prev = ch
-    counts = {
-        "plus": sequence.count("plus"),
-        "minus": sequence.count("minus"),
-        "times": sequence.count("times"),
-        "divide": sequence.count("divide"),
-    }
-    return sequence, counts
-
-
-def _extract_enclosed_segments(compact_expr, left_ch, right_ch):
-    segments = []
-    stack = []
-    for i, ch in enumerate(compact_expr):
-        if ch == left_ch:
-            stack.append(i)
-        elif ch == right_ch and stack:
-            start = stack.pop()
-            if len(stack) == 0:
-                segments.append(compact_expr[start + 1:i])
-    return segments
-
-
-def _extract_abs_segments(compact_expr):
-    segments = []
-    opens = []
-    for i, ch in enumerate(compact_expr):
-        if ch == '|':
-            if opens:
-                start = opens.pop()
-                segments.append(compact_expr[start + 1:i])
-            else:
-                opens.append(i)
-    return segments
-
-
-def _segment_stats(segment_expr):
-    seq, counts = _count_binary_ops(segment_expr)
-    number_spans = _scan_number_spans(segment_expr)
-    return {
-        "numbers": len(number_spans),
-        "ops": len(seq),
-        "plus": counts["plus"],
-        "minus": counts["minus"],
-        "times": counts["times"],
-        "divide": counts["divide"],
-    }
-
-
-def _build_structural_profile(text):
-    norm = _normalize_math_text(text)
-    compact = "".join(norm.split())
-    sequence, counts = _count_binary_ops(compact)
-    number_spans = _scan_number_spans(compact)
-
-    bracket_segments = _extract_enclosed_segments(compact, '[', ']')
-    # 新增：也抓取大括號 {} 區塊併入統計（或可獨立統計，但通常視為高等級括號）
-    brace_segments = _extract_enclosed_segments(compact, '{', '}')
-    all_bracket_segments = bracket_segments + brace_segments
-
-    abs_segments = _extract_abs_segments(compact)
-
-    bracket_stats = [_segment_stats(seg) for seg in all_bracket_segments]
-    abs_stats = [_segment_stats(seg) for seg in abs_segments]
-
-    return {
-        "normalized": compact,
-        "operator_sequence": sequence,
-        "operator_count": len(sequence),
-        "counts": counts,
-        "number_count": len(number_spans),
-        "bracket_count": len(all_bracket_segments),
-        "abs_count": len(abs_segments),
-        "bracket_stats": bracket_stats,
-        "abs_stats": abs_stats,
-        "has_abs": len(abs_segments) > 0,
-        "has_square_brackets": len(all_bracket_segments) > 0,
-        "has_parentheses": "(" in compact and ")" in compact,
-        "has_parenthesized_negative": "(-" in compact,
-        "has_braces": len(brace_segments) > 0,
-    }
-
-
-def _extract_operator_fingerprint(text):
-    return _build_structural_profile(text)
-
-
-def _build_isomorphic_constraints(source_text, json_spec=None):
-    fp = _build_structural_profile(source_text)
-    seq_text = " -> ".join(fp["operator_sequence"]) if fp["operator_sequence"] else "none"
-    forbidden_ops = [
-        op for op in ("plus", "minus", "times", "divide")
-        if fp["counts"].get(op, 0) == 0
-    ]
-
-    lines = [
-        f"1) 運算子順序必須完全一致：{seq_text}",
-        f"2) 二元運算子總數必須一致：{fp['operator_count']}",
-        f"2.1) 數字總數必須一致：{fp['number_count']}",
-        f"2.2) 加減乘除統計必須一致：+={fp['counts']['plus']}, -={fp['counts']['minus']}, ×={fp['counts']['times']}, ÷={fp['counts']['divide']}",
-    ]
-
-    if fp["has_square_brackets"]:
-        lines.append("3) 必須保留中括號結構 []，不得改成一般括號或移除。")
-        lines.append(f"3.1) 中括號區塊數量必須一致：{fp['bracket_count']}")
-        for idx, st in enumerate(fp["bracket_stats"], start=1):
-            lines.append(
-                f"3.{idx+1}) 第{idx}個中括號內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
-            )
-    else:
-        lines.append("3) 禁止新增中括號 []。")
-
-    if fp["has_abs"]:
-        lines.append("4) 必須保留絕對值符號 | |，不可省略。")
-        lines.append(f"4.1) 絕對值區塊數量必須一致：{fp['abs_count']}")
-        for idx, st in enumerate(fp["abs_stats"], start=1):
-            lines.append(
-                f"4.{idx+1}) 第{idx}個絕對值內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
-            )
-    else:
-        lines.append("4) 禁止新增絕對值符號 | | 或 abs()。")
-
-    if fp["has_parenthesized_negative"]:
-        lines.append("5) 負數必須以括號形式表達（例如 (-7)）。")
-    else:
-        lines.append("5) 不可為了湊格式而新增多餘的負數括號。")
-
-    if forbidden_ops:
-        lines.append(f"6) 禁止新增未出現的運算子：{', '.join(forbidden_ops)}")
-
-    if json_spec and isinstance(json_spec, dict):
-        structure = json_spec.get("structure") or ""
-        if structure:
-            lines.append(f"7) 參考結構：{structure}")
-
-    block = "\n".join(lines)
-    return block, fp
-
-
-def _select_liveshow_structure_template(fp):
-    if fp.get("has_abs"):
-        template_id = "T3_ABS_MIXED"
-        template_text = (
-            "題型骨架 T3（含絕對值）：| A op1 B | op2 C op3 D\n"
-            "- 絕對值符號必須保留\n"
-            "- 內外層運算子順序不可改\n"
-            "- 負數格式必須使用 IntegerOps.fmt_num()"
-        )
-        return template_id, template_text
-
-    if fp.get("has_square_brackets"):
-        template_id = "T2_BRACKETED_NESTED"
-        template_text = (
-            "題型骨架 T2（雙中括號巢狀）：[ ... ] op [ ... ]\n"
-            "- 左右兩側都必須保留中括號\n"
-            "- 中括號內可含小括號與多步運算\n"
-            "- 最外層只允許原題出現的運算子"
-        )
-        return template_id, template_text
-
-    template_id = "T1_LINEAR_MIXED"
-    template_text = (
-        "題型骨架 T1（線性混合）：A op1 B op2 C ...\n"
-        "- 不新增絕對值、不新增中括號\n"
-        "- 僅保留原題已有的小括號樣式\n"
-        "- 運算子序列與數量必須同構"
+def _infer_fraction_display_mode(source_text, skill_id):
+    return _infer_fraction_display_mode_impl(
+        source_text,
+        skill_id,
+        extract_expr_fn=_extract_math_expr_from_question,
     )
-    return template_id, template_text
 
 
-def _extract_math_expr_from_question(question_text):
-    if not question_text:
-        return ""
-    import re
-    m = re.search(r'\$(.*?)\$', str(question_text))
-    if m:
-        return m.group(1).strip()
-    return str(question_text).strip()
-
-def _to_eval_expression_template(expr):
-    import re
-    # 預保護修補：暫時隱藏 f-string 佔位符 {v1}, {v2}... 避免被誤轉
-    temp = re.sub(r'\{v(\d+)\}', r'__V\1__', expr or "")
-    
-    norm = _normalize_math_text(temp)
-    compact = "".join(norm.split())
-
-    # 1. 移除不影響數學結構但干擾演算的排版 LaTeX 指令
-    compact = compact.replace('\\left', '').replace('\\right', '').replace('\\text', '')
-    # 2. 將所有類括號統一轉為圓括號 (此時大括號只剩數學大括號)
-    compact = compact.replace("[", "(").replace("]", ")").replace("{", "(").replace("}", ")")
-
-    out = []
-    abs_open = False
-    for ch in compact:
-        if ch == '|':
-            if not abs_open:
-                out.append('abs(')
-                abs_open = True
-            else:
-                out.append(')')
-                abs_open = False
-        else:
-            out.append(ch)
-
-    if abs_open:
-        out.append(')')
-        
-    final_expr = "".join(out)
-    # 3. 還原 f-string 佔位符
-    final_expr = re.sub(r'__V(\d+)__', r'{v\1}', final_expr)
-    return final_expr
+def _has_decimal_number(text):
+    return _has_decimal_number_impl(text, extract_expr_fn=_extract_math_expr_from_question)
 
 
-def _recompute_correct_answer_from_question(question_text):
-    import re
-    expr = _extract_math_expr_from_question(question_text)
-    if not expr:
-        return None
-
-    eval_expr = _to_eval_expression_template(expr)
-    if not re.fullmatch(r"[0-9+\-*/().aabs]+", eval_expr):
-        return None
-
-    try:
-        val = eval(eval_expr, {"__builtins__": {}}, {"abs": abs})
-    except Exception:
-        return None
-
-    try:
-        fval = float(val)
-    except Exception:
-        return None
-
-    if abs(fval - round(fval)) < 1e-6:
-        return str(int(round(fval)))
-    return str(fval)
-
-
-def _collapse_double_numeric_parentheses(expr_text):
-    import re
-    if not expr_text:
-        return expr_text, 0
-
-    out = str(expr_text)
-    total_replacements = 0
-    for _ in range(8):
-        new_out, count = re.subn(r'\(\s*\(\s*(-?\d+)\s*\)\s*\)', r'(\1)', out)
-        total_replacements += count
-        if new_out == out:
-            break
-        out = new_out
-    return out, total_replacements
-
-
-def _enforce_negative_parentheses(expr_text):
-    """
-    將顯示算式中的「單元負數常數」統一為括號格式：
-    -3 -> (-3)
-    但已經是 (-3) 的不重複包裝。
-    """
-    if not expr_text:
-        return expr_text, 0
-
-    compact = "".join(str(expr_text).split())
-    out = []
-    changes = 0
-    i = 0
-
-    while i < len(compact):
-        ch = compact[i]
-        if ch == '-':
-            prev = compact[i - 1] if i > 0 else ''
-            unary = (i == 0 or prev in '+-*/([|')
-            if unary:
-                j = i + 1
-                if j < len(compact) and compact[j].isdigit():
-                    while j < len(compact) and compact[j].isdigit():
-                        j += 1
-
-                    already_wrapped = (prev == '(' and j < len(compact) and compact[j] == ')')
-                    token = compact[i:j]
-                    if already_wrapped:
-                        out.append(token)
-                    else:
-                        out.append(f"({token})")
-                        changes += 1
-                    i = j
-                    continue
-
-        out.append(ch)
-        i += 1
-
-    return "".join(out), changes
-
-
-def _sanitize_question_text_display(question_text, return_report=False):
-    import re
-    if not question_text:
-        return (question_text, {"double_paren_fixes": 0}) if return_report else question_text
-
-    text = str(question_text)
-    m = re.search(r'\$(.*?)\$', text)
-    total_fixes = 0
-    total_neg_wraps = 0
-    if m:
-        inner = m.group(1)
-        fixed_inner, fix_count = _collapse_double_numeric_parentheses(inner)
-        total_fixes += fix_count
-        fixed_inner_2, wrap_count = _enforce_negative_parentheses(fixed_inner)
-        total_neg_wraps += wrap_count
-        sanitized = text[:m.start(1)] + fixed_inner_2 + text[m.end(1):]
-    else:
-        sanitized, fix_count = _collapse_double_numeric_parentheses(text)
-        total_fixes += fix_count
-        sanitized, wrap_count = _enforce_negative_parentheses(sanitized)
-        total_neg_wraps += wrap_count
-
-    if return_report:
-        return sanitized, {
-            "double_paren_fixes": total_fixes,
-            "negative_wrap_fixes": total_neg_wraps,
-        }
-    return sanitized
+def _format_fraction_mixed_display(question_text, skill_id, display_mode="auto", source_text=None, return_report=False):
+    return _format_fraction_mixed_display_impl(
+        question_text,
+        skill_id,
+        display_mode=display_mode,
+        source_text=source_text,
+        return_report=return_report,
+        infer_mode_fn=_infer_fraction_display_mode,
+    )
 
 
 def _optimize_live_execution_code(code_text):
@@ -459,58 +137,77 @@ def _optimize_live_execution_code(code_text):
     )
 
     code = re.sub(r"\btime\.sleep\s*\([^\)]*\)", "pass", code)
+    code = re.sub(r"\btraceback\.print_exc\s*\(\s*\)", "pass", code)
     return code
 
 
-def _is_expression_isomorphic(expected_fp, generated_expr):
-    if not generated_expr:
-        return False
-    got_fp = _build_structural_profile(generated_expr)
-    if got_fp.get("operator_sequence") != expected_fp.get("operator_sequence"):
-        return False
-    if got_fp.get("number_count") != expected_fp.get("number_count"):
-        return False
-    if got_fp.get("counts") != expected_fp.get("counts"):
-        return False
-    if got_fp.get("has_abs") != expected_fp.get("has_abs"):
-        return False
-    if got_fp.get("has_square_brackets") != expected_fp.get("has_square_brackets"):
-        return False
-    if got_fp.get("abs_count") != expected_fp.get("abs_count"):
-        return False
-    if got_fp.get("bracket_count") != expected_fp.get("bracket_count"):
-        return False
-    if got_fp.get("bracket_stats") != expected_fp.get("bracket_stats"):
-        return False
-    if got_fp.get("abs_stats") != expected_fp.get("abs_stats"):
-        return False
-    return True
+def _patch_fraction_skill_eval_calls(code_text, skill_id):
+        """
+        僅針對分數技能做執行相容補丁：
+        - 不改動整數技能既有函式
+        - 將 IntegerOps.safe_eval(...) 轉為 safe_eval(...)
+            交由執行環境中的通用 safe_eval（支援 Fraction）處理
+        """
+        policy = get_skill_policy(skill_id)
+        if not bool(policy.get("apply_fraction_eval_patch", False)):
+                return code_text
+
+        code = code_text or ""
+        code = code.replace("IntegerOps.safe_eval(", "safe_eval(")
+
+        # 關閉「倒算法強制整除」：分數技能不需要把除法硬湊成整數
+        code = code.replace(
+            "if type(ans_init).__name__ == \"Fraction\" and ans_init.denominator != 1:",
+            "if False and type(ans_init).__name__ == \"Fraction\" and ans_init.denominator != 1:"
+        )
+        code = code.replace(
+            "if isinstance(ans_init, Fraction) and ans_init.denominator != 1:",
+            "if False and isinstance(ans_init, Fraction) and ans_init.denominator != 1:"
+        )
+        code = code.replace(
+            "if ans_init.denominator != 1:",
+            "if False and ans_init.denominator != 1:"
+        )
+
+        # 分數技能數值降階（僅此技能）
+        # 分母：避免 1 與過大分母
+        code = code.replace("IntegerOps.random_nonzero(1, 99)", "IntegerOps.random_nonzero(-10, 10)")
+        code = code.replace("IntegerOps.random_nonzero(1, 100)", "IntegerOps.random_nonzero(-10, 10)")
+        code = code.replace("random.randint(1, 99)", "random.randint(-10, 10)")
+        code = code.replace("random.randint(1, 100)", "random.randint(-10, 10)")
+
+        # 分子：降到七年級友善區間
+        code = code.replace("IntegerOps.random_nonzero(-99, 99)", "IntegerOps.random_nonzero(-50, 50)")
+        code = code.replace("random.randint(-99, 99)", "random.randint(-50, 50)")
+
+        # 常見寬鬆結果上限，收斂到目前規範
+        code = code.replace("abs(ans.numerator) > 60 or ans.denominator > 24", "abs(ans.numerator) > 120 or ans.denominator > 30")
+        code = code.replace("abs(ans.numerator) > 80 or ans.denominator > 30", "abs(ans.numerator) > 120 or ans.denominator > 30")
+
+        # 常見分母保護（避免出現 ±1 讓題面退化為整數）
+        code = code.replace("while den == 0:", "while den == 0 or abs(den) == 1:")
+
+        return code
 
 
-def _profile_diff_summary(expected_fp, generated_expr):
-    got_fp = _build_structural_profile(generated_expr or "")
-    diffs = []
-
-    if got_fp.get("operator_sequence") != expected_fp.get("operator_sequence"):
-        diffs.append(f"operator_sequence: expected={expected_fp.get('operator_sequence')} got={got_fp.get('operator_sequence')}")
-    if got_fp.get("number_count") != expected_fp.get("number_count"):
-        diffs.append(f"number_count: expected={expected_fp.get('number_count')} got={got_fp.get('number_count')}")
-    if got_fp.get("counts") != expected_fp.get("counts"):
-        diffs.append(f"op_counts: expected={expected_fp.get('counts')} got={got_fp.get('counts')}")
-    if got_fp.get("bracket_count") != expected_fp.get("bracket_count"):
-        diffs.append(f"bracket_count: expected={expected_fp.get('bracket_count')} got={got_fp.get('bracket_count')}")
-    if got_fp.get("abs_count") != expected_fp.get("abs_count"):
-        diffs.append(f"abs_count: expected={expected_fp.get('abs_count')} got={got_fp.get('abs_count')}")
-    if got_fp.get("bracket_stats") != expected_fp.get("bracket_stats"):
-        diffs.append("bracket_stats mismatch")
-    if got_fp.get("abs_stats") != expected_fp.get("abs_stats"):
-        diffs.append("abs_stats mismatch")
-
-    return diffs
+def _patch_fraction_eval_calls_heuristic(code_text):
+    """
+    run_generated_code 防護：若程式碼中明顯是 Fraction 計算，
+    但仍使用 IntegerOps.safe_eval，則轉為 safe_eval。
+    """
+    code = code_text or ""
+    if "IntegerOps.safe_eval(" in code and ("Fraction(" in code or "from fractions import Fraction" in code):
+        code = code.replace("IntegerOps.safe_eval(", "safe_eval(")
+    return code
 
 
-def _build_isomorphic_fallback_code(ocr_text):
-    norm = _normalize_math_text(ocr_text)
+def _build_isomorphic_fallback_code(ocr_text, skill_id=None):
+    expr_text = _extract_math_expr_from_question(ocr_text) or ocr_text
+    expr_marked = str(expr_text)
+    expr_marked = expr_marked.replace("\\div", "§DIV§").replace("÷", "§DIV§")
+    expr_marked = expr_marked.replace("\\times", "§TIMES§").replace("×", "§TIMES§")
+
+    norm = _normalize_math_text(expr_marked)
     compact = "".join(norm.split())
 
     spans = _scan_number_spans(compact)
@@ -542,7 +239,8 @@ def _build_isomorphic_fallback_code(ocr_text):
         else:
             math_parts.append("{fmt(" + var_name + ")}")
 
-        var_specs.append((var_name, source_negative))
+        source_is_decimal = ('.' in token)
+        var_specs.append((var_name, source_negative, source_is_decimal))
 
         cursor = end
         idx += 1
@@ -554,25 +252,53 @@ def _build_isomorphic_fallback_code(ocr_text):
 
     eval_template = "".join(eval_parts)
     math_template = "".join(math_parts)
-    math_template = math_template.replace("\\", "\\\\").replace("*", "\\\\times").replace("/", "\\\\div")
+
+    eval_template = eval_template.replace("§DIV§", "/").replace("§TIMES§", "*")
+
+    math_template = math_template.replace("§DIV§", "\\\\div").replace("§TIMES§", "\\\\times")
+    policy = get_skill_policy(skill_id)
+    is_fraction_skill = bool(policy.get("fallback_fraction_style", False))
+    math_template = math_template.replace("\\", "\\\\").replace("*", "\\\\times")
+    if not is_fraction_skill:
+        math_template = math_template.replace("/", "\\\\div")
     eval_template = _to_eval_expression_template(eval_template)
     eval_template = eval_template.replace("\\", "\\\\")
 
     assign_lines = ["        vars_dict = {}"]
-    for i, (var_name, source_negative) in enumerate(var_specs):
-        if i == 0:
-            vmin, vmax = 1, 200
-        elif i == 1:
-            vmin, vmax = 1, 10
-        elif i == 2:
-            vmin, vmax = 1, 20
+    source_has_decimal = _has_decimal_number(ocr_text)
+
+    for i, (var_name, source_negative, source_is_decimal) in enumerate(var_specs):
+        prev_char = compact[spans[i][0] - 1] if spans[i][0] > 0 else ''
+        is_denominator_position = (prev_char == '/')
+
+        if is_fraction_skill:
+            if is_denominator_position:
+                assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-10, 10)")
+                assign_lines.append(f"        while abs(vars_dict['{var_name}']) <= 1:")
+                assign_lines.append(f"            vars_dict['{var_name}'] = IntegerOps.random_nonzero(-10, 10)")
+            else:
+                # 若來源題型含小數，對應小數位置維持小數型態
+                if source_has_decimal and source_is_decimal:
+                    assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-50, 50) / 10.0")
+                    assign_lines.append(f"        while abs(vars_dict['{var_name}'] - int(vars_dict['{var_name}'])) < 1e-9:")
+                    assign_lines.append(f"            vars_dict['{var_name}'] = IntegerOps.random_nonzero(-50, 50) / 10.0")
+                else:
+                    # 分子符號不跟原題綁死：改為對稱隨機，避免固定「第一個負、第二個正」的死板模式
+                    assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-50, 50)")
         else:
-            vmin, vmax = 1, 15
-            
-        if source_negative:
-            assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-{vmax}, -{vmin})")
-        else:
-            assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero({vmin}, {vmax})")
+            if i == 0:
+                vmin, vmax = 1, 200
+            elif i == 1:
+                vmin, vmax = 1, 10
+            elif i == 2:
+                vmin, vmax = 1, 20
+            else:
+                vmin, vmax = 1, 15
+
+            if source_negative:
+                assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero(-{vmax}, -{vmin})")
+            else:
+                assign_lines.append(f"        vars_dict['{var_name}'] = IntegerOps.random_nonzero({vmin}, {vmax})")
 
     assign_block = "\n".join(assign_lines)
 
@@ -597,7 +323,10 @@ def generate(level=1, **kwargs):
             for k, v in vars_dict.items():
                 key1 = chr(123) + k + chr(125)
                 key2 = chr(123) + "fmt(" + k + ")" + chr(125)
-                frac_str = "Fraction(" + str(v) + ", 1)"
+                if isinstance(v, float):
+                    frac_str = "Fraction('" + format(v, '.1f') + "')"
+                else:
+                    frac_str = "Fraction(" + str(v) + ", 1)"
                 eval_str_init = eval_str_init.replace(key1, frac_str)
                 eval_str_init = eval_str_init.replace(key2, frac_str)
                 
@@ -626,12 +355,19 @@ def generate(level=1, **kwargs):
                 key2 = chr(123) + "fmt(" + k + ")" + chr(125)
                 
                 # 最終答案計算也用 Fraction 以確保絕對精確
-                frac_str = "Fraction(" + str(v) + ", 1)"
+                if isinstance(v, float):
+                    frac_str = "Fraction('" + format(v, '.1f') + "')"
+                else:
+                    frac_str = "Fraction(" + str(v) + ", 1)"
                 eval_str = eval_str.replace(key1, frac_str)
                 eval_str = eval_str.replace(key2, frac_str)
-                
-                math_str = math_str.replace(key1, str(v))
-                math_str = math_str.replace(key2, IntegerOps.fmt_num(v))
+
+                if isinstance(v, float):
+                    disp_v = format(v, '.1f')
+                else:
+                    disp_v = str(v)
+                math_str = math_str.replace(key1, disp_v)
+                math_str = math_str.replace(key2, disp_v if isinstance(v, float) else IntegerOps.fmt_num(v))
                 
             ans = safe_eval(eval_str)
             
@@ -639,13 +375,18 @@ def generate(level=1, **kwargs):
             last_math_str = math_str
             
             if type(ans).__name__ == "Fraction":
+                if abs(ans.numerator) > 120 or ans.denominator > 30:
+                    continue
                 if ans.denominator == 1:
-                    return {{
-                        'question_text': "計算 $" + math_str + "$ 的值。",
-                        'correct_answer': str(ans.numerator),
-                        'mode': 1,
-                        '_o1_healed': _o1_healed
-                    }}
+                    final_ans = str(ans.numerator)
+                else:
+                    final_ans = f"{{ans.numerator}}/{{ans.denominator}}"
+                return {{
+                    'question_text': "計算 $" + math_str + "$ 的值。",
+                    'correct_answer': final_ans,
+                    'mode': 1,
+                    '_o1_healed': _o1_healed
+                }}
             elif abs(ans - round(ans)) < 1e-6:
                 return {{
                     'question_text': "計算 $" + math_str + "$ 的值。",
@@ -655,8 +396,6 @@ def generate(level=1, **kwargs):
                 }}
             
         except Exception:
-            import traceback
-            traceback.print_exc()
             continue
             
     # 如果極端情況 25 次都找不到，退避到最後一次結果
@@ -688,6 +427,14 @@ def check(user_answer, correct_answer):
         pass
     return {{'correct': False, 'result': '錯誤'}}
 '''
+
+    # 分數技能：禁用 fallback 內建的 O(1) 整除強制邏輯，避免題目退化為整數四則
+    if is_fraction_skill:
+        code = code.replace(
+            "if type(ans_init).__name__ == \"Fraction\" and ans_init.denominator != 1:",
+            "if False and type(ans_init).__name__ == \"Fraction\" and ans_init.denominator != 1:"
+        )
+
     return code
 
 
@@ -728,6 +475,30 @@ def apply_strict_mirroring(scaffold, ocr_text):
         )
     
     return final_output
+
+
+def _looks_like_fraction_expression(text: str) -> bool:
+    content = str(text or "")
+    return (
+        "\\frac" in content
+        or bool(re.search(r"\b\d+\s*/\s*\d+\b", content))
+        or bool(re.search(r"\b\d+\s+\d+\s*/\s*\d+\b", content))
+    )
+
+
+def _looks_like_radical_expression(text: str) -> bool:
+    content = str(text or "")
+    lowered = content.lower()
+    return ("\\sqrt" in content) or ("√" in content) or ("radical" in lowered) or ("根號" in content)
+
+
+def _apply_skill_safety_guard(skill_name: str, ocr_text: str, available_skills):
+    if skill_name == "jh_數學2上_FourOperationsOfRadicals":
+        if _looks_like_fraction_expression(ocr_text) and not _looks_like_radical_expression(ocr_text):
+            corrected = normalize_skill_id("Fractions", available_skills)
+            if corrected != "Unknown":
+                return corrected, "fraction_without_radical_symbol"
+    return skill_name, None
 
 
 @live_show_bp.route('/live_show')
@@ -795,6 +566,8 @@ def generate_live():
             
             # 3. DNA 物理裁剪 (apply_strict_mirroring)
             ocr_text = json_spec.get("ocr_text", input_text or "")
+            fraction_display_mode = _infer_fraction_display_mode(ocr_text, skill_id)
+            decimal_style_mode = _has_decimal_number(ocr_text)
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
             iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
             template_id, template_text = _select_liveshow_structure_template(fp)
@@ -868,210 +641,97 @@ Template: {template_id}
                 final_code = re.sub(r'\n(\s*)```\s*$', '', final_code, flags=re.MULTILINE)
                 
             # 7. Execute Code to get output dict identical to `scaler.py` format
-            cpu_start = time.time()
             expected_fp = _build_structural_profile(ocr_text)
-            generated_fp = {}
-            iso_isomorphic = False
-            ab2_exec_code = _optimize_live_execution_code(final_code)
-            
-            # --- [NEW] Ab2 Interception (Scaffold Prompt, No Healer) ---
-            ab2_result = {}
-            ab2_save_dir = "generated_scripts"
-            if not os.path.exists(ab2_save_dir):
-                os.makedirs(ab2_save_dir, exist_ok=True)
-            ab2_filename = f"live_show_{int(time.time())}_{uuid.uuid4().hex[:6]}_ab2.py"
-            ab2_file_path = os.path.join(ab2_save_dir, ab2_filename)
-            with open(ab2_file_path, "w", encoding="utf-8") as _fb:
-                _fb.write(final_code)
-                
-            ab2_cpu_start = time.time()
-            try:
-                ab2_exe_res = scaler._execute_code(ab2_exec_code, level=1)
-                ab2_exec_elapsed = time.time() - ab2_cpu_start
-                if "question_text" in ab2_exe_res:
-                    sanitized_q, sanitize_report = _sanitize_question_text_display(
-                        ab2_exe_res.get("question_text", ""),
-                        return_report=True
-                    )
-                    ab2_exe_res["question_text"] = sanitized_q
-                    ab2_exe_res["_display_sanitize_report"] = sanitize_report
-                if "question_text" in ab2_exe_res:
-                    old_ans = ab2_exe_res.get("correct_answer", "")
-                    fixed_ans = _recompute_correct_answer_from_question(ab2_exe_res.get("question_text", ""))
-                    if fixed_ans is not None:
-                        ab2_exe_res["correct_answer"] = fixed_ans
-                        ab2_exe_res["_answer_recomputed"] = True
-                        if str(old_ans) != str(fixed_ans):
-                            ab2_exe_res["_answer_recomputed_from"] = str(old_ans)
-                            ab2_exe_res["_answer_recomputed_to"] = str(fixed_ans)
-                try:
-                    from scripts.evaluate_mcri import evaluate_math_hygiene
-                    if "question_text" in ab2_exe_res:
-                        h_score, _ = evaluate_math_hygiene(ab2_exe_res["question_text"])
-                        ab2_exe_res["_mcri_hygiene_score"] = h_score
-                except:
-                    pass
-                if ab2_exe_res.get("_o1_healed"):
-                    ab2_exe_res.setdefault("healer_trace", {"regex_fixes": 0, "ast_fixes": 0})
-                    ab2_exe_res["healer_trace"]["ast_fixes"] += 1
-                    ab2_exe_res.setdefault("healer_logs", [])
-                    ab2_exe_res["healer_logs"].append("[O(1)_HEALER] Intelligently scaled variables to force perfect division (Native).")
-                ab2_result = ab2_exe_res
-            except Exception as e:
-                ab2_exec_elapsed = time.time() - ab2_cpu_start
-                ab2_result = {"error": f"執行錯誤: {e}"}
-            
-            ab2_result["file_path"] = ab2_file_path
-            ab2_result["ai_inference_time_sec"] = ai_inference_time_sec
-            ab2_result["cpu_execution_time_sec"] = ab2_exec_elapsed
-            
-            # [NEW] Prepend api_stubs to BOTH final executed code AND the raw code shown on UI
-            final_code_with_stubs = api_stubs + "\n\n" + final_code
-            ab2_result["raw_code"] = final_code_with_stubs
-            ab2_result["final_code"] = final_code_with_stubs # no healer applied
-            
-            # --- Resume Ab3 (Full Healer) ---
-            # Ab3 CPU time = Healer + Execution (must always be ≥ Ab2)
-            cpu_start_ab3 = time.time()
-            problems_result = []
-            ab3_exec_elapsed = 0.0
-            
-            # [FIX] 真正執行 Healer，讓 Ab3 擁有自癒能力
+            # --- Ab2 Interception (Scaffold Prompt, No Healer) ---
+            ab2_pack = run_ab2_interception(
+                scaler=scaler,
+                final_code=final_code,
+                api_stubs=api_stubs,
+                skill_id=skill_id,
+                expected_fp=expected_fp,
+                decimal_style_mode=decimal_style_mode,
+                ocr_text=ocr_text,
+                fraction_display_mode=fraction_display_mode,
+                ai_inference_time_sec=ai_inference_time_sec,
+                live_file_display_mode=_LIVE_FILE_DISPLAY_MODE,
+                optimize_live_execution_code_fn=_optimize_live_execution_code,
+                patch_fraction_skill_eval_calls_fn=_patch_fraction_skill_eval_calls,
+                evaluate_iso_style_guard_fn=_evaluate_iso_style_guard_impl,
+                build_isomorphic_fallback_code_fn=_build_isomorphic_fallback_code,
+                extract_math_expr_from_question_fn=_extract_math_expr_from_question,
+                has_decimal_number_fn=_has_decimal_number,
+                is_expression_isomorphic_fn=_is_expression_isomorphic,
+                sanitize_result_question_fn=_sanitize_result_question_impl,
+                format_result_question_display_fn=_format_result_question_display_impl,
+                recompute_result_answer_fn=_recompute_result_answer_impl,
+                recompute_correct_answer_from_question_fn=_recompute_correct_answer_from_question,
+                maybe_add_o1_fix_fn=_maybe_add_o1_fix_impl,
+            )
+            ab2_result = ab2_pack["ab2_result"]
             from core.code_generator import _advanced_healer
-            healed_code = final_code
-            regex_fixes = 0
-            ast_fixes = 0
-            try:
-                healed_code, *healer_stats = _advanced_healer(final_code, ablation_id=3, skill_id=skill_id)
-                # 提取修復次數
-                regex_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
-                ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
-                ast_stats = healer_stats[2] if len(healer_stats) > 2 else None
-                detail_logs = getattr(ast_stats, "logs", []) if ast_stats else []
-                print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes} ===")
-            except Exception as e:
-                import traceback
-                print(f"=== [VL Pipeline Healer] CRASHED ===")
-                traceback.print_exc()
-                healed_code = final_code
+            ab3_pack = run_ab3_full_healer(
+                scaler=scaler,
+                final_code=final_code,
+                skill_id=skill_id,
+                expected_fp=expected_fp,
+                decimal_style_mode=decimal_style_mode,
+                ocr_text=ocr_text,
+                fraction_display_mode=fraction_display_mode,
+                live_file_display_mode=_LIVE_FILE_DISPLAY_MODE,
+                optimize_live_execution_code_fn=_optimize_live_execution_code,
+                patch_fraction_skill_eval_calls_fn=_patch_fraction_skill_eval_calls,
+                advanced_healer_fn=_advanced_healer,
+                sanitize_result_question_fn=_sanitize_result_question_impl,
+                evaluate_iso_style_guard_fn=_evaluate_iso_style_guard_impl,
+                append_iso_style_guard_logs_fn=_append_iso_style_guard_logs_impl,
+                append_fallback_switch_log_fn=_append_fallback_switch_log_impl,
+                profile_diff_summary_fn=_profile_diff_summary,
+                build_isomorphic_fallback_code_fn=_build_isomorphic_fallback_code,
+                extract_math_expr_from_question_fn=_extract_math_expr_from_question,
+                has_decimal_number_fn=_has_decimal_number,
+                is_expression_isomorphic_fn=_is_expression_isomorphic,
+                build_structural_profile_fn=_build_structural_profile,
+                recompute_result_answer_fn=_recompute_result_answer_impl,
+                recompute_correct_answer_from_question_fn=_recompute_correct_answer_from_question,
+                format_result_question_display_fn=_format_result_question_display_impl,
+                maybe_add_o1_fix_fn=_maybe_add_o1_fix_impl,
+            )
+
+            problems_result = ab3_pack["problems_result"]
+            cpu_execution_time_sec = ab3_pack["cpu_execution_time_sec"]
+            healed_code = ab3_pack["healed_code"]
+            file_path = ab3_pack["file_path"]
+            regex_fixes = ab3_pack["regex_fixes"]
+            regex_code_fixes = ab3_pack["regex_code_fixes"]
+            regex_display_fixes = ab3_pack["regex_display_fixes"]
+            ast_fixes = ab3_pack["ast_fixes"]
+            o1_fixes = ab3_pack["o1_fixes"]
+            detail_logs = ab3_pack["detail_logs"]
+            generated_fp = ab3_pack["generated_fp"]
+            iso_isomorphic = ab3_pack["iso_isomorphic"]
             
-            try:
-                healed_exec_code = _optimize_live_execution_code(healed_code)
-                exe_res = scaler._execute_code(healed_exec_code, level=1)
-                if "question_text" in exe_res:
-                    sanitized_q, sanitize_report = _sanitize_question_text_display(
-                        exe_res.get("question_text", ""),
-                        return_report=True
-                    )
-                    exe_res["question_text"] = sanitized_q
-                    if sanitize_report.get("double_paren_fixes", 0) > 0:
-                        detail_logs = detail_logs if 'detail_logs' in locals() else []
-                        detail_logs.append(f"[DISPLAY_SANITIZE] collapsed {sanitize_report['double_paren_fixes']} nested numeric parenthesis pattern(s).")
-                    if sanitize_report.get("negative_wrap_fixes", 0) > 0:
-                        detail_logs = detail_logs if 'detail_logs' in locals() else []
-                        detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {sanitize_report['negative_wrap_fixes']} bare negative literal(s) with parentheses.")
-
-                generated_expr = _extract_math_expr_from_question(exe_res.get("question_text", ""))
-                if not _is_expression_isomorphic(expected_fp, generated_expr):
-                    detail_logs = detail_logs if 'detail_logs' in locals() else []
-                    detail_logs.append("[ISO_GUARD] primary output profile mismatch.")
-                    for d in _profile_diff_summary(expected_fp, generated_expr):
-                        detail_logs.append(f"[ISO_GUARD] {d}")
-
-                    fallback_code = _build_isomorphic_fallback_code(ocr_text)
-                    if fallback_code:
-                        healed_code = fallback_code
-                        healed_exec_code = _optimize_live_execution_code(healed_code)
-                        exe_res = scaler._execute_code(healed_exec_code, level=1)
-                        if "question_text" in exe_res:
-                            sanitized_q2, sanitize_report2 = _sanitize_question_text_display(
-                                exe_res.get("question_text", ""),
-                                return_report=True
-                            )
-                            exe_res["question_text"] = sanitized_q2
-                            if sanitize_report2.get("double_paren_fixes", 0) > 0:
-                                detail_logs.append(f"[DISPLAY_SANITIZE] collapsed {sanitize_report2['double_paren_fixes']} nested numeric parenthesis pattern(s) after fallback.")
-                            if sanitize_report2.get("negative_wrap_fixes", 0) > 0:
-                                detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {sanitize_report2['negative_wrap_fixes']} bare negative literal(s) after fallback.")
-                        detail_logs.append("[ISO_GUARD] LLM output drift detected; switched to deterministic isomorphic fallback.")
-                        generated_expr_2 = _extract_math_expr_from_question(exe_res.get("question_text", ""))
-                        if not _is_expression_isomorphic(expected_fp, generated_expr_2):
-                            for d in _profile_diff_summary(expected_fp, generated_expr_2):
-                                detail_logs.append(f"[ISO_GUARD][FALLBACK_FAIL] {d}")
-                            raise ValueError("ISO_GUARD fallback failed: generated structure still not isomorphic")
-
-                generated_expr_final = _extract_math_expr_from_question(exe_res.get("question_text", ""))
-                generated_fp = _build_structural_profile(generated_expr_final)
-                iso_isomorphic = _is_expression_isomorphic(expected_fp, generated_expr_final)
-                old_ans = exe_res.get("correct_answer", "")
-                fixed_ans = _recompute_correct_answer_from_question(exe_res.get("question_text", ""))
-                if fixed_ans is not None:
-                    exe_res["correct_answer"] = fixed_ans
-                    detail_logs = detail_logs if 'detail_logs' in locals() else []
-                    detail_logs.append("[ANS_GUARD] correct_answer recomputed from displayed expression.")
-                    if str(old_ans) != str(fixed_ans):
-                        detail_logs.append(f"[ANS_GUARD] correct_answer changed: {old_ans} -> {fixed_ans}")
-                        
-                if exe_res.get("_o1_healed"):
-                    ast_fixes += 1
-                    detail_logs = detail_logs if 'detail_logs' in locals() else []
-                    detail_logs.append("[O(1)_HEALER] Intelligently scaled variables to force perfect division.")
-                    
-                ab3_exec_elapsed = time.time() - cpu_start_ab3
-
-                # 使用 V6.7 evaluate_live_code 計分
-                try:
-                    from scripts.evaluate_mcri import evaluate_live_code
-                    if "question_text" in exe_res:
-                        _live_mcri = evaluate_live_code(
-                            code=healed_exec_code,
-                            exec_result=exe_res,
-                            healer_trace={"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
-                            ablation_mode=False
-                        )
-                        exe_res["_live_mcri"] = _live_mcri
-                        exe_res["_mcri_hygiene_score"] = _live_mcri["breakdown"].get("l4_3_hygiene", 15.0)
-                except:
-                    pass
-                problems_result.append(exe_res)
-            except Exception as e:
-                ab3_exec_elapsed = time.time() - cpu_start_ab3
-                problems_result.append({"error": f"執行錯誤: {e}"})
-                
-            cpu_execution_time_sec = ab3_exec_elapsed
-            
-            # 8. 儲存原始碼以供「下一題」功能調用 (儲存 Healed 版本)
-            save_dir = "generated_scripts"
-            if not os.path.exists(save_dir):
-                os.makedirs(save_dir, exist_ok=True)
-            unique_filename = f"live_show_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
-            file_path = os.path.join(save_dir, unique_filename)
-            with open(file_path, "w", encoding="utf-8") as _fb:
-                _fb.write(healed_code)
-            
-            output = {
-                "problems": problems_result,
-                "debug_meta": {
-                    "performance": {
-                        "ai_inference_time_sec": ai_inference_time_sec,
-                        "cpu_execution_time_sec": cpu_execution_time_sec
-                    },
-                    "raw_code": raw_out,
-                    "final_code": api_stubs + "\n\n" + healed_code,
-                    "file_path": file_path,
-                    "bare_prompt": "",
-                    "scaffold_prompt": system_prompt,
-                    "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
-                    "architect_model": "Qwen3-VL",
-                    "healer_trace": {"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
-                    "healer_logs": detail_logs if 'detail_logs' in locals() else [],
-                    "iso_profile_expected": expected_fp,
-                    "iso_profile_generated": generated_fp,
-                    "iso_isomorphic": iso_isomorphic,
-                    "mcri_report": {"robustness_grade": "MODERATE", "robustness_reason": "Visual Generation with Full Healer"}
-                },
-                "ab2_result": ab2_result
-            }
+            output = assemble_visual_output(
+                problems_result=problems_result,
+                ai_inference_time_sec=ai_inference_time_sec,
+                cpu_execution_time_sec=cpu_execution_time_sec,
+                raw_out=raw_out,
+                api_stubs=api_stubs,
+                healed_code=healed_code,
+                file_path=file_path,
+                system_prompt=system_prompt,
+                json_spec=json_spec,
+                regex_fixes=regex_fixes,
+                regex_code_fixes=regex_code_fixes,
+                regex_display_fixes=regex_display_fixes,
+                ast_fixes=ast_fixes,
+                o1_fixes=o1_fixes,
+                detail_logs=detail_logs,
+                expected_fp=expected_fp,
+                generated_fp=generated_fp,
+                iso_isomorphic=iso_isomorphic,
+                fraction_display_mode=fraction_display_mode,
+                ab2_result=ab2_result,
+            )
         else:
             engine = get_engine()
             enriched_input = input_text
@@ -1117,12 +777,17 @@ Template: {template_id}
         
         # Merge basic trace counts with detailed logs
         base_logs = [
+            "HEALER_FIX_LOGS",
             f"regex_fixes: {healer_trace.get('regex_fixes', 0)}",
+            f"regex_code_fixes: {healer_trace.get('regex_code_fixes', 0)}",
+            f"regex_display_fixes: {healer_trace.get('regex_display_fixes', 0)}",
             f"ast_fixes: {healer_trace.get('ast_fixes', 0)}",
+            f"o1_fixes: {healer_trace.get('o1_fixes', 0)}",
             f"robustness: {mcri_report.get('robustness_grade', 'N/A')}",
         ]
         detail_logs = dm.get("healer_logs", [])
-        output["healer_logs"] = base_logs + detail_logs
+        readable_logs = _build_readable_healer_logs(healer_trace, detail_logs)
+        output["healer_logs"] = base_logs + readable_logs + detail_logs
 
         # ── Map problems[0] fields for the frontend ───────────────────────
         problems = output.get("problems", [])
@@ -1468,7 +1133,6 @@ def classify_input():
                 
                 import re
                 import json
-                import difflib
 
                 # 1. 更強力的 JSON 提取 (包含 <think> 標籤也能用貪婪搜索強行拉出)
                 # 解決 LaTeX 大括號干擾：嘗試抓出整個 JSON 字串
@@ -1507,42 +1171,12 @@ def classify_input():
                             f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, ops={op_fp.get('operator_count', 0)}, []={op_fp.get('bracket_count', 0)}, ||={op_fp.get('abs_count', 0)}"
                         )
 
-                        # 1. 字典硬覆寫 (Hard Mapping)
-                        HARD_MAPPING = {
-                            "Arithmetic": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-                            "IntegerArithmetic": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-                            "FourArithmeticOperationsOfIntegers": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-                            "jh_數學1上_四則運算": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-                            "Algebra": "jh_數學2上_FourArithmeticOperationsOfPolynomial",
-                            "Polynomial": "jh_數學2上_FourArithmeticOperationsOfPolynomial",
-                            "jh_數學2上_多項式的四則運算": "jh_數學2上_FourArithmeticOperationsOfPolynomial",
-                            "Radicals": "jh_數學2上_FourOperationsOfRadicals",
-                            "jh_數學2上_根號運算": "jh_數學2上_FourOperationsOfRadicals",
-                        }
-                        
                         raw_skill_id = raw_skill_id.strip()
-                        if raw_skill_id in HARD_MAPPING:
-                            print(f">>> ⚠️ 觸發 Hard Mapping 修正: {raw_skill_id} -> {HARD_MAPPING[raw_skill_id]}")
-                            raw_skill_id = HARD_MAPPING[raw_skill_id]
-
-                        # 2. Substring & Fuzzy Matching 模糊比對邏輯
-                        if raw_skill_id in available_skills:
-                            skill_name = raw_skill_id
-                        else:
-                            # 2a. 先嘗試 Case-Insensitive 的「包含」檢查 (Substring Match)
-                            substring_match = next((avail for avail in available_skills if raw_skill_id.lower() in avail.lower()), None)
-                            if substring_match:
-                                skill_name = substring_match
-                                print(f">>> ⚠️ 觸發 Substring 修正 Skill ID: {raw_skill_id} -> {skill_name}")
-                            else:
-                                # 2b. 再退化為 difflib 相似度檢查
-                                matches = difflib.get_close_matches(raw_skill_id, available_skills, n=1, cutoff=0.3)
-                                if matches:
-                                    skill_name = matches[0]
-                                    print(f">>> ⚠️ 觸發 Fuzzy 修正 Skill ID: {raw_skill_id} -> {skill_name}")
-                                else:
-                                    skill_name = "Unknown"
-                                    print(f">>> ❌ 找不到對應的 Skill ID: {raw_skill_id}")
+                        skill_name = normalize_skill_id(raw_skill_id, available_skills)
+                        if skill_name == "Unknown":
+                            print(f">>> ❌ 找不到對應的 Skill ID: {raw_skill_id}")
+                        elif skill_name != raw_skill_id:
+                            print(f">>> ⚠️ 觸發 Policy Normalization 修正 Skill ID: {raw_skill_id} -> {skill_name}")
                                     
                         
                         print(f"DEBUG: Available skills are {available_skills}")
@@ -1557,6 +1191,17 @@ def classify_input():
                                 confidence = 0
                                 skill_name = "Unknown"
                                 print(f">>> ❌ 嚴重錯誤: 已匹配 ID {skill_name} 但實體路徑不存在！")
+
+                        guarded_skill, guard_reason = _apply_skill_safety_guard(skill_name, ocr_text, available_skills)
+                        if guarded_skill != skill_name:
+                            process_logs.append(
+                                f"> 🛡️ Classification Safety Guard: [{skill_name}] -> [{guarded_skill}] ({guard_reason})"
+                            )
+                            print(
+                                f">>> 🛡️ Classification Safety Guard 修正: {skill_name} -> {guarded_skill} ({guard_reason})"
+                            )
+                            skill_name = guarded_skill
+                            confidence = min(int(confidence or 0), 95)
                                 
                         print(f">>> ✅ Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
                         
@@ -1704,20 +1349,59 @@ def run_generated_code():
     if not code:
         return jsonify({"success": False, "error": "No code or valid file_path provided."}), 400
     level = data.get("level", 1)
+    skill_id = data.get("skill_id")
+    fraction_display_mode = data.get("fraction_display_mode", "auto")
+    source_ocr_text = data.get("ocr_text", "")
+
+    if file_path:
+        try:
+            _meta = _LIVE_FILE_DISPLAY_MODE.get(os.path.abspath(file_path), {})
+            if (not skill_id) and _meta.get("skill_id"):
+                skill_id = _meta.get("skill_id")
+            if (fraction_display_mode == "auto") and _meta.get("mode"):
+                fraction_display_mode = _meta.get("mode")
+            if (not source_ocr_text) and _meta.get("ocr_text"):
+                source_ocr_text = _meta.get("ocr_text")
+        except Exception:
+            pass
+
     ablation_mode = data.get("ablation_mode", False)
     healer_trace = data.get("healer_trace") if isinstance(data.get("healer_trace"), dict) else {}
-    if not healer_trace:
-        fixes_from_payload = data.get("fixes", 0) or 0
-        healer_trace = {"regex_fixes": int(fixes_from_payload), "ast_fixes": 0}
+    fixes_from_payload = data.get("fixes", 0) or 0
+    healer_trace = _init_healer_trace_impl(healer_trace, fixes_from_payload=fixes_from_payload)
     
     start_time = time.time()
     try:
         engine = get_engine()
         
+        # 下一題執行防護：重用 live_show 的執行補丁，避免 file_path 舊碼造成第二題 Error
+        exec_code = _optimize_live_execution_code(code)
+        exec_code = _patch_fraction_skill_eval_calls(exec_code, skill_id)
+        exec_code = _patch_fraction_eval_calls_heuristic(exec_code)
+
         # 執行程式碼
-        res = engine.scaler._execute_code(code, level=level)
+        res = engine.scaler._execute_code(exec_code, level=level)
         if "question_text" in res:
-            res["question_text"] = _sanitize_question_text_display(res.get("question_text", ""))
+            sanitized_q, sanitize_report = _sanitize_question_text_display(
+                res.get("question_text", ""),
+                return_report=True
+            )
+            _apply_sanitize_report_to_trace_impl(healer_trace, [], sanitize_report, after_fallback=False)
+
+            final_q, display_report = _format_fraction_mixed_display(
+                sanitized_q,
+                skill_id,
+                display_mode=fraction_display_mode,
+                source_text=source_ocr_text,
+                return_report=True
+            )
+            _apply_display_report_to_trace_impl(healer_trace, [], display_report)
+            _recompute_regex_totals_impl(healer_trace)
+            res["question_text"] = final_q
+            fixed_ans = _recompute_correct_answer_from_question(res.get("question_text", ""))
+            if fixed_ans is not None:
+                res["correct_answer"] = fixed_ans
+            res["correct_answer"] = _force_fraction_answer_text(res.get("correct_answer", ""), skill_id)
         
         # ── V6.7 MCRI 真實評分（下一題路徑）──────────────────────
         live_mcri_result = None
@@ -1725,7 +1409,7 @@ def run_generated_code():
             try:
                 from scripts.evaluate_mcri import evaluate_live_code
                 live_mcri_result = evaluate_live_code(
-                    code=code,
+                    code=exec_code,
                     exec_result=res,
                     healer_trace=healer_trace,
                     ablation_mode=ablation_mode
@@ -1754,6 +1438,7 @@ def run_generated_code():
             "answer": res.get("correct_answer", ""),
             "api_time": time.time() - start_time,
             "fixes": (healer_trace.get("regex_fixes", 0) or 0) + (healer_trace.get("ast_fixes", 0) or 0),
+            "fraction_display_mode": _infer_fraction_display_mode(source_ocr_text or res.get("question_text", ""), skill_id),
             "mcri": mcri_payload
         }
         return jsonify(output)
