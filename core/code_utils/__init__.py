@@ -31,5 +31,5 @@ __all__ = [
     # LaTeX utils
     'clean_latex_output',
     # File utils
-    'get_base_root', 'path_in_root', 'ensure_dir'
+    'get_base_root', 'path_in_root', 'ensure_dir',
 ]
