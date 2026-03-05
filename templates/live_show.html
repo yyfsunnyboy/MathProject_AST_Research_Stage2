@@ -1523,8 +1523,8 @@
     <div id="transition-overlay">
         <div id="overlay-icon">☁️</div>
         <div id="overlay-text" class="overlay-color-cloud">
-            <span class="log-badge badge-gemini">GEMINI</span>
-            [CLOUD] Perceiving Mathematics...
+            <span class="log-badge badge-gemini">ARCHITECT</span>
+            [CLOUD] Perceiving Mathematics via Qwen3-VL...
         </div>
         <div id="overlay-pipeline">
             <span class="overlay-step active-step" id="pipe-cloud">CLOUD PERCEPTION</span>
@@ -1620,7 +1620,6 @@
                     <select id="model-select-ab1" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
                         <option value="pause" selected>暫停測試</option>
-                        <option value="gemini-3-flash">Gemini-3-Flash</option>
                         <option value="qwen3-8b">Qwen3-8B</option>
                         <option value="qwen3-14b">Qwen3-14B</option>
                     </select>
@@ -1746,7 +1745,6 @@
                     <div id="badge-ab3" class="badge badge-standby">STANDBY</div>
                     <select id="model-select-ab3" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
-                        <option value="gemini-3-flash">Gemini-3-Flash</option>
                         <option value="qwen3-8b" selected>Qwen3-8B</option>
                         <option value="qwen3-14b">Qwen3-14B</option>
                     </select>
@@ -2141,7 +2139,7 @@
                 setBadge('badge-' + target, 'badge-failed', '⛔ FAILED');
                 panel.classList.add('state-failed');
 
-                const badgeStr = (target === 'ab1') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+                const badgeStr = '<span class="log-badge badge-qwen">QWEN</span>';
                 const logElement = document.getElementById('log-' + target);
                 if (logElement) {
                     logElement.innerHTML = badgeStr + ' <span style="color:#e74c3c">> [ERROR] Generation failed. Raw LLM output rejected.</span>';
@@ -2227,9 +2225,9 @@
 
             // [NEW] Capture JSON Source Origin and Output
             if (isAb3) {
-                if (res.gemini_raw_spec) {
-                    currentGeminiJson = res.gemini_raw_spec;
-                } else if (res.raw_code && !res.gemini_raw_spec) {
+                if (res.architect_raw_spec || res.gemini_raw_spec) {
+                    currentGeminiJson = res.architect_raw_spec || res.gemini_raw_spec;
+                } else if (res.raw_code && !res.architect_raw_spec && !res.gemini_raw_spec) {
                     currentGeminiJson = ""; // fallback
                 }
 
@@ -2275,13 +2273,13 @@
                 panel.classList.add('state-failed'); // Or a distinct paused style if you have one
                 const logAb1 = document.getElementById('log-ab1');
                 if (logAb1) logAb1.innerHTML =
-                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#f39c12">>> TEST PAUSED. Token Generation Skipped.</span>';
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> TEST PAUSED. Token Generation Skipped.</span>';
             } else {
                 setBadge('badge-ab1', 'badge-success', '✅ GENERATED');
                 panel.classList.add('state-success');
                 const logAb1 = document.getElementById('log-ab1');
                 if (logAb1) logAb1.innerHTML =
-                    '<span class="log-badge badge-gemini">GEMINI</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
+                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
             }
 
             // Update last final code for the Next Question button
@@ -2357,7 +2355,7 @@
                     cmpLog.innerHTML = `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SCAFFOLD
                 ONLY] No Healer. MCRI: ${mcriScore}</span>`;
                 } else {
-                    cmpLog.innerHTML = `<span class="log-badge badge-gemini">QWEN</span> <span style="color:#ef4444">>>
+                    cmpLog.innerHTML = `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#ef4444">>>
                 [NATIVE-BARE] No Scaffold. MCRI: ${mcriScore}</span>`;
                 }
             }
@@ -2452,7 +2450,7 @@
 
         /* ═══════════════════════════════════════════
         TRANSITION DIAGNOSTIC ANIMATION
-        Phase 1: CLOUD PERCEPTION (Gemini)
+        Phase 1: CLOUD PERCEPTION (Architect/Qwen3-VL)
         Phase 2: SCAFFOLD INJECTION (Amber)
         Phase 3: LOCAL ENGINE (Qwen)
         Phase 4: SYSTEM READY
@@ -2482,7 +2480,7 @@
             overlay.classList.add('active');
             document.getElementById('overlay-icon').textContent = '☁️';
             overlayText.className = 'overlay-color-cloud';
-            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [CLOUD] Perceiving Mathematics via Gemini Flash...';;
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">ARCHITECT</span> [CLOUD] Perceiving Mathematics via Qwen3-VL...';;
             activate(pipeCloud);
             await new Promise(r => setTimeout(r, 1100));
 
@@ -2490,7 +2488,7 @@
             document.getElementById('overlay-icon').textContent = '📋';
             overlayText.className = '';
             overlayText.style.color = '#f59e0b';
-            overlayText.innerHTML = '<span class="log-badge badge-gemini">GEMINI</span> [SCAFFOLD] Injecting @SKILL.md Prompt Architecture...';;
+            overlayText.innerHTML = '<span class="log-badge badge-gemini">ARCHITECT</span> [SCAFFOLD] Injecting @SKILL.md Prompt Architecture...';;
             activate(pipeScaffold);
             await new Promise(r => setTimeout(r, 1000));
 
@@ -2508,10 +2506,10 @@
             // Phase 4 — Boot logs
             const m1_val = document.getElementById('model-select-ab1').value;
             const m3_val = document.getElementById('model-select-ab3').value;
-            const badge1 = m1_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
-            const badge3 = m3_val.includes('gemini') ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
-            const name1 = m1_val.includes('gemini') ? 'Gemini-3-Flash' : (m1_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
-            const name3 = m3_val.includes('gemini') ? 'Gemini-3-Flash' : (m3_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B');
+            const badge1 = '<span class="log-badge badge-qwen">QWEN</span>';
+            const badge3 = '<span class="log-badge badge-qwen">QWEN</span>';
+            const name1 = m1_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B';
+            const name3 = m3_val === 'qwen3-14b' ? 'Qwen-14B' : 'Qwen-8B';
 
             log1.innerHTML = `${badge1} <span style="color:#3498db">> [NATIVE] Initializing ${name1} (Zero-shot)...</span>`;
             log3.innerHTML = `${badge3} <span style="color:#3498db">> [LOCAL] Initializing ${name3} (Active Healer)...</span>`;
@@ -2528,13 +2526,16 @@
         ═══════════════════════════════════════════ */
         async function fetchParams(text, isAb1, modelId, skillId, imageData = null, jsonSpec = null) {
             try {
+                const reqBody = {
+                    prompt: text, ablation_mode: isAb1, model_id: modelId, skill_id: skillId,
+                    image_data: imageData
+                };
+                if (jsonSpec) reqBody.json_spec = jsonSpec;
+
                 const res = await fetch('/api/generate_live', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        prompt: text, ablation_mode: isAb1, model_id: modelId, skill_id: skillId,
-                        image_data: imageData, json_spec: jsonSpec
-                    })
+                    body: JSON.stringify(reqBody)
                 });
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 return await res.json();
@@ -2870,9 +2871,10 @@
             // --- 全域變數控制 ---
             let isAnalyzing = false;
             let resolvedSkillId = null;
-            let resolvedJsonSpec = null;
 
-            if (hasCanvasContent) {
+            if (input) {
+                payload.text_data = input;
+            } else if (hasCanvasContent) {
                 if (isAnalyzing) return; // 狀態鎖定：如果正在辨識中，則跳過
                 isAnalyzing = true;
 
@@ -2887,8 +2889,6 @@
 
                 // 壓縮影像 (JPEG 0.8) 以提升本地傳輸效能
                 payload.image_data = tempCanvas.toDataURL('image/jpeg', 0.8);
-            } else if (input) {
-                payload.text_data = input;
             }
 
             try {
@@ -2937,7 +2937,6 @@
                     updateConfidence(result.confidence_scores);
                     setSkillBadge(result.skill_id);
                     resolvedSkillId = result.skill_id;
-                    resolvedJsonSpec = result.json_spec;
                     await typeWriterLog(`> Validation Score: ${result.confidence_scores}%`, '#f39c12');
 
                     if (log1) log1.innerHTML += `<br><span class="log-badge badge-qwen">QWEN</span> <span
@@ -2990,12 +2989,12 @@
             // Reset thought sandbox before each run
             resetThoughtSandbox();
 
-            // Parallel JSON generation requests
+            // Parallel generation requests
             const modelIdAb3 = document.getElementById('model-select-ab3').value;
             const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
-            const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, payload.image_data,
-                resolvedJsonSpec)
+            const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, null,
+                null)
                 .then(r2 => {
                     if (r2.ab2_result) {
                         renderResult('ab2', r2.ab2_result);
@@ -3020,7 +3019,7 @@
                     cpu_execution_time_sec: 0,
                     mcri: { total_score: 0 }
                 }).then(r1 => renderResult('ab1', r1))
-                : fetchParams(input, true, modelIdAb1, resolvedSkillId, payload.image_data, resolvedJsonSpec)
+                : fetchParams(input, true, modelIdAb1, resolvedSkillId, null, null)
                     .then(r1 => renderResult('ab1', r1))
                     .catch(err => renderResult('ab1', { error: err.message }));
 

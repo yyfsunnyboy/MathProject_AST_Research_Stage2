@@ -527,6 +527,10 @@ def generate_live():
     try:
         image_data = data.get("image_data")
         json_spec = data.get("json_spec", {})
+        route_mode = "text_engine_ab1" if ablation_mode else "text_engine_ab3"
+        if input_text and image_data:
+            image_data = None
+            print(">>> 🛡️ [PATH] image_data ignored due to text-priority guard")
         
         if skill_id == "Unknown":
             return jsonify({
@@ -541,6 +545,8 @@ def generate_live():
             }), 400
         
         if image_data and not ablation_mode:
+            route_mode = "image_monolithic_ab3"
+            print(f">>> 🧭 [PATH] /api/generate_live route_mode={route_mode}")
             print(">>> 👁️ 觸發 Monolithic Multimodal Brain (Qwen3-VL 代碼生成)")
             import re
             image_data = re.sub(r'^data:image/.+;base64,', '', image_data)
@@ -733,6 +739,7 @@ Template: {template_id}
                 ab2_result=ab2_result,
             )
         else:
+            print(f">>> 🧭 [PATH] /api/generate_live route_mode={route_mode}")
             engine = get_engine()
             enriched_input = input_text
             if not ablation_mode:
@@ -752,6 +759,7 @@ Template: {template_id}
             )
             
         output["api_time"] = time.time() - start_time
+        output["route_mode"] = route_mode
 
         # ── Flatten debug_meta fields for the frontend ────────────────────
         dm = output.get("debug_meta", {})
@@ -799,11 +807,18 @@ Template: {template_id}
         output["file_path"] = dm.get("file_path", "")
         output["bare_prompt"] = dm.get("bare_prompt", "")
         output["scaffold_prompt"] = dm.get("scaffold_prompt", "")
-        output["gemini_raw_spec"] = dm.get("gemini_raw_spec", "")
-        output["architect_model"] = dm.get("architect_model", "Gemini 3 Flash")
+        output["architect_raw_spec"] = dm.get("architect_raw_spec", dm.get("gemini_raw_spec", ""))
+        output["gemini_raw_spec"] = output["architect_raw_spec"]
+        output["architect_model"] = dm.get("architect_model", "Qwen3-VL 8B (Local)")
         output["iso_profile_expected"] = dm.get("iso_profile_expected", {})
         output["iso_profile_generated"] = dm.get("iso_profile_generated", {})
         output["iso_isomorphic"] = dm.get("iso_isomorphic", None)
+
+        # Keep Ab2/Ab3 diagnostics anchored to the same pre-healer raw text.
+        if isinstance(ab2_res, dict):
+            ab2_res["raw_text"] = output["raw_text"]
+            ab2_res["raw_code"] = output["raw_code"]
+            output["ab2_result"] = ab2_res
 
         if problems:
             first = problems[0]
@@ -901,7 +916,8 @@ Template: {template_id}
             output["ab2_result"] = {
                 "problem":                raw_ab2.get("question_text", "(Ab2 — scaffold prompt result)"),
                 "answer":                 raw_ab2.get("correct_answer", ""),
-                "raw_code":               raw_ab2.get("raw_code", ""),
+                "raw_text":               output.get("raw_text", raw_ab2.get("raw_code", "")),
+                "raw_code":               output.get("raw_code", raw_ab2.get("raw_code", "")),
                 "final_code":             raw_ab2.get("raw_code", ""),   # No Healer for Ab2
                 "file_path":              raw_ab2.get("file_path", ""),
                 "ai_inference_time_sec":  raw_ab2.get("ai_inference_time_sec", 0),
@@ -997,21 +1013,32 @@ def classify_input():
     if not data:
         return jsonify({"success": False, "error": "No data provided."}), 400
 
+    text_data = (data.get("text_data") or "").strip()
     image_data = data.get("image_data")
-    if image_data:
+    route_mode = "none"
+    if text_data and image_data:
+        # 後端防呆：若文字與圖片同時存在，優先採用文字路徑，避免舊版前端殘留 canvas 造成誤判
+        route_mode = "text_priority_conflict"
+        image_data = None
+    elif image_data:
+        route_mode = "image"
         import re
         image_data = re.sub(r'^data:image/.+;base64,', '', image_data)
-        
-    text_data = data.get("text_data")
+    elif text_data:
+        route_mode = "text"
+
     ocr_text = ""
     process_logs = []
 
     try:
         process_logs.append("> 🧬 Initiating Vision DNA Sequencing [Qwen3-VL Mode]...")
+        process_logs.append(f"> 🧭 Route Mode: {route_mode}")
+        print(f">>> 🧭 [PATH] /api/classify route_mode={route_mode}")
         
         skill_name = "Unknown"
         confidence = 0
         json_spec = {}
+        api_error = None
 
         if image_data or text_data:
             if image_data:
@@ -1020,7 +1047,7 @@ def classify_input():
                 process_logs.append("> 📝 Detected Text Payload. Passing to Visual Logic Core for Semantic Parsing...")
             
             # 使用 Qwen3-VL 進行「視覺/語義單次推理」架構
-            print(">>> 📥 傳送資列至 Qwen3-VL 進行聯合分析 (提取 + 分類 + JSON Spec)...")
+            print(">>> 📥 傳送資料至 Qwen3-VL 進行聯合分析 (提取 + 分類)...")
             
             # 動態取得所有 Agent Skills 資料夾名稱
             # 修正：確保指向 core/agent_skills 而不依賴 current_app 執行環境限制
@@ -1036,7 +1063,7 @@ def classify_input():
             msg_content = []
             if image_data:
                 prompt_text = f"""
-你現在是邏輯辨識核心。請觀察圖片，精確提取數學 LaTeX 算式（需忽略 \\tt 與噪音），產出精確的 JSON Spec。
+你現在是邏輯辨識核心。請觀察圖片，精確提取數學 LaTeX 算式（需忽略 \\tt 與噪音），並完成技能分類。
 【!! 你只能輸出一個 JSON 物件，嚴禁包含任何其他文字、分析過程或 markdown block !!】
 
 【最高指令：技能 ID 選擇】
@@ -1047,18 +1074,9 @@ def classify_input():
 {{
   "ocr_text": "12 \\div (-4) \\times (-3)", // 絕對禁止在這裡放入任何解題步驟、文字解說或 markdown，只能有 LaTeX 算式！
   "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-  "confidence": 95,
-  "spec": {{
-    "structure": "A \\div B \\times C",
-    "operator_sequence": ["divide", "times"],
-    "constraints": "A 為正整數，B, C 為負整數",
-    "steps": [
-      "必須使用 IntegerOps.fmt_num 代入所需數字",
-      "嚴禁使用 abs() 或 | 符號"
-    ]
-  }}
+    "confidence": 95
 }}
-[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須從 SKILL.md 目錄或已知概念的【程式要求】中提取對應的 Domain API (如 IntegerOps) 調用規範，並將其寫入 JSON 的 spec.steps 中。此外，針對當前題型，嚴禁出現哪些算子（如：若圖片沒絕對值，則必須寫下「嚴禁使用 abs() 或 | 符號」）也必須寫在 steps 中。
+[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。
 """
                 msg_content = [
                     {"type": "text", "text": prompt_text},
@@ -1066,7 +1084,7 @@ def classify_input():
                 ]
             else:
                 prompt_text = f"""
-你現在是邏輯辨識核心。請閱讀以下使用者提供的數學算式或指令，精確產出結構化的 JSON Spec。
+你現在是邏輯辨識核心。請閱讀以下使用者提供的數學算式或指令，精確完成技能分類。
 【!! 你只能輸出一個 JSON 物件，嚴禁包含任何其他文字、分析過程或 markdown block !!】
 
 【使用者輸入文字】
@@ -1080,18 +1098,9 @@ def classify_input():
 {{
   "ocr_text": "{text_data.strip()}", // 絕對禁止在這裡放入任何解題步驟、文字解說或 markdown，只能有 LaTeX 算式！
   "skill_id": "對應的資料夾名稱",
-  "confidence": 95,
-  "spec": {{
-    "structure": "例如 A \\div B \\times C",
-    "operator_sequence": ["divide", "times"],
-    "constraints": "精確寫出約束條件",
-    "steps": [
-      "使用對應的 Domain API",
-      "嚴格限制的算式或符號"
-    ]
-  }}
+    "confidence": 95
 }}
-[嚴格禁止] 嚴禁使用『混合練習』或『隨機運算』等模糊描述。你必須從 SKILL.md 目錄或已知概念的【程式要求】中提取對應的 Domain API 調用規範，並將其寫入 JSON 的 spec.steps 中。此外，針對當前題型，嚴禁出現哪些算子（例如沒出現絕對值，就必須明確列為禁用）也必須寫在 steps 中。
+[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。
 """
                 msg_content = prompt_text
 
@@ -1145,15 +1154,7 @@ def classify_input():
                         ocr_text = parsed_res.get("ocr_text", text_data.strip() if text_data else "")
                         raw_skill_id = parsed_res.get("skill_id", "Unknown")
                         confidence = parsed_res.get("confidence", 95)
-                        json_spec = parsed_res.get("spec", parsed_res.get("json_spec", {}))
-                        
-                        # [核心修復] 如果 spec 裡面沒東西，從外層補齊
-                        if not json_spec and "structure" in parsed_res:
-                            json_spec = {
-                                "structure": parsed_res.get("structure"),
-                                "operator_sequence": parsed_res.get("operator_sequence"),
-                                "constraints": parsed_res.get("constraints")
-                            }
+                        json_spec = {}
                         
                         # [新修復] 將 OCR 提取出來的 * 和 / 替換為 LaTeX 格式
                         ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
@@ -1214,9 +1215,29 @@ def classify_input():
                     print(">>> ❌ 找不到 JSON 結構")
                     skill_name = "Unknown"
                     ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
+            except requests.exceptions.HTTPError as e:
+                status_code = e.response.status_code if e.response is not None else "N/A"
+                response_text = ""
+                if e.response is not None:
+                    response_text = (e.response.text or "").strip()
+                if len(response_text) > 400:
+                    response_text = response_text[:400] + "..."
+                api_error = f"Qwen3-VL API HTTP {status_code}: {response_text or str(e)}"
+                print(f">>> ❌ Qwen3-VL HTTP 錯誤: {api_error}")
+                process_logs.append(f"> ❌ Ollama Upstream Error: HTTP {status_code}")
+                ocr_text = "ERROR: Failed to reach Qwen3-VL API."
             except requests.exceptions.RequestException as e:
                 print(f">>> ❌ Qwen3-VL 執行失敗: {e}")
+                api_error = f"Qwen3-VL API Request failed: {e}"
+                process_logs.append("> ❌ Ollama Upstream Error: Request failed")
                 ocr_text = "ERROR: Failed to reach Qwen3-VL API."
+
+            if api_error:
+                return jsonify({
+                    "success": False,
+                    "error": api_error,
+                    "process_logs": process_logs,
+                }), 502
 
             display_text = ocr_text[:30] + "..." if len(ocr_text) > 30 else ocr_text
             if skill_name == "Unknown":
@@ -1310,6 +1331,7 @@ def classify_input():
 
         return jsonify({
             "success": True,
+            "route_mode": route_mode,
             "ocr_text": ocr_text,
             "skill_id": skill_name,
             "confidence_scores": confidence,

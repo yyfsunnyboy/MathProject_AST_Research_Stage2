@@ -1,0 +1,6 @@
+﻿{
+    "ablation_mode":  true,
+    "skill_id":  "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id":  "qwen3-8b",
+    "prompt":  "計算 | 8×(-2)-5 | ÷ 7×(-3) 的值。"
+}

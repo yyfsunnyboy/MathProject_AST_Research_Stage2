@@ -89,6 +89,7 @@ def sanitize_question_text_display(question_text, return_report=False):
     m = re.search(r'\$(.*?)\$', text)
     total_fixes = 0
     total_neg_wraps = 0
+    op_token_count = 0
     if m:
         inner = m.group(1)
         fixed_inner, fix_count = collapse_double_numeric_parentheses(inner)

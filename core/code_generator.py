@@ -114,7 +114,10 @@ def _inject_domain_libs(code_str):
 
             # 1. 如果代碼中已有該 class 的定義 (Stub 或完整定義)，先移除它
             # Pattern: class ClassName ... (直到下一個 class 或特殊標記)
-            remove_pattern = re.compile(rf'(class {class_name}[^:]*:(?:.|\n)*?)(?=\nclass |\n# \[|\Z)', re.MULTILINE)
+            remove_pattern = re.compile(
+                rf'(class {class_name}[^:]*:(?:.|\n)*?)(?=\nclass |\ndef |\n# \[|\n[A-Z_]{{3,}}\s*=|\Z)',
+                re.MULTILINE,
+            )
             
             if remove_pattern.search(code_str):
                 code_str = remove_pattern.sub('', code_str)

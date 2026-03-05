@@ -1,0 +1,6 @@
+﻿{
+    "ablation_mode":  false,
+    "skill_id":  "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id":  "qwen3-8b",
+    "prompt":  "12 / (-4) * (-3)"
+}

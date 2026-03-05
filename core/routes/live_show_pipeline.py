@@ -35,8 +35,14 @@ def run_ab2_interception(
     recompute_correct_answer_from_question_fn,
     maybe_add_o1_fix_fn,
 ):
-    ab2_exec_code = optimize_live_execution_code_fn(final_code)
-    ab2_exec_code = patch_fraction_skill_eval_calls_fn(ab2_exec_code, skill_id)
+    ab2_exec_code = (final_code or "").strip()
+    ab2_exec_code = ab2_exec_code.replace("\r\n", "\n")
+    if ab2_exec_code.lower().startswith("```python"):
+        ab2_exec_code = ab2_exec_code[len("```python"):].lstrip("\n")
+    elif ab2_exec_code.startswith("```"):
+        ab2_exec_code = ab2_exec_code[len("```"):].lstrip("\n")
+    if ab2_exec_code.endswith("```"):
+        ab2_exec_code = ab2_exec_code[:-3].rstrip()
 
     ab2_result = {}
     ab2_save_dir = "generated_scripts"
@@ -50,47 +56,6 @@ def run_ab2_interception(
     try:
         ab2_exe_res = scaler._execute_code(ab2_exec_code, level=1)
         ab2_exec_elapsed = time.time() - ab2_cpu_start
-        ab2_guard = evaluate_iso_style_guard_fn(
-            expected_fp=expected_fp,
-            question_text=ab2_exe_res.get("question_text", ""),
-            decimal_style_mode=decimal_style_mode,
-            extract_expr_fn=extract_math_expr_from_question_fn,
-            has_decimal_fn=has_decimal_number_fn,
-            isomorphic_fn=is_expression_isomorphic_fn,
-        )
-        if ab2_guard.get("triggered"):
-            fallback_code_ab2 = build_isomorphic_fallback_code_fn(ocr_text, skill_id=skill_id)
-            if fallback_code_ab2:
-                ab2_final_exec_code = patch_fraction_skill_eval_calls_fn(
-                    optimize_live_execution_code_fn(fallback_code_ab2),
-                    skill_id,
-                )
-                ab2_exe_res = scaler._execute_code(ab2_final_exec_code, level=1)
-                ab2_exe_res["_ab2_iso_fallback"] = True
-                if ab2_guard.get("decimal_mismatch"):
-                    ab2_exe_res.setdefault("healer_logs", [])
-                    ab2_exe_res["healer_logs"].append(
-                        "[STYLE_GUARD] source contains decimal; switched to decimal-preserving fallback."
-                    )
-
-        if "question_text" in ab2_exe_res:
-            sanitize_result_question_fn(
-                ab2_exe_res,
-                after_fallback=False,
-            )
-            format_result_question_display_fn(
-                ab2_exe_res,
-                skill_id,
-                display_mode=fraction_display_mode,
-                source_text=ocr_text,
-            )
-
-        if "question_text" in ab2_exe_res:
-            recompute_result_answer_fn(
-                ab2_exe_res,
-                skill_id,
-                recompute_answer_fn=recompute_correct_answer_from_question_fn,
-            )
 
         try:
             from scripts.evaluate_mcri import evaluate_math_hygiene
@@ -100,12 +65,6 @@ def run_ab2_interception(
                 ab2_exe_res["_mcri_hygiene_score"] = h_score
         except Exception:
             pass
-
-        if ab2_exe_res.get("_o1_healed"):
-            maybe_add_o1_fix_fn(
-                ab2_exe_res,
-                message="[O(1)_HEALER] Intelligently scaled variables to force perfect division (Native).",
-            )
 
         ab2_result = ab2_exe_res
     except Exception as e:
@@ -417,6 +376,7 @@ def assemble_visual_output(
             "file_path": file_path,
             "bare_prompt": "",
             "scaffold_prompt": system_prompt,
+            "architect_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
             "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
             "architect_model": "Qwen3-VL",
             "healer_trace": {
