@@ -318,3 +318,69 @@ python -m pytest tests/test_live_show_healer_regression.py -q
 - 測試與編譯指令結果可重現。
 - 文件有更新（本檔至少更新變更重點或 SOP）。
 - 不新增 route 硬編碼 skill 規則。
+
+---
+
+## 9. 今日下班交接（2026-03-05）
+
+> 這一節是「今天實際狀態快照」，明天可從這裡直接接手。
+
+### 9.1 今日已完成（Confirmed）
+
+1. **Ab3 `generate` 遺失致命錯誤已針對 root cause 修補**
+    - 修正 `core/code_generator.py` 中 `_inject_domain_libs(...)` 的 class 移除正則，避免誤吞後續函式。
+    - 在 `core/engine/scaler.py` 加入保護：注入後會檢查是否真的存在 `def generate(...)`（以 regex 判定真函式，不再用單純字串 contains）。
+
+2. **Ab3 最終保險機制已加上**
+    - 若模型原始輸出與注入結果都無 `generate`，改走 emergency template，避免直接噴：
+      - `執行第 1 題時發生錯誤: 生成的代碼中找不到 generate 函式`
+    - emergency template 題幹已加清理，不會帶入「題型同構硬性約束」整段文字。
+
+3. **實驗契約維持不變（延續先前約定）**
+    - Ab1：minimal cleanup（不走 healer）。
+    - Ab2：minimal baseline（不走 healer）。
+    - Ab3：完整 healer / guard / fallback 路徑。
+    - Ab2/Ab3 raw parity 仍維持對齊邏輯。
+
+### 9.2 目前仍在處理（Open Issues）
+
+1. **題目品質問題仍存在（尤其 Ab2）**
+    - 雖然 Ab3 致命錯誤已大幅下降，但模型偶發偏題/亂題仍會出現。
+    - Ab2 因設計上不經 healer，品質波動會比 Ab3 明顯。
+
+2. **回歸腳本執行穩定性**
+    - PowerShell 直接批次在此環境有編碼/引號污染問題（繁中內容 + 長指令時特別容易）。
+    - 已改採 Python 腳本方式做回歸（避免 shell 編碼問題）。
+
+3. **尚未完成一次「乾淨 5 題回歸報表」固化到文件**
+    - 原因：最後一輪回歸中途被取消/終端污染，還沒產出可直接貼 PR 的穩定統計表。
+
+### 9.3 明天接手建議步驟（最短路徑）
+
+1. **先啟服務（單一 terminal，避免多個背景殘留）**
+
+```bash
+python app.py
+```
+
+2. **跑 UTF-8 Python 回歸（不要用長串 PowerShell inline）**
+
+```bash
+python tmp_regression_ab3.py
+```
+
+3. **看三個關鍵指標**
+    - `ab3_error` 是否為空。
+    - `ab3_has_generate` 是否為 `True`。
+    - `ab2_result.raw_code == raw_code` 是否為 `True`。
+
+4. **若 Ab3 還有失敗案例，優先查層級**
+    - 先看 `core/engine/scaler.py` 的 generate safeguard 是否有命中。
+    - 再看 `core/routes/live_show_pipeline.py` 的 Ab3 execution/guard/fallback log。
+    - 最後才考慮調 prompt 或 policy，不要先把規則塞回 route。
+
+### 9.4 本次實際有改到的檔案（今日）
+
+- `core/code_generator.py`
+- `core/engine/scaler.py`
+- `SHOWREEL_LOGIC.md`（本段交接）
