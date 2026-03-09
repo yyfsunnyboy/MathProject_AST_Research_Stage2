@@ -22,6 +22,58 @@ class AdaptiveScaler:
     def _get_skill_path(self, skill_name):
         return os.path.join(self.project_root, "agent_skills", skill_name)
 
+    def _get_skill_vision_input(self, skill_name: str) -> bool:
+        """讀取 skill.json["vision_input"]；不存在則回傳 False。"""
+        manifest = os.path.join(self._get_skill_path(skill_name), "skill.json")
+        if os.path.isfile(manifest):
+            try:
+                import json as _json
+                with open(manifest, encoding="utf-8") as fh:
+                    return bool(_json.load(fh).get("vision_input", False))
+            except Exception:
+                pass
+        return False
+
+    def _call_ai_vision(self, prompt: str, image_base64: str, model_config: dict) -> tuple:
+        """多模態 AI 呼叫（Qwen3-VL）。
+        目前所有 skill 的 vision_input=false，此方法為未來擴充預留。
+        Returns: (raw_code, _, _, thinking_text)
+        """
+        from core.code_generator import _call_ai
+        # 當 skill.json vision_input=true 且有 image 時呼叫；暫時 fallback 到純文字
+        if image_base64:
+            try:
+                import requests, base64, json as _json
+                from config import Config
+                url = model_config.get("base_url", "http://127.0.0.1:11434") + "/api/chat"
+                payload = {
+                    "model": model_config.get("model", "qwen3-vl:8b-instruct-q4_k_m"),
+                    "messages": [{"role": "user", "content": [
+                        {"type": "text",  "text": prompt},
+                        {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_base64}"}},
+                    ]}],
+                    "stream": False,
+                    "options": {"num_predict": model_config.get("max_tokens", 4096)},
+                }
+                resp = requests.post(url, json=payload, timeout=120)
+                resp.raise_for_status()
+                content = resp.json().get("message", {}).get("content", "")
+                return content, None, None, ""
+            except Exception as e:
+                print(f"[WARN] _call_ai_vision failed ({e}), fallback to text-only")
+        return _call_ai(prompt, model_config=model_config)
+
+    def _load_skill_prompt(self, skill_path: str, mode: str = "LIVESHOW") -> str | None:
+        """優先讀取 mode-specific prompt 檔（prompt_liveshow.md / prompt_benchmark.md）。
+        若不存在則回傳 None，呼叫端 fallback 到 SKILL.md 切割邏輯。
+        """
+        mode_file = os.path.join(skill_path, f"prompt_{mode.lower()}.md")
+        if os.path.isfile(mode_file):
+            with open(mode_file, encoding="utf-8") as fh:
+                raw = fh.read()
+            return "\n".join(line.replace('\r', '') for line in raw.splitlines())
+        return None
+
     def generate_problem(self, skill_name, level=2):
         """
         生成指定技能與難度的題目。
@@ -180,6 +232,11 @@ class AdaptiveScaler:
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 if not os.path.exists(skill_md_path):
                     raise FileNotFoundError(f"找不到技能定義: {skill_md_path}")
+
+                # ── Phase 3-B: mode-aware prompt loading ──────────────────────
+                liveshow_prompt = self._load_skill_prompt(skill_path, "LIVESHOW")
+                # ──────────────────────────────────────────────────────────────
+
                 with open(skill_md_path, "r", encoding="utf-8") as f:
                     raw_text = f.read()
                     # 徹底消除 Windows CRLF 導致的 f-string 游標回車覆寫問題
@@ -192,18 +249,39 @@ class AdaptiveScaler:
                 benchmark_match = re.search(r'\[\[MODE:BENCHMARK\]\]([\s\S]*?)\[\[END_MODE:BENCHMARK\]\]', full_skill_spec)
                 benchmark_content = benchmark_match.group(1).strip() if benchmark_match else ""
 
-                if ablation_mode:
-                    prompt = f"""{skill_spec_distilled}
+                if liveshow_prompt:
+                    # ── 優先路徑：使用 prompt_liveshow.md（含 /no_think + 規則 + 範例程式碼）──
+                    input_text_safe = self._sanitize_input_dna(input_text)
+                    try:
+                        from core.routes.live_show import apply_strict_mirroring
+                        liveshow_prompt = apply_strict_mirroring(liveshow_prompt, input_text_safe)
+                    except ImportError:
+                        pass
 
-請參考以下例題，撰寫一個 `generate(level=1)` 函式：
-{input_text}
-直接輸出代碼。
+                    # Fetch api_stubs for Ab2 interception (same as fallback path)
+                    from core.prompts.domain_function_library import get_required_domains, get_domain_helpers_code
+                    required_domains = get_required_domains(skill_name)
+                    api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
+
+                    prompt = f"""{liveshow_prompt}
+
+【動態目標題型參考】
+{input_text_safe}
+
+【硬性一致性約束（必須遵守）】
+1. 嚴格鏡像目標題型結構，不得新增題型中不存在的運算符號。
+2. 必須使用對應 Domain API（例如 IntegerOps / FractionOps / PolynomialOps / RadicalOps）。
+3. 題目中的乘號與除號必須使用 \\times 與 \\div。
+4. 直接輸出可執行 Python 程式碼（需包含 `generate`，可包含 `check`）。
+5. 不要輸出 JSON、不要輸出 markdown 解釋。
+6. 若「動態目標題型參考」已提供完整可計算算式（含具體數字），禁止重新隨機抽數、禁止改寫為其他題目。
+7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
+8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
+9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
 """
                 else:
-                    # 預處理 input_text 確保有 LaTeX 基本結構
+                    # ── Fallback：舊邏輯（SKILL.md 切割 + BENCHMARK section）──
                     input_text_safe = self._sanitize_input_dna(input_text)
-                    
-                    # 套用物理剪裁 (apply_strict_mirroring)
                     try:
                         from core.routes.live_show import apply_strict_mirroring
                         skill_spec_distilled = apply_strict_mirroring(skill_spec_distilled, input_text_safe)
@@ -241,13 +319,15 @@ class AdaptiveScaler:
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
 """
-                    
                 active_ablation_id = 3
             
             from config import Config
             model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
             
             start_ai = time.time()
+            # ── Phase 4-A: vision_input routing ────────────────────────────
+            use_vision = (not ablation_mode) and self._get_skill_vision_input(skill_name)
+            # ───────────────────────────────────────────────────────────────
             if not ablation_mode:
                 print("========================================")
                 print("🖥️ [Ab3] 單階段 Qwen 直出代碼...")
@@ -255,7 +335,10 @@ class AdaptiveScaler:
                 print("=== [DEBUG] 發送給 Qwen 的 PROMPT 內容 ===")
                 print(prompt)
                 print("========================================")
-                raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
+                if use_vision:
+                    raw_code, _, _, thinking_text = self._call_ai_vision(prompt, "", model_config)
+                else:
+                    raw_code, _, _, thinking_text = _call_ai(prompt, model_config=model_config)
             else:
                 print("=== [DEBUG] 發送給 LLM (Native) 的 PROMPT 內容 ===")
                 print(prompt)
@@ -385,7 +468,8 @@ class AdaptiveScaler:
                 ab2_result["raw_code"] = ab2_code_to_execute    # scaffold code, markdown-fence stripped only
                 
                 # [NEW] Prepend api_stubs to Ab2's final code so the UI sees the injected functions
-                ab2_result["final_code"] = api_stubs + "\n\n" + ab2_code_to_execute  # no Healer applied for Ab2
+                _api_stubs_prefix = api_stubs if 'api_stubs' in dir() else ""
+                ab2_result["final_code"] = _api_stubs_prefix + "\n\n" + ab2_code_to_execute  # no Healer applied for Ab2
                 # --- /Ab2 Interception ---
                 
                 def _ensure_generate_block(code_text, fallback_source):

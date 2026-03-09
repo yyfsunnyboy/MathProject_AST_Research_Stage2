@@ -67,7 +67,7 @@ from core.code_utils.latex_utils import *
 
 REFACTOR_MODULES_AVAILABLE = True
 
-def _inject_domain_libs(code_str):
+def _inject_domain_libs(code_str, skill_id: str | None = None):
     """
     [New Feature 2026-02-16] 自動注入 Domain Libraries (如 RadicalOps) 的完整實作
     使生成的 Skill File 可以獨立運行 (Self-Contained)。
@@ -75,8 +75,41 @@ def _inject_domain_libs(code_str):
     1. 強制替換 Stub
     2. 自動注入 Global Alias (simplify_term = RadicalOps.simplify_term)
     3. 自動移除錯誤的 import (from RadicalOps import ...)
+    [Phase 4-B] 若提供 skill_id，從 skill.json["injected_apis"] 強制注入宣告的 API，
+    防止 AI 忘記使用 class name 時的靜默失敗。
     """
     injected_names = []
+
+    # ── Phase 4-B: read declared APIs + required_imports from skill.json ──
+    declared_apis: list[str] = []
+    required_imports: list[str] = []
+    if skill_id:
+        try:
+            import json as _json, glob as _glob
+            project_root = os.path.dirname(os.path.abspath(__file__))
+            pattern = os.path.join(project_root, "..", "agent_skills", skill_id, "skill.json")
+            manifest_candidates = _glob.glob(pattern)
+            if not manifest_candidates:
+                # try walking up one more level
+                pattern2 = os.path.join(project_root, "agent_skills", skill_id, "skill.json")
+                manifest_candidates = _glob.glob(pattern2)
+            if manifest_candidates:
+                with open(manifest_candidates[0], encoding="utf-8") as fh:
+                    meta = _json.load(fh)
+                declared_apis = [str(a) for a in (meta.get("injected_apis") or []) if a]
+                required_imports = [str(m) for m in (meta.get("required_imports") or []) if m]
+        except Exception:
+            pass
+    # ───────────────────────────────────────────────────────────────────────
+
+    # 補齊 required_imports（如 random、math）— 若程式碼未有 import 則在頂端補上
+    import_lines_to_add = []
+    for mod in required_imports:
+        pattern_found = re.search(rf'^\s*import\s+{re.escape(mod)}\b', code_str, re.MULTILINE)
+        if not pattern_found:
+            import_lines_to_add.append(f"import {mod}")
+    if import_lines_to_add:
+        code_str = "\n".join(import_lines_to_add) + "\n" + code_str
     
     # 定義需要注入的 Libs 關鍵字與對應 Class Name
     target_libs = {
@@ -85,6 +118,11 @@ def _inject_domain_libs(code_str):
         'FractionOps': 'FractionOps',
         'PolynomialOps': 'PolynomialOps'
     }
+
+    # 強制注入 skill.json 宣告的 APIs（即使 code_str 未引用）
+    for api in declared_apis:
+        if api in target_libs and api not in code_str:
+            code_str = f"# [skill.json declared: {api}]\n" + code_str
     
     # 讀取 domain_function_library.py 作為 Class 定義的統一來源
     try:

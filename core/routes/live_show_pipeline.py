@@ -110,6 +110,7 @@ def run_ab3_full_healer(
     ocr_text,
     fraction_display_mode,
     live_file_display_mode,
+    api_stubs="",
     optimize_live_execution_code_fn,
     patch_fraction_skill_eval_calls_fn,
     advanced_healer_fn,
@@ -291,8 +292,11 @@ def run_ab3_full_healer(
             from scripts.evaluate_mcri import evaluate_live_code
 
             if "question_text" in exe_res:
+                # [Fix] Evaluate with api_stubs prepended so robustness detection
+                # (class IntegerOps / FractionOps) is consistent with Ab2's evaluation.
+                eval_code = (api_stubs + "\n\n" + healed_exec_code) if api_stubs else healed_exec_code
                 _live_mcri = evaluate_live_code(
-                    code=healed_exec_code,
+                    code=eval_code,
                     exec_result=exe_res,
                     healer_trace={"regex_fixes": regex_fixes, "ast_fixes": ast_fixes},
                     ablation_mode=False,

@@ -68,14 +68,12 @@ class FractionOps:
             if val.denominator == 1:
                 return str(val.numerator)
             if mixed and abs(val.numerator) > val.denominator:
-                whole = val.numerator // val.denominator
+                whole = abs(val.numerator) // val.denominator  # [Fix] use abs() to avoid Python floor-division error for negatives
                 remainder = abs(val.numerator) % val.denominator
                 if remainder == 0:
-                    return str(whole)
-                if whole == 0:
-                    return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
+                    return str(-whole if val < 0 else whole)
                 sign = "-" if val < 0 else ""
-                return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
+                return f"{sign}{whole} \\frac{{{remainder}}}{{{val.denominator}}}"
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
     
@@ -504,14 +502,12 @@ class FractionOps:
             if val.denominator == 1:
                 return str(val.numerator)
             if mixed and abs(val.numerator) > val.denominator:
-                whole = val.numerator // val.denominator
+                whole = abs(val.numerator) // val.denominator  # [Fix] use abs() to avoid Python floor-division error for negatives
                 remainder = abs(val.numerator) % val.denominator
                 if remainder == 0:
-                    return str(whole)
-                if whole == 0:
-                    return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
+                    return str(-whole if val < 0 else whole)
                 sign = "-" if val < 0 else ""
-                return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
+                return f"{sign}{whole} \\frac{{{remainder}}}{{{val.denominator}}}"
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
 

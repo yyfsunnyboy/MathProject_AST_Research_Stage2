@@ -1,4 +1,4 @@
-```python
+/no_think
 【角色】K12 數學演算法工程師
 
 【程式要求】（必須嚴格遵守）
@@ -337,4 +337,3 @@ def check(user_answer, correct_answer):
 - 不要輸出任何額外文字。
 - 不要輸出 markdown。
 [[END_MODE:LIVESHOW]]
-```

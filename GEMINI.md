@@ -68,3 +68,171 @@
 
 - **數據回傳要求**:
     - 每次生成必須包含 `debug_meta` 物件，內含：`latency_ms` (延遲)、`healer_fix_count` (修復次數) 與 `MCRI_score` (可靠性評分)。
+
+---
+
+## 5. 系統架構現狀 (Current Architecture)
+
+```text
+MathProject_AST_Research/
+├─ core/
+│  ├─ routes/
+│  │  ├─ live_show.py          ← API 入口 + 流程編排（Route Orchestration）
+│  │  └─ live_show_pipeline.py ← Ab2/Ab3 協調 + output 組裝
+│  ├─ healers/
+│  │  ├─ live_show_healer.py   ← 題面 sanitize + display/regex/o1/ast fix-count
+│  │  ├─ live_show_iso_guard.py← ISO / STYLE guard 決策 + fallback log
+│  │  ├─ ast_healer.py
+│  │  └─ regex_healer.py
+│  ├─ code_utils/
+│  │  ├─ live_show_math_utils.py ← 表達式抽取 + 同構比較 + 答案重算
+│  │  ├─ math_utils.py
+│  │  └─ latex_utils.py
+│  ├─ skill_policies/          ← 技能策略 + alias 正規化（Policy Registry）
+│  │  ├─ registry.py
+│  │  ├─ integer.py / fraction.py / polynomial.py / radical.py
+│  │  └─ __init__.py
+│  ├─ engine/
+│  │  ├─ engine.py             ← MathEngine 總入口
+│  │  ├─ classifier.py         ← SkillClassifier（動態掃 agent_skills/）
+│  │  └─ scaler.py             ← AdaptiveScaler（JIT 題目生成）
+│  └─ scaffold/
+│     └─ domain_libs.py        ← IntegerOps / FractionOps / RadicalOps / PolynomialOps 實作
+├─ agent_skills/               ← 每個技能目錄（含 SKILL.md）
+│  ├─ jh_數學1上_FourArithmeticOperationsOfIntegers/
+│  ├─ jh_數學1上_FourArithmeticOperationsOfNumbers/
+│  ├─ jh_數學2上_FourArithmeticOperationsOfPolynomial/
+│  └─ jh_數學2上_FourOperationsOfRadicals/
+├─ templates/live_show.html    ← 前端 UI（Ab1/Ab2/Ab3 平行對決面板）
+└─ tests/
+   └─ test_live_show_healer_regression.py
+```
+
+**關鍵資料流（統一路徑）**  
+```
+使用者輸入（圖片貼上 或 文字輸入）
+    ↓  [/api/classify]
+    Qwen3-VL 聯合推理 → ocr_text + skill_id + json_spec（含 operator_fingerprint）
+    ↓  前端儲存 resolvedJsonSpec
+    ↓  [/api/generate_live]  ← 兩種輸入路徑在此合流
+    canonical_ocr_text = json_spec["ocr_text"]（圖片/文字共用同一份）
+    → image_monolithic_ab3 路徑（有圖時）  ┐
+    → text_engine_ab3 路徑（文字時）       ┘  → 同一套 healer + iso_guard + MCRI
+    ↓
+    assemble_visual_output → HTTP JSON 回前端
+```
+
+---
+
+## 6. 修改優先序與執行計畫 (Roadmap)
+
+### Phase 0 — 已完成項目 ✅
+
+| 完成日期 | 項目 |
+|---|---|
+| 2026-03-06 | `live_show.py` 改為 Route Orchestration，複雜邏輯下沉到 pipeline / healer |
+| 2026-03-06 | `live_show_pipeline.py` 新增，承接 Ab2/Ab3 協調與 output 組裝 |
+| 2026-03-06 | `core/skill_policies/` 建立，技能策略與 alias 由 registry 統一管理 |
+| 2026-03-06 | Healer fix-count 分帳（Code / Display / AST / O1）可追溯 |
+| 2026-03-06 | Payload validity gate + emergency fallback（防 timeout / hallucination） |
+| 2026-03-06 | SKILL.md 加入 fail-fast prompt contract（`/no_think`、banned tokens） |
+| 2026-03-09 | **圖片貼上與文字輸入統一執行路徑**：classify 寫入 `json_spec["ocr_text"]`，generate_live 以 `canonical_ocr_text` 為單一來源，前端 `resolvedJsonSpec` 轉發 |
+
+---
+
+### Phase 1 — ✅ 已完成（P0，零破壞性）— 2026-03-09
+
+**目標：修正現有 agent skill 架構的已知缺陷，改善 Qwen3 8B 輸出率。**
+
+| 序號 | 檔案 | 動作 | 理由 | 狀態 |
+|---|---|---|---|---|
+| 1-A | `agent_skills/jh_數學1上_FourArithmeticOperationsOfNumbers/SKILL.md` | 移除最外層的 ` ```skill ` 破損 code fence | 模型看到後以為自己在 code block 內，role/task 文字解讀混亂 | ✅ |
+| 1-B | 所有 4 個 `SKILL.md` | `/no_think` 統一放在第一行 | Qwen3 需要在 prompt 最開頭才能可靠壓制 thinking mode | ✅ |
+| 1-C | 每個 `agent_skills/<id>/` | 新增 `skill.json` manifest | 建立單一 source of truth，解除 registry 硬編碼依賴 | ✅ |
+| 1-D | Polynomial + Radicals `SKILL.md` | 補充完整 `[[MODE:LIVESHOW]]` section（含可運行範例程式碼） | Qwen3 8B 需要具體程式範例才能正確實作 | ✅ |
+| 1-E | Integers + Numbers `SKILL.md` | 移除 Integers ` ```python ` 外層 fence | 同 1-A 原因 | ✅ |
+
+`skill.json` 標準格式：
+```json
+{
+  "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+  "display_name": "整數四則運算",
+  "family": "integer",
+  "level_range": [1, 3],
+  "injected_apis": ["IntegerOps"],
+  "required_imports": ["random", "math"],
+  "modes": ["BENCHMARK", "LIVESHOW"],
+  "vision_input": false,
+  "aliases": ["Arithmetic", "IntegerArithmetic"],
+  "schema_version": "1.0"
+}
+```
+
+---
+
+### Phase 2 — ✅ 已完成（P1，中等工程量）— 2026-03-09
+
+**目標：讓 registry 自動從 `skill.json` 載入，新技能加入不再需要改 `.py`。**
+
+| 序號 | 檔案 | 動作 | 狀態 |
+|---|---|---|---|
+| 2-A | `core/skill_policies/registry.py` | 新增 `_load_from_manifests()` 自動掃 `skill.json`，與現有 POLICIES 合併 | ✅ |
+| 2-B | `core/engine/classifier.py` | 優先讀 `skill.json["skill_id"]` 作為 available_skills，不再只依賴目錄名 | ✅ |
+
+驗收步驟：
+```bash
+python -c "from core.skill_policies import normalize_skill_id; print(normalize_skill_id('Arithmetic'))"
+# 預期：jh_數學1上_FourArithmeticOperationsOfIntegers
+```
+
+---
+
+### Phase 3 — ✅ 已完成（P2，需要 scaler 改動）— 2026-03-09
+
+**目標：SKILL.md 模式分割，降低 Qwen3 prompt 長度 50%（目標 ≤ 2048 tokens/call）。**
+
+| 序號 | 動作 | 狀態 |
+|---|---|---|
+| 3-A | 每個 skill 目錄新增 `prompt_liveshow.md` 與 `prompt_benchmark.md`（由 SKILL.md 自動拆分產生） | ✅ |
+| 3-B | `core/engine/scaler.py` 新增 `_load_skill_prompt(skill_path, mode)` 優先讀 mode-specific 檔，fallback 到 SKILL.md 切割 | ✅ |
+| 3-C | Ab3 路徑現在使用 `prompt_liveshow.md`（含 `/no_think` + 規則 + LIVESHOW 範例程式碼），不再只走 BENCHMARK section | ✅ |
+
+---
+
+### Phase 4 — ✅ 已完成（P3，Qwen3-VL 視覺能力完整接入）— 2026-03-09
+
+**目標：正式宣告視覺 skill，讓 Qwen3-8B-VL 的多模態能力有規範的接入路徑。**
+
+| 序號 | 動作 | 狀態 |
+|---|---|---|
+| 4-A | `scaler.py` 新增 `_get_skill_vision_input()` 讀 `skill.json["vision_input"]`；新增 `_call_ai_vision()` 多模態 API 路徑；Ab3 路徑自動路由 | ✅ |
+| 4-B | `_inject_domain_libs(code_str, skill_id=None)` 加入 skill_id 參數，讀 `skill.json["injected_apis"]` 防止靜默失敗 | ✅ |
+| 4-C | `/api/run_generated_code` 接收 `json_spec`，補充 `source_ocr_text`；response 回傳 `json_spec` 供前端下一題連鎖使用 | ✅ |
+
+---
+
+## 7. 新技能接入 SOP（Policy-Only）
+
+> 目標：新增技能時，**不改** `live_show.py`／healer 主流程，只透過檔案接軌。
+
+```
+Step 1) 建立目錄 agent_skills/<skill_id>/
+Step 2) 新增 skill.json（填 family / aliases / injected_apis）
+Step 3) 新增 SKILL.md（/no_think 置頂，分 SKILL_END_PROMPT / LIVESHOW 兩段）
+Step 4) 在對應 core/skill_policies/<family>.py 加入 skill_id
+Step 5) 驗證正規化：
+        python -c "from core.skill_policies import normalize_skill_id; print(normalize_skill_id('<alias>'))"
+Step 6) Compile check：
+        python -m py_compile core/skill_policies/__init__.py core/routes/live_show.py
+Step 7) 回歸測試：
+        python tests/test_live_show_healer_regression.py
+```
+
+---
+
+## 8. 開發守則提醒 (Agent Guidelines)
+
+- **新增技能策略**：改 `core/skill_policies/<family>.py`，不動 `live_show.py`。
+- **修改 healer 行為**：改 `core/healers/`，不在 route 加硬編碼。
+- **新增 OCR text 處理**：在 `/api/classify` 內做，不在 `generate_live` 重複處理。
+- **任何改動後**：`python -m py_compile core/routes/live_show.py` + `python tests/test_live_show_healer_regression.py`。

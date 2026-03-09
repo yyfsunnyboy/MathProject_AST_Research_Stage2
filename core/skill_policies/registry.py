@@ -7,7 +7,10 @@
 
 from __future__ import annotations
 
+import glob
 import importlib
+import json
+import os
 import pkgutil
 import difflib
 from typing import Dict, List
@@ -56,6 +59,55 @@ def _load_policies() -> Dict[str, Dict[str, object]]:
     return table
 
 
+def _load_from_manifests(table: Dict[str, Dict[str, object]]) -> None:
+    """掃描所有 agent_skills/*/skill.json，把新 skill_id 和 aliases 合併進 table。
+
+    規則：
+    - 若 skill_id 已存在於 table（py 政策已定義），僅補充 manifest 帶來的 aliases，
+      不覆蓋 .py 中的 policy switches（保留 fraction/eval 旗標）。
+    - 若 skill_id 在 table 中不存在，建立一筆新政策（所有 switches 預設 False）。
+    """
+    project_root = os.path.dirname(  # skills_policies/ → core/ → project_root
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    )
+    pattern = os.path.join(project_root, "agent_skills", "*", "skill.json")
+    for manifest_path in glob.glob(pattern):
+        try:
+            with open(manifest_path, encoding="utf-8") as fh:
+                meta = json.load(fh)
+        except Exception:
+            continue
+
+        sid = meta.get("skill_id", "").strip()
+        if not sid:
+            continue
+
+        manifest_aliases = [str(a) for a in (meta.get("aliases") or []) if a]
+
+        if sid in table:
+            # 已有 .py 定義 → 僅補充 manifest 中尚未登記的 aliases
+            existing = table[sid]
+            existing_aliases = list(existing.get("aliases") or [])
+            for alias in manifest_aliases:
+                if alias not in existing_aliases:
+                    existing_aliases.append(alias)
+            existing["aliases"] = existing_aliases
+            # 同樣把 injected_apis / vision_input 存到 policy（供 scaler 使用）
+            existing.setdefault("injected_apis", meta.get("injected_apis") or [])
+            existing.setdefault("vision_input", meta.get("vision_input", False))
+        else:
+            # table 中沒有 → 用 manifest 建一筆新政策
+            new_policy = _normalize_policy({
+                "policy_id": sid,
+                "family": meta.get("family", "generic"),
+                "skill_ids": [sid],
+                "aliases": manifest_aliases,
+                "injected_apis": meta.get("injected_apis") or [],
+                "vision_input": meta.get("vision_input", False),
+            })
+            table[sid] = new_policy
+
+
 def _build_alias_table(policy_table: Dict[str, Dict[str, object]]) -> Dict[str, str]:
     aliases: Dict[str, str] = {}
     for skill_id, policy in policy_table.items():
@@ -73,6 +125,7 @@ def _build_alias_table(policy_table: Dict[str, Dict[str, object]]) -> Dict[str, 
 def refresh_registry() -> None:
     global _POLICY_TABLE, _ALIAS_TABLE
     _POLICY_TABLE = _load_policies()
+    _load_from_manifests(_POLICY_TABLE)       # merge skill.json aliases / new skills
     _ALIAS_TABLE = _build_alias_table(_POLICY_TABLE)
 
 

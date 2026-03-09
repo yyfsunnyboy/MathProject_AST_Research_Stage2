@@ -145,7 +145,7 @@ class IntegerOps:
             clean_expr = clean_expr.replace('\\', '') # 移除殘留的反斜線
             
             # 使用 eval，但只允許安全的數學運算
-            result = eval(clean_expr, {"__builtins__": {"abs": abs}}, {})
+            result = eval(clean_expr, {"__builtins__": {"abs": abs, "Fraction": Fraction, "round": round, "int": int}}, {})
             return result
         except Exception as e:
             raise ValueError(f"無法計算表達式: {expr_str}, 錯誤: {e}")

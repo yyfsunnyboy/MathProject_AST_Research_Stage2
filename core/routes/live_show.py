@@ -526,7 +526,18 @@ def generate_live():
     start_time = time.time()
     try:
         image_data = data.get("image_data")
-        json_spec = data.get("json_spec", {})
+        json_spec = data.get("json_spec") or {}
+        if not isinstance(json_spec, dict):
+            json_spec = {}
+
+        # ── Canonical OCR text ─────────────────────────────────────────────
+        # Both image-paste and text-box paths go through /api/classify first.
+        # Classify stores the final ocr_text (after LaTeX normalisation) into
+        # json_spec["ocr_text"].  Using it here keeps both paths on the exact
+        # same execution track; we fall back to input_text only when json_spec
+        # is absent (e.g. direct API calls or old clients).
+        canonical_ocr_text = json_spec.get("ocr_text") or input_text
+
         route_mode = "text_engine_ab1" if ablation_mode else "text_engine_ab3"
         if input_text and image_data:
             image_data = None
@@ -571,12 +582,23 @@ def generate_live():
             api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
             
             # 3. DNA 物理裁剪 (apply_strict_mirroring)
-            ocr_text = json_spec.get("ocr_text", input_text or "")
+            # Use canonical_ocr_text (from classify) so image and text paths are identical.
+            ocr_text = canonical_ocr_text
             fraction_display_mode = _infer_fraction_display_mode(ocr_text, skill_id)
             decimal_style_mode = _has_decimal_number(ocr_text)
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
-            iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
-            template_id, template_text = _select_liveshow_structure_template(fp)
+            # Re-use pre-computed structural profile from classify when available.
+            if json_spec.get("operator_fingerprint"):
+                iso_block = json_spec.get("isomorphic_constraints", "")
+                fp = json_spec["operator_fingerprint"]
+                template_id = json_spec.get("structure_template_id", "")
+                template_text = json_spec.get("structure_template_text", "")
+                if not iso_block:
+                    iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
+                    template_id, template_text = _select_liveshow_structure_template(fp)
+            else:
+                iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
+                template_id, template_text = _select_liveshow_structure_template(fp)
             
             # 動態注入 OCR 結果
             live_show_content = live_show_content.replace("{{OCR_RESULT}}", ocr_text)
@@ -684,6 +706,7 @@ Template: {template_id}
                 ocr_text=ocr_text,
                 fraction_display_mode=fraction_display_mode,
                 live_file_display_mode=_LIVE_FILE_DISPLAY_MODE,
+                api_stubs=api_stubs,
                 optimize_live_execution_code_fn=_optimize_live_execution_code,
                 patch_fraction_skill_eval_calls_fn=_patch_fraction_skill_eval_calls,
                 advanced_healer_fn=_advanced_healer,
@@ -741,14 +764,14 @@ Template: {template_id}
         else:
             print(f">>> 🧭 [PATH] /api/generate_live route_mode={route_mode}")
             engine = get_engine()
-            enriched_input = input_text
+            # Use canonical_ocr_text so image-paste and text-box reach the same point.
+            enriched_input = canonical_ocr_text
             if not ablation_mode:
-                iso_block = ""
-                if isinstance(json_spec, dict):
-                    iso_block = json_spec.get("isomorphic_constraints", "")
+                # Re-use isomorphic constraints computed during classify when available.
+                iso_block = json_spec.get("isomorphic_constraints", "") if isinstance(json_spec, dict) else ""
                 if not iso_block:
-                    iso_block, _ = _build_isomorphic_constraints(input_text, json_spec if isinstance(json_spec, dict) else None)
-                enriched_input = f"{input_text}\n\n【題型同構硬性約束】\n{iso_block}"
+                    iso_block, _ = _build_isomorphic_constraints(canonical_ocr_text, json_spec if isinstance(json_spec, dict) else None)
+                enriched_input = f"{canonical_ocr_text}\n\n【題型同構硬性約束】\n{iso_block}"
 
             output = engine.generate_practice_set(
                 input_text=enriched_input,
@@ -1168,6 +1191,10 @@ def classify_input():
                         json_spec["structural_profile"] = op_fp
                         json_spec["structure_template_id"] = template_id
                         json_spec["structure_template_text"] = template_text
+                        # Canonical OCR text — stored here so generate_live can use exactly the
+                        # same text regardless of whether the original input was an image or a
+                        # text-box entry, keeping both paths on the same execution track.
+                        json_spec["ocr_text"] = ocr_text
                         process_logs.append(
                             f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, ops={op_fp.get('operator_count', 0)}, []={op_fp.get('bracket_count', 0)}, ||={op_fp.get('abs_count', 0)}"
                         )
@@ -1375,6 +1402,15 @@ def run_generated_code():
     fraction_display_mode = data.get("fraction_display_mode", "auto")
     source_ocr_text = data.get("ocr_text", "")
 
+    # ── Phase 4-C: 取得 json_spec（下一題結構化 profile）────────────────
+    json_spec = data.get("json_spec")
+    if not isinstance(json_spec, dict):
+        json_spec = {}
+    # 若 json_spec 帶有 ocr_text，以其為 source_ocr_text 的優先來源
+    if not source_ocr_text and json_spec.get("ocr_text"):
+        source_ocr_text = json_spec["ocr_text"]
+    # ────────────────────────────────────────────────────────────────────
+
     if file_path:
         try:
             _meta = _LIVE_FILE_DISPLAY_MODE.get(os.path.abspath(file_path), {})
@@ -1461,7 +1497,8 @@ def run_generated_code():
             "api_time": time.time() - start_time,
             "fixes": (healer_trace.get("regex_fixes", 0) or 0) + (healer_trace.get("ast_fixes", 0) or 0),
             "fraction_display_mode": _infer_fraction_display_mode(source_ocr_text or res.get("question_text", ""), skill_id),
-            "mcri": mcri_payload
+            "mcri": mcri_payload,
+            "json_spec": json_spec or {},   # Phase 4-C: 傳回 structural profile，供前端連鎖下一題使用
         }
         return jsonify(output)
         

@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^python -c \"\nimport re\ntext = open\\('core/engine/scaler\\.py', encoding='utf-8'\\)\\.read\\(\\)\n# find skill prompt loading logic\nlines = text\\.splitlines\\(\\)\nfor i, l in enumerate\\(lines\\):\n    if any\\(kw in l for kw in \\['SKILL\\.md', 'skill_prompt', 'skill_content', 'read_skill', 'load_skill', 'SKILL_END', 'MODE:'\\]\\):\n        print\\(f'\\{i\\+1:4\\}: \\{l\\}'\\)\n\"\n$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

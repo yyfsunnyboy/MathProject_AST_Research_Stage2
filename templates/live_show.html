@@ -2871,6 +2871,7 @@
             // --- 全域變數控制 ---
             let isAnalyzing = false;
             let resolvedSkillId = null;
+            let resolvedJsonSpec = null; // holds json_spec from /api/classify; same for image and text paths
 
             if (input) {
                 payload.text_data = input;
@@ -2907,6 +2908,9 @@
                 if (result.success) {
                     input = result.ocr_text; // use recognized or passed text
                     document.getElementById('promptInput').value = input; // populate UI
+                    // Keep the classify json_spec so generate_live receives the same
+                    // structural metadata regardless of image-paste vs text-box input.
+                    resolvedJsonSpec = result.json_spec || null;
 
                     if (result.structural_profile) {
                         updateStructureCompare({
@@ -2994,7 +2998,7 @@
             const modelIdAb1 = document.getElementById('model-select-ab1').value;
 
             const p3 = fetchParams(input, false, modelIdAb3, resolvedSkillId, null,
-                null)
+                resolvedJsonSpec)
                 .then(r2 => {
                     if (r2.ab2_result) {
                         renderResult('ab2', r2.ab2_result);
@@ -3019,7 +3023,7 @@
                     cpu_execution_time_sec: 0,
                     mcri: { total_score: 0 }
                 }).then(r1 => renderResult('ab1', r1))
-                : fetchParams(input, true, modelIdAb1, resolvedSkillId, null, null)
+                : fetchParams(input, true, modelIdAb1, resolvedSkillId, null, resolvedJsonSpec)
                     .then(r1 => renderResult('ab1', r1))
                     .catch(err => renderResult('ab1', { error: err.message }));
 

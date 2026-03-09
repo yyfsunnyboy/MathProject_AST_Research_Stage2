@@ -15,15 +15,29 @@ class SkillClassifier:
 
     def _discover_skills(self):
         """
-        動態掃描 agent_skills 目錄，獲取可用技能清單。
+        動態掃描 agent_skills 目錄。
+        優先讀取各子目錄的 skill.json["skill_id"] 作為技能 ID；
+        若 skill.json 不存在則退回目錄名稱。
         """
         project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
         skills_dir = os.path.join(project_root, "agent_skills")
         skills = []
         if os.path.exists(skills_dir):
             for d in os.listdir(skills_dir):
-                if os.path.isdir(os.path.join(skills_dir, d)):
-                    skills.append(d)
+                dir_path = os.path.join(skills_dir, d)
+                if not os.path.isdir(dir_path):
+                    continue
+                manifest_path = os.path.join(dir_path, "skill.json")
+                if os.path.isfile(manifest_path):
+                    try:
+                        with open(manifest_path, encoding="utf-8") as fh:
+                            meta = json.load(fh)
+                        sid = meta.get("skill_id", "").strip()
+                        skills.append(sid if sid else d)
+                        continue
+                    except Exception:
+                        pass
+                skills.append(d)
         return sorted(skills)
 
     def _get_system_prompt(self):

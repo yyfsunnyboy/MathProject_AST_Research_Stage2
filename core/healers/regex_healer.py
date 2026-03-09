@@ -817,7 +817,18 @@ class RegexHealer:
             
             # 3. 檢查剩餘內容是否有中文
             if re.search(r'[\u4e00-\u9fff]', line_no_strings):
-                # 中文出現在字串外部 -> 這是廢話
+                # 中文出現在字串外部
+                # ── 先試著只砍掉行內 inline comment (# 中文...) ──
+                # 例：v1 = random_nonzero(1,100)  # 正數 [1,100]
+                #  → 保留 "v1 = random_nonzero(1,100)"
+                line_stripped = re.sub(r'\s*#[^\n]*$', '', line).rstrip()
+                line_no_str2 = re.sub(string_pattern, '', line_stripped)
+                if re.search(r'[\u4e00-\u9fff]', line_no_str2):
+                    # 即使去掉 inline comment，行本身仍有中文 → 整行丟棄
+                    continue
+                # 只有 inline comment 含中文，保留程式碼部分
+                if line_stripped:
+                    cleaned_lines.append(line_stripped)
                 continue
             
             cleaned_lines.append(line)
