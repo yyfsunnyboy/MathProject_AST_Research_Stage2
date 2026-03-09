@@ -42,9 +42,15 @@ def collapse_double_numeric_parentheses(expr_text):
 
 def enforce_negative_parentheses(expr_text):
     """
-    將顯示算式中的「單元負數常數」統一為括號格式：
-    -3 -> (-3)
-    但已經是 (-3) 的不重複包裝。
+    將顯示算式中的「單元負數常數（或負混合分數）」統一為括號格式：
+    -3            -> (-3)
+    -4\\frac{1}{5} -> (-4\\frac{1}{5})   [FIX: 負混合分數整體包裝]
+    但已經是 (-3) 或 (-4\\frac{1}{5}) 的不重複包裝。
+
+    Bug 修正：原版只掃描數字部分，導致 -4\\frac{1}{5} 被誤包成
+    (-4)\\frac{1}{5}，負號僅覆蓋整數部分而非整個混合分數。
+    修正：掃到數字後若緊接 \\frac，繼續掃過兩個 {...} 大括號群，
+    使 already_wrapped 判斷能正確偵測外層括號。
     """
     if not expr_text:
         return expr_text, 0
@@ -64,6 +70,22 @@ def enforce_negative_parentheses(expr_text):
                 if j < len(compact) and compact[j].isdigit():
                     while j < len(compact) and compact[j].isdigit():
                         j += 1
+
+                    # [FIX] 若數字後緊接 \frac{a}{b}，將整個混合分數併入 token
+                    # 例：-4\frac{1}{5} → token="-4\frac{1}{5}"
+                    # 這樣 already_wrapped 才能正確偵測到外層 (...)
+                    if compact[j:j + 5] == '\\frac':
+                        j += 5  # skip '\frac'
+                        for _ in range(2):  # 掃過兩組 {分子}{分母}
+                            if j < len(compact) and compact[j] == '{':
+                                depth = 1
+                                j += 1
+                                while j < len(compact) and depth > 0:
+                                    if compact[j] == '{':
+                                        depth += 1
+                                    elif compact[j] == '}':
+                                        depth -= 1
+                                    j += 1
 
                     already_wrapped = (prev == '(' and j < len(compact) and compact[j] == ')')
                     token = compact[i:j]

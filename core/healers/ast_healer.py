@@ -98,8 +98,8 @@ class ASTHealer(ast.NodeTransformer):
             node.func.id = 'build_polynomial_text'
             return node
         
-        # 1. 攔截 eval/exec/safe_eval
-        target_funcs = ['eval', 'exec', 'safe_eval']
+        # 1. 攔截 eval/exec（safe_eval 是合法替換目標，不列入）
+        target_funcs = ['eval', 'exec']
         if isinstance(node.func, ast.Name) and node.func.id in target_funcs:
             self.fixes += 1
             self.logs.append(f"AST Healer: Replaced dangerous function {node.func.id}() with safe_eval()")

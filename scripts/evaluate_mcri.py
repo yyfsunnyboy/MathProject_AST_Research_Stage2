@@ -354,8 +354,8 @@ def evaluate_sympy_verification(question_text: str, correct_answer: str) -> Tupl
         def normalize_math(t):
             t = str(t).replace(r'\left', '').replace(r'\right', '').replace(r'\div', '/')
             t = t.replace(r'\times', '*').replace(r'\cdot', '*')
-            # 處理帶分數
-            t = re.sub(r'(\d+)\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1 + (\2)/(\3))', t)
+            # 處理帶分數：允許數字與 \frac 之間有空格（FractionOps.to_latex(mixed=True) 輸出如 "-2 \frac{3}{4}"）
+            t = re.sub(r'(\d+)\s*\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1 + (\2)/(\3))', t)
             t = re.sub(r'\\frac\{([^}]+)\}\{([^}]+)\}', r'(\1)/(\2)', t)
             t = t.replace('×', '*').replace('÷', '/').replace('[', '(').replace(']', ')')
             t = re.sub(r'\|([^|]+)\|', r'abs(\1)', t)
@@ -2757,10 +2757,22 @@ def evaluate_live_code(
         import ast as _ast
         ast_tree = _ast.parse(code)
         l1_score += 4.0
-        forbidden = {"eval", "exec"}
-        used = {node.id for node in _ast.walk(ast_tree)
-                if isinstance(node, _ast.Name) and node.id in forbidden}
-        if not used:
+        # [Fix] Only flag eval/exec in top-level functions (generate/check), NOT inside
+        # injected domain helper classes (e.g. IntegerOps.safe_eval calls eval() safely).
+        class _ForbiddenVisitor(_ast.NodeVisitor):
+            def __init__(self):
+                self._in_class = 0
+                self.found = False
+            def visit_ClassDef(self, node):
+                self._in_class += 1
+                self.generic_visit(node)
+                self._in_class -= 1
+            def visit_Name(self, node):
+                if node.id in {"eval", "exec"} and self._in_class == 0:
+                    self.found = True
+        _fv = _ForbiddenVisitor()
+        _fv.visit(ast_tree)
+        if not _fv.found:
             l1_score += 3.5
     except SyntaxError:
         l1_score = 0.0

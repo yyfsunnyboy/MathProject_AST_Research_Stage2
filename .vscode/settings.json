@@ -3,6 +3,10 @@
         "/^python -c \"\nimport re\ntext = open\\('core/engine/scaler\\.py', encoding='utf-8'\\)\\.read\\(\\)\n# find skill prompt loading logic\nlines = text\\.splitlines\\(\\)\nfor i, l in enumerate\\(lines\\):\n    if any\\(kw in l for kw in \\['SKILL\\.md', 'skill_prompt', 'skill_content', 'read_skill', 'load_skill', 'SKILL_END', 'MODE:'\\]\\):\n        print\\(f'\\{i\\+1:4\\}: \\{l\\}'\\)\n\"\n$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^\\$env:PYTHONUTF8=\"1\"; python -m py_compile core/routes/live_show\\.py core/routes/live_show_pipeline\\.py scripts/evaluate_mcri\\.py core/healers/live_show_healer\\.py core/healers/live_show_iso_guard\\.py core/code_utils/live_show_math_utils\\.py core/skill_policies/registry\\.py; if \\(\\$LASTEXITCODE -eq 0\\) \\{ Write-Host \"✅ All compile checks PASSED\" \\} else \\{ Write-Host \"❌ Compile check FAILED\" \\}$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

@@ -95,14 +95,12 @@ class FractionOps:
             if val.denominator == 1:
                 return str(val.numerator)
             if mixed and abs(val.numerator) > val.denominator:
-                whole = val.numerator // val.denominator
+                whole = abs(val.numerator) // val.denominator  # [Fix] use abs() to avoid Python floor-division error for negatives
                 remainder = abs(val.numerator) % val.denominator
                 if remainder == 0:
-                    return str(whole)
-                if whole == 0:
-                    return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
+                    return str(-whole if val < 0 else whole)
                 sign = "-" if val < 0 else ""
-                return f"{sign}{abs(whole)} \\frac{{{remainder}}}{{{val.denominator}}}"
+                return f"{sign}{whole} \\frac{{{remainder}}}{{{val.denominator}}}"
             return f"\\frac{{{val.numerator}}}{{{val.denominator}}}"
         return str(val)
     
@@ -130,7 +128,7 @@ class FractionOps:
 
 
 def generate(level=1, **kwargs):
-    for _ in range(30):
+    for _ in range(100):
         try:
             n1 = IntegerOps.random_nonzero(-99, 99)
             d1 = IntegerOps.random_nonzero(2, 10)
@@ -138,34 +136,21 @@ def generate(level=1, **kwargs):
             d2 = IntegerOps.random_nonzero(2, 10)
             n3 = IntegerOps.random_nonzero(-99, 99)
             d3 = IntegerOps.random_nonzero(2, 10)
-            f1 = Fraction(n1, d1)
-            f2 = Fraction(n2, d2)
-            f3 = Fraction(n3, d3)
-            eval_str_init = f'Fraction({n1}, {d1}) + Fraction({n2}, {d2}) - Fraction({n3}, {d3})'
-            ans_init = safe_eval(eval_str_init)
-            if isinstance(ans_init, Fraction) and ans_init.denominator > 120:
-                continue
-            if isinstance(ans_init, Fraction) and abs(ans_init.numerator) > 120 or ans_init.denominator > 36:
-                continue
-            f1_red = Fraction(n1, d1).limit_denominator()
-            f2_red = Fraction(n2, d2).limit_denominator()
-            f3_red = Fraction(n3, d3).limit_denominator()
-            math_str_f1 = FractionOps.to_latex(f1_red)
-            math_str_f2 = FractionOps.to_latex(f2_red)
-            math_str_f3 = FractionOps.to_latex(f3_red)
-            math_str = f'({math_str_f1}) + ({math_str_f2}) - ({math_str_f3})'
-            eval_str = f'Fraction({n1}, {d1}) + Fraction({n2}, {d2}) - Fraction({n3}, {d3})'
+            eval_str = f'Fraction({n1}, {d1}) / Fraction({n2}, {d2}) + Fraction({n3}, {d3})'
             ans = safe_eval(eval_str)
-            f_ans = Fraction(ans).limit_denominator()
-            if f_ans.denominator == 1:
-                correct_answer = str(f_ans.numerator)
-            else:
-                correct_answer = f'{f_ans.numerator}/{f_ans.denominator}'
+            if not isinstance(ans, Fraction) or abs(ans.numerator) > 120 or ans.denominator > 120:
+                continue
+            f1_str = FractionOps.to_latex(Fraction(n1, d1), mixed=True)
+            f2_str = FractionOps.to_latex(Fraction(n2, d2), mixed=True)
+            f3_str = FractionOps.to_latex(Fraction(n3, d3), mixed=True)
+            math_str = f'\\left({f1_str}\\right) \\div \\left({f2_str}\\right) + \\left({f3_str}\\right)'
             if '}{1}' in math_str:
                 continue
-            if '又' in math_str:
-                continue
-            return {'question_text': '計算 $' + math_str + '$ 的值。', 'answer': '', 'correct_answer': correct_answer, 'mode': 1, '_o1_healed': True}
+            if ans.denominator == 1:
+                correct_answer = str(ans.numerator)
+            else:
+                correct_answer = f'{ans.numerator}/{ans.denominator}'
+            return {'question_text': '計算 $' + math_str + '$ 的值。', 'answer': '', 'correct_answer': correct_answer, 'mode': 1, '_o1_healed': False}
         except Exception:
             continue
     return {'question_text': 'Error', 'answer': '', 'correct_answer': '0', 'mode': 1}

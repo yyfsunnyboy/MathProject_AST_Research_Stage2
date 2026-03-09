@@ -44,6 +44,11 @@ def run_ab2_interception(
     if ab2_exec_code.endswith("```"):
         ab2_exec_code = ab2_exec_code[:-3].rstrip()
 
+    # [Fix] Apply execution optimizer to Ab2 as well, so that oversized range/while
+    # loops are capped and time.sleep is stripped — same as Ab3.
+    # This ensures CPU time comparison is fair (not confounded by loop size).
+    ab2_exec_code = optimize_live_execution_code_fn(ab2_exec_code)
+
     ab2_result = {}
     ab2_save_dir = "generated_scripts"
     if not os.path.exists(ab2_save_dir):

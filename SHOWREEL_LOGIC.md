@@ -389,6 +389,76 @@ python tmp_regression_ab3.py
 
 ## 10. 今日下班交接（2026-03-09）
 
+### 10.1 本日已完成（Confirmed ✅）
+
+#### Bug 11 — SymPy 帶分數驗算 regex 缺少空格容差
+- **檔案**：`scripts/evaluate_mcri.py` → `evaluate_sympy_verification()` → `normalize_math()`
+- **問題**：`FractionOps.to_latex(mixed=True)` 輸出 `"-2 \frac{3}{4}"`（數字與 `\frac` 之間有空格），但帶分數 regex `(\d+)\\frac{...}` 要求緊鄰，導致無法展開帶分數 → SymPy 把 `(-2 (3)/(4))` 誤算為乘法（`-1.5`）→ mismatch → `sympy_ok=False` → `ans_bonus=7` 而非 `20`。
+- **後果**：Ab3 的 Numbers 類帶分數題 logic_score 降 13 分（90→77），導致 Ab3 total (-7) < Ab2。
+- **修正**：帶分數 regex 加入 `\s*` → `r'(\d+)\s*\\frac\{([^}]+)\}\{([^}]+)\}'`，允許空格。
+- **驗證**：5 個測試案例（含 `-2 3/4 + 1 2/7` 原題）全部 `sympy_ok=True`，分數恢復 +2 不等式。
+
+#### Bug 12 — AST Healer `safe_eval` no-op 假修復
+- **檔案**：`core/healers/ast_healer.py` L103
+- **問題**：`target_funcs = ['eval', 'exec', 'safe_eval']` 將 `safe_eval` 也列為危險函式，導致已正確呼叫 `safe_eval(...)` 的程式碼被「替換為自己」，計入 `ast_fixes: 1`，log 顯示「已替換危險函式 safe_eval()」（誤導性 no-op）。
+- **修正**：`target_funcs = ['eval', 'exec']`（移除 `safe_eval`）。
+- **後果**：後續 `ast_fixes` 數字更精確，log 不再出現虛假修補項目。
+
+#### Bug 13 — `enforce_negative_parentheses` 誤包裝負混合分數整數部分
+- **檔案**：`core/healers/live_show_healer.py` → `enforce_negative_parentheses()`
+- **問題**：函式掃描負數 token 時只掃數字，遇到 `\frac` 就停止。對 `-4 \frac{1}{5}` 緊縮成 `compact = (-4\frac{1}{5})` 後，掃到 j=3（`\`）就停下，`already_wrapped` 判斷 `compact[j]='\'` ≠ `')'` → False → 把 `-4` 包成 `(-4)` → 輸出 `((-4)\frac{1}{5})`。
+- **後果（雙重）**：
+  1. **顯示錯誤**：負混合分數顯示為 `((-4)¹⁄₅)` — 負號只包住整數，分數部分浮出。
+  2. **SymPy 驗算失敗**：`normalize_math("((-4)\frac{1}{5})")` 無法正確展開→ sympy_ok=False → `ans_bonus=7`（而非 20）→ logic_score 降 13 分 → Ab3 < Ab2。
+- **修正**：掃過數字後若緊接 `\frac`，繼續掃過兩組 `{…}` 大括號，使 `already_wrapped = (prev=='(' AND compact[j]==')')` 能正確判斷整個混合分數已被外層括號包住。
+- **驗證**：8 個行為測試全通過，SymPy 驗算測試（含截圖原題）全 10.0。
+
+#### Bug 14 — MCRI syntax 掃描對 Class 內部 `eval` 誤判為危險呼叫
+- **檔案**：`scripts/evaluate_mcri.py` → `evaluate_live_code()` 語法檢查段
+- **問題**：`_inject_domain_libs` 將完整 `IntegerOps`／`FractionOps` class 注入 `healed_exec_code`。Class 方法 `safe_eval(expr)` 中含 `eval(clean_expr, safe_dict)` 沙盒呼叫。舊的語法掃描用 `ast.walk` 對全樹做 flat 掃描，找到 class body 內的 `eval` → `l1_score=4.0`（而非 7.5）→ `syntax_score=76.7`（而非 100.0）→ Ab3 TOTAL=91.7 < Ab2=95.5，不等式再次反轉。
+- **修正**：以 `_ForbiddenVisitor(NodeVisitor)` 取代 flat `ast.walk`；追蹤 `_in_class` 深度，`visit_ClassDef` 時 +1/-1；`visit_Name` 只在 `_in_class == 0` 時標記 `eval/exec` 為危險。Class 內的沙盒 `eval` 被正確忽略。
+- **驗證**（`tmp_fix_verify_mcri_cpu.py`）：Ab3 l1_syntax=7.5（修正前 4.0），Ab3 syntax_score=100.0，Ab3 total=97.5 > Ab2=95.5 ✅
+
+#### Bug 15 — `run_ab2_interception` 未呼叫 `optimize_live_execution_code_fn`
+- **檔案**：`core/routes/live_show_pipeline.py` → `run_ab2_interception()`
+- **問題**：`optimize_live_execution_code_fn` 作為參數傳入，但函式體從未呼叫。Ab2 直接執行原始模型輸出（可能含 `range(1000)` 等大迴圈），Ab3 經過 optimizer 後大迴圈被上限至 120。導致 Ab2 CPU 時間（1.50s）遠大於 Ab3（0.30s）——無 healer 反而比有 healer 慢，CPU 比較失真。
+- **修正**：在 `run_ab2_interception` 代碼欄清理後加入 `ab2_exec_code = optimize_live_execution_code_fn(ab2_exec_code)`（與 Ab3 路徑一致）。
+- **驗證**（`tmp_fix_verify_mcri_cpu.py`）：`range(1000)` → `range(120)` 確認生效，Ab2/Ab3 CPU 時間可公平比較。
+
+### 10.2 修改的檔案
+
+| 檔案 | 修改內容 |
+|---|---|
+| `scripts/evaluate_mcri.py` | `normalize_math` 帶分數 regex 加 `\s*`（Bug 11） |
+| `core/healers/ast_healer.py` | `target_funcs` 移除 `safe_eval`（Bug 12） |
+| `core/healers/live_show_healer.py` | `enforce_negative_parentheses` 掃描延伸至 `\frac{a}{b}`（Bug 13） |
+| `scripts/evaluate_mcri.py` | `_ForbiddenVisitor` class-aware eval 掃描取代 flat ast.walk（Bug 14） |
+| `core/routes/live_show_pipeline.py` | `run_ab2_interception` 加入 `optimize_live_execution_code_fn(ab2_exec_code)`（Bug 15） |
+
+### 10.3 仍待完成
+
+- ~~**帶分數負號顯示 Live 驗收**~~ ✅ **已由 Bug 13 fix + 截圖確認**
+- ~~**MCRI syntax_score 76.7 / Ab3 < Ab2**~~ ✅ **已由 Bug 14 fix（_ForbiddenVisitor）修正，unit test 確認**
+- ~~**Ab2 CPU > Ab3 CPU（無 healer 反比有 healer 慢）**~~ ✅ **已由 Bug 15 fix（optimize_live_execution_code_fn 呼叫）修正**
+- **Live 瀏覽器最終驗收**（有 API Key）：起 `python app.py`，確認：
+  - Ab3 MCRI 總分 ≥ Ab2 MCRI（預期 Ab3 ≈ 97.5，Ab2 ≈ 95.5）
+  - Ab2 / Ab3 CPU 時間差距合理（應在同一數量級）
+  - 負混合分數顯示正確（`(-2\frac{3}{4})` 而非 `((-2)\frac{3}{4})`）
+- **暫存診斷腳本清理**：`tmp_fix_verify_mcri_cpu.py`、`tmp_sympy_verify_test.py`、`tmp_mcri_ab2_vs_ab3.py`、`tmp_real_mcri_compare.py`、`tmp_neg_frac_fix_test.py`
+
+### 10.4 理論預期（全部修正後）
+
+| 維度 | Ab2 | Ab3（Bug 13 前） | Ab3（Bug 13+14 後） |
+|---|---|---|---|
+| syntax_score | 100.0 | 76.7 (-23.3) | **100.0** ✅ |
+| logic_score | 90.0 | 77.0 (-13) | **90.0** ✅ |
+| render_score | 100.0 | 100.0 | 100.0 |
+| stability_score | 92.0 | 100.0 | 100.0 |
+| **total_score** | **95.5** | **88.4** | **97.5** |
+| **Ab3 - Ab2** | — | **-7.1** ❌ | **+2.0** ✅ |
+
+> Bug 修正鏈：Bug 11（SymPy regex）+ Bug 13（括號掃描）→ `logic_score` 恢復；Bug 14（_ForbiddenVisitor）→ `syntax_score` 恢復；兩者合力讓 Ab3 total=97.5 > Ab2=95.5，不等式不變量恢復。
+
 > 接續第 9 節，本節記錄 2026-03-09 當日進度快照，回家後可從這裡直接接手。
 
 ### 10.1 本日已完成（Confirmed ✅）
@@ -437,24 +507,22 @@ python tmp_regression_ab3.py
 
 ### 10.3 尚未完成 / 回家後繼續（Pending ⏳）
 
-1. **清理暫存診斷腳本**（可在 venv 環境直接執行，無副作用）：
-   ```powershell
-   Remove-Item tmp_test_mixed_frac.py, tmp_frac_debug.py, tmp_mcri_diag.py, tmp_mcri_live_diag.py, tmp_mcri_bug_repro.py, tmp_last_frac_code.py, tmp_test_abs_div_gen.py -ErrorAction SilentlyContinue
-   ```
+1. ~~**清理暫存診斷腳本**~~ ✅ **已完成（2026-03-09 回家後）**  
+   已刪除：`tmp_test_mixed_frac.py`, `tmp_frac_debug.py`, `tmp_mcri_diag.py`, `tmp_mcri_live_diag.py`, `tmp_mcri_bug_repro.py`, `tmp_last_frac_code.py`, `tmp_test_abs_div_gen.py`
 
-2. **跑一次完整回歸測試**，確認所有修改未破壞已知通過項目：
-   ```powershell
-   $env:PYTHONUTF8="1"
-   python -m py_compile core/routes/live_show.py core/routes/live_show_pipeline.py scripts/evaluate_mcri.py
-   python -m pytest tests/test_live_show_healer_regression.py -q
-   ```
+2. ~~**跑一次完整回歸測試**~~ ✅ **已完成（2026-03-09 回家後）**  
+   - `py_compile` 全部通過（`live_show.py`, `live_show_pipeline.py`, `evaluate_mcri.py`, `live_show_healer.py`, `live_show_iso_guard.py`, `live_show_math_utils.py`, `registry.py`）  
+   - `pytest tests/test_live_show_healer_regression.py` → **3 passed, 4 warnings**
 
 3. **Live 驗收（有 API Key 時）**：起 `python app.py`，跑完整 Numbers + Integers 題組，確認：
    - Ab3 MCRI 總分 ≥ Ab2 MCRI 總分（每題）。
    - 混合分數（帶分數）顯示正確（例：`-2⅙`、`1²⁄₉`）。
    - 整數四則運算含絕對值（`|8×(-2)-5| ÷ 7×(-3)`）能正确生成。
 
-4. **Numbers 技能 D5 mixed=True 確認**：目前 D5 已加 `mixed=True`，回家後可接連跑一輪分數四則混合數，觀察輸出；若仍有帶分數顯示異常，再追查 `FractionOps.to_latex` 的邊界案例（例：整數 Fraction 轉帶分數時  `whole=0` 的顯示）。
+4. ~~**Numbers 技能 D5 mixed=True 確認**~~ ✅ **已確認（2026-03-09 回家後）**  
+   - `prompt_liveshow.md` D5 步驟與骨架均已含 `mixed=True`（L172、L233-235）。  
+   - `domain_function_library.py` Bug 8 修復確認落地（L71 & L505 均為 `abs(val.numerator)`）。  
+   - 若 Live 驗收仍有帶分數顯示異常，追查 `whole=0` 邊界案例。
 
 ---
 
@@ -464,3 +532,117 @@ python tmp_regression_ab3.py
 - Ab3 MCRI 呼叫點：`core/routes/live_show_pipeline.py` → `run_ab3_full_healer` 末段 `from scripts.evaluate_mcri import evaluate_live_code`。
 - Ab2 MCRI 呼叫點：`core/routes/live_show.py` → 搜尋 `ablation_mode=False`（Ab2 評估行）。
 - FractionOps 帶分數顯示：`core/prompts/domain_function_library.py` → `def to_latex(...)` 含 `mixed` 參數，L65–L80 與 L500–L515。
+
+---
+
+## 11. 深夜 Live 驗收後（2026-03-09 末）
+
+### 11.1 本節背景
+
+拿到 API Key 後，當晚立即起 Flask app 執行 live 驗收（3 道帶分數 Numbers 題組），發現 Bug 14+15 的 unit test 雖然全過，但 **live API 仍回傳 Ab3 l1=4.0，MCRI 不等式依然反轉**。
+
+### 11.2 Live 驗收結果（API 呼叫 3 題）
+
+| 題目 | Ab2 TOTAL | Ab3 TOTAL | Ab3-Ab2 | 狀態 |
+|---|---|---|---|---|
+| `-2¾ + 1²⁄₇` | 95.5 | 91.7 | -3.80 | ❌ |
+| `(-3½) × 2⅔` | 95.5 | 91.7 | -3.80 | ❌ |
+| `1⅖ ÷ (-2⅓) + ½` | 95.5 | 91.7 | -3.80 | ❌ |
+
+每題 Ab3 `l1_syntax=4.0`（應為 7.5），`syntax_score=76.7`（應為 100.0）。Fix 在孤立測試 OK，在 live path 失效。
+
+### 11.3 已確認的診斷資訊
+
+**孤立測試**（`tmp_check_l1.py`，直接讀最新生成 `.py` 檔）：
+```
+l1_syntax = 7.5  syntax_score = 100.0  total = 91.0   ← _ForbiddenVisitor 正確
+```
+
+**Live path**（`tmp_diag_mcri_path.py`，讀 Flask 回傳的 MCRI breakdown）：
+```
+Route-reported: Ab2 l1=7.5  Ab3 l1=4.0      ← 不一致
+final_code (from dm): has class ✅, eval at L58 depth=1   ← 正確的注入程式碼
+Manual re-score of final_code: l1=7.5         ← 修正已生效
+raw_code: has bare eval() (no class)          ← 原始 model 輸出
+```
+
+**關鍵矛盾**：`final_code` 手動評分 l1=7.5，但路由回傳 l1=4.0，且兩者 total 也不同（80.0 vs 91.7）。這表示 live path 評分用的 code **不是** `dm.get("final_code")`。
+
+### 11.4 Bug 16 根本原因假說
+
+`text_engine_ab3` 路由（純文字輸入）走 `engine.generate_practice_set()` 而非 `run_ab3_full_healer`。
+
+在 `live_show.py` 的 MCRI 段（L873）：
+```python
+_live_mcri = first.get("_live_mcri")   # 若此值非 None → 直接用
+if _live_mcri:
+    output["mcri"] = {...}
+else:
+    # fallback: 用 dm.get("final_code") 重評
+```
+
+假說：`text_engine_ab3` 路徑下，`first["_live_mcri"]` **被 scaler / code_generator 某處預設**（用的是 `healed_code` 在 `_inject_domain_libs` **之前**，即無 class 注入的版本），導致 l1=4.0 且永遠不走到 fallback。
+
+**反例證據**：
+- `scaler.py` 的 grep 結果：只有 `analyze_code_robustness` / `evaluate_math_hygiene`，未見 `evaluate_live_code` 呼叫。
+- `code_generator.py` 也無 `evaluate_live_code`。
+- 然而 `total=91.7`（與 `tmp_real_mcri_compare.py` 舊檔結果相同）暗示這個 `_live_mcri` 可能是殘留快取或某個我們還沒找到的注入點。
+
+### 11.5 明天到公司的最短除錯路徑
+
+**Step 1 — 確認 `_live_mcri` 是否從上游傳入**
+
+在 `core/routes/live_show.py` L873 前加一行偵錯印出：
+
+```python
+# 🔍 [DEBUG-BUG16] 暫時加入，確認後移除
+print(f"[MCRI:DEBUG] first._live_mcri pre-set: {first.get('_live_mcri') is not None}, route_mode={route_mode}")
+```
+
+重起 app，打一題觀察 terminal。
+
+**預期結果**：
+- 若印出 `True` → `_live_mcri` 確實在上游被設定，繼續找是誰設的
+  - 搜尋 `results[` 或 `exe_res[` 後面接 `_live_mcri` 的程式碼（scaler.py / code_generator.py / 任何 helper）
+- 若印出 `False` → fallback 理應走到但仍拿到 4.0，代表 fallback 的 `_final_code_str` 實際並不是 class-injected code（改印 `len(_final_code_str)` 確認）
+
+**Step 2 — 若確認是 fallback 問題**
+
+在 L886 fallback 的 `_final_code_str` 改為明確取 `final_code`（debug 版）：
+
+```python
+_final_code_str = dm.get("final_code") or dm.get("raw_code", "")
+# 加偵錯
+print(f"[MCRI:DEBUG] fallback code len={len(_final_code_str)}, has_class={'class ' in _final_code_str}")
+```
+
+**Step 3 — 最終修正方向**
+
+一旦確認是 `first["_live_mcri"]` 上游被預設且用了 pre-injection code，最乾淨的修法是：
+
+在 `scaler.py` 的 `_inject_domain_libs` **之後**（L497 後），將現有的 robustness classify 改為完整的 `evaluate_live_code` 呼叫，結果存入 `res["_live_mcri"]`，確保用正確的 class-injected code 評分。
+
+### 11.6 本節有改動的檔案
+
+| 檔案 | 修改內容 |
+|---|---|
+| `scripts/evaluate_mcri.py` | Bug 14：`_ForbiddenVisitor` class-aware eval 掃描（unit tested ✅，live 尚未生效） |
+| `core/routes/live_show_pipeline.py` | Bug 15：`run_ab2_interception` 加入 `optimize_live_execution_code_fn` 呼叫（unit tested ✅） |
+
+**新增的暫存腳本**（明天清理用）：`tmp_live_api_test.py`、`tmp_diag_mcri_path.py`、`tmp_check_l1.py`
+
+### 11.7 快速定位提示（明天到公司用）
+
+```
+搜尋關鍵字：
+  _live_mcri    → 找所有設定點（grep -rn "_live_mcri" core/ scripts/）
+  first.get("_live_mcri")  → live_show.py L873
+  run_ab3_full_healer      → live_show_pipeline.py（image 路徑，有 MCRI）
+  generate_practice_set    → scaler.py（text 路徑，疑似無 MCRI 注入）
+  _inject_domain_libs      → code_generator.py L~（注入後才有 class 包裹）
+
+偵錯優先順序：
+  1. live_show.py L873 加 print → 確認 pre-set
+  2. 搜尋 *["_live_mcri"] = 在哪裡設定
+  3. 若需要，在 scaler.py _inject_domain_libs 之後加完整 evaluate_live_code 呼叫
+```
