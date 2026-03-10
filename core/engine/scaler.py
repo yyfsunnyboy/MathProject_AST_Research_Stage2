@@ -489,7 +489,10 @@ class AdaptiveScaler:
 
                 # [執行完整 Healer + 函式庫注入]
                 healed_code, *healer_stats = _advanced_healer(clean_code, ablation_id=active_ablation_id, skill_id=skill_name)
-                
+                # [Bug 16 Fix] If AST healer exited early, bare eval() may remain.
+                # Replace before injection so MCRI static analysis sees safe_eval().
+                healed_code = re.sub(r'\beval\s*\(', 'safe_eval(', healed_code)
+
                 # [核心優化]：在代碼中注入可見的修復痕跡
                 healed_code = self._inject_healer_tags(healed_code, raw_code, target_ops)
                 

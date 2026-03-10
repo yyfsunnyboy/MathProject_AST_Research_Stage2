@@ -166,6 +166,10 @@ def run_ab3_full_healer(
         optimize_live_execution_code_fn(healed_code),
         skill_id,
     )
+    # [Bug 16 Fix] If AST healer exited early (e.g. syntax-repair loop), bare eval()
+    # may survive.  Replace now so MCRI static scan sees safe_eval() instead.
+    import re as _re16
+    healed_exec_code = _re16.sub(r'\beval\s*\(', 'safe_eval(', healed_exec_code)
 
     try:
         exe_res = scaler._execute_code(healed_exec_code, level=1)

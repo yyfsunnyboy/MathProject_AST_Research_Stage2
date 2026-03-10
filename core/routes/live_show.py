@@ -1173,6 +1173,11 @@ def classify_input():
                 if json_match:
                     clean_json_str = json_match.group(0)
                     try:
+                        # [Bug 17 Fix] Qwen3-VL may return raw LaTeX sequences like \div \times
+                        # inside JSON string values. These are invalid JSON escape sequences and
+                        # cause json.loads() to raise JSONDecodeError: Invalid \escape.
+                        # Escape any backslash NOT followed by a valid JSON escape character.
+                        clean_json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', clean_json_str)
                         parsed_res = json.loads(clean_json_str)
                         ocr_text = parsed_res.get("ocr_text", text_data.strip() if text_data else "")
                         raw_skill_id = parsed_res.get("skill_id", "Unknown")

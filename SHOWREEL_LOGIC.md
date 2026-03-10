@@ -8,6 +8,7 @@
 - 不要在 route 新增硬編碼 skill mapping；技能策略與 alias 一律進 policy registry。
 - 改技能行為優先順序：policy 檔 → healer/code_utils → 最後才 route。
 - 修補計數必須可追溯（Code / Display / AST / O1）。
+- **[2026-03-10] Bug 16 已修復**：AST healer 提前退出（語法修復迴圈超次）時留下的 bare `eval()` 現在由 pipeline 的 regex 後處理修正（`\beval\s*\(` → `safe_eval(`），確保 MCRI l1_syntax 永遠 ≥ 7.5（不因 healer 部分失敗而降）。
 - 每次修改後至少跑 compile 與 `tests/test_live_show_healer_regression.py`。
 - 新技能接入原則：優先 policy-only；只有規則不足才擴充 healer/code_utils。
 
@@ -645,4 +646,83 @@ print(f"[MCRI:DEBUG] fallback code len={len(_final_code_str)}, has_class={'class
   1. live_show.py L873 加 print → 確認 pre-set
   2. 搜尋 *["_live_mcri"] = 在哪裡設定
   3. 若需要，在 scaler.py _inject_domain_libs 之後加完整 evaluate_live_code 呼叫
+```
+
+---
+
+## 12. 今日下班交接（2026-03-10）
+
+### 12.1 本日已完成（Confirmed ✅）
+
+#### Bug 16 根本原因確認 + 修復
+
+**根本原因鏈**：
+1. 模型（Qwen3-VL 或 Gemini）偶爾輸出含語法錯誤 + `eval()` 的程式碼。
+2. AST Healer 執行語法修復迴圈（最多 5 次刪除語法錯誤行）→ 若仍無法 parse，直接從 `except` 分支返回，`self.fixes > 0`（語法行刪除計入）但 `visit_Call`（替換 `eval`→`safe_eval`）**從未執行**。
+3. 返回的 `healed_code` 仍含 bare `eval()`。
+4. IMAGE PATH：`healed_exec_code = patch(optimize(healed_code))` 仍有 `eval()` → MCRI 靜態掃描 `_ForbiddenVisitor` 找到 depth=0 的 `eval` → `l1_syntax=4.0` → `syntax_score=76.7` → `Ab3 total=91.7 < Ab2=95.5`。
+5. `total_fixes = regex_fixes + ast_fixes > 0`（語法修復行計入）→ `stability_score=100.0`（ROBUST+healer），與 l1=4.0 同時存在，造成「healer 有執行但 eval 沒修好」的假象。
+
+**修復方案（Bug 16 Fix）**：
+- 在 `eval()` 被傳給 `evaluate_live_code` 之前，加一個保底 regex pass：
+  - `re.sub(r'\beval\s*\(', 'safe_eval(', healed_exec_code)` — IMAGE PATH
+  - `re.sub(r'\beval\s*\(', 'safe_eval(', healed_code)` — TEXT PATH（注入前）
+- `\beval` 不匹配 `safe_eval` 中的 `eval`（前接 `_` 是 word char，無 word boundary），安全。
+
+**修改的檔案**：
+| 檔案 | 修改內容 |
+|---|---|
+| `core/routes/live_show_pipeline.py` | `healed_exec_code` 計算後加 `re.sub(r'\beval\s*\(', 'safe_eval(', ...)` |
+| `core/engine/scaler.py` | `_advanced_healer` 後 `healed_code` 加 `re.sub(r'\beval\s*\(', 'safe_eval(', ...)` |
+
+**驗證結果**（`tmp_bug16_integration_test.py`）：
+```
+BEFORE fix: l1=4.0, syntax=76.7, total=82.7
+AFTER  fix: l1=7.5, syntax=100.0, total=88.5
+Ab2 MCRI:   l1=4.0, syntax=76.7, total=79.7
+Ab3 MCRI:   l1=7.5, syntax=100.0, total=88.5
+Ab3 - Ab2 = +8.8
+PASS: Ab3 >= Ab2 invariant maintained after Bug 16 fix.
+```
+
+### 12.2 理論預期（全部修正後）
+
+| 維度 | Ab2 | Ab3（Bug 16 前，healer 失敗） | Ab3（Bug 16 後，最壞情況） |
+|---|---|---|---|
+| l1_syntax | 7.5 | 4.0 ← Bug | **7.5** ✅ |
+| syntax_score | 100.0 | 76.7 | **100.0** ✅ |
+| logic_score | 90.0 | 90.0 | 90.0 |
+| render_score | 100.0 | 100.0 | 100.0 |
+| stability_score | 92.0 | 100.0 | 100.0 |
+| **total_score** | **95.5** | **91.7** ❌ | **97.5** ✅ |
+| **Ab3 - Ab2** | — | **-3.8** ❌ | **+2.0** ✅ |
+
+### 12.3 尚待完成
+
+1. **Live 瀏覽器最終驗收**（有 API Key + Qwen3-VL 運行時）：
+   - 啟動 `python app.py`，測試 Numbers + Integers 帶分數題組。
+   - 確認每題 `Ab3 total >= Ab2 total`（不等式不變量）。
+   - 確認 l1_syntax=7.5（syntax_score=100.0）。
+   - 確認帶分數顯示正確（如 `-2¾` 而非 `((-2)\frac{3}{4})`）。
+
+2. **清理暫存腳本**：
+   - `tmp_bug16_diag.py`, `tmp_bug16_integration_test.py`（本次新增）
+   - `tmp_live_api_test.py`, `tmp_diag_mcri_path.py`, `tmp_check_l1.py`（昨日遺留）
+
+### 12.4 最低驗證命令（每次改完必跑）
+
+```bash
+python -m py_compile core/routes/live_show.py core/routes/live_show_pipeline.py core/engine/scaler.py scripts/evaluate_mcri.py
+python tests/test_live_show_healer_regression.py
+python tmp_bug16_integration_test.py
+```
+
+### 12.5 快速定位提示
+
+```
+Bug 16 修復位置：
+  IMAGE PATH: core/routes/live_show_pipeline.py → healed_exec_code 計算後 ~L168
+  TEXT  PATH: core/engine/scaler.py → _advanced_healer 後 ~L492
+  不變式驗證: tmp_bug16_integration_test.py
+  MCRI 評分邏輯: scripts/evaluate_mcri.py → evaluate_live_code() → _ForbiddenVisitor
 ```
