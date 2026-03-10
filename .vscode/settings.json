@@ -7,6 +7,10 @@
         "/^\\$env:PYTHONUTF8=\"1\"; python -m py_compile core/routes/live_show\\.py core/routes/live_show_pipeline\\.py scripts/evaluate_mcri\\.py core/healers/live_show_healer\\.py core/healers/live_show_iso_guard\\.py core/code_utils/live_show_math_utils\\.py core/skill_policies/registry\\.py; if \\(\\$LASTEXITCODE -eq 0\\) \\{ Write-Host \"✅ All compile checks PASSED\" \\} else \\{ Write-Host \"❌ Compile check FAILED\" \\}$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^& python -c \"import requests; r=requests\\.get\\('http://127\\.0\\.0\\.1:11434/api/tags'\\); print\\(r\\.json\\(\\)\\)\"$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

@@ -1095,11 +1095,11 @@ def classify_input():
 
 輸出格式要求（skill_id 必須是上面清單中的確切字串）：
 {{
-  "ocr_text": "12 \\div (-4) \\times (-3)", // 絕對禁止在這裡放入任何解題步驟、文字解說或 markdown，只能有 LaTeX 算式！
+  "ocr_text": "12 \\div (-4) \\times (-3)",
   "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
-    "confidence": 95
+  "confidence": 95
 }}
-[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。
+[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。嚴禁在 JSON 內加入 // 注解或任何額外文字。
 """
                 msg_content = [
                     {"type": "text", "text": prompt_text},
@@ -1119,11 +1119,11 @@ def classify_input():
 
 輸出格式要求（skill_id 必須是上面清單中的確切字串）：
 {{
-  "ocr_text": "{text_data.strip()}", // 絕對禁止在這裡放入任何解題步驟、文字解說或 markdown，只能有 LaTeX 算式！
+  "ocr_text": "{text_data.strip()}",
   "skill_id": "對應的資料夾名稱",
-    "confidence": 95
+  "confidence": 95
 }}
-[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。
+[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。嚴禁在 JSON 內加入 // 注解或任何額外文字。
 """
                 msg_content = prompt_text
 
@@ -1146,7 +1146,7 @@ def classify_input():
                 "stream": False,
                 "options": {
                     "temperature": vl_config.get("temperature", 0.1),
-                    "num_ctx": 4096,  # 針對單行算式小圖優化，加快速回應
+                    "num_ctx": 8192,  # 升至 8192：圖片 token 消耗大，避免截斷 <think> 閉合標籤
                     "num_gpu": -1,
                     "repeat_penalty": 1.05
                 }
@@ -1166,9 +1166,25 @@ def classify_input():
                 import re
                 import json
 
-                # 1. 更強力的 JSON 提取 (包含 <think> 標籤也能用貪婪搜索強行拉出)
+                # 1. 清除 <think>...</think> 區塊
+                # 同時處理兩種情況：
+                #   a) 正常閉合：<think>...</think>
+                #   b) 未閉合（num_ctx 截斷導致 </think> 消失）：<think>...[EOF]
+                raw_out_clean = re.sub(r'<think>.*?</think>', '', raw_out, flags=re.DOTALL)
+                # 若仍有 <think> 開頭但沒閉合，截掉從 <think> 開始的所有內容
+                raw_out_clean = re.sub(r'<think>.*', '', raw_out_clean, flags=re.DOTALL)
+                raw_out_clean = raw_out_clean.strip()
+                # 若剝除思考區塊後為空（模型只輸出 think），退回原始文字並嘗試找 JSON
+                if not raw_out_clean:
+                    raw_out_clean = raw_out
+
+                # 2. 清除 ```json ... ``` 包裝（模型可能照搬 markdown 格式）
+                raw_out_clean = re.sub(r'```(?:json)?\s*', '', raw_out_clean).strip()
+                raw_out_clean = raw_out_clean.replace('```', '').strip()
+
+                # 3. JSON 提取：在已清理的文字中搜尋
                 # 解決 LaTeX 大括號干擾：嘗試抓出整個 JSON 字串
-                json_match = re.search(r'(\{.*\})', raw_out, re.DOTALL)
+                json_match = re.search(r'(\{.*\})', raw_out_clean, re.DOTALL)
 
                 if json_match:
                     clean_json_str = json_match.group(0)
@@ -1178,6 +1194,9 @@ def classify_input():
                         # cause json.loads() to raise JSONDecodeError: Invalid \escape.
                         # Escape any backslash NOT followed by a valid JSON escape character.
                         clean_json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', clean_json_str)
+                        # 清除模型照抄 prompt 範例的 // 行尾注解（JSON 不支援注解）
+                        # 只清除字串值外面的注解，安全做法：移除行尾 //... 的部分
+                        clean_json_str = re.sub(r'\s*//[^\n"]*', '', clean_json_str)
                         parsed_res = json.loads(clean_json_str)
                         ocr_text = parsed_res.get("ocr_text", text_data.strip() if text_data else "")
                         raw_skill_id = parsed_res.get("skill_id", "Unknown")
@@ -1239,12 +1258,13 @@ def classify_input():
                         print(f">>> ✅ Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
                         
                     except json.JSONDecodeError as e:
-                        print(f">>> ❌ JSON 解析失敗: {e}。原始輸出: {raw_out}")
+                        print(f">>> ❌ JSON 解析失敗: {e}")
+                        print(f">>> ❌ 清理後文字(前500字): {repr(raw_out_clean[:500])}")
                         skill_name = "Unknown"
                         # [容錯] 儘量保留 ocr_text 給後端使用，而非直接丟失
                         ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
                 else:
-                    print(">>> ❌ 找不到 JSON 結構")
+                    print(f">>> ❌ 找不到 JSON 結構。清理後文字(前500字): {repr(raw_out_clean[:500])}")
                     skill_name = "Unknown"
                     ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
             except requests.exceptions.HTTPError as e:

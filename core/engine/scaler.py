@@ -492,6 +492,29 @@ class AdaptiveScaler:
                 # [Bug 16 Fix] If AST healer exited early, bare eval() may remain.
                 # Replace before injection so MCRI static analysis sees safe_eval().
                 healed_code = re.sub(r'\beval\s*\(', 'safe_eval(', healed_code)
+                # [Bug 16 Fix — source] Strip extra args (globals/locals dicts) from
+                # safe_eval() calls using AST so expressions with parens are handled safely.
+                # The polyfill also accepts *args as a runtime safety net, but this ensures
+                # clean code reaches downstream MCRI analysis.
+                try:
+                    import ast as _ast, astunparse as _astunparse
+
+                    class _StripSafeEvalArgs(_ast.NodeTransformer):
+                        def visit_Call(self, node):
+                            self.generic_visit(node)
+                            if (isinstance(node.func, _ast.Name)
+                                    and node.func.id == 'safe_eval'
+                                    and len(node.args) > 1):
+                                node.args = [node.args[0]]
+                                node.keywords = []
+                            return node
+
+                    _tree = _ast.parse(healed_code)
+                    _tree = _StripSafeEvalArgs().visit(_tree)
+                    _ast.fix_missing_locations(_tree)
+                    healed_code = astunparse.unparse(_tree).strip()
+                except Exception:
+                    pass  # AST strip is best-effort; polyfill handles runtime
 
                 # [核心優化]：在代碼中注入可見的修復痕跡
                 healed_code = self._inject_healer_tags(healed_code, raw_code, target_ops)
@@ -679,7 +702,9 @@ def check(user_answer, correct_answer):
         Fraction = importlib.import_module("fractions").Fraction
         
         # [Fallback Polyfill] 為了壓制 AI 發瘋硬要呼叫 safe_eval 的幻覺，並且處理 LaTeX 語法
-        def _safe_eval_polyfill(expr):
+        # *_ignored_args accepts extra positional args (e.g. globals/locals dict) that
+        # Python's built-in eval() takes; generated code may call eval(expr, {...}) with 2 args.
+        def _safe_eval_polyfill(expr, *_ignored_args, **_ignored_kwargs):
             try:
                 import re
                 from fractions import Fraction
