@@ -726,3 +726,83 @@ Bug 16 修復位置：
   不變式驗證: tmp_bug16_integration_test.py
   MCRI 評分邏輯: scripts/evaluate_mcri.py → evaluate_live_code() → _ForbiddenVisitor
 ```
+
+---
+
+### 12.6 今日補充進度（2026-03-10 下午）
+
+#### classify_input 健壯性補強（Bug 17 / 18 / 19 + classify robustness）
+
+**背景**：Qwen3-VL `qwen3-vl:8b-instruct-q4_k_m` 在 thinking mode 下會先輸出 `<think>...</think>` 推理區塊，區塊內也含 `{...}` JSON 結構，但不是實際答案 JSON。加上模型可能照抄 prompt 範例加入 `// 注解`，或直接在 `ocr_text` 欄位放 LaTeX 反斜線（如 `\div`），導致 `json.loads()` 失敗或抓錯內容。
+
+**修改的檔案**：`core/routes/live_show.py` → `classify_input()`（約 L1155–L1250）
+
+| Bug | 問題 | 修正 |
+|---|---|---|
+| **Bug 17** | Qwen3-VL 在 JSON `ocr_text` 欄位輸出 `\div`、`\times` 等 LaTeX 字元。這些是非法 JSON escape sequence，`json.loads()` 拋出 `JSONDecodeError: Invalid \escape`。 | `json.loads()` 前加 `re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', clean_json_str)` 轉義非 JSON 反斜線。 |
+| **Bug 18** | Qwen3-VL thinking mode 輸出 `<think>...</think>` 區塊，內含假 JSON `{...}`，舊程式直接抓第一個 `\{.*\}` → 誤取假 JSON → `skill_id = "Unknown"` 或解析失敗。另有 `num_ctx=4096` 截斷導致 `</think>` 消失（未閉合 think）的邊緣情況。 | 加兩段 `re.sub` 清除：`<think>.*?</think>`（閉合，DOTALL）與 `<think>.*`（未閉合，DOTALL）。`num_ctx` 從 `4096` 升至 `8192` 減少截斷風險。 |
+| **Bug 19** | Qwen3-VL 照抄 prompt 範例格式，在 JSON 行尾加入 `// 注解`，JSON 標準不支援注解 → `json.loads()` 失敗。 | `json.loads()` 前加 `re.sub(r'\s*//[^\n"]*', '', clean_json_str)` 移除行尾注解。 |
+| **classify robustness** | 模型有時用 `` ```json ... ``` `` 包裝輸出，導致 JSON 抓取失敗。 | 加 `re.sub(r'```(?:json)?\s*', '', ...)` 清除 markdown block。 |
+
+**注意（情境 1 邊緣案例）**：若 num_ctx 截斷導致 `</think>` 消失且答案 JSON 也在 think 塊內（整個 raw_out 就是未閉合 think），clean 清空後會 fallback 回 raw_out，從 raw_out 掃出第一個 `{...}` → 可能提取 think 內假 JSON → `skill_id = "Unknown"`（字段不符）→ 安全降級不崩潰。
+
+**驗證**：
+- `tmp_test_think_strip.py` → OLD BEHAVIOR: `FAILED to parse` / NEW BEHAVIOR: `SUCCESS!` ✅
+- `tmp_test_classify_robustness.py` → 情境 1~4 全部 `✅ 成功`
+
+---
+
+### 12.7 IMAGE PATH safe_eval 二參數現況
+
+**現況**：Image PATH（`pipeline.py`）的 Bug 16 fix（`eval(` → `safe_eval(`）有時會將 `eval(expr, safe_dict)` 轉為 `safe_eval(expr, safe_dict)`（兩個參數）。
+
+**為何不崩潰**：`_execute_code` 的 polyfill `_safe_eval_polyfill(expr, *_ignored_args, ...)` 接受多餘參數並忽略，runtime 安全 ✅。
+
+**Text PATH 的差異**：`scaler.py` 多了 `_StripSafeEvalArgs` AST transformer 把第二個參數剝除（程式碼更乾淨），Image PATH 缺此步驟，但不影響正確性。
+
+**結論**：Image PATH 不需緊急補 `_StripSafeEvalArgs`；若未來有高品質要求可補齊，優先級低。診斷腳本 `tmp_test_eval_strip.py` 已驗證 regex 方案無法處理含巢狀括號的運算式（如 `abs(-42) / (-8 * 1 - 6)`），若要補齊應改採 scaler.py 的 AST 方案。
+
+---
+
+### 12.8 今日（2026-03-10）新增暫存腳本
+
+| 腳本 | 用途 |
+|---|---|
+| `tmp_test_think_strip.py` | `<think>` 剝除前後行為對比測試（Bug 18） |
+| `tmp_test_classify_robustness.py` | classify_input 4 種邊緣情境驗收 |
+| `tmp_test_eval_strip.py` | `safe_eval` 二參數 regex 剝除方案可行性測試 |
+| `tmp_test_vl_classify.py` | Qwen3-VL 純文字分類 live API 測試 |
+| `tmp_test_vl_image.py` | Qwen3-VL 圖片辨識 live API 測試 |
+| `tmp_diag_image_classify.py` | 合成截圖測試完整 classify flow（需 Ollama 運行） |
+
+---
+
+### 12.9 尚待完成（更新版）
+
+1. **Live 瀏覽器最終驗收**（有 API Key + Qwen3-VL 運行時）：
+   - 確認每題 `Ab3 total >= Ab2 total`（不等式不變量；Bug 16 fix 預期 Ab3≈97.5 > Ab2≈95.5）。
+   - 確認 classify 的 `<think>` 剝除在真實題目上生效（`skill_id` 不再因 think block 返回 Unknown）。
+   - 確認帶分數顯示正確（如 `-2¾` 而非 `((-2)\frac{3}{4})`）。
+
+2. **暫存腳本清理**（累積清單）：
+   - Bug 16：`tmp_bug16_diag.py`、`tmp_bug16_integration_test.py`
+   - Bug 11~15 遺留：`tmp_live_api_test.py`、`tmp_diag_mcri_path.py`、`tmp_check_l1.py`
+   - Bug 17~19（今日新增）：`tmp_test_think_strip.py`、`tmp_test_classify_robustness.py`、`tmp_test_eval_strip.py`、`tmp_test_vl_classify.py`、`tmp_test_vl_image.py`、`tmp_diag_image_classify.py`
+
+### 12.10 本日有改動的檔案（完整版）
+
+| 檔案 | 修改內容 |
+|---|---|
+| `core/routes/live_show_pipeline.py` | Bug 16：`healed_exec_code` 加 `re.sub(r'\beval\s*\(', 'safe_eval(', ...)` |
+| `core/engine/scaler.py` | Bug 16：`healed_code` 加同上 regex + `_StripSafeEvalArgs` AST 剝除二參數 |
+| `core/routes/live_show.py` | Bug 17：JSON LaTeX `\escape` 修正；Bug 18：`<think>` 兩段剝除 + `num_ctx` 4096→8192；Bug 19：`//` 注解清除；classify markdown block 清除 |
+
+### 12.11 最低驗證命令（含今日更新）
+
+```bash
+python -m py_compile core/routes/live_show.py core/routes/live_show_pipeline.py core/engine/scaler.py scripts/evaluate_mcri.py
+python tests/test_live_show_healer_regression.py
+python tmp_bug16_integration_test.py
+python tmp_test_think_strip.py
+python tmp_test_classify_robustness.py
+```

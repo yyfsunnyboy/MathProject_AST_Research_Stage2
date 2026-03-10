@@ -1202,7 +1202,33 @@ def classify_input():
                         raw_skill_id = parsed_res.get("skill_id", "Unknown")
                         confidence = parsed_res.get("confidence", 95)
                         json_spec = {}
-                        
+
+                        # [Bug 20 Fix] json.loads() interprets \t→tab, \r→CR, \f→FF, \b→BS, \n→LF.
+                        # LaTeX commands that start with these bytes get mangled after parsing:
+                        #   \times → (tab)imes,  \frac → (FF)rac,  \right → (CR)ight,
+                        #   \begin → (BS)egin,   \neq  → (LF)eq
+                        # Unmangle them back to proper LaTeX after json.loads().
+                        _LATEX_JSON_UNMANGLE = [
+                            ('\times',       r'\times'),
+                            ('\to',          r'\to'),
+                            ('\top',         r'\top'),
+                            ('\text',        r'\text'),
+                            ('\theta',       r'\theta'),
+                            ('\frac',        r'\frac'),
+                            ('\forall',      r'\forall'),
+                            ('\right',       r'\right'),
+                            ('\rightarrow',  r'\rightarrow'),
+                            ('\begin',       r'\begin'),
+                            ('\beta',        r'\beta'),
+                            ('\neq',         r'\neq'),
+                            ('\neg',         r'\neg'),
+                            ('\nabla',       r'\nabla'),
+                            ('\nleq',        r'\nleq'),
+                            ('\ngeq',        r'\ngeq'),
+                        ]
+                        for _mangled, _fixed in _LATEX_JSON_UNMANGLE:
+                            ocr_text = ocr_text.replace(_mangled, _fixed)
+
                         # [新修復] 將 OCR 提取出來的 * 和 / 替換為 LaTeX 格式
                         ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
 
