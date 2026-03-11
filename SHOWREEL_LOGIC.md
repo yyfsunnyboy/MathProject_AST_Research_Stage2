@@ -729,6 +729,7 @@ Bug 16 修復位置：
 
 ---
 
+<<<<<<< Updated upstream
 ### 12.6 今日補充進度（2026-03-10 下午）
 
 #### classify_input 健壯性補強（Bug 17 / 18 / 19 + classify robustness）
@@ -806,3 +807,139 @@ python tmp_bug16_integration_test.py
 python tmp_test_think_strip.py
 python tmp_test_classify_robustness.py
 ```
+=======
+## 13. 下班交接（2026-03-10 晚）
+
+### 13.1 本段背景
+
+下午繼續 Live Show 圖片輸入路徑（photo paste → `/api/classify` → Qwen3-VL → skill DNA 辨識）的穩健化工作，修復了三個連鎖失效問題。
+
+---
+
+### 13.2 本節已完成 ✅
+
+#### Bug 17 — DNA Match Failed（圖片路徑，`<think>` 閉合標籤）
+
+- **現象**：貼上截圖後，terminal 印出：
+  ```
+  📄 VL Extraction & Alignment Complete: [(Text Extraction Failed due to...] -> Unknown
+  ⚠️ DNA Match Failed: Falling back to Unknown.
+  ```
+- **根本原因**：Qwen3-VL 處理複雜圖片時，輸出前先產生 `<think>...</think>` 推理區塊，區塊內有 `{...}` JSON 樣式結構。舊 greedy regex `r'(\{.*\})'` 從 `<think>` 內的第一個 `{` 開始匹配，抓到錯誤 JSON 段落。
+- **修復位置**：`core/routes/live_show.py` → `classify_input()`
+- **修復內容**：JSON 提取前先 `re.sub(r'<think>.*?</think>', '', raw_out, flags=re.DOTALL)` 剝除閉合 `<think>` 區塊；若剝除後為空，回退使用原始 `raw_out`。
+- **驗證**：`tmp_test_think_strip.py` — 新方式 SUCCESS，舊方式 FAILED parse ✅
+
+---
+
+#### Bug 18 — `safe_eval` polyfill 只接受 1 個參數
+
+- **現象**：Ab3 題目執行時報錯：
+  ```
+  ⚠️ 執行第 1 題時發生錯誤: Invalid expression: abs(-42) / (-8 * 1 - 6)
+  AdaptiveScaler._execute_code.._safe_eval_polyfill() takes 1 positional argument but 2 were given
+  ```
+- **根本原因**：Ab3 AI 生成的程式碼使用 `eval(expr, {"abs": abs, ...})` 兩參數寫法（Python 標準 `eval` 語法）。`exec_globals["eval"]` polyfill 只接受 1 個參數。
+- **三層防禦修復**：
+  1. **`ast_healer.py` L101-112（原有）**：healer 正常路徑中 `eval→safe_eval` 重命名 + 截掉多餘參數（`node.args = [node.args[0]]`）。
+  2. **`core/engine/scaler.py` L494 後（新增 AST pass）**：regex `eval→safe_eval` 替換之後，再用 `_StripSafeEvalArgs` NodeTransformer 剝除 `safe_eval(expr, dict)` 的第二個參數（處理 early-exit 漏網情境）。
+  3. **`core/engine/scaler.py` L682（polyfill 簽名）**：`def _safe_eval_polyfill(expr, *_ignored_args, **_ignored_kwargs)` — 運行時最後防線。
+- **驗證**：手動測試 `/api/classify` HTTP 200，Ab3 題目正常執行 ✅
+
+---
+
+#### Bug 19 — DNA Match Failed（圖片路徑，多重根因復發）
+
+在 Bug 17 修復後，系統重啟發現圖片辨識仍偶發 Unknown，診斷出三個更深層原因：
+
+**根因 A — `num_ctx: 4096` 對圖片太小**
+- 圖片 token 消耗量大，模型輸出被截斷（`</think>` 閉合標籤消失）。
+- 舊的 Step 1 只能清 `<think>...</think>` 閉合區塊，截斷後的 `<think>...EOF` 清不掉。
+- **修復**：`num_ctx: 4096` → `num_ctx: 8192`（`core/routes/live_show.py` L1143）
+
+**根因 B — Prompt 範例含 `//` 注解，模型照抄**
+- Image prompt 與 text prompt 的 JSON 範例中有 `// 絕對禁止在這裡放入...` 樣式注解。
+- 模型學習 prompt 格式後，在輸出 JSON 中也加入 `//` 注解 → `json.loads()` 失敗。
+- **修復**：移除兩份 prompt 範例中的 `//` 注解行；在範例結尾加「嚴禁在 JSON 內加入 `//` 注解」明確說明。
+
+**根因 C — 模型輸出 ` ```json ``` ` Markdown 包裝**
+- 某些情況下模型在 JSON 外包 ` ```json ... ``` ` → 舊 regex 無法提取 JSON。
+
+**統合修復 — 4-step 清理 pipeline**（`core/routes/live_show.py` L1169 區域）：
+```python
+# Step 1: 移除閉合 <think>...</think>
+raw_out_clean = re.sub(r'<think>.*?</think>', '', raw_out, flags=re.DOTALL)
+# Step 2: 移除未閉合 <think>...（num_ctx 截斷造成 </think> 消失）
+raw_out_clean = re.sub(r'<think>.*', '', raw_out_clean, flags=re.DOTALL)
+raw_out_clean = raw_out_clean.strip()
+if not raw_out_clean:
+    raw_out_clean = raw_out
+# Step 3: 移除 ```json ... ``` Markdown 包裝
+raw_out_clean = re.sub(r'```(?:json)?\s*', '', raw_out_clean).strip().replace('```', '').strip()
+# Step 4: 搜尋到 JSON 字串後，清除 // 行尾注解
+clean_json_str = re.sub(r'\s*//[^\n"]*', '', clean_json_str)
+```
+- **驗證**：`tmp_test_classify_robustness.py` — 4 種情境（正常、`<think>` 截斷、Markdown 包裝、`//` 注解）全部 ✅
+
+---
+
+### 13.3 修改的檔案
+
+| 檔案 | 修改內容 |
+|---|---|
+| `core/routes/live_show.py` | `num_ctx: 4096` → `8192`（L1143）；4-step JSON 清理 pipeline（L1169）；`//` 注解清除（json.loads 前）；image/text prompt 範例移除 `//` 注解 |
+| `core/engine/scaler.py` | `_safe_eval_polyfill` 簽名改為 `*_ignored_args`（L682）；regex `eval→safe_eval` 後加 AST pass 剝除多餘參數（L494） |
+
+---
+
+### 13.4 尚待完成
+
+1. **Live 瀏覽器圖片路徑最終驗收**：Bug 19 多重根因修復完成，但尚未用真實數學截圖在瀏覽器端重新測試確認。
+   - 啟動 `python app.py`
+   - 貼上真實數學題截圖
+   - 預期：`📄 VL Extraction & Alignment Complete: [算式內容]`（非 Unknown）
+   - 若仍失敗：查 Flask terminal，找 `>>> ❌` 開頭的行，確認 `repr(raw_out_clean[:500])`
+
+2. **固化一次「5 題完整回歸報表」**（含 Numbers + Integers + Bug 16-19 全部修復後）。
+
+3. **清理暫存測試腳本**：
+   - `tmp_test_vl_classify.py`, `tmp_test_vl_image.py`
+   - `tmp_test_think_strip.py`, `tmp_test_eval_strip.py`
+   - `tmp_diag_image_classify.py`, `tmp_test_classify_robustness.py`
+   - `tmp_bug16_diag.py`, `tmp_bug16_integration_test.py`
+   - `tmp_live_api_test.py`, `tmp_diag_mcri_path.py`, `tmp_check_l1.py`
+
+---
+
+### 13.5 回家後接手最短路徑
+
+```
+1. 啟動服務
+   python app.py
+
+2. 瀏覽器測試圖片貼上路徑
+   - 打開 http://127.0.0.1:5000/live
+   - 貼上數學截圖，觀察是否正確辨識 skill
+
+3. 若圖片仍 Unknown → 看 Flask terminal
+   - 找  >>>  ❌  開頭的錯誤行
+   - 確認 repr(raw_out_clean[:500]) 的實際內容
+   - 若 Qwen3-VL 連模型回應都沒拿到 → 查 Ollama 服務狀態
+
+4. 若圖片 OK → 跑一輪回歸
+   python -m py_compile core/routes/live_show.py core/engine/scaler.py core/routes/live_show_pipeline.py
+   python tests/test_live_show_healer_regression.py
+
+5. 清理暫存腳本（見 13.4 第 3 點）
+```
+
+---
+
+### 13.6 三層防禦架構總結（`safe_eval` Bug 18）
+
+| 層級 | 位置 | 作用 |
+|---|---|---|
+| 1（Healer 主路徑）| `core/healers/ast_healer.py` L101-112 | `eval→safe_eval` 改名 + 截掉多餘參數（正常 healer 路徑） |
+| 2（中間 AST pass）| `core/engine/scaler.py` L494 後 | regex 替換後再做 AST 清洗（early-exit 漏網情境） |
+| 3（Polyfill 防禦）| `core/engine/scaler.py` L682 | `*_ignored_args` 接受多餘參數（最終執行期保底） |
+>>>>>>> Stashed changes
