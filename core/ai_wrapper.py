@@ -495,8 +495,8 @@ def get_ai_client(role='default'):
             return GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
         except ValueError as e:
             logger.warning(f"⚠️ Google AI Client init failed ({e}). Falling back to Local AI Client.")
-            fb_config = Config.MODEL_ROLES.get('default', {})
-            fb_model = fb_config.get('model', 'qwen3:8b')
+            fb_config = Config.MODEL_ROLES.get('default', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}))
+            fb_model = fb_config.get('model', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b'))
             return LocalAIClient(fb_model, temperature, max_tokens=max_tokens, extra_body=extra_body)
     elif provider == 'local':
         return LocalAIClient(model_name, temperature, max_tokens=max_tokens, extra_body=extra_body)

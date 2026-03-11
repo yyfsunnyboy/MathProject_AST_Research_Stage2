@@ -160,15 +160,14 @@ class Config:
             },
             'description': 'Qwen 2.5 Coder 1.5B (Ultra-Stable Fallback)'
         },
-        # 6. Qwen3-VL 8B (Local) [Vision-Enabled Architecture]
         'qwen3-vl-8b': {
             'provider': 'local',
             'model': 'qwen3-vl:8b-instruct-q4_k_m', 
             'temperature': 0.1,
             'max_tokens': 2048,
             'extra_body': {
-                'num_ctx': 8192,          # 視覺模型需要較大的上下文空間
-                'num_gpu': -1,            # 強制使用 5060 Ti 全速運行
+                'num_ctx': 4096,          # 📉 從 8192 降為 4096，減少跨顯存的漫溢
+                'num_gpu': -1,            # 強制使用顯卡全速運行
                 'num_thread': 8,
                 'keep_alive': "60m",      # 演示時建議保持模型常駐
                 'top_k': 20,
@@ -176,7 +175,63 @@ class Config:
             },
             'description': 'Qwen3-VL 8B (Visual Reasoning Engine)'
         },
+
+        # 6.5. Qwen3-VL 4B (Local) [Lightweight Vision Engine]
+        'qwen3-vl-4b': {
+            'provider': 'local',
+            'model': 'qwen3-vl:4b', 
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 4096,          # 記憶體小，可以保持這水準
+                'num_gpu': -1,            # 100% VRAM 運行
+                'num_thread': 8,
+                'keep_alive': "60m",
+                'top_k': 20,
+                'top_p': 0.9,
+            },
+            'description': 'Qwen3-VL 4B (Visual Reasoning Engine)'
+        },
+
+        # 7. Qwen3.5 9B (Local) [Text-Only, 2026-03-11 新增測試]
+        'qwen3.5-9b': {
+            'provider': 'local',
+            'model': 'qwen3.5:9b',
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 8192,
+                'num_gpu': -1,
+                'num_thread': 8,
+                'keep_alive': "30m",
+                'top_k': 20,
+                'top_p': 0.9,
+                'repeat_penalty': 1.1,
+            },
+            'description': 'Qwen3.5-9B (Text-Only, Trial)'
+        },
+        
+        # 8. Qwen3.5 4B (Local) [Text-Only, Lightweight Trial]
+        'qwen3.5-4b': {
+            'provider': 'local',
+            'model': 'qwen3.5:4b',
+            'temperature': 0.1,
+            'max_tokens': 2048,
+            'extra_body': {
+                'num_ctx': 4096,
+                'num_gpu': -1,
+                'num_thread': 8,
+                'keep_alive': "30m",
+                'top_k': 20,
+                'top_p': 0.9,
+                'repeat_penalty': 1.1,
+            },
+            'description': 'Qwen3.5-4B (Text-Only, Lightweight)'
+        },
     }
+
+    # ★ 預設代碼生成模型 Preset Key（修改此處即可全域切換）
+    DEFAULT_CODER_PRESET = 'qwen3-vl-8b'
 
     # ★ 系統角色指派
     # 這是 Web 介面預設使用的設定
@@ -193,7 +248,9 @@ class Config:
         # 'coder': CODER_PRESETS['qwen3-8b'], 
 
         # 預設工程師也可以直接同步換成 VL 版本，達成「視角即代碼」
-        'coder': CODER_PRESETS['qwen3-vl-8b'],
+        'coder': CODER_PRESETS['qwen3-vl-8b'],  # [2026-03-11] 恢復使用統一 VL 架構
+        # 'coder': CODER_PRESETS['qwen3-vl-4b'],
+        # 'coder': CODER_PRESETS['qwen3.5-4b'],
                 
         'tutor': {
             'provider': 'local',

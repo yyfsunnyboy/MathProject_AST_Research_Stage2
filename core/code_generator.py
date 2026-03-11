@@ -1047,7 +1047,7 @@ def auto_generate_skill_code(skill_id, queue=None, **kwargs):
     model_size_to_preset = {
         'cloud': 'gemini-3-flash',
         '14b': 'qwen3-14b', # [UPDATED 2026-02-13] Point to Qwen3 preset
-        '7b': 'qwen3-8b'
+        '7b': Config.DEFAULT_CODER_PRESET
     }
     
     model_preset_key = model_size_to_preset.get(model_size_class, 'qwen2.5-coder-14b')

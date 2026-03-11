@@ -537,7 +537,7 @@ def generate_live():
     input_text = data.get("prompt") or data.get("input_text", "")
     ablation_mode = data.get("ablation_mode", False)
     count = data.get("count", 1)
-    model_id = data.get("model_id", "qwen3-8b")
+    model_id = data.get("model_id", "qwen3.5-9b")
     skill_id = data.get("skill_id")
     
     start_time = time.time()
@@ -584,14 +584,24 @@ def generate_live():
             
             # 1. 取得技能知識與模板
             skill_path = scaler._get_skill_path(skill_id)
-            skill_md_path = os.path.join(skill_path, "SKILL.md")
-            with open(skill_md_path, "r", encoding="utf-8") as f:
-                full_skill_spec = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
-
-            knowledge = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
             import re
-            live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', full_skill_spec)
-            live_show_content = live_show_match.group(1).strip() if live_show_match else ""
+            # [統一規範] 優先讀取 prompt_liveshow.md，fallback 到 SKILL.md [[MODE:LIVESHOW]]
+            _liveshow_md_path = os.path.join(skill_path, "prompt_liveshow.md")
+            if os.path.isfile(_liveshow_md_path):
+                with open(_liveshow_md_path, "r", encoding="utf-8") as f:
+                    live_show_content = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
+                # [架構規範] SKILL.md = 共用 base；prompt_liveshow.md = liveshow delta
+                skill_md_path = os.path.join(skill_path, "SKILL.md")
+                with open(skill_md_path, "r", encoding="utf-8") as f:
+                    full_skill_spec = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
+                knowledge = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+            else:
+                skill_md_path = os.path.join(skill_path, "SKILL.md")
+                with open(skill_md_path, "r", encoding="utf-8") as f:
+                    full_skill_spec = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
+                knowledge = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+                live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', full_skill_spec)
+                live_show_content = live_show_match.group(1).strip() if live_show_match else ""
 
             # 2. 獲取 API Stubs
             from core.prompts.domain_function_library import get_required_domains, get_domain_helpers_code
@@ -700,9 +710,9 @@ Template: {template_id}
                 "stream": False,
                 "options": {
                     "temperature": vl_config.get("temperature", 0.1),
-                    "num_ctx": 4096,  # 針對單行算式小圖優化，減少記憶體碎片
+                    "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),  # 動態讀取 config
                     "num_gpu": -1,
-                    "keep_alive": 0
+                    "keep_alive": 30  # keep model hot for 30s — avoids reload cost on rapid retries
                 }
             }
 
@@ -1055,7 +1065,7 @@ def stream_thought_ab1():
         prompt  — 使用者輸入的數學敘述
     """
     prompt_text = request.args.get('prompt', '').strip()
-    model_id_query = request.args.get('model_id', 'qwen3-8b').strip()
+    model_id_query = request.args.get('model_id', Config.DEFAULT_CODER_PRESET).strip()
     
     if not prompt_text:
         return Response('data: {"type":"error","text":"No prompt provided."}\n\n',
@@ -1071,7 +1081,7 @@ def stream_thought_ab1():
 
             model_config = (
                 Config.CODER_PRESETS.get(model_id_query) or
-                Config.CODER_PRESETS.get('qwen3-8b') or
+                Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET) or
                 next(iter(Config.CODER_PRESETS.values()), None)
             )
             if not model_config:
@@ -1079,7 +1089,7 @@ def stream_thought_ab1():
                 return
 
             client = LocalAIClient(
-                model_name=model_config.get('model', 'qwen3:8b'),
+                model_name=model_config.get('model', Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b')),
                 temperature=model_config.get('temperature', 0.7),
                 **{k: v for k, v in model_config.items()
                    if k not in ('model', 'temperature', 'provider')}
@@ -1204,9 +1214,9 @@ def classify_input():
 """
                 msg_content = prompt_text
 
-            # 從 Config 中動態取用參數 (目前強制校準為 qwen3-vl:8b 測試連線)
-            vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
-            model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
+            # 從 Config 中動態取用 vision_analyzer 設定
+            vl_config = Config.MODEL_ROLES.get('vision_analyzer', Config.CODER_PRESETS.get('qwen3-vl-4b', {}))
+            model_name = vl_config.get('model', 'qwen3-vl:4b')  # 動態對應模型名稱
             
             # 準備 Ollama Chat API Payload (Compatible with both image and pure Text messages)
             msg_dict = {"role": "user", "content": prompt_text}
@@ -1223,7 +1233,7 @@ def classify_input():
                 "stream": False,
                 "options": {
                     "temperature": vl_config.get("temperature", 0.1),
-                    "num_ctx": 8192,  # 升至 8192：圖片 token 消耗大，避免截斷 <think> 閉合標籤
+                    "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),  # 動態讀取 config
                     "num_gpu": -1,
                     "repeat_penalty": 1.05
                 }
@@ -1461,35 +1471,48 @@ def classify_input():
                 else:
                     bare_prompt = f"請寫一個 generate(level=1) 函式，參考：\n{ocr_text}\n直接輸出代碼。"
 
-                skill_md_path = os.path.join(skill_path, "SKILL.md")
-                if os.path.exists(skill_md_path):
+                import re
+                # [統一規範] 優先讀取 prompt_liveshow.md，fallback 到 SKILL.md [[MODE:LIVESHOW]]
+                _liveshow_md_path = os.path.join(skill_path, "prompt_liveshow.md")
+                if os.path.isfile(_liveshow_md_path):
+                    with open(_liveshow_md_path, "r", encoding="utf-8") as f:
+                        live_show_content = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
+                    # [架構規範] SKILL.md = 共用 base；prompt_liveshow.md = liveshow delta
+                    skill_md_path = os.path.join(skill_path, "SKILL.md")
+                    with open(skill_md_path, "r", encoding="utf-8") as f:
+                        full_skill_spec = "\n".join([line.replace('\r', '') for line in f.read().splitlines()])
+                    skill_spec_distilled = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+                elif os.path.exists(os.path.join(skill_path, "SKILL.md")):
+                    skill_md_path = os.path.join(skill_path, "SKILL.md")
                     with open(skill_md_path, "r", encoding="utf-8") as f:
                         skill_spec = f.read()
                     # 使用明確的切斷錨點，確保不同技能都能精準抓取精華區塊
                     skill_spec_distilled = skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
-
-                    import re
                     live_show_match = re.search(r'\[\[MODE:LIVESHOW\]\]([\s\S]*?)\[\[END_MODE:LIVESHOW\]\]', skill_spec)
                     live_show_content = live_show_match.group(1).strip() if live_show_match else ""
-
-                    # 預處理 input_text 確保有 LaTeX 基本結構 (Using a simplified version of scaler's sanitize)
-                    input_text_safe = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', ocr_text)
-                    if "$" not in input_text_safe:
-                        input_text_safe = re.sub(r'(\(.*\).*)', r'$\1$', input_text_safe)
-
-                    # 動態注入 OCR 結果
-                    live_show_content = live_show_content.replace('{{OCR_RESULT}}', input_text_safe)
-                    
                     # 應用物理裁切，確保不必要的規則（如絕對值）在沒有出現對應符號時被移除
                     skill_spec_distilled = apply_strict_mirroring(skill_spec_distilled, ocr_text)
                     # [Bug 23 Fix] live_show_content（[[MODE:LIVESHOW]] 區塊）也需要過濾。
-                    # 未過濾時模型仍看到「3) 絕對值層級」「D4: 以 abs() 實作」等規則，
-                    # 導致生成題目含絕對值，即使輸入例題沒有絕對值。
                     live_show_content = apply_strict_mirroring(live_show_content, ocr_text)
-
-                    scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
                 else:
-                    scaffold_prompt = "[SKILL.md 未找到]"
+                    skill_spec_distilled = ""
+                    live_show_content = ""
+
+                # 預處理 input_text 確保有 LaTeX 基本結構
+                input_text_safe = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', ocr_text)
+                if "$" not in input_text_safe:
+                    input_text_safe = re.sub(r'(\(.*\).*)', r'$\1$', input_text_safe)
+
+                # 動態注入 OCR 結果，並對 prompt_liveshow.md 也套用 apply_strict_mirroring
+                live_show_content = live_show_content.replace('{{OCR_RESULT}}', input_text_safe)
+                live_show_content = apply_strict_mirroring(live_show_content, ocr_text)
+
+                if skill_spec_distilled:
+                    scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
+                elif live_show_content:
+                    scaffold_prompt = live_show_content
+                else:
+                    scaffold_prompt = "[prompt_liveshow.md 與 SKILL.md 均未找到]"
 
                 iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec if isinstance(json_spec, dict) else None)
                 template_id, template_text = _select_liveshow_structure_template(op_fp)

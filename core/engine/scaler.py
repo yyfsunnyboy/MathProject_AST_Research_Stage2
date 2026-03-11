@@ -140,7 +140,7 @@ class AdaptiveScaler:
             
             # [Fix] 使用 Qwen3-8B 作為預設發案模型
             from config import Config
-            model_config = Config.CODER_PRESETS.get('qwen3-8b')
+            model_config = Config.CODER_PRESETS.get('qwen3.5-9b') or Config.CODER_PRESETS.get('qwen3-8b')
             raw_code, _, _, _ = _call_ai(prompt, model_config=model_config)
             
             # 2. 清理與修復
@@ -186,7 +186,7 @@ class AdaptiveScaler:
             traceback.print_exc()
             raise Exception(f"代碼生成或執行失敗: {e}")
 
-    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3-8b', ablation_mode=False):
+    def generate_custom_problems(self, skill_name, input_text, count=5, model_id='qwen3.5-9b', ablation_mode=False):
         """
         根據輸入例題，完全模仿題型生成 count 題。
         ablation_mode: 若為 True (Ab1 模式)，跳過 SKILL.md 讀取與 Healer 修復，使用原生 Prompt。
@@ -250,11 +250,12 @@ class AdaptiveScaler:
                 benchmark_content = benchmark_match.group(1).strip() if benchmark_match else ""
 
                 if liveshow_prompt:
-                    # ── 優先路徑：使用 prompt_liveshow.md（含 /no_think + 規則 + 範例程式碼）──
+                    # ── [架構規範] 組合 SKILL.md base + prompt_liveshow.md delta ──
+                    assembled_liveshow = f"{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{liveshow_prompt}"
                     input_text_safe = self._sanitize_input_dna(input_text)
                     try:
                         from core.routes.live_show import apply_strict_mirroring
-                        liveshow_prompt = apply_strict_mirroring(liveshow_prompt, input_text_safe)
+                        assembled_liveshow = apply_strict_mirroring(assembled_liveshow, input_text_safe)
                     except ImportError:
                         pass
 
@@ -263,7 +264,7 @@ class AdaptiveScaler:
                     required_domains = get_required_domains(skill_name)
                     api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
 
-                    prompt = f"""{liveshow_prompt}
+                    prompt = f"""{assembled_liveshow}
 
 【動態目標題型參考】
 {input_text_safe}
@@ -322,7 +323,7 @@ class AdaptiveScaler:
                 active_ablation_id = 3
             
             from config import Config
-            model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3-8b')
+            model_config = Config.CODER_PRESETS.get(model_id) or Config.CODER_PRESETS.get('qwen3.5-9b') or Config.CODER_PRESETS.get('qwen3-8b')
             
             start_ai = time.time()
             # ── Phase 4-A: vision_input routing ────────────────────────────
@@ -586,7 +587,7 @@ class AdaptiveScaler:
                 "thinking": thinking_text,
                 "final_code": final_code,
                 "file_path": file_path,
-                "architect_model": (model_config or {}).get("model", "qwen3:8b"),
+                "architect_model": (model_config or {}).get("model", Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET, {}).get('model', 'qwen3.5:9b')),
                 "healer_trace": {
                     "regex_fixes": regex_fixes,
                     "ast_fixes": ast_fixes
@@ -789,7 +790,7 @@ def check(user_answer, correct_answer):
         """
         print(f"🔄 正在為 {skill_name} 生產 {n} 題 (單次 AI 呼叫 + Python 高速迴圈)...")
         # 直接呼叫一次 custom_problems，要求他回傳 n 題，這也是在本地 Python 環境中跑 n 次 generate()
-        batches = self.generate_custom_problems(skill_name, input_text, count=n, model_id='qwen3-8b', ablation_mode=ablation_mode)
+        batches = self.generate_custom_problems(skill_name, input_text, count=n, model_id=Config.DEFAULT_CODER_PRESET, ablation_mode=ablation_mode)
         return batches
 
 if __name__ == "__main__":

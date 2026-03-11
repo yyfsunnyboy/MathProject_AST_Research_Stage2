@@ -157,23 +157,23 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
             # 1. 提取核心法規區 (=== 之前的部分)
             base_rules = full_text.split('=== SKILL_END_PROMPT ===')[0]
             
-            # 2. 使用 Regex 提取 BENCHMARK 區塊內容
-            benchmark_match = re.search(
-                r'\[\[MODE:BENCHMARK\]\](.*?)\[\[END_MODE:BENCHMARK\]\]', 
-                full_text, 
-                re.DOTALL
-            )
-            
-            if not benchmark_match:
-                raise ValueError(f"無法在 {path} 中找到 BENCHMARK 標記區塊！")
-                
-            benchmark_content = benchmark_match.group(1).strip()
+            # 2. [架構規範] 優先讀取 prompt_benchmark.md，fallback 到 SKILL.md [[MODE:BENCHMARK]]
+            benchmark_md_path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "prompt_benchmark.md")
+            if os.path.exists(benchmark_md_path):
+                with open(benchmark_md_path, "r", encoding="utf-8") as f:
+                    benchmark_content = f.read().strip()
+            else:
+                benchmark_match = re.search(
+                    r'\[\[MODE:BENCHMARK\]\](.*?)\[\[END_MODE:BENCHMARK\]\]',
+                    full_text,
+                    re.DOTALL
+                )
+                if not benchmark_match:
+                    raise ValueError(f"無法在 {path} 中找到 BENCHMARK 標記區塊，且 prompt_benchmark.md 不存在！")
+                benchmark_content = benchmark_match.group(1).strip()
             
             # 3. 組合最終 Benchmark 指令
             final_prompt = f"{base_rules}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}"
-            
-            # 移除可能殘留的 LIVESHOW 標記 (防禦性編寫)
-            final_prompt = re.sub(r'\[\[MODE:LIVESHOW\]\].*?\[\[END_MODE:LIVESHOW\]\]', '', final_prompt, flags=re.DOTALL)
             
             return final_prompt
             

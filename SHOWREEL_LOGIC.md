@@ -809,7 +809,83 @@ python tmp_test_classify_robustness.py
 
 ---
 
-## 13. 下班交接（2026-03-10 晚）
+## 13. Agent Skill 三層架構規範（2026-03-11 確立基準）
+
+> **⚠️ 每次修改 agent_skills/ 前必讀此節**
+
+### 13.1 架構原則
+
+每個 Agent Skill 目錄結構如下：
+
+```
+agent_skills/{skill_name}/
+    SKILL.md              ← 共用 base rules（唯一真相來源）
+    prompt_liveshow.md    ← liveshow 專用 delta（不含 base）
+    prompt_benchmark.md   ← benchmark 專用 delta（不含 base）
+    evals.json, skill.json
+```
+
+**核心不變式**：
+- `SKILL.md` 只含 base（Role 定義、imports、API 介面、domain 規則、共用約束）
+- `SKILL.md` 末尾有且只有一個 `=== SKILL_END_PROMPT ===` 分隔符，分隔符之後不得有任何內容
+- `prompt_liveshow.md` 和 `prompt_benchmark.md` 只含各自的 delta，**不得複製 base 內容**
+- delta 檔第一行：`prompt_liveshow.md` 以 `[Role] MathProject LiveShow` 開頭；`prompt_benchmark.md` 以 `【任務】` 開頭
+
+### 13.2 Runtime 組合邏輯
+
+三個程式入口（`live_show.py`、`scaler.py`、`benchmark.py`）統一組合方式：
+
+```python
+base   = SKILL.md 內容，split("=== SKILL_END_PROMPT ===")[0].strip()
+delta  = prompt_liveshow.md 或 prompt_benchmark.md 全文
+prompt = f"{base}\n=== SKILL_END_PROMPT ===\n\n{delta}"
+```
+
+**優先邏輯**（fallback 策略）：
+- 優先讀 `prompt_liveshow.md` / `prompt_benchmark.md`
+- 若不存在，fallback 到舊版 `[[MODE:LIVESHOW]]` / `[[MODE:BENCHMARK]]` 區塊（相容層）
+- 兩者都不存在 → `raise ValueError`
+
+### 13.3 維護規則
+
+| 要修改的行為 | 修改哪個檔案 |
+|---|---|
+| Domain API / import 規則 / 共用 interface / Role 定義 | **`SKILL.md`** |
+| LiveShow 生成演算法（同構規則、格式要求、迴圈次數） | **`prompt_liveshow.md`** |
+| Benchmark 題型結構、難度等級、評測格式 | **`prompt_benchmark.md`** |
+| 新增技能（新 skill 目錄） | 三檔都建，先寫 SKILL.md，再寫各自 delta |
+
+### 13.4 目前各技能狀態（2026-03-11）
+
+| 技能 | SKILL.md base 行數 | prompt_liveshow.md | prompt_benchmark.md |
+|---|---|---|---|
+| jh_數學1上_Integers | 44 行 | ✅ delta（以 `[Role]` 開頭） | ✅ delta（以 `【任務】` 開頭） |
+| jh_數學1上_Numbers | 52 行 | ✅ delta（以 `[Role]` 開頭） | ✅ delta（以 `【任務】` 開頭） |
+| jh_數學2上_Polynomial | ~40 行（清淨） | ✅ delta（以 `[Role]` 開頭） | ✅ delta（以 `【課本例題風格】` 開頭） |
+| jh_數學2上_Radicals | ~60 行（清淨） | ✅ delta（以 `[Role]` 開頭） | ✅ delta（以 `【強烈建議程式碼結構】` 開頭） |
+
+**（2026-03-11 已完成）**：Grade 2 `prompt_benchmark.md` 已建立，`SKILL.md` separator 後殘留已清除，全 4 個技能均符合三層架構規範。
+
+### 13.5 架構驗證指令
+
+```bash
+# 驗證所有技能的 base 正確分離、delta 首行正確
+python -c "
+import os
+base = 'agent_skills'
+for s in os.listdir(base):
+    sk = os.path.join(base, s, 'SKILL.md')
+    lv = os.path.join(base, s, 'prompt_liveshow.md')
+    if not os.path.isfile(sk): continue
+    skill_base = open(sk, encoding='utf-8').read().split('=== SKILL_END_PROMPT ===')[0].strip()
+    lv_delta = open(lv, encoding='utf-8').read() if os.path.isfile(lv) else '(missing)'
+    print(s[:40], '|', skill_base.split(chr(10))[-1][:30], '|', lv_delta[:40])
+"
+```
+
+---
+
+## 14. 下班交接（2026-03-10 晚）
 
 ### 13.1 本段背景
 

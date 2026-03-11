@@ -78,7 +78,7 @@ class SkillClassifier:
             from config import Config
             
             # 使用環境中已定義的 qwen3-8b 配置，並特別限制它的輸出字數（分類不需要長文）
-            model_config = Config.CODER_PRESETS.get('qwen3-8b').copy()
+            model_config = Config.CODER_PRESETS.get(Config.DEFAULT_CODER_PRESET).copy()
             model_config['max_tokens'] = 120 # 強制截斷思考區塊，防止無限生成卡死超過1分鐘
             
             print(f">>> 🧠 本地 Qwen3 正在進行技能 DNA 比對...")
