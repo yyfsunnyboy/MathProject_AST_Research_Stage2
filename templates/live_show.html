@@ -2263,11 +2263,20 @@
                 const logAb3 = document.getElementById('log-ab3');
                 if (logAb3) logAb3.innerHTML = '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> SYSTEM OPTIMAL. NO REPAIRS REQUIRED.</span>';
             } else if (isAb2) {
-                setBadge('badge-ab2', 'badge-success', '✅ GENERATED');
-                panel.classList.add('state-success');
-                const logAb2 = document.getElementById('log-ab2');
-                if (logAb2) logAb2.innerHTML =
-                    '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#e67e22">>> [SCAFFOLD OUTPUT] Executing Native String (No Safety Guards)...</span>';
+                if (res._same_as_ab3) {
+                    setBadge('badge-ab2', 'badge-success', '= Ab3');
+                    panel.classList.add('state-success');
+                    const logAb2s = document.getElementById('log-ab2');
+                    if (logAb2s) logAb2s.innerHTML =
+                        '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">' +
+                        '>> [Ab2 ≡ Ab3] Healer 未修改任何程式碼，Ab2 與 Ab3 共享相同輸出。</span>';
+                } else {
+                    setBadge('badge-ab2', 'badge-success', '✅ GENERATED');
+                    panel.classList.add('state-success');
+                    const logAb2 = document.getElementById('log-ab2');
+                    if (logAb2) logAb2.innerHTML =
+                        '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#e67e22">>> [SCAFFOLD OUTPUT] Executing Native String (No Safety Guards)...</span>';
+                }
             } else if (res.is_paused) {
                 setBadge('badge-ab1', 'badge-failed', '⏸ PAUSED');
                 panel.classList.add('state-failed'); // Or a distinct paused style if you have one
@@ -2352,7 +2361,9 @@
                         : `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#10b981">>> SYSTEM OPTIMAL. NO REPAIRS.
                 MCRI: ${mcriScore}</span>`;
                 } else if (target === 'ab2') {
-                    cmpLog.innerHTML = `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SCAFFOLD
+                    cmpLog.innerHTML = res._same_as_ab3
+                        ? `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> [= Ab3] Healer 未修改，共享相同結果。MCRI: ${mcriScore}</span>`
+                        : `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#f39c12">>> [SCAFFOLD
                 ONLY] No Healer. MCRI: ${mcriScore}</span>`;
                 } else {
                     cmpLog.innerHTML = `<span class="log-badge badge-qwen">QWEN</span> <span style="color:#ef4444">>>

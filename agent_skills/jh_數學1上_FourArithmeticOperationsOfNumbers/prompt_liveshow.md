@@ -169,9 +169,13 @@ Step D4: 組出 eval_str（純 Python 可計算）。
 - 不可在 eval_str 使用 `\\times/\\div`。
 
 Step D5: 組出 math_str（LaTeX 顯示）。
-- 假分數（|分子|>分母）**必須轉帶分數**：`FractionOps.to_latex(Fraction(num, den), mixed=True)`
-  - 例：`FractionOps.to_latex(Fraction(-13, 6), mixed=True)` → `"-2 \\frac{1}{6}"`
-  - 例：`FractionOps.to_latex(Fraction(15, 7), mixed=True)` → `"2 \\frac{1}{7}"`
+- **帶分數顯示模式由 Prompt 底部的【帶分數禁令】或【帶分數必要】指令決定：**
+  - 若 Prompt 中標記【帶分數必要】（輸入例題含帶分數）：假分數（|分子|>分母）**必須轉帶分數**：`FractionOps.to_latex(Fraction(num, den), mixed=True)`
+    - 例：`FractionOps.to_latex(Fraction(-13, 6), mixed=True)` → `"-2 \\frac{1}{6}"`
+    - 例：`FractionOps.to_latex(Fraction(15, 7), mixed=True)` → `"2 \\frac{1}{7}"`
+  - 若 Prompt 中標記【帶分數禁令】（輸入例題只有純分數）：所有分數一律用**純分數**顯示：`FractionOps.to_latex(Fraction(num, den), mixed=False)`
+    - 禁止生成 `k\\frac{r}{b}` 帶分數格式。
+  - 若無任何標記：預設使用 `mixed=False`（純分數顯示）。
 - 若分母為 1，`to_latex` 自動顯示整數（不必特殊處理）。
 - 題面分數必須是約分後結果（Fraction 自動約分）。
 - 乘號顯示為 `\\times`

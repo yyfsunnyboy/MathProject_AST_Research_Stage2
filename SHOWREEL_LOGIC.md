@@ -729,7 +729,6 @@ Bug 16 修復位置：
 
 ---
 
-<<<<<<< Updated upstream
 ### 12.6 今日補充進度（2026-03-10 下午）
 
 #### classify_input 健壯性補強（Bug 17 / 18 / 19 + classify robustness）
@@ -807,7 +806,9 @@ python tmp_bug16_integration_test.py
 python tmp_test_think_strip.py
 python tmp_test_classify_robustness.py
 ```
-=======
+
+---
+
 ## 13. 下班交接（2026-03-10 晚）
 
 ### 13.1 本段背景
@@ -942,4 +943,131 @@ clean_json_str = re.sub(r'\s*//[^\n"]*', '', clean_json_str)
 | 1（Healer 主路徑）| `core/healers/ast_healer.py` L101-112 | `eval→safe_eval` 改名 + 截掉多餘參數（正常 healer 路徑） |
 | 2（中間 AST pass）| `core/engine/scaler.py` L494 後 | regex 替換後再做 AST 清洗（early-exit 漏網情境） |
 | 3（Polyfill 防禦）| `core/engine/scaler.py` L682 | `*_ignored_args` 接受多餘參數（最終執行期保底） |
->>>>>>> Stashed changes
+
+---
+
+## 14. 下班交接（2026-03-11）
+
+### 14.1 本日已完成（Confirmed ✅）
+
+#### SHOWREEL_LOGIC.md merge conflict 修復
+- **問題**：文件 L732~945 有未解決的 `<<<<<<< Updated upstream … >>>>>>> Stashed changes` 衝突標記，12.6 節（下午版）與 13 節（晚間版）兩段並存。
+- **修復**：移除三個衝突標記，兩段內容並列保留（均屬 2026-03-10 當日工作）。
+
+#### Bug 21 — `classify_input` JSON 提取 greedy regex 失效
+- **檔案**：`core/routes/live_show.py` → `classify_input()` → 約 L1185 區域
+- **問題**：JSON 提取用 `re.search(r'(\{.*\})', raw_out_clean, re.DOTALL)`（貪婪匹配）。當 Qwen3-VL 在 `</think>` 後輸出說明文字且說明文字含 `{...}` 時，貪婪 regex 從說明文字的第一個 `{` 抓到最後一個 `}`，組出非法 JSON → OCR 失敗。
+- **修復**：改用 `json.JSONDecoder().raw_decode()` 逐一掃描每個 `{` 起點，找到第一個能成功解析且含 `ocr_text`/`skill_id` 的合法 JSON 即停止。
+- **驗證**（`tmp_test_bug21.py`）：新 scan 6 種情境全通過；舊 greedy 情境 2、6 失敗（對照組）；regression 3 passed ✅
+
+#### Bug 23 — `live_show_content`（`[[MODE:LIVESHOW]]` 區塊）未被 `apply_strict_mirroring` 過濾
+- **檔案**：`core/routes/live_show.py` → `classify_input()` → scaffold_prompt 組裝段（約 L1425-1430）
+- **問題**：`apply_strict_mirroring(scaffold, ocr_text)` 只作用於 `skill_spec_distilled`，但從 `SKILL.md` 讀取的 `[[MODE:LIVESHOW]]` 區塊（`live_show_content`）未被過濾。SKILL.md 的 `[[MODE:LIVESHOW]]` 段含：
+  - `3) 絕對值層級 — 絕對值區塊數量必須一致。`
+  - `- 每一個絕對值區塊內：（數量/分布一致）`
+  - `D4: 若有絕對值段，eval_str 必須以 abs(...) 實作該段。`
+  這些指令直接傳進 scaffold_prompt → 即使輸入例題無絕對值，模型仍照 LIVESHOW 區塊規則生成含 `abs()` 的題目。
+- **現象**：使用者截圖輸入 `5 × 12 - 30 ÷ (-5)`（無 `|`），但生成題卻出現 `|17 × 2 − 4| ÷ (−3)`。
+- **修復一**（前次 session）：在 scaffold_prompt 組裝前加入：
+  ```python
+  live_show_content = apply_strict_mirroring(live_show_content, ocr_text)
+  ```
+- **修復二**（本次）：`apply_strict_mirroring` 函式加入 `_skip_abs_block` 狀態追蹤：當偵測到含 `絕對值` 關鍵字的段落標題（如 `3) 絕對值層級`）時啟動跳過模式；後續縮排子項目（`  - 數字數量一致` 等不含 `絕對值` 關鍵字的行）也一併刪除，直到遇到非縮排新段落為止。
+- **驗證**：`apply_strict_mirroring(test_block, ocr_no_abs)` → Bad lines: [] PASS ✅；Legit lines kept: True ✅；compile ✅
+
+#### Bug 25 — 非分數技能生成含 `\frac{}{}` 的 LaTeX 分數式（AI 幻覺）
+- **現象**：使用者輸入的是整數四則運算例題（如 `8⁷₁₀ − (12³₅) + ((-4))`），生成題目卻出現｜ `\frac{2}{3}-(-\frac{3}{4})+(-\frac{1}{6})`，答案 `1/10`。
+- **根本原因**：此屬層 AI 幻覺 — Qwen-8B 忽視了 SKILL.md 簡式指令，將帶分數(Mixed Number)輸入的數字誤識為分子，生成楂 `\frac` LaTeX 的分數题目。ISO Guard 考的是運算拓撲（+/-/層數等），不檢查顯示型式，因此 ISO Guard 未觸發。
+- **修復一 — 管線 FRAC_GUARD**（`core/routes/live_show_pipeline.py` → `run_ab3_full_healer()`）：
+  - guard_meta 計算後，若 `enable_fraction_display=False`（非分數技能）且 `question_text` 含 `\frac`，則強制將 `guard_meta["triggered"]=True` 並記錄 `[FRAC_GUARD][Bug25]` 日誌 → 觸發 iso-fallback。
+- **修復二 — SKILL.md 禁止清單強化**（`[[MODE:LIVESHOW]]` 章節 E）：
+  - 新增 ❌ 明確禁止：整數單元中完全禁止 `\frac{}{}`， math_str 只能使用 `\times`、`\div`、`+`、`-` 和整數數値。
+- **驗證**：compile OK；回歸測記 3 passed ✅
+
+#### Bug 24 — 整數技能生成分數答案（eval_str/math_str 拓撲不一致）
+- **現象**：整數四則運算單元出現分數答案，如 `答案 = 779/9`（應全為整數）。
+- **根本原因**：AI 生成腳本的 `eval_str` 與 `math_str` 拓撲不一致。例如：
+  - `eval_str = '(v1 * v2 - v3) / v4'`（整體除，結果為整數）
+  - `math_str = 'v1 \times v2 - v3 \div v4'`（省略括號，等於不同的數學式）
+  - `_recompute_correct_answer_from_question()` 從 **顯示字串** 重算，得到 `779/9`，覆蓋了腳本正確的整數答案 `-9`。
+- **修復一 — 管線 guard**（`core/healers/live_show_healer.py` → `recompute_result_answer()`）：
+  - 加入 Bug 24 Guard：若 `skill_id` 為整數技能（`force_fraction_answer=False`）且 recompute 結果含 `/`（分數），則**拒絕覆蓋**，保留腳本原始整數答案，並記錄 `[ANS_GUARD][Bug24]` 日誌。
+  - 分數技能（`force_fraction_answer=True`）不受影響，仍允許分數答案。
+- **修復二 — SKILL.md 骨架強化**（`[[MODE:LIVESHOW]]` Step D5 + 骨架 F）：
+  - 新增⚠️致命規則：`math_str` 的括號結構**必須**與 `eval_str` 完全一致。
+  - 明確給出正確/錯誤示例：`eval=(v1-v2)/v3 → math=(fmt(v1)-fmt(v2))÷fmt(v3)` ✅ vs `math=fmt(v1)-fmt(v2)÷fmt(v3)` ❌。
+- **驗證**：Mock 測試 3 種情境全通過；回歸測試 3 passed ✅
+
+#### Bug 22 — Bug 17 regex 二次逃逸已合法的 `\\div`
+- **檔案**：`core/routes/live_show.py` → `classify_input()` → scan loop Bug 17 fix 行
+- **問題**：Qwen3-VL 輸出 `"5 \\times 12 - 30 \\div (-5)"` — `\\div` 是已正確逃逸的 JSON（`\\` = 一個反斜線）。但 Bug 17 regex `r'\\(?!["\\/bfnrtu])'` 沒有 lookbehind，掃到 `\\div` 的第二個 `\`（後接 `d`，`d` 不在排除列表）→ 將其替換為 `\\` → 產生 `\\\div`（三個反斜線）→ 非法 JSON → `raw_decode` 全部失敗 → OCR 輸出 `(Text Extraction Failed due to JSON Error)`。
+  - Flask terminal 日誌：`'{\n  "ocr_text": "5 \\\\times ...'`（repr 顯示 `\\\\` = 實際 `\\`，模型輸出本身是合法 JSON）
+- **修復**：加入 `(?<!\\)` 負向 lookbehind：`r'(?<!\\)\\(?!["\\/bfnrtu])'`，只逃逸孤立的 `\`（非 `\\` 配對中的第二個 `\`）
+- **驗證**（`tmp_test_bug22.py`）：實際 Qwen3-VL `\\div` 輸出 — 新版 ✅，舊版 ❌
+
+### 14.2 修改的檔案
+
+| 檔案 | 修改內容 |
+|---|---|
+| `core/routes/live_show.py` | Bug 21：greedy regex → `raw_decode()` scan；`except json.JSONDecodeError` → `except Exception`；診斷 print 加入 `process_logs` |
+| `core/routes/live_show.py` | Bug 22：Bug 17 fix regex 加 `(?<!\\)` lookbehind 避免二次逃逸 |
+| `core/routes/live_show_pipeline.py` | Bug 25-修復一：`run_ab3_full_healer()` 加入 FRAC_GUARD，非分數技能有 `\frac` 就觸發 fallback |
+| `agent_skills/jh_數學1上_FourArithmeticOperationsOfIntegers/SKILL.md` | Bug 25-修復二：`[[MODE:LIVESHOW]]` 章節 E 新增禁止 `\frac` 明確清單 |
+| `core/routes/live_show.py` | Bug 23-修復一：scaffold 組裝前加 `live_show_content = apply_strict_mirroring(live_show_content, ocr_text)` |
+| `core/routes/live_show.py` | Bug 23-修復二：`apply_strict_mirroring` 加 `_skip_abs_block` 狀態機，完整刪除絕對值段落及其縮排子項目 |
+| `core/healers/live_show_healer.py` | Bug 24-修復一：`recompute_result_answer()` 加整數技能分數答案拒絕 guard |
+| `agent_skills/jh_數學1上_FourArithmeticOperationsOfIntegers/SKILL.md` | Bug 24-修復二：Step D5 + 骨架 F 新增 math_str/eval_str 括號一致性規則 |
+| `core/routes/live_show_pipeline.py` | Bug 26-修復一：Bug 25 guard 重構為 if/else，加入 MIXED_GUARD；純分數輸入生帶分數 & 帶分數輸入生純分數，均觸發 fallback |
+| `core/routes/live_show.py` | Bug 26-修復二：VL path scaffold_prompt 動態注入【帶分數禁令】/【帶分數必要】指令 |
+| `agent_skills/jh_數學1上_FourArithmeticOperationsOfNumbers/SKILL.md` | Bug 26-修復三：`[[MODE:LIVESHOW]]` 章節 C 帶分數規則改為依 Prompt 標記條件切換 |
+| `agent_skills/jh_數學1上_FourArithmeticOperationsOfNumbers/prompt_liveshow.md` | Bug 26-修復四：Step D5 `to_latex` 改為依標記決定 `mixed=True/False` |
+| `SHOWREEL_LOGIC.md` | 修復 merge conflict 標記；新增本節交接 |
+
+---
+
+#### Bug 26 — 分數技能帶分數/純分數顯示風格與輸入不一致
+
+**症狀**：
+- 輸入例題只含純分數（$\frac{2}{3} - (-\frac{3}{4}) + (-\frac{1}{6})$），但生成題出現帶分數（$2\frac{1}{3}$）。
+- 反之，輸入例題含帶分數（$8\frac{7}{10} - (12\frac{3}{5})$），應確保生成題也有帶分數。
+
+**根本原因**：
+- `prompt_liveshow.md` Step D5 硬寫 `FractionOps.to_latex(..., mixed=True)`，AI 總是為假分數生成帶分數。
+- `live_show.py` VL path 的 `scaffold_prompt` 未注入任何帶分數/純分數模式指令。
+- Pipeline guard 未偵測帶分數顯示風格不一致（不像 decimal_style_mode 已有 guard）。
+
+**修復方案**：
+
+| 層級 | 修復 |
+|------|------|
+| Prompt-level | `live_show.py` VL path scaffold_prompt 動態注入【帶分數禁令】/【帶分數必要】（依 `fraction_display_mode` 決定） |
+| SKILL.md | `[[MODE:LIVESHOW]]` 章節 C 帶分數規則改為依 Prompt 標記條件切換 |
+| prompt_liveshow.md | Step D5 `to_latex` 說明改為依標記決定 `mixed=True/False`，預設 `mixed=False` |
+| Guard-level | `live_show_pipeline.py` 加 MIXED_GUARD：`fraction_display_mode=="fraction"` 且生成有帶分數 → fallback；`fraction_display_mode=="mixed"` 且生成無帶分數 → fallback |
+
+**關鍵設計**：
+- `infer_fraction_display_mode(ocr_text, skill_id)` 已能偵測輸入是否含帶分數，回傳 `"mixed"` / `"fraction"` / `"none"`。
+- 帶分數 pattern：`r'(?<![\\{/])\d+\s*\\frac\s*\{'`（整數緊接 `\frac{`，前方非 `\`/`{`/`/`）。
+
+### 14.3 尚待完成
+
+1. **Live 瀏覽器圖片路徑最終驗收**（有 Ollama + Qwen3-VL 運行時）：
+   - 重啟 `python app.py`，貼上真實數學截圖（含/不含絕對值各一）
+   - 預期（無 `|` 輸入）：OCR 正確辨識，`skill_id` 不再返回 Unknown；生成題不含絕對值
+   - 預期（有 `|` 輸入）：OCR 保留絕對值，生成題含絕對值
+   - **新增**：貼上純分數截圖預期：生成題僅純分數；貼上帶分數截圖預期：生成題含帶分數
+
+2. **暫存腳本清理**（累積清單）：
+   - 本日新增：`tmp_test_bug21.py`
+   - 前日遺留：`tmp_bug16_diag.py`、`tmp_bug16_integration_test.py`、`tmp_live_api_test.py`、`tmp_diag_mcri_path.py`、`tmp_check_l1.py`、`tmp_test_think_strip.py`、`tmp_test_classify_robustness.py`、`tmp_test_eval_strip.py`、`tmp_test_vl_classify.py`、`tmp_test_vl_image.py`、`tmp_diag_image_classify.py`
+
+### 14.4 最低驗證命令
+
+```bash
+python -m py_compile core/routes/live_show.py
+python -m py_compile core/routes/live_show_pipeline.py
+python -m py_compile core/healers/live_show_healer.py
+python tests/test_live_show_healer_regression.py
+python tmp_test_bug21.py
+python tmp_test_bug22.py
+```

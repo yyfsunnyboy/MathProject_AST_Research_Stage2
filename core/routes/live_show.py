@@ -452,6 +452,10 @@ def apply_strict_mirroring(scaffold, ocr_text):
     lines = scaffold.split('\n')
     cleaned_lines = []
 
+    # [Bug 23 Fix] 追蹤「絕對值段落」狀態：遇到 "3) 絕對值層級" 等段落標題後，
+    # 後續的縮排內容行（數量一致、分布一致等）也要一併刪除，直到遇到非縮排行（新段落）。
+    _skip_abs_block = False
+
     for line in lines:
         should_remove = False
         for symbol, keywords in guards.items():
@@ -459,8 +463,21 @@ def apply_strict_mirroring(scaffold, ocr_text):
             if symbol not in ocr_text:
                 if any(kw in line for kw in keywords):
                     should_remove = True
+                    if symbol == "|":
+                        _skip_abs_block = True  # 開始跳過絕對值段落的縮排內容
                     break
-        
+
+        # 若正在跳過絕對值子段落，且此行是縮排的子項目（以空白/- 開頭且包含「數量一致」等）
+        if not should_remove and _skip_abs_block and "|" not in ocr_text:
+            stripped = line.strip()
+            if stripped.startswith('-') or stripped.startswith('•') or (line.startswith('  ') and stripped):
+                # 這是縮排的子項目，屬於上方已刪除的絕對值段
+                should_remove = True
+            else:
+                # 遇到非縮排行（新段落或空行），停止跳過
+                if stripped and not stripped.startswith('-'):
+                    _skip_abs_block = False
+
         if not should_remove:
             cleaned_lines.append(line)
 
@@ -606,7 +623,25 @@ def generate_live():
             # 【基因+任務】組合提取 (完全封殺 BENCHMARK)
             final_scaffold = knowledge + "\n" + live_show_content
                 
-            # 4. 組裝 Scaffold Prompt 
+            # 4. 組裝 Scaffold Prompt
+            # [Bug 26] 根據 fraction_display_mode 動態注入帶分數/純分數限制
+            if fraction_display_mode == "fraction":
+                _fraction_mode_constraint = (
+                    "\n【帶分數禁令（Bug26）】"
+                    "輸入例題只含純分數（\frac{a}{b}，無帶分數 n\frac{r}{b}）。"
+                    "禁止生成帶分數格式。所有 FractionOps.to_latex() 必須傳入 mixed=False。"
+                    "禁止生成分子大於分母的帶分數表示（如 2\\frac{1}{3}、-1\\frac{2}{5}）。"
+                )
+            elif fraction_display_mode == "mixed":
+                _fraction_mode_constraint = (
+                    "\n【帶分數必要（Bug26）】"
+                    "輸入例題含帶分數（n\frac{r}{b} 格式，n≥1）。"
+                    "所有 FractionOps.to_latex() 必須傳入 mixed=True，"
+                    "假分數必須轉換成帶分數格式（如 \frac{7}{3} → 2\\frac{1}{3}）。"
+                )
+            else:
+                _fraction_mode_constraint = ""
+
             scaffold_prompt = f"""
 # Math-Master 核心開發任務
 
@@ -621,13 +656,37 @@ def generate_live():
 
 【4. 題型骨架模板（必須採用）】
 Template: {template_id}
-{template_text}
+{template_text}{_fraction_mode_constraint}
 """
             # 5. 準備 Qwen3-VL 呼叫
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
-            system_prompt = f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構。嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n\n【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n\n請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+            # [Bug 29] Dynamically inject bracket/abs constraint into system prompt
+            # so the AI cannot ignore it via the 「無視所有模板」 override.
+            _fp_brackets = fp.get("bracket_count", 0)
+            _fp_abs = fp.get("abs_count", 0)
+            if _fp_brackets > 0 and _fp_abs == 0:
+                _sys_grouping_note = (
+                    "【中括號守則（最高優先）】圖片中的分組符號是中括號 [ ]。"
+                    "生成的 math_str 字串中必須原樣保留 [ ]，"
+                    "嚴禁以 | | 或 abs() 替代。違者判定生成失敗。"
+                )
+            elif _fp_abs > 0 and _fp_brackets == 0:
+                _sys_grouping_note = (
+                    "【絕對值守則（最高優先）】圖片中含絕對值符號 | |。"
+                    "生成的 math_str 字串中必須原樣保留 | |，嚴禁替換成 [ ]。"
+                )
+            else:
+                _sys_grouping_note = ""
+            system_prompt = (
+                f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構。"
+                f"嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n"
+                f"{_sys_grouping_note}\n\n"
+                f"【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n\n"
+                f"請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n"
+                f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+            )
             
             payload = {
                 "model": model_name,
@@ -804,7 +863,11 @@ Template: {template_id}
         output["ai_inference_time_sec"]  = perf.get("ai_inference_time_sec", 0)
         output["cpu_execution_time_sec"] = perf.get("cpu_execution_time_sec", 0)
         output["thinking"] = dm.get("thinking", "")
-        output["fixes"]    = (healer_trace.get("regex_fixes", 0) or 0) + (healer_trace.get("ast_fixes", 0) or 0)
+        output["fixes"]    = (
+            (healer_trace.get("regex_fixes", 0) or 0)
+            + (healer_trace.get("ast_fixes", 0) or 0)
+            + (healer_trace.get("o1_fixes", 0) or 0)
+        )
         
         # Merge basic trace counts with detailed logs
         base_logs = [
@@ -956,6 +1019,20 @@ Template: {template_id}
                     "breakdown":       _ab2_live_mcri.get("breakdown", {}),
                 }
             }
+
+        # [Bug 26 companion — ab2 ≡ ab3 when fixes=0]
+        # 當 ab3 healer 修復數 = 0 時，ab2 與 ab3 使用相同程式碼，共享同一運行結果。
+        # 背景：ab2 與 ab3 分別獨立執行同一份程式碼，但因亂數種子不同會產生不同問題，
+        # 導致前端顯示不一致。當修復數=0 時將 ab3 的題目/答案複製至 ab2_result。
+        if (
+            output.get("fixes", 0) == 0
+            and isinstance(output.get("ab2_result"), dict)
+            and "error" not in output
+            and "problem" in output
+        ):
+            output["ab2_result"]["problem"] = output["problem"]
+            output["ab2_result"]["answer"] = output["answer"]
+            output["ab2_result"]["_same_as_ab3"] = True
 
         return jsonify(output)
     except Exception as e:
@@ -1162,7 +1239,9 @@ def classify_input():
                 
                 # 從 Chat API 結構中取出回覆
                 raw_out = result.get("message", {}).get("content", "").strip()
-                
+                print(f">>> 📝 Qwen3-VL raw_out (前300字): {repr(raw_out[:300])}")
+                process_logs.append(f"> 🔍 VL raw (前150字): {repr(raw_out[:150])}")
+
                 import re
                 import json
 
@@ -1182,22 +1261,35 @@ def classify_input():
                 raw_out_clean = re.sub(r'```(?:json)?\s*', '', raw_out_clean).strip()
                 raw_out_clean = raw_out_clean.replace('```', '').strip()
 
-                # 3. JSON 提取：在已清理的文字中搜尋
-                # 解決 LaTeX 大括號干擾：嘗試抓出整個 JSON 字串
-                json_match = re.search(r'(\{.*\})', raw_out_clean, re.DOTALL)
-
-                if json_match:
-                    clean_json_str = json_match.group(0)
+                # 3. JSON 提取：掃描每個 { 位置，找第一個含 ocr_text/skill_id 的合法 JSON
+                # [Bug 21 Fix] 原本的 greedy re.search(r'\{.*\}', ..., re.DOTALL) 會從第一個 {
+                # 一路貪婪匹配到最後一個 }。若模型在 </think> 後仍輸出說明文字（如
+                # "{some note}. Answer: {...}"），說明文字的 { 會讓 regex 擴展過頭 →
+                # 拼出非法 JSON → JSONDecodeError → OCR 失敗。
+                # 改用 json.JSONDecoder().raw_decode() 逐一嘗試每個 { 起點，
+                # 找到第一個能成功解析且含 ocr_text / skill_id 的合法 JSON 即停止。
+                _json_decoder = json.JSONDecoder()
+                parsed_res = None
+                for _scan_m in re.finditer(r'\{', raw_out_clean):
+                    _snip = raw_out_clean[_scan_m.start():]
+                    # [Bug 17 Fix] escape invalid JSON backslashes (e.g. bare \div → \\div)
+                    # [Bug 22 Fix] add (?<!\\) lookbehind: if the model already outputs \\div
+                    # (properly escaped), the old regex incorrectly re-escapes the second \
+                    # (followed by 'd' not in exclusion list) → \\\div (3 backslashes) → invalid JSON.
+                    # Lookbehind ensures we only touch lone \ (not \\ pairs).
+                    _snip_fixed = re.sub(r'(?<!\\)\\(?!["\\/bfnrtu])', r'\\\\', _snip)
+                    # remove // line-end comments (model sometimes copies prompt examples)
+                    _snip_fixed = re.sub(r'\s*//[^\n"]*', '', _snip_fixed)
                     try:
-                        # [Bug 17 Fix] Qwen3-VL may return raw LaTeX sequences like \div \times
-                        # inside JSON string values. These are invalid JSON escape sequences and
-                        # cause json.loads() to raise JSONDecodeError: Invalid \escape.
-                        # Escape any backslash NOT followed by a valid JSON escape character.
-                        clean_json_str = re.sub(r'\\(?!["\\/bfnrtu])', r'\\\\', clean_json_str)
-                        # 清除模型照抄 prompt 範例的 // 行尾注解（JSON 不支援注解）
-                        # 只清除字串值外面的注解，安全做法：移除行尾 //... 的部分
-                        clean_json_str = re.sub(r'\s*//[^\n"]*', '', clean_json_str)
-                        parsed_res = json.loads(clean_json_str)
+                        _obj, _ = _json_decoder.raw_decode(_snip_fixed)
+                        if isinstance(_obj, dict) and ('ocr_text' in _obj or 'skill_id' in _obj):
+                            parsed_res = _obj
+                            break
+                    except (json.JSONDecodeError, ValueError):
+                        continue
+
+                if parsed_res is not None:
+                    try:
                         ocr_text = parsed_res.get("ocr_text", text_data.strip() if text_data else "")
                         raw_skill_id = parsed_res.get("skill_id", "Unknown")
                         confidence = parsed_res.get("confidence", 95)
@@ -1283,16 +1375,28 @@ def classify_input():
                                 
                         print(f">>> ✅ Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
                         
-                    except json.JSONDecodeError as e:
-                        print(f">>> ❌ JSON 解析失敗: {e}")
+                    except Exception as e:
+                        print(f">>> ❌ JSON 後處理失敗: {e}")
                         print(f">>> ❌ 清理後文字(前500字): {repr(raw_out_clean[:500])}")
                         skill_name = "Unknown"
-                        # [容錯] 儘量保留 ocr_text 給後端使用，而非直接丟失
                         ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
                 else:
-                    print(f">>> ❌ 找不到 JSON 結構。清理後文字(前500字): {repr(raw_out_clean[:500])}")
-                    skill_name = "Unknown"
-                    ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
+                    print(f">>> ❌ 所有 {{ 位置均無法解析出有效 JSON。清理後文字(前500字): {repr(raw_out_clean[:500])}")
+                    process_logs.append(f"> ❌ JSON scan failed. clean(前150字): {repr(raw_out_clean[:150])}")
+                    # [Last-resort fallback] 直接用 regex 抽 ocr_text 值（容許 LaTeX 反斜線）
+                    _fb = re.search(r'"ocr_text"\s*:\s*"((?:[^"\\]|\\.)*)"', raw_out)
+                    if _fb:
+                        ocr_text = re.sub(r'\\(?!["\\bfnrtu/])', r'\\', _fb.group(1))
+                        try:
+                            ocr_text = ocr_text.encode('raw_unicode_escape').decode('unicode_escape')
+                        except Exception:
+                            pass
+                        print(f">>> ⚠️ Last-resort OCR fallback: {ocr_text}")
+                        process_logs.append(f"> ⚠️ OCR last-resort fallback: {ocr_text}")
+                        skill_name = "Unknown"  # skill 仍 unknown，但 ocr_text 保留
+                    else:
+                        skill_name = "Unknown"
+                        ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
             except requests.exceptions.HTTPError as e:
                 status_code = e.response.status_code if e.response is not None else "N/A"
                 response_text = ""
@@ -1378,6 +1482,10 @@ def classify_input():
                     
                     # 應用物理裁切，確保不必要的規則（如絕對值）在沒有出現對應符號時被移除
                     skill_spec_distilled = apply_strict_mirroring(skill_spec_distilled, ocr_text)
+                    # [Bug 23 Fix] live_show_content（[[MODE:LIVESHOW]] 區塊）也需要過濾。
+                    # 未過濾時模型仍看到「3) 絕對值層級」「D4: 以 abs() 實作」等規則，
+                    # 導致生成題目含絕對值，即使輸入例題沒有絕對值。
+                    live_show_content = apply_strict_mirroring(live_show_content, ocr_text)
 
                     scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
                 else:

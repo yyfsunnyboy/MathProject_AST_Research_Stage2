@@ -256,6 +256,9 @@ Step D5: 組出 math_str（LaTeX 顯示）。
 - 乘號顯示為 \\times
 - 除號顯示為 \\div
 - 數字顯示用 fmt_num
+- ⚠️【致命規則】math_str 的括號結構必須與 eval_str 完全一致。
+  - 若 eval_str = `(v1 * v2 - v3) / v4`，則 math_str 必須加相同括號：`(fmt(v1) \\times fmt(v2) - fmt(v3)) \\div fmt(v4)`
+  - 禁止在 eval_str 有括號而 math_str 省略括號（否則顯示式與計算式優先序不同，出現分數答案）
 
 Step D6: O(1) 智慧型倒算法與驗證
 - 建立 eval_str_init 將變數代入，並使用 Fraction(...) 預先計算。
@@ -273,6 +276,8 @@ Step D7: 回傳
 - 禁止任意新增 abs()、[]、() 層級。
 - 禁止把 [] 結構改寫成純線性算式。
 - 禁止把 |a op b| 改成 a op b（或反之）。
+- ❌ 嚴禁在整數單元使用 `\frac{}{}` LaTeX 分數顯示（整數四則運算的答案與過程均為整數）。
+  - math_str 中只能使用 `\times`、`\div`、`+`、`-` 和整數數值，絕不使用 `\frac`。
 
 --------------------------------------------------
 【F. 可直接遵循的骨架】
@@ -302,8 +307,11 @@ def generate(level=1, **kwargs):
                 _o1_healed = True
                 
             # 4) 變數縮放完成後，重新組裝真正的字串
-            eval_str = "..." # 純 Python 計算字串 (例如 v1 / (v2+v3))
-            math_str = "..." # LaTeX 顯示字串 (例如 fmt(v1) \\div (fmt(v2)+fmt(v3)))
+            eval_str = "..." # 純 Python 計算字串 (例如 (v1 - v2) / v3)
+            # ⚠️ math_str 括號必須與 eval_str 完全對應！
+            # ✅ 正確：eval=(v1-v2)/v3  →  math=(fmt(v1)-fmt(v2))÷fmt(v3)
+            # ❌ 錯誤：eval=(v1-v2)/v3  →  math=fmt(v1)-fmt(v2)÷fmt(v3) ← 缺括號，等於不同式子
+            math_str = "..." # LaTeX 顯示字串 (例如 (fmt(v1) - fmt(v2)) \\div fmt(v3))
 
             ans = IntegerOps.safe_eval(eval_str)
             if abs(ans - round(ans)) < 1e-6:

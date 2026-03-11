@@ -603,16 +603,28 @@ def recompute_result_answer(exe_res, skill_id, recompute_answer_fn=None, detail_
     old_ans = exe_res.get("correct_answer", "")
     fixed_ans = recompute_answer_fn(exe_res.get("question_text", "")) if callable(recompute_answer_fn) else None
     if fixed_ans is not None:
-        exe_res["correct_answer"] = fixed_ans
-        exe_res["_answer_recomputed"] = True
-        if str(old_ans) != str(fixed_ans):
-            exe_res["_answer_recomputed_from"] = str(old_ans)
-            exe_res["_answer_recomputed_to"] = str(fixed_ans)
-
-        if append_change_logs and isinstance(detail_logs, list):
-            detail_logs.append("[ANS_GUARD] correct_answer recomputed from internal expression.")
+        # [Bug 24 Guard] 整數技能（force_fraction_answer=False）時，若 recompute 結果為分數
+        # （表示顯示字串與計算字串拓撲不一致），則拒絕覆蓋，保留腳本原來的整數答案。
+        policy = get_skill_policy(skill_id)
+        _is_fraction_result = "/" in str(fixed_ans) and not str(fixed_ans).startswith("-/")
+        _force_frac = bool(policy.get("force_fraction_answer", False))
+        if _is_fraction_result and not _force_frac:
+            if append_change_logs and isinstance(detail_logs, list):
+                detail_logs.append(
+                    f"[ANS_GUARD][Bug24] 整數技能 recompute 得到分數 {fixed_ans!r}，"
+                    f"疑似 eval_str/math_str 拓撲不一致，保留原答案 {old_ans!r}。"
+                )
+        else:
+            exe_res["correct_answer"] = fixed_ans
+            exe_res["_answer_recomputed"] = True
             if str(old_ans) != str(fixed_ans):
-                detail_logs.append(f"[ANS_GUARD] correct_answer changed: {old_ans} -> {fixed_ans}")
+                exe_res["_answer_recomputed_from"] = str(old_ans)
+                exe_res["_answer_recomputed_to"] = str(fixed_ans)
+
+            if append_change_logs and isinstance(detail_logs, list):
+                detail_logs.append("[ANS_GUARD] correct_answer recomputed from internal expression.")
+                if str(old_ans) != str(fixed_ans):
+                    detail_logs.append(f"[ANS_GUARD] correct_answer changed: {old_ans} -> {fixed_ans}")
 
     exe_res["correct_answer"] = force_fraction_answer_text(exe_res.get("correct_answer", ""), skill_id)
     return exe_res.get("correct_answer")

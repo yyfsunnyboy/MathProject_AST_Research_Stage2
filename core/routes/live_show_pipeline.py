@@ -154,13 +154,27 @@ def run_ab3_full_healer(
         regex_fixes = regex_code_fixes
         ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
         ast_stats = healer_stats[2] if len(healer_stats) > 2 else None
+        # Collect AST healer logs before mutating detail_logs
         detail_logs = getattr(ast_stats, "logs", []) if ast_stats else []
-        print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes} ===")
-    except Exception:
-        import traceback
+        # healer_stats[5] = healer_fixes = regex_fixes + ast_fixes + anti_dup_fixes
+        # Extract anti_dup_fixes so they contribute to the final fix count.
+        _healer_total = healer_stats[5] if len(healer_stats) > 5 and isinstance(healer_stats[5], int) else None
+        anti_dup_fixes = max(0, (_healer_total - regex_code_fixes - ast_fixes)) if _healer_total is not None else 0
+        # Fold anti_dup_fixes into regex_code_fixes so the rest of the pipeline counts them correctly.
+        regex_code_fixes += anti_dup_fixes
+        regex_fixes = regex_code_fixes
+        # [Bug] Always log healer execution status so the frontend can confirm it ran.
+        detail_logs.insert(0, f"[HEALER_STATUS] ✅ Active Healer ran — regex_code={regex_code_fixes}, ast={ast_fixes}, anti_dup={anti_dup_fixes}")
+        print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes}, AntiDup: {anti_dup_fixes} ===")
+    except Exception as _healer_exc:
+        import traceback as _healer_tb
         print("=== [VL Pipeline Healer] CRASHED ===")
-        traceback.print_exc()
+        _healer_tb.print_exc()
         healed_code = final_code
+        anti_dup_fixes = 0
+        # Log crash to detail_logs so the frontend can show it (not just the console).
+        detail_logs.append(f"[HEALER_STATUS] ❌ Healer CRASHED — {type(_healer_exc).__name__}: {_healer_exc}")
+        detail_logs.append("[HEALER_STATUS] 使用原始 AI 輸出，Skip 所有修復。")
 
     healed_exec_code = patch_fraction_skill_eval_calls_fn(
         optimize_live_execution_code_fn(healed_code),
@@ -206,6 +220,59 @@ def run_ab3_full_healer(
             isomorphic_fn=is_expression_isomorphic_fn,
         )
         decimal_mismatch = bool(guard_meta.get("decimal_mismatch"))
+
+        # [Bug 29 Guard] 明確的中括號↔絕對值結構錯位守衛（ISO guard 的備援保障）
+        # 當 expected 有 [ ] (bracket_count>0, abs_count=0) 但生成含 | | 時強制 fallback。
+        if not guard_meta.get("triggered"):
+            _exp_brackets29 = expected_fp.get("bracket_count", 0)
+            _exp_abs29 = expected_fp.get("abs_count", 0)
+            _qt29 = exe_res.get("question_text", "")
+            if _exp_brackets29 > 0 and _exp_abs29 == 0 and "|" in _qt29:
+                guard_meta["triggered"] = True
+                guard_meta["bracket_abs_mismatch"] = True
+                detail_logs.append(
+                    f"[BRACKET_ABS_GUARD][Bug29] 例題使用中括號（bracket_count={_exp_brackets29}，abs_count=0）"
+                    f"但生成題目含 | 絕對值符號，強制觸發 iso-fallback。"
+                )
+
+        # [Bug 25 Guard] 非分數技能禁止在生成題目中出現 \frac{}{}
+        # [Bug 26 Guard] 分數技能帶分數/純分數顯示風格必須與輸入例題一致
+        if not guard_meta.get("triggered"):
+            import re as _re_guard26
+            from core.skill_policies.registry import get_skill_policy as _gsp
+            _policy = _gsp(skill_id)
+            _qt = exe_res.get("question_text", "")
+            if not _policy.get("enable_fraction_display", False):
+                # Bug 25: 非分數技能（整數四則運算等）出現 \frac 時觸發 fallback
+                if "\\frac" in _qt:
+                    guard_meta["triggered"] = True
+                    guard_meta["frac_forbidden"] = True
+                    detail_logs.append(
+                        f"[FRAC_GUARD][Bug25] 非分數技能({skill_id!r})生成含 \\frac 的題目，"
+                        f"疑似 AI 幻覺，強制觸發 iso-fallback。"
+                    )
+            else:
+                # Bug 26: 分數技能 — 帶分數 / 純分數顯示風格必須鏡像輸入例題
+                # 帶分數pattern：整數緊接 \frac（前面非 \、{、/，避免誤抓 \frac 本體）
+                _HAS_MIXED_RE = _re_guard26.compile(r'(?<![\\{/])\d+\s*\\frac\s*\{')
+                _has_mixed_gen = bool(_HAS_MIXED_RE.search(_qt))
+                if fraction_display_mode == "fraction" and _has_mixed_gen:
+                    # 輸入只有純分數，但 AI 生成了帶分數
+                    guard_meta["triggered"] = True
+                    guard_meta["mixed_style_mismatch"] = True
+                    detail_logs.append(
+                        "[MIXED_GUARD][Bug26] 輸入為純分數（無帶分數），"
+                        "生成題目含帶分數（整數+\\frac），強制觸發 iso-fallback。"
+                    )
+                elif fraction_display_mode == "mixed" and not _has_mixed_gen:
+                    # 輸入有帶分數，但 AI 生成了純分數
+                    guard_meta["triggered"] = True
+                    guard_meta["mixed_style_mismatch"] = True
+                    detail_logs.append(
+                        "[MIXED_GUARD][Bug26] 輸入含帶分數，"
+                        "生成題目無帶分數（僅 \\frac 無整數首項），強制觸發 iso-fallback。"
+                    )
+
         if guard_meta.get("triggered"):
             append_iso_style_guard_logs_fn(
                 detail_logs,
@@ -217,6 +284,13 @@ def run_ab3_full_healer(
             )
 
             fallback_code = build_isomorphic_fallback_code_fn(ocr_text, skill_id=skill_id)
+            if not fallback_code:
+                # Fallback returned empty string — OCR text may have no parseable numbers.
+                # Log the failure clearly so diagnostics can catch it.
+                detail_logs.append(
+                    "[ISO_GUARD][FALLBACK_EMPTY] build_isomorphic_fallback_code 返回空字串"
+                    "（OCR 文字可能無數字 span），跳過 fallback，保留原始 AI 輸出。"
+                )
             if fallback_code:
                 healed_code = fallback_code
                 healed_exec_code = optimize_live_execution_code_fn(healed_code)
