@@ -194,44 +194,46 @@ def _build_isomorphic_constraints(source_text, json_spec=None):
     ]
 
     lines = [
-        f"1) 運算子順序必須完全一致：{seq_text}",
-        f"2) 二元運算子總數必須一致：{fp['operator_count']}",
-        f"2.1) 數字總數必須一致：{fp['number_count']}",
-        f"2.2) 加減乘除統計必須一致：+={fp['counts']['plus']}, -={fp['counts']['minus']}, ×={fp['counts']['times']}, ÷={fp['counts']['divide']}",
+        "【同構零容忍檢查清單】",
+        f"1) 數字總數量必須嚴格一致：恰好 {fp['number_count']} 個參與計算的數字 (算式中出現幾個數字，你就只能宣告幾個變數)",
+        f"2) 二元運算子總數必須嚴格一致：恰好 {fp['operator_count']} 個運算子",
+        f"3) 運算子順序必須完全一致：{seq_text}",
+        f"4) 運算子統計必須嚴格一致：+={fp['counts']['plus']}, -={fp['counts']['minus']}, ×={fp['counts']['times']}, ÷={fp['counts']['divide']}",
+        "【重大警告】禁止擅自修改結構！如果生成的數字數量或運算子種類與上方統計不符，你的程式碼將被判定為嚴重失敗！"
     ]
 
     if fp["has_square_brackets"]:
-        lines.append("3) 必須保留中括號結構 []，不得改成一般括號或移除。")
-        lines.append(f"3.1) 中括號區塊數量必須一致：{fp['bracket_count']}")
+        lines.append("\n5) 必須保留中括號結構 []，不得改成一般括號或移除。")
+        lines.append(f"5.1) 中括號區塊數量必須一致：{fp['bracket_count']}")
         for idx, st in enumerate(fp["bracket_stats"], start=1):
             lines.append(
-                f"3.{idx+1}) 第{idx}個中括號內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
+                f"5.{idx+1}) 第{idx}個中括號內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
             )
     else:
-        lines.append("3) 禁止新增中括號 []。")
+        lines.append("\n5) 禁止新增中括號 []。")
 
     if fp["has_abs"]:
-        lines.append("4) 必須保留絕對值符號 | |，不可省略。")
-        lines.append(f"4.1) 絕對值區塊數量必須一致：{fp['abs_count']}")
+        lines.append("6) 必須保留絕對值符號 | |，不可省略。")
+        lines.append(f"6.1) 絕對值區塊數量必須一致：{fp['abs_count']}")
         for idx, st in enumerate(fp["abs_stats"], start=1):
             lines.append(
-                f"4.{idx+1}) 第{idx}個絕對值內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
+                f"6.{idx+1}) 第{idx}個絕對值內：數字={st['numbers']}，運算子={st['ops']}（+{st['plus']}/-{st['minus']}/×{st['times']}/÷{st['divide']}）"
             )
     else:
-        lines.append("4) 禁止新增絕對值符號 | | 或 abs()。")
+        lines.append("6) 禁止新增絕對值符號 | | 或 abs()。")
 
     if fp["has_parenthesized_negative"]:
-        lines.append("5) 負數必須以括號形式表達（例如 (-7)）。")
+        lines.append("7) 負數必須以括號形式表達（例如 (-7)）。")
     else:
-        lines.append("5) 不可為了湊格式而新增多餘的負數括號。")
+        lines.append("7) 不可為了湊格式而新增多餘的負數括號。")
 
     if forbidden_ops:
-        lines.append(f"6) 禁止新增未出現的運算子：{', '.join(forbidden_ops)}")
+        lines.append(f"8) 禁止新增未出現的運算子：{', '.join(forbidden_ops)}")
 
     if json_spec and isinstance(json_spec, dict):
         structure = json_spec.get("structure") or ""
         if structure:
-            lines.append(f"7) 參考結構：{structure}")
+            lines.append(f"9) 參考結構：{structure}")
 
     block = "\n".join(lines)
     return block, fp
@@ -241,29 +243,32 @@ def _select_liveshow_structure_template(fp):
     if fp.get("has_abs"):
         template_id = "T3_ABS_MIXED"
         template_text = (
-            "題型骨架 T3（含絕對值）：| A op1 B | op2 C op3 D\n"
+            f"題型骨架 T3（含絕對值，目標需恰好 {fp.get('number_count', 0)} 個數字）：| A op1 B | op2 C op3 D\n"
             "- 絕對值符號必須保留\n"
             "- 內外層運算子順序不可改\n"
-            "- 負數格式必須使用 IntegerOps.fmt_num()"
+            "- 負數格式必須使用 IntegerOps.fmt_num()\n"
+            "【最高禁令】算式結構與數字個數必須100%同構，嚴禁增減任何變數或常數！"
         )
         return template_id, template_text
 
     if fp.get("has_square_brackets"):
         template_id = "T2_BRACKETED_NESTED"
         template_text = (
-            "題型骨架 T2（雙中括號巢狀）：[ ... ] op [ ... ]\n"
+            f"題型骨架 T2（雙中括號，目標需恰好 {fp.get('number_count', 0)} 個數字）：[ ... ] op [ ... ]\n"
             "- 左右兩側都必須保留中括號\n"
             "- 中括號內可含小括號與多步運算\n"
-            "- 最外層只允許原題出現的運算子"
+            "- 最外層只允許原題出現的運算子\n"
+            "【最高禁令】算式結構與數字個數必須100%同構，嚴禁增減任何變數或常數！"
         )
         return template_id, template_text
 
     template_id = "T1_LINEAR_MIXED"
     template_text = (
-        "題型骨架 T1（線性混合）：A op1 B op2 C ...\n"
+        f"題型骨架 T1（線性混合，目標需恰好 {fp.get('number_count', 0)} 個數字）：A op1 B op2 C ...\n"
         "- 不新增絕對值、不新增中括號\n"
         "- 僅保留原題已有的小括號樣式\n"
-        "- 運算子序列與數量必須同構"
+        "- 運算子序列與數量必須同構\n"
+        "【最高禁令】算式結構與數字個數必須100%同構，嚴禁增減任何變數或常數！"
     )
     return template_id, template_text
 

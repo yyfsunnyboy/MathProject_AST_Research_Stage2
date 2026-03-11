@@ -39,6 +39,11 @@ import random
 # PolynomialOps is injected automatically
 
 def generate(level=1, **kwargs):
+    # Step 0: 解析題型結構 (必須先寫出這三行註解，確保你確實算過)
+    # 多項式數量 (即原題參與運算的多項式有幾個): ... 個
+    # 題型判斷: ... (加減法 / 乘法展開 / 求未知多項式)
+    # 運算符號: ... (例如 + 或 - 或 *)
+    
     var = 'x'
 
     if level == 1:

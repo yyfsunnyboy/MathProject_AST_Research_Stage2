@@ -22,6 +22,37 @@ def _normalize_plain_operator_tokens(text):
     out, n = re.subn(r'(?<!\\)(?<![A-Za-z])div(?![A-Za-z])', '÷', out, flags=re.IGNORECASE)
     total += n
 
+    # [V52.1 FIX] 修補隱含乘法：絕對值與絕對值、括號、數字之間的缺失乘號
+    # 情況 1: |A||B|  或 \right| \left|
+    out, n = re.subn(r'(\|\s*\||\\right\|\s*\\left\|)', r'| \times |', out)
+    if '\\right| \\times \\left|' in out: # fix up the replaced one
+        out = out.replace('| \\times |', '\\right| \\times \\left|') 
+    else:
+        out = out.replace('| \\times |', '| \\times |')
+    # simpler rule for latex right-left
+    out, n1 = re.subn(r'\\right\|\s*\\left\|', r'\\right| \\times \\left|', out)
+    # simpler rule for plain pipe
+    out, n2 = re.subn(r'\|\s*\|', r'| \\times |', out)
+    total += (n1 + n2)
+
+    # 情況 2: |A|(B) 或 \right|(  ->  |A| \times (B)
+    out, n1 = re.subn(r'\\right\|\s*\(', r'\\right| \\times (', out)
+    out, n2 = re.subn(r'(\d+|\w+)?\|\s*\(', r'\1| \\times (', out) # 處理 |( 但要小心不要配到開頭
+    total += (n1 + n2)
+
+    # 情況 3: (A)|B| 或 )\left|  -> (A) \times |B|
+    out, n1 = re.subn(r'\)\s*\\left\|', r') \\times \\left|', out)
+    out, n2 = re.subn(r'\)\s*\|', r') \\times |', out)
+    total += (n1 + n2)
+
+    # 情況 4: |A|5 或 \right|5
+    out, n1 = re.subn(r'\\right\|\s*(\d+)', r'\\right| \\times \1', out)
+    # out, n2 = re.subn(r'\|\s*(\d+)', r'| \\times \1', out) # 這比較危險，可能誤判
+
+    # 統一轉換回純文字 '×' 方便後續
+    out, n = re.subn(r'\\times\b', '×', out)
+    total += n
+
     return out, total
 
 
@@ -105,32 +136,44 @@ def enforce_negative_parentheses(expr_text):
 
 def sanitize_question_text_display(question_text, return_report=False):
     if not question_text:
-        return (question_text, {"double_paren_fixes": 0, "negative_wrap_fixes": 0, "operator_token_fixes": 0}) if return_report else question_text
+        return (question_text, {"double_paren_fixes": 0, "negative_wrap_fixes": 0, "operator_token_fixes": 0, "diffs": []}) if return_report else question_text
 
     text = str(question_text)
     m = re.search(r'\$(.*?)\$', text)
     total_fixes = 0
     total_neg_wraps = 0
     op_token_count = 0
+    diffs = []
+    
     if m:
         inner = m.group(1)
         fixed_inner, fix_count = collapse_double_numeric_parentheses(inner)
+        if fix_count > 0: diffs.append(f"    * {sanitize_rule_explain('double_paren_fixes')}: [{inner}] => [{fixed_inner}]")
         total_fixes += fix_count
+        
         fixed_inner_2, wrap_count = enforce_negative_parentheses(fixed_inner)
+        if wrap_count > 0: diffs.append(f"    * {sanitize_rule_explain('negative_wrap_fixes')}: [{fixed_inner}] => [{fixed_inner_2}]")
         total_neg_wraps += wrap_count
         sanitized = text[:m.start(1)] + fixed_inner_2 + text[m.end(1):]
     else:
-        sanitized, fix_count = collapse_double_numeric_parentheses(text)
+        sanitized_1, fix_count = collapse_double_numeric_parentheses(text)
+        if fix_count > 0: diffs.append(f"    * {sanitize_rule_explain('double_paren_fixes')}: [{text}] => [{sanitized_1}]")
         total_fixes += fix_count
-        sanitized, wrap_count = enforce_negative_parentheses(sanitized)
+        
+        sanitized_2, wrap_count = enforce_negative_parentheses(sanitized_1)
+        if wrap_count > 0: diffs.append(f"    * {sanitize_rule_explain('negative_wrap_fixes')}: [{sanitized_1}] => [{sanitized_2}]")
         total_neg_wraps += wrap_count
-        sanitized, op_token_count = _normalize_plain_operator_tokens(sanitized)
+        
+        sanitized_3, op_token_count = _normalize_plain_operator_tokens(sanitized_2)
+        if op_token_count > 0: diffs.append(f"    * {sanitize_rule_explain('operator_token_fixes')}: [{sanitized_2}] => [{sanitized_3}]")
+        sanitized = sanitized_3
 
     if return_report:
         return sanitized, {
             "double_paren_fixes": total_fixes,
             "negative_wrap_fixes": total_neg_wraps,
             "operator_token_fixes": int(op_token_count if 'op_token_count' in locals() else 0),
+            "diffs": diffs
         }
     return sanitized
 
@@ -229,9 +272,13 @@ def format_fraction_mixed_display(
     m = re.search(r'\$(.*?)\$', text)
     if not m:
         normalized_text, op_token_count = _normalize_plain_operator_tokens(text)
+        diffs = []
+        if op_token_count > 0:
+            diffs.append(f"    * {healer_rule_explain('plain_operator_token_to_symbol')}: [{text}] => [{normalized_text}]")
         report = {
             "regex_fix_count": int(op_token_count),
             "fix_breakdown": {"plain_operator_token_to_symbol": int(op_token_count)} if op_token_count > 0 else {},
+            "diffs": diffs
         }
         if return_report:
             return normalized_text, report
@@ -256,97 +303,106 @@ def format_fraction_mixed_display(
 
     regex_fix_count = 0
     breakdown = {}
+    diffs = []
+    
+    last_val = inner
 
-    def _inc(name, n):
-        nonlocal regex_fix_count
+    def _inc(name, n, current_val):
+        nonlocal regex_fix_count, last_val
         n = int(n or 0)
         if n <= 0:
+            last_val = current_val
             return
         regex_fix_count += n
         breakdown[name] = int(breakdown.get(name, 0)) + n
+        if last_val != current_val:
+            diffs.append(f"    * {healer_rule_explain(name)}: [{last_val}] => [{current_val}]")
+        last_val = current_val
 
     inner2, n = re.subn(r'\\frac\s*\{\s*([+-]?\d+)\s*\}\s*\{\s*([1-9]\d*)\s*\}', _replace_latex_frac, inner)
-    _inc("normalize_latex_fraction", n)
+    _inc("normalize_latex_fraction", n, inner2)
     inner2, n = re.subn(r'\(\s*([+-]?\d+)\s*\)\s*/\s*\(\s*([+-]?\d+)\s*\)(?!\s*/)', _replace_paren_paren_frac, inner2)
-    _inc("paren_over_paren_to_fraction", n)
+    _inc("paren_over_paren_to_fraction", n, inner2)
     inner2, n = re.subn(r'\(\s*([+-]?\d+)\s*\)\s*/\s*([1-9]\d*)(?!\s*/)', _replace_paren_num_frac, inner2)
-    _inc("paren_num_over_num_to_fraction", n)
+    _inc("paren_num_over_num_to_fraction", n, inner2)
     inner2, n = re.subn(r'(?<![\d\\}/])([+-]?\d+)\s*/\s*\(\s*([+-]?\d+)\s*\)(?!\s*/)', _replace_num_paren_den_frac, inner2)
-    _inc("num_over_paren_den_to_fraction", n)
+    _inc("num_over_paren_den_to_fraction", n, inner2)
     inner2, n = re.subn(
         r'(?<![\d\\}/])([+-]?\d+)\s*/\s*([1-9]\d*)(?!\s*/)(?![\d\{])',
         _replace_plain_frac,
         inner2
     )
-    _inc("slash_fraction_to_latex", n)
+    _inc("slash_fraction_to_latex", n, inner2)
 
     inner2, n = re.subn(
         r'(?<![\d\\}])([+-]?\d+)\s*/\s*([1-9]\d*)(?![\d\{])',
         _replace_plain_frac,
         inner2
     )
-    _inc("slash_fraction_to_latex_fallback", n)
+    _inc("slash_fraction_to_latex_fallback", n, inner2)
 
     for _ in range(3):
         _before = inner2
         inner2 = inner2.replace("+-", "-").replace("-+", "-").replace("++", "+").replace("--", "+")
         if inner2 != _before:
-            _inc("normalize_sign_sequence", 1)
+            _inc("normalize_sign_sequence", 1, inner2)
 
     for _ in range(6):
         new_inner = inner2
         new_inner, n = re.subn(r'-\(\s*-\s*([^()]+?)\s*\)', r'+\1', new_inner)
-        _inc("double_negative_parenthesis", n)
+        _inc("double_negative_parenthesis", n, new_inner)
         new_inner, n = re.subn(r'\+\(\s*-\s*([^()]+?)\s*\)', r'-\1', new_inner)
-        _inc("plus_negative_parenthesis", n)
+        _inc("plus_negative_parenthesis", n, new_inner)
         new_inner, n = re.subn(r'-\(\s*\+\s*([^()]+?)\s*\)', r'-\1', new_inner)
-        _inc("minus_plus_parenthesis", n)
+        _inc("minus_plus_parenthesis", n, new_inner)
         new_inner, n = re.subn(r'\+\(\s*\+\s*([^()]+?)\s*\)', r'+\1', new_inner)
-        _inc("plus_plus_parenthesis", n)
+        _inc("plus_plus_parenthesis", n, new_inner)
 
         new_inner, n = re.subn(
             r'\(\s*([+-]?(?:\\frac\{\d+\}\{\d+\}|\d+\\frac\{\d+\}\{\d+\}|\d+))\s*\)',
             r'\1',
             new_inner
         )
-        _inc("remove_redundant_atomic_parenthesis", n)
+        _inc("remove_redundant_atomic_parenthesis", n, new_inner)
         new_inner = new_inner.replace("+-", "-").replace("-+", "-").replace("++", "+").replace("--", "+")
+        last_val = new_inner
         if new_inner == inner2:
             break
         inner2 = new_inner
+        last_val = inner2
 
     inner2, n = re.subn(r'\\{2,}div\b', lambda _m: '\\div', inner2)
-    _inc("normalize_div_backslashes", n)
+    _inc("normalize_div_backslashes", n, inner2)
     inner2, n = re.subn(r'\\{2,}times\b', lambda _m: '\\times', inner2)
-    _inc("normalize_times_backslashes", n)
+    _inc("normalize_times_backslashes", n, inner2)
 
     inner2, n = re.subn(r'(?<!\\)(?<![A-Za-z])div(?![A-Za-z])', r'\\div', inner2, flags=re.IGNORECASE)
-    _inc("fix_plain_div_token", n)
+    _inc("fix_plain_div_token", n, inner2)
     inner2, n = re.subn(r'(?<!\\)(?<![A-Za-z])times(?![A-Za-z])', r'\\times', inner2, flags=re.IGNORECASE)
-    _inc("fix_plain_times_token", n)
+    _inc("fix_plain_times_token", n, inner2)
 
     inner2, n = re.subn(r'(?<!\\)div(?=\s*[\[\(\{])', r'\\div', inner2)
-    _inc("fix_plain_div_token", n)
+    _inc("fix_plain_div_token", n, inner2)
     inner2, n = re.subn(r'(?<=\d)\s*div\s*(?=[\-\+\[\(\{\\])', r'\\div', inner2)
-    _inc("fix_plain_div_token", n)
+    _inc("fix_plain_div_token", n, inner2)
     inner2, n = re.subn(r'(?<!\\)times(?=\s*[\[\(\{])', r'\\times', inner2)
-    _inc("fix_plain_times_token", n)
+    _inc("fix_plain_times_token", n, inner2)
 
     inner2, n = re.subn(r'(\\left\[)\s*\+\s*', r'\1', inner2)
-    _inc("remove_leading_plus_in_left_bracket", n)
+    _inc("remove_leading_plus_in_left_bracket", n, inner2)
     inner2, n = re.subn(r'(\\left\()\s*\+\s*', r'\1', inner2)
-    _inc("remove_leading_plus_in_left_paren", n)
+    _inc("remove_leading_plus_in_left_paren", n, inner2)
     inner2, n = re.subn(r'(\\left\{)\s*\+\s*', r'\1', inner2)
-    _inc("remove_leading_plus_in_left_brace", n)
+    _inc("remove_leading_plus_in_left_brace", n, inner2)
     inner2, n = re.subn(r'([\[\(\{])\s*\+\s*', r'\1', inner2)
-    _inc("remove_leading_plus_after_open_bracket", n)
+    _inc("remove_leading_plus_after_open_bracket", n, inner2)
 
     inner2, n = re.subn(r'^\s*\+\s*', '', inner2)
-    _inc("remove_leading_plus_at_start", n)
+    _inc("remove_leading_plus_at_start", n, inner2)
 
     out = text[:m.start(1)] + inner2 + text[m.end(1):]
     if return_report:
-        return out, {"regex_fix_count": int(regex_fix_count), "fix_breakdown": breakdown}
+        return out, {"regex_fix_count": int(regex_fix_count), "fix_breakdown": breakdown, "diffs": diffs}
     return out
 
 
@@ -381,6 +437,9 @@ def build_readable_healer_logs(healer_trace, detail_logs):
     def _to_zh(line):
         s = str(line or "").strip()
 
+        if s.startswith("* "):
+            return "    " + s
+
         if s.startswith("AST Healer:"):
             body = s.replace("AST Healer:", "", 1).strip()
             body = body.replace("Replaced dangerous function", "已替換危險函式")
@@ -406,6 +465,12 @@ def build_readable_healer_logs(healer_trace, detail_logs):
             content = content.replace("bare negative literal(s) with parentheses", "裸負數括號")
             content = content.replace("after fallback", "（fallback 後）")
             return f"- 題面清理：{content}"
+
+        if s.startswith("[CODE_REGEX_DIFF]"):
+            content = s.replace("[CODE_REGEX_DIFF]", "", 1).strip()
+            if content.startswith("Regex 程式碼內容修復："):
+                return f"- Code Regex 修補："
+            return "    " + content
 
         return ""
 
@@ -501,6 +566,9 @@ def apply_sanitize_report_to_trace(trace, detail_logs, sanitize_report, after_fa
             detail_logs.append(f"[DISPLAY_SANITIZE_HEALER] negative_wrap_fixes: +{negative_cnt}")
         if op_token_cnt > 0:
             detail_logs.append(f"[DISPLAY_SANITIZE_HEALER] operator_token_fixes: +{op_token_cnt}")
+        if "diffs" in sanitize_report:
+            for d in sanitize_report["diffs"]:
+                detail_logs.append(d)
 
     return total
 
@@ -526,6 +594,9 @@ def apply_display_report_to_trace(trace, detail_logs, display_report):
                 cnt = int(val or 0)
                 if cnt > 0:
                     detail_logs.append(f"[DISPLAY_REGEX_HEALER] {key}: +{cnt}")
+        if "diffs" in display_report:
+            for d in display_report["diffs"]:
+                detail_logs.append(d)
     return total
 
 

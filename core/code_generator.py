@@ -989,6 +989,23 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
             pass
         ast_stats = ASTStats()
         ast_stats.logs = []
+        
+    # [NEW] Code Regex Diff Logging for Live Show UI
+    if code_before_regex != code_after_regex:
+        import difflib
+        _diff = difflib.unified_diff(
+            code_before_regex.splitlines(),
+            code_after_regex.splitlines(),
+            n=0, lineterm=''
+        )
+        ast_stats.logs.append("[CODE_REGEX_DIFF] Regex 程式碼內容修復：")
+        for _dl in _diff:
+            if _dl.startswith("+++") or _dl.startswith("---") or _dl.startswith("@@"):
+                continue
+            if _dl.startswith("-"):
+                ast_stats.logs.append(f"[CODE_REGEX_DIFF] ❌ 移除: {_dl[1:].strip()}")
+            elif _dl.startswith("+"):
+                ast_stats.logs.append(f"[CODE_REGEX_DIFF] ✅ 修改/新增: {_dl[1:].strip()}")
     
     # [NEW 2026-02-08] Step 4.5 + 7.5: Anti-Duplication & Variable-Before-Use Checker (僅 Ab3)
     anti_dup_fixes = 0

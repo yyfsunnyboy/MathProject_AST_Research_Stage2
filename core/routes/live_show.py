@@ -484,12 +484,9 @@ def apply_strict_mirroring(scaffold, ocr_text):
     # 重新組裝並加上強制同構命令
     final_output = '\n'.join(cleaned_lines)
     
-    # 針對你的個案：如果沒看到絕對值，直接把【任務】那一行強制改掉
+    # 針對你的個案：如果沒看到絕對值，附加動態強制禁令
     if "|" not in ocr_text:
-        final_output = final_output.replace(
-            "題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)",
-            "題目結構必須與【參考例題】完全相同，嚴禁增加額外運算（如絕對值）。"
-        )
+        final_output += "\n\n【動態絕對值禁令】\n圖片中沒有絕對值符號。嚴禁在你的程式碼中加入 abs() 或任何絕對值符號（| |），必須 100% 保持同構！"
     
     return final_output
 
@@ -690,10 +687,12 @@ Template: {template_id}
             else:
                 _sys_grouping_note = ""
             system_prompt = (
-                f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構。"
-                f"嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n"
+                f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構與數字個數。\n"
+                f"嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。【嚴禁增加數字數量】原題有幾個數字，你就只能宣告幾個變數！\n"
+                f"必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n"
                 f"{_sys_grouping_note}\n\n"
-                f"【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n\n"
+                f"【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n"
+                f"【強制步驟】你必須在 generate 函式開頭，先用註解 `# Step 0:` 寫出你觀察到的變數個數與運算符號數量，然後嚴格依此數量宣告變數。\n\n"
                 f"請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n"
                 f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
             )
@@ -799,11 +798,11 @@ Template: {template_id}
             cpu_execution_time_sec = ab3_pack["cpu_execution_time_sec"]
             healed_code = ab3_pack["healed_code"]
             file_path = ab3_pack["file_path"]
-            regex_fixes = ab3_pack["regex_fixes"]
-            regex_code_fixes = ab3_pack["regex_code_fixes"]
-            regex_display_fixes = ab3_pack["regex_display_fixes"]
-            ast_fixes = ab3_pack["ast_fixes"]
-            o1_fixes = ab3_pack["o1_fixes"]
+            regex_fixes = ab3_pack.get("regex_fixes", 0)
+            regex_code_fixes = ab3_pack.get("regex_code_fixes", 0)
+            regex_display_fixes = ab3_pack.get("regex_display_fixes", 0)
+            ast_fixes = ab3_pack.get("ast_fixes", 0)
+            o1_fixes = ab3_pack.get("o1_fixes", 0)
             detail_logs = ab3_pack["detail_logs"]
             generated_fp = ab3_pack["generated_fp"]
             iso_isomorphic = ab3_pack["iso_isomorphic"]
@@ -1534,7 +1533,7 @@ def classify_input():
             process_logs.append("> ⚠️ DNA Match Failed: Falling back to Unknown.")
             confidence = 30
             # [強制防禦] 就算辨識出錯退回 Unknown，也幫前端準備乾淨的防禦性 scaffold_prompt 以免出問題
-            fallback_knowledge = "題目結構必須與【參考例題】完全相同，嚴禁增加額外運算（如絕對值）。"
+            fallback_knowledge = "題目結構與數字個數必須與【參考例題】完全相同，嚴禁增加額外數字或運算（如絕對值）。"
             fallback_knowledge_safe = apply_strict_mirroring(fallback_knowledge, ocr_text)
             scaffold_prompt = fallback_knowledge_safe
 

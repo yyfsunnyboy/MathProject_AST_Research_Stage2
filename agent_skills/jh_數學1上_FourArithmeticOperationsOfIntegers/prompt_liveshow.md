@@ -121,14 +121,20 @@ import math
 from fractions import Fraction
 
 def generate(level=1, **kwargs):
+    # Step 0: 解析題型結構 (必須先寫出這三行註解，確保你確實算過)
+    # 變數個數: ... 個
+    # 運算符號數與種類: ... 個 (分別為 ...)
+    # 特殊結構: ... (無 / 絕對值 / 中括號)
+
     fmt = IntegerOps.fmt_num
 
     for _ in range(200):
-        # 1) 依原始常數位置產生變數（只換數字，不動結構）
+        # 1) 依 Step 0 解析出的「變數個數」，嚴格依序宣告對應數量的變數！
+        # 【最高禁令】原題有幾個參與運算的數字，你就只能生成幾個變數！
         # v1, v2, ... 根據原例題正負號與 D3 的區間規範生成
         
         # 2) 直接計算分子/分母整數值（不用 safe_eval，不用 Fraction 縮放）
-        # 例如：numerator = v1 * v2 - v3；denominator = v4 * v5
+        # 依據上方宣告的變數，組合出分子分母的算式
         numerator = ...  # 依題型填寫分子算式
         denominator = ... # 依題型填寫分母算式
         
@@ -139,10 +145,13 @@ def generate(level=1, **kwargs):
         final_ans = abs(numerator) // abs(denominator)
         # 若分母為負，結果取負號（依題目運算方向而定）
         
-        # 4) 組裝 eval_str（純 Python 可計算，含 abs()）與 math_str（LaTeX 顯示）
-        # ★ 必須使用 f-string，直接嵌入變數名，禁止用 .format() 或 str.replace()
-        eval_str = f"abs({v1} * {v2} - {v3}) / ({v4} * {v5})"  # 依題型修改
-        math_str = f"\\left| {fmt(v1)} \\times {fmt(v2)} - {fmt(v3)} \\right| \\div {fmt(v4)} \\times {fmt(v5)}"  # 依題型修改
+        # 4) 組裝 eval_str（純運算）與 math_str（LaTeX 顯示）
+        # ★ 你必須宣告 eval_str 與 math_str 這兩個變數！
+        # 【最高禁令】必須按照原題的運算子與數字個數！嚴禁無腦照抄 5個變數的範例！
+        # 範例 (嚴禁照抄): eval_str = f"abs({v1} * {v2}) - ({v3} / {v4})"
+        #               math_str = f"\\left| {fmt(v1)} \\times {fmt(v2)} \\right| - ({fmt(v3)} \\div {fmt(v4)})"
+        eval_str = f"..."  # 純 Python 算式 (若有絕對值才用 abs)
+        math_str = f"..."  # LaTeX 顯示字串 (若有絕對值才用 \\left| \\right|)
 
         ans = IntegerOps.safe_eval(eval_str)
         if abs(ans - round(ans)) < 1e-6:

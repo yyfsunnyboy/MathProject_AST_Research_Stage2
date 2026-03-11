@@ -43,41 +43,36 @@ import math
 # RadicalOps is injected automatically
 
 def generate(level=1, **kwargs):
+    # Step 0: 解析題型結構 (必須先寫出這三行註解，確保你確實算過)
+    # 根式項數 (即原題參與加減運算的根式有幾項): ... 項
+    # 乘法分配律區塊: ... (無 / 幾組)
+    # 特殊結構: ... (有理化分母 / 純加減)
+
     simplifiable = [8, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75]
     simple = [2, 3, 5, 7, 11]
 
     for _ in range(20):
-        # Part 1: 3~4 項未化簡根式加減
-        n_terms = random.randint(3, 4)
-        terms1_data = []
-        for i in range(n_terms):
-            c = random.choice([x for x in range(-5, 6) if x != 0])
-            r = random.choice(simplifiable)
-            terms1_data.append((c, r))
-
-        part1_strs = []
-        for i, (c, r) in enumerate(terms1_data):
-            s = RadicalOps.format_term_unsimplified(c, r, is_first=(i == 0))
-            part1_strs.append(s)
-        part1_latex = "".join(part1_strs)
-
-        # Part 2: 乘法分配律 k(\sqrt{r_a} + \sqrt{r_b})
-        k = random.randint(2, 5)
-        r_a = random.choice(simple)
-        r_b = random.choice(simple)
-        part2_latex = f"{k}(\\sqrt{{{r_a}}} + \\sqrt{{{r_b}}})"
-
-        question_text = f"化簡 $({part1_latex}) + {part2_latex}$"
-
-        # 計算答案（純數值操作，禁止解析 LaTeX 字串）
-        final_terms = {}
-        for c, r in terms1_data:
-            new_c, new_r = RadicalOps.simplify_term(c, r)
-            final_terms[new_r] = final_terms.get(new_r, 0) + new_c
-        c_a, r_a_s = RadicalOps.simplify_term(k, r_a)
-        final_terms[r_a_s] = final_terms.get(r_a_s, 0) + c_a
-        c_b, r_b_s = RadicalOps.simplify_term(k, r_b)
-        final_terms[r_b_s] = final_terms.get(r_b_s, 0) + c_b
+        try:
+            # 1. 根據 Step 0 的項數與區塊宣告對應數量的變數
+            # 【最高禁令】原題有幾項根式、是否有乘法分配律區塊，你就必須 100% 照做宣告對應的變數！
+            # 絕對禁止直接抄寫預設的隨機 3~4 項！
+            # c1 = random.choice(...)
+            # r1 = random.choice(...)
+            # c2 = ...
+            # k = ... (若有乘法分配律) 
+            
+            # 2. 組合題目字串
+            # ★ 你必須宣告 question_text 這個變數！
+            # 範例 (嚴禁照抄): q_part1 = RadicalOps.format_term_unsimplified(c1, r1, True)
+            #               question_text = f"化簡 $({q_part1}) + ...$"
+            question_text = f"..."
+            
+            # 3. 計算答案（純數值操作，利用 RadicalOps.simplify_term 化簡再合併同類項）
+            final_terms = {}
+            # 例如:
+            # new_c1, new_r1 = RadicalOps.simplify_term(c1, r1)
+            # final_terms[new_r1] = final_terms.get(new_r1, 0) + new_c1
+            # ... 合併所有項 ...
 
         correct_answer = RadicalOps.format_expression(final_terms)
         if correct_answer and correct_answer != '0':
@@ -87,6 +82,8 @@ def generate(level=1, **kwargs):
                 'correct_answer': correct_answer,
                 'mode': 1
             }
+        except Exception:
+            continue
 
     return {'question_text': 'Error', 'answer': '', 'correct_answer': '0', 'mode': 1}
 

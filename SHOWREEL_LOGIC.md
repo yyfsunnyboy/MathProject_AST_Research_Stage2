@@ -1133,17 +1133,47 @@ clean_json_str = re.sub(r'\s*//[^\n"]*', '', clean_json_str)
    - 預期（有 `|` 輸入）：OCR 保留絕對值，生成題含絕對值
    - **新增**：貼上純分數截圖預期：生成題僅純分數；貼上帶分數截圖預期：生成題含帶分數
 
-2. **暫存腳本清理**（累積清單）：
-   - 本日新增：`tmp_test_bug21.py`
-   - 前日遺留：`tmp_bug16_diag.py`、`tmp_bug16_integration_test.py`、`tmp_live_api_test.py`、`tmp_diag_mcri_path.py`、`tmp_check_l1.py`、`tmp_test_think_strip.py`、`tmp_test_classify_robustness.py`、`tmp_test_eval_strip.py`、`tmp_test_vl_classify.py`、`tmp_test_vl_image.py`、`tmp_diag_image_classify.py`
+2. ~~**暫存腳本清理**（累積清單）~~ ✅ **已完成 (2026-03-11)**
+   - 已清空 Bug 16~26 期間創建的十餘個測試腳本，如 `tmp_test_bug21.py`、`tmp_test_think_strip.py` 等。
 
-### 14.4 最低驗證命令
+### 14.4 本日新增修復（Bug 27）
+
+#### Bug 27 — 整數技能在無絕對值時依然生成絕對值 (Structural Drift)
+- **現象**：當輸入如 `(-56) \div (-4) - (-28) \div 2` 時，生成題出現了 `|86 \times 10 - (-4)| \div (-12) \times (-4)` (多出絕對值層級)。
+- **根本原因**：`apply_strict_mirroring` 雖然會把 `prompt_liveshow.md` 裡的「3) 絕對值層級」強制刪除，但寫在最下方 **F. 可直接遵循的骨架** 裡的 `eval_str = f"abs(...)"` 和 `math_str = f"\left| ... \right|"` 沒有被過濾掉，導致 AI 認為必須產生有絕對值的程式碼。
+- **修復**：
+  1. 將 `agent_skills/jh_數學1上_FourArithmeticOperationsOfIntegers/prompt_liveshow.md` 中的 `eval_str` / `math_str` skeleton 去除 `abs()` / `\left| \right|`，改用普通圓括號表示，並在備註加上「若有絕對值才用 abs/left|，否則絕對不可用」。
+  2. 在 `core/routes/live_show.py` 的 `apply_strict_mirroring` 結尾，當判斷 `|` 不在 OCR 中時，追加全局約束 `【動態絕對值禁令】圖片中沒有絕對值符號。嚴禁在你的程式碼中加入 abs() 或任何絕對值符號（\| \|）`。
+- **驗證**：Regression tests 全部通過 (3 passed)。
+
+### 14.5 最低驗證命令
 
 ```bash
 python -m py_compile core/routes/live_show.py
 python -m py_compile core/routes/live_show_pipeline.py
 python -m py_compile core/healers/live_show_healer.py
 python tests/test_live_show_healer_regression.py
-python tmp_test_bug21.py
-python tmp_test_bug22.py
 ```
+
+---
+
+### 14.6 今日晚間補充進度（2026-03-11 晚）
+
+#### Bug 28 — 結構漂移 (Structure Drift) 與 `math_str is not defined` 錯誤
+- **現象**：LLM 有時沒有遵照例題的變數數量、運算符號數量和類型，甚至直接遺漏定義 `math_str` 和 `eval_str` 變數導致 Runtime Error。
+- **根本原因**：LLM 在撰寫 Python 生成腳本前，缺乏對題型結構的「思考與規劃」，直接開始寫 Code 容易迷失上下文。此外，prompt 之前的 placeholder 寫法讓 LLM 誤以為可以省略 `math_str`。
+- **修復（Prompt Engineering）**：
+  1. **補齊 Placeholder 範例**：在 `prompt_liveshow.md` 中提供明確且抽象的 `eval_str` 和 `math_str` 寫法範例（如用 `v1, v2` 代表），避免 LLM 解析模糊。
+  2. **強制 Chain-of-Thought (CoT)**：在所有 4 個技能的 `generate()` function skeleton 開頭強制加入 `# Step 0: 結構分析` 區塊，要求 LLM 在生成代碼前，必須在註解中明確清點並寫出「變數數量」、「運算符號數量」及「特殊結構（如絕對值、括號）」，從而約束其後續的代碼生成嚴格對齊結構。
+- **驗證**：不再發生 `math_str is not defined`，生成題型結構對齊度大幅提升。
+
+#### Bug 29 — 絕對值隱含乘法遺漏 (Missing Operator After Absolute Value)
+- **現象**：當輸入如 `|29 \times (-4)|(-6)` 時，LLM 生成代碼時偶爾會省略兩者之間的乘號，導致後續 `eval_str` 和 `math_str` 中缺少對應運算子而報錯。
+- **根本原因**：系統原先在 `live_show_healer.py` 處理隱含乘法時（例如 `2(3)` → `2 \times 3`），僅考慮了括號和數字，漏掉了把「絕對值符號」納入隱含乘法的修復邊界條件。
+- **修復（Healer Regex 增強）**：
+  在 `live_show_healer.py` 的 `_normalize_plain_operator_tokens` 函式中，加入四種絕對值隱含乘法恢復的正則表達式規則：
+  1. **絕對值 接 絕對值**：`\|A\|\|B\|` → `\|A\| \times \|B\|`
+  2. **絕對值 接 括號**：`\|A\|\((-4)\)` → `\|A\| \times \((-4)\)`
+  3. **括號 接 絕對值**：`\((-3)\)\|B\|` → `\((-3)\) \times \|B\|`
+  4. **絕對值 接 數字**：`\|A\|5` → `\|A\| \times 5`
+- **驗證**：自訂測試腳本 6 種隱含乘法情境全部成功補回 `\times`，回歸測試 3 passed ✅。
