@@ -15,6 +15,18 @@ class RadicalOps:
     @staticmethod
     def simplify_term(coeff, radicand):
         """化簡單項根式 c√r -> (new_c, new_r)"""
+        from fractions import Fraction
+        
+        # 由於 Sandbox dynamic reloading，isinstance 容易失靈，改用 __name__
+        if type(radicand).__name__ == "Fraction" or isinstance(radicand, Fraction):
+            num = radicand.numerator
+            den = radicand.denominator
+            if den != 1:
+                coeff = Fraction(coeff, den)
+                radicand = num * den
+            else:
+                radicand = num
+                
         if radicand == 0:
             return (0, 0)
         if radicand == 1:
@@ -38,17 +50,32 @@ class RadicalOps:
         if coeff == 0:
             return ""
         
-        if radicand == 1:
-            term_str = str(coeff)
-        elif radicand == 0:
-            term_str = "0"
+        from fractions import Fraction
+        
+        # Handle Fraction and styling
+        if type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction):
+            coeff_str = FractionOps.to_latex(coeff, mixed=False)
         else:
-            if coeff == 1:
-                term_str = f"\\sqrt{{{radicand}}}"
-            elif coeff == -1:
-                term_str = f"-\\sqrt{{{radicand}}}"
+            coeff_str = str(coeff)
+            
+        if coeff == 1:
+            coeff_str = ""
+        elif coeff == -1:
+            coeff_str = "-"
+            
+        if radicand == 0:
+            term_str = "0"
+            coeff_str = "0" # Override for 0 radicand
+        elif radicand == 1:
+            term_str = FractionOps.to_latex(coeff, mixed=False) if (type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction)) else str(coeff)
+        else:
+            if (type(radicand).__name__ == "Fraction" or isinstance(radicand, Fraction)):
+                if radicand.denominator != 1:
+                    term_str = f"{coeff_str}\\sqrt{{{FractionOps.to_latex(radicand, mixed=False)}}}"
+                else:
+                    term_str = f"{coeff_str}\\sqrt{{{radicand.numerator}}}"
             else:
-                term_str = f"{coeff}\\sqrt{{{radicand}}}"
+                term_str = f"{coeff_str}\\sqrt{{{radicand}}}"
         
         if not is_first and coeff > 0:
             return "+" + term_str
@@ -60,17 +87,32 @@ class RadicalOps:
         if coeff == 0:
             return ""
         
-        if radicand == 1:
-            term_str = str(coeff)
-        elif radicand == 0:
-            term_str = "0"
+        from fractions import Fraction
+        
+        # Handle Fraction and styling
+        if type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction):
+            coeff_str = FractionOps.to_latex(coeff, mixed=False)
         else:
-            if coeff == 1:
-                term_str = f"\\sqrt{{{radicand}}}"
-            elif coeff == -1:
-                term_str = f"-\\sqrt{{{radicand}}}"
+            coeff_str = str(coeff)
+            
+        if coeff == 1:
+            coeff_str = ""
+        elif coeff == -1:
+            coeff_str = "-"
+            
+        if radicand == 0:
+            term_str = "0"
+            coeff_str = "0" # Override for 0 radicand
+        elif radicand == 1:
+            term_str = FractionOps.to_latex(coeff, mixed=False) if (type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction)) else str(coeff)
+        else:
+            if (type(radicand).__name__ == "Fraction" or isinstance(radicand, Fraction)):
+                if radicand.denominator != 1:
+                    term_str = f"{coeff_str}\\sqrt{{{FractionOps.to_latex(radicand, mixed=False)}}}"
+                else:
+                    term_str = f"{coeff_str}\\sqrt{{{radicand.numerator}}}"
             else:
-                term_str = f"{coeff}\\sqrt{{{radicand}}}"
+                term_str = f"{coeff_str}\\sqrt{{{radicand}}}"
         
         if not is_first and coeff > 0:
             return "+" + term_str

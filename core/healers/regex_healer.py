@@ -327,11 +327,48 @@ class RegexHealer:
             # ' -- ': ' + ', # Too risky due to comments/separators
         }
         
-        result = code_str
-        for old, new in replacements.items():
-            result = result.replace(old, new)
+        lines = code_str.split('\n')
+        new_lines = []
         
-        return result
+        for line in lines:
+            if line.lstrip().startswith('#'):
+                new_lines.append(line)
+                continue
+                
+            in_string = False
+            string_char = None
+            comment_idx = -1
+            
+            for i, char in enumerate(line):
+                if char in "'\"":
+                    if not in_string:
+                        in_string = True
+                        string_char = char
+                    elif string_char == char:
+                        bs_count = 0
+                        for j in range(i-1, -1, -1):
+                            if line[j] == '\\':
+                                bs_count += 1
+                            else:
+                                break
+                        if bs_count % 2 == 0:
+                            in_string = False
+                elif char == '#' and not in_string:
+                    comment_idx = i
+                    break
+            
+            if comment_idx != -1:
+                code_part = line[:comment_idx]
+                comment_part = line[comment_idx:]
+                for old, new in replacements.items():
+                    code_part = code_part.replace(old, new)
+                new_lines.append(code_part + comment_part)
+            else:
+                for old, new in replacements.items():
+                    line = line.replace(old, new)
+                new_lines.append(line)
+        
+        return '\n'.join(new_lines)
 
     def remove_duplicate_class_definitions(self, code_str: str) -> tuple:
         """
@@ -630,10 +667,10 @@ class RegexHealer:
             'Counter': 'from collections import Counter',
             'Fraction': 'from fractions import Fraction',
             'Decimal': 'from decimal import Decimal',
-            're\\.\w+': 'import re',  # 如果用到 re.xxx
-            'math\\.\w+': 'import math', # 如果用到 math.xxx
-            'random\\.\w+': 'import random',
-            'itertools\\.\w+': 'import itertools',
+            r're\.\w+': 'import re',  # 如果用到 re.xxx
+            r'math\.\w+': 'import math', # 如果用到 math.xxx
+            r'random\.\w+': 'import random',
+            r'itertools\.\w+': 'import itertools',
             'datetime': 'import datetime',
         }
         

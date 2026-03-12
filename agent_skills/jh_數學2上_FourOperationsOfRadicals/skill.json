@@ -3,8 +3,8 @@
   "display_name": "根式四則運算",
   "family": "radical",
   "level_range": [1, 3],
-  "injected_apis": ["RadicalOps"],
-  "required_imports": ["random", "math"],
+  "injected_apis": ["RadicalOps", "FractionOps"],
+  "required_imports": ["random", "math", "from fractions import Fraction"],
   "modes": ["BENCHMARK", "LIVESHOW"],
   "vision_input": false,
   "aliases": [

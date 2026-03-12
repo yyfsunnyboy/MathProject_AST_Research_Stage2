@@ -10,9 +10,9 @@
 【任務】
 實作 `def generate(level=1, **kwargs)`，生成根式化簡與四則運算題目。
 依照 level 選擇難度：
-- Level 1 (Easy): 基礎加減法，包含 2 項未化簡根式。
-- Level 2 (Normal): 標準教材型，3-4 項未化簡根式加減 + 一組簡單分配律乘法。
-- Level 3 (Hard): 進階挑戰型，包含根式除法（分母有理化）或複雜的雙括號乘法展開。
+- Level 1 (Easy): 根號化簡 (Simplifying Radicals)。只生成單一項需要化簡的根式（例如 `\sqrt{12}` 或 `\sqrt{2^5}`），不包含加減乘除。
+- Level 2 (Normal): 同類方根的合併 (Combining Like Radicals)。只生成同類方根的加減法（例如 `2\sqrt{12} - \sqrt{27}`），不包含乘除法。
+- Level 3 (Hard): 四則運算 (Four Arithmetic Operations)。包含根式的乘法分配律、展開與加減混合運算。
 返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
 
 
@@ -20,7 +20,8 @@
 1. **Import 規範**：
    - ✅ **必須** `import random`
    - ✅ **必須** `import math`
-   - ❌ **嚴禁** `import RadicalOps` (系統已自動注入，直接使用 `RadicalOps.xxx`)
+   - ✅ **必須** `from fractions import Fraction`
+   - ❌ **嚴禁** `import RadicalOps` 或是 `import FractionOps` (系統已自動注入，直接使用 `RadicalOps.xxx`)
 
 2. **核心邏輯**：
    - 使用 `terms = [(coeff, radicand), ...]` 列表來儲存數學狀態。
@@ -45,16 +46,18 @@
        return {'correct': correct, 'result': '正確' if correct else '錯誤'}
    ```
 
-【系統已注入的輔助函式（API）】（直接調用 `RadicalOps.xxx`）
+【系統已注入的輔助函式（API）】（直接調用 `RadicalOps.xxx` 或 `FractionOps.xxx`）
 - `RadicalOps.simplify_term(coeff, radicand)` → `(new_coeff, new_radicand)`
-- `RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True)` → 未化簡格式化（題目用）
-- `RadicalOps.format_expression(terms_dict, denominator=1)` → 最終答案（自動合併同類項、排序、LaTeX）
+- `RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True)` → 未化簡格式化（題目用，支援 Fraction）
+- `RadicalOps.format_expression(terms_dict, denominator=1)` → 最終答案（自動合併同類項、排序、LaTeX，支援 Fraction）
+- `FractionOps.create(value)` → 建立分數
+- `FractionOps.to_latex(frac, mixed=False)` → 分數轉 LaTeX
 
 【核心規則】
-1. **題目結構**：
-   - Part 1: 3~4 項未化簡根式加減（例如 `\sqrt{12} + 2\sqrt{27} - \sqrt{8}`）。
-   - Part 2: 簡單乘法（例如 `2(\sqrt{3} + \sqrt{5})`）。
-   - 題目顯示：`化簡 $(Part1) + Part2$`
+1. **題目結構 (依據 Level)**：
+   - Level 1: 單一未化簡根式，題目顯示：`化簡 $\sqrt{...}$`
+   - Level 2: 3~4 項同類方根的加減，題目顯示：`化簡 $... + ... - ...$`
+   - Level 3: 乘法分配律混合加減，題目顯示：`化簡 $(...) \times (...) + ...$` 或單純 `(...) \times (...)`
 2. **數值範圍**：
    - 係數 `coeff`: -5 ~ 5 (非零)
    - 根號內 `radicand`: 2, 3, 5, 6, 7, 8, 10, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75
