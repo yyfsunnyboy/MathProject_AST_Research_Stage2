@@ -134,6 +134,128 @@ def enforce_negative_parentheses(expr_text):
     return "".join(out), changes
 
 
+def fix_math_brackets_hierarchy(math_str):
+    """
+    動態調整數學括號層級與消除冗餘雙括號。
+    1. 統一所有群組括號為純 ()
+    2. 移除冗餘的雙重括號 ((...)) -> (...)
+    3. 依據嵌套深度升級為 \left[ \right] 與 \left\{ \right\}
+    """
+    s = str(math_str)
+    
+    # 1. 統一所有群組括號為純 ()
+    s = s.replace(r'\left(', '(').replace(r'\right)', ')')
+    s = s.replace(r'\left[', '(').replace(r'\right]', ')')
+    s = s.replace('[', '(').replace(']', ')')
+    s = s.replace(r'\left\{', '(').replace(r'\right\}', ')')
+    s = s.replace(r'\{', '(').replace(r'\}', ')')
+    
+    # 2. 移除冗餘的雙括號 (( ... )) -> ( ... )
+    while True:
+        stack = []
+        pairs = {}
+        valid = True
+        for i, c in enumerate(s):
+            if c == '(':
+                stack.append(i)
+            elif c == ')':
+                if not stack:
+                    valid = False; break
+                start = stack.pop()
+                pairs[start] = i
+        if stack or not valid:
+            break
+            
+        redundant_start = -1
+        redundant_end = -1
+        for start, end in pairs.items():
+            first_non_space = start + 1
+            while first_non_space < end and s[first_non_space].isspace():
+                first_non_space += 1
+                
+            last_non_space = end - 1
+            while last_non_space > start and s[last_non_space].isspace():
+                last_non_space -= 1
+                
+            if first_non_space < end and s[first_non_space] == '(' and s[last_non_space] == ')':
+                if pairs.get(first_non_space) == last_non_space:
+                    redundant_start = start
+                    redundant_end = end
+                    break
+                    
+        if redundant_start != -1:
+            s = s[:redundant_start] + ' ' + s[redundant_start+1:redundant_end] + ' ' + s[redundant_end+1:]
+        else:
+            break
+            
+    # 3. 確保括號平衡再進行升級
+    temp_count = 0
+    balanced = True
+    for c in s:
+        if c == '(': temp_count += 1
+        elif c == ')':
+            temp_count -= 1
+            if temp_count < 0:
+                balanced = False; break
+    if temp_count != 0: balanced = False
+    
+    if not balanced:
+        return math_str # 降級處理：若不平衡則維持現狀
+        
+    nodes = []
+    temp_stack = []
+    root_nodes = []
+    
+    for i, c in enumerate(s):
+        if c == '(':
+            new_node = {'start': i, 'end': -1, 'children': [], 'depth': 1}
+            nodes.append(new_node)
+            if temp_stack:
+                temp_stack[-1]['children'].append(new_node)
+            else:
+                root_nodes.append(new_node)
+            temp_stack.append(new_node)
+        elif c == ')':
+            if temp_stack:
+                node = temp_stack.pop()
+                node['end'] = i
+                
+    def compute_depth(node):
+        if not node['children']:
+            node['depth'] = 1
+        else:
+            max_child_depth = max(compute_depth(child) for child in node['children'])
+            node['depth'] = max_child_depth + 1
+        return node['depth']
+        
+    for root in root_nodes:
+        compute_depth(root)
+        
+    replacements = {}
+    for node in nodes:
+        d = node['depth']
+        if d == 1:
+            replacements[node['start']] = '('
+            replacements[node['end']] = ')'
+        elif d == 2:
+            replacements[node['start']] = r'\left['
+            replacements[node['end']] = r'\right]'
+        else:
+            replacements[node['start']] = r'\left\{'
+            replacements[node['end']] = r'\right\}'
+            
+    parts = []
+    for i, c in enumerate(s):
+        if i in replacements:
+            parts.append(replacements[i])
+        else:
+            parts.append(c)
+            
+    # 若有產生升降級，會將雙括號的空白修剪一下
+    final_s = "".join(parts)
+    return final_s
+
+
 def sanitize_question_text_display(question_text, return_report=False):
     if not question_text:
         return (question_text, {"double_paren_fixes": 0, "negative_wrap_fixes": 0, "operator_token_fixes": 0, "diffs": []}) if return_report else question_text
@@ -154,7 +276,13 @@ def sanitize_question_text_display(question_text, return_report=False):
         fixed_inner_2, wrap_count = enforce_negative_parentheses(fixed_inner)
         if wrap_count > 0: diffs.append(f"    * {sanitize_rule_explain('negative_wrap_fixes')}: [{fixed_inner}] => [{fixed_inner_2}]")
         total_neg_wraps += wrap_count
-        sanitized = text[:m.start(1)] + fixed_inner_2 + text[m.end(1):]
+        
+        fixed_inner_3 = fix_math_brackets_hierarchy(fixed_inner_2)
+        if fixed_inner_2 != fixed_inner_3:
+            diffs.append(f"    * 括號層級動態修正: [{fixed_inner_2}] => [{fixed_inner_3}]")
+            total_fixes += 1
+            
+        sanitized = text[:m.start(1)] + fixed_inner_3 + text[m.end(1):]
     else:
         sanitized_1, fix_count = collapse_double_numeric_parentheses(text)
         if fix_count > 0: diffs.append(f"    * {sanitize_rule_explain('double_paren_fixes')}: [{text}] => [{sanitized_1}]")
@@ -166,7 +294,13 @@ def sanitize_question_text_display(question_text, return_report=False):
         
         sanitized_3, op_token_count = _normalize_plain_operator_tokens(sanitized_2)
         if op_token_count > 0: diffs.append(f"    * {sanitize_rule_explain('operator_token_fixes')}: [{sanitized_2}] => [{sanitized_3}]")
-        sanitized = sanitized_3
+        
+        sanitized_4 = fix_math_brackets_hierarchy(sanitized_3)
+        if sanitized_3 != sanitized_4:
+            diffs.append(f"    * 括號層級動態修正: [{sanitized_3}] => [{sanitized_4}]")
+            total_fixes += 1
+            
+        sanitized = sanitized_4
 
     if return_report:
         return sanitized, {
