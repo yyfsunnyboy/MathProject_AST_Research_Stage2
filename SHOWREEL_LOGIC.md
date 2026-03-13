@@ -1177,3 +1177,48 @@ python tests/test_live_show_healer_regression.py
   3. **括號 接 絕對值**：`\((-3)\)\|B\|` → `\((-3)\) \times \|B\|`
   4. **絕對值 接 數字**：`\|A\|5` → `\|A\| \times 5`
 - **驗證**：自訂測試腳本 6 種隱含乘法情境全部成功補回 `\times`，回歸測試 3 passed ✅。
+
+---
+
+## 15. 今日下班交接（2026-03-13）
+
+### 15.1 本日已完成（Confirmed ✅）
+
+#### RadicalOps 領域函數抽離與優化
+- **目標**：將複雜的根式運算（加減合併、乘法、有理化除法）從 AI 提示詞中抽離，改為調用 `RadicalOps` 標準 API，減輕 Qwen3-8B-VL 的計算負擔。
+- **改動檔案**：
+  - `core/scaffold/domain_libs.py`：新增 `add_term`、`mul_terms`、`div_terms` 靜態方法。
+  - `core/prompts/domain_function_library.py`：同步更新 `RADICALOPS_HELPERS` 字串與 `RadicalOps` 類別，確保生成的程式碼包含這些方法。
+  - `agent_skills/jh_數學2上_FourOperationsOfRadicals/`：更新 `SKILL.md`、`prompt_liveshow.md`、`prompt_benchmark.md` 以全面改用新 API。
+- **修復 Bug**：
+  - **Bug 30**：修復了因 `RadicalOps` 在注入時缺少 `mul_terms` 等方法導致的 `AttributeError`。現在生成的腳本能正確調用新 API 進行根式運算。
+- **例題驗算**：
+  - 已用本機 `core/scaffold/domain_libs.py::RadicalOps.div_terms` 驗證：`\sqrt{35} \div \sqrt{5}` 會化簡為 `\sqrt{7}`（`(c, r) = (1, 7)`）。
+
+### 15.2 尚待完成（Pending ⏳）
+
+1. **Live 驗收（Radical 題組）**：
+   - 雖然已在本地 `py_compile` 與 `regression` 測試通過，但仍需在瀏覽器端針對 `7√2 × 5√2` 等複雜題型進行最後驗收。
+   - 確認生成題目的 LaTeX 格式是否符合 8 年級教學規範（例如項數、係數類型是否 100% 同構）。
+
+2. **核心架構維護**：
+   - 持續監控 `domain_function_library.py` 與 `domain_libs.py` 的同步狀況，避免未來再次出現「本地有改但注入沒改」的 AttributeError。
+
+### 15.3 接手建議（與下一位 Agent 交接）
+
+1. **環境啟動**：
+   - `python app.py`（確保 Ollama 中 `qwen3-vl:8b` 已啟動）。
+2. **測試建議**：
+   - 使用包含「除法有理化」或「多項分配律」的根式截圖進行測試，觀察 `add_term` 與 `div_terms` 的執行穩定性。
+3. **文件參考**：
+   - 若遇到 API 遺失錯誤，優先檢查 `core/prompts/domain_function_library.py` 中的字串常數是否已更新。
+
+---
+
+## 16. Agent 執行規範補充 (2026-03-13)
+
+- **自動執行權限**：在執行 `view_file` 或不具破壞性的 `run_command` 時，應主動使用 `SafeToAutoRun: true`，以減少對使用者的審批干擾。
+- **注入同步**：修改 `core/scaffold/domain_libs.py` 內的操作類別時，**必須同時**修改 `core/prompts/domain_function_library.py` 的對應字串。
+- **技能凍結協議 (Freeze Protocol)**：以下技能已通過完整測試驗收，**嚴禁**修改其關聯檔案與專屬邏輯（包含 `IntegerOps` / `FractionOps` 的現有行為）：
+  - `jh_數學1上_FourArithmeticOperationsOfIntegers`
+  - `jh_數學1上_FourArithmeticOperationsOfNumbers`

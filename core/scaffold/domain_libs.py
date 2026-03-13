@@ -45,6 +45,40 @@ class RadicalOps:
         return (new_coeff, new_radicand)
 
     @staticmethod
+    def add_term(terms_dict, coeff, radicand):
+        """化簡並將單項根式加入到字典中"""
+        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
+        if new_coeff != 0:
+            terms_dict[new_radicand] = terms_dict.get(new_radicand, 0) + new_coeff
+        return terms_dict
+
+    @staticmethod
+    def mul_terms(c1, r1, c2, r2):
+        """兩個單項根式相乘，返回化簡結果 (new_coeff, new_radicand)"""
+        return RadicalOps.simplify_term(c1 * c2, r1 * r2)
+
+    @staticmethod
+    def div_terms(c1, r1, c2, r2):
+        """兩個單項根式相除 c1√r1 ÷ c2√r2，返回化簡與有理化結果 (new_coeff, new_radicand)"""
+        from fractions import Fraction
+        
+        if c2 == 0 or r2 == 0:
+            raise ValueError("除數係數或被開方數不能為 0")
+        
+        # 處理分數被開方數
+        is_r1_frac = type(r1).__name__ == "Fraction" or isinstance(r1, Fraction)
+        is_r2_frac = type(r2).__name__ == "Fraction" or isinstance(r2, Fraction)
+        
+        if is_r1_frac or is_r2_frac:
+            return RadicalOps.simplify_term(Fraction(c1, c2), Fraction(r1, r2))
+        
+        # 整數被開方數
+        if r1 % r2 == 0:
+            return RadicalOps.simplify_term(Fraction(c1, c2), r1 // r2)
+        else:
+            return RadicalOps.simplify_term(Fraction(c1, c2 * r2), r1 * r2)
+
+    @staticmethod
     def format_term(coeff, radicand, is_first=True):
         """格式化單項根式 (LaTeX)"""
         if coeff == 0:
@@ -251,4 +285,3 @@ class FractionOps:
         if b == 0 or (isinstance(b, Fraction) and b.numerator == 0):
             raise ValueError("除數不能為 0")
         return FractionOps.create(a) / FractionOps.create(b)
-

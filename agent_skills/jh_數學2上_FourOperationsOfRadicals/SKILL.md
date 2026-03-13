@@ -48,6 +48,9 @@
 
 【系統已注入的輔助函式（API）】（直接調用 `RadicalOps.xxx` 或 `FractionOps.xxx`）
 - `RadicalOps.simplify_term(coeff, radicand)` → `(new_coeff, new_radicand)`
+- `RadicalOps.add_term(terms_dict, coeff, radicand)` → `terms_dict` (化簡後加入)
+- `RadicalOps.mul_terms(c1, r1, c2, r2)` → `(new_coeff, new_radicand)`
+- `RadicalOps.div_terms(c1, r1, c2, r2)` → `(new_coeff, new_radicand)`
 - `RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True)` → 未化簡格式化（題目用，支援 Fraction）
 - `RadicalOps.format_expression(terms_dict, denominator=1)` → 最終答案（自動合併同類項、排序、LaTeX，支援 Fraction）
 - `FractionOps.create(value)` → 建立分數
