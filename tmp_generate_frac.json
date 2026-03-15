@@ -1,6 +1,0 @@
-﻿{
-    "ablation_mode":  false,
-    "skill_id":  "jh_數學1上_FourArithmeticOperationsOfNumbers",
-    "model_id":  "qwen3-8b",
-    "prompt":  "計算 (-2 3/4)+1 2/7 的值。"
-}

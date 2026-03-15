@@ -155,6 +155,7 @@ class DomainFunctionHelper:
         difficulty: str,
         max_retries: int = 200,
         target_profile: Optional[dict] = None,
+        term_count: int = None,
     ) -> dict:
         """
         Generate a dictionary of safe, controlled random variables for the
@@ -211,7 +212,10 @@ class DomainFunctionHelper:
 
         for attempt in range(max_retries):
             try:
-                v = generator_map[pid](difficulty)
+                if pid == "p1_add_sub":
+                    v = self._vars_p1(difficulty, term_count=term_count)
+                else:
+                    v = generator_map[pid](difficulty)
                 best_effort_vars = v  # always keep latest mathematically-valid vars
 
                 if target_sc is not None:
@@ -392,8 +396,11 @@ class DomainFunctionHelper:
             raise _RetrySignal()
         return {"r": r}
 
-    def _vars_p1(self, difficulty: str) -> dict:
-        n_terms = {"easy": 2, "mid": 3, "hard": 4}.get(difficulty, 2)
+    def _vars_p1(self, difficulty: str, term_count: int = None) -> dict:
+        if term_count is not None and term_count >= 2:
+            n_terms = term_count
+        else:
+            n_terms = {"easy": 2, "mid": 3, "hard": 4}.get(difficulty, 2)
         terms = []
         for i in range(n_terms):
             c = random.choice(NON_ZERO_COEFF)

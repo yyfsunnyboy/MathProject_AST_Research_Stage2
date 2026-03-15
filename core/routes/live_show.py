@@ -88,18 +88,20 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
     """
     Assemble a complete, executable radical scaffold from the model's raw output.
 
-    The model is instructed to output exactly two lines:
+    The model is instructed to output exactly three lines:
         pattern_id = "p1_add_sub"
         difficulty  = "mid"
+        term_count = 2
 
     Three-step extraction:
       Step 1 — Clean: strip <think> blocks and markdown fences.
       Step 2 — Extract: aggressively find pattern_id + difficulty via regex,
-                        with unquoted and bare-token fallbacks.
+                        with unquoted and bare-token fallbacks; extract optional
+                        term_count (integer) with None fallback.
       Step 3 — Assemble: wrap the decisions in RADICAL_V4_SCAFFOLD_PREFIX /
                          SUFFIX so the executor always receives valid Python.
 
-    Hard fallback (p1_add_sub / mid) guarantees the pipeline never breaks.
+    Hard fallback (p1_add_sub / mid / None) guarantees the pipeline never breaks.
     Every run prints a one-line diagnostic to the terminal.
     """
     # ── Step 1: Clean ─────────────────────────────────────────────────────
@@ -149,12 +151,18 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
     if used_fallback_diff:
         diff = "mid"
 
+    # 2e. Extract term_count (integer, optional)
+    tc_match = re.search(r'term_count\s*=\s*(\d+)', clean_raw)
+    tc = tc_match.group(1).strip() if tc_match else "None"
+
     _src_pid  = "FALLBACK" if used_fallback_pid  else "extracted"
     _src_diff = "FALLBACK" if used_fallback_diff else "extracted"
+    _src_tc   = "extracted" if tc_match else "FALLBACK"
     _msg = (
         f"[RADICAL_ASSEMBLER] "
         f"pattern_id={p_id!r} ({_src_pid}), "
-        f"difficulty={diff!r} ({_src_diff})"
+        f"difficulty={diff!r} ({_src_diff}), "
+        f"term_count={tc!r} ({_src_tc})"
     )
     try:
         print(_msg)
@@ -166,6 +174,7 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
     decisions = (
         f'    pattern_id = "{p_id}"\n'
         f'    difficulty  = "{diff}"\n'
+        f'    term_count = {tc}\n'
     )
     return _RADICAL_PREFIX + decisions + _RADICAL_SUFFIX
 
@@ -735,6 +744,15 @@ def generate_live():
             else:
                 iso_block, fp = _build_isomorphic_constraints(ocr_text, json_spec)
                 template_id, template_text = _select_liveshow_structure_template(fp)
+
+            # [Radical Orchestrator] The integer fingerprint (nums/ops/brackets) is
+            # meaningless for radical LaTeX.  Clear it so the scaffold prompt sent to
+            # the LLM carries NO integer-based constraints and NO bracket/abs guards.
+            if skill_id == _RADICAL_SKILL_ID:
+                iso_block     = ""
+                fp            = {}
+                template_id   = ""
+                template_text = ""
             
             # 動態注入 OCR 結果
             live_show_content = live_show_content.replace("{{OCR_RESULT}}", ocr_text)
@@ -781,33 +799,49 @@ Template: {template_id}
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
-            # [Bug 29] Dynamically inject bracket/abs constraint into system prompt
-            # so the AI cannot ignore it via the 「無視所有模板」 override.
-            _fp_brackets = fp.get("bracket_count", 0)
-            _fp_abs = fp.get("abs_count", 0)
-            if _fp_brackets > 0 and _fp_abs == 0:
-                _sys_grouping_note = (
-                    "【中括號守則（最高優先）】圖片中的分組符號是中括號 [ ]。"
-                    "生成的 math_str 字串中必須原樣保留 [ ]，"
-                    "嚴禁以 | | 或 abs() 替代。違者判定生成失敗。"
-                )
-            elif _fp_abs > 0 and _fp_brackets == 0:
-                _sys_grouping_note = (
-                    "【絕對值守則（最高優先）】圖片中含絕對值符號 | |。"
-                    "生成的 math_str 字串中必須原樣保留 | |，嚴禁替換成 [ ]。"
+            if skill_id == _RADICAL_SKILL_ID:
+                # ── Radical Orchestrator: minimal 3-line classifier prompt ──────
+                # Model must ONLY identify pattern_id + difficulty + term_count.
+                # No digit-count mirroring, no IntegerOps, no bracket guards.
+                system_prompt = (
+                    "你是根式題型辨識引擎（Radical Pattern Classifier）。\n"
+                    "根據圖片中的根號算式，從 Pattern Catalogue 選出 pattern_id，並判斷難度與根式項數。\n"
+                    "只輸出 3 行 Python 代碼，格式如下（直接照輸，僅替換值）：\n"
+                    "pattern_id = \"p1_add_sub\"\n"
+                    "difficulty  = \"mid\"\n"
+                    "term_count = 2\n"
+                    "禁止輸出其他任何文字、markdown、import 或函式定義。\n\n"
+                    f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
                 )
             else:
-                _sys_grouping_note = ""
-            system_prompt = (
-                f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構與數字個數。\n"
-                f"嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。【嚴禁增加數字數量】原題有幾個數字，你就只能宣告幾個變數！\n"
-                f"必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n"
-                f"{_sys_grouping_note}\n\n"
-                f"【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n"
-                f"【強制步驟】你必須在 generate 函式開頭，先用註解 `# Step 0:` 寫出你觀察到的變數個數與運算符號數量，然後嚴格依此數量宣告變數。\n\n"
-                f"請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n"
-                f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
-            )
+                # ── Integer / Fraction skills: full structural-mirror prompt ────
+                # [Bug 29] Dynamically inject bracket/abs constraint into system
+                # prompt so the AI cannot ignore it via the 「無視所有模板」 override.
+                _fp_brackets = fp.get("bracket_count", 0)
+                _fp_abs = fp.get("abs_count", 0)
+                if _fp_brackets > 0 and _fp_abs == 0:
+                    _sys_grouping_note = (
+                        "【中括號守則（最高優先）】圖片中的分組符號是中括號 [ ]。"
+                        "生成的 math_str 字串中必須原樣保留 [ ]，"
+                        "嚴禁以 | | 或 abs() 替代。違者判定生成失敗。"
+                    )
+                elif _fp_abs > 0 and _fp_brackets == 0:
+                    _sys_grouping_note = (
+                        "【絕對值守則（最高優先）】圖片中含絕對值符號 | |。"
+                        "生成的 math_str 字串中必須原樣保留 | |，嚴禁替換成 [ ]。"
+                    )
+                else:
+                    _sys_grouping_note = ""
+                system_prompt = (
+                    f"你現在是頂級 Python 工程師。你現在直接觀察圖片，你的唯一任務是 100% 鏡像模仿圖片中的算式結構與數字個數。\n"
+                    f"嚴禁加入任何圖片中沒有的數學符號（如：絕對值、括號）。【嚴禁增加數字數量】原題有幾個數字，你就只能宣告幾個變數！\n"
+                    f"必須使用 IntegerOps.fmt_num 與 \\div、\\times。\n"
+                    f"{_sys_grouping_note}\n\n"
+                    f"【最高指令】『無視所有模板，以你看到的圖片內容為唯一真理。產出最簡約的 generate 函式。』\n"
+                    f"【強制步驟】你必須在 generate 函式開頭，先用註解 `# Step 0:` 寫出你觀察到的變數個數與運算符號數量，然後嚴格依此數量宣告變數。\n\n"
+                    f"請根據圖片與提供的【SCAFFOLD PROMPT】，直接輸出 Python 代碼，不需要解釋。\n\n"
+                    f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+                )
             
             payload = {
                 "model": model_name,
@@ -1493,22 +1527,39 @@ def classify_input():
                         # [新修復] 將 OCR 提取出來的 * 和 / 替換為 LaTeX 格式
                         ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
 
-                        iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
-                        template_id, template_text = _select_liveshow_structure_template(op_fp)
                         if not isinstance(json_spec, dict):
                             json_spec = {}
+
+                        if raw_skill_id.strip() == _RADICAL_SKILL_ID:
+                            # Radical Orchestrator: integer fingerprint is meaningless for
+                            # radical LaTeX — use DNA profile instead.
+                            op_fp          = _build_radical_profile(ocr_text)
+                            iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
+                            template_id, template_text = "", ""
+                            process_logs.append(
+                                f"> 🧬 Radical DNA Profile: rad_count={op_fp.get('rad_count', 0)}, "
+                                f"simplifiable={op_fp.get('simplifiable_count', 0)}, "
+                                f"rationalize={op_fp.get('rationalize_count', 0)}"
+                            )
+                        else:
+                            iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
+                            template_id, template_text = _select_liveshow_structure_template(op_fp)
+                            process_logs.append(
+                                f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, "
+                                f"ops={op_fp.get('operator_count', 0)}, "
+                                f"[]={op_fp.get('bracket_count', 0)}, "
+                                f"||={op_fp.get('abs_count', 0)}"
+                            )
+
                         json_spec["isomorphic_constraints"] = iso_constraints
-                        json_spec["operator_fingerprint"] = op_fp
-                        json_spec["structural_profile"] = op_fp
-                        json_spec["structure_template_id"] = template_id
+                        json_spec["operator_fingerprint"]   = op_fp
+                        json_spec["structural_profile"]     = op_fp
+                        json_spec["structure_template_id"]  = template_id
                         json_spec["structure_template_text"] = template_text
                         # Canonical OCR text — stored here so generate_live can use exactly the
                         # same text regardless of whether the original input was an image or a
                         # text-box entry, keeping both paths on the same execution track.
                         json_spec["ocr_text"] = ocr_text
-                        process_logs.append(
-                            f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, ops={op_fp.get('operator_count', 0)}, []={op_fp.get('bracket_count', 0)}, ||={op_fp.get('abs_count', 0)}"
-                        )
 
                         raw_skill_id = raw_skill_id.strip()
                         skill_name = normalize_skill_id(raw_skill_id, available_skills)
@@ -1673,18 +1724,29 @@ def classify_input():
                 else:
                     scaffold_prompt = "[prompt_liveshow.md 與 SKILL.md 均未找到]"
 
-                iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec if isinstance(json_spec, dict) else None)
-                template_id, template_text = _select_liveshow_structure_template(op_fp)
+                if skill_name == _RADICAL_SKILL_ID:
+                    # Radical Orchestrator: DNA mirror — no integer iso constraints
+                    op_fp          = _build_radical_profile(ocr_text)
+                    iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
+                    template_id, template_text = "", ""
+                    # scaffold_prompt is already complete from prompt_liveshow.md;
+                    # do NOT append integer-based constraint sections.
+                else:
+                    iso_constraints, op_fp = _build_isomorphic_constraints(
+                        ocr_text, json_spec if isinstance(json_spec, dict) else None
+                    )
+                    template_id, template_text = _select_liveshow_structure_template(op_fp)
+                    scaffold_prompt += (
+                        f"\n\n【題型同構硬性約束】\n{iso_constraints}"
+                        f"\n\n【題型骨架模板（必須採用）】\nTemplate: {template_id}\n{template_text}"
+                    )
+
                 if isinstance(json_spec, dict):
-                    json_spec["isomorphic_constraints"] = iso_constraints
-                    json_spec["operator_fingerprint"] = op_fp
-                    json_spec["structural_profile"] = op_fp
-                    json_spec["structure_template_id"] = template_id
+                    json_spec["isomorphic_constraints"]  = iso_constraints
+                    json_spec["operator_fingerprint"]    = op_fp
+                    json_spec["structural_profile"]      = op_fp
+                    json_spec["structure_template_id"]   = template_id
                     json_spec["structure_template_text"] = template_text
-                scaffold_prompt += (
-                    f"\n\n【題型同構硬性約束】\n{iso_constraints}"
-                    f"\n\n【題型骨架模板（必須採用）】\nTemplate: {template_id}\n{template_text}"
-                )
                     
             except Exception as e:
                 scaffold_prompt = f"Error loading SKILL.md: {e}"

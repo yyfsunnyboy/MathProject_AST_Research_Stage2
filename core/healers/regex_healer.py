@@ -262,6 +262,10 @@ class RegexHealer:
         """
         [V3.3 Ab3 Fix] 移除錯誤的模組引用（當使用 Scaffolding 注入時）
         例如： from domain_function_library import fmt_num, IntegerOps
+
+        [V3.5 Radical Guard] Lines containing 'DomainFunctionHelper' are
+        NEVER deleted — this import is legitimately injected by the Radical
+        Orchestrator scaffold and must survive healer passes.
         """
         old_code = code_str
         fix_count = 0
@@ -276,7 +280,9 @@ class RegexHealer:
             r"^.*from\s+domain_function_library\s+import.*(?:\n|$)",
             r"^.*import\s+domain_function_library.*(?:\n|$)",
             r"^.*from\s+core\.code_generator\s+import.*(?:\n|$)",
-            r"^.*from\s+core\..*\s+import.*(?:\n|$)"
+            # [V3.5] Negative lookahead: skip lines that reference DomainFunctionHelper
+            # so the Radical Orchestrator scaffold import is never stripped.
+            r"^(?!.*DomainFunctionHelper).*from\s+core\..*\s+import.*(?:\n|$)"
         ]
         
         current_code = code_str
@@ -1024,6 +1030,7 @@ class RegexHealer:
         [V3.3 Ab3 Fix] 移除錯誤的模組引用（當使用 Scaffolding 注入時）
         例如： from domain_function_library import fmt_num, IntegerOps
         [V3.4] 增加移除 from RadicalOps import ...
+        [V3.5] Negative lookahead protects DomainFunctionHelper import.
         """
         old_code = code_str
         fix_count = 0
@@ -1035,7 +1042,9 @@ class RegexHealer:
             r"^.*from\s+domain_function_library\s+import.*(?:\n|$)",
             r"^.*import\s+domain_function_library.*(?:\n|$)",
             r"^.*from\s+core\.code_generator\s+import.*(?:\n|$)",
-            r"^.*from\s+core\..*\s+import.*(?:\n|$)",
+            # [V3.5] Negative lookahead: skip lines that reference DomainFunctionHelper
+            # so the Radical Orchestrator scaffold import is never stripped.
+            r"^(?!.*DomainFunctionHelper).*from\s+core\..*\s+import.*(?:\n|$)",
             r"^.*from\s+RadicalOps\s+import.*(?:\n|$)", # [V3.4 NEW]
             r"^.*import\s+RadicalOps.*(?:\n|$)"          # [V3.4 NEW]
         ]

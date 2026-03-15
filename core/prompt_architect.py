@@ -486,7 +486,7 @@ _V4_ARCH_NOTE = """
 ════════════════════════════════════════════
 架構說明（Pure Orchestrator Mode）
 ════════════════════════════════════════════
-模型職責：pattern_id（11 選 1）+ difficulty（3 選 1）。
+模型職責：pattern_id（11 選 1）+ difficulty（3 選 1）+ term_count（觀察原題項數）。
 所有根式計算、化簡、有理化、步驟 → DomainFunctionHelper 決定性完成。
 禁止自行撰寫任何根式數學邏輯。
 """
@@ -544,7 +544,7 @@ _V4_API_SIGNATURES = """
 ════════════════════════════════════════════
 DomainFunctionHelper API（僅此 3 個必要方法）
 ════════════════════════════════════════════
-df.get_safe_vars_for_pattern(pattern_id, difficulty)   → dict
+df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count) → dict
 df.solve_problem_pattern(pattern_id, vars, difficulty) → (str, List[str])
 df.format_question_LaTeX(pattern_id, vars)             → str
 """
@@ -571,7 +571,7 @@ RADICAL_V4_SCAFFOLD_PREFIX = (
 
 RADICAL_V4_SCAFFOLD_SUFFIX = (
     "    # [Auto-appended scaffold — deterministic, DO NOT output]\n"
-    "    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty)\n"
+    "    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count)\n"
     "    ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)\n"
     "    question_text = df.format_question_LaTeX(pattern_id, vars)\n"
     "\n"
@@ -595,7 +595,7 @@ RADICAL_V4_SCAFFOLD_SUFFIX = (
 # ---------------------------------------------------------------------------
 _V4_CODE_SCAFFOLD_FULL = (
     "\n════════════════════════════════════════════\n"
-    "【系統已注入以下 Scaffold，你的輸出只有 ↓↑ 之間的兩行】\n"
+    "【系統已注入以下 Scaffold，你的輸出只有 ↓↑ 之間的三行】\n"
     "════════════════════════════════════════════\n"
     "# [Pre-injected by Architect — DO NOT RE-OUTPUT]\n"
     "# from core.domain_functions import DomainFunctionHelper\n"
@@ -603,13 +603,14 @@ _V4_CODE_SCAFFOLD_FULL = (
     "#\n"
     "# def generate(level=1, **kwargs):\n"
     "#\n"
-    "# ↓ 你只輸出以下兩行（縮排 4 個空格，不加任何其他程式碼）↓\n"
+    "# ↓ 你只輸出以下三行（縮排 4 個空格）↓\n"
     "    pattern_id = \"p1_add_sub\"  # ← 從 Pattern Catalogue 選擇\n"
     "    difficulty  = \"mid\"         # ← easy / mid / hard\n"
+    "    term_count = 2             # ← 觀察原題，填寫根式的總項數（如 2 或 3）\n"
     "# ↑ 你的輸出到這裡結束 ↑\n"
     "#\n"
     "# [Auto-appended after your output — DO NOT OUTPUT]\n"
-    "# vars = df.get_safe_vars_for_pattern(pattern_id, difficulty)\n"
+    "# vars = df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count)\n"
     "# ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)\n"
     "# question_text = df.format_question_LaTeX(pattern_id, vars)\n"
     "# return { 'question_text': ..., 'correct_answer': ans, ... }\n"
@@ -617,10 +618,11 @@ _V4_CODE_SCAFFOLD_FULL = (
     "# def check(user_answer, correct_answer): ...\n"
     "\n"
     "════════════════════════════════════════════\n"
-    "你的輸出應為（僅此兩行，不加任何其他 code）：\n"
+    "你的輸出應為（僅此三行，不加任何其他 code）：\n"
     "════════════════════════════════════════════\n"
     "    pattern_id = \"<從上方 Catalogue 選一個 p-ID>\"\n"
     "    difficulty  = \"<easy|mid|hard>\"\n"
+    "    term_count = <觀察原題中根式的總項數，填整數>\n"
 )
 
 _V4_CODE_SCAFFOLD_P6_COMBO = (
