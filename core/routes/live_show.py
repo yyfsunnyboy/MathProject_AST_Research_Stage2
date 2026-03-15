@@ -151,11 +151,15 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
 
     _src_pid  = "FALLBACK" if used_fallback_pid  else "extracted"
     _src_diff = "FALLBACK" if used_fallback_diff else "extracted"
-    print(
-        f"⚙️  [RADICAL_ASSEMBLER] "
+    _msg = (
+        f"[RADICAL_ASSEMBLER] "
         f"pattern_id={p_id!r} ({_src_pid}), "
         f"difficulty={diff!r} ({_src_diff})"
     )
+    try:
+        print(_msg)
+    except UnicodeEncodeError:
+        print(_msg.encode("ascii", errors="replace").decode("ascii"))
 
     # ── Step 3: Assemble ──────────────────────────────────────────────────
     # Decisions live inside def generate() → must be indented with 4 spaces.
