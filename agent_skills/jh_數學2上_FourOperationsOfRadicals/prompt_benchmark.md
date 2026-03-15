@@ -16,8 +16,9 @@ def generate(level=1, **kwargs):
         question_text = f"化簡 ${RadicalOps.format_term_unsimplified(c, r, True)}$"
         
         # Calculate answer
-        new_c, new_r = RadicalOps.simplify_term(c, r)
-        correct_answer = RadicalOps.format_expression({new_r: new_c})
+        final_terms = {}
+        RadicalOps.add_term(final_terms, c, r)
+        correct_answer = RadicalOps.format_expression(final_terms)
         
         return {
             'question_text': question_text,
@@ -47,8 +48,7 @@ def generate(level=1, **kwargs):
         
         final_terms = {}
         for c, r in terms:
-            new_c, new_r = RadicalOps.simplify_term(c, r)
-            final_terms[new_r] = final_terms.get(new_r, 0) + new_c
+            RadicalOps.add_term(final_terms, c, r)
             
         correct_answer = RadicalOps.format_expression(final_terms)
         
@@ -80,16 +80,12 @@ def generate(level=1, **kwargs):
         
         final_terms = {}
         # Term 1: t1 * t2
-        mult_c1 = c1 * c2
-        mult_r1 = r1 * r2
-        new_c1, new_r1 = RadicalOps.simplify_term(mult_c1, mult_r1)
-        final_terms[new_r1] = final_terms.get(new_r1, 0) + new_c1
+        new_c1, new_r1 = RadicalOps.mul_terms(c1, r1, c2, r2)
+        RadicalOps.add_term(final_terms, new_c1, new_r1)
         
         # Term 2: t1 * t3
-        mult_c2 = c1 * c3
-        mult_r2 = r1 * r3
-        new_c2, new_r2 = RadicalOps.simplify_term(mult_c2, mult_r2)
-        final_terms[new_r2] = final_terms.get(new_r2, 0) + new_c2
+        new_c2, new_r2 = RadicalOps.mul_terms(c1, r1, c3, r3)
+        RadicalOps.add_term(final_terms, new_c2, new_r2)
         
         correct_answer = RadicalOps.format_expression(final_terms)
         

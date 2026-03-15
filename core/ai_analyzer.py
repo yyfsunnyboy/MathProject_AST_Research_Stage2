@@ -860,3 +860,118 @@ def analyze_question_image(image_file):
     except Exception as e:
         print(f"Error in analyze_question_image: {e}")
         return {"error": f"Analysis failed: {str(e)}"}
+
+
+# ===========================================================================
+# Radical DNA Validation Helpers
+# ---------------------------------------------------------------------------
+# These functions live alongside the Gemini analysis utilities so that any
+# route or pipeline module can import a single structural-alignment check
+# without needing to know which profiler is appropriate for a given skill.
+# ===========================================================================
+
+_RADICAL_SKILL_ID = "jh_數學2上_FourOperationsOfRadicals"
+
+
+def _build_radical_profile(latex_text: str) -> dict:
+    """
+    Extract the Radical Math DNA fingerprint from a LaTeX question string.
+
+    Returns:
+        rad_count          — total \\sqrt{N} tokens found
+        simplifiable_count — radicands that contain a perfect-square factor
+        rationalize_count  — \\frac / \\dfrac whose denominator holds \\sqrt
+        radicands          — list of integer radicands (preserves duplicates)
+
+    Delegates to the canonical implementation in live_show_math_utils so the
+    extraction logic is defined in exactly one place.
+    """
+    from core.code_utils.live_show_math_utils import (
+        _build_radical_profile as _impl,
+    )
+    return _impl(latex_text)
+
+
+def validate_structure_alignment(
+    skill_id: str,
+    target_text: str,
+    generated_text: str,
+) -> dict:
+    """
+    Compare the structural profile of *target_text* (OCR / reference input)
+    against *generated_text* (model / DomainFunctionHelper output).
+
+    Dispatches to the appropriate profiler based on *skill_id*:
+
+    • Radical skill  → Radical DNA mirror (rad_count + simplifiable_count)
+    • All other skills → Integer/Fraction structural fingerprint
+                         (operator_sequence, number_count, bracket stats, …)
+
+    Returns a unified result dict:
+        {
+          "aligned":      bool,
+          "profile_type": "radical" | "integer",
+          "expected":     dict,
+          "generated":    dict,
+          "diffs":        list[str],
+        }
+
+    This function never raises; import errors or profiling failures are caught
+    and reflected in ``aligned=False`` with an error message in ``diffs``.
+    """
+    try:
+        from core.code_utils.live_show_math_utils import (
+            _build_radical_profile   as _rad_profile,
+            _build_structural_profile,
+            _is_radical_isomorphic,
+            _radical_profile_diff,
+            _is_expression_isomorphic,
+            _profile_diff_summary,
+        )
+    except ImportError as _ie:
+        return {
+            "aligned":      False,
+            "profile_type": "unknown",
+            "expected":     {},
+            "generated":    {},
+            "diffs":        [f"ImportError: {_ie}"],
+        }
+
+    try:
+        _is_radical = (
+            skill_id == _RADICAL_SKILL_ID
+            or "Radicals" in (skill_id or "")
+        )
+
+        if _is_radical:
+            expected  = _rad_profile(target_text)
+            generated = _rad_profile(generated_text)
+            aligned   = _is_radical_isomorphic(expected, generated_text)
+            diffs     = _radical_profile_diff(expected, generated_text)
+            return {
+                "aligned":      aligned,
+                "profile_type": "radical",
+                "expected":     expected,
+                "generated":    generated,
+                "diffs":        diffs,
+            }
+        else:
+            expected  = _build_structural_profile(target_text)
+            generated = _build_structural_profile(generated_text)
+            aligned   = _is_expression_isomorphic(expected, generated_text)
+            diffs     = _profile_diff_summary(expected, generated_text)
+            return {
+                "aligned":      aligned,
+                "profile_type": "integer",
+                "expected":     expected,
+                "generated":    generated,
+                "diffs":        diffs,
+            }
+    except Exception as _exc:
+        return {
+            "aligned":      False,
+            "profile_type": "error",
+            "expected":     {},
+            "generated":    {},
+            "diffs":        [f"validate_structure_alignment error: {_exc}"],
+        }

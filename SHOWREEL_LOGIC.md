@@ -218,6 +218,7 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 
 ## 9. 歷史修復摘要（僅關鍵清單）
 
+<<<<<<< HEAD
 | Bug | 日期 | 修復位置 | 簡述 |
 |-----|------|---------|------|
 | #8 | 03-09 | `domain_function_library.py` | FractionOps 負數 floor-division 修正 |
@@ -241,3 +242,68 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 | #31 | 03-11 | `prompt_liveshow.md` Radicals, `domain_libs.py` | add_dicts / multiply_dicts 防止手寫展開 |
 | Radicals-F | 03-14 | `regex_healer.py`, `prompt_liveshow.md` | simplify_term 參數順序反轉 bug |
 | Radicals-G | 03-14 | `regex_healer.py`, `live_show_healer.py` | simplify_root 幻覺、missing correct_answer、tuple-as-key、$...$ 自動補加 |
+=======
+#### Bug 28 — 結構漂移 (Structure Drift) 與 `math_str is not defined` 錯誤
+- **現象**：LLM 有時沒有遵照例題的變數數量、運算符號數量和類型，甚至直接遺漏定義 `math_str` 和 `eval_str` 變數導致 Runtime Error。
+- **根本原因**：LLM 在撰寫 Python 生成腳本前，缺乏對題型結構的「思考與規劃」，直接開始寫 Code 容易迷失上下文。此外，prompt 之前的 placeholder 寫法讓 LLM 誤以為可以省略 `math_str`。
+- **修復（Prompt Engineering）**：
+  1. **補齊 Placeholder 範例**：在 `prompt_liveshow.md` 中提供明確且抽象的 `eval_str` 和 `math_str` 寫法範例（如用 `v1, v2` 代表），避免 LLM 解析模糊。
+  2. **強制 Chain-of-Thought (CoT)**：在所有 4 個技能的 `generate()` function skeleton 開頭強制加入 `# Step 0: 結構分析` 區塊，要求 LLM 在生成代碼前，必須在註解中明確清點並寫出「變數數量」、「運算符號數量」及「特殊結構（如絕對值、括號）」，從而約束其後續的代碼生成嚴格對齊結構。
+- **驗證**：不再發生 `math_str is not defined`，生成題型結構對齊度大幅提升。
+
+#### Bug 29 — 絕對值隱含乘法遺漏 (Missing Operator After Absolute Value)
+- **現象**：當輸入如 `|29 \times (-4)|(-6)` 時，LLM 生成代碼時偶爾會省略兩者之間的乘號，導致後續 `eval_str` 和 `math_str` 中缺少對應運算子而報錯。
+- **根本原因**：系統原先在 `live_show_healer.py` 處理隱含乘法時（例如 `2(3)` → `2 \times 3`），僅考慮了括號和數字，漏掉了把「絕對值符號」納入隱含乘法的修復邊界條件。
+- **修復（Healer Regex 增強）**：
+  在 `live_show_healer.py` 的 `_normalize_plain_operator_tokens` 函式中，加入四種絕對值隱含乘法恢復的正則表達式規則：
+  1. **絕對值 接 絕對值**：`\|A\|\|B\|` → `\|A\| \times \|B\|`
+  2. **絕對值 接 括號**：`\|A\|\((-4)\)` → `\|A\| \times \((-4)\)`
+  3. **括號 接 絕對值**：`\((-3)\)\|B\|` → `\((-3)\) \times \|B\|`
+  4. **絕對值 接 數字**：`\|A\|5` → `\|A\| \times 5`
+- **驗證**：自訂測試腳本 6 種隱含乘法情境全部成功補回 `\times`，回歸測試 3 passed ✅。
+
+---
+
+## 15. 今日下班交接（2026-03-13）
+
+### 15.1 本日已完成（Confirmed ✅）
+
+#### RadicalOps 領域函數抽離與優化
+- **目標**：將複雜的根式運算（加減合併、乘法、有理化除法）從 AI 提示詞中抽離，改為調用 `RadicalOps` 標準 API，減輕 Qwen3-8B-VL 的計算負擔。
+- **改動檔案**：
+  - `core/scaffold/domain_libs.py`：新增 `add_term`、`mul_terms`、`div_terms` 靜態方法。
+  - `core/prompts/domain_function_library.py`：同步更新 `RADICALOPS_HELPERS` 字串與 `RadicalOps` 類別，確保生成的程式碼包含這些方法。
+  - `agent_skills/jh_數學2上_FourOperationsOfRadicals/`：更新 `SKILL.md`、`prompt_liveshow.md`、`prompt_benchmark.md` 以全面改用新 API。
+- **修復 Bug**：
+  - **Bug 30**：修復了因 `RadicalOps` 在注入時缺少 `mul_terms` 等方法導致的 `AttributeError`。現在生成的腳本能正確調用新 API 進行根式運算。
+- **例題驗算**：
+  - 已用本機 `core/scaffold/domain_libs.py::RadicalOps.div_terms` 驗證：`\sqrt{35} \div \sqrt{5}` 會化簡為 `\sqrt{7}`（`(c, r) = (1, 7)`）。
+
+### 15.2 尚待完成（Pending ⏳）
+
+1. **Live 驗收（Radical 題組）**：
+   - 雖然已在本地 `py_compile` 與 `regression` 測試通過，但仍需在瀏覽器端針對 `7√2 × 5√2` 等複雜題型進行最後驗收。
+   - 確認生成題目的 LaTeX 格式是否符合 8 年級教學規範（例如項數、係數類型是否 100% 同構）。
+
+2. **核心架構維護**：
+   - 持續監控 `domain_function_library.py` 與 `domain_libs.py` 的同步狀況，避免未來再次出現「本地有改但注入沒改」的 AttributeError。
+
+### 15.3 接手建議（與下一位 Agent 交接）
+
+1. **環境啟動**：
+   - `python app.py`（確保 Ollama 中 `qwen3-vl:8b` 已啟動）。
+2. **測試建議**：
+   - 使用包含「除法有理化」或「多項分配律」的根式截圖進行測試，觀察 `add_term` 與 `div_terms` 的執行穩定性。
+3. **文件參考**：
+   - 若遇到 API 遺失錯誤，優先檢查 `core/prompts/domain_function_library.py` 中的字串常數是否已更新。
+
+---
+
+## 16. Agent 執行規範補充 (2026-03-13)
+
+- **自動執行權限**：在執行 `view_file` 或不具破壞性的 `run_command` 時，應主動使用 `SafeToAutoRun: true`，以減少對使用者的審批干擾。
+- **注入同步**：修改 `core/scaffold/domain_libs.py` 內的操作類別時，**必須同時**修改 `core/prompts/domain_function_library.py` 的對應字串。
+- **技能凍結協議 (Freeze Protocol)**：以下技能已通過完整測試驗收，**嚴禁**修改其關聯檔案與專屬邏輯（包含 `IntegerOps` / `FractionOps` 的現有行為）：
+  - `jh_數學1上_FourArithmeticOperationsOfIntegers`
+  - `jh_數學1上_FourArithmeticOperationsOfNumbers`
+>>>>>>> 72cf81989b7a6d8116c44aff7624336031261894

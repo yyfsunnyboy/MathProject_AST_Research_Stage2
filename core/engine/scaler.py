@@ -74,6 +74,33 @@ class AdaptiveScaler:
             return "\n".join(line.replace('\r', '') for line in raw.splitlines())
         return None
 
+    def _is_radical_simplifiable(self, n):
+        """檢查一個數字是否可以從根號中化簡（即包含大於1的平方數因數）"""
+        n = int(n)
+        if n <= 1:
+            return False
+        i = 2
+        while i * i <= n:
+            if n % (i * i) == 0:
+                return True
+            i += 1
+        return False
+
+    def _analyze_radical_style(self, latex_string):
+        """分析輸入的 LaTeX 字串，判斷其根式風格"""
+        import re
+        # 從 \sqrt{...} 中提取所有數字
+        # [Fix] 支援 \sqrt (單反斜線) 與 \\sqrt (雙反斜線) 兩種情況，避免因轉義導致漏抓
+        radicands = [int(n) for n in re.findall(r'\\{1,2}sqrt\{(\d+)\}', latex_string)]
+        if not radicands:
+            return 'simplified'  # 如果沒有根號，預設為最簡風格
+
+        # 只要有一個根式可以化簡，就整體視為「需化簡」風格
+        if any(self._is_radical_simplifiable(r) for r in radicands):
+            return 'simplifiable'
+        else:
+            return 'simplified'
+
     def generate_problem(self, skill_name, level=2):
         """
         生成指定技能與難度的題目。
@@ -264,14 +291,32 @@ class AdaptiveScaler:
                     required_domains = get_required_domains(skill_name)
                     api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
 
-                    prompt = f"""{assembled_liveshow}
+                    # [新增] 根據輸入例題分析根式風格，動態生成 Prompt 指令
+                    radical_style_prompt = ""
+                    if "OfRadicals" in skill_name:
+                        style = self._analyze_radical_style(input_text_safe)
+                        if style == 'simplifiable':
+                            radical_style_prompt = "\n【根式風格】: 例題包含需化簡的根式 (如 √8)，你生成的題目也必須包含需化簡的根式。"
+                        else:  # 'simplified'
+                            radical_style_prompt = "\n【根式風格】: 例題的根式皆為最簡根式 (如 √2)，你生成的題目也必須只使用最簡根式。"
+                            # [Auto-Fix] 若為最簡風格，強制替換 Scaffolding 中的 simplifiable 列表，避免 AI 照抄舊列表
+                            import re
+                            assembled_liveshow = re.sub(
+                                r"(\s*)simplifiable\s*=\s*\[.*?\]",
+                                r"\1simplifiable = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 17, 19, 21, 22, 23, 26, 29, 30, 31, 33, 34, 35, 37, 38, 39, 41, 42]",
+                                assembled_liveshow,
+                                flags=re.DOTALL  # [Fix] 確保即使列表跨行也能正確替換
+                            )
 
+                    prompt = f"""{assembled_liveshow}
+{radical_style_prompt}
 【動態目標題型參考】
 {input_text_safe}
 
 【硬性一致性約束（必須遵守）】
 1. 嚴格鏡像目標題型結構，不得新增題型中不存在的運算符號。
 2. 必須使用對應 Domain API（例如 IntegerOps / FractionOps / PolynomialOps / RadicalOps）。
+   (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
 4. 直接輸出可執行 Python 程式碼（需包含 `generate`，可包含 `check`）。
 5. 不要輸出 JSON、不要輸出 markdown 解釋。
@@ -279,6 +324,7 @@ class AdaptiveScaler:
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
+10. 根號必須使用 \\sqrt{{...}}，嚴禁使用 sqrt(...)。
 """
                 else:
                     # ── Fallback：舊邏輯（SKILL.md 切割 + BENCHMARK section）──
@@ -293,6 +339,15 @@ class AdaptiveScaler:
                     required_domains = get_required_domains(skill_name)
                     api_stubs = get_domain_helpers_code(required_domains, stub_mode=True)
 
+                    # [新增] 根據輸入例題分析根式風格，動態生成 Prompt 指令
+                    radical_style_prompt = ""
+                    if "OfRadicals" in skill_name:
+                        style = self._analyze_radical_style(input_text_safe)
+                        if style == 'simplifiable':
+                            radical_style_prompt = "\n【根式風格】: 例題包含需化簡的根式 (如 √8)，你生成的題目也必須包含需化簡的根式。"
+                        else:  # 'simplified'
+                            radical_style_prompt = "\n【根式風格】: 例題的根式皆為最簡根式 (如 √2)，你生成的題目也必須只使用最簡根式。"
+
                     prompt = f"""# Math-Master 核心開發任務
 
 【1. 數學基因 (From SKILL.md)】
@@ -300,16 +355,14 @@ class AdaptiveScaler:
 
 【2. 實作規範與模板 (From BENCHMARK)】
 {benchmark_content}
-
+{radical_style_prompt}
 【3. 動態目標題型參考】
 {input_text_safe}
-
-【4. 標準工具箱 (API Stubs)】
-{api_stubs}
 
 【最高實作準則】
 1. 嚴格鏡像目標題型結構，不得新增題型中不存在的運算符號。
 2. 必須使用對應 Domain API（例如 IntegerOps / FractionOps / PolynomialOps / RadicalOps）。
+   (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
 4. 直接輸出可執行 Python 程式碼（需包含 `generate`，可包含 `check`）。
 5. 不要輸出 JSON、不要輸出 markdown 解釋。
@@ -319,6 +372,7 @@ class AdaptiveScaler:
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
+10. 根號必須使用 \\sqrt{{...}}，嚴禁使用 sqrt(...)。
 """
                 active_ablation_id = 3
             
@@ -621,7 +675,7 @@ class AdaptiveScaler:
         import re
         
         # 0. 處理 LaTeX 轉義，確保送給 AI 的字串不會因為 Python 解析遇到 \d, \t 而報錯
-        text = text.replace(r'\div', r'\\div').replace(r'\times', r'\\times')
+        text = text.replace(r'\div', r'\\div').replace(r'\times', r'\\times').replace(r'\sqrt', r'\\sqrt')
         
         # 1. 處理平方：將 x^2 轉為 x^{2} (LaTeX 標準)
         text = re.sub(r'(\w)\^(\d+)', r'\1^{\2}', text)
@@ -725,7 +779,8 @@ def check(user_answer, correct_answer):
                 s = s.replace('\\frac', 'MyFrac')
                 
                 # 放棄危險正則表達式，直接 eval
-                return eval(s, {"__builtins__": {}}, {"Fraction": Fraction, "abs": abs, "MyFrac": MyFrac})
+                # [Fix] 加入 sqrt 與 math 支援，防止緊急代碼執行時報錯
+                return eval(s, {"__builtins__": {}}, {"Fraction": Fraction, "abs": abs, "MyFrac": MyFrac, "sqrt": math.sqrt, "math": math})
             except Exception as e:
                 raise Exception(f"safe_eval 計算失敗 ({expr}): 轉換後為 '{s}', 錯誤: {e}")
                 
@@ -779,6 +834,15 @@ def check(user_answer, correct_answer):
             else:
                 result = gen_func(level=level)
                 
+            # [Patch] Post-process question_text to fix common AI LaTeX hallucinations (e.g., sqrt(x) -> \sqrt{x})
+            if isinstance(result, dict) and "question_text" in result:
+                q = result["question_text"]
+                if "sqrt(" in q:
+                    import re
+                    # Replace 'sqrt(inner)' with '\sqrt{inner}'
+                    q = re.sub(r'sqrt\s*\(([^)]+)\)', r'\\sqrt{\1}', q)
+                    result["question_text"] = q
+
             return result
         except Exception as e:
             print(f"❌ 執行生成的程式碼時出錯: {e}")

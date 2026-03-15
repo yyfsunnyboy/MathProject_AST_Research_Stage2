@@ -192,6 +192,34 @@ class RadicalOps:
         return f"\\sqrt{{{expr}}}"
 
     @staticmethod
+    def add_term(terms_dict, coeff, radicand):
+        """化簡並將單項根式加入到字典中"""
+        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
+        if new_coeff != 0:
+            terms_dict[new_radicand] = terms_dict.get(new_radicand, 0) + new_coeff
+        return terms_dict
+
+    @staticmethod
+    def mul_terms(c1, r1, c2, r2):
+        """兩個單項根式相乘，返回化簡結果 (new_coeff, new_radicand)"""
+        return RadicalOps.simplify_term(c1 * c2, r1 * r2)
+
+    @staticmethod
+    def div_terms(c1, r1, c2, r2):
+        """兩個單項根式相除 c1√r1 ÷ c2√r2，返回化簡與有理化結果 (new_coeff, new_radicand)"""
+        from fractions import Fraction
+        # 處理分數被開方數
+        is_r1_frac = type(r1).__name__ == "Fraction" or isinstance(r1, Fraction)
+        is_r2_frac = type(r2).__name__ == "Fraction" or isinstance(r2, Fraction)
+        if is_r1_frac or is_r2_frac:
+            return RadicalOps.simplify_term(Fraction(c1, c2), Fraction(r1, r2))
+        # 整數被開方數
+        if r1 % r2 == 0:
+            return RadicalOps.simplify_term(Fraction(c1, c2), r1 // r2)
+        else:
+            return RadicalOps.simplify_term(Fraction(c1, c2 * r2), r1 * r2)
+
+    @staticmethod
     def get_prime_factors(n):
         """質因數分解 (例: 12 -> {2:2, 3:1})"""
         n = abs(int(n))
@@ -210,6 +238,15 @@ class RadicalOps:
     @staticmethod
     def simplify_term(coeff, radicand):
         """化簡單項根式 c√r -> (new_c, new_r)"""
+        from fractions import Fraction
+        # [Fix] Handle Fraction radicand (e.g. 1/2 -> 2/4 -> 1/2 sqrt(2))
+        if isinstance(radicand, Fraction):
+            if radicand.denominator != 1:
+                coeff = Fraction(coeff, radicand.denominator)
+                radicand = radicand.numerator * radicand.denominator
+            else:
+                radicand = radicand.numerator
+
         radicand = int(radicand)
         if radicand == 0: return 0, 1
         if radicand == 1: return coeff, 1
@@ -692,6 +729,35 @@ class RadicalOps:
     def to_latex(expr):
         return f"\\sqrt{{{expr}}}"
 
+    @staticmethod
+    def add_term(terms_dict, coeff, radicand):
+        '''化簡並將單項根式加入到字典中'''
+        new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
+        if new_coeff != 0:
+            terms_dict[new_radicand] = terms_dict.get(new_radicand, 0) + new_coeff
+        return terms_dict
+
+    @staticmethod
+    def mul_terms(c1, r1, c2, r2):
+        '''兩個單項根式相乘，返回化簡結果 (new_coeff, new_radicand)'''
+        return RadicalOps.simplify_term(c1 * c2, r1 * r2)
+
+    @staticmethod
+    def div_terms(c1, r1, c2, r2):
+        '''兩個單項根式相除 c1√r1 ÷ c2√r2，返回化簡與有理化結果 (new_coeff, new_radicand)'''
+        if c2 == 0 or r2 == 0: raise ValueError("Division by zero")
+        from fractions import Fraction
+        # 處理分數被開方數
+        is_r1_frac = type(r1).__name__ == "Fraction" or isinstance(r1, Fraction)
+        is_r2_frac = type(r2).__name__ == "Fraction" or isinstance(r2, Fraction)
+        if is_r1_frac or is_r2_frac:
+            return RadicalOps.simplify_term(Fraction(c1, c2), Fraction(r1, r2))
+        # 整數被開方數
+        if r1 % r2 == 0:
+            return RadicalOps.simplify_term(Fraction(c1, c2), r1 // r2)
+        else:
+            return RadicalOps.simplify_term(Fraction(c1, c2 * r2), r1 * r2)
+
     # --- [V2.7 新增] 高級根式運算工具 (供複雜題目生成使用) ---
 
     @staticmethod
@@ -713,6 +779,15 @@ class RadicalOps:
     @staticmethod
     def simplify_term(coeff, radicand):
         '''化簡單項根式 c√r -> (new_c, new_r)'''
+        from fractions import Fraction
+        # [Fix] Handle Fraction radicand
+        if isinstance(radicand, Fraction):
+            if radicand.denominator != 1:
+                coeff = Fraction(coeff, radicand.denominator)
+                radicand = radicand.numerator * radicand.denominator
+            else:
+                radicand = radicand.numerator
+
         radicand = int(radicand)
         if radicand == 0: return 0, 1
         if radicand == 1: return coeff, 1
