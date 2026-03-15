@@ -147,6 +147,26 @@ class RadicalOps:
             return f"\\frac{{{expr}}}{{{denominator}}}"
         return expr
 
+    @staticmethod
+    def add_dicts(terms1, terms2):
+        """合併兩個同類項字典"""
+        merged = dict(terms1)
+        for r, c in terms2.items():
+            merged[r] = merged.get(r, 0) + c
+        return merged
+        
+    @staticmethod
+    def multiply_dicts(terms1, terms2):
+        """展開兩個多項根式的乘積，並自動化簡同類項"""
+        result = {}
+        for r1, c1 in terms1.items():
+            for r2, c2 in terms2.items():
+                if c1 == 0 or c2 == 0: continue
+                # c1√r1 * c2√r2
+                new_c, new_r = RadicalOps.simplify_term(c1 * c2, r1 * r2)
+                result[new_r] = result.get(new_r, 0) + new_c
+        return {r: c for r, c in result.items() if c != 0}
+
 
 class IntegerOps:
     """整數運算工具"""

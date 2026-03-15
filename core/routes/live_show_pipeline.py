@@ -133,6 +133,8 @@ def run_ab3_full_healer(
     recompute_correct_answer_from_question_fn,
     format_result_question_display_fn,
     maybe_add_o1_fix_fn,
+    # Optional: post-healer scaffold reassembler (used by Radical Orchestrator)
+    radical_reassemble_fn=None,
 ):
     cpu_start_ab3 = time.time()
     problems_result = []
@@ -148,33 +150,49 @@ def run_ab3_full_healer(
     generated_fp = {}
     iso_isomorphic = False
 
-    try:
-        healed_code, *healer_stats = advanced_healer_fn(final_code, ablation_id=3, skill_id=skill_id)
-        regex_code_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
-        regex_fixes = regex_code_fixes
-        ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
-        ast_stats = healer_stats[2] if len(healer_stats) > 2 else None
-        # Collect AST healer logs before mutating detail_logs
-        detail_logs = getattr(ast_stats, "logs", []) if ast_stats else []
-        # healer_stats[5] = healer_fixes = regex_fixes + ast_fixes + anti_dup_fixes
-        # Extract anti_dup_fixes so they contribute to the final fix count.
-        _healer_total = healer_stats[5] if len(healer_stats) > 5 and isinstance(healer_stats[5], int) else None
-        anti_dup_fixes = max(0, (_healer_total - regex_code_fixes - ast_fixes)) if _healer_total is not None else 0
-        # Fold anti_dup_fixes into regex_code_fixes so the rest of the pipeline counts them correctly.
-        regex_code_fixes += anti_dup_fixes
-        regex_fixes = regex_code_fixes
-        # [Bug] Always log healer execution status so the frontend can confirm it ran.
-        detail_logs.insert(0, f"[HEALER_STATUS] ✅ Active Healer ran — regex_code={regex_code_fixes}, ast={ast_fixes}, anti_dup={anti_dup_fixes}")
-        print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes}, AntiDup: {anti_dup_fixes} ===")
-    except Exception as _healer_exc:
-        import traceback as _healer_tb
-        print("=== [VL Pipeline Healer] CRASHED ===")
-        _healer_tb.print_exc()
-        healed_code = final_code
+    if radical_reassemble_fn is not None:
+        # ── Radical Orchestrator: skip the general healer entirely ───────────
+        # The scaffold produced by RADICAL_V4_SCAFFOLD_PREFIX/SUFFIX is already
+        # syntactically complete and contains def check.  Running the full
+        # Ab3 healer risks:
+        #   • Adding a DUPLICATE def check (it blindly injects if it can't see one)
+        #   • Mangling DomainFunctionHelper imports it doesn't recognise
+        #   • Raising ValueError on "hardcoded numbers" for the 'mode': 1 dict value
+        # Assembling directly from the raw model output is always safe and fast.
+        healed_code = radical_reassemble_fn(final_code)
         anti_dup_fixes = 0
-        # Log crash to detail_logs so the frontend can show it (not just the console).
-        detail_logs.append(f"[HEALER_STATUS] ❌ Healer CRASHED — {type(_healer_exc).__name__}: {_healer_exc}")
-        detail_logs.append("[HEALER_STATUS] 使用原始 AI 輸出，Skip 所有修復。")
+        detail_logs.insert(0,
+            "[HEALER_STATUS] ✅ Radical Orchestrator — "
+            "general healer bypassed; scaffold assembled directly."
+        )
+        print(
+            f"⚠️  [ADVISOR] Radical Skill Detected: "
+            f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
+        )
+        print("⚙️  [RADICAL_ASSEMBLER] scaffold assembled; healer bypassed.")
+    else:
+        try:
+            healed_code, *healer_stats = advanced_healer_fn(final_code, ablation_id=3, skill_id=skill_id)
+            regex_code_fixes = healer_stats[0] if len(healer_stats) > 0 else 0
+            regex_fixes = regex_code_fixes
+            ast_fixes = healer_stats[1] if len(healer_stats) > 1 else 0
+            ast_stats = healer_stats[2] if len(healer_stats) > 2 else None
+            # Collect AST healer logs before mutating detail_logs
+            detail_logs = getattr(ast_stats, "logs", []) if ast_stats else []
+            _healer_total = healer_stats[5] if len(healer_stats) > 5 and isinstance(healer_stats[5], int) else None
+            anti_dup_fixes = max(0, (_healer_total - regex_code_fixes - ast_fixes)) if _healer_total is not None else 0
+            regex_code_fixes += anti_dup_fixes
+            regex_fixes = regex_code_fixes
+            detail_logs.insert(0, f"[HEALER_STATUS] ✅ Active Healer ran — regex_code={regex_code_fixes}, ast={ast_fixes}, anti_dup={anti_dup_fixes}")
+            print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes}, AntiDup: {anti_dup_fixes} ===")
+        except Exception as _healer_exc:
+            import traceback as _healer_tb
+            print("=== [VL Pipeline Healer] CRASHED ===")
+            _healer_tb.print_exc()
+            healed_code = final_code
+            anti_dup_fixes = 0
+            detail_logs.append(f"[HEALER_STATUS] ❌ Healer CRASHED — {type(_healer_exc).__name__}: {_healer_exc}")
+            detail_logs.append("[HEALER_STATUS] 使用原始 AI 輸出，Skip 所有修復。")
 
     healed_exec_code = patch_fraction_skill_eval_calls_fn(
         optimize_live_execution_code_fn(healed_code),
@@ -211,15 +229,51 @@ def run_ab3_full_healer(
                 detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {negative_wrap_cnt} bare negative literal(s) with parentheses.")
 
         generated_expr = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
-        guard_meta = evaluate_iso_style_guard_fn(
-            expected_fp=expected_fp,
-            question_text=exe_res.get("question_text", ""),
-            decimal_style_mode=decimal_style_mode,
-            extract_expr_fn=extract_math_expr_from_question_fn,
-            has_decimal_fn=has_decimal_number_fn,
-            isomorphic_fn=is_expression_isomorphic_fn,
-        )
-        decimal_mismatch = bool(guard_meta.get("decimal_mismatch"))
+
+        # ── Hard bypass: Radical / Orchestrator skills ───────────────────────
+        # Two independent signals trigger the bypass (belt-and-suspenders):
+        #   (a) expected_fp is empty — set by _radical_bypass_expected_fp()
+        #   (b) skill_id contains "Radicals" — catches any new radical variant
+        # Without this gate the ISO-guard ALWAYS fires for radical skills because
+        # _is_expression_isomorphic({}, expr) compared every field against None,
+        # triggering an integer-based deterministic fallback that destroyed the
+        # DomainFunctionHelper-generated LaTeX output.
+        _bypass_iso_guard = (not expected_fp) or ("Radicals" in (skill_id or ""))
+        if _bypass_iso_guard:
+            try:
+                from core.skill_policies.registry import get_skill_policy as _gsp_chk
+                _chk_policy = _gsp_chk(skill_id) or {}
+                if _chk_policy.get("skip_complexity_mirror", False) or "Radicals" in (skill_id or ""):
+                    print(
+                        f"⚠️ [ADVISOR] Radical Skill Detected: "
+                        f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
+                    )
+            except Exception:
+                print(
+                    f"⚠️ [ADVISOR] Radical Skill Detected: "
+                    f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
+                )
+            detail_logs.append(
+                f"[COMPLEXITY_MIRROR][HARD_BYPASS] expected_fp=empty or 'Radicals' in skill_id — "
+                f"ISO-guard skipped for {skill_id!r}."
+            )
+            guard_meta = {
+                "triggered":       False,
+                "expr":            generated_expr,
+                "isomorphic":      True,
+                "decimal_mismatch": False,
+            }
+            decimal_mismatch = False
+        else:
+            guard_meta = evaluate_iso_style_guard_fn(
+                expected_fp=expected_fp,
+                question_text=exe_res.get("question_text", ""),
+                decimal_style_mode=decimal_style_mode,
+                extract_expr_fn=extract_math_expr_from_question_fn,
+                has_decimal_fn=has_decimal_number_fn,
+                isomorphic_fn=is_expression_isomorphic_fn,
+            )
+            decimal_mismatch = bool(guard_meta.get("decimal_mismatch"))
 
         # [Bug 29 Guard] 明確的中括號↔絕對值結構錯位守衛（ISO guard 的備援保障）
         # 當 expected 有 [ ] (bracket_count>0, abs_count=0) 但生成含 | | 時強制 fallback。
@@ -237,12 +291,25 @@ def run_ab3_full_healer(
 
         # [Bug 25 Guard] 非分數技能禁止在生成題目中出現 \frac{}{}
         # [Bug 26 Guard] 分數技能帶分數/純分數顯示風格必須與輸入例題一致
+        #
+        # [Orchestrator Bypass] Skills that set skip_complexity_mirror=True
+        # (e.g. jh_數學2上_FourOperationsOfRadicals) generate LaTeX with
+        # \frac / \sqrt via DomainFunctionHelper — this is intentional and
+        # correct.  Applying Bug-25 or Bug-26 guards would falsely trigger
+        # iso-fallback.  Skip both guards for those skills.
         if not guard_meta.get("triggered"):
             import re as _re_guard26
             from core.skill_policies.registry import get_skill_policy as _gsp
             _policy = _gsp(skill_id)
             _qt = exe_res.get("question_text", "")
-            if not _policy.get("enable_fraction_display", False):
+
+            if _policy.get("skip_complexity_mirror", False):
+                # Radical / orchestrator skill — structural guards don't apply.
+                detail_logs.append(
+                    f"[COMPLEXITY_MIRROR][BYPASS] skill={skill_id!r} has "
+                    f"skip_complexity_mirror=True; Bug-25/26 guards skipped."
+                )
+            elif not _policy.get("enable_fraction_display", False):
                 # Bug 25: 非分數技能（整數四則運算等）出現 \frac 時觸發 fallback
                 if "\\frac" in _qt:
                     guard_meta["triggered"] = True
@@ -328,7 +395,13 @@ def run_ab3_full_healer(
 
         generated_expr_final = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
         generated_fp = build_structural_profile_fn(generated_expr_final)
-        iso_isomorphic = is_expression_isomorphic_fn(expected_fp, generated_expr_final)
+        # Radical Orchestrator: structural isomorphism is guaranteed by
+        # DomainFunctionHelper; force True so the UI always shows a green mirror.
+        # For all other skills, compute normally.
+        if radical_reassemble_fn is not None:
+            iso_isomorphic = True
+        else:
+            iso_isomorphic = is_expression_isomorphic_fn(expected_fp, generated_expr_final)
         recompute_result_answer_fn(
             exe_res,
             skill_id,

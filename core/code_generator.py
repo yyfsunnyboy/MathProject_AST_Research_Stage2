@@ -184,7 +184,9 @@ def _inject_domain_libs(code_str, skill_id: str | None = None):
                               "simplify_term = RadicalOps.simplify_term\n" \
                               "format_term = RadicalOps.format_term\n" \
                               "format_term_unsimplified = RadicalOps.format_term_unsimplified\n" \
-                              "format_expression = RadicalOps.format_expression\n"
+                              "format_expression = RadicalOps.format_expression\n" \
+                              "add_dicts = RadicalOps.add_dicts\n" \
+                              "multiply_dicts = RadicalOps.multiply_dicts\n"
                 elif class_name == 'PolynomialOps':
                     aliases = "\n\n# [Global Aliases for PolynomialOps]\n" \
                               "poly_normalize = PolynomialOps.normalize\n" \

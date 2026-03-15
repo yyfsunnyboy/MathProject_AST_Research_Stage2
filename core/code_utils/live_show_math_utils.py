@@ -379,6 +379,11 @@ def _recompute_correct_answer_from_question(question_text):
 def _is_expression_isomorphic(expected_fp, generated_expr):
     if not generated_expr:
         return False
+    # Empty fingerprint = bypass mode (radical orchestrator, OCR-less path, etc.)
+    # All fields default to None; comparing None against real values always returns
+    # False — treating an empty dict as "no constraints" is the correct semantic.
+    if not expected_fp:
+        return True
     got_fp = _build_structural_profile(generated_expr)
     if got_fp.get("operator_sequence") != expected_fp.get("operator_sequence"):
         return False
@@ -420,4 +425,135 @@ def _profile_diff_summary(expected_fp, generated_expr):
     if got_fp.get("abs_stats") != expected_fp.get("abs_stats"):
         diffs.append("abs_stats mismatch")
 
+    return diffs
+
+
+# ===========================================================================
+# Radical Math DNA — specialised profiler for jh_數學2上_FourOperationsOfRadicals
+# ===========================================================================
+
+def _has_square_factor(n: int) -> bool:
+    """Return True if integer n contains a perfect-square factor > 1.
+
+    A radicand is *simplifiable* when it is not in its simplest radical form,
+    e.g. 12 = 4×3 → √12 = 2√3.  Prime radicands (2, 3, 5, 7, …) are already
+    in simplest form and return False.
+    """
+    if not isinstance(n, int) or n < 4:
+        return False
+    i = 2
+    while i * i <= n:
+        if n % (i * i) == 0:
+            return True
+        i += 1
+    return False
+
+
+def _frac_denominators(text: str) -> list:
+    """Return a list of denominator strings from all \\frac{}{} / \\dfrac{}{} in *text*.
+
+    Uses brace-depth tracking so nested LaTeX constructs are handled correctly.
+    """
+    # Normalise \dfrac → \frac so a single pass suffices.
+    normalised = text.replace(r'\dfrac{', r'\frac{')
+    denoms: list = []
+    i = 0
+    while i < len(normalised):
+        pos = normalised.find(r'\frac{', i)
+        if pos == -1:
+            break
+        j = pos + 6  # step past '\frac{'
+        # Walk over the numerator brace
+        depth = 1
+        while j < len(normalised) and depth > 0:
+            if normalised[j] == '{':
+                depth += 1
+            elif normalised[j] == '}':
+                depth -= 1
+            j += 1
+        # Skip optional whitespace between } and {
+        while j < len(normalised) and normalised[j] in ' \t\n':
+            j += 1
+        if j >= len(normalised) or normalised[j] != '{':
+            i = pos + 1
+            continue
+        j += 1  # step past opening '{' of denominator
+        denom_start = j
+        depth = 1
+        while j < len(normalised) and depth > 0:
+            if normalised[j] == '{':
+                depth += 1
+            elif normalised[j] == '}':
+                depth -= 1
+            j += 1
+        denoms.append(normalised[denom_start: j - 1])
+        i = pos + 1
+    return denoms
+
+
+def _build_radical_profile(latex_text: str) -> dict:
+    """Extract the *Radical Math DNA* fingerprint from a LaTeX question string.
+
+    Returns a dict with:
+        rad_count          — total number of \\sqrt{N} tokens (integer radicands)
+        simplifiable_count — how many of those radicands contain a square factor
+        rationalize_count  — number of \\frac / \\dfrac whose denominator holds a \\sqrt
+        radicands          — the list of integer radicands found (preserves duplicates)
+
+    Example
+    -------
+    ``$2\\sqrt{3} + \\sqrt{12}$``
+        → {'rad_count': 2, 'simplifiable_count': 1,
+           'rationalize_count': 0, 'radicands': [3, 12]}
+
+    ``$\\dfrac{5}{\\sqrt{3}}$``
+        → {'rad_count': 1, 'simplifiable_count': 0,
+           'rationalize_count': 1, 'radicands': [3]}
+    """
+    text = str(latex_text or '')
+
+    # Only integer radicands are relevant for junior-high radical problems.
+    sqrt_matches = re.findall(r'\\sqrt\{(\d+)\}', text)
+    radicands = [int(m) for m in sqrt_matches]
+
+    rad_count          = len(radicands)
+    simplifiable_count = sum(1 for r in radicands if _has_square_factor(r))
+
+    denoms             = _frac_denominators(text)
+    rationalize_count  = sum(1 for d in denoms if r'\\sqrt' in d or '\\sqrt' in d)
+
+    return {
+        'rad_count':          rad_count,
+        'simplifiable_count': simplifiable_count,
+        'rationalize_count':  rationalize_count,
+        'radicands':          radicands,
+    }
+
+
+def _is_radical_isomorphic(target_rp: dict, generated_text: str) -> bool:
+    """Return True when *generated_text* matches the *target_rp* radical profile.
+
+    Strict fields: rad_count, simplifiable_count.
+    rationalize_count is intentionally advisory (not checked here) to avoid
+    over-constraining patterns whose denominator style can vary.
+    """
+    if not generated_text:
+        return False
+    gen_rp = _build_radical_profile(generated_text)
+    if gen_rp['rad_count'] != target_rp.get('rad_count', -1):
+        return False
+    if gen_rp['simplifiable_count'] != target_rp.get('simplifiable_count', -1):
+        return False
+    return True
+
+
+def _radical_profile_diff(target_rp: dict, generated_text: str) -> list:
+    """Return human-readable diff strings for every mismatched radical profile field."""
+    gen_rp = _build_radical_profile(generated_text or '')
+    diffs = []
+    for field in ('rad_count', 'simplifiable_count', 'rationalize_count'):
+        exp = target_rp.get(field)
+        got = gen_rp.get(field)
+        if exp is not None and exp != got:
+            diffs.append(f"{field}: expected={exp} got={got}")
     return diffs

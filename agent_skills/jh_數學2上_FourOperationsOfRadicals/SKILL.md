@@ -1,69 +1,93 @@
 /no_think
 【絕對禁止輸出 thinking 或任何非 code 內容】
 - 嚴禁寫任何思考過程、解釋、註解
-- 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
 - 直接輸出 Python code，沒有任何前言、後語
-- 如果違反，直接 0 分
 
-【角色】K12 數學演算法工程師
+【角色】Edge AI Orchestrator — 根式四則運算（Pure Orchestrator Mode）
 
-【任務】
-實作 `def generate(level=1, **kwargs)`，生成根式化簡與四則運算題目。
-依照 level 選擇難度：
-- Level 1 (Easy): 根號化簡 (Simplifying Radicals)。只生成單一項需要化簡的根式（例如 `\sqrt{12}` 或 `\sqrt{2^5}`），不包含加減乘除。
-- Level 2 (Normal): 同類方根的合併 (Combining Like Radicals)。只生成同類方根的加減法（例如 `2\sqrt{12} - \sqrt{27}`），不包含乘除法。
-- Level 3 (Hard): 四則運算 (Four Arithmetic Operations)。包含根式的乘法分配律、展開與加減混合運算。
-返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
+════════════════════════════════════════════════════════════════
+架構宣告：Pure Orchestrator
+════════════════════════════════════════════════════════════════
+模型的唯一職責（2 個決策）：
+  1. 從 Pattern Catalogue 辨識 pattern_id（下方 11 選 1）
+  2. 設定 difficulty（easy / mid / hard）
 
+所有根式計算、化簡、有理化、步驟生成 → DomainFunctionHelper 決定性完成。
+模型絕對禁止自行撰寫任何根式數學邏輯。
 
-【程式要求】（必須嚴格遵守）
-1. **Import 規範**：
-   - ✅ **必須** `import random`
-   - ✅ **必須** `import math`
-   - ✅ **必須** `from fractions import Fraction`
-   - ❌ **嚴禁** `import RadicalOps` 或是 `import FractionOps` (系統已自動注入，直接使用 `RadicalOps.xxx`)
+════════════════════════════════════════════════════════════════
+Pattern Catalogue（按優先順序匹配，第一個符合的為答案）
+════════════════════════════════════════════════════════════════
+p5b_conjugate_rad  | √p/(b√q±c)    共軛有理化，分子為根式       | √2/(√3+1)
+p5a_conjugate_int  | 1/(b√q±c)     共軛有理化，分子為整數 1      | 1/(√3−√2)
+p2c_mult_binomial  | (a√r+b)(c√s+d) 雙括號多項×多項展開          | (√3+√2)(√6−1)
+p2b_mult_distrib   | k√r×(a√s±b√t) 單項×多項，分配律展開         | 2√3×(√12−√2)
+p2a_mult_direct    | k₁√r₁ × k₂√r₂ 兩根式直接相乘（無括號）      | 2√8 × 3√45
+p4_frac_mult       | (a/b)×(√r/c)  分數×含根式的分數              | (2/3)×(√3/3)
+p3a_div_expr       | (a√r±b√s)÷√d  表達式除單一根式              | (−3√2+√15)÷√3
+p3b_div_simple     | a/√b           純分數形式，分母有理化          | 5/√3
+p6_combo           | 多步驟混合運算   加減 + 有理化等複合題型        | 多步混合
+p1_add_sub         | k₁√r₁ ± k₂√r₂  純根式加減，化簡後合併同類項   | 2√12 − √27
+p0_simplify        | √r              單一根式化簡                   | √72
 
-2. **核心邏輯**：
-   - 使用 `terms = [(coeff, radicand), ...]` 列表來儲存數學狀態。
-   - **絕對禁止** 解析 LaTeX 字串來獲取數值（例如 `int(term.split(...))` 是被禁止的）。
-   - 計算過程必須純粹基於整數操作 `(coeff, radicand)`。
-   - 只有在最後一步（生成題目文字或答案文字）才調用 `RadicalOps` 進行格式化。
+辨識優先規則：
+  ⚠ p5b 優先於 p5a（看分子是否為根式）
+  ⚠ p2c 優先於 p2b（看是否有雙括號）
+  ⚠ p2a 不是 p2b（p2a 無括號）
+  ⚠ 如遇無法辨識，預設 p1_add_sub，difficulty="mid"
 
-3. **函數介面**：
-   ```python
-   def generate(level=1, **kwargs):
-       # ... logic ...
-       return {
-           'question_text': str,
-           'answer': '',
-           'correct_answer': str,
-           'mode': 1
-       }
+════════════════════════════════════════════════════════════════
+各 pattern 的 difficulty 建議
+════════════════════════════════════════════════════════════════
+  easy  → p0, p1（2 項）, p2a, p3b
+  mid   → p1（3 項）, p2b, p3a, p4, p5a
+  hard  → p1（4 項）, p2c, p5b, p6_combo
 
-   def check(user_answer, correct_answer):
-       # 簡單比對字串即可
-       correct = str(user_answer).strip() == str(correct_answer).strip()
-       return {'correct': correct, 'result': '正確' if correct else '錯誤'}
-   ```
+════════════════════════════════════════════════════════════════
+唯一合法程式碼格式（模型只能修改 ← 標記的兩行）
+════════════════════════════════════════════════════════════════
+from core.domain_functions import DomainFunctionHelper
+df = DomainFunctionHelper()
 
-【系統已注入的輔助函式（API）】（直接調用 `RadicalOps.xxx` 或 `FractionOps.xxx`）
-- `RadicalOps.simplify_term(coeff, radicand)` → `(new_coeff, new_radicand)`
-- `RadicalOps.format_term_unsimplified(coeff, radicand, is_first=True)` → 未化簡格式化（題目用，支援 Fraction）
-- `RadicalOps.format_expression(terms_dict, denominator=1)` → 最終答案（自動合併同類項、排序、LaTeX，支援 Fraction）
-- `FractionOps.create(value)` → 建立分數
-- `FractionOps.to_latex(frac, mixed=False)` → 分數轉 LaTeX
+def generate(level=1, **kwargs):
+    # AI Task: Identify pattern and difficulty from OCR text
+    pattern_id = "p1_add_sub"  # ← 從 Pattern Catalogue 選擇
+    difficulty  = "mid"         # ← easy / mid / hard
 
-【核心規則】
-1. **題目結構 (依據 Level)**：
-   - Level 1: 單一未化簡根式，題目顯示：`化簡 $\sqrt{...}$`
-   - Level 2: 3~4 項同類方根的加減，題目顯示：`化簡 $... + ... - ...$`
-   - Level 3: 乘法分配律混合加減，題目顯示：`化簡 $(...) \times (...) + ...$` 或單純 `(...) \times (...)`
-2. **數值範圍**：
-   - 係數 `coeff`: -5 ~ 5 (非零)
-   - 根號內 `radicand`: 2, 3, 5, 6, 7, 8, 10, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75
-     - 題目中的 `radicand` 必須包含這類「可化簡」的數（如 12, 18, 27, 50）。
-     - 答案中的 `radicand` 必須是最簡根式（如 2, 3, 5...）。
-3. **正確使用 format_expression**：
-   - 必須傳入字典 `terms_dict = {radicand: total_coeff}`。
-   - 嚴禁傳入列表或字串。
+    # The rest is deterministic. DO NOT ADD LOGIC HERE.
+    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty)
+    ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)
+    question_text = df.format_question_LaTeX(pattern_id, vars)
+
+    return {
+        'question_text': question_text,
+        'answer': '',
+        'correct_answer': ans,
+        'solution_steps': sol,
+        'mode': 1,
+        '_o1_healed': False
+    }
+
+def check(user_answer, correct_answer):
+    correct = str(user_answer).strip() == str(correct_answer).strip()
+    return {'correct': correct, 'result': '正確' if correct else '錯誤'}
+
+════════════════════════════════════════════════════════════════
+DomainFunctionHelper 公開 API（模型只需呼叫這 3 個）
+════════════════════════════════════════════════════════════════
+df.get_safe_vars_for_pattern(pattern_id, difficulty)  → dict
+df.solve_problem_pattern(pattern_id, vars, difficulty) → (str, List[str])
+df.format_question_LaTeX(pattern_id, vars)             → str
+
+════════════════════════════════════════════════════════════════
+硬性禁令（任何違反均觸發 Healer 重試，計 0 分）
+════════════════════════════════════════════════════════════════
+1. 嚴禁 import math / import sympy / import numpy
+2. 嚴禁 math.sqrt / ** / sympy.sqrt / float() / pow()
+3. 嚴禁解析 LaTeX 字串取數值（如 int(s.split(...))）
+4. 嚴禁自行定義任何根式計算函數
+5. 嚴禁修改 df.get_safe_vars_for_pattern 以下的任何 scaffold 程式碼
+6. 嚴禁呼叫 RadicalLogicEngine（已棄用，本模式使用 DomainFunctionHelper）
+7. pattern_id 必須完全符合 Pattern Catalogue 中的值（含下劃線後綴）
+8. difficulty 必須是：easy / mid / hard 之一
 === SKILL_END_PROMPT ===

@@ -466,12 +466,15 @@ class RegexHealer:
         修復常見的幻覺方法呼叫
         例如： PolynomialOps.format() -> PolynomialOps.format_latex()
         [V2.9.1 FIX] 使用 Regex 以包容函數與括號間可能出現的空白
+        [V4.3 FIX] 修復 simplify_root → simplify_term(1, ...)
         """
         fix_count = 0
         hallucinations_regex = {
             r'PolynomialOps\.format\s*\(': 'PolynomialOps.format_latex(',
             r'RadicalOps\.format\s*\(': 'RadicalOps.format_term(',
-            r'poly_format\s*\(': 'poly_format_latex('
+            r'poly_format\s*\(': 'poly_format_latex(',
+            # simplify_root 是幻覺方法，用 simplify_term(1, ...) 替換
+            r'(?:RadicalOps\.)?simplify_root\s*\(': 'RadicalOps.simplify_term(1, ',
         }
         
         for bad_pattern, good_call in hallucinations_regex.items():
@@ -481,6 +484,59 @@ class RegexHealer:
                 fix_count += count
                 print(f"   [RegexHealer] 修復幻覺方法調用: {bad_pattern} → {good_call}")
                 
+        return code_str, fix_count
+
+    def fix_simplify_term_arg_order(self, code_str: str) -> tuple:
+        """
+        [V4.2 NEW] 修復 simplify_term 參數順序錯誤。
+        簽名：simplify_term(coeff, radicand)
+          - 第一個參數是係數 (通常是整數或 Fraction)
+          - 第二個參數是被開方數 (radicand)
+        常見錯誤：AI 寫成 simplify_term(r1 * r2, 1) 或 simplify_term(product, 1)
+          - radicand=1 → simplify_term returns (coeff, 1) → format_expression 輸出純整數
+          - 正確應為：simplify_term(1, r1 * r2)
+        修復：將 simplify_term(expr, 1) 中 expr 為乘積或多字符變量的情況翻轉
+        """
+        fix_count = 0
+
+        # Pattern: simplify_term(something_not_1, 1)
+        # "something_not_1" must be a product (contains *) or a multi-char variable (not a single digit)
+        # We only flip when the second arg is literal 1 (integer), not a variable named "1"
+        pattern = re.compile(
+            r'(simplify_term\s*\()([^,\n]+?)(\s*,\s*1\s*\))',
+            re.MULTILINE
+        )
+
+        def should_flip(expr: str) -> bool:
+            expr = expr.strip()
+            # Flip if: contains * (product), or is a multi-char variable (not just a digit)
+            if '*' in expr:
+                return True
+            if re.match(r'^[a-zA-Z_]\w*$', expr) and expr not in ('1',):
+                return True
+            return False
+
+        def replacer(m):
+            nonlocal fix_count
+            first_arg = m.group(2)
+            if should_flip(first_arg):
+                fix_count += 1
+                print(f"[RegexHealer V4.2] 修復 simplify_term 參數順序: simplify_term({first_arg.strip()}, 1) → simplify_term(1, {first_arg.strip()})")
+                return f"{m.group(1)}1, {first_arg}{m.group(3).replace(', 1)', ')')}"
+            return m.group(0)
+
+        # More targeted replacement
+        def replacer2(m):
+            nonlocal fix_count
+            first_arg = m.group(2)
+            if should_flip(first_arg):
+                fix_count += 1
+                print(f"[RegexHealer V4.2] 修復 simplify_term 參數順序: simplify_term({first_arg.strip()}, 1) → simplify_term(1, {first_arg.strip()})")
+                # Rebuild: simplify_term(1, <old_first_arg>)
+                return f"simplify_term(1, {first_arg.strip()})"
+            return m.group(0)
+
+        code_str = pattern.sub(replacer2, code_str)
         return code_str, fix_count
 
     def remove_input_calls(self, code_str: str) -> str:
@@ -638,6 +694,36 @@ class RegexHealer:
             stats['syntax_fixed'] = False
 
         # ================================================================
+        # Step 3.2: 修復 simplify_term 參數順序錯誤 ⭐ [V4.2 NEW]
+        # ================================================================
+        code_str, arg_order_fixes = self.fix_simplify_term_arg_order(code_str)
+        stats['regex_fix_count'] += arg_order_fixes
+        stats['simplify_term_arg_fixes'] = arg_order_fixes
+
+        # ================================================================
+        # Step 3.3b: 修復 simplify_term tuple 當 dict key ⭐ [V4.3b NEW]
+        # ================================================================
+        code_str, tuple_key_fixes = self.fix_simplify_term_tuple_as_key(code_str)
+        stats['regex_fix_count'] += tuple_key_fixes
+        stats['tuple_key_fixes'] = tuple_key_fixes
+
+        # ================================================================
+        # Step 3.4: 修復 correct_answer 從未賦值 ⭐ [V4.3 NEW]
+        # ================================================================
+        code_str, missing_ca_fixes = self.fix_missing_correct_answer(code_str)
+        stats['regex_fix_count'] += missing_ca_fixes
+        stats['missing_correct_answer_fixes'] = missing_ca_fixes
+
+        # ================================================================
+        # Step 3.5: 修復 correct_answer 被空字典覆寫 ⭐ [V4.1 NEW]
+        # ================================================================
+        code_str, shadow_fixes = self.fix_shadowed_correct_answer(code_str)
+        stats['regex_fix_count'] += shadow_fixes
+        stats['shadow_answer_fixes'] = shadow_fixes
+        if shadow_fixes > 0:
+            print(f"[RegexHealer V4.1] 移除 {shadow_fixes} 個 correct_answer 覆寫行 (final_terms 空字典)")
+
+        # ================================================================
         # Step 4: 移除 input() 呼叫
         # ================================================================
         old_code = code_str
@@ -646,11 +732,153 @@ class RegexHealer:
         if code_str != old_code:
             stats['regex_fix_count'] += 1
             stats['input_removed'] = True
-            print(f"🔧 [RegexHealer] 移除 input() 呼叫")
+            print(f"[RegexHealer] 移除 input() 呼叫")
         else:
             stats['input_removed'] = False
 
         return code_str, stats
+
+    def fix_simplify_term_tuple_as_key(self, code_str: str) -> tuple:
+        """
+        [V4.3b NEW] 修復「simplify_term 返回值被當作 dict key」的模式。
+
+        發生情境：AI 寫成：
+            root = RadicalOps.simplify_term(1, product)   # 返回 tuple (new_c, new_r)
+            final_terms = {}                               # 可能有中間行
+            final_terms[root] = 1                          # TypeError: tuple 不可哈希！
+
+        正確應為：
+            new_c, new_r = RadicalOps.simplify_term(1, product)
+            final_terms[new_r] = final_terms.get(new_r, 0) + new_c
+        """
+        fix_count = 0
+        lines = code_str.split('\n')
+        result = []
+        i = 0
+        LOOKAHEAD = 8  # 允許中間最多 8 行的間距
+
+        while i < len(lines):
+            line = lines[i]
+            # 偵測：VAR = RadicalOps.simplify_term(1, EXPR)
+            m_assign = re.match(
+                r'^(\s*)(\w+)\s*=\s*(?:RadicalOps\.)?simplify_term\s*\(1\s*,\s*(.+?)\)\s*$', line
+            )
+            if m_assign:
+                indent, var_name, expr = m_assign.group(1), m_assign.group(2), m_assign.group(3)
+                # 往後最多 LOOKAHEAD 行找 final_terms[VAR] = N
+                key_line_idx = None
+                for j in range(i + 1, min(i + 1 + LOOKAHEAD, len(lines))):
+                    m_key = re.match(
+                        rf'^(\s*)final_terms\[{re.escape(var_name)}\]\s*=\s*\d+\s*$', lines[j]
+                    )
+                    if m_key:
+                        key_line_idx = j
+                        break
+
+                if key_line_idx is not None:
+                    # Replace assignment line + key usage line, keep middle lines intact
+                    result.append(f"{indent}new_c, new_r = RadicalOps.simplify_term(1, {expr})")
+                    for mid in range(i + 1, key_line_idx):
+                        result.append(lines[mid])
+                    result.append(f"{indent}final_terms[new_r] = final_terms.get(new_r, 0) + new_c")
+                    fix_count += 1
+                    i = key_line_idx + 1
+                    print(f"[RegexHealer V4.3b] 修復 simplify_term tuple-as-key: {var_name}→(new_c,new_r); final_terms[new_r]+=new_c")
+                    continue
+
+            result.append(line)
+            i += 1
+        return '\n'.join(result), fix_count
+
+    def fix_missing_correct_answer(self, code_str: str) -> tuple:
+        """
+        [V4.3 NEW] 修復 correct_answer 從未被賦值的問題。
+
+        發生情境：AI 建構了 final_terms 字典但忘記呼叫
+          correct_answer = RadicalOps.format_expression(final_terms)
+        導致後面的 `if correct_answer` 引發 NameError，50 次全部失敗。
+
+        修復策略：若 generate() 函式中：
+          - 有 `final_terms` 被使用（建構或賦值）
+          - 有 `if correct_answer` 或 `'correct_answer': correct_answer`（使用了變數）
+          - 但沒有 `correct_answer =`（從未賦值）
+        則在第一個 `if correct_answer` 之前插入賦值行。
+        """
+        fix_count = 0
+        lines = code_str.split('\n')
+
+        has_final_terms = any('final_terms' in line for line in lines)
+        has_correct_answer_use = any(
+            re.search(r'\bcorrect_answer\b', line) and '=' not in line.split('correct_answer')[0]
+            or "'correct_answer'" in line
+            for line in lines
+        )
+        has_correct_answer_assign = any(
+            re.match(r'\s*correct_answer\s*=', line)
+            for line in lines
+        )
+
+        if has_final_terms and has_correct_answer_use and not has_correct_answer_assign:
+            # Find the first line that uses correct_answer (if check or return)
+            insert_before = None
+            for i, line in enumerate(lines):
+                if re.search(r'\bcorrect_answer\b', line) and re.match(r'\s*(if|return)', line.strip()):
+                    insert_before = i
+                    break
+
+            if insert_before is not None:
+                # Determine indentation level from surrounding code
+                indent = re.match(r'^(\s*)', lines[insert_before]).group(1)
+                new_line = f"{indent}correct_answer = RadicalOps.format_expression(final_terms)"
+                lines.insert(insert_before, new_line)
+                fix_count = 1
+                print(f"[RegexHealer V4.3] 補加 correct_answer = format_expression(final_terms) 在第 {insert_before+1} 行之前")
+
+        return '\n'.join(lines), fix_count
+
+    def fix_shadowed_correct_answer(self, code_str: str) -> tuple:
+        """
+        [V4.1 NEW] 修復 correct_answer 被骨架的空字典覆寫問題。
+
+        發生情境：AI 在 Situation E/C 已正確生成：
+            correct_answer = RadicalOps.format_expression({new_r: new_c}, denominator=denom)
+        但同時複製骨架的 Situation A/B/D 行：
+            correct_answer = RadicalOps.format_expression(final_terms)  # 狀況 A/B/D
+        後者用空字典 final_terms={} 覆寫正確答案，導致 correct_answer='0'。
+
+        修復策略：若 generate() 函數內同時存在：
+          - 好的行：含 denominator= 且不含 final_terms
+          - 壞的行：format_expression(final_terms) 只傳 final_terms
+        則移除所有壞的行。
+        """
+        lines = code_str.split('\n')
+
+        # 蒐集所有 correct_answer = RadicalOps.format_expression(...) 的行號
+        answer_line_indices = []
+        for i, line in enumerate(lines):
+            stripped = line.strip()
+            if re.search(r'correct_answer\s*=\s*RadicalOps\.format_expression\(', stripped):
+                answer_line_indices.append(i)
+
+        if len(answer_line_indices) < 2:
+            return code_str, 0
+
+        good_indices = set()
+        bad_indices = set()
+        for idx in answer_line_indices:
+            content = lines[idx].strip()
+            # 好的行：有 denominator= 且不是 final_terms
+            if 'denominator=' in content and 'final_terms' not in content:
+                good_indices.add(idx)
+            # 壞的行：只傳 final_terms（空字典）
+            elif re.search(r'format_expression\(\s*final_terms\s*\)', content):
+                bad_indices.add(idx)
+
+        if good_indices and bad_indices:
+            new_lines = [line for i, line in enumerate(lines) if i not in bad_indices]
+            return '\n'.join(new_lines), len(bad_indices)
+
+        return code_str, 0
 
     def inject_standard_libraries(self, code_str: str) -> tuple:
         """

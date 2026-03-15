@@ -454,6 +454,481 @@ AUXILIARY_FUNCTION_PROMPT = r"""你是 K12 數學教案設計專家。
 """
 
 # ==============================================================================
+# Pure Orchestrator Scaffold for jh_數學2上_FourOperationsOfRadicals
+# (Edge AI Orchestrator V4 — DomainFunctionHelper, p0–p6 pattern IDs)
+#
+# Change log:
+#   V1  DomainFunctionHelper with 11 granular p*_* pattern IDs.
+#       (First implementation — later overridden by V2.)
+#   V2  RadicalLogicEngine with 4 consolidated IDs: SimpleAdd | Multiply |
+#       Rationalize | Combo.  ZERO math logic in generated code.
+#   V3  Selective context loading on top of V2: P4_COMBO → slim spec (~40%
+#       token reduction via brace-depth OCR detector).
+#   V4  Full revert to DomainFunctionHelper + p0–p6 IDs (Pure Orchestrator).
+#       Removes all V2 naming (SimpleAdd/Multiply/Rationalize/Combo) and all
+#       RadicalLogicEngine references.  Selective loading retained and updated
+#       to target p6_combo instead of "Combo".
+# ==============================================================================
+
+_RADICAL_ORCHESTRATOR_SKILL_ID = "jh_數學2上_FourOperationsOfRadicals"
+
+# ---------------------------------------------------------------------------
+# Shared building blocks (referenced by both full and slim spec builders)
+# ---------------------------------------------------------------------------
+
+_V4_HEADER = """/no_think
+【絕對禁止輸出 thinking 或任何非 code 內容】
+【Edge AI Orchestrator V4 — 根式四則運算 Pure Orchestrator】
+【引擎：core/domain_functions.py :: DomainFunctionHelper】
+"""
+
+_V4_ARCH_NOTE = """
+════════════════════════════════════════════
+架構說明（Pure Orchestrator Mode）
+════════════════════════════════════════════
+模型職責：pattern_id（11 選 1）+ difficulty（3 選 1）。
+所有根式計算、化簡、有理化、步驟 → DomainFunctionHelper 決定性完成。
+禁止自行撰寫任何根式數學邏輯。
+"""
+
+_V4_DIFFICULTY_GUIDE = """
+════════════════════════════════════════════
+difficulty 設定指南
+════════════════════════════════════════════
+  easy  → p0, p1（2 項）, p2a, p3b
+  mid   → p1（3 項）, p2b, p3a, p4, p5a
+  hard  → p1（4 項）, p2c, p5b, p6_combo
+"""
+
+# Prohibitions reference df (DomainFunctionHelper) not engine/RLE
+_V4_PROHIBITIONS = """
+════════════════════════════════════════════
+硬性禁令（違反即觸發 Healer 重試，計 0 分）
+════════════════════════════════════════════
+1. 嚴禁 import math / sympy / numpy
+2. 嚴禁 math.sqrt / ** / float() / pow()
+3. 嚴禁解析 LaTeX 字串取數值
+4. 嚴禁自行定義任何根式計算函數
+5. 嚴禁修改或重寫 df.get_safe_vars_for_pattern 以下的任何 scaffold
+6. 嚴禁呼叫 RadicalLogicEngine（已棄用）
+7. pattern_id 必須完全符合 Pattern Catalogue 中的值（含下劃線後綴）
+8. difficulty 必須是：easy / mid / hard 之一
+9. 嚴禁寫 import df 或 from X import df — df 已由系統注入全域範圍，
+   它是一個物件實例，不是模組，永遠不需要 import
+10. 嚴禁重寫 from core.domain_functions import DomainFunctionHelper —
+    系統已在執行前注入，重複宣告會導致 NameError
+11. 嚴禁輸出 def generate 或 def check 函式定義 — scaffold 已由系統提供
+"""
+
+_V4_PATTERN_TABLE = r"""
+════════════════════════════════════════════
+Pattern Catalogue（按優先順序匹配）
+════════════════════════════════════════════
+p5b_conjugate_rad  | √p/(b√q±c)      共軛有理化，分子為根式
+p5a_conjugate_int  | 1/(b√q±c)       共軛有理化，分子為整數 1
+p2c_mult_binomial  | (a√r+b)(c√s+d)  雙括號多項×多項展開
+p2b_mult_distrib   | k√r×(a√s±b√t)  單項×多項，分配律展開
+p2a_mult_direct    | k₁√r₁ × k₂√r₂  兩根式直接相乘（無括號）
+p4_frac_mult       | (a/b)×(√r/c)    分數×含根式的分數
+p3a_div_expr       | (a√r±b√s)÷√d   表達式除單一根式
+p3b_div_simple     | a/√b            純分數形式，分母有理化
+p6_combo           | 多步驟混合       加減＋有理化等複合題型
+p1_add_sub         | k₁√r₁ ± k₂√r₂  純根式加減，化簡後合併同類項
+p0_simplify        | √r              單一根式化簡
+
+⚠ p5b 優先於 p5a；p2c 優先於 p2b；p2a 不是 p2b（無括號！）
+⚠ 如遇無法辨識，預設 p1_add_sub，difficulty="mid"
+"""
+
+_V4_API_SIGNATURES = """
+════════════════════════════════════════════
+DomainFunctionHelper API（僅此 3 個必要方法）
+════════════════════════════════════════════
+df.get_safe_vars_for_pattern(pattern_id, difficulty)   → dict
+df.solve_problem_pattern(pattern_id, vars, difficulty) → (str, List[str])
+df.format_question_LaTeX(pattern_id, vars)             → str
+"""
+
+# ===========================================================================
+# Scaffold preamble / tail — EXPORTED for use by live_show.py
+#
+# The live_show route PRE-INJECTS these around the model's 2-line output so
+# the model never needs to write import statements or function definitions.
+#
+# Full execution flow:
+#   1. RADICAL_V4_SCAFFOLD_PREFIX  (injected BEFORE model output)
+#   2. model outputs:  pattern_id = "..."  +  difficulty = "..."
+#   3. RADICAL_V4_SCAFFOLD_SUFFIX  (injected AFTER model output)
+# ===========================================================================
+
+RADICAL_V4_SCAFFOLD_PREFIX = (
+    "from core.domain_functions import DomainFunctionHelper\n"
+    "df = DomainFunctionHelper()\n"
+    "\n"
+    "def generate(level=1, **kwargs):\n"
+    "    # [Pre-injected by Architect — model provided decisions below]\n"
+)
+
+RADICAL_V4_SCAFFOLD_SUFFIX = (
+    "    # [Auto-appended scaffold — deterministic, DO NOT output]\n"
+    "    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty)\n"
+    "    ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)\n"
+    "    question_text = df.format_question_LaTeX(pattern_id, vars)\n"
+    "\n"
+    "    return {\n"
+    "        'question_text': question_text,\n"
+    "        'answer': '',\n"
+    "        'correct_answer': ans,\n"
+    "        'solution_steps': sol,\n"
+    "        'mode': 1,\n"
+    "        '_o1_healed': False\n"
+    "    }\n"
+    "\n"
+    "def check(user_answer, correct_answer):\n"
+    "    correct = str(user_answer).strip() == str(correct_answer).strip()\n"
+    "    return {'correct': correct, 'result': '正確' if correct else '錯誤'}\n"
+)
+
+# ---------------------------------------------------------------------------
+# Code section shown inside the spec (model sees what's pre-injected +
+# exactly which 2 lines it must output — nothing else)
+# ---------------------------------------------------------------------------
+_V4_CODE_SCAFFOLD_FULL = (
+    "\n════════════════════════════════════════════\n"
+    "【系統已注入以下 Scaffold，你的輸出只有 ↓↑ 之間的兩行】\n"
+    "════════════════════════════════════════════\n"
+    "# [Pre-injected by Architect — DO NOT RE-OUTPUT]\n"
+    "# from core.domain_functions import DomainFunctionHelper\n"
+    "# df = DomainFunctionHelper()   ← df 是物件，非模組，禁止 import df\n"
+    "#\n"
+    "# def generate(level=1, **kwargs):\n"
+    "#\n"
+    "# ↓ 你只輸出以下兩行（縮排 4 個空格，不加任何其他程式碼）↓\n"
+    "    pattern_id = \"p1_add_sub\"  # ← 從 Pattern Catalogue 選擇\n"
+    "    difficulty  = \"mid\"         # ← easy / mid / hard\n"
+    "# ↑ 你的輸出到這裡結束 ↑\n"
+    "#\n"
+    "# [Auto-appended after your output — DO NOT OUTPUT]\n"
+    "# vars = df.get_safe_vars_for_pattern(pattern_id, difficulty)\n"
+    "# ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)\n"
+    "# question_text = df.format_question_LaTeX(pattern_id, vars)\n"
+    "# return { 'question_text': ..., 'correct_answer': ans, ... }\n"
+    "#\n"
+    "# def check(user_answer, correct_answer): ...\n"
+    "\n"
+    "════════════════════════════════════════════\n"
+    "你的輸出應為（僅此兩行，不加任何其他 code）：\n"
+    "════════════════════════════════════════════\n"
+    "    pattern_id = \"<從上方 Catalogue 選一個 p-ID>\"\n"
+    "    difficulty  = \"<easy|mid|hard>\"\n"
+)
+
+_V4_CODE_SCAFFOLD_P6_COMBO = (
+    "\n════════════════════════════════════════════\n"
+    "【pattern_id 已鎖定為 p6_combo，你只輸出 difficulty 一行】\n"
+    "════════════════════════════════════════════\n"
+    "# [Pre-injected — DO NOT RE-OUTPUT]\n"
+    "# from core.domain_functions import DomainFunctionHelper\n"
+    "# df = DomainFunctionHelper()   ← df 是物件，非模組，禁止 import df\n"
+    "# def generate(level=1, **kwargs):\n"
+    "#     pattern_id = \"p6_combo\"  # locked\n"
+    "#\n"
+    "# ↓ 你只輸出以下一行 ↓\n"
+    "    difficulty  = \"hard\"  # ← easy / mid / hard\n"
+    "# ↑ 你的輸出到這裡結束 ↑\n"
+    "\n"
+    "════════════════════════════════════════════\n"
+    "你的輸出應為（僅此一行）：\n"
+    "════════════════════════════════════════════\n"
+    "    difficulty  = \"<easy|mid|hard>\"\n"
+)
+
+# ===========================================================================
+# Full spec — model must identify the pattern itself from OCR
+# ===========================================================================
+
+def _build_full_spec(ocr_example: str = "") -> str:
+    """
+    Full context spec for ambiguous or first-pass OCR input.
+    Includes the complete 11-pattern catalogue and difficulty guide.
+    Model fills both pattern_id and difficulty.
+    """
+    parts = [
+        _V4_HEADER,
+        _V4_ARCH_NOTE,
+        _V4_PATTERN_TABLE,
+        _V4_DIFFICULTY_GUIDE,
+        _V4_CODE_SCAFFOLD_FULL,
+        _V4_API_SIGNATURES,
+        _V4_PROHIBITIONS,
+    ]
+    spec = "\n".join(parts)
+    if ocr_example:
+        spec += (
+            "\n════════════════════════════════════════\n"
+            "參考 OCR 語義（本次輸入，僅供辨識 pattern_id 用）\n"
+            "════════════════════════════════════════\n"
+            f"{ocr_example}\n"
+        )
+    return spec
+
+
+# ===========================================================================
+# p6_combo slim spec — pattern pre-confirmed as "p6_combo"
+#
+# Strips vs full spec:
+#   ✂ Full 11-pattern catalogue  → replaced by 2-line lock confirmation
+#   ✂ Difficulty-to-pattern mapping table
+#   ✂ vars-structure docs        → not needed (df generates internally)
+#
+# Retained:
+#   ✓ Architecture note (1-liner)
+#   ✓ "pattern_id = p6_combo locked" statement
+#   ✓ difficulty guide (3 lines)
+#   ✓ Code scaffold with p6_combo pre-filled
+#   ✓ 3 API signatures
+#   ✓ Prohibitions
+#   ✓ OCR snippet (if provided)
+#
+# Token reduction vs full spec: ~40%.
+# ===========================================================================
+
+_V4_P6_COMBO_LOCK = """
+════════════════════════════════
+p6_combo 已確認（OCR 語義鎖定）
+════════════════════════════════
+pattern_id = "p6_combo"  ← 已鎖定，禁止更改
+組合方式：(p2b_mult_distrib | p3b_div_simple | p5a_conjugate_int) + p1_add_sub
+vars 由 df.get_safe_vars_for_pattern 完全自動生成，模型無需構造任何變數。
+"""
+
+def _build_p6_combo_slim_spec(ocr_example: str = "") -> str:
+    """
+    Minimal context spec for p6_combo (multi-step combination problems).
+
+    The model already knows pattern_id = "p6_combo", so we strip:
+      - 11-pattern recognition table
+      - difficulty-to-pattern mapping
+      - vars-structure documentation
+    and retain only the minimum operational instructions.
+    """
+    parts = [
+        _V4_HEADER,
+        "所有計算由 DomainFunctionHelper 完成。模型只需確認 difficulty。\n",
+        _V4_P6_COMBO_LOCK,
+        _V4_DIFFICULTY_GUIDE,
+        _V4_CODE_SCAFFOLD_P6_COMBO,
+        _V4_API_SIGNATURES,
+        _V4_PROHIBITIONS,
+    ]
+    spec = "\n".join(parts)
+    if ocr_example:
+        spec += (
+            "\n════════════════════════════════\n"
+            "OCR 語義（已確認 p6_combo）\n"
+            "════════════════════════════════\n"
+            f"{ocr_example}\n"
+        )
+    return spec
+
+
+# ===========================================================================
+# OCR pattern detector  (text → p-ID string or None)
+#
+# Decision rules (priority order):
+#
+#   p6_combo    — expression contains BOTH (fraction-with-radical-denom OR
+#                 multiply-bracket) AND a top-level add/subtract of another
+#                 radical term; OR an explicit multi-step phrase.
+#
+#   p5b / p5a   — √.../(...) conjugate forms (distinguished by numerator)
+#
+#   p2c / p2b   — double-bracket or single-item-×-bracket
+#
+#   p2a         — bare × between radicals
+#
+#   p3b / p3a   — fraction or ÷ with radical denominator
+#
+#   p1_add_sub  — radical add/subtract without fraction or multiplication
+#
+#   p0_simplify — single isolated radical
+#
+# The detector is conservative: returns None on ambiguous input so the caller
+# falls back to the full spec.
+# ===========================================================================
+
+def _has_toplevel_addsub_rad(text: str) -> bool:
+    """
+    Return True iff a '+' or '-' binary operator appears at brace/paren
+    depth-0 AND a radical token (\\sqrt or √) exists anywhere in text.
+
+    Depth-tracking prevents operators inside fraction denominators or
+    multiplication brackets from triggering a false Combo classification:
+      \\frac{1}{\\sqrt{3}-\\sqrt{2}}     → '-' at depth 1  → False
+      2\\sqrt{3}\\times(\\sqrt{12}-1)    → '-' at depth 1  → False
+      \\frac{3}{\\sqrt{5}-1} + 2\\sqrt{5} → '+' at depth 0 → True
+      2\\sqrt{12} - \\sqrt{27}           → '-' at depth 0  → True
+    """
+    if r"\sqrt" not in text and "√" not in text:
+        return False
+
+    depth = 0
+    prev_nonspace = ""
+    for ch in text:
+        if ch in "{(":
+            depth += 1
+        elif ch in "})":
+            depth = max(0, depth - 1)
+        elif ch in "+-" and depth == 0:
+            if prev_nonspace in "})" or (prev_nonspace and prev_nonspace[-1].isalnum()):
+                return True
+        if ch.strip():
+            prev_nonspace = ch
+    return False
+
+
+import re as _re
+
+# Compiled pattern for p3b_div_simple: \frac{a}{\sqrt{b}} where the
+# denominator is EXACTLY a plain radical with no ± terms.
+# Matches e.g. \frac{5}{\sqrt{3}}, \dfrac{2}{\sqrt{7}}.
+# Does NOT match \frac{1}{\sqrt{3}-\sqrt{2}} because the denominator brace
+# contains more than just \sqrt{digits}.
+_RE_P3B_SIMPLE_FRAC = _re.compile(
+    r"(?:\\dfrac|\\frac)\{[^{}]*\}\{\\sqrt\{\d+\}\}"
+)
+
+
+def _detect_pattern_from_ocr(ocr_text: str) -> str | None:
+    """
+    Analyse OCR text and return the most likely pattern_id, or None if
+    the signal is insufficient (caller falls back to full spec).
+
+    Returns one of the p-ID strings used by DomainFunctionHelper, or None.
+    Priority order mirrors the Pattern Catalogue in SKILL.md.
+    """
+    if not ocr_text:
+        return None
+
+    text = str(ocr_text)
+
+    # ---- signal primitives ------------------------------------------------
+    # Fraction whose denominator starts with a radical (broad catch-all)
+    has_frac_rad_denom = any(k in text for k in [
+        r"\frac{1}{\sqrt", r"\frac{\sqrt",
+        r"\dfrac{1}{\sqrt", r"\dfrac{\sqrt",
+        r"\frac{", r"\dfrac{",
+    ])
+    # p3b: fraction with a PURE radical denominator (no ± in denominator)
+    has_simple_rad_frac = bool(_RE_P3B_SIMPLE_FRAC.search(text))
+    # Radical in numerator → conjugate with radical numerator (p5b)
+    has_sqrt_numerator  = r"\frac{\sqrt" in text or r"\dfrac{\sqrt" in text
+    # Explicit multiplication with bracket → distributive (p2b/p2c)
+    has_times_bracket   = any(k in text for k in [
+        r"\times(", r"\times \left(",
+        r"×(",      r"× \left(",
+    ])
+    # Bare multiplication (no bracket) → p2a
+    has_times_bare = any(k in text for k in [
+        r"\times\sqrt", r"\times \sqrt",
+        r"×\sqrt",      r"× \sqrt",
+        r"\times",      r"×",
+    ])
+    # Division by radical → p3a / p3b
+    has_div_rad = any(k in text for k in [
+        r"\div\sqrt", r"÷\sqrt", r"/\sqrt",
+    ])
+    # Double-bracket → p2c
+    has_double_bracket = any(k in text for k in [
+        r")(\sqrt", r")×(", r") \times (",
+    ])
+    # Depth-0 add/subtract of a radical term (binary operator check)
+    has_toplevel_rad = _has_toplevel_addsub_rad(text)
+    # Any radical add/subtract (includes depth > 0; for SimpleAdd fallback)
+    has_any_rad_addsub = (
+        (r"\sqrt" in text or "√" in text)
+        and any(k in text for k in ["+", "-", r"\pm"])
+    )
+    # Explicit multi-step phrases
+    has_multi_step = any(k in text for k in [
+        "多步", "先計算", "再加", "再減", "combined", "multi-step",
+    ])
+
+    # ---- p6_combo: two distinct top-level operations ----------------------
+    combo_a = has_frac_rad_denom and has_toplevel_rad and not has_simple_rad_frac
+    combo_b = has_times_bracket  and has_toplevel_rad
+    combo_c = has_multi_step
+    if combo_a or combo_b or combo_c:
+        return "p6_combo"
+
+    # ---- p5b: conjugate with radical numerator ----------------------------
+    if has_sqrt_numerator:
+        return "p5b_conjugate_rad"
+
+    # ---- p3b: simple a/√b fraction (no ± in denominator) -----------------
+    # Must be checked BEFORE the generic conjugate (p5a) check because p3b is
+    # a specialisation of "frac with radical denominator".
+    if has_simple_rad_frac:
+        return "p3b_div_simple"
+
+    # ---- p5a: conjugate with integer numerator (denominator has ±) --------
+    if has_frac_rad_denom:
+        return "p5a_conjugate_int"
+
+    # ---- multiplication patterns (p2c, p2b, p2a) -------------------------
+    if has_double_bracket:
+        return "p2c_mult_binomial"
+    if has_times_bracket:
+        return "p2b_mult_distrib"
+    if has_times_bare:
+        return "p2a_mult_direct"
+
+    # ---- division by a radical without fraction notation (p3a) -----------
+    if has_div_rad and has_any_rad_addsub:
+        return "p3a_div_expr"
+    if has_div_rad:
+        return "p3b_div_simple"
+
+    # ---- addition / subtraction fallback (p1_add_sub) --------------------
+    if has_any_rad_addsub:
+        return "p1_add_sub"
+
+    return None   # insufficient signal → caller uses full spec
+
+
+# ===========================================================================
+# Public entry point for the scaffold builder
+# ===========================================================================
+
+#: Patterns that have a dedicated slim spec to reduce context window usage.
+_SPEC_BUILDERS = {
+    "p6_combo": _build_p6_combo_slim_spec,
+    # Extend here when slim specs for other patterns are ready.
+}
+
+
+def _get_radical_orchestrator_spec(skill_id: str, ocr_example: str = "") -> str:
+    """
+    Selective context loader for jh_數學2上_FourOperationsOfRadicals (V4).
+
+    Algorithm:
+      1. Run OCR-semantic pattern detector on ocr_example.
+      2. If a high-confidence pattern is identified AND a slim spec exists for
+         that pattern, inject the trimmed spec (lower token cost for 8B model).
+      3. Otherwise fall back to the full spec (all 11 patterns + difficulty map).
+    """
+    detected = _detect_pattern_from_ocr(ocr_example)
+    builder  = _SPEC_BUILDERS.get(detected)
+    if builder is not None:
+        return builder(ocr_example)
+    return _build_full_spec(ocr_example)
+
+
+# Backward-compat alias used by generate_v15_spec and external callers.
+RADICAL_ORCHESTRATOR_MASTER_SPEC = _build_full_spec()
+
+
+# ==============================================================================
 # Core Generation Logic
 # ==============================================================================
 
@@ -461,8 +936,81 @@ def generate_v15_spec(skill_id, model_tag="local_14b", architect_model=None):
     """
     [V42.0 Spec Generator]
     讀取例題 -> 呼叫 AI 架構師 -> 存入資料庫 (MASTER_SPEC)
+
+    [Pure Orchestrator Override — V4]
+    For jh_數學2上_FourOperationsOfRadicals, bypasses the LLM architect and
+    injects a pre-written Pure Orchestrator spec (DomainFunctionHelper API)
+    directly.  The spec instructs Qwen-VL-8B to select one of 11 granular
+    pattern IDs (p0_simplify … p6_combo) and a difficulty level, delegating
+    ALL radical computation to DomainFunctionHelper.  When OCR semantics
+    strongly indicate p6_combo (multi-step), a slim context spec is injected
+    instead to minimise context-window usage on the 8B model.
     """
     try:
+        # ----------------------------------------------------------------
+        # [Neuro-Symbolic Override] jh_數學2上_FourOperationsOfRadicals
+        #
+        # This branch generates a LIGHTWEIGHT prompt that:
+        #   ✅ ASKS FOR:  pattern_id (11 choices) + difficulty (3 choices)
+        #   ❌ EXCLUDES:  isomorphic constraints, bracket counting,
+        #                 operator-sequence matching, number-count checks,
+        #                 decimal-style guards, and all integer/fraction
+        #                 V42.0 spec sections — none are relevant to radicals.
+        #
+        # All other skills fall through to the standard V42.0 LLM-architect
+        # flow below.  This branch is isolated: changes here cannot leak
+        # integer/fraction constraints into the radical prompt, and vice versa.
+        # ----------------------------------------------------------------
+        if skill_id == _RADICAL_ORCHESTRATOR_SKILL_ID:
+            ocr_example = ""
+            try:
+                example = TextbookExample.query.filter_by(skill_id=skill_id).limit(1).first()
+                if example:
+                    ocr_example = f"Question: {example.problem_text.strip()}"
+            except Exception:
+                pass
+
+            spec_content = _get_radical_orchestrator_spec(skill_id, ocr_example)
+
+            # Safety guard: ensure no integer/fraction complexity-mirror keywords
+            # leaked into the spec (would confuse the model about bracket counting).
+            _forbidden_in_radical_spec = (
+                "isomorphic", "bracket_count", "abs_count",
+                "operator_sequence", "number_count",
+            )
+            for _kw in _forbidden_in_radical_spec:
+                if _kw in spec_content:
+                    import warnings
+                    warnings.warn(
+                        f"[prompt_architect] Radical spec contains forbidden "
+                        f"integer-guard keyword {_kw!r} — please audit "
+                        f"_get_radical_orchestrator_spec().",
+                        stacklevel=2,
+                    )
+
+            new_prompt_entry = SkillGenCodePrompt(
+                skill_id=skill_id,
+                prompt_content=spec_content,
+                prompt_type="MASTER_SPEC",
+                system_prompt="[Neuro-Symbolic Orchestrator V2 — RadicalLogicEngine, no LLM math]",
+                user_prompt_template=f"skill_id={skill_id}",
+                model_tag="orchestrator_v2",
+                created_at=datetime.now()
+            )
+            db.session.add(new_prompt_entry)
+            db.session.commit()
+            return {
+                'success': True,
+                'spec': spec_content,
+                'prompt_id': new_prompt_entry.id,
+                'orchestrator_mode': True,
+                'engine': 'RadicalLogicEngine',
+            }
+
+        # ----------------------------------------------------------------
+        # Standard flow for all other skills
+        # ----------------------------------------------------------------
+
         # 1. 抓取 1 個範例 (避免過多 Context 干擾)
         skill = SkillInfo.query.filter_by(skill_id=skill_id).first()
         example = TextbookExample.query.filter_by(skill_id=skill_id).limit(1).first()

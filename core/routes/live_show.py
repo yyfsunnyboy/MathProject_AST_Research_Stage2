@@ -53,6 +53,10 @@ from core.code_utils.live_show_math_utils import (
     _recompute_correct_answer_from_question,
     _is_expression_isomorphic,
     _profile_diff_summary,
+    # Radical Math DNA (jh_數學2上_FourOperationsOfRadicals)
+    _build_radical_profile,
+    _is_radical_isomorphic,
+    _radical_profile_diff,
 )
 from core.healers.live_show_iso_guard import (
     evaluate_iso_style_guard as _evaluate_iso_style_guard_impl,
@@ -61,6 +65,11 @@ from core.healers.live_show_iso_guard import (
 )
 from core.skill_policies import get_skill_policy, normalize_skill_id
 from core.routes.live_show_pipeline import run_ab2_interception, run_ab3_full_healer, assemble_visual_output
+from core.prompt_architect import (
+    _RADICAL_ORCHESTRATOR_SKILL_ID as _RADICAL_SKILL_ID,
+    RADICAL_V4_SCAFFOLD_PREFIX as _RADICAL_PREFIX,
+    RADICAL_V4_SCAFFOLD_SUFFIX as _RADICAL_SUFFIX,
+)
 # (舊有 Pix2Text 套件已移除，OCR 全權交由 Qwen3-VL 處理)
 
 # 從 __init__.py 匯入已註冊的 Blueprint
@@ -69,6 +78,105 @@ from . import live_show_bp
 # 全局初始化 MathEngine (延遲載入以避免循環引用)
 _engine_instance = None
 _LIVE_FILE_DISPLAY_MODE = {}
+
+
+# ===========================================================================
+# Radical Orchestrator helpers
+# ===========================================================================
+
+def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
+    """
+    Assemble a complete, executable radical scaffold from the model's raw output.
+
+    The model is instructed to output exactly two lines:
+        pattern_id = "p1_add_sub"
+        difficulty  = "mid"
+
+    Three-step extraction:
+      Step 1 — Clean: strip <think> blocks and markdown fences.
+      Step 2 — Extract: aggressively find pattern_id + difficulty via regex,
+                        with unquoted and bare-token fallbacks.
+      Step 3 — Assemble: wrap the decisions in RADICAL_V4_SCAFFOLD_PREFIX /
+                         SUFFIX so the executor always receives valid Python.
+
+    Hard fallback (p1_add_sub / mid) guarantees the pipeline never breaks.
+    Every run prints a one-line diagnostic to the terminal.
+    """
+    # ── Step 1: Clean ─────────────────────────────────────────────────────
+    raw = (raw_model_output or "").strip()
+    # Remove <think>…</think> reasoning traces the model may have leaked.
+    raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL).strip()
+    # Remove markdown code fences (```python … ``` or plain ``` … ```).
+    clean_raw = re.sub(r'```(?:python)?', '', raw).strip()
+    clean_raw = re.sub(r'```', '', clean_raw).strip()
+
+    # ── Step 2: Extract ───────────────────────────────────────────────────
+    _VALID_PIDS = {
+        "p0_simplify",
+        "p1_add_sub",
+        "p2a_mult_direct", "p2b_mult_distrib", "p2c_mult_binomial",
+        "p3a_div_expr",    "p3b_div_simple",
+        "p4_frac_mult",
+        "p5a_conjugate_int", "p5b_conjugate_rad",
+        "p6_combo",
+    }
+    _VALID_DIFFS = {"easy", "mid", "hard"}
+
+    # 2a. Quoted assignment  →  pattern_id = "p1_add_sub"
+    pid_match  = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', clean_raw)
+    diff_match = re.search(r'difficulty\s*=\s*["\']([^"\']+)["\']',  clean_raw)
+
+    # 2b. Unquoted assignment  →  pattern_id = p1_add_sub
+    if not pid_match:
+        pid_match  = re.search(r'pattern_id\s*=\s*([A-Za-z][A-Za-z0-9_]*)', clean_raw)
+    if not diff_match:
+        diff_match = re.search(r'difficulty\s*=\s*([A-Za-z][A-Za-z0-9_]*)',  clean_raw)
+
+    p_id = (pid_match.group(1).strip()  if pid_match  else "").lower()
+    diff = (diff_match.group(1).strip() if diff_match else "").lower()
+
+    # 2c. Bare token scan  →  any valid pid / difficulty token in the text
+    if p_id not in _VALID_PIDS:
+        p_id = next((c for c in sorted(_VALID_PIDS) if c in clean_raw), "")
+    if diff not in _VALID_DIFFS:
+        diff = next((c for c in ("easy", "mid", "hard") if c in clean_raw), "")
+
+    # 2d. Hard fallback — pipeline must never stall
+    used_fallback_pid  = p_id not in _VALID_PIDS
+    used_fallback_diff = diff not in _VALID_DIFFS
+    if used_fallback_pid:
+        p_id = "p1_add_sub"
+    if used_fallback_diff:
+        diff = "mid"
+
+    _src_pid  = "FALLBACK" if used_fallback_pid  else "extracted"
+    _src_diff = "FALLBACK" if used_fallback_diff else "extracted"
+    print(
+        f"⚙️  [RADICAL_ASSEMBLER] "
+        f"pattern_id={p_id!r} ({_src_pid}), "
+        f"difficulty={diff!r} ({_src_diff})"
+    )
+
+    # ── Step 3: Assemble ──────────────────────────────────────────────────
+    # Decisions live inside def generate() → must be indented with 4 spaces.
+    decisions = (
+        f'    pattern_id = "{p_id}"\n'
+        f'    difficulty  = "{diff}"\n'
+    )
+    return _RADICAL_PREFIX + decisions + _RADICAL_SUFFIX
+
+
+def _radical_bypass_expected_fp() -> dict:
+    """
+    Return an empty structural-profile dict for the radical orchestrator skill.
+
+    The Complexity Mirror (_build_structural_profile) misinterprets LaTeX
+    tokens like \\sqrt{} and \\frac{}{} as bracket/brace segments, producing
+    a spurious 'expected_fp' that will never match the DomainFunctionHelper
+    output.  An empty dict makes _is_expression_isomorphic return True for
+    every expression, effectively disabling the guard for this skill.
+    """
+    return {}
 
 
 def get_engine():
@@ -736,8 +844,21 @@ Template: {template_id}
                 final_code = re.sub(r'^(\s*)```\s*\n', '', final_code, flags=re.MULTILINE)
                 final_code = re.sub(r'\n(\s*)```\s*$', '', final_code, flags=re.MULTILINE)
                 
+            # [Radical Orchestrator] Assemble full scaffold from model's 2-line output.
+            # Must happen before expected_fp so the healed code uses the correct
+            # preamble even when the model only emits pattern_id + difficulty.
+            if skill_id == _RADICAL_SKILL_ID:
+                final_code = _assemble_radical_orchestrator_code(final_code)
+
             # 7. Execute Code to get output dict identical to `scaler.py` format
-            expected_fp = _build_structural_profile(ocr_text)
+            # [Radical Orchestrator] Bypass integer Complexity Mirror; use the
+            # domain-specific Radical DNA mirror instead.
+            if skill_id == _RADICAL_SKILL_ID:
+                expected_fp      = _radical_bypass_expected_fp()
+                target_radical_profile = _build_radical_profile(ocr_text)
+            else:
+                expected_fp             = _build_structural_profile(ocr_text)
+                target_radical_profile  = {}
             # --- Ab2 Interception (Scaffold Prompt, No Healer) ---
             ab2_pack = run_ab2_interception(
                 scaler=scaler,
@@ -792,6 +913,11 @@ Template: {template_id}
                 recompute_correct_answer_from_question_fn=_recompute_correct_answer_from_question,
                 format_result_question_display_fn=_format_result_question_display_impl,
                 maybe_add_o1_fix_fn=_maybe_add_o1_fix_impl,
+                # Radical Orchestrator: re-assemble scaffold after healer pass
+                radical_reassemble_fn=(
+                    _assemble_radical_orchestrator_code
+                    if skill_id == _RADICAL_SKILL_ID else None
+                ),
             )
 
             problems_result = ab3_pack["problems_result"]
@@ -806,6 +932,36 @@ Template: {template_id}
             detail_logs = ab3_pack["detail_logs"]
             generated_fp = ab3_pack["generated_fp"]
             iso_isomorphic = ab3_pack["iso_isomorphic"]
+
+            # ── Radical DNA Mirror (soft check) ──────────────────────────────
+            # Runs only for the radical skill in place of the integer iso-guard.
+            # Compares rad_count + simplifiable_count between OCR input and
+            # each generated question; results are appended to detail_logs.
+            if skill_id == _RADICAL_SKILL_ID and target_radical_profile.get('rad_count') is not None:
+                _policy = {}
+                try:
+                    from core.skill_policies import get_skill_policy
+                    _policy = get_skill_policy(skill_id) or {}
+                except Exception:
+                    pass
+                if _policy.get("use_radical_complexity_mirror", True):
+                    for _pr in (problems_result or []):
+                        _qt = _pr.get("question_text", "") if isinstance(_pr, dict) else ""
+                        if not _qt:
+                            continue
+                        _gen_rp = _build_radical_profile(_qt)
+                        if _is_radical_isomorphic(target_radical_profile, _qt):
+                            detail_logs.append(
+                                "[RADICAL_DNA] ✓ profile match — "
+                                f"rad_count={_gen_rp['rad_count']}, "
+                                f"simplifiable={_gen_rp['simplifiable_count']}, "
+                                f"rationalize={_gen_rp['rationalize_count']}"
+                            )
+                        else:
+                            _diffs = _radical_profile_diff(target_radical_profile, _qt)
+                            detail_logs.append(
+                                "[RADICAL_DNA] ✗ profile mismatch — " + "; ".join(_diffs)
+                            )
             
             output = assemble_visual_output(
                 problems_result=problems_result,

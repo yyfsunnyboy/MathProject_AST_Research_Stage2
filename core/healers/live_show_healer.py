@@ -261,6 +261,20 @@ def sanitize_question_text_display(question_text, return_report=False):
         return (question_text, {"double_paren_fixes": 0, "negative_wrap_fixes": 0, "operator_token_fixes": 0, "diffs": []}) if return_report else question_text
 
     text = str(question_text)
+
+    # [GUARD] 若 question_text 缺少 $...$ 但含有 LaTeX 指令，自動補加包裹
+    # 常見情況：AI 直接輸出 \frac{1}{2}\times\frac{\sqrt{3}}{3} 而忘記 $ 和中文描述
+    _LATEX_TRIGGERS = (r'\frac', r'\sqrt', r'\times', r'\div', r'\cdot', r'\pm',
+                       r'\left', r'\right', r'\leq', r'\geq', r'\neq', r'\alpha')
+    if '$' not in text and any(cmd in text for cmd in _LATEX_TRIGGERS):
+        # 若沒有中文描述，補加「計算 $...$ 的值。」
+        _has_chinese = any('\u4e00' <= ch <= '\u9fff' for ch in text)
+        if not _has_chinese:
+            text = f"計算 ${text}$ 的值。"
+        else:
+            # 有中文但沒 $：把 LaTeX 部分（從第一個 \ 到結尾的數學部分）加 $
+            text = re.sub(r'((?:\\[a-zA-Z]+|[0-9+\-*/^{}_ \\]+){3,})', r'$\1$', text, count=1)
+
     m = re.search(r'\$(.*?)\$', text)
     total_fixes = 0
     total_neg_wraps = 0
