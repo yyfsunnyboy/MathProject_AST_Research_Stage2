@@ -30,11 +30,16 @@ Pattern Catalogue（按優先順序匹配第一個符合的）
 p5b | √p/(b√q±c)  共軛有理化（分子為根式）      | √2/(3√2+4)
 p5a | 1/(b√q±c)   共軛有理化（分子為整數1）      | 1/(√3-√2)
 p2c | (a+b)(c+d)  雙括號多項×多項展開           | (√3+√2)(√6-1)
+p2d | (a√r±b√s)² 完全平方公式展開             | (√3+2√2)²
+p2e | (a√r-b√s)(a√r+b√s) 平方差公式展開      | (√3-2√2)(√3+2√2)
 p2b | k√r×(…)     單項×多項分配律              | 2√3×(√12-√2)
 p2a | k√r × k√r   兩根式直接相乘（無括號）       | 2√8×3√45
 p4  | (a/b)×(√r/c) 分數×含根式的分數            | (2/3)×(√3/3)
 p3a | (…)÷√d      表達式÷單一根式              | (-3√2+√15)÷√3
+p3c | k√r ÷ k√r    兩根式直接相除（含負數括號）   | (-12√6)÷(8√3)
 p3b | a/√b         純分數形式分母有理化           | 5/√3
+p4b | (√a/√b)÷(√c/√d) 根式分數相除            | (√33/√7)÷(√11/√21)
+p4c | √(a/b)×√(c/d)÷√(e/f) 根號內分數連乘除   | √(1/2)×√(1/5)÷√(1/6)
 p6  | 複合多步驟     加減+有理化等多步              | 多步混合
 p1  | √r₁±√r₂     純加減法（化簡後合併同類項）    | 2√12-√27
 p0  | √r           單一根式化簡                 | √72
@@ -107,9 +112,14 @@ p1_add_sub       : {"terms": [(coeff, radicand, op), ...]}   op ∈ {"+", "-"}
 p2a_mult_direct  : {"c1": int, "r1": int, "c2": int, "r2": int}
 p2b_mult_distrib : {"c1", "r1", "c2", "r2", "c3", "r3", "op"}
 p2c_mult_binomial: {"c1","r1","c2","r2","c3","r3","c4","r4"}
+p2d_perfect_square: {"c1","r1","c2","r2","op"}   op ∈ {"+","-"}
+p2e_diff_of_squares: {"c1","r1","c2","r2"}
 p3a_div_expr     : {"c1","r1","c2","r2","denom_r","op"}
+p3c_div_direct   : {"c1","r1","c2","r2"}
 p3b_div_simple   : {"a": int, "b": int}
 p4_frac_mult     : {"a","b","r","c"}
+p4b_frac_rad_div : {"n1","d1","n2","d2"}
+p4c_nested_frac_chain: {"n1","d1","n2","d2","n3","d3"}
 p5a_conjugate_int: {"b","q","c","sign"}   sign ∈ {1,-1}
 p5b_conjugate_rad: {"p","b","q","c","sign"}
 p6_combo         : {"sub_pattern1","vars1","sub_pattern2","vars2","combo_op"}
@@ -120,8 +130,8 @@ p6_combo         : {"sub_pattern1","vars1","sub_pattern2","vars2","combo_op"}
 【STEP 4】Difficulty 對應難度說明
 ════════════════════════════════════════════════════════════════
   easy  → 2 項加減 / 直接乘法 / 純分母有理化
-  mid   → 3 項加減 / 分配律展開 / P3a / P4 / P5a
-  hard  → 4 項加減 / 雙括號展開 / P5b / P6 複合題
+  mid   → 3 項加減 / 分配律展開 / P3a / P3c / P4 / P5a
+  hard  → 4 項加減 / 雙括號展開 / P2d / P2e / P4b / P4c / P5b / P6 複合題
 
 ════════════════════════════════════════════════════════════════
 【STEP 5】硬性禁令（違反任何一條均導致 0 分）

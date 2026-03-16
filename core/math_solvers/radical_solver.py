@@ -501,9 +501,14 @@ class RadicalSolver:
             "p2a_mult_direct":     self._solve_p2a,
             "p2b_mult_distrib":    self._solve_p2b,
             "p2c_mult_binomial":   self._solve_p2c,
+            "p2d_perfect_square":  self._solve_p2d,
+            "p2e_diff_of_squares": self._solve_p2e,
             "p3a_div_expr":        self._solve_p3a,
+            "p3c_div_direct":      self._solve_p3c,
             "p3b_div_simple":      self._solve_p3b,
             "p4_frac_mult":        self._solve_p4,
+            "p4b_frac_rad_div":    self._solve_p4b,
+            "p4c_nested_frac_chain": self._solve_p4c,
             "p5a_conjugate_int":   self._solve_p5a,
             "p5b_conjugate_rad":   self._solve_p5b,
             "p6_combo":            self._solve_p6,
@@ -608,6 +613,88 @@ class RadicalSolver:
         ]
         return latex_ans, steps
 
+    def _solve_p2d(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P2d: Perfect-square expansion (c1√r1 ± c2√r2)².
+
+        Formula: (a ± b)² = a² ± 2ab + b²
+          where a = c1√r1, b = c2√r2
+          → c1²·r1  ±  2·c1·c2·√(r1·r2)  +  c2²·r2
+          → int_part = c1²·r1 + c2²·r2  (always positive)
+          → cross term: ±2·c1·c2·√(r1·r2), simplified via _simplify_rad
+        """
+        c1, r1 = int(v["c1"]), int(v["r1"])
+        c2, r2 = int(v["c2"]), int(v["r2"])
+        op = v.get("op", "+")
+
+        # Integer part: c1²·r1 + c2²·r2
+        int_part = c1 * c1 * r1 + c2 * c2 * r2
+
+        # Cross term: ±2·c1·c2·√(r1·r2), then simplify
+        cross_coeff_raw = 2 * c1 * c2 if op == "+" else -(2 * c1 * c2)
+        cross_r_raw = r1 * r2
+        nc, nr = _simplify_rad(cross_coeff_raw, cross_r_raw)
+
+        # Build answer TermsDict: integer key=1, radical key=nr
+        result: TermsDict = {}
+        if int_part != 0:
+            result[1] = result.get(1, 0) + int_part
+        if nc != 0:
+            result[nr] = result.get(nr, 0) + nc
+        result = _merge_terms(result)
+        latex_ans = _format_expression(result)
+
+        # Format question terms for step display
+        t1_q = _format_term_unsimplified(c1, r1, True)
+        t2_q = _format_term_unsimplified(c2, r2, True)
+        op_str = "+" if op == "+" else "-"
+        sq_str = rf"({t1_q} {op_str} {t2_q})^2"
+
+        cross_nc_abs = abs(nc)
+        cross_sign = "+" if nc >= 0 else "-"
+        cross_latex = (
+            rf"{cross_sign} {cross_nc_abs}\sqrt{{{nr}}}"
+            if nr != 1
+            else rf"{cross_sign} {cross_nc_abs}"
+        )
+
+        a_sq = c1 * c1 * r1
+        b_sq = c2 * c2 * r2
+        steps: StepList = [
+            rf"\text{{Step 1: 套用完全平方公式}} \quad "
+            rf"(a {op_str} b)^2 = a^2 {op_str} 2ab + b^2",
+            rf"\text{{Step 2: 代入展開}} \quad "
+            rf"{sq_str} = {a_sq} {cross_latex} + {b_sq}",
+            rf"\text{{Step 3: 化簡合併}} \quad = {latex_ans}",
+        ]
+
+        return latex_ans, steps
+
+    def _solve_p2e(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P2e: Difference-of-squares (c1√r1 - c2√r2)(c1√r1 + c2√r2).
+
+        Formula: (a - b)(a + b) = a² - b²
+          where a = c1√r1, b = c2√r2
+          → c1²·r1 - c2²·r2  (pure integer result)
+        """
+        c1, r1 = int(v["c1"]), int(v["r1"])
+        c2, r2 = int(v["c2"]), int(v["r2"])
+
+        ans_int = c1 * c1 * r1 - c2 * c2 * r2
+        latex_ans = str(ans_int)
+
+        # r=1 renders as plain integer in the question display
+        t1 = str(c1 * r1) if r1 == 1 else _format_term_unsimplified(c1, r1, True)
+        t2 = str(c2 * r2) if r2 == 1 else _format_term_unsimplified(c2, r2, True)
+        a_sq = c1 * c1 * r1
+        b_sq = c2 * c2 * r2
+
+        steps: StepList = [
+            rf"\text{{Step 1: 套用平方差公式}} \quad (a-b)(a+b) = a^2 - b^2",
+            rf"\text{{Step 2: 代入}} \quad ({t1}-{t2})({t1}+{t2}) = {a_sq} - {b_sq}",
+            rf"\text{{Step 3: 計算結果}} \quad = {latex_ans}",
+        ]
+        return latex_ans, steps
+
     def _solve_p3a(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
         """P3a: Expression ÷ single radical (c1√r1 ± c2√r2) ÷ √d."""
         c1, r1 = v["c1"], v["r1"]
@@ -652,6 +739,45 @@ class RadicalSolver:
 
         return latex_ans, steps
 
+    def _solve_p3c(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P3c: Direct division (c1√r1) ÷ (c2√r2) = (c1/c2) * √(r1/r2).
+
+        √(r1/r2) = √(r1*r2) / r2, so result = (c1 * √(r1*r2)) / (c2 * r2).
+        Simplify √(r1*r2) and reduce the fraction.
+        """
+        c1, r1 = int(v["c1"]), int(v["r1"])
+        c2, r2 = int(v["c2"]), int(v["r2"])
+
+        out_c, out_r = _simplify_rad(1, r1 * r2)
+        coeff = Fraction(c1 * out_c, c2 * r2)
+
+        if out_r == 1:
+            if coeff.denominator == 1:
+                latex_ans = str(int(coeff))
+            else:
+                sgn = "-" if coeff.numerator < 0 else ""
+                latex_ans = rf"{sgn}\frac{{{abs(coeff.numerator)}}}{{{coeff.denominator}}}"
+        else:
+            if coeff.denominator == 1:
+                latex_ans = _format_term(int(coeff.numerator), out_r, True)
+            else:
+                num = coeff.numerator
+                den = coeff.denominator
+                sgn = "-" if num < 0 else ""
+                latex_ans = rf"{sgn}\frac{{{abs(num)}\sqrt{{{out_r}}}}}{{{den}}}"
+
+        t1 = _format_term_unsimplified(c1, r1, True)
+        t2 = _format_term_unsimplified(c2, r2, True)
+        left = f"({t1})" if c1 < 0 else t1
+        right = f"({t2})" if c2 < 0 else t2
+
+        steps: StepList = [
+            rf"\text{{Step 1: 化為分數}} \quad {left} \div {right} = \frac{{{c1}\sqrt{{{r1}}}}}{{{c2}\sqrt{{{r2}}}}}",
+            rf"\text{{Step 2: 有理化分母}} \quad = \frac{{{c1}\sqrt{{{r1*r2}}}}}{{{c2*r2}}}",
+            rf"\text{{Step 3: 化簡根式並約分}} \quad = {latex_ans}",
+        ]
+        return latex_ans, steps
+
     def _solve_p3b(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
         """P3b: Simple rationalization a/√b."""
         a = v["a"]
@@ -679,6 +805,49 @@ class RadicalSolver:
             rf"\text{{Step 2: 化簡根式並約分}} \quad = {latex_ans}"
         )
 
+        return latex_ans, steps
+
+    def _solve_p4b(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P4b: (√n1/√d1) ÷ (√n2/√d2) = √((n1*d2)/(d1*n2)). Rationalize and simplify."""
+        import sympy
+        n1, d1 = int(v["n1"]), int(v["d1"])
+        n2, d2 = int(v["n2"]), int(v["d2"])
+
+        # (√n1/√d1) ÷ (√n2/√d2) = (√n1/√d1) * (√d2/√n2) = √(n1*d2/(d1*n2))
+        num_rad = n1 * d2
+        den_rad = d1 * n2
+        expr = sympy.sqrt(sympy.Rational(num_rad, den_rad))
+        simplified = sympy.simplify(expr)
+        latex_ans = sympy.latex(simplified)
+
+        steps: StepList = [
+            rf"\text{{Step 1: 除改乘倒數}} \quad "
+            rf"\frac{{\sqrt{{{n1}}}}}{{\sqrt{{{d1}}}}} \div \frac{{\sqrt{{{n2}}}}}{{\sqrt{{{d2}}}}} "
+            rf"= \frac{{\sqrt{{{n1}}}}}{{\sqrt{{{d1}}}}} \times \frac{{\sqrt{{{d2}}}}}{{\sqrt{{{n2}}}}}",
+            rf"\text{{Step 2: 合併根號}} \quad = \sqrt{{\frac{{{num_rad}}}{{{den_rad}}}}}",
+            rf"\text{{Step 3: 有理化並化簡}} \quad = {latex_ans}",
+        ]
+        return latex_ans, steps
+
+    def _solve_p4c(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P4c: √(n1/d1) × √(n2/d2) ÷ √(n3/d3) = √((n1*n2*d3)/(d1*d2*n3))."""
+        import sympy
+        n1, d1 = int(v["n1"]), int(v["d1"])
+        n2, d2 = int(v["n2"]), int(v["d2"])
+        n3, d3 = int(v["n3"]), int(v["d3"])
+
+        num_rad = n1 * n2 * d3
+        den_rad = d1 * d2 * n3
+        expr = sympy.sqrt(sympy.Rational(num_rad, den_rad))
+        simplified = sympy.simplify(expr)
+        latex_ans = sympy.latex(simplified)
+
+        steps: StepList = [
+            rf"\text{{Step 1: 合併根號}} \quad "
+            rf"\sqrt{{\frac{{{n1}}}{{{d1}}}}} \times \sqrt{{\frac{{{n2}}}{{{d2}}}}} \div \sqrt{{\frac{{{n3}}}{{{d3}}}}} "
+            rf"= \sqrt{{\frac{{{num_rad}}}{{{den_rad}}}}}",
+            rf"\text{{Step 2: 有理化並化簡}} \quad = {latex_ans}",
+        ]
         return latex_ans, steps
 
     def _solve_p5a(self, v: dict, difficulty: str) -> Tuple[str, StepList]:

@@ -140,6 +140,12 @@ def run_ab3_full_healer(
     problems_result = []
     ab3_exec_elapsed = 0.0
 
+    # [UNIVERSAL FIX] Force Radical Scaffold Assembly here, for BOTH text and image paths
+    if "FourOperationsOfRadicals" in (skill_id or ""):
+        from core.routes.live_show import _assemble_radical_orchestrator_code
+        final_code = _assemble_radical_orchestrator_code(final_code)
+        print(f"⚙️ [UNIVERSAL_ASSEMBLER] Applied orchestrator scaffold for {skill_id}")
+
     healed_code = final_code
     regex_fixes = 0
     regex_code_fixes = 0
@@ -150,26 +156,11 @@ def run_ab3_full_healer(
     generated_fp = {}
     iso_isomorphic = False
 
-    if radical_reassemble_fn is not None:
-        # ── Radical Orchestrator: skip the general healer entirely ───────────
-        # The scaffold produced by RADICAL_V4_SCAFFOLD_PREFIX/SUFFIX is already
-        # syntactically complete and contains def check.  Running the full
-        # Ab3 healer risks:
-        #   • Adding a DUPLICATE def check (it blindly injects if it can't see one)
-        #   • Mangling DomainFunctionHelper imports it doesn't recognise
-        #   • Raising ValueError on "hardcoded numbers" for the 'mode': 1 dict value
-        # Assembling directly from the raw model output is always safe and fast.
-        healed_code = radical_reassemble_fn(final_code)
+    if "FourOperationsOfRadicals" in (skill_id or ""):
+        # Radical Orchestrator: skip the general healer entirely
         anti_dup_fixes = 0
-        detail_logs.insert(0,
-            "[HEALER_STATUS] ✅ Radical Orchestrator — "
-            "general healer bypassed; scaffold assembled directly."
-        )
-        print(
-            f"⚠️  [ADVISOR] Radical Skill Detected: "
-            f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
-        )
-        print("⚙️  [RADICAL_ASSEMBLER] scaffold assembled; healer bypassed.")
+        detail_logs.insert(0, "[HEALER_STATUS] ✅ Radical Orchestrator — general healer bypassed.")
+        print("⚙️ [RADICAL_ASSEMBLER] healer bypassed.")
     else:
         try:
             healed_code, *healer_stats = advanced_healer_fn(final_code, ablation_id=3, skill_id=skill_id)

@@ -420,28 +420,11 @@ class ASTHealer(ast.NodeTransformer):
                 # so visit_ImportFrom will NOT strip the import inside the try block.
                 _fallback_src = (
                     "def generate(level=1, **kwargs):\n"
-                    "    # Injected by AST Healer — context-aware fallback\n"
-                    "    try:\n"
-                    "        from core.domain_functions import DomainFunctionHelper\n"
-                    "        _df   = DomainFunctionHelper()\n"
-                    "        _pid  = 'p1_add_sub'\n"
-                    "        _diff = 'mid'\n"
-                    "        _v    = _df.get_safe_vars_for_pattern(_pid, _diff)\n"
-                    "        _ans, _sol = _df.solve_problem_pattern(_pid, _v, _diff)\n"
-                    "        _qt   = _df.format_question_LaTeX(_pid, _v)\n"
-                    "        return {\n"
-                    "            'question_text':  _qt,\n"
-                    "            'answer':         '',\n"
-                    "            'correct_answer': _ans,\n"
-                    "            'solution_steps': _sol,\n"
-                    "            'mode':           1,\n"
-                    "            '_o1_healed':     False,\n"
-                    "        }\n"
-                    "    except Exception:\n"
-                    "        return {\n"
-                    "            'question_text':  'Fallback due to severe hallucination',\n"
-                    "            'correct_answer': '\\\\text{Failed}',\n"
-                    "        }\n"
+                    "    # Injected by AST Healer — assembly failure signal\n"
+                    "    return {\n"
+                    "        'question_text':  'Fallback due to missing generate() wrapper',\n"
+                    "        'correct_answer': '\\\\text{Failed}',\n"
+                    "    }\n"
                 )
                 try:
                     _fb_tree = ast.parse(_fallback_src)
@@ -462,7 +445,7 @@ class ASTHealer(ast.NodeTransformer):
                                         ast.Constant(value="correct_answer"),
                                     ],
                                     values=[
-                                        ast.Constant(value="Fallback due to severe hallucination"),
+                                        ast.Constant(value="Fallback due to missing generate() wrapper"),
                                         ast.Constant(value="\\text{Failed}"),
                                     ],
                                 )

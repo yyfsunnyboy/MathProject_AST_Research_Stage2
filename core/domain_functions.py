@@ -189,9 +189,14 @@ class DomainFunctionHelper:
             "p2a_mult_direct":     self._vars_p2a,
             "p2b_mult_distrib":    self._vars_p2b,
             "p2c_mult_binomial":   self._vars_p2c,
+            "p2d_perfect_square":  self._vars_p2d,
+            "p2e_diff_of_squares": self._vars_p2e,
             "p3a_div_expr":        self._vars_p3a,
+            "p3c_div_direct":      self._vars_p3c,
             "p3b_div_simple":      self._vars_p3b,
             "p4_frac_mult":        self._vars_p4,
+            "p4b_frac_rad_div":    self._vars_p4b,
+            "p4c_nested_frac_chain": self._vars_p4c,
             "p5a_conjugate_int":   self._vars_p5a,
             "p5b_conjugate_rad":   self._vars_p5b,
             "p6_combo":            self._vars_p6,
@@ -287,9 +292,14 @@ class DomainFunctionHelper:
             "p2a_mult_direct":     self._fmt_p2a,
             "p2b_mult_distrib":    self._fmt_p2b,
             "p2c_mult_binomial":   self._fmt_p2c,
+            "p2d_perfect_square":  self._fmt_p2d,
+            "p2e_diff_of_squares": self._fmt_p2e,
             "p3a_div_expr":        self._fmt_p3a,
+            "p3c_div_direct":      self._fmt_p3c,
             "p3b_div_simple":      self._fmt_p3b,
             "p4_frac_mult":        self._fmt_p4,
+            "p4b_frac_rad_div":    self._fmt_p4b,
+            "p4c_nested_frac_chain": self._fmt_p4c,
             "p5a_conjugate_int":   self._fmt_p5a,
             "p5b_conjugate_rad":   self._fmt_p5b,
             "p6_combo":            self._fmt_p6,
@@ -345,11 +355,22 @@ class DomainFunctionHelper:
                         variables.get("r2", 1),
                         variables.get("r3", 1)])
 
+        if pid == "p2d_perfect_square":
+            # question: (c1√r1 ± c2√r2)² — r1, r2 from PRIME_SET → always 0
+            return _sc([variables.get("r1", 1), variables.get("r2", 1)])
+
+        if pid == "p2e_diff_of_squares":
+            # question: (c1√r1 - c2√r2)(c1√r1 + c2√r2) — square-free radicands → always 0
+            return _sc([variables.get("r1", 1), variables.get("r2", 1)])
+
         if pid == "p3a_div_expr":
             # question: (c1√r1 ± c2√r2) ÷ √denom_r
             return _sc([variables.get("r1", 1),
                         variables.get("r2", 1),
                         variables.get("denom_r", 1)])
+
+        if pid == "p3c_div_direct":
+            return _sc([variables.get("r1", 1), variables.get("r2", 1)])
 
         if pid == "p3b_div_simple":
             # question: a/√b — b from PRIME_SET → always 0
@@ -357,6 +378,15 @@ class DomainFunctionHelper:
 
         if pid == "p4_frac_mult":
             return _sc([variables.get("r", 1)])
+
+        if pid == "p4b_frac_rad_div":
+            return _sc([variables.get("n1", 1), variables.get("d1", 1),
+                       variables.get("n2", 1), variables.get("d2", 1)])
+
+        if pid == "p4c_nested_frac_chain":
+            return _sc([variables.get("n1", 1), variables.get("d1", 1),
+                       variables.get("n2", 1), variables.get("d2", 1),
+                       variables.get("n3", 1), variables.get("d3", 1)])
 
         if pid in ("p5a_conjugate_int", "p5b_conjugate_rad"):
             # both use PRIME_SET radicands → always 0
@@ -444,6 +474,25 @@ class DomainFunctionHelper:
         return {"c1": c1, "r1": r1, "c2": c2, "r2": r2,
                 "c3": c3, "r3": r3, "c4": c4, "r4": 1}
 
+    def _vars_p2d(self, difficulty: str) -> dict:
+        """P2d: Perfect-square expansion (c1√r1 ± c2√r2)²."""
+        c1 = random.choice([c for c in range(1, 5)])
+        c2 = random.choice([c for c in range(1, 5)])
+        r1 = random.choice(PRIME_SET)
+        r2 = random.choice([r for r in PRIME_SET if r != r1])
+        op = random.choice(["+", "-"])
+        return {"c1": c1, "r1": r1, "c2": c2, "r2": r2, "op": op}
+
+    def _vars_p2e(self, difficulty: str) -> dict:
+        """P2e: Difference-of-squares (c1√r1 - c2√r2)(c1√r1 + c2√r2)."""
+        # r1 can be 1 (pure integer term) to allow e.g. (3 - √2)(3 + √2)
+        SQFREE = [1, 2, 3, 5, 6, 7]
+        c1 = random.choice(range(1, 5))
+        c2 = random.choice(range(1, 5))
+        r1 = random.choice(SQFREE)
+        r2 = random.choice([r for r in SQFREE if r != r1])
+        return {"c1": c1, "r1": r1, "c2": c2, "r2": r2}
+
     def _vars_p3a(self, difficulty: str) -> dict:
         for _ in range(50):
             c1 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 4])
@@ -467,6 +516,17 @@ class DomainFunctionHelper:
                 return {"c1": c1, "r1": r1, "c2": c2, "r2": r2, "denom_r": d, "op": op}
         raise _RetrySignal()
 
+    def _vars_p3c(self, difficulty: str) -> dict:
+        """P3c: Direct division k₁√r₁ ÷ k₂√r₂. r2 from [2,3,5,7], r1 = r2*k for nice division."""
+        R2_POOL = [2, 3, 5, 7]
+        K_POOL = [2, 3, 5, 6, 7, 10]
+        c1 = random.choice([c for c in range(-15, 16) if c != 0])
+        c2 = random.choice([c for c in range(-15, 16) if c != 0])
+        r2 = random.choice(R2_POOL)
+        k = random.choice(K_POOL)
+        r1 = r2 * k
+        return {"c1": c1, "r1": r1, "c2": c2, "r2": r2}
+
     def _vars_p3b(self, difficulty: str) -> dict:
         a = random.choice([c for c in range(1, 6)])
         b = random.choice(PRIME_SET)
@@ -478,6 +538,25 @@ class DomainFunctionHelper:
         r = random.choice(SIMPLIFIABLE_SET)
         c = random.choice(SMALL_DENOM)
         return {"a": a, "b": b, "r": r, "c": c}
+
+    def _vars_p4b(self, difficulty: str) -> dict:
+        """P4b: (√n1/√d1) ÷ (√n2/√d2). Square-free integers."""
+        SQFREE = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15, 21, 22, 33]
+        n1 = random.choice(SQFREE)
+        d1 = random.choice([x for x in SQFREE if x != n1])
+        n2 = random.choice(SQFREE)
+        d2 = random.choice([x for x in SQFREE if x != n2])
+        return {"n1": n1, "d1": d1, "n2": n2, "d2": d2}
+
+    def _vars_p4c(self, difficulty: str) -> dict:
+        """P4c: √(n1/d1) × √(n2/d2) ÷ √(n3/d3)."""
+        n1 = random.choice([1, 2, 3])
+        n2 = random.choice([1, 2, 3])
+        n3 = random.choice([1, 2, 3])
+        d1 = random.choice([2, 3, 5, 6, 7])
+        d2 = random.choice([2, 3, 5, 6, 7])
+        d3 = random.choice([2, 3, 5, 6, 7])
+        return {"n1": n1, "d1": d1, "n2": n2, "d2": d2, "n3": n3, "d3": d3}
 
     def _vars_p5a(self, difficulty: str) -> dict:
         for _ in range(50):
@@ -569,6 +648,25 @@ class DomainFunctionHelper:
         t4 = (f" + {c4}" if c4 > 0 else f" - {abs(c4)}") if c4 else ""
         return rf"化簡 $({t1}{t2})({t3}{t4})$。"
 
+    def _fmt_p2d(self, v: dict) -> str:
+        """P2d: Format (c1√r1 ± c2√r2)²."""
+        c1, r1 = v["c1"], v["r1"]
+        c2, r2 = v["c2"], v["r2"]
+        op = v.get("op", "+")
+        t1 = _format_term_unsimplified(c1, r1, True)
+        t2 = _format_term_unsimplified(c2, r2, True)
+        op_str = "+" if op == "+" else "-"
+        return rf"展開化簡 $({t1} {op_str} {t2})^2$。"
+
+    def _fmt_p2e(self, v: dict) -> str:
+        """P2e: Format (c1√r1 - c2√r2)(c1√r1 + c2√r2)."""
+        c1, r1 = v["c1"], v["r1"]
+        c2, r2 = v["c2"], v["r2"]
+        # r=1 means pure integer: render as c1, not c1√1
+        t1 = str(c1 * r1) if r1 == 1 else _format_term_unsimplified(c1, r1, True)
+        t2 = str(c2 * r2) if r2 == 1 else _format_term_unsimplified(c2, r2, True)
+        return rf"展開化簡 $({t1} - {t2})({t1} + {t2})$。"
+
     def _fmt_p3a(self, v: dict) -> str:
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v.get("c2", 0), v.get("r2", 1)
@@ -579,6 +677,16 @@ class DomainFunctionHelper:
         q2 = _format_term_unsimplified(c2_display, r2, False) if c2 else ""
         return rf"化簡 $({q1}{q2}) \div \sqrt{{{d}}}$。"
 
+    def _fmt_p3c(self, v: dict) -> str:
+        """P3c: Format (c1√r1) ÷ (c2√r2). Wrap in () when coefficient is negative."""
+        c1, r1 = v["c1"], v["r1"]
+        c2, r2 = v["c2"], v["r2"]
+        t1 = _format_term_unsimplified(c1, r1, True)
+        t2 = _format_term_unsimplified(c2, r2, True)
+        left = f"({t1})" if c1 < 0 else t1
+        right = f"({t2})" if c2 < 0 else t2
+        return rf"化簡 ${left} \div {right}$。"
+
     def _fmt_p3b(self, v: dict) -> str:
         a, b = v["a"], v["b"]
         return rf"化簡 $\dfrac{{{a}}}{{\sqrt{{{b}}}}}$。"
@@ -586,6 +694,19 @@ class DomainFunctionHelper:
     def _fmt_p4(self, v: dict) -> str:
         a, b, r, c = v["a"], v["b"], v["r"], v["c"]
         return rf"計算 $\dfrac{{{a}}}{{{b}}} \times \dfrac{{\sqrt{{{r}}}}}{{{c}}}$ 的值。"
+
+    def _fmt_p4b(self, v: dict) -> str:
+        """P4b: (√n1/√d1) ÷ (√n2/√d2)."""
+        n1, d1 = v["n1"], v["d1"]
+        n2, d2 = v["n2"], v["d2"]
+        return rf"化簡 $\\dfrac{{\\sqrt{{{n1}}}}}{{\\sqrt{{{d1}}}}} \\div \\dfrac{{\\sqrt{{{n2}}}}}{{\\sqrt{{{d2}}}}}$。"
+
+    def _fmt_p4c(self, v: dict) -> str:
+        """P4c: √(n1/d1) × √(n2/d2) ÷ √(n3/d3)."""
+        n1, d1 = v["n1"], v["d1"]
+        n2, d2 = v["n2"], v["d2"]
+        n3, d3 = v["n3"], v["d3"]
+        return rf"化簡 $\\sqrt{{\\dfrac{{{n1}}}{{{d1}}}}} \\times \\sqrt{{\\dfrac{{{n2}}}{{{d2}}}}} \\div \\sqrt{{\\dfrac{{{n3}}}{{{d3}}}}}$。"
 
     def _fmt_p5a(self, v: dict) -> str:
         b, q, c, sign = v["b"], v["q"], v["c"], v["sign"]

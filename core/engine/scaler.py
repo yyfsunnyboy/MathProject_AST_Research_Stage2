@@ -412,6 +412,27 @@ class AdaptiveScaler:
             print("==============================")
             
             import re
+
+            # [ROOT FIX] Apply Radical Scaffold BEFORE Ab2/Ab3 split
+            # This must run before cleaned_text / ab2_code_to_execute are derived.
+            if "FourOperationsOfRadicals" in (skill_name or ""):
+                from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
+                _rr = str(raw_code or "")
+                if "def generate" not in _rr:
+                    _pid_m  = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', _rr)
+                    _diff_m = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', _rr)
+                    _tc_m   = re.search(r'term_count\s*=\s*(\d+|None)', _rr)
+                    _pid  = _pid_m.group(1).strip()  if _pid_m  else "p1_add_sub"
+                    _diff = _diff_m.group(1).strip() if _diff_m else "mid"
+                    _tc   = _tc_m.group(1).strip()   if _tc_m   else "None"
+                    _decisions = (
+                        f'    pattern_id = "{_pid}"\n'
+                        f'    difficulty = "{_diff}"\n'
+                        f'    term_count = {_tc}\n'
+                    )
+                    raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
+                    print(f"⚙️ [ROOT_ASSEMBLER/scaler] Scaffold assembled — pid={_pid!r} diff={_diff!r} tc={_tc!r}")
+
             # 2. 處理 <think> 標籤
             if '<think>' in raw_code:
                 cleaned_text = re.sub(r'<think>.*?</think>', '', raw_code, flags=re.DOTALL).strip()
@@ -467,7 +488,22 @@ class AdaptiveScaler:
             final_code_to_healer = re.sub(r'^\s*```python\s*', '', final_code_to_healer, flags=re.IGNORECASE)
             final_code_to_healer = re.sub(r'^\s*```\s*', '', final_code_to_healer)
             final_code_to_healer = re.sub(r'\s*```\s*$', '', final_code_to_healer)
-            
+
+            # [UNIVERSAL ORCHESTRATOR FIX] Ensure Radical code is assembled before Healer
+            if "FourOperationsOfRadicals" in (skill_name or ""):
+                from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
+                raw_code = str(final_code_to_healer or "")
+                if "def generate" not in raw_code:
+                    pid_match = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', raw_code)
+                    diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw_code)
+                    tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw_code)
+                    pid = pid_match.group(1).strip() if pid_match else "p1_add_sub"
+                    diff = diff_match.group(1).strip() if diff_match else "mid"
+                    tc = tc_match.group(1).strip() if tc_match else "None"
+                    decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
+                    final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
+                    print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] Scaffold assembled — pid={pid!r} diff={diff!r} tc={tc!r}")
+
             # 🚨 關鍵偵錯點 2：檢查送給 Healer 的內容是否為空
             if not ablation_mode:
                 print(f"=== [DEBUG] SENDING TO HEALER (Length: {len(final_code_to_healer)}) ===")

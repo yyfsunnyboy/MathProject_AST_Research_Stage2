@@ -512,15 +512,16 @@ def _build_radical_profile(latex_text: str) -> dict:
     """
     text = str(latex_text or '')
 
-    # Only integer radicands are relevant for junior-high radical problems.
-    sqrt_matches = re.findall(r'\\sqrt\{(\d+)\}', text)
-    radicands = [int(m) for m in sqrt_matches]
+    # Simple robust count — catches \sqrt{N}, \sqrt{\frac{...}}, √, and any nested form.
+    rad_count = text.count(r'\sqrt') + text.count('√')
 
-    rad_count          = len(radicands)
+    # Integer-radicand sub-list kept for simplifiable / radicands fields.
+    sqrt_matches       = re.findall(r'\\sqrt\{(\d+)\}', text)
+    radicands          = [int(m) for m in sqrt_matches]
     simplifiable_count = sum(1 for r in radicands if _has_square_factor(r))
 
-    denoms             = _frac_denominators(text)
-    rationalize_count  = sum(1 for d in denoms if r'\\sqrt' in d or '\\sqrt' in d)
+    denoms            = _frac_denominators(text)
+    rationalize_count = sum(1 for d in denoms if r'\\sqrt' in d or '\\sqrt' in d)
 
     return {
         'rad_count':          rad_count,

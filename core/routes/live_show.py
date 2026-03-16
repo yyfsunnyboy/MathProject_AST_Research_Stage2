@@ -85,97 +85,29 @@ _LIVE_FILE_DISPLAY_MODE = {}
 # ===========================================================================
 
 def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
-    """
-    Assemble a complete, executable radical scaffold from the model's raw output.
+    import re
+    raw = str(raw_model_output or "")
 
-    The model is instructed to output exactly three lines:
-        pattern_id = "p1_add_sub"
-        difficulty  = "mid"
-        term_count = 2
+    # 1. Aggressive markdown and whitespace cleanup
+    raw = re.sub(r'```python|```', '', raw).strip()
 
-    Three-step extraction:
-      Step 1 — Clean: strip <think> blocks and markdown fences.
-      Step 2 — Extract: aggressively find pattern_id + difficulty via regex,
-                        with unquoted and bare-token fallbacks; extract optional
-                        term_count (integer) with None fallback.
-      Step 3 — Assemble: wrap the decisions in RADICAL_V4_SCAFFOLD_PREFIX /
-                         SUFFIX so the executor always receives valid Python.
+    # 2. Robust Regex extraction (handles spaces, single/double quotes)
+    pid_match = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', raw)
+    diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw)
+    tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw)
 
-    Hard fallback (p1_add_sub / mid / None) guarantees the pipeline never breaks.
-    Every run prints a one-line diagnostic to the terminal.
-    """
-    # ── Step 1: Clean ─────────────────────────────────────────────────────
-    raw = (raw_model_output or "").strip()
-    # Remove <think>…</think> reasoning traces the model may have leaked.
-    raw = re.sub(r'<think>.*?</think>', '', raw, flags=re.DOTALL).strip()
-    # Remove markdown code fences (```python … ``` or plain ``` … ```).
-    clean_raw = re.sub(r'```(?:python)?', '', raw).strip()
-    clean_raw = re.sub(r'```', '', clean_raw).strip()
-
-    # ── Step 2: Extract ───────────────────────────────────────────────────
-    _VALID_PIDS = {
-        "p0_simplify",
-        "p1_add_sub",
-        "p2a_mult_direct", "p2b_mult_distrib", "p2c_mult_binomial",
-        "p3a_div_expr",    "p3b_div_simple",
-        "p4_frac_mult",
-        "p5a_conjugate_int", "p5b_conjugate_rad",
-        "p6_combo",
-    }
-    _VALID_DIFFS = {"easy", "mid", "hard"}
-
-    # 2a. Quoted assignment  →  pattern_id = "p1_add_sub"
-    pid_match  = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', clean_raw)
-    diff_match = re.search(r'difficulty\s*=\s*["\']([^"\']+)["\']',  clean_raw)
-
-    # 2b. Unquoted assignment  →  pattern_id = p1_add_sub
-    if not pid_match:
-        pid_match  = re.search(r'pattern_id\s*=\s*([A-Za-z][A-Za-z0-9_]*)', clean_raw)
-    if not diff_match:
-        diff_match = re.search(r'difficulty\s*=\s*([A-Za-z][A-Za-z0-9_]*)',  clean_raw)
-
-    p_id = (pid_match.group(1).strip()  if pid_match  else "").lower()
-    diff = (diff_match.group(1).strip() if diff_match else "").lower()
-
-    # 2c. Bare token scan  →  any valid pid / difficulty token in the text
-    if p_id not in _VALID_PIDS:
-        p_id = next((c for c in sorted(_VALID_PIDS) if c in clean_raw), "")
-    if diff not in _VALID_DIFFS:
-        diff = next((c for c in ("easy", "mid", "hard") if c in clean_raw), "")
-
-    # 2d. Hard fallback — pipeline must never stall
-    used_fallback_pid  = p_id not in _VALID_PIDS
-    used_fallback_diff = diff not in _VALID_DIFFS
-    if used_fallback_pid:
-        p_id = "p1_add_sub"
-    if used_fallback_diff:
-        diff = "mid"
-
-    # 2e. Extract term_count (integer, optional)
-    tc_match = re.search(r'term_count\s*=\s*(\d+)', clean_raw)
+    # 3. Safe fallback assignments
+    pid = pid_match.group(1).strip() if pid_match else "p1_add_sub"
+    diff = diff_match.group(1).strip() if diff_match else "mid"
     tc = tc_match.group(1).strip() if tc_match else "None"
 
-    _src_pid  = "FALLBACK" if used_fallback_pid  else "extracted"
-    _src_diff = "FALLBACK" if used_fallback_diff else "extracted"
-    _src_tc   = "extracted" if tc_match else "FALLBACK"
-    _msg = (
-        f"[RADICAL_ASSEMBLER] "
-        f"pattern_id={p_id!r} ({_src_pid}), "
-        f"difficulty={diff!r} ({_src_diff}), "
-        f"term_count={tc!r} ({_src_tc})"
-    )
-    try:
-        print(_msg)
-    except UnicodeEncodeError:
-        print(_msg.encode("ascii", errors="replace").decode("ascii"))
-
-    # ── Step 3: Assemble ──────────────────────────────────────────────────
-    # Decisions live inside def generate() → must be indented with 4 spaces.
+    # 4. Strict indented assembly
     decisions = (
-        f'    pattern_id = "{p_id}"\n'
-        f'    difficulty  = "{diff}"\n'
+        f'    pattern_id = "{pid}"\n'
+        f'    difficulty = "{diff}"\n'
         f'    term_count = {tc}\n'
     )
+
     return _RADICAL_PREFIX + decisions + _RADICAL_SUFFIX
 
 
@@ -628,7 +560,7 @@ def _looks_like_radical_expression(text: str) -> bool:
 
 
 def _apply_skill_safety_guard(skill_name: str, ocr_text: str, available_skills):
-    if skill_name == "jh_數學2上_FourOperationsOfRadicals":
+    if "FourOperationsOfRadicals" in (skill_name or ""):
         if _looks_like_fraction_expression(ocr_text) and not _looks_like_radical_expression(ocr_text):
             corrected = normalize_skill_id("Fractions", available_skills)
             if corrected != "Unknown":
@@ -656,8 +588,8 @@ def generate_live():
     ablation_mode = data.get("ablation_mode", False)
     count = data.get("count", 1)
     model_id = data.get("model_id", "qwen3.5-9b")
-    skill_id = data.get("skill_id")
-    
+    skill_id = (data.get("skill_id") or "").strip() or None
+
     start_time = time.time()
     try:
         image_data = data.get("image_data")
@@ -748,7 +680,7 @@ def generate_live():
             # [Radical Orchestrator] The integer fingerprint (nums/ops/brackets) is
             # meaningless for radical LaTeX.  Clear it so the scaffold prompt sent to
             # the LLM carries NO integer-based constraints and NO bracket/abs guards.
-            if skill_id == _RADICAL_SKILL_ID:
+            if "FourOperationsOfRadicals" in (skill_id or ""):
                 iso_block     = ""
                 fp            = {}
                 template_id   = ""
@@ -799,7 +731,7 @@ Template: {template_id}
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
-            if skill_id == _RADICAL_SKILL_ID:
+            if "FourOperationsOfRadicals" in (skill_id or ""):
                 # ── Radical Orchestrator: minimal 3-line classifier prompt ──────
                 # Model must ONLY identify pattern_id + difficulty + term_count.
                 # No digit-count mirroring, no IntegerOps, no bracket guards.
@@ -881,22 +813,18 @@ Template: {template_id}
                 final_code = re.sub(r'^(\s*)```python\s*\n', '', final_code, flags=re.MULTILINE)
                 final_code = re.sub(r'^(\s*)```\s*\n', '', final_code, flags=re.MULTILINE)
                 final_code = re.sub(r'\n(\s*)```\s*$', '', final_code, flags=re.MULTILINE)
-                
-            # [Radical Orchestrator] Assemble full scaffold from model's 2-line output.
-            # Must happen before expected_fp so the healed code uses the correct
-            # preamble even when the model only emits pattern_id + difficulty.
-            if skill_id == _RADICAL_SKILL_ID:
-                final_code = _assemble_radical_orchestrator_code(final_code)
 
-            # 7. Execute Code to get output dict identical to `scaler.py` format
-            # [Radical Orchestrator] Bypass integer Complexity Mirror; use the
-            # domain-specific Radical DNA mirror instead.
-            if skill_id == _RADICAL_SKILL_ID:
-                expected_fp      = _radical_bypass_expected_fp()
+            # [CRITICAL FIX] Radical Orchestrator: Assemble full scaffold
+            if "FourOperationsOfRadicals" in (skill_id or ""):
+                final_code = _assemble_radical_orchestrator_code(final_code)
+                # Bypass integer Complexity Mirror; use Radical DNA mirror instead.
+                expected_fp = {}
                 target_radical_profile = _build_radical_profile(ocr_text)
             else:
-                expected_fp             = _build_structural_profile(ocr_text)
-                target_radical_profile  = {}
+                expected_fp = _build_structural_profile(ocr_text)
+                target_radical_profile = {}
+
+            # 7. Execute Code to get output dict identical to `scaler.py` format
             # --- Ab2 Interception (Scaffold Prompt, No Healer) ---
             ab2_pack = run_ab2_interception(
                 scaler=scaler,
@@ -954,7 +882,7 @@ Template: {template_id}
                 # Radical Orchestrator: re-assemble scaffold after healer pass
                 radical_reassemble_fn=(
                     _assemble_radical_orchestrator_code
-                    if skill_id == _RADICAL_SKILL_ID else None
+                    if "FourOperationsOfRadicals" in (skill_id or "") else None
                 ),
             )
 
@@ -971,11 +899,16 @@ Template: {template_id}
             generated_fp = ab3_pack["generated_fp"]
             iso_isomorphic = ab3_pack["iso_isomorphic"]
 
+            # Silence Complexity Mirror for radical skill: skip Structure Drift Detected
+            if "FourOperationsOfRadicals" in (skill_id or ""):
+                generated_fp = {}
+                iso_isomorphic = True
+
             # ── Radical DNA Mirror (soft check) ──────────────────────────────
             # Runs only for the radical skill in place of the integer iso-guard.
             # Compares rad_count + simplifiable_count between OCR input and
             # each generated question; results are appended to detail_logs.
-            if skill_id == _RADICAL_SKILL_ID and target_radical_profile.get('rad_count') is not None:
+            if "FourOperationsOfRadicals" in (skill_id or ""):
                 _policy = {}
                 try:
                     from core.skill_policies import get_skill_policy
@@ -1530,7 +1463,7 @@ def classify_input():
                         if not isinstance(json_spec, dict):
                             json_spec = {}
 
-                        if raw_skill_id.strip() == _RADICAL_SKILL_ID:
+                        if "FourOperationsOfRadicals" in (raw_skill_id or ""):
                             # Radical Orchestrator: integer fingerprint is meaningless for
                             # radical LaTeX — use DNA profile instead.
                             op_fp          = _build_radical_profile(ocr_text)
@@ -1656,7 +1589,6 @@ def classify_input():
 
         if skill_name != "Unknown":
             process_logs.append(f"> ✅ DNA Sequence Aligned: {skill_name}")
-            confidence = 98
             
             # 確保 engine 已經初始化，因為 Qwen3-VL (image_data) 沒有呼叫 classifier
             import core.routes.live_show as live_show_module
@@ -1724,7 +1656,7 @@ def classify_input():
                 else:
                     scaffold_prompt = "[prompt_liveshow.md 與 SKILL.md 均未找到]"
 
-                if skill_name == _RADICAL_SKILL_ID:
+                if "FourOperationsOfRadicals" in (skill_name or ""):
                     # Radical Orchestrator: DNA mirror — no integer iso constraints
                     op_fp          = _build_radical_profile(ocr_text)
                     iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
