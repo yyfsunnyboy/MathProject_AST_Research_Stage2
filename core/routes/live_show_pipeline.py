@@ -388,9 +388,11 @@ def run_ab3_full_healer(
         generated_fp = build_structural_profile_fn(generated_expr_final)
         # Radical Orchestrator: structural isomorphism is guaranteed by
         # DomainFunctionHelper; force True so the UI always shows a green mirror.
-        # For all other skills, compute normally.
+        # [UI FIX] Populate generated_fp with supercharged radical profile so the frontend mirror isn't blank.
         if radical_reassemble_fn is not None:
             iso_isomorphic = True
+            from core.code_utils.live_show_math_utils import _build_radical_profile
+            generated_fp = _build_radical_profile(generated_expr_final)
         else:
             iso_isomorphic = is_expression_isomorphic_fn(expected_fp, generated_expr_final)
         recompute_result_answer_fn(

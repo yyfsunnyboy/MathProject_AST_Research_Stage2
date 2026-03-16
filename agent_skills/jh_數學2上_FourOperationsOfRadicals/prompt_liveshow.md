@@ -47,47 +47,6 @@ p0  | √r           單一根式化簡                 | √72
 ⚠ p5b 優先於 p5a；p2c 優先於 p2b；p2a 不是 p2b（無括號！）
 
 ════════════════════════════════════════════════════════════════
-【STEP 1】唯一合法程式碼格式
-════════════════════════════════════════════════════════════════
-/no_think
-【絕對禁止輸出 thinking 或任何非 code 內容】
-
-模型只需輸出以下格式，僅修改 pattern_id、difficulty 和 term_count 三個值：
-
-```python
-from core.domain_functions import DomainFunctionHelper
-df = DomainFunctionHelper()
-
-def generate(level=1, **kwargs):
-    # [辨識1] Pattern ID: ___
-    # [辨識2] Difficulty: ___
-    # [辨識3] 辨識依據: ___
-    # [辨識4] Term Count: ___
-
-    pattern_id = "p1_add_sub"   # ← 填入辨識結果
-    difficulty  = "mid"          # ← 填入難度
-    term_count = 2              # ← 觀察原題，填寫根式的總項數（如 2 或 3）
-
-    # 以下為固定 scaffold，禁止修改
-    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count)
-    ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)
-    question_text = df.format_question_LaTeX(pattern_id, vars)
-
-    return {
-        'question_text': question_text,
-        'answer': '',
-        'correct_answer': ans,
-        'solution_steps': sol,
-        'mode': 1,
-        '_o1_healed': False
-    }
-
-def check(user_answer, correct_answer):
-    correct = str(user_answer).strip() == str(correct_answer).strip()
-    return {'correct': correct, 'result': '正確' if correct else '錯誤'}
-```
-
-════════════════════════════════════════════════════════════════
 【STEP 2】DomainFunctionHelper API 速查
 ════════════════════════════════════════════════════════════════
 
@@ -111,6 +70,8 @@ p0_simplify      : {"r": int}
 p1_add_sub       : {"terms": [(coeff, radicand, op), ...]}   op ∈ {"+", "-"}
 p2a_mult_direct  : {"c1": int, "r1": int, "c2": int, "r2": int}
 p2b_mult_distrib : {"c1", "r1", "c2", "r2", "c3", "r3", "op"}
+p2f_int_mult_rad : {"c1", "c2", "r"}
+p2g_rad_mult_frac, p2h_frac_mult_rad : {"k", "r", "num", "den"}
 p2c_mult_binomial: {"c1","r1","c2","r2","c3","r3","c4","r4"}
 p2d_perfect_square: {"c1","r1","c2","r2","op"}   op ∈ {"+","-"}
 p2e_diff_of_squares: {"c1","r1","c2","r2"}
@@ -129,27 +90,7 @@ p6_combo         : {"sub_pattern1","vars1","sub_pattern2","vars2","combo_op"}
 ════════════════════════════════════════════════════════════════
 【STEP 4】Difficulty 對應難度說明
 ════════════════════════════════════════════════════════════════
-  easy  → 2 項加減 / 直接乘法 / 純分母有理化
+  easy  → 2 項加減 / 直接乘法 / 整數×根式(p2f) / 根式×分數(p2g,p2h) / 純分母有理化
   mid   → 3 項加減 / 分配律展開 / P3a / P3c / P4 / P5a
   hard  → 4 項加減 / 雙括號展開 / P2d / P2e / P4b / P4c / P5b / P6 複合題
 
-════════════════════════════════════════════════════════════════
-【STEP 5】硬性禁令（違反任何一條均導致 0 分）
-════════════════════════════════════════════════════════════════
-1. 嚴禁 import math / import sympy / import numpy
-2. 嚴禁 math.sqrt, **, sympy.sqrt, float 等任何根式或浮點運算
-3. 嚴禁解析 LaTeX 字串取數值（如 int(s.split(...)）
-4. 嚴禁自定義 simplify_radical, rationalize 等計算函數
-5. 嚴禁修改 df.get_safe_vars_for_pattern 以下的 scaffold 內容
-6. 嚴禁呼叫 RadicalOps.xxx（已棄用，本模式使用 DomainFunctionHelper）
-7. 嚴禁生成超過 3 行有效 Python 程式邏輯（pattern_id、difficulty、term_count 各 1 行）
-8. 輸出只能是 Python 原始碼，不輸出任何解釋文字或 markdown fence
-
-════════════════════════════════════════════════════════════════
-【STEP 6】最終輸出要求
-════════════════════════════════════════════════════════════════
-- 只輸出 Python 原始碼
-- 不輸出任何額外文字或說明
-- 不輸出 markdown fence (```python)
-- pattern_id 必須是 Pattern Catalogue 中存在的值
-- difficulty 必須是 "easy" / "mid" / "hard" 之一

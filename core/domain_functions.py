@@ -127,6 +127,7 @@ class DomainFunctionHelper:
             ("p5b_conjugate_rad", [r"\frac{\sqrt", r"√p/(", "共軛根式"]),
             ("p5a_conjugate_int", [r"\frac{1}{\sqrt", r"1/(", "共軛", "有理化分母"]),
             ("p2c_mult_binomial", [r")(\sqrt", r")×(", "雙括號"]),
+            ("p2f_int_mult_rad",  [r")\s*\\times", r")\s*×", "整數與根式相乘"]),
             ("p2b_mult_distrib",  [r"\times(", r"×(", "分配律"]),
             ("p2a_mult_direct",   [r"\times\sqrt", r"×\sqrt", "直接相乘"]),
             ("p4_frac_mult",      [r"\frac{", r"分數×", "純分數"]),
@@ -189,6 +190,9 @@ class DomainFunctionHelper:
             "p2a_mult_direct":     self._vars_p2a,
             "p2b_mult_distrib":    self._vars_p2b,
             "p2c_mult_binomial":   self._vars_p2c,
+            "p2f_int_mult_rad":    self._vars_p2f,
+            "p2g_rad_mult_frac":   self._vars_p2g_p2h,
+            "p2h_frac_mult_rad":   self._vars_p2g_p2h,
             "p2d_perfect_square":  self._vars_p2d,
             "p2e_diff_of_squares": self._vars_p2e,
             "p3a_div_expr":        self._vars_p3a,
@@ -219,6 +223,10 @@ class DomainFunctionHelper:
             try:
                 if pid == "p1_add_sub":
                     v = self._vars_p1(difficulty, term_count=term_count)
+                elif pid == "p2f_int_mult_rad":
+                    v = self._vars_p2f(difficulty)
+                elif pid in ("p2g_rad_mult_frac", "p2h_frac_mult_rad"):
+                    v = self._vars_p2g_p2h(difficulty)
                 else:
                     v = generator_map[pid](difficulty)
                 best_effort_vars = v  # always keep latest mathematically-valid vars
@@ -292,6 +300,9 @@ class DomainFunctionHelper:
             "p2a_mult_direct":     self._fmt_p2a,
             "p2b_mult_distrib":    self._fmt_p2b,
             "p2c_mult_binomial":   self._fmt_p2c,
+            "p2f_int_mult_rad":    self._fmt_p2f,
+            "p2g_rad_mult_frac":   lambda v: self._fmt_p2gh(v, "p2g_rad_mult_frac"),
+            "p2h_frac_mult_rad":   lambda v: self._fmt_p2gh(v, "p2h_frac_mult_rad"),
             "p2d_perfect_square":  self._fmt_p2d,
             "p2e_diff_of_squares": self._fmt_p2e,
             "p3a_div_expr":        self._fmt_p3a,
@@ -342,6 +353,12 @@ class DomainFunctionHelper:
 
         if pid == "p2a_mult_direct":
             return _sc([variables.get("r1", 1), variables.get("r2", 1)])
+
+        if pid == "p2f_int_mult_rad":
+            return _sc([variables.get("r", 1)])
+
+        if pid in ("p2g_rad_mult_frac", "p2h_frac_mult_rad"):
+            return _sc([variables.get("r", 1)])
 
         if pid == "p2b_mult_distrib":
             # question: c1√r1 × (c2√r2 ± c3√r3) — r2 comes from SIMPLIFIABLE_SET
@@ -493,6 +510,23 @@ class DomainFunctionHelper:
         r2 = random.choice([r for r in SQFREE if r != r1])
         return {"c1": c1, "r1": r1, "c2": c2, "r2": r2}
 
+    def _vars_p2f(self, difficulty: str) -> dict:
+        """P2f: Integer × radical k₁ × k₂√r. c1 can be negative (parentheses)."""
+        c1 = random.choice([-6, -5, -4, -3, -2, 2, 3, 4, 5, 6])
+        c2 = random.choice([-4, -3, -2, 2, 3, 4])
+        r = random.choice([2, 3, 5, 6, 7, 11])
+        return {"c1": c1, "c2": c2, "r": r}
+
+    def _vars_p2g_p2h(self, difficulty: str) -> dict:
+        """P2g/P2h: k√r × (num/den) or (num/den) × k√r. Pure radical × pure fraction."""
+        k = random.choice([-5, -4, -3, -2, 2, 3, 4, 5])
+        r = random.choice([2, 3, 5, 6, 7])
+        num = random.choice([1, 2, 3, 4, 5])
+        den = random.choice([2, 3, 4, 5, 6])
+        while num == den:
+            den = random.choice([2, 3, 4, 5, 6])
+        return {"k": k, "r": r, "num": num, "den": den}
+
     def _vars_p3a(self, difficulty: str) -> dict:
         for _ in range(50):
             c1 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 4])
@@ -625,6 +659,41 @@ class DomainFunctionHelper:
         q1 = _format_term_unsimplified(v["c1"], v["r1"], True)
         q2 = _format_term_unsimplified(v["c2"], v["r2"], True)
         return rf"化簡 ${q1} \times {q2}$。"
+
+    def _fmt_p2f(self, v: dict) -> str:
+        """P2f: Format (c1) × (c2√r) or c1 × c2√r. Bulletproof LaTeX for frontend."""
+        c1 = v["c1"]
+        c2 = v["c2"]
+        r = v["r"]
+
+        # Format first term (integer)
+        str_c1 = f"({c1})" if c1 < 0 else str(c1)
+
+        # Format second term (radical)
+        if c2 == -1:
+            str_c2 = f"-\\sqrt{{{r}}}"
+        elif c2 == 1:
+            str_c2 = f"\\sqrt{{{r}}}"
+        else:
+            str_c2 = f"{c2}\\sqrt{{{r}}}"
+
+        # Wrap second term in parentheses if negative
+        str_c2 = f"({str_c2})" if c2 < 0 else str_c2
+
+        # Join with standard spacing
+        inner = f"{str_c1} \\times {str_c2}"
+        return rf"化簡 ${inner}$。"
+
+    def _fmt_p2gh(self, v: dict, pattern_id: str) -> str:
+        """P2g: k√r × (num/den). P2h: (num/den) × k√r."""
+        k, r, num, den = v["k"], v["r"], v["num"], v["den"]
+        k_str = f"({k})" if k < 0 else str(k)
+        frac_str = f"\\frac{{{num}}}{{{den}}}"
+        if pattern_id == "p2g_rad_mult_frac":
+            inner = f"{k_str}\\sqrt{{{r}}} \\times {frac_str}"
+        else:
+            inner = f"{frac_str} \\times {k_str}\\sqrt{{{r}}}"
+        return rf"化簡 ${inner}$。"
 
     def _fmt_p2b(self, v: dict) -> str:
         c1, r1 = v["c1"], v["r1"]

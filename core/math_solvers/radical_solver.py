@@ -501,6 +501,9 @@ class RadicalSolver:
             "p2a_mult_direct":     self._solve_p2a,
             "p2b_mult_distrib":    self._solve_p2b,
             "p2c_mult_binomial":   self._solve_p2c,
+            "p2f_int_mult_rad":    self._solve_p2f,
+            "p2g_rad_mult_frac":   self._solve_p2gh,
+            "p2h_frac_mult_rad":   self._solve_p2gh,
             "p2d_perfect_square":  self._solve_p2d,
             "p2e_diff_of_squares": self._solve_p2e,
             "p3a_div_expr":        self._solve_p3a,
@@ -566,6 +569,58 @@ class RadicalSolver:
             (v["c1"], v["r1"]),
             (v["c2"], v["r2"]),
         )
+
+    def _solve_p2f(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P2f: Integer × radical c1 × c2√r. Multiply coefficients, radicand stays."""
+        c1 = v["c1"]
+        c2 = v["c2"]
+        r = v["r"]
+        ans_c = c1 * c2
+
+        if ans_c == 1:
+            ans_latex = f"\\sqrt{{{r}}}"
+        elif ans_c == -1:
+            ans_latex = f"-\\sqrt{{{r}}}"
+        elif ans_c == 0:
+            ans_latex = "0"
+        else:
+            ans_latex = f"{ans_c}\\sqrt{{{r}}}"
+
+        steps = [r"將外部整數與根式係數直接相乘：c_1 \times c_2"]
+        return ans_latex, steps
+
+    def _solve_p2gh(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """P2g/P2h: k√r × (num/den) or (num/den) × k√r. Result: (k*num/den)√r."""
+        import math
+        k, r, num, den = v["k"], v["r"], v["num"], v["den"]
+
+        top = k * num
+        bottom = den
+        g = math.gcd(abs(top), bottom)
+        top //= g
+        bottom //= g
+
+        if bottom == 1:
+            if top == 1:
+                ans_latex = f"\\sqrt{{{r}}}"
+            elif top == -1:
+                ans_latex = f"-\\sqrt{{{r}}}"
+            elif top == 0:
+                ans_latex = "0"
+            else:
+                ans_latex = f"{top}\\sqrt{{{r}}}"
+        else:
+            if top == 1:
+                ans_latex = f"\\frac{{\\sqrt{{{r}}}}}{{{bottom}}}"
+            elif top == -1:
+                ans_latex = f"\\frac{{-\\sqrt{{{r}}}}}{{{bottom}}}"
+            elif top > 0:
+                ans_latex = f"\\frac{{{top}\\sqrt{{{r}}}}}{{{bottom}}}"
+            else:
+                ans_latex = f"-\\frac{{{-top}\\sqrt{{{r}}}}}{{{bottom}}}"
+
+        steps = [r"將整數與分子相乘後進行約分化簡。"]
+        return ans_latex, steps
 
     def _solve_p2b(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
         """P2b: Distributive multiplication c1√r1 · (c2√r2 ± c3√r3)."""

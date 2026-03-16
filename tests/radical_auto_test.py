@@ -64,6 +64,9 @@ _ALL_PATTERNS = [
     "p1_add_sub",
     "p2a_mult_direct",
     "p2b_mult_distrib",
+    "p2f_int_mult_rad",
+    "p2g_rad_mult_frac",
+    "p2h_frac_mult_rad",
     "p2c_mult_binomial",
     "p3a_div_expr",
     "p3b_div_simple",
@@ -108,7 +111,11 @@ def _load_scaffold_constants():
 
 def _build_code(pid: str, diff: str) -> str:
     PRE, SUF = _load_scaffold_constants()
-    decisions = f'    pattern_id = "{pid}"\n    difficulty  = "{diff}"\n'
+    decisions = (
+        f'    pattern_id = "{pid}"\n'
+        f'    difficulty  = "{diff}"\n'
+        '    term_count = 2\n'  # Required by scaffold; p2f etc. ignore it
+    )
     return PRE + decisions + SUF
 
 
@@ -163,6 +170,15 @@ class Suite1_DomainFunctionHelper(unittest.TestCase):
 
     def test_p2b_mult_distrib(self):
         self._run_pattern("p2b_mult_distrib", "mid")
+
+    def test_p2f_int_mult_rad(self):
+        self._run_pattern("p2f_int_mult_rad", "easy")
+
+    def test_p2g_rad_mult_frac(self):
+        self._run_pattern("p2g_rad_mult_frac", "easy")
+
+    def test_p2h_frac_mult_rad(self):
+        self._run_pattern("p2h_frac_mult_rad", "easy")
 
     def test_p2c_mult_binomial(self):
         self._run_pattern("p2c_mult_binomial", "hard")

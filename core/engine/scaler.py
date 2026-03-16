@@ -318,13 +318,13 @@ class AdaptiveScaler:
 2. 必須使用對應 Domain API（例如 IntegerOps / FractionOps / PolynomialOps / RadicalOps）。
    (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
-4. 直接輸出可執行 Python 程式碼（需包含 `generate`，可包含 `check`）。
+4. 程式碼輸出格式請嚴格遵守你所選的路徑（路徑 A 僅需 3 行變數宣告，路徑 B 才需完整 generate 函式）。
 5. 不要輸出 JSON、不要輸出 markdown 解釋。
-6. 若「動態目標題型參考」已提供完整可計算算式（含具體數字），禁止重新隨機抽數、禁止改寫為其他題目。
+6. 允許將數字隨機化，但必須完全保持原題的運算結構與項數。
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 根號必須使用 \\sqrt{{...}}，嚴禁使用 sqrt(...)。
+10. 輸出的 question_text 與 correct_answer 必須是標準 LaTeX (使用 \\sqrt{{...}})。在 Python 計算過程中允許使用 sp.sqrt()。
 """
                 else:
                     # ── Fallback：舊邏輯（SKILL.md 切割 + BENCHMARK section）──
@@ -364,15 +364,15 @@ class AdaptiveScaler:
 2. 必須使用對應 Domain API（例如 IntegerOps / FractionOps / PolynomialOps / RadicalOps）。
    (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
-4. 直接輸出可執行 Python 程式碼（需包含 `generate`，可包含 `check`）。
+4. 程式碼輸出格式請嚴格遵守你所選的路徑（路徑 A 僅需 3 行變數宣告，路徑 B 才需完整 generate 函式）。
 5. 不要輸出 JSON、不要輸出 markdown 解釋。
 
 【硬性一致性約束（必須遵守）】
-6. 若「動態目標題型參考」已提供完整可計算算式（含具體數字），禁止重新隨機抽數、禁止改寫為其他題目。
+6. 允許將數字隨機化，但必須完全保持原題的運算結構與項數。
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 根號必須使用 \\sqrt{{...}}，嚴禁使用 sqrt(...)。
+10. 輸出的 question_text 與 correct_answer 必須是標準 LaTeX (使用 \\sqrt{{...}})。在 Python 計算過程中允許使用 sp.sqrt()。
 """
                 active_ablation_id = 3
             
@@ -418,20 +418,22 @@ class AdaptiveScaler:
             if "FourOperationsOfRadicals" in (skill_name or ""):
                 from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
                 _rr = str(raw_code or "")
-                if "def generate" not in _rr:
-                    _pid_m  = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', _rr)
+                _pid_m = re.search(r'["\'](p[0-6][a-zA-Z0-9_]+)["\']', _rr)
+
+                if _pid_m:
+                    # 只要有 pattern_id，強制剝奪 AI 的程式碼，只萃取變數！
                     _diff_m = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', _rr)
                     _tc_m   = re.search(r'term_count\s*=\s*(\d+|None)', _rr)
-                    _pid  = _pid_m.group(1).strip()  if _pid_m  else "p1_add_sub"
+                    _pid  = _pid_m.group(1).strip()
                     _diff = _diff_m.group(1).strip() if _diff_m else "mid"
                     _tc   = _tc_m.group(1).strip()   if _tc_m   else "None"
-                    _decisions = (
-                        f'    pattern_id = "{_pid}"\n'
-                        f'    difficulty = "{_diff}"\n'
-                        f'    term_count = {_tc}\n'
-                    )
+                    _decisions = f'    pattern_id = "{_pid}"\n    difficulty = "{_diff}"\n    term_count = {_tc}\n'
                     raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print(f"⚙️ [ROOT_ASSEMBLER/scaler] Scaffold assembled — pid={_pid!r} diff={_diff!r} tc={_tc!r}")
+                    print(f"⚙️ [ROOT_ASSEMBLER/scaler] FORCE Extracted variables — pid={_pid!r} diff={_diff!r}")
+                else:
+                    # 真正的路徑 B (Coder 模式)，全域補齊 df
+                    if "df." in _rr and "DomainFunctionHelper" not in _rr:
+                        raw_code = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + _rr
 
             # 2. 處理 <think> 標籤
             if '<think>' in raw_code:
@@ -492,17 +494,23 @@ class AdaptiveScaler:
             # [UNIVERSAL ORCHESTRATOR FIX] Ensure Radical code is assembled before Healer
             if "FourOperationsOfRadicals" in (skill_name or ""):
                 from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
-                raw_code = str(final_code_to_healer or "")
-                if "def generate" not in raw_code:
-                    pid_match = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', raw_code)
-                    diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw_code)
-                    tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw_code)
-                    pid = pid_match.group(1).strip() if pid_match else "p1_add_sub"
+                raw_code_temp = str(final_code_to_healer or "")
+                pid_match = re.search(r'["\'](p[0-6][a-zA-Z0-9_]+)["\']', raw_code_temp)
+
+                if pid_match:
+                    # 強制萃取
+                    diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw_code_temp)
+                    tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw_code_temp)
+                    pid = pid_match.group(1).strip()
                     diff = diff_match.group(1).strip() if diff_match else "mid"
                     tc = tc_match.group(1).strip() if tc_match else "None"
                     decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
                     final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] Scaffold assembled — pid={pid!r} diff={diff!r} tc={tc!r}")
+                    print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] FORCE Extracted variables — pid={pid!r}")
+                else:
+                    # 路徑 B 補齊
+                    if "df." in raw_code_temp and "DomainFunctionHelper" not in raw_code_temp:
+                        final_code_to_healer = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + raw_code_temp
 
             # 🚨 關鍵偵錯點 2：檢查送給 Healer 的內容是否為空
             if not ablation_mode:

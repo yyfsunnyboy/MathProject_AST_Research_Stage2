@@ -491,44 +491,42 @@ def _frac_denominators(text: str) -> list:
     return denoms
 
 
-def _build_radical_profile(latex_text: str) -> dict:
-    """Extract the *Radical Math DNA* fingerprint from a LaTeX question string.
+def _build_radical_profile(ocr_text: str) -> dict:
+    """Extract the *Radical Math DNA* fingerprint: base structural stats + radical counts.
 
-    Returns a dict with:
-        rad_count          — total number of \\sqrt{N} tokens (integer radicands)
-        simplifiable_count — how many of those radicands contain a square factor
-        rationalize_count  — number of \\frac / \\dfrac whose denominator holds a \\sqrt
-        radicands          — the list of integer radicands found (preserves duplicates)
-
-    Example
-    -------
-    ``$2\\sqrt{3} + \\sqrt{12}$``
-        → {'rad_count': 2, 'simplifiable_count': 1,
-           'rationalize_count': 0, 'radicands': [3, 12]}
-
-    ``$\\dfrac{5}{\\sqrt{3}}$``
-        → {'rad_count': 1, 'simplifiable_count': 0,
-           'rationalize_count': 1, 'radicands': [3]}
+    Combines base operator fingerprint (nums, ops, brackets) with radical-specific
+    stats (rad_total, rad_simplified, rad_simplifiable) for the Complexity Mirror UI.
     """
-    text = str(latex_text or '')
+    import re
+    text = str(ocr_text or "")
 
-    # Simple robust count — catches \sqrt{N}, \sqrt{\frac{...}}, √, and any nested form.
-    rad_count = text.count(r'\sqrt') + text.count('√')
+    # 1. Get base structural stats (nums, ops, brackets)
+    base_fp = _extract_operator_fingerprint(text)
 
-    # Integer-radicand sub-list kept for simplifiable / radicands fields.
-    sqrt_matches       = re.findall(r'\\sqrt\{(\d+)\}', text)
-    radicands          = [int(m) for m in sqrt_matches]
-    simplifiable_count = sum(1 for r in radicands if _has_square_factor(r))
+    # 2. Count total radicals
+    rad_total = text.count(r'\sqrt') + text.count('√')
 
-    denoms            = _frac_denominators(text)
-    rationalize_count = sum(1 for d in denoms if r'\\sqrt' in d or '\\sqrt' in d)
+    # 3. Heuristic for simplifiable radicals (common non-square-free numbers under 150)
+    simplifiable_pattern = r'\\sqrt\{?\s*(8|12|18|20|24|27|28|32|44|45|48|50|54|63|72|75|80|98|99|108|125)\b\}?'
+    rad_simplifiable = len(re.findall(simplifiable_pattern, text))
 
-    return {
-        'rad_count':          rad_count,
-        'simplifiable_count': simplifiable_count,
-        'rationalize_count':  rationalize_count,
-        'radicands':          radicands,
-    }
+    # 4. Calculate simplified radicals
+    rad_simplified = max(0, rad_total - rad_simplifiable)
+
+    # 5. Rationalize count (frac/dfrac whose denominator holds \sqrt) for logging
+    denoms = _frac_denominators(text)
+    rationalize_count = sum(1 for d in denoms if r'\sqrt' in d or '\\sqrt' in d)
+
+    # 6. Merge and return (include backward-compat aliases for _is_radical_isomorphic)
+    base_fp.update({
+        "rad_total": rad_total,
+        "rad_simplified": rad_simplified,
+        "rad_simplifiable": rad_simplifiable,
+        "rad_count": rad_total,
+        "simplifiable_count": rad_simplifiable,
+        "rationalize_count": rationalize_count,
+    })
+    return base_fp
 
 
 def _is_radical_isomorphic(target_rp: dict, generated_text: str) -> bool:

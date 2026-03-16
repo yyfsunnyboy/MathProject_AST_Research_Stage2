@@ -859,7 +859,7 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
         
     # 檢查是否有直接賦值數字 (例如 v1 = 8)
     if re.search(r'\b[a-zA-Z_]\w*\s*=\s*-?\d+\s*(\n|#)', code_after_regex):
-        if "level=" not in code_after_regex and "max_retries" not in code_after_regex:
+        if "level=" not in code_after_regex and "max_retries" not in code_after_regex and "FourOperationsOfRadicals" not in str(skill_id or ""):
             raise ValueError("Healer: Detected HARD-CODED numbers! You MUST use IntegerOps.random_nonzero().")
 
     # [NEW FIX: Healer 強制注入 Check Function]

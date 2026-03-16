@@ -528,6 +528,9 @@ p5b_conjugate_rad  | √p/(b√q±c)      共軛有理化，分子為根式
 p5a_conjugate_int  | 1/(b√q±c)       共軛有理化，分子為整數 1
 p2c_mult_binomial  | (a√r+b)(c√s+d)  雙括號多項×多項展開
 p2b_mult_distrib   | k√r×(a√s±b√t)  單項×多項，分配律展開
+p2f_int_mult_rad   | k₁ × k₂√r      純整數與根式相乘 (允許負數括號)
+p2g_rad_mult_frac  | k√r × (a/b)    純根式與分數相乘
+p2h_frac_mult_rad  | (a/b) × k√r    純分數與根式相乘
 p2a_mult_direct    | k₁√r₁ × k₂√r₂  兩根式直接相乘（無括號）
 p4_frac_mult       | (a/b)×(√r/c)    分數×含根式的分數
 p3a_div_expr       | (a√r±b√s)÷√d   表達式除單一根式
@@ -536,7 +539,7 @@ p6_combo           | 多步驟混合       加減＋有理化等複合題型
 p1_add_sub         | k₁√r₁ ± k₂√r₂  純根式加減，化簡後合併同類項
 p0_simplify        | √r              單一根式化簡
 
-⚠ p5b 優先於 p5a；p2c 優先於 p2b；p2a 不是 p2b（無括號！）
+⚠ p5b 優先於 p5a；p2c 優先於 p2b；p2f 優先於 p2b（整數×根式）；p2a 不是 p2b（無括號！）
 ⚠ 如遇無法辨識，預設 p1_add_sub，difficulty="mid"
 """
 

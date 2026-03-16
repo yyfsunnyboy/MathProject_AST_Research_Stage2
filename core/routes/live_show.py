@@ -65,11 +65,7 @@ from core.healers.live_show_iso_guard import (
 )
 from core.skill_policies import get_skill_policy, normalize_skill_id
 from core.routes.live_show_pipeline import run_ab2_interception, run_ab3_full_healer, assemble_visual_output
-from core.prompt_architect import (
-    _RADICAL_ORCHESTRATOR_SKILL_ID as _RADICAL_SKILL_ID,
-    RADICAL_V4_SCAFFOLD_PREFIX as _RADICAL_PREFIX,
-    RADICAL_V4_SCAFFOLD_SUFFIX as _RADICAL_SUFFIX,
-)
+from core.prompt_architect import _RADICAL_ORCHESTRATOR_SKILL_ID as _RADICAL_SKILL_ID
 # (舊有 Pix2Text 套件已移除，OCR 全權交由 Qwen3-VL 處理)
 
 # 從 __init__.py 匯入已註冊的 Blueprint
@@ -86,29 +82,36 @@ _LIVE_FILE_DISPLAY_MODE = {}
 
 def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
     import re
+    from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
     raw = str(raw_model_output or "")
 
-    # 1. Aggressive markdown and whitespace cleanup
+    # Clean markdown first
     raw = re.sub(r'```python|```', '', raw).strip()
 
-    # 2. Robust Regex extraction (handles spaces, single/double quotes)
+    # [SMART WRAPPER V2]
+    # If AI wrote `def generate`, it chose Path B (or hallucinated a hybrid).
+    if "def generate" in raw:
+        # Check if it tried to use `df` but forgot to import it
+        if "df." in raw and "DomainFunctionHelper" not in raw:
+            # Inject the missing imports at the very top
+            imports = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n"
+            return imports + raw
+        # Otherwise, it's a pure Path B Coder output, return as is
+        return raw
+
+    # [PATH A: Pure Orchestrator Assembly]
+    # If no `def generate`, we assume it's just the 3 variables.
     pid_match = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', raw)
     diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw)
     tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw)
 
-    # 3. Safe fallback assignments
     pid = pid_match.group(1).strip() if pid_match else "p1_add_sub"
     diff = diff_match.group(1).strip() if diff_match else "mid"
     tc = tc_match.group(1).strip() if tc_match else "None"
 
-    # 4. Strict indented assembly
-    decisions = (
-        f'    pattern_id = "{pid}"\n'
-        f'    difficulty = "{diff}"\n'
-        f'    term_count = {tc}\n'
-    )
+    decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
 
-    return _RADICAL_PREFIX + decisions + _RADICAL_SUFFIX
+    return RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
 
 
 def _radical_bypass_expected_fp() -> dict:
@@ -727,6 +730,28 @@ def generate_live():
 Template: {template_id}
 {template_text}{_fraction_mode_constraint}
 """
+            # [Hybrid Pipeline] Inject exact blueprint for Radical skill so LLM mirrors complexity
+            if "FourOperationsOfRadicals" in (skill_id or ""):
+                op_fp = json_spec.get("operator_fingerprint") or _build_radical_profile(ocr_text)
+                rad_tot = op_fp.get("rad_total", 0)
+                rad_simp = op_fp.get("rad_simplified", 0)
+                rad_unsimp = op_fp.get("rad_simplifiable", 0)
+                nums = op_fp.get("number_count", 0)
+                ops = op_fp.get("operator_count", 0)
+
+                blueprint = f"""
+【系統強制藍圖 (System Blueprint)】
+Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，不可多也不可少：
+- 總數字個數 (nums): {nums}
+- 運算符號數 (ops): {ops}
+- 根式總數 (rad_total): {rad_tot}
+- 最簡根式數量 (rad_simplified): {rad_simp} (例如 √2, √3)
+- 需化簡根式數量 (rad_simplifiable): {rad_unsimp} (例如 √8, √12)
+
+若你選擇「路徑 B (Coder模式)」，你宣告的 vars_dict 必須嚴格產生上述數量的對應變數！
+"""
+                scaffold_prompt += f"\n\n{blueprint}"
+
             # 5. 準備 Qwen3-VL 呼叫
             vl_config = Config.CODER_PRESETS.get('qwen3-vl-8b', {})
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
@@ -817,9 +842,8 @@ Template: {template_id}
             # [CRITICAL FIX] Radical Orchestrator: Assemble full scaffold
             if "FourOperationsOfRadicals" in (skill_id or ""):
                 final_code = _assemble_radical_orchestrator_code(final_code)
-                # Bypass integer Complexity Mirror; use Radical DNA mirror instead.
-                expected_fp = {}
                 target_radical_profile = _build_radical_profile(ocr_text)
+                expected_fp = target_radical_profile  # Send to UI!
             else:
                 expected_fp = _build_structural_profile(ocr_text)
                 target_radical_profile = {}
@@ -898,11 +922,6 @@ Template: {template_id}
             detail_logs = ab3_pack["detail_logs"]
             generated_fp = ab3_pack["generated_fp"]
             iso_isomorphic = ab3_pack["iso_isomorphic"]
-
-            # Silence Complexity Mirror for radical skill: skip Structure Drift Detected
-            if "FourOperationsOfRadicals" in (skill_id or ""):
-                generated_fp = {}
-                iso_isomorphic = True
 
             # ── Radical DNA Mirror (soft check) ──────────────────────────────
             # Runs only for the radical skill in place of the integer iso-guard.
