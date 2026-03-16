@@ -230,13 +230,45 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 
 **驗證**：根式題型下，模型看到 2 項（如 `3√2+√8`）可輸出 `term_count=2`，引擎依此生成 2 項，不再被 mid 預設 3 項覆蓋。
 
-### 8.7 明天從這裡繼續
+### 8.7 今日進度（2026-03-16）
+
+**根式 Hybrid 雙軌修補：Path A / Path B 分流、Aggressive Extractor、Prompt 衝突解除**
+
+| 項目 | 檔案 | 內容 |
+|------|------|------|
+| Path A 模板改回 3 行輸出 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md` | `🔴 路徑 A` 明確規定：若符合 Pattern Catalogue，只能輸出 3 行純文字宣告 `pattern_id` / `difficulty` / `term_count`；禁止自行寫 `def generate()`、`from ...` |
+| Pattern Catalogue 優先權 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md` | 在表前新增「若符合列表結構，務必優先選擇【路徑 A】」說明，避免明明能走 Orchestrator 卻誤走 sympy 自寫程式 |
+| Path B 防誤判強化 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md` | 新增「☠️ 生死禁令」：路徑 B 的程式碼與註解嚴禁出現 `pattern_id = `；若需註解，改用 `custom_mode = True`，避免後端 Extractor 誤攔截 |
+| Path B 邊界案例模板 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md` | 新增「分數根式 × 負整數」sympy 範例：`\frac{\sqrt{5}}{12} \times (-16)`，固定使用 `sp.Rational(1, den) * sp.sqrt(r) * c`，確保題型同構 |
+| Prompt 規則 Hybrid-aware | `core/engine/scaler.py` | 兩處 prompt 字串中的 Rule 4 由「必須包含 generate」改為「依所選路徑輸出：Path A 只需 3 行，Path B 才需完整 generate」，解除底部硬規則與 SKILL.md 的衝突 |
+| Smart Wrapper V3 | `core/engine/scaler.py` | 先前加上 df 補丁邏輯：若 AI 寫了 `df.` 卻沒匯入 `DomainFunctionHelper`，會在 `def generate()` 內部補注入，避免 local/global scope 不一致導致 `NameError` |
+| Aggressive Extraction | `core/engine/scaler.py` | `[ROOT FIX]` 與 `[UNIVERSAL ORCHESTRATOR FIX]` 改成「只要抓到 pattern id，就直接丟棄 AI 其餘 boilerplate，只萃取 3 個決策變數並重建 golden scaffold」，避免 `if __name__ == "__main__":`、全形字元、雜訊註解污染 |
+| Extractor regex 放寬 | `core/engine/scaler.py` | `pattern_id` 偵測由 `pattern_id = "..."` 改為搜尋任何被引號包住的 `p0~p6...` pattern token：`r'["\\'](p[0-6][a-zA-Z0-9_]+)["\\']'`，即使 AI 不是用指定賦值格式也能攔到 |
+| Prompt cleanup 後的補洞 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/prompt_liveshow.md`, `core/engine/scaler.py` | 已移除舊的互斥禁令段落，並把 scaler 內對根式題的硬性規則改為允許 Python 計算用 `sp.sqrt()`、但輸出 `question_text` / `correct_answer` 必須是標準 LaTeX |
+| p2g / p2h 支援補齊 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md`, `core/domain_functions.py`, `core/solver/radical_solver.py` | Pattern Catalogue 已納入 `p2g_rad_mult_frac` / `p2h_frac_mult_rad`，DomainFunction 與 solver 端也已補上對應生成與求解邏輯 |
+
+**目前判定流程（2026-03-16 版）**
+
+1. AI 若輸出中含任何被引號包住的 `p0~p6...` pattern token，`scaler.py` 直接進 Aggressive Extraction，只保留 `pattern_id` / `difficulty` / `term_count`。
+2. 若沒有 pattern token，視為真正的 Path B，保留 AI 的 sympy 程式碼。
+3. 若 Path B 程式碼誤用了 `df.` 且沒匯入 helper，Smart Wrapper 會補齊 `DomainFunctionHelper`。
+
+**已知風險 / 明天第一優先驗證**
+
+- Path B 現在依賴「AI 絕不在註解或字串裡提到 `pattern_id = `」；若模型仍偷寫變體字樣，Extractor 仍可能誤判。
+- 放寬後的 regex 會把任何被引號包住的 `p0...` token 視為 orchestrator 線索；需確認不會誤打到一般字串常數。
+- `RADICAL_V4_SCAFFOLD_PREFIX` 目前仍是全域 `df = DomainFunctionHelper()` 版本；若後續要完全統一路徑，可再決定是否改成函式內注入。
+
+### 8.8 明天從這裡繼續
 
 1. **Live 驗收**：瀏覽器端用根式課本圖（2 項 / 3 項）確認 term_count 辨識與生成項數一致。
-2. **回歸**：`python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q`；必要時跑 `py_compile` 上述修改檔。
-3. **若 Healer 仍誤刪 import**：檢查是否還有其他 regex 或 AST 路徑會動到 `from core.domain_functions import DomainFunctionHelper`。
-4. **generated_scripts/**：已清理舊暫存；新跑 Live Show 會再寫入，可視需要定期清空。
-5. **本日已清理檔案**：專案根目錄 `tmp_*.py`（24 個）、`scratch_healer_test.py`、`test_mcri.py`、`test_normalization.py`、`test_fstring.py`；`generated_scripts/*.py`（64 個暫存腳本）。正式測試請用 `tests/` 下之 regression。
+2. **Path A / Path B 實機驗收**：至少各測 3 題。
+   Path A：`p2g`, `p2h`, `p2c`, `p5a/p5b` 看是否只輸出 3 行後被正確組裝。
+   Path B：`\\frac{\\sqrt{5}}{12} \\times (-16)`、一般分數根式混合連乘除，確認不會被 Aggressive Extraction 誤吃掉。
+3. **回歸**：`python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q`；必要時跑 `py_compile` 至少覆蓋 `core/engine/scaler.py`、`core/prompt_architect.py`、`core/domain_functions.py`、`core/solver/radical_solver.py`。
+4. **若仍有誤判**：優先檢查 `scaler.py` 的放寬 regex 是否抓到非 pattern 用字串，再考慮加入更嚴格上下文 guard。
+5. **若仍有 df NameError**：檢查實際執行路徑到底走 `RADICAL_V4_SCAFFOLD_PREFIX`、Aggressive Extraction，還是 Smart Wrapper 補丁分支。
+6. **generated_scripts/**：Live Show 新跑仍會持續寫入，可視需要定期清空；正式驗證請以 `tests/` 內 regression 為準。
 
 ---
 
