@@ -1,3 +1,6 @@
+[[MODE:BENCHMARK]]
+【說明】本檔為實驗/大量出題用程式碼結構。Pattern Catalogue 與辨識規則由憲法 (SKILL.md) 提供，scaler 組裝時會一併注入，此處不重複定義。
+
 【強烈建議程式碼結構】
 ```python
 import random
@@ -107,4 +110,4 @@ def check(user_answer, correct_answer):
 ✅ 嚴禁 `int(str.split(...))` 這種寫法
 ✅ `format_expression` 輸入必須是 Dict
 ✅ 輸出 Python code only, no comments
-/no_think
+[[END_MODE:BENCHMARK]]

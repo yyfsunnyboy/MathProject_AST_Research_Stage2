@@ -574,7 +574,7 @@ RADICAL_V4_SCAFFOLD_PREFIX = (
 
 RADICAL_V4_SCAFFOLD_SUFFIX = (
     "    # [Auto-appended scaffold — deterministic, DO NOT output]\n"
-    "    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count)\n"
+    "    vars = df.get_safe_vars_for_pattern(pattern_id, difficulty, term_count=term_count, style=locals().get('radical_style', 'mixed'))\n"
     "    ans, sol = df.solve_problem_pattern(pattern_id, vars, difficulty)\n"
     "    question_text = df.format_question_LaTeX(pattern_id, vars)\n"
     "\n"

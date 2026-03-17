@@ -515,6 +515,7 @@ class RadicalSolver:
             "p5a_conjugate_int":   self._solve_p5a,
             "p5b_conjugate_rad":   self._solve_p5b,
             "p6_combo":            self._solve_p6,
+            "p7_mixed_rad_add":   self._solve_p7_mixed_rad_add,
         }
         if pid not in dispatch:
             raise ValueError(
@@ -967,3 +968,18 @@ class RadicalSolver:
             rf"\text{{--- 最終合併 ---}} \quad ({ans1}) {'+' if combo_op=='+' else '-'} ({ans2}) = {final_ans}"
         )
         return final_ans, all_steps
+
+    def _solve_p7_mixed_rad_add(self, v: dict, difficulty: str) -> Tuple[str, StepList]:
+        """
+        P7: √(w+n/d) ± √(w+n/d) — mixed-number radicals (perfect-square fractions).
+        Expected keys: w1, f_n1, d1, n1, w2, f_n2, d2, n2, op ('+' or '-').
+        """
+        import sympy as sp
+        expr1 = sp.sqrt(sp.Rational(v["n1"], v["d1"]))
+        expr2 = sp.sqrt(sp.Rational(v["n2"], v["d2"]))
+        expr = expr1 + expr2 if v["op"] == "+" else expr1 - expr2
+        ans_latex = sp.latex(sp.simplify(expr))
+        steps: StepList = [
+            "將帶分數化為假分數，確認為完全平方數後開根號，再進行加減運算。"
+        ]
+        return ans_latex, steps

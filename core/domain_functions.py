@@ -45,6 +45,8 @@ from core.math_solvers.radical_solver import (
 # ---------------------------------------------------------------------------
 PRIME_SET = [2, 3, 5, 7, 11]
 SIMPLIFIABLE_SET = [8, 12, 18, 20, 24, 27, 32, 45, 48, 50, 72, 75]
+# Square-free / already-simplified radicands when style == "simplified"
+SIMPLIFIED_RADICALS = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15]
 NON_ZERO_COEFF = [-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]
 SMALL_DENOM = [2, 3, 4, 5, 6]
 
@@ -157,6 +159,7 @@ class DomainFunctionHelper:
         max_retries: int = 200,
         target_profile: Optional[dict] = None,
         term_count: int = None,
+        style: str = "mixed",
     ) -> dict:
         """
         Generate a dictionary of safe, controlled random variables for the
@@ -174,6 +177,9 @@ class DomainFunctionHelper:
                             simplifiable_count matches target_profile["simplifiable_count"].
                             If the constraint cannot be satisfied within max_retries the
                             best-effort vars (mathematically correct) are returned.
+            term_count:     optional override for p1_add_sub term count.
+            style:          "mixed" (default) or "simplified". When "simplified", radicands
+                            are drawn only from SIMPLIFIED_RADICALS (square-free).
 
         Returns:
             A dict of variables consumed by solve_problem_pattern and
@@ -183,6 +189,12 @@ class DomainFunctionHelper:
             RuntimeError if valid vars cannot be generated within max_retries
             AND no best-effort result is available.
         """
+        # [Style Enforcement] Use only simplified (square-free) radicands when requested
+        if style == "simplified":
+            self._simplifiable_pool = SIMPLIFIED_RADICALS
+        else:
+            self._simplifiable_pool = SIMPLIFIABLE_SET
+
         pid = pattern_id.lower().strip()
         generator_map = {
             "p0_simplify":         self._vars_p0,
@@ -204,6 +216,7 @@ class DomainFunctionHelper:
             "p5a_conjugate_int":   self._vars_p5a,
             "p5b_conjugate_rad":   self._vars_p5b,
             "p6_combo":            self._vars_p6,
+            "p7_mixed_rad_add":   self._vars_p7_mixed_rad_add,
         }
         if pid not in generator_map:
             raise ValueError(
@@ -314,6 +327,7 @@ class DomainFunctionHelper:
             "p5a_conjugate_int":   self._fmt_p5a,
             "p5b_conjugate_rad":   self._fmt_p5b,
             "p6_combo":            self._fmt_p6,
+            "p7_mixed_rad_add":   self._fmt_p7_mixed_rad_add,
         }
         if pid not in formatter_map:
             raise ValueError(f"Unknown pattern_id '{pattern_id}'.")
@@ -416,6 +430,9 @@ class DomainFunctionHelper:
             c2 = self.count_simplifiable_in_vars(sp2, variables.get("vars2", {})) if sp2 else 0
             return (c1 if c1 != -1 else 0) + (c2 if c2 != -1 else 0)
 
+        if pid == "p7_mixed_rad_add":
+            return 2  # both radicands (n1/d1, n2/d2) are perfect squares
+
         return -1  # unknown — caller should skip the profile check
 
     def get_radical_profile(self, question_text: str) -> dict:
@@ -449,9 +466,10 @@ class DomainFunctionHelper:
         else:
             n_terms = {"easy": 2, "mid": 3, "hard": 4}.get(difficulty, 2)
         terms = []
+        pool = getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET)
         for i in range(n_terms):
             c = random.choice(NON_ZERO_COEFF)
-            r = random.choice(SIMPLIFIABLE_SET)
+            r = random.choice(pool)
             op = "+" if i == 0 else random.choice(["+", "-"])
             terms.append((c, r, op))
 
@@ -463,7 +481,8 @@ class DomainFunctionHelper:
         return {"terms": terms}
 
     def _vars_p2a(self, difficulty: str) -> dict:
-        pool = SIMPLIFIABLE_SET if difficulty != "easy" else SIMPLIFIABLE_SET[:6]
+        base = getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET)
+        pool = base if difficulty != "easy" else (base[:6] if len(base) >= 6 else base)
         c1 = random.choice(NON_ZERO_COEFF)
         c2 = random.choice(NON_ZERO_COEFF)
         r1 = random.choice(pool)
@@ -474,7 +493,7 @@ class DomainFunctionHelper:
         c1 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 3])
         r1 = random.choice(PRIME_SET)
         c2 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 3])
-        r2 = random.choice(SIMPLIFIABLE_SET)
+        r2 = random.choice(getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET))
         c3 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 3])
         r3 = random.choice(PRIME_SET)
         op = random.choice(["+", "-"])
@@ -530,7 +549,7 @@ class DomainFunctionHelper:
     def _vars_p3a(self, difficulty: str) -> dict:
         for _ in range(50):
             c1 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 4])
-            r1 = random.choice(SIMPLIFIABLE_SET)
+            r1 = random.choice(getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET))
             c2 = random.choice([c for c in NON_ZERO_COEFF if abs(c) <= 3])
             r2 = random.choice(PRIME_SET)
             d = random.choice(PRIME_SET)
@@ -569,7 +588,7 @@ class DomainFunctionHelper:
     def _vars_p4(self, difficulty: str) -> dict:
         a = random.randint(1, 5)
         b = random.choice(SMALL_DENOM)
-        r = random.choice(SIMPLIFIABLE_SET)
+        r = random.choice(getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET))
         c = random.choice(SMALL_DENOM)
         return {"a": a, "b": b, "r": r, "c": c}
 
@@ -632,6 +651,25 @@ class DomainFunctionHelper:
             "combo_op":     combo_op,
         }
 
+    def _vars_p7_mixed_rad_add(self, difficulty: str) -> dict:
+        """P7: √(w+n/d) ± √(w+n/d) — reverse-engineer perfect-square mixed numbers."""
+        d1_root = random.choice([2, 3, 4])
+        n1_root = d1_root + random.choice([1, 2])
+        d1, n1 = d1_root**2, n1_root**2
+        w1, f_n1 = n1 // d1, n1 % d1
+
+        d2_root = random.choice([3, 4, 5, 6])
+        n2_root = d2_root * 2 + random.choice([1, 5])
+        d2, n2 = d2_root**2, n2_root**2
+        w2, f_n2 = n2 // d2, n2 % d2
+
+        op = random.choice(["+", "-"])
+        return {
+            "w1": w1, "f_n1": f_n1, "d1": d1, "n1": n1,
+            "w2": w2, "f_n2": f_n2, "d2": d2, "n2": n2,
+            "op": op,
+        }
+
     # =======================================================================
     # Question formatters (private)
     # =======================================================================
@@ -656,9 +694,22 @@ class DomainFunctionHelper:
         return rf"化簡 ${expr}$。"
 
     def _fmt_p2a(self, v: dict) -> str:
-        q1 = _format_term_unsimplified(v["c1"], v["r1"], True)
-        q2 = _format_term_unsimplified(v["c2"], v["r2"], True)
-        return rf"化簡 ${q1} \times {q2}$。"
+        """P2a: k₁√r₁ × k₂√r₂. Wrap second operand in () when c2 < 0; optional () for c1 < 0."""
+        c1, r1 = v["c1"], v["r1"]
+        c2, r2 = v["c2"], v["r2"]
+        term1 = (
+            rf"\sqrt{{{r1}}}" if c1 == 1
+            else (rf"-\sqrt{{{r1}}}" if c1 == -1 else rf"{c1}\sqrt{{{r1}}}")
+        )
+        term2 = (
+            rf"\sqrt{{{r2}}}" if c2 == 1
+            else (rf"-\sqrt{{{r2}}}" if c2 == -1 else rf"{c2}\sqrt{{{r2}}}")
+        )
+        if c2 < 0:
+            term2 = f"({term2})"
+        if c1 < 0 and c1 != -1:
+            term1 = f"({term1})"
+        return rf"化簡 ${term1} \times {term2}$。"
 
     def _fmt_p2f(self, v: dict) -> str:
         """P2f: Format (c1) × (c2√r) or c1 × c2√r. Bulletproof LaTeX for frontend."""
@@ -689,10 +740,13 @@ class DomainFunctionHelper:
         k, r, num, den = v["k"], v["r"], v["num"], v["den"]
         k_str = f"({k})" if k < 0 else str(k)
         frac_str = f"\\frac{{{num}}}{{{den}}}"
+        term_rad = f"{k_str}\\sqrt{{{r}}}"
+        if k < 0 and pattern_id == "p2h_frac_mult_rad":
+            term_rad = f"({term_rad})"
         if pattern_id == "p2g_rad_mult_frac":
-            inner = f"{k_str}\\sqrt{{{r}}} \\times {frac_str}"
+            inner = f"{term_rad} \\times {frac_str}"
         else:
-            inner = f"{frac_str} \\times {k_str}\\sqrt{{{r}}}"
+            inner = f"{frac_str} \\times {term_rad}"
         return rf"化簡 ${inner}$。"
 
     def _fmt_p2b(self, v: dict) -> str:
@@ -747,14 +801,22 @@ class DomainFunctionHelper:
         return rf"化簡 $({q1}{q2}) \div \sqrt{{{d}}}$。"
 
     def _fmt_p3c(self, v: dict) -> str:
-        """P3c: Format (c1√r1) ÷ (c2√r2). Wrap in () when coefficient is negative."""
+        """P3c: (c1√r1) ÷ (c2√r2). Wrap entire term in () when coefficient is negative."""
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
-        t1 = _format_term_unsimplified(c1, r1, True)
-        t2 = _format_term_unsimplified(c2, r2, True)
-        left = f"({t1})" if c1 < 0 else t1
-        right = f"({t2})" if c2 < 0 else t2
-        return rf"化簡 ${left} \div {right}$。"
+        term1 = (
+            rf"\sqrt{{{r1}}}" if c1 == 1
+            else (rf"-\sqrt{{{r1}}}" if c1 == -1 else rf"{c1}\sqrt{{{r1}}}")
+        )
+        term2 = (
+            rf"\sqrt{{{r2}}}" if c2 == 1
+            else (rf"-\sqrt{{{r2}}}" if c2 == -1 else rf"{c2}\sqrt{{{r2}}}")
+        )
+        if c1 < 0:
+            term1 = f"({term1})"
+        if c2 < 0:
+            term2 = f"({term2})"
+        return rf"化簡 ${term1} \div {term2}$。"
 
     def _fmt_p3b(self, v: dict) -> str:
         a, b = v["a"], v["b"]
@@ -768,14 +830,14 @@ class DomainFunctionHelper:
         """P4b: (√n1/√d1) ÷ (√n2/√d2)."""
         n1, d1 = v["n1"], v["d1"]
         n2, d2 = v["n2"], v["d2"]
-        return rf"化簡 $\\dfrac{{\\sqrt{{{n1}}}}}{{\\sqrt{{{d1}}}}} \\div \\dfrac{{\\sqrt{{{n2}}}}}{{\\sqrt{{{d2}}}}}$。"
+        return rf"化簡 $\dfrac{{\sqrt{{{n1}}}}}{{\sqrt{{{d1}}}}} \div \dfrac{{\sqrt{{{n2}}}}}{{\sqrt{{{d2}}}}}$。"
 
     def _fmt_p4c(self, v: dict) -> str:
         """P4c: √(n1/d1) × √(n2/d2) ÷ √(n3/d3)."""
         n1, d1 = v["n1"], v["d1"]
         n2, d2 = v["n2"], v["d2"]
         n3, d3 = v["n3"], v["d3"]
-        return rf"化簡 $\\sqrt{{\\dfrac{{{n1}}}{{{d1}}}}} \\times \\sqrt{{\\dfrac{{{n2}}}{{{d2}}}}} \\div \\sqrt{{\\dfrac{{{n3}}}{{{d3}}}}}$。"
+        return rf"化簡 $\sqrt{{\dfrac{{{n1}}}{{{d1}}}}} \times \sqrt{{\dfrac{{{n2}}}{{{d2}}}}} \div \sqrt{{\dfrac{{{n3}}}{{{d3}}}}}$。"
 
     def _fmt_p5a(self, v: dict) -> str:
         b, q, c, sign = v["b"], v["q"], v["c"], v["sign"]
@@ -793,6 +855,14 @@ class DomainFunctionHelper:
         sp1 = v.get("sub_pattern1", "?")
         sp2 = v.get("sub_pattern2", "?")
         return rf"計算下列複合根式運算（子題型：{sp1} 與 {sp2}）。"
+
+    def _fmt_p7_mixed_rad_add(self, v: dict) -> str:
+        """P7: √(w+n/d) ± √(w+n/d) 帶分數根式加減."""
+        op_str = " + " if v["op"] == "+" else " - "
+        return (
+            rf"計算 $\sqrt{{{v['w1']}\frac{{{v['f_n1']}}}{{{v['d1']}}}}}"
+            rf"{op_str}\sqrt{{{v['w2']}\frac{{{v['f_n2']}}}{{{v['d2']}}}}}$ 的值。"
+        )
 
     # =======================================================================
     # Internal utilities

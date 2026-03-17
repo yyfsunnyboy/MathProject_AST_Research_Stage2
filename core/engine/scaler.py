@@ -10,6 +10,46 @@ from core.ai_wrapper import get_ai_client, call_ai_with_retry
 from core.code_generator import auto_generate_skill_code
 from config import Config
 
+# 合法 pattern_id 清單（與 domain_functions.py / SKILL.md 對齊，防止假 ID 觸發強制萃取）
+RADICAL_VALID_PATTERN_IDS = [
+    'p0_simplify', 'p1_add_sub', 'p2a_mult_direct', 'p2b_mult_distrib',
+    'p2c_mult_binomial', 'p2f_int_mult_rad', 'p2g_rad_mult_frac',
+    'p2h_frac_mult_rad', 'p2d_perfect_square', 'p2e_diff_of_squares',
+    'p3a_div_expr', 'p3c_div_direct', 'p3b_div_simple', 'p4_frac_mult',
+    'p4b_frac_rad_div', 'p4c_nested_frac_chain', 'p5a_conjugate_int',
+    'p5b_conjugate_rad', 'p6_combo', 'p7_mixed_rad_add',
+]
+
+# 短別名 → 完整 ID（模糊匹配，減少 8B 模型壓力）
+RADICAL_FUZZY_PREFIX_MAP = {
+    'p0': 'p0_simplify', 'p1': 'p1_add_sub', 'p2a': 'p2a_mult_direct',
+    'p2b': 'p2b_mult_distrib', 'p2c': 'p2c_mult_binomial', 'p2d': 'p2d_perfect_square',
+    'p2e': 'p2e_diff_of_squares', 'p2f': 'p2f_int_mult_rad', 'p2g': 'p2g_rad_mult_frac',
+    'p2h': 'p2h_frac_mult_rad', 'p3a': 'p3a_div_expr', 'p3b': 'p3b_div_simple',
+    'p3c': 'p3c_div_direct', 'p4': 'p4_frac_mult', 'p4b': 'p4b_frac_rad_div',
+    'p4c': 'p4c_nested_frac_chain', 'p5a': 'p5a_conjugate_int', 'p5b': 'p5b_conjugate_rad',
+    'p6': 'p6_combo', 'p7': 'p7_mixed_rad_add',
+}
+
+
+def _resolve_radical_pattern_id(matched: str, raw_text: str) -> str | None:
+    """將模型輸出的 pattern_id（可能為短別名或幻覺）解析為合法 ID。"""
+    if not matched:
+        return None
+    s = matched.strip()
+    if s in RADICAL_VALID_PATTERN_IDS:
+        return s
+    if s in RADICAL_FUZZY_PREFIX_MAP:
+        return RADICAL_FUZZY_PREFIX_MAP[s]
+    # p3 或含 div/÷ 時預設為兩根式相除
+    if (s.startswith("p3") or s == "p3") and ("div" in raw_text or "÷" in raw_text or "\\div" in raw_text):
+        return "p3c_div_direct"
+    # 前綴匹配：僅當唯一時採用
+    candidates = [vid for vid in RADICAL_VALID_PATTERN_IDS if vid.startswith(s) or s.startswith(vid)]
+    if len(candidates) == 1:
+        return candidates[0]
+    return None
+
 class AdaptiveScaler:
     """
     AdaptiveScaler 負責根據技能與難度生成題目。
@@ -319,12 +359,12 @@ class AdaptiveScaler:
    (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
 4. 程式碼輸出格式請嚴格遵守你所選的路徑（路徑 A 僅需 3 行變數宣告，路徑 B 才需完整 generate 函式）。
-5. 不要輸出 JSON、不要輸出 markdown 解釋。
+5. 不要輸出 JSON、不要輸出 markdown 解釋、更不要在 Python 區塊外寫任何廢話（如 "生成的代碼如下"）。
 6. 允許將數字隨機化，但必須完全保持原題的運算結構與項數。
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 輸出的 question_text 與 correct_answer 必須是標準 LaTeX (使用 \\sqrt{{...}})。在 Python 計算過程中允許使用 sp.sqrt()。
+10. 系統已預載 sympy (as sp) 與 df，你可直接使用。若題型複雜，請直接撰寫數學邏輯並 return 包含 question_text 與 correct_answer 的字典。
 """
                 else:
                     # ── Fallback：舊邏輯（SKILL.md 切割 + BENCHMARK section）──
@@ -365,14 +405,14 @@ class AdaptiveScaler:
    (API 原始碼已從 Prompt 移除以節省 Token，AI 需依賴 SKILL.md 的範例與規則來學習使用。)
 3. 題目中的乘號與除號必須使用 \\times 與 \\div。
 4. 程式碼輸出格式請嚴格遵守你所選的路徑（路徑 A 僅需 3 行變數宣告，路徑 B 才需完整 generate 函式）。
-5. 不要輸出 JSON、不要輸出 markdown 解釋。
+5. 不要輸出 JSON、不要輸出 markdown 解釋、更不要在 Python 區塊外寫任何廢話（如 "生成的代碼如下"）。
 
 【硬性一致性約束（必須遵守）】
 6. 允許將數字隨機化，但必須完全保持原題的運算結構與項數。
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 輸出的 question_text 與 correct_answer 必須是標準 LaTeX (使用 \\sqrt{{...}})。在 Python 計算過程中允許使用 sp.sqrt()。
+10. 系統已預載 sympy (as sp) 與 df，你可直接使用。若題型複雜，請直接撰寫數學邏輯並 return 包含 question_text 與 correct_answer 的字典。
 """
                 active_ablation_id = 3
             
@@ -418,22 +458,48 @@ class AdaptiveScaler:
             if "FourOperationsOfRadicals" in (skill_name or ""):
                 from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
                 _rr = str(raw_code or "")
-                _pid_m = re.search(r'["\'](p[0-6][a-zA-Z0-9_]+)["\']', _rr)
 
-                if _pid_m:
-                    # 只要有 pattern_id，強制剝奪 AI 的程式碼，只萃取變數！
-                    _diff_m = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', _rr)
-                    _tc_m   = re.search(r'term_count\s*=\s*(\d+|None)', _rr)
-                    _pid  = _pid_m.group(1).strip()
-                    _diff = _diff_m.group(1).strip() if _diff_m else "mid"
-                    _tc   = _tc_m.group(1).strip()   if _tc_m   else "None"
-                    _decisions = f'    pattern_id = "{_pid}"\n    difficulty = "{_diff}"\n    term_count = {_tc}\n'
+                # [LOOP BREAKER] 重複迴圈時強制改為預設 Path A，避免崩潰
+                if len(_rr) > 1000 and _rr.count('pattern_id') > 5:
+                    _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
+                    _decisions = f'    pattern_id = "p1_add_sub"\n    difficulty = "mid"\n    term_count = 2\n    radical_style = "{_style}"\n'
                     raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print(f"⚙️ [ROOT_ASSEMBLER/scaler] FORCE Extracted variables — pid={_pid!r} diff={_diff!r}")
+                    print("⚙️ [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p1_add_sub).")
                 else:
-                    # 真正的路徑 B (Coder 模式)，全域補齊 df
-                    if "df." in _rr and "DomainFunctionHelper" not in _rr:
-                        raw_code = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + _rr
+                    # [SMART INTERCEPTOR V4] Alias-aware: 僅當 AI 輸出很短（且沒寫 def generate）時才啟動強制萃取
+                    _pid_m = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', _rr)
+                    _raw_pid = _pid_m.group(1).strip() if _pid_m else None
+
+                    alias_map = {
+                        "p0": "p0_simplify", "p1": "p1_add_sub", "p2a": "p2a_mult_direct",
+                        "p2b": "p2b_mult_distrib", "p2c": "p2c_mult_binomial", "p2d": "p2d_perfect_square",
+                        "p2e": "p2e_diff_of_squares", "p2f": "p2f_int_mult_rad", "p2g": "p2g_rad_mult_frac",
+                        "p2h": "p2h_frac_mult_rad", "p3a": "p3a_div_expr", "p3b": "p3b_div_simple",
+                        "p3c": "p3c_div_direct", "p4": "p4_frac_mult", "p4b": "p4b_frac_rad_div",
+                        "p4c": "p4c_nested_frac_chain", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
+                        "p6": "p6_combo", "p7": "p7_mixed_rad_add"
+                    }
+                    if _raw_pid:
+                        _raw_pid_clean = _raw_pid.split()[0].replace('±', '').replace('÷', '').strip()
+                        _pid = alias_map.get(_raw_pid_clean, _raw_pid_clean)
+                    else:
+                        _pid = None
+
+                    valid_ids = set(alias_map.values())
+
+                    if _pid in valid_ids and len(_rr.strip()) < 300 and "def generate" not in _rr:
+                        _diff_m = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', _rr)
+                        _tc_m = re.search(r'term_count\s*=\s*(\d+|None)', _rr)
+                        _diff = _diff_m.group(1).strip() if _diff_m else "mid"
+                        _tc = _tc_m.group(1).strip() if _tc_m else "None"
+                        _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
+                        _decisions = f'    pattern_id = "{_pid}"\n    difficulty = "{_diff}"\n    term_count = {_tc}\n    radical_style = "{_style}"\n'
+                        raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
+                        print(f"⚙️ [ROOT_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {_pid}. Forcing Scaffold.")
+                    else:
+                        if "df." in _rr and "DomainFunctionHelper" not in _rr:
+                            raw_code = "import sympy as sp\nfrom core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + _rr
+                            print("⚙️ [ROOT_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
 
             # 2. 處理 <think> 標籤
             if '<think>' in raw_code:
@@ -495,22 +561,47 @@ class AdaptiveScaler:
             if "FourOperationsOfRadicals" in (skill_name or ""):
                 from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
                 raw_code_temp = str(final_code_to_healer or "")
-                pid_match = re.search(r'["\'](p[0-6][a-zA-Z0-9_]+)["\']', raw_code_temp)
 
-                if pid_match:
-                    # 強制萃取
-                    diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw_code_temp)
-                    tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw_code_temp)
-                    pid = pid_match.group(1).strip()
-                    diff = diff_match.group(1).strip() if diff_match else "mid"
-                    tc = tc_match.group(1).strip() if tc_match else "None"
-                    decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
+                if len(raw_code_temp) > 1000 and raw_code_temp.count('pattern_id') > 5:
+                    _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
+                    decisions = f'    pattern_id = "p0_simplify"\n    difficulty = "easy"\n    term_count = None\n    radical_style = "{_style}"\n'
                     final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] FORCE Extracted variables — pid={pid!r}")
+                    print("⚙️ [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p0_simplify).")
                 else:
-                    # 路徑 B 補齊
-                    if "df." in raw_code_temp and "DomainFunctionHelper" not in raw_code_temp:
-                        final_code_to_healer = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + raw_code_temp
+                    # [SMART INTERCEPTOR V4] Alias-aware: 僅當輸出很短且沒寫 def generate 時才強制萃取
+                    pid_match = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', raw_code_temp)
+                    _raw_pid = pid_match.group(1).strip() if pid_match else None
+
+                    alias_map = {
+                        "p0": "p0_simplify", "p1": "p1_add_sub", "p2a": "p2a_mult_direct",
+                        "p2b": "p2b_mult_distrib", "p2c": "p2c_mult_binomial", "p2d": "p2d_perfect_square",
+                        "p2e": "p2e_diff_of_squares", "p2f": "p2f_int_mult_rad", "p2g": "p2g_rad_mult_frac",
+                        "p2h": "p2h_frac_mult_rad", "p3a": "p3a_div_expr", "p3b": "p3b_div_simple",
+                        "p3c": "p3c_div_direct", "p4": "p4_frac_mult", "p4b": "p4b_frac_rad_div",
+                        "p4c": "p4c_nested_frac_chain", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
+                        "p6": "p6_combo", "p7": "p7_mixed_rad_add"
+                    }
+                    if _raw_pid:
+                        _raw_pid_clean = _raw_pid.split()[0].replace('±', '').replace('÷', '').strip()
+                        pid = alias_map.get(_raw_pid_clean, _raw_pid_clean)
+                    else:
+                        pid = None
+
+                    valid_ids = set(alias_map.values())
+
+                    if pid in valid_ids and len(raw_code_temp.strip()) < 300 and "def generate" not in raw_code_temp:
+                        diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw_code_temp)
+                        tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw_code_temp)
+                        diff = diff_match.group(1).strip() if diff_match else "mid"
+                        tc = tc_match.group(1).strip() if tc_match else "None"
+                        _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
+                        decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n    radical_style = "{_style}"\n'
+                        final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
+                        print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {pid}. Forcing Scaffold.")
+                    else:
+                        if "df." in raw_code_temp and "DomainFunctionHelper" not in raw_code_temp:
+                            final_code_to_healer = "import sympy as sp\nfrom core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + raw_code_temp
+                            print("⚙️ [UNIVERSAL_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
 
             # 🚨 關鍵偵錯點 2：檢查送給 Healer 的內容是否為空
             if not ablation_mode:
@@ -520,7 +611,17 @@ class AdaptiveScaler:
                 
                 if not final_code_to_healer:
                     print("[FATAL ERROR] 傳給 Healer 的字串是空的！API 萃取邏輯有 Bug！")
-            
+
+            # [CIRCUIT BREAKER]
+            _final_str = str(final_code_to_healer or "")
+            # 檢查是否為系統組裝的 Scaffold (路徑 A VIP 豁免)
+            is_scaffold = "df.get_safe_vars_for_pattern" in _final_str
+
+            # 只有在非 Scaffold (即 AI 自行撰寫的路徑 B) 的情況下，才檢查是否瘋狂跳針
+            if not is_scaffold and (_final_str.count('pattern_id') > 3 or len(_final_str) > 2000):
+                print("🚨 [scaler] Circuit Breaker Triggered: Model Repetition Detected in Path B!")
+                final_code_to_healer = self._build_emergency_generate_code("計算 $\\sqrt{2} \\times \\sqrt{3}$ 的值。")
+
             clean_code = final_code_to_healer
             
             if ablation_mode:
@@ -827,23 +928,24 @@ def check(user_answer, correct_answer):
                 return eval(s, {"__builtins__": {}}, {"Fraction": Fraction, "abs": abs, "MyFrac": MyFrac, "sqrt": math.sqrt, "math": math})
             except Exception as e:
                 raise Exception(f"safe_eval 計算失敗 ({expr}): 轉換後為 '{s}', 錯誤: {e}")
-                
+
+        import sympy as sp
+        from core.domain_functions import DomainFunctionHelper
+        df_instance = DomainFunctionHelper()
+
         exec_globals = {
             "random": importlib.import_module("random"),
             "math": importlib.import_module("math"),
+            "sp": sp,
+            "sympy": sp,
             "Fraction": Fraction,
-            "safe_eval": _safe_eval_polyfill,  # [Polyfill 植入]
-            "eval": _safe_eval_polyfill,       # 連 eval 一起壓制
+            "safe_eval": _safe_eval_polyfill,
+            "eval": _safe_eval_polyfill,
             "RadicalOps": RadicalOps,
-            "PolynomialOps": PolynomialOps,
-            "FractionOps": FractionOps,
-            "IntegerOps": IntegerOps,
-            "CalculusOps": CalculusOps,
-            "MixedNumbers": FractionOps, # Alias for compatibility
-            "Integers": IntegerOps,      # Alias for compatibility
-            # [防護牆] 預設變數，防止 UnboundLocalError
-            "question_text": "題目生成失敗", # 預設值
-            "correct_answer": "0"            # 預設值
+            "DomainFunctionHelper": DomainFunctionHelper,
+            "df": df_instance,  # 閉環關鍵：預載實例
+            "question_text": "題目生成失敗",
+            "correct_answer": "0"
         }
         
         try:
