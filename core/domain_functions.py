@@ -199,6 +199,8 @@ class DomainFunctionHelper:
         generator_map = {
             "p0_simplify":         self._vars_p0,
             "p1_add_sub":          self._vars_p1,
+            "p1b_add_sub_bracket": self._vars_p1b,
+            "p1c_mixed_frac_rad_add_sub": self._vars_p1c,
             "p2a_mult_direct":     self._vars_p2a,
             "p2b_mult_distrib":    self._vars_p2b,
             "p2c_mult_binomial":   self._vars_p2c,
@@ -213,6 +215,7 @@ class DomainFunctionHelper:
             "p4_frac_mult":        self._vars_p4,
             "p4b_frac_rad_div":    self._vars_p4b,
             "p4c_nested_frac_chain": self._vars_p4c,
+            "p4d_frac_rad_div_mixed": self._vars_p4d,
             "p5a_conjugate_int":   self._vars_p5a,
             "p5b_conjugate_rad":   self._vars_p5b,
             "p6_combo":            self._vars_p6,
@@ -286,6 +289,41 @@ class DomainFunctionHelper:
         Returns:
             (latex_answer: str, solution_steps: List[str])
         """
+        pid = pattern_id.lower().strip()
+        if pid == "p1b_add_sub_bracket":
+            import sympy as sp
+            c1, r1 = variables["c1"], variables["r1"]
+            c2, r2 = variables["c2"], variables["r2"]
+            c3, r3 = variables["c3"], variables["r3"]
+            c4, r4 = variables["c4"], variables["r4"]
+
+            t1 = c1 * sp.sqrt(r1)
+            t2 = c2 * sp.sqrt(r2)
+            t3 = c3 * sp.sqrt(r3)
+            t4 = c4 * sp.sqrt(r4)
+
+            inner = t3 + t4
+            expr = (t1 + t2 + inner) if variables["op_bracket"] == "+" else (t1 + t2 - inner)
+            return (
+                sp.latex(sp.simplify(expr)),
+                ["展開括號注意變號，將各根式化為最簡根式，最後合併同類項。"],
+            )
+        if pid == "p1c_mixed_frac_rad_add_sub":
+            import sympy as sp
+            term1 = sp.Rational(variables["a"], 1) / sp.sqrt(variables["b"])
+            term2 = (sp.Rational(variables["c"], variables["d"])) * sp.sqrt(variables["b"])
+            expr = term1 + term2 if variables["op"] == "+" else term1 - term2
+            return (
+                sp.latex(sp.simplify(expr)),
+                ["先將第一項分母有理化，再合併同類方根。"],
+            )
+        if pid == "p4d_frac_rad_div_mixed":
+            import sympy as sp
+            a, b, c, d = variables["a"], variables["b"], variables["c"], variables["d"]
+            expr = (sp.Rational(a, 1) / sp.sqrt(b)) / (sp.sqrt(c) / sp.sqrt(d))
+            ans_latex = sp.latex(sp.simplify(expr))
+            return ans_latex, ["將除法改為乘上倒數，再進行分母有理化與根式化簡。"]
+
         return self._solver.solve_problem_pattern(pattern_id, variables, difficulty)
 
     # -----------------------------------------------------------------------
@@ -310,6 +348,8 @@ class DomainFunctionHelper:
         formatter_map = {
             "p0_simplify":         self._fmt_p0,
             "p1_add_sub":          self._fmt_p1,
+            "p1b_add_sub_bracket": self._fmt_p1b,
+            "p1c_mixed_frac_rad_add_sub": self._fmt_p1c,
             "p2a_mult_direct":     self._fmt_p2a,
             "p2b_mult_distrib":    self._fmt_p2b,
             "p2c_mult_binomial":   self._fmt_p2c,
@@ -324,6 +364,7 @@ class DomainFunctionHelper:
             "p4_frac_mult":        self._fmt_p4,
             "p4b_frac_rad_div":    self._fmt_p4b,
             "p4c_nested_frac_chain": self._fmt_p4c,
+            "p4d_frac_rad_div_mixed": self._fmt_p4d,
             "p5a_conjugate_int":   self._fmt_p5a,
             "p5b_conjugate_rad":   self._fmt_p5b,
             "p6_combo":            self._fmt_p6,
@@ -364,6 +405,12 @@ class DomainFunctionHelper:
 
         if pid == "p1_add_sub":
             return _sc([t[1] for t in variables.get("terms", [])])
+
+        if pid == "p1b_add_sub_bracket":
+            return _sc([variables.get(f"r{i}") for i in range(1, 5)])
+
+        if pid == "p1c_mixed_frac_rad_add_sub":
+            return _sc([variables.get("b", 1)])
 
         if pid == "p2a_mult_direct":
             return _sc([variables.get("r1", 1), variables.get("r2", 1)])
@@ -418,6 +465,9 @@ class DomainFunctionHelper:
             return _sc([variables.get("n1", 1), variables.get("d1", 1),
                        variables.get("n2", 1), variables.get("d2", 1),
                        variables.get("n3", 1), variables.get("d3", 1)])
+
+        if pid == "p4d_frac_rad_div_mixed":
+            return _sc([variables.get("b", 1), variables.get("c", 1), variables.get("d", 1)])
 
         if pid in ("p5a_conjugate_int", "p5b_conjugate_rad"):
             # both use PRIME_SET radicands → always 0
@@ -479,6 +529,26 @@ class DomainFunctionHelper:
             raise _RetrySignal()  # all distinct — no combination possible
 
         return {"terms": terms}
+
+    def _vars_p1b(self, difficulty: str) -> dict:
+        pool = getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET)
+        return {
+            "c1": random.choice(NON_ZERO_COEFF), "r1": random.choice(pool),
+            "c2": random.choice(NON_ZERO_COEFF), "r2": random.choice(pool),
+            "c3": random.choice(NON_ZERO_COEFF), "r3": random.choice(pool),
+            "c4": random.choice(NON_ZERO_COEFF), "r4": random.choice(pool),
+            "op_bracket": random.choice(["+", "-"]),
+        }
+
+    def _vars_p1c(self, difficulty: str) -> dict:
+        b = random.choice([2, 3, 5])
+        return {
+            "a": random.randint(1, 5),
+            "b": b,
+            "c": random.randint(1, 5),
+            "d": random.choice([2, 3, 4, 5, 6]),
+            "op": random.choice(["+", "-"]),
+        }
 
     def _vars_p2a(self, difficulty: str) -> dict:
         base = getattr(self, "_simplifiable_pool", SIMPLIFIABLE_SET)
@@ -611,6 +681,15 @@ class DomainFunctionHelper:
         d3 = random.choice([2, 3, 5, 6, 7])
         return {"n1": n1, "d1": d1, "n2": n2, "d2": d2, "n3": n3, "d3": d3}
 
+    def _vars_p4d(self, difficulty: str) -> dict:
+        """P4d: (a/√b) ÷ (√c/√d)."""
+        return {
+            "a": random.randint(1, 5),
+            "b": random.choice([2, 3, 5, 7]),
+            "c": random.choice([2, 3, 5, 6, 7, 10]),
+            "d": random.choice([2, 3, 5, 6, 7]),
+        }
+
     def _vars_p5a(self, difficulty: str) -> dict:
         for _ in range(50):
             b = random.choice([1, 2, 3])
@@ -693,6 +772,19 @@ class DomainFunctionHelper:
         expr = "".join(parts)
         return rf"化簡 ${expr}$。"
 
+    def _fmt_p1b(self, v: dict) -> str:
+        t1 = self._fmt_term(v["c1"], v["r1"], True)
+        t2 = self._fmt_term(v["c2"], v["r2"], False)
+        t3 = self._fmt_term(v["c3"], v["r3"], True)
+        t4 = self._fmt_term(v["c4"], v["r4"], False)
+
+        op_bracket = " + " if v["op_bracket"] == "+" else " - "
+        return rf"化簡 ${t1}{t2}{op_bracket}({t3}{t4})$。"
+
+    def _fmt_p1c(self, v: dict) -> str:
+        op_str = " + " if v["op"] == "+" else " - "
+        return rf"化簡 $\dfrac{{{v['a']}}}{{\sqrt{{{v['b']}}}}}{op_str}\dfrac{{{v['c']}}}{{{v['d']}}}\sqrt{{{v['b']}}}$。"
+
     def _fmt_p2a(self, v: dict) -> str:
         """P2a: k₁√r₁ × k₂√r₂. Wrap second operand in () when c2 < 0; optional () for c1 < 0."""
         c1, r1 = v["c1"], v["r1"]
@@ -749,15 +841,34 @@ class DomainFunctionHelper:
             inner = f"{frac_str} \\times {term_rad}"
         return rf"化簡 ${inner}$。"
 
+    def _fmt_term(self, c: int, r: int, is_first: bool = True) -> str:
+        """Smart term formatter that avoids redundant parentheses and handles 1/-1 cleanly."""
+        if c == 0:
+            return ""
+        
+        abs_c = abs(c)
+        if r == 1:
+            part = str(abs_c)
+        elif abs_c == 1:
+            part = rf"\sqrt{{{r}}}"
+        else:
+            part = rf"{abs_c}\sqrt{{{r}}}"
+            
+        if is_first:
+            return f"-{part}" if c < 0 else part
+        else:
+            return f" - {part}" if c < 0 else f" + {part}"
+
     def _fmt_p2b(self, v: dict) -> str:
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
         c3, r3 = v["c3"], v["r3"]
         op = v.get("op", "+")
         c3_display = c3 if op == "+" else -c3
-        q1 = _format_term_unsimplified(c1, r1, True)
-        q2 = _format_term_unsimplified(c2, r2, True)
-        q3 = _format_term_unsimplified(c3_display, r3, False)
+        
+        q1 = self._fmt_term(c1, r1, True)
+        q2 = self._fmt_term(c2, r2, True)
+        q3 = self._fmt_term(c3_display, r3, False)
         return rf"化簡 ${q1} \times ({q2}{q3})$。"
 
     def _fmt_p2c(self, v: dict) -> str:
@@ -765,10 +876,11 @@ class DomainFunctionHelper:
         c2, r2 = v.get("c2", 0), v.get("r2", 1)
         c3, r3 = v["c3"], v["r3"]
         c4 = v.get("c4", 0)
-        t1 = _format_term_unsimplified(c1, r1, True)
-        t2 = (f" + {c2}\\sqrt{{{r2}}}" if c2 > 0 else f" - {abs(c2)}\\sqrt{{{r2}}}") if c2 else ""
-        t3 = _format_term_unsimplified(c3, r3, True)
-        t4 = (f" + {c4}" if c4 > 0 else f" - {abs(c4)}") if c4 else ""
+        
+        t1 = self._fmt_term(c1, r1, True)
+        t2 = self._fmt_term(c2, r2, False)
+        t3 = self._fmt_term(c3, r3, True)
+        t4 = self._fmt_term(c4, 1, False)  # r=1 handles the pure integer case
         return rf"化簡 $({t1}{t2})({t3}{t4})$。"
 
     def _fmt_p2d(self, v: dict) -> str:
@@ -838,6 +950,10 @@ class DomainFunctionHelper:
         n2, d2 = v["n2"], v["d2"]
         n3, d3 = v["n3"], v["d3"]
         return rf"化簡 $\sqrt{{\dfrac{{{n1}}}{{{d1}}}}} \times \sqrt{{\dfrac{{{n2}}}{{{d2}}}}} \div \sqrt{{\dfrac{{{n3}}}{{{d3}}}}}$。"
+
+    def _fmt_p4d(self, v: dict) -> str:
+        """P4d: (a/√b) ÷ (√c/√d)."""
+        return rf"計算 $\dfrac{{{v['a']}}}{{\sqrt{{{v['b']}}}}} \div \dfrac{{\sqrt{{{v['c']}}}}}{{\sqrt{{{v['d']}}}}}$ 的值。"
 
     def _fmt_p5a(self, v: dict) -> str:
         b, q, c, sign = v["b"], v["q"], v["c"], v["sign"]

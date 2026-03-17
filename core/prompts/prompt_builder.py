@@ -66,8 +66,10 @@ BARE_PROMPT_TEMPLATE = """【角色設定】
    - 'correct': True 或 False
    - 'result': 回傳 '正確' 或 '錯誤'
 
-4. 請使用 Python 的 standard library (如 random, math) 即可。
-   - 🔴 重要：不要使用 sympy、numpy 或其他外部套件
+# --- [教授的科學測試：開放 Sympy 與放寬限制] ---
+# (原版限制) 4. 請使用 Python 的 standard library (如 random, math) 即可。
+# (原版限制)    - 🔴 重要：不要使用 sympy、numpy 或其他外部套件
+4. 允許使用 Python 標準庫（math, random 等）與 sympy 套件來輔助計算與 LaTeX 格式化。
 
 ⚠️ 重要：只輸出 Python 程式碼！
 - ✅ 正確：直接從 import 開始寫

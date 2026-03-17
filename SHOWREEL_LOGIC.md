@@ -270,6 +270,21 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 5. **若仍有 df NameError**：檢查實際執行路徑到底走 `RADICAL_V4_SCAFFOLD_PREFIX`、Aggressive Extraction，還是 Smart Wrapper 補丁分支。
 6. **generated_scripts/**：Live Show 新跑仍會持續寫入，可視需要定期清空；正式驗證請以 `tests/` 內 regression 為準。
 
+### 8.9 今日進度（2026-03-17）
+
+**根式技能（Radicals）Prompt/Extractor/Pattern 全面同步與穩定化**
+
+| 類別 | 檔案 | 更新重點 |
+|------|------|----------|
+| Prompt 分層重構 | `agent_skills/jh_數學2上_FourOperationsOfRadicals/SKILL.md` / `prompt_liveshow.md` / `prompt_benchmark.md` | 形成「Constitution → Civil Law → Procedural」三層：SKILL.md 只保留角色、Pattern Catalogue、辨識優先規則、difficulty 建議、API/vars 參考；LiveShow 只放 Hybrid 分流與格式；Benchmark 保持 Level 1/2/3 並避免重複定義 Catalogue。 |
+| LiveShow Prompt 壓力下降 | `agent_skills/.../prompt_liveshow.md` | 移除過長 Few-shot 與恐嚇式禁令，改為精簡規則；為維持路徑 A 一致性，加入「與 SKILL.md 同步」的完整 Pattern Catalogue 表與純加減防護網；確保 `p1b`/`p1c` 規則明確。 |
+| 新增 Path A 題型（解決誤分類） | `SKILL.md` / `core/domain_functions.py` / `core/math_solvers/radical_solver.py` | 新增並落地：`p7_mixed_rad_add`（帶分數根式加減）、`p4d_frac_rad_div_mixed`（(a/√b)÷(√c/√d)）、`p1b_add_sub_bracket`（帶括號加減）、`p1c_mixed_frac_rad_add_sub`（a/√b ± (c/d)√b）。各 pattern 完整包含 vars 生成、格式化、求解（部分採 Sympy 特判）。 |
+| Extractor 防誤判 + Alias Resolver | `core/engine/scaler.py` | Smart Interceptor 僅在短輸出且無 `def generate` 時才強制 Scaffold；pattern_id 偵測改成 anchor 在行首的 `pattern_id = ...`；加入 alias_map（p1/p1b/p1c/p4d/p7…）與合法 ID 校驗，避免假 pattern_id 綁架 Path B。 |
+| Circuit Breaker 穩定化 | `core/engine/scaler.py` | Circuit Breaker 只在 Path B（非 Scaffold）時生效；並避免 Scaffold 內建 `pattern_id` 字串造成誤觸發（以 raw output / scaffold 特徵 bypass）。 |
+| Sandbox 閉環環境 | `core/engine/scaler.py` | `_execute_code` 預載 `sp`/`sympy` 與 `df`（DomainFunctionHelper 實例）到 exec_globals，降低 LLM/Healer 漏 import 造成的 NameError。 |
+| LaTeX 顯示修復 | `core/domain_functions.py` | 修復 `p4b/p4c` raw f-string 反斜線輸出問題；新增 `_fmt_term`，並重寫 `p2b/p2c` formatter 讓負係數更自然（`-2\\sqrt{7}` 取代 `(-2)\\sqrt{7}`）。 |
+| 前端選單對齊 presets | `templates/live_show.html` | Ab1/Ab3 下拉只保留 `pause`/`gemini-3-flash`/`qwen3-vl-8b`；Phase 4 boot logs 依 model 顯示 Gemini(藍) / Qwen(綠) badge 與名稱。 |
+
 ---
 
 ## 9. 歷史修復摘要（僅關鍵清單）

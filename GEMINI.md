@@ -124,6 +124,69 @@ MathProject_AST_Research/
 
 ---
 
+## 5.1 Prompt 分層架構（必讀：Radicals 已套用）
+
+> 目標：降低 8B 模型壓力，讓 **Path A（Orchestrator）** 走後端引擎、**Path B（Coder）** 只在必要時啟用。
+
+### 三層檔案（Constitution → Civil Law → Procedural Law）
+
+```
+agent_skills/<skill_id>/
+  SKILL.md             ← Constitution：Pattern Catalogue、辨識規則、difficulty 建議、API/vars 參考（可被 Practice/Quiz 共用）
+  prompt_liveshow.md   ← Civil Law：LiveShow delta（Hybrid 分流規則、輸出格式、少量提示；不可塞大量模板）
+  prompt_benchmark.md  ← Procedural Law：批次/實驗用結構（保留 Level 1/2/3 code skeleton）
+```
+
+### Runtime 組裝（`core/engine/scaler.py`）
+
+- base = `SKILL.md` 在 `=== SKILL_END_PROMPT ===` 前的內容
+- delta = `prompt_liveshow.md`（或 benchmark mode 時讀 `prompt_benchmark.md`）
+- prompt = `f"{base}\n=== SKILL_END_PROMPT ===\n\n{delta}"`
+
+---
+
+## 5.2 Radicals：Hybrid 雙軌（Path A / Path B）
+
+### Path A（Orchestrator）
+- **輸出只允許 3 行**：`pattern_id` / `difficulty` / `term_count`
+- 後端會以 pattern_id 走 `DomainFunctionHelper` → `RadicalSolver` 完成出題與解題
+
+### Path B（Coder）
+- 只有在「非 catalogue 標準題型、或複雜混合」才用
+- 後端 sandbox 已預載 `sympy as sp` 與 `df`（DomainFunctionHelper 實例），降低漏 import 崩潰
+
+---
+
+## 5.3 scaler.py 的防故障機制（Radicals 重點）
+
+### Smart Interceptor（避免綁架 Path B）
+- 只有在 **輸出很短** 且 **沒有 `def generate`** 時才把 AI 輸出視為 Path A 決策並強制組裝 scaffold
+
+### Alias Resolver（短別名容錯）
+- 支援 `p1`/`p1b`/`p1c`/`p4d`/`p7` 等 short alias → full pattern_id
+- 避免 AI 用短別名導致後端拒收
+
+### Circuit Breaker（避免跳針/過長）
+- 只對 **Path B（非 scaffold）** 生效，偵測到重複或異常過長就 fallback 到 emergency generate code
+
+---
+
+## 5.4 Radicals：後端單一真相（Source of Truth）
+
+- **題型識別與變數生成**：`core/domain_functions.py`（`DomainFunctionHelper.get_safe_vars_for_pattern`）
+- **題面格式化（LaTeX）**：`DomainFunctionHelper.format_question_LaTeX`
+- **求解**：
+  - 大多數 pattern：走 `core/math_solvers/radical_solver.py::RadicalSolver.solve_problem_pattern`
+  - 少數新/混合 pattern：`DomainFunctionHelper.solve_problem_pattern` 用 sympy 特判（避免 prompt bloat）
+
+目前 Radicals 已新增並落地的擴充 pattern（範例）：
+- `p7_mixed_rad_add`（帶分數根式加減）
+- `p4d_frac_rad_div_mixed`（(a/√b)÷(√c/√d)）
+- `p1b_add_sub_bracket`（帶括號加減）
+- `p1c_mixed_frac_rad_add_sub`（a/√b ± (c/d)√b）
+
+> 後續要做「多項式四則」請沿用同樣方法：先在 `SKILL.md` 定義 catalogue + vars，再在 `DomainFunctionHelper` / solver 端落地，最後接上 scaler 的 alias/valid_id。
+
 ## 6. 修改優先序與執行計畫 (Roadmap)
 
 ### Phase 0 — 已完成項目 ✅

@@ -1620,12 +1620,8 @@
                     <select id="model-select-ab1" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
                         <option value="pause" selected>暫停測試</option>
-                        <option value="qwen3-vl-8b">Qwen3-VL-8B</option>
-                        <option value="qwen3-vl-4b">Qwen3-VL-4B</option>
-                        <option value="qwen3.5-9b">Qwen3.5-9B</option>
-                        <option value="qwen3.5-4b">Qwen3.5-4B</option>
-                        <option value="qwen3-8b">Qwen3-8B</option>
-                        <option value="qwen3-14b">Qwen3-14B</option>
+                        <option value="gemini-3-flash">Gemini 3 Flash (Cloud)</option>
+                        <option value="qwen3-vl-8b">Qwen3-VL-8B (Local)</option>
                     </select>
                 </div>
             </div>
@@ -1749,12 +1745,8 @@
                     <div id="badge-ab3" class="badge badge-standby">STANDBY</div>
                     <select id="model-select-ab3" class="model-select"
                         style="padding: 0.25rem 0.5rem; border-radius: 4px; border: 1px solid var(--border-subtle); background: #f8f9fa; font-size: 0.75rem; color: var(--text-main); outline: none;">
-                        <option value="qwen3-vl-8b" selected>Qwen3-VL-8B</option>
-                        <option value="qwen3-vl-4b">Qwen3-VL-4B</option>
-                        <option value="qwen3.5-9b">Qwen3.5-9B</option>
-                        <option value="qwen3.5-4b">Qwen3.5-4B</option>
-                        <option value="qwen3-8b">Qwen3-8B</option>
-                        <option value="qwen3-14b">Qwen3-14B</option>
+                        <option value="gemini-3-flash">Gemini 3 Flash (Cloud)</option>
+                        <option value="qwen3-vl-8b" selected>Qwen3-VL-8B (Local)</option>
                     </select>
                 </div>
             </div>
@@ -2525,10 +2517,14 @@
             // Phase 4 — Boot logs
             const m1_val = document.getElementById('model-select-ab1').value;
             const m3_val = document.getElementById('model-select-ab3').value;
-            const badge1 = '<span class="log-badge badge-qwen">QWEN</span>';
-            const badge3 = '<span class="log-badge badge-qwen">QWEN</span>';
-            const name1 = m1_val === 'qwen3-14b' ? 'Qwen-14B' : (m1_val === 'qwen3-vl-8b' ? 'Qwen3-VL-8B' : (m1_val === 'qwen3-vl-4b' ? 'Qwen3-VL-4B' : (m1_val === 'qwen3.5-9b' ? 'Qwen3.5-9B' : (m1_val === 'qwen3.5-4b' ? 'Qwen3.5-4B' : 'Qwen-8B'))));
-            const name3 = m3_val === 'qwen3-14b' ? 'Qwen-14B' : (m3_val === 'qwen3-vl-8b' ? 'Qwen3-VL-8B' : (m3_val === 'qwen3-vl-4b' ? 'Qwen3-VL-4B' : (m3_val === 'qwen3.5-9b' ? 'Qwen3.5-9B' : (m3_val === 'qwen3.5-4b' ? 'Qwen3.5-4B' : 'Qwen-8B'))));
+            
+            // 動態判斷 Badge (如果是 gemini 就用藍色 gemini badge，否則預設 qwen)
+            const badge1 = m1_val === 'gemini-3-flash' ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            const badge3 = m3_val === 'gemini-3-flash' ? '<span class="log-badge badge-gemini">GEMINI</span>' : '<span class="log-badge badge-qwen">QWEN</span>';
+            
+            // 動態判斷顯示名稱
+            const name1 = m1_val === 'gemini-3-flash' ? 'Gemini 3 Flash' : (m1_val === 'qwen3-vl-8b' ? 'Qwen3-VL-8B' : 'Local Engine');
+            const name3 = m3_val === 'gemini-3-flash' ? 'Gemini 3 Flash' : (m3_val === 'qwen3-vl-8b' ? 'Qwen3-VL-8B' : 'Local Engine');
 
             log1.innerHTML = `${badge1} <span style="color:#3498db">> [NATIVE] Initializing ${name1} (Zero-shot)...</span>`;
             log3.innerHTML = `${badge3} <span style="color:#3498db">> [LOCAL] Initializing ${name3} (Active Healer)...</span>`;

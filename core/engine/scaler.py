@@ -16,8 +16,9 @@ RADICAL_VALID_PATTERN_IDS = [
     'p2c_mult_binomial', 'p2f_int_mult_rad', 'p2g_rad_mult_frac',
     'p2h_frac_mult_rad', 'p2d_perfect_square', 'p2e_diff_of_squares',
     'p3a_div_expr', 'p3c_div_direct', 'p3b_div_simple', 'p4_frac_mult',
-    'p4b_frac_rad_div', 'p4c_nested_frac_chain', 'p5a_conjugate_int',
+    'p4b_frac_rad_div', 'p4c_nested_frac_chain', 'p4d_frac_rad_div_mixed', 'p5a_conjugate_int',
     'p5b_conjugate_rad', 'p6_combo', 'p7_mixed_rad_add',
+    'p1b_add_sub_bracket', 'p1c_mixed_frac_rad_add_sub',
 ]
 
 # 短別名 → 完整 ID（模糊匹配，減少 8B 模型壓力）
@@ -27,8 +28,9 @@ RADICAL_FUZZY_PREFIX_MAP = {
     'p2e': 'p2e_diff_of_squares', 'p2f': 'p2f_int_mult_rad', 'p2g': 'p2g_rad_mult_frac',
     'p2h': 'p2h_frac_mult_rad', 'p3a': 'p3a_div_expr', 'p3b': 'p3b_div_simple',
     'p3c': 'p3c_div_direct', 'p4': 'p4_frac_mult', 'p4b': 'p4b_frac_rad_div',
-    'p4c': 'p4c_nested_frac_chain', 'p5a': 'p5a_conjugate_int', 'p5b': 'p5b_conjugate_rad',
+    'p4c': 'p4c_nested_frac_chain', 'p4d': 'p4d_frac_rad_div_mixed', 'p5a': 'p5a_conjugate_int', 'p5b': 'p5b_conjugate_rad',
     'p6': 'p6_combo', 'p7': 'p7_mixed_rad_add',
+    'p1b': 'p1b_add_sub_bracket', 'p1c': 'p1c_mixed_frac_rad_add_sub',
 }
 
 
@@ -476,8 +478,8 @@ class AdaptiveScaler:
                         "p2e": "p2e_diff_of_squares", "p2f": "p2f_int_mult_rad", "p2g": "p2g_rad_mult_frac",
                         "p2h": "p2h_frac_mult_rad", "p3a": "p3a_div_expr", "p3b": "p3b_div_simple",
                         "p3c": "p3c_div_direct", "p4": "p4_frac_mult", "p4b": "p4b_frac_rad_div",
-                        "p4c": "p4c_nested_frac_chain", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
-                        "p6": "p6_combo", "p7": "p7_mixed_rad_add"
+                        "p4c": "p4c_nested_frac_chain", "p4d": "p4d_frac_rad_div_mixed", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
+                        "p6": "p6_combo", "p7": "p7_mixed_rad_add", "p1b": "p1b_add_sub_bracket", "p1c": "p1c_mixed_frac_rad_add_sub"
                     }
                     if _raw_pid:
                         _raw_pid_clean = _raw_pid.split()[0].replace('±', '').replace('÷', '').strip()
@@ -578,8 +580,8 @@ class AdaptiveScaler:
                         "p2e": "p2e_diff_of_squares", "p2f": "p2f_int_mult_rad", "p2g": "p2g_rad_mult_frac",
                         "p2h": "p2h_frac_mult_rad", "p3a": "p3a_div_expr", "p3b": "p3b_div_simple",
                         "p3c": "p3c_div_direct", "p4": "p4_frac_mult", "p4b": "p4b_frac_rad_div",
-                        "p4c": "p4c_nested_frac_chain", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
-                        "p6": "p6_combo", "p7": "p7_mixed_rad_add"
+                        "p4c": "p4c_nested_frac_chain", "p4d": "p4d_frac_rad_div_mixed", "p5a": "p5a_conjugate_int", "p5b": "p5b_conjugate_rad",
+                        "p6": "p6_combo", "p7": "p7_mixed_rad_add", "p1b": "p1b_add_sub_bracket", "p1c": "p1c_mixed_frac_rad_add_sub"
                     }
                     if _raw_pid:
                         _raw_pid_clean = _raw_pid.split()[0].replace('±', '').replace('÷', '').strip()
