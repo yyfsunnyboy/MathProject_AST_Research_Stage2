@@ -259,6 +259,11 @@ class RadicalOps:
         return coeff * out_factor, new_radicand
 
     @staticmethod
+    def simplify(coeff, radicand):
+        """別名：等同 simplify_term；單項化簡 c√r → (new_c, new_r)。"""
+        return RadicalOps.simplify_term(coeff, radicand)
+
+    @staticmethod
     def format_term(coeff, radicand, is_first=True):
         """格式化單項根式 (LaTeX)，支援 Fraction 係數"""
         if coeff == 0: return ""
@@ -292,19 +297,58 @@ class RadicalOps:
         return f"{sign}{c_str}\\sqrt{{{r_val}}}"
 
     @staticmethod
-    def format_term_unsimplified(coeff, radicand, is_first=True):
-        """格式化單項根式 (不化簡，用於題目展示)"""
-        if coeff == 0: return ""
+    def format_term_unsimplified(
+        coeff, radicand, is_first=True, wrap_negative_non_leading=False, is_leading=None
+    ):
+        """不化簡被開方數；is_leading 與 is_first 同義。"""
+        if is_leading is not None:
+            is_first = bool(is_leading)
+        if coeff == 0:
+            return ""
+        from fractions import Fraction as _F
 
-        sign = ""
-        if not is_first:
-            sign = " + " if coeff > 0 else " - "
-        elif coeff < 0:
-            sign = "-"
+        def is_f(x):
+            return type(x).__name__ == "Fraction" or isinstance(x, _F)
 
-        abs_c = abs(coeff)
-        c_str = "" if abs_c == 1 else str(abs_c)
-        return f"{sign}{c_str}\\sqrt{{{radicand}}}"
+        if radicand == 0:
+            return "0"
+        if not is_f(radicand) and int(radicand) == 1:
+            return FractionOps.to_latex(coeff, mixed=False) if is_f(coeff) else str(coeff)
+        if is_f(radicand):
+            rt = (
+                FractionOps.to_latex(radicand, mixed=False)
+                if radicand.denominator != 1
+                else str(radicand.numerator)
+            )
+            core = f"\\sqrt{{{rt}}}"
+        else:
+            core = f"\\sqrt{{{radicand}}}"
+        if is_f(coeff):
+            if wrap_negative_non_leading and coeff < 0 and not is_first:
+                return f"\\left({RadicalOps.format_term_unsimplified(coeff, radicand, True, False)}\\right)"
+            at = FractionOps.to_latex(abs(coeff), mixed=False)
+            mid = f"{at}{core}" if abs(coeff) != 1 else core
+            if is_first:
+                return f"-{mid}" if coeff < 0 else (mid if coeff > 0 else "0")
+            if coeff > 0:
+                return f" + {mid}" if coeff != 1 else f" + {core}"
+            return f" - {mid}" if abs(coeff) != 1 else f" - {core}"
+        c = int(coeff)
+        if wrap_negative_non_leading and c < 0 and not is_first:
+            return f"\\left({RadicalOps.format_term_unsimplified(c, radicand, True, False)}\\right)"
+        if is_first:
+            if c == 1:
+                return core
+            if c == -1:
+                return f"-{core}"
+            if c < 0:
+                return f"-{abs(c)}{core}"
+            return f"{c}{core}"
+        if c > 0:
+            return f" + {core}" if c == 1 else f" + {c}{core}"
+        if c == -1:
+            return f" - {core}"
+        return f" - {abs(c)}{core}"
 
     @staticmethod
     def format_expression(terms_dict, denominator=1):
@@ -341,22 +385,34 @@ class RadicalOps:
                 for r in simplified:
                     simplified[r] //= common
 
-        # 3. 排序 (整數項 radicand=1 排最前，其他從小到大)
+        # 3. 按 radicand 升序（答案唯一）
         sorted_rads = sorted(simplified.keys())
-        if 1 in sorted_rads:
-            sorted_rads.remove(1)
-            sorted_rads.insert(0, 1)
 
-        # 4. 生成字串
+        # 4. 標準書寫：首項負號緊貼；後續「 + 」「 - 」與係數絕對值
         parts = []
-        is_first = True
-        for r in sorted_rads:
-            term_str = RadicalOps.format_term(simplified[r], r, is_first)
-            if term_str:
-                parts.append(term_str)
-                is_first = False
+        for i, r in enumerate(sorted_rads):
+            c = simplified[r]
+            if c == 0:
+                continue
+            if r == 1:
+                tex = str(c)
+                if not parts:
+                    parts.append(tex)
+                elif c > 0:
+                    parts.append(f" + {tex}")
+                else:
+                    parts.append(f" - {abs(c)}")
+            else:
+                ac = abs(c)
+                body = f"\\sqrt{{{r}}}" if ac == 1 else f"{ac}\\sqrt{{{r}}}"
+                if not parts:
+                    parts.append(f"-{body}" if c < 0 else body)
+                elif c > 0:
+                    parts.append(f" + {body}")
+                else:
+                    parts.append(f" - {body}")
 
-        final_str = "".join(parts).lstrip()
+        final_str = "".join(parts)
 
         if denominator == 1 or not final_str:
             return final_str if final_str else "0"
@@ -800,6 +856,11 @@ class RadicalOps:
         return coeff * out_factor, new_radicand
 
     @staticmethod
+    def simplify(coeff, radicand):
+        '''別名：等同 simplify_term；單項化簡 c√r → (new_c, new_r)。'''
+        return RadicalOps.simplify_term(coeff, radicand)
+
+    @staticmethod
     def format_term(coeff, radicand, is_first=True):
         '''
         格式化單項根式 (LaTeX)
@@ -838,23 +899,58 @@ class RadicalOps:
         return f"{sign}{c_str}\\sqrt{{{r_val}}}"
 
     @staticmethod
-    def format_term_unsimplified(coeff, radicand, is_first=True):
-        '''
-        格式化單項根式 (不化簡，用於題目展示)
-        - 保留原始 radicand (如 √18 而非 3√2)
-        - 處理正負號與係數 1/-1
-        '''
-        if coeff == 0: return ""
+    def format_term_unsimplified(
+        coeff, radicand, is_first=True, wrap_negative_non_leading=False, is_leading=None
+    ):
+        '''不化簡被開方數；is_leading 與 is_first 同義。'''
+        if is_leading is not None:
+            is_first = bool(is_leading)
+        if coeff == 0:
+            return ""
+        from fractions import Fraction as _F
 
-        sign = ""
-        if not is_first:
-            sign = " + " if coeff > 0 else " - "
-        elif coeff < 0:
-            sign = "-"
+        def is_f(x):
+            return type(x).__name__ == "Fraction" or isinstance(x, _F)
 
-        abs_c = abs(coeff)
-        c_str = "" if abs_c == 1 else str(abs_c)
-        return f"{sign}{c_str}\\sqrt{{{radicand}}}"
+        if radicand == 0:
+            return "0"
+        if not is_f(radicand) and int(radicand) == 1:
+            return FractionOps.to_latex(coeff, mixed=False) if is_f(coeff) else str(coeff)
+        if is_f(radicand):
+            rt = (
+                FractionOps.to_latex(radicand, mixed=False)
+                if radicand.denominator != 1
+                else str(radicand.numerator)
+            )
+            core = f"\\sqrt{{{rt}}}"
+        else:
+            core = f"\\sqrt{{{radicand}}}"
+        if is_f(coeff):
+            if wrap_negative_non_leading and coeff < 0 and not is_first:
+                return f"\\left({RadicalOps.format_term_unsimplified(coeff, radicand, True, False)}\\right)"
+            at = FractionOps.to_latex(abs(coeff), mixed=False)
+            mid = f"{at}{core}" if abs(coeff) != 1 else core
+            if is_first:
+                return f"-{mid}" if coeff < 0 else (mid if coeff > 0 else "0")
+            if coeff > 0:
+                return f" + {mid}" if coeff != 1 else f" + {core}"
+            return f" - {mid}" if abs(coeff) != 1 else f" - {core}"
+        c = int(coeff)
+        if wrap_negative_non_leading and c < 0 and not is_first:
+            return f"\\left({RadicalOps.format_term_unsimplified(c, radicand, True, False)}\\right)"
+        if is_first:
+            if c == 1:
+                return core
+            if c == -1:
+                return f"-{core}"
+            if c < 0:
+                return f"-{abs(c)}{core}"
+            return f"{c}{core}"
+        if c > 0:
+            return f" + {core}" if c == 1 else f" + {c}{core}"
+        if c == -1:
+            return f" - {core}"
+        return f" - {abs(c)}{core}"
 
     @staticmethod
     def format_expression(terms_dict, denominator=1):
@@ -863,7 +959,7 @@ class RadicalOps:
         - 自動化簡合併同類項
         - 支援 Fraction 係數（自動通分轉為整數係數 + denominator）
         - 支援 denominator 參數直接傳入分母（推薦用法：避免 Fraction 係數）
-        - 自動排序 (整數項在前，根式項按 radicand 排序)
+        - 按 radicand 升序；首項負號緊貼，後續「 + 」「 - 」
         '''
         if not terms_dict: return "0"
         import math
@@ -897,22 +993,34 @@ class RadicalOps:
                 for r in simplified:
                     simplified[r] //= common
 
-        # 3. 排序 (整數項 radicand=1 排最前，其他從小到大)
+        # 3. 按 radicand 升序（答案唯一）
         sorted_rads = sorted(simplified.keys())
-        if 1 in sorted_rads:
-            sorted_rads.remove(1)
-            sorted_rads.insert(0, 1)
 
-        # 4. 生成字串
+        # 4. 標準書寫：首項負號緊貼；後續「 + 」「 - 」與係數絕對值
         parts = []
-        is_first = True
-        for r in sorted_rads:
-            term_str = RadicalOps.format_term(simplified[r], r, is_first)
-            if term_str:
-                parts.append(term_str)
-                is_first = False
+        for i, r in enumerate(sorted_rads):
+            c = simplified[r]
+            if c == 0:
+                continue
+            if r == 1:
+                tex = str(c)
+                if not parts:
+                    parts.append(tex)
+                elif c > 0:
+                    parts.append(f" + {tex}")
+                else:
+                    parts.append(f" - {abs(c)}")
+            else:
+                ac = abs(c)
+                body = f"\\sqrt{{{r}}}" if ac == 1 else f"{ac}\\sqrt{{{r}}}"
+                if not parts:
+                    parts.append(f"-{body}" if c < 0 else body)
+                elif c > 0:
+                    parts.append(f" + {body}")
+                else:
+                    parts.append(f" - {body}")
 
-        final_str = "".join(parts).lstrip()
+        final_str = "".join(parts)
 
         if denominator == 1 or not final_str:
             return final_str if final_str else "0"
@@ -1446,7 +1554,7 @@ SKILL_DOMAIN_MAPPING = {
     'FourArithmeticOperationsOfNumbers': ['integerops', 'fractionops'],  # [Fix] 補上分數工具
     
     # ===== 根式運算相關 (新增 V2.7) =====
-    'FourOperationsOfRadicals': ['radicalops'],  # 只注入根式工具，不注入多項式工具
+    'FourOperationsOfRadicals': ['radicalops', 'fractionops'],  # 根式 + 分數排版（RadicalOps 可呼叫 FractionOps）
     
     # ===== 多項式相關 =====
     'polynomial_def': ['polynomial'],

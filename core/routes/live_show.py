@@ -76,6 +76,40 @@ _engine_instance = None
 _LIVE_FILE_DISPLAY_MODE = {}
 
 
+def compact_radical_skill_for_liveshow(skill_text: str) -> str:
+    """
+    根式單元 LiveShow：縮減 SKILL 注入量（8B token 預算）。
+    移除 DomainFunctionHelper（df）整段與 vars 結構參考表；保留 Catalogue、
+    RadicalOps API 表與 Verification Logic。
+    """
+    if not skill_text or not skill_text.strip():
+        return skill_text
+    sep = "════════════════════════════════════════════════════════════════"
+    marker_df = "**DomainFunctionHelper (df)**"
+    marker_ver = "【Verification Logic】"
+    marker_vars = f"{sep}\nvars 結構參考"
+    out = skill_text
+    if marker_df in out:
+        head, tail = out.split(marker_df, 1)
+        vp = tail.find(marker_ver)
+        if vp != -1:
+            rest = tail[vp:]
+            if marker_vars in rest:
+                rest = rest.split(marker_vars)[0].rstrip()
+                rest += "\n\n*（路徑 A：`vars` 由 `df.get_safe_vars_for_pattern` 產生；逐 pattern 鍵表已省略。）*"
+            out = head.rstrip() + "\n\n" + rest
+        else:
+            out = head.rstrip()
+    elif marker_vars in out:
+        out = out.split(marker_vars)[0].rstrip()
+        out += "\n\n*（路徑 A：`vars` 由 `df.get_safe_vars_for_pattern` 產生；逐 pattern 鍵表已省略。）*"
+    out = out.replace(
+        "【API 與規範】RadicalOps · DomainFunctionHelper (df)",
+        "【API 與規範】RadicalOps",
+    )
+    return out.strip()
+
+
 # ===========================================================================
 # Radical Orchestrator helpers
 # ===========================================================================
@@ -667,6 +701,8 @@ def generate_live():
             fraction_display_mode = _infer_fraction_display_mode(ocr_text, skill_id)
             decimal_style_mode = _has_decimal_number(ocr_text)
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
+            if skill_id and "FourOperationsOfRadicals" in skill_id:
+                knowledge = compact_radical_skill_for_liveshow(knowledge)
             # Re-use pre-computed structural profile from classify when available.
             if json_spec.get("operator_fingerprint"):
                 iso_block = json_spec.get("isomorphic_constraints", "")
@@ -1667,6 +1703,9 @@ def classify_input():
                 # 動態注入 OCR 結果，並對 prompt_liveshow.md 也套用 apply_strict_mirroring
                 live_show_content = live_show_content.replace('{{OCR_RESULT}}', input_text_safe)
                 live_show_content = apply_strict_mirroring(live_show_content, ocr_text)
+
+                if skill_spec_distilled and skill_name and "FourOperationsOfRadicals" in skill_name:
+                    skill_spec_distilled = compact_radical_skill_for_liveshow(skill_spec_distilled)
 
                 if skill_spec_distilled:
                     scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""

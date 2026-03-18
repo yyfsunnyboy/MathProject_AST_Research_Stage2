@@ -58,7 +58,8 @@
     - **確保** 整數除法結果符合 K12 教學規範。
 
 - **LaTeX 渲染安全**:
-    - 強制使用 `\left(` 與 `\right)` 處理括號。
+    - **括號策略（2026-03-18 更新）**：題幹端優先使用**標準 LaTeX 括號** `(...)`；由 Healer 負責 token-level 的「負數整項括號」修復與去重。
+    - **Healer token 辨識範圍**：已支援在負數整數後延伸掃描 `\\frac{...}{...}` 與 `\\sqrt{...}`，避免像 `(-4\\sqrt{6})` 被誤拆造成重複加括號或括號層級誤升級。
     - 確保所有數學符號通過渲染檢核，避免破圖。
 
 - **Live Show 分設架構 (Hybrid Architecture)**:
@@ -177,7 +178,11 @@ agent_skills/<skill_id>/
 - **題面格式化（LaTeX）**：`DomainFunctionHelper.format_question_LaTeX`
 - **求解**：
   - 大多數 pattern：走 `core/math_solvers/radical_solver.py::RadicalSolver.solve_problem_pattern`
-  - 少數新/混合 pattern：`DomainFunctionHelper.solve_problem_pattern` 用 sympy 特判（避免 prompt bloat）
+  - 少數顯示/格式高度敏感 pattern：由 `DomainFunctionHelper.solve_problem_pattern` 直接攔截並回傳 deterministic 詳解（例如 `p2f_int_mult_rad`、`p2g/p2h`、`p4_frac_mult`），避免舊 solver 或 LLM 產生破壞前端的非標準 LaTeX。
+
+**架構決策（2026-03-18 更新）**
+- **Orchestrator 路徑不依賴 SymPy**：Path A（pattern catalogue → DomainFunctionHelper/RadicalSolver）以 `RadicalOps`/`FractionOps` 的 deterministic API 完成出題、排版與求解。
+- SymPy 僅保留作為 Path B（Coder）沙盒的可選工具，用於非 catalogue 的極端混合題；但展示/教學主路徑以「可控、可重現、可追溯」為最高優先。
 
 目前 Radicals 已新增並落地的擴充 pattern（範例）：
 - `p7_mixed_rad_add`（帶分數根式加減）

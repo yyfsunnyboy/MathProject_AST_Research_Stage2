@@ -313,6 +313,12 @@ class AdaptiveScaler:
 
                 # 使用明確的切斷錨點，截取基礎規則與 LIVESHOW 區段
                 skill_spec_distilled = full_skill_spec.split("=== SKILL_END_PROMPT ===")[0].strip()
+                if "OfRadicals" in skill_name:
+                    try:
+                        from core.routes.live_show import compact_radical_skill_for_liveshow
+                        skill_spec_distilled = compact_radical_skill_for_liveshow(skill_spec_distilled)
+                    except ImportError:
+                        pass
 
                 import re
                 benchmark_match = re.search(r'\[\[MODE:BENCHMARK\]\]([\s\S]*?)\[\[END_MODE:BENCHMARK\]\]', full_skill_spec)
@@ -350,7 +356,14 @@ class AdaptiveScaler:
                                 flags=re.DOTALL  # [Fix] 確保即使列表跨行也能正確替換
                             )
 
-                    prompt = f"""{assembled_liveshow}
+                    if "OfRadicals" in skill_name:
+                        prompt = f"""{assembled_liveshow}
+{radical_style_prompt}
+【動態目標題型參考】
+{input_text_safe}
+"""
+                    else:
+                        prompt = f"""{assembled_liveshow}
 {radical_style_prompt}
 【動態目標題型參考】
 {input_text_safe}
@@ -366,7 +379,6 @@ class AdaptiveScaler:
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 系統已預載 sympy (as sp) 與 df，你可直接使用。若題型複雜，請直接撰寫數學邏輯並 return 包含 question_text 與 correct_answer 的字典。
 """
                 else:
                     # ── Fallback：舊邏輯（SKILL.md 切割 + BENCHMARK section）──
@@ -414,7 +426,6 @@ class AdaptiveScaler:
 7. 必須保留原題的運算骨架：項數、括號層級、絕對值位置、正負號配置與運算符集合需一致。
 8. 禁止新增原題沒有的運算（例如原題沒有絕對值時，不得自行加入 | |）。
 9. `question_text` 必須是對原題算式的標準化 LaTeX 呈現，不得改題意。
-10. 系統已預載 sympy (as sp) 與 df，你可直接使用。若題型複雜，請直接撰寫數學邏輯並 return 包含 question_text 與 correct_answer 的字典。
 """
                 active_ablation_id = 3
             

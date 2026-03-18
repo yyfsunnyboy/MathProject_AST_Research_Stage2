@@ -12,7 +12,7 @@ Description:
       1. get_golden_pattern_for_liveshow() — OCR-semantic → pattern_id mapping
       2. get_safe_vars_for_pattern()       — controlled random variable generation
       3. solve_problem_pattern()           — delegates to RadicalSolver
-      4. format_question_LaTeX()           — question-text LaTeX formatting
+      4. format_question_LaTeX()           — LaTeX via RadicalOps（與沙盒一致）
 
     Design constraints:
       - All variable generation is seeded through integer-only arithmetic.
@@ -33,12 +33,12 @@ from typing import Dict, List, Optional, Tuple
 from core.math_solvers.radical_solver import (
     RadicalSolver,
     _simplify_rad,
-    _format_term_unsimplified,
     _format_expression,
     _merge_terms,
     StepList,
     TermsDict,
 )
+from core.scaffold.domain_libs import RadicalOps
 
 # ---------------------------------------------------------------------------
 # Constant sets (match SKILL.md definitions)
@@ -282,47 +282,123 @@ class DomainFunctionHelper:
         difficulty: str = "mid",
     ) -> Tuple[str, StepList]:
         """
-        Compute the answer and solution steps for a given pattern + variables.
-
-        Delegates entirely to RadicalSolver.solve_problem_pattern.
-
-        Returns:
-            (latex_answer: str, solution_steps: List[str])
+        純淨版：無 SymPy。p2f 由 RadicalOps 攔截（標準 LaTeX 括號）；其餘交 RadicalSolver。
         """
         pid = pattern_id.lower().strip()
-        if pid == "p1b_add_sub_bracket":
-            import sympy as sp
-            c1, r1 = variables["c1"], variables["r1"]
-            c2, r2 = variables["c2"], variables["r2"]
-            c3, r3 = variables["c3"], variables["r3"]
-            c4, r4 = variables["c4"], variables["r4"]
 
-            t1 = c1 * sp.sqrt(r1)
-            t2 = c2 * sp.sqrt(r2)
-            t3 = c3 * sp.sqrt(r3)
-            t4 = c4 * sp.sqrt(r4)
+        # 攔截 p2f：RadicalOps 答案；標準括號 + Healer 已辨識 \\sqrt 整項
+        if pid == "p2f_int_mult_rad":
+            c1 = variables.get("c1", 1)
+            c2 = variables.get("c2", 1)
+            r = variables.get("r", 1)
 
-            inner = t3 + t4
-            expr = (t1 + t2 + inner) if variables["op_bracket"] == "+" else (t1 + t2 - inner)
-            return (
-                sp.latex(sp.simplify(expr)),
-                ["展開括號注意變號，將各根式化為最簡根式，最後合併同類項。"],
+            ans_latex = RadicalOps.format_expression({r: c1 * c2})
+
+            t1 = f"({c1})" if c1 < 0 else str(c1)
+
+            if c2 == -1:
+                raw_t2 = f"-\\sqrt{{{r}}}"
+            elif c2 == 1:
+                raw_t2 = f"\\sqrt{{{r}}}"
+            else:
+                raw_t2 = f"{c2}\\sqrt{{{r}}}"
+
+            if c2 < 0:
+                t2 = f"({raw_t2})"
+            else:
+                t2 = raw_t2
+
+            step1 = f"原式 = ${t1} \\times {t2}$"
+
+            c1_str = str(c1)
+            c2_str = f"({c2})" if c2 < 0 else str(c2)
+            if c2 < 0:
+                step2_math = (
+                    f"\\left[ {c1_str} \\times {c2_str} \\right] \\sqrt{{{r}}}"
+                )
+            else:
+                step2_math = f"({c1_str} \\times {c2_str}) \\sqrt{{{r}}}"
+            step2 = f"將括號外的整數與根式前的係數相乘：${step2_math}$"
+
+            return ans_latex, [step1, step2, f"計算結果為：${ans_latex}$"]
+
+        # --- 攔截 P2G / P2H（分數 × 根式）---
+        if pid in ("p2g_rad_mult_frac", "p2h_frac_mult_rad"):
+            k = variables.get("k", 1)
+            r = variables.get("r", 1)
+            num = variables.get("num", 1)
+            den = variables.get("den", 1)
+
+            ans_latex = RadicalOps.format_expression({r: k * num}, denominator=den)
+            term_rad = self._format_single_fraction_radical(k, r)
+            frac_str = f"\\dfrac{{{num}}}{{{den}}}"
+
+            if pid == "p2g_rad_mult_frac":
+                step1 = f"原式 = ${term_rad} \\times {frac_str}$"
+            else:
+                tr = term_rad
+                if k < 0:
+                    tr = f"\\left({tr}\\right)"
+                step1 = f"原式 = ${frac_str} \\times {tr}$"
+
+            if isinstance(k, Fraction):
+                k_num, k_den = k.numerator, k.denominator
+            else:
+                k_num, k_den = k, 1
+
+            s2_num, s2_den = k_num * num, k_den * den
+            if s2_num == 1:
+                s2_rad = rf"\sqrt{{{r}}}"
+            elif s2_num == -1:
+                s2_rad = rf"-\sqrt{{{r}}}"
+            else:
+                s2_rad = rf"{abs(s2_num)}\sqrt{{{r}}}"
+
+            sign = "-" if s2_num < 0 else ""
+            step2 = f"分子與分子相乘、分母與分母相乘：${sign}\\dfrac{{{s2_rad}}}{{{s2_den}}}$"
+
+            return ans_latex, [step1, step2, f"化簡結果為：${ans_latex}$"]
+
+        # --- 攔截 P4（純分數 × 分母根式分數）---
+        if pid == "p4_frac_mult":
+            a, b = variables.get("a", 1), variables.get("b", 1)
+            r, c = variables.get("r", 1), variables.get("c", 1)
+            k = variables.get("k", 1)
+            swap = variables.get("swap", False)
+
+            ans_latex = RadicalOps.format_expression({r: a * k}, denominator=b * c)
+
+            if k == 1:
+                rad_num = rf"\sqrt{{{r}}}"
+            elif k == -1:
+                rad_num = rf"-\sqrt{{{r}}}"
+            else:
+                rad_num = rf"{k}\sqrt{{{r}}}"
+
+            frac1 = rf"\dfrac{{{a}}}{{{b}}}"
+            frac2 = rf"\dfrac{{{rad_num}}}{{{c}}}"
+
+            step1 = (
+                f"原式 = ${frac2} \\times {frac1}$"
+                if swap
+                else f"原式 = ${frac1} \\times {frac2}$"
             )
-        if pid == "p1c_mixed_frac_rad_add_sub":
-            import sympy as sp
-            term1 = sp.Rational(variables["a"], 1) / sp.sqrt(variables["b"])
-            term2 = (sp.Rational(variables["c"], variables["d"])) * sp.sqrt(variables["b"])
-            expr = term1 + term2 if variables["op"] == "+" else term1 - term2
-            return (
-                sp.latex(sp.simplify(expr)),
-                ["先將第一項分母有理化，再合併同類方根。"],
+
+            s2_num, s2_den = a * k, b * c
+            if s2_num == 1:
+                s2_rad = rf"\sqrt{{{r}}}"
+            elif s2_num == -1:
+                s2_rad = rf"-\sqrt{{{r}}}"
+            else:
+                s2_rad = rf"{abs(s2_num)}\sqrt{{{r}}}"
+
+            sign = "-" if s2_num < 0 else ""
+            step2 = (
+                f"分子與分子相乘，分母與分母相乘："
+                f"${sign}\\dfrac{{{s2_rad}}}{{{s2_den}}}$"
             )
-        if pid == "p4d_frac_rad_div_mixed":
-            import sympy as sp
-            a, b, c, d = variables["a"], variables["b"], variables["c"], variables["d"]
-            expr = (sp.Rational(a, 1) / sp.sqrt(b)) / (sp.sqrt(c) / sp.sqrt(d))
-            ans_latex = sp.latex(sp.simplify(expr))
-            return ans_latex, ["將除法改為乘上倒數，再進行分母有理化與根式化簡。"]
+
+            return ans_latex, [step1, step2, f"化簡結果為：${ans_latex}$"]
 
         return self._solver.solve_problem_pattern(pattern_id, variables, difficulty)
 
@@ -345,6 +421,28 @@ class DomainFunctionHelper:
             A complete question_text string with $...$ LaTeX wrapping.
         """
         pid = pattern_id.lower().strip()
+        if pid == "p2f_int_mult_rad":
+            vars_ = variables
+            c1 = vars_.get("c1", 1)
+            c2 = vars_.get("c2", 1)
+            r = vars_.get("r", 1)
+
+            t1 = f"({c1})" if c1 < 0 else str(c1)
+
+            if c2 == -1:
+                raw_t2 = f"-\\sqrt{{{r}}}"
+            elif c2 == 1:
+                raw_t2 = f"\\sqrt{{{r}}}"
+            else:
+                raw_t2 = f"{c2}\\sqrt{{{r}}}"
+
+            if c2 < 0:
+                t2 = f"({raw_t2})"
+            else:
+                t2 = raw_t2
+
+            return rf"化簡 ${t1} \times {t2}$。"
+
         formatter_map = {
             "p0_simplify":         self._fmt_p0,
             "p1_add_sub":          self._fmt_p1,
@@ -353,7 +451,6 @@ class DomainFunctionHelper:
             "p2a_mult_direct":     self._fmt_p2a,
             "p2b_mult_distrib":    self._fmt_p2b,
             "p2c_mult_binomial":   self._fmt_p2c,
-            "p2f_int_mult_rad":    self._fmt_p2f,
             "p2g_rad_mult_frac":   lambda v: self._fmt_p2gh(v, "p2g_rad_mult_frac"),
             "p2h_frac_mult_rad":   lambda v: self._fmt_p2gh(v, "p2h_frac_mult_rad"),
             "p2d_perfect_square":  self._fmt_p2d,
@@ -373,6 +470,23 @@ class DomainFunctionHelper:
         if pid not in formatter_map:
             raise ValueError(f"Unknown pattern_id '{pattern_id}'.")
         return formatter_map[pid](variables)
+
+    # 🚨 [新增這個方法] 這是教科書級分子根號排版器
+    def _format_single_fraction_radical(self, coeff, r: int) -> str:
+        """將分數係數的根式排版成標準的分子帶根號格式，例如 \dfrac{3\sqrt{7}}{4}"""
+        from fractions import Fraction
+
+        if isinstance(coeff, Fraction) and coeff.denominator != 1:
+            n = abs(coeff.numerator)
+            d = coeff.denominator
+            sign = "-" if coeff < 0 else ""
+            if n == 1:
+                rad_str = rf"\sqrt{{{r}}}"
+            else:
+                rad_str = rf"{n}\sqrt{{{r}}}"
+            return f"{sign}\\dfrac{{{rad_str}}}{{{d}}}"
+
+        return RadicalOps.format_term_unsimplified(coeff, r, True)
 
     # -----------------------------------------------------------------------
     # 5. Radical DNA helpers
@@ -755,7 +869,7 @@ class DomainFunctionHelper:
 
     def _fmt_p0(self, v: dict) -> str:
         r = v["r"]
-        return rf"化簡 $\sqrt{{{r}}}$。"
+        return rf"化簡 ${RadicalOps.format_term_unsimplified(1, r, True)}$。"
 
     def _fmt_p1(self, v: dict) -> str:
         terms = v["terms"]
@@ -763,10 +877,9 @@ class DomainFunctionHelper:
         for i, (coeff, radicand, op) in enumerate(terms):
             is_first = (i == 0)
             if is_first:
-                parts.append(_format_term_unsimplified(coeff, radicand, True))
+                parts.append(RadicalOps.format_term_unsimplified(coeff, radicand, True))
             else:
-                # Use the op sign rather than the coeff's own sign
-                parts.append(_format_term_unsimplified(
+                parts.append(RadicalOps.format_term_unsimplified(
                     coeff if op == "+" else -coeff, radicand, False
                 ))
         expr = "".join(parts)
@@ -782,57 +895,28 @@ class DomainFunctionHelper:
         return rf"化簡 ${t1}{t2}{op_bracket}({t3}{t4})$。"
 
     def _fmt_p1c(self, v: dict) -> str:
-        op_str = " + " if v["op"] == "+" else " - "
-        return rf"化簡 $\dfrac{{{v['a']}}}{{\sqrt{{{v['b']}}}}}{op_str}\dfrac{{{v['c']}}}{{{v['d']}}}\sqrt{{{v['b']}}}$。"
+        c, d, b = v["c"], v["d"], v["b"]
+        coeff = Fraction(c, d) if v["op"] == "+" else -Fraction(c, d)
+        tail = RadicalOps.format_term_unsimplified(coeff, b, False)
+        return rf"化簡 $\dfrac{{{v['a']}}}{{\sqrt{{{b}}}}}{tail}$。"
 
     def _fmt_p2a(self, v: dict) -> str:
-        """P2a: k₁√r₁ × k₂√r₂. Wrap second operand in () when c2 < 0; optional () for c1 < 0."""
+        """P2a: k₁√r₁ × k₂√r₂ — 根式一律經 RadicalOps。"""
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
-        term1 = (
-            rf"\sqrt{{{r1}}}" if c1 == 1
-            else (rf"-\sqrt{{{r1}}}" if c1 == -1 else rf"{c1}\sqrt{{{r1}}}")
-        )
-        term2 = (
-            rf"\sqrt{{{r2}}}" if c2 == 1
-            else (rf"-\sqrt{{{r2}}}" if c2 == -1 else rf"{c2}\sqrt{{{r2}}}")
-        )
+        term1 = RadicalOps.format_term_unsimplified(c1, r1, True)
+        term2 = RadicalOps.format_term_unsimplified(c2, r2, True)
         if c2 < 0:
             term2 = f"({term2})"
         if c1 < 0 and c1 != -1:
             term1 = f"({term1})"
         return rf"化簡 ${term1} \times {term2}$。"
 
-    def _fmt_p2f(self, v: dict) -> str:
-        """P2f: Format (c1) × (c2√r) or c1 × c2√r. Bulletproof LaTeX for frontend."""
-        c1 = v["c1"]
-        c2 = v["c2"]
-        r = v["r"]
-
-        # Format first term (integer)
-        str_c1 = f"({c1})" if c1 < 0 else str(c1)
-
-        # Format second term (radical)
-        if c2 == -1:
-            str_c2 = f"-\\sqrt{{{r}}}"
-        elif c2 == 1:
-            str_c2 = f"\\sqrt{{{r}}}"
-        else:
-            str_c2 = f"{c2}\\sqrt{{{r}}}"
-
-        # Wrap second term in parentheses if negative
-        str_c2 = f"({str_c2})" if c2 < 0 else str_c2
-
-        # Join with standard spacing
-        inner = f"{str_c1} \\times {str_c2}"
-        return rf"化簡 ${inner}$。"
-
     def _fmt_p2gh(self, v: dict, pattern_id: str) -> str:
         """P2g: k√r × (num/den). P2h: (num/den) × k√r."""
         k, r, num, den = v["k"], v["r"], v["num"], v["den"]
-        k_str = f"({k})" if k < 0 else str(k)
         frac_str = f"\\frac{{{num}}}{{{den}}}"
-        term_rad = f"{k_str}\\sqrt{{{r}}}"
+        term_rad = RadicalOps.format_term_unsimplified(k, r, True)
         if k < 0 and pattern_id == "p2h_frac_mult_rad":
             term_rad = f"({term_rad})"
         if pattern_id == "p2g_rad_mult_frac":
@@ -842,22 +926,10 @@ class DomainFunctionHelper:
         return rf"化簡 ${inner}$。"
 
     def _fmt_term(self, c: int, r: int, is_first: bool = True) -> str:
-        """Smart term formatter that avoids redundant parentheses and handles 1/-1 cleanly."""
+        """根式／整數項 LaTeX，對齊 RadicalOps。"""
         if c == 0:
             return ""
-        
-        abs_c = abs(c)
-        if r == 1:
-            part = str(abs_c)
-        elif abs_c == 1:
-            part = rf"\sqrt{{{r}}}"
-        else:
-            part = rf"{abs_c}\sqrt{{{r}}}"
-            
-        if is_first:
-            return f"-{part}" if c < 0 else part
-        else:
-            return f" - {part}" if c < 0 else f" + {part}"
+        return RadicalOps.format_term_unsimplified(c, r, is_leading=is_first)
 
     def _fmt_p2b(self, v: dict) -> str:
         c1, r1 = v["c1"], v["r1"]
@@ -888,8 +960,8 @@ class DomainFunctionHelper:
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
         op = v.get("op", "+")
-        t1 = _format_term_unsimplified(c1, r1, True)
-        t2 = _format_term_unsimplified(c2, r2, True)
+        t1 = RadicalOps.format_term_unsimplified(c1, r1, True)
+        t2 = RadicalOps.format_term_unsimplified(c2, r2, True)
         op_str = "+" if op == "+" else "-"
         return rf"展開化簡 $({t1} {op_str} {t2})^2$。"
 
@@ -898,8 +970,8 @@ class DomainFunctionHelper:
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
         # r=1 means pure integer: render as c1, not c1√1
-        t1 = str(c1 * r1) if r1 == 1 else _format_term_unsimplified(c1, r1, True)
-        t2 = str(c2 * r2) if r2 == 1 else _format_term_unsimplified(c2, r2, True)
+        t1 = str(c1 * r1) if r1 == 1 else RadicalOps.format_term_unsimplified(c1, r1, True)
+        t2 = str(c2 * r2) if r2 == 1 else RadicalOps.format_term_unsimplified(c2, r2, True)
         return rf"展開化簡 $({t1} - {t2})({t1} + {t2})$。"
 
     def _fmt_p3a(self, v: dict) -> str:
@@ -908,22 +980,16 @@ class DomainFunctionHelper:
         op = v.get("op", "+")
         d = v["denom_r"]
         c2_display = c2 if op == "+" else -c2
-        q1 = _format_term_unsimplified(c1, r1, True)
-        q2 = _format_term_unsimplified(c2_display, r2, False) if c2 else ""
+        q1 = RadicalOps.format_term_unsimplified(c1, r1, True)
+        q2 = RadicalOps.format_term_unsimplified(c2_display, r2, False) if c2 else ""
         return rf"化簡 $({q1}{q2}) \div \sqrt{{{d}}}$。"
 
     def _fmt_p3c(self, v: dict) -> str:
-        """P3c: (c1√r1) ÷ (c2√r2). Wrap entire term in () when coefficient is negative."""
+        """P3c: (c1√r1) ÷ (c2√r2)。"""
         c1, r1 = v["c1"], v["r1"]
         c2, r2 = v["c2"], v["r2"]
-        term1 = (
-            rf"\sqrt{{{r1}}}" if c1 == 1
-            else (rf"-\sqrt{{{r1}}}" if c1 == -1 else rf"{c1}\sqrt{{{r1}}}")
-        )
-        term2 = (
-            rf"\sqrt{{{r2}}}" if c2 == 1
-            else (rf"-\sqrt{{{r2}}}" if c2 == -1 else rf"{c2}\sqrt{{{r2}}}")
-        )
+        term1 = RadicalOps.format_term_unsimplified(c1, r1, True)
+        term2 = RadicalOps.format_term_unsimplified(c2, r2, True)
         if c1 < 0:
             term1 = f"({term1})"
         if c2 < 0:
@@ -936,13 +1002,22 @@ class DomainFunctionHelper:
 
     def _fmt_p4(self, v: dict) -> str:
         a, b, r, c = v["a"], v["b"], v["r"], v["c"]
-        return rf"計算 $\dfrac{{{a}}}{{{b}}} \times \dfrac{{\sqrt{{{r}}}}}{{{c}}}$ 的值。"
+        sr = RadicalOps.format_term_unsimplified(1, r, True)
+        return rf"計算 $\dfrac{{{a}}}{{{b}}} \times \dfrac{{{sr}}}{{{c}}}$ 的值。"
 
     def _fmt_p4b(self, v: dict) -> str:
         """P4b: (√n1/√d1) ÷ (√n2/√d2)."""
         n1, d1 = v["n1"], v["d1"]
         n2, d2 = v["n2"], v["d2"]
-        return rf"化簡 $\dfrac{{\sqrt{{{n1}}}}}{{\sqrt{{{d1}}}}} \div \dfrac{{\sqrt{{{n2}}}}}{{\sqrt{{{d2}}}}}$。"
+        t1, t2 = (
+            RadicalOps.format_term_unsimplified(1, n1, True),
+            RadicalOps.format_term_unsimplified(1, d1, True),
+        )
+        t3, t4 = (
+            RadicalOps.format_term_unsimplified(1, n2, True),
+            RadicalOps.format_term_unsimplified(1, d2, True),
+        )
+        return rf"化簡 $\dfrac{{{t1}}}{{{t2}}} \div \dfrac{{{t3}}}{{{t4}}}$。"
 
     def _fmt_p4c(self, v: dict) -> str:
         """P4c: √(n1/d1) × √(n2/d2) ÷ √(n3/d3)."""

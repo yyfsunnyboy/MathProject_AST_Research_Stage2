@@ -285,6 +285,22 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 | LaTeX 顯示修復 | `core/domain_functions.py` | 修復 `p4b/p4c` raw f-string 反斜線輸出問題；新增 `_fmt_term`，並重寫 `p2b/p2c` formatter 讓負係數更自然（`-2\\sqrt{7}` 取代 `(-2)\\sqrt{7}`）。 |
 | 前端選單對齊 presets | `templates/live_show.html` | Ab1/Ab3 下拉只保留 `pause`/`gemini-3-flash`/`qwen3-vl-8b`；Phase 4 boot logs 依 model 顯示 Gemini(藍) / Qwen(綠) badge 與名稱。 |
 
+### 8.10 今日進度（2026-03-18）
+
+**分數 × 根式排版全面教材化（Healer 與 DomainFunction 同步）**
+
+| 類別 | 檔案 | 更新重點 |
+|------|------|----------|
+| Healer：負數括號修復升級 | `core/healers/live_show_healer.py` | `enforce_negative_parentheses()` 在原本「數字後緊接 `\\frac{...}{...}`」的 token 延伸掃描後，新增「數字後緊接 `\\sqrt{...}`」延伸掃描。目的：遇到 `(-4\\sqrt{6})` 時能把 `-4\\sqrt{6}` 視為單一 token，正確判斷 already_wrapped，避免重複加括號或括號層級被誤升級。 |
+| DomainFunction：p2f 題幹與詳解一致 | `core/domain_functions.py` | `p2f_int_mult_rad` 題幹與 `solve_problem_pattern` 的 `step1` 皆改為標準 LaTeX（負係數根式整項括號：`({raw_t2})`），並依賴 Healer 新的 `\\sqrt{...}` token 辨識來避免誤判。 |
+| DomainFunction：新增排版工具（分子帶根號） | `core/domain_functions.py` | 在 `DomainFunctionHelper` 內新增 `_format_single_fraction_radical(coeff, r)`：把分數係數根式強制排成「分子帶根號」形式（例：`\\dfrac{3\\sqrt{7}}{4}`），供題幹與詳解共用。 |
+| DomainFunction：攔截分數題型求解（避免舊 solver/格式破壞） | `core/domain_functions.py` | `solve_problem_pattern()` 新增攔截：`p2g_rad_mult_frac`、`p2h_frac_mult_rad`、`p4_frac_mult`，以 `RadicalOps.format_expression(..., denominator=...)` 產生答案並回傳固定的兩步教材式詳解（分子相乘、分母相乘），確保前端顯示一致且可控。 |
+| Prompt 注入 mapping | `core/prompts/domain_function_library.py` | `SKILL_DOMAIN_MAPPING['FourOperationsOfRadicals']` 由 `['radicalops']` 擴充為 `['radicalops','fractionops']`，使根式技能在 scaffold 注入時同時擁有 FractionOps（讓 RadicalOps 產生分數 LaTeX 時可穩定呼叫）。 |
+
+**今日結論（重要決策）**
+- Orchestrator（Path A / DomainFunctionHelper / RadicalSolver）方向：**優先以 RadicalOps/FractionOps 的 deterministic API 完成出題/排版/求解**，避免把版面控制丟回 LLM 或 SymPy。
+- 括號/排版策略：題幹端維持標準 LaTeX，Healer 負責 token-level 的「負數整項括號」修復，並已擴充到 `\\sqrt{...}`。
+
 ---
 
 ## 9. 歷史修復摘要（僅關鍵清單）

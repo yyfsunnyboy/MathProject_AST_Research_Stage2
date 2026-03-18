@@ -45,6 +45,11 @@ class RadicalOps:
         return (new_coeff, new_radicand)
 
     @staticmethod
+    def simplify(coeff, radicand):
+        """別名：與 simplify_term 同義；單項化簡 c√r → (new_c, new_r)，例如 radicand=12 → (2, 3)。"""
+        return RadicalOps.simplify_term(coeff, radicand)
+
+    @staticmethod
     def add_term(terms_dict, coeff, radicand):
         """化簡並將單項根式加入到字典中"""
         new_coeff, new_radicand = RadicalOps.simplify_term(coeff, radicand)
@@ -116,67 +121,122 @@ class RadicalOps:
         return term_str
 
     @staticmethod
-    def format_term_unsimplified(coeff, radicand, is_first=True):
-        """格式化單項根式 (不化簡，用於題目展示)"""
+    def format_term_unsimplified(
+        coeff, radicand, is_first=True, wrap_negative_non_leading=False, is_leading=None
+    ):
+        """
+        單項題幹 LaTeX（不化簡被開方數）。禁止 * 號、禁止 sqrt( ) 函數寫法。
+        is_first / is_leading（同義，傳 is_leading 時覆寫 is_first）：首項為 True。
+        """
+        if is_leading is not None:
+            is_first = bool(is_leading)
         if coeff == 0:
             return ""
-        
         from fractions import Fraction
-        
-        # Handle Fraction and styling
-        if type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction):
-            coeff_str = FractionOps.to_latex(coeff, mixed=False)
-        else:
-            coeff_str = str(coeff)
-            
-        if coeff == 1:
-            coeff_str = ""
-        elif coeff == -1:
-            coeff_str = "-"
-            
+
+        def is_f(x):
+            return type(x).__name__ == "Fraction" or isinstance(x, Fraction)
+
         if radicand == 0:
-            term_str = "0"
-            coeff_str = "0" # Override for 0 radicand
-        elif radicand == 1:
-            term_str = FractionOps.to_latex(coeff, mixed=False) if (type(coeff).__name__ == "Fraction" or isinstance(coeff, Fraction)) else str(coeff)
+            return "0"
+        if not is_f(radicand) and int(radicand) == 1:
+            return FractionOps.to_latex(coeff, mixed=False) if is_f(coeff) else str(coeff)
+
+        if is_f(radicand):
+            rt = (
+                FractionOps.to_latex(radicand, mixed=False)
+                if radicand.denominator != 1
+                else str(radicand.numerator)
+            )
+            core = f"\\sqrt{{{rt}}}"
         else:
-            if (type(radicand).__name__ == "Fraction" or isinstance(radicand, Fraction)):
-                if radicand.denominator != 1:
-                    term_str = f"{coeff_str}\\sqrt{{{FractionOps.to_latex(radicand, mixed=False)}}}"
-                else:
-                    term_str = f"{coeff_str}\\sqrt{{{radicand.numerator}}}"
-            else:
-                term_str = f"{coeff_str}\\sqrt{{{radicand}}}"
-        
-        if not is_first and coeff > 0:
-            return "+" + term_str
-        return term_str
+            core = f"\\sqrt{{{radicand}}}"
+
+        if is_f(coeff):
+            if wrap_negative_non_leading and coeff < 0 and not is_first:
+                return f"\\left({RadicalOps.format_term_unsimplified(coeff, radicand, True, False)}\\right)"
+            at = FractionOps.to_latex(abs(coeff), mixed=False)
+            mid = f"{at}{core}" if abs(coeff) != 1 else core
+            if is_first:
+                return f"-{mid}" if coeff < 0 else (mid if coeff > 0 else "0")
+            if coeff > 0:
+                return f" + {mid}" if coeff != 1 else f" + {core}"
+            return f" - {mid}" if abs(coeff) != 1 else f" - {core}"
+
+        c = int(coeff)
+        if wrap_negative_non_leading and c < 0 and not is_first:
+            return f"\\left({RadicalOps.format_term_unsimplified(c, radicand, True, False)}\\right)"
+
+        if is_first:
+            if c == 1:
+                return core
+            if c == -1:
+                return f"-{core}"
+            if c < 0:
+                return f"-{abs(c)}{core}"
+            return f"{c}{core}"
+
+        if c > 0:
+            return f" + {core}" if c == 1 else f" + {c}{core}"
+        if c == -1:
+            return f" - {core}"
+        return f" - {abs(c)}{core}"
 
     @staticmethod
     def format_expression(terms_dict, denominator=1):
-        """格式化多項根式表達式 (terms_dict: {radicand: coeff})"""
+        """
+        多項根式 (terms_dict: {radicand: coeff})。先化簡合併，再按 radicand 升序輸出以保答案唯一。
+        首項係數為負時前綴 '-' 不空格；後續項正係數為 ' + '，負係數為 ' - ' 並取係數絕對值。
+        """
+        from fractions import Fraction
+
+        def _is_frac(x):
+            return type(x).__name__ == "Fraction" or isinstance(x, Fraction)
+
         if not terms_dict:
             return "0"
-        
-        sorted_radicands = sorted(terms_dict.keys())
-        
-        parts = []
-        is_first_term = True
-        for rad in sorted_radicands:
-            coeff = terms_dict[rad]
-            if coeff == 0:
+        simplified = {}
+        for r, c in terms_dict.items():
+            if c == 0:
                 continue
-            
-            part_str = RadicalOps.format_term(coeff, rad, is_first=is_first_term)
-            if part_str:
-                parts.append(part_str)
-                is_first_term = False
-        
-        if not parts:
+            nc, nr = RadicalOps.simplify_term(c, r)
+            simplified[nr] = simplified.get(nr, 0) + nc
+        simplified = {r: c for r, c in simplified.items() if c != 0}
+        if not simplified:
             return "0"
-        
+
+        ordered = sorted(simplified.items(), key=lambda kv: kv[0])
+        parts = []
+        for i, (r, c) in enumerate(ordered):
+            if r == 1:
+                tex = FractionOps.to_latex(c, mixed=False) if _is_frac(c) else str(c)
+                if i == 0:
+                    parts.append(tex)
+                elif (_is_frac(c) and c > 0) or (not _is_frac(c) and c > 0):
+                    parts.append(f" + {tex}")
+                else:
+                    ac = abs(c)
+                    parts.append(f" - {FractionOps.to_latex(ac, mixed=False) if _is_frac(c) else str(ac)}")
+                continue
+            ac = abs(c)
+            if _is_frac(c):
+                mag = FractionOps.to_latex(ac, mixed=False)
+                body = f"{mag}\\sqrt{{{r}}}" if ac != 1 else f"\\sqrt{{{r}}}"
+            elif ac == 1:
+                body = f"\\sqrt{{{r}}}"
+            else:
+                body = f"{ac}\\sqrt{{{r}}}"
+            if i == 0:
+                if c < 0:
+                    parts.append(f"-{body}")
+                else:
+                    parts.append(body)
+            else:
+                if c > 0:
+                    parts.append(f" + {body}")
+                else:
+                    parts.append(f" - {body}")
         expr = "".join(parts)
-        
         if denominator != 1:
             return f"\\frac{{{expr}}}{{{denominator}}}"
         return expr

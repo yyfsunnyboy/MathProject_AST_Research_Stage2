@@ -80,8 +80,8 @@ def enforce_negative_parentheses(expr_text):
 
     Bug 修正：原版只掃描數字部分，導致 -4\\frac{1}{5} 被誤包成
     (-4)\\frac{1}{5}，負號僅覆蓋整數部分而非整個混合分數。
-    修正：掃到數字後若緊接 \\frac，繼續掃過兩個 {...} 大括號群，
-    使 already_wrapped 判斷能正確偵測外層括號。
+    修正：掃到數字後若緊接 \\frac 或 \\sqrt{...}，繼續掃過對應大括號群，
+    使 already_wrapped 能正確偵測外層括號（如 (-4\\sqrt{6})）。
     """
     if not expr_text:
         return expr_text, 0
@@ -117,6 +117,19 @@ def enforce_negative_parentheses(expr_text):
                                     elif compact[j] == '}':
                                         depth -= 1
                                     j += 1
+
+                    # 若數字後緊接 \sqrt{a}，將整個根式併入 token（例：-4\sqrt{6}）
+                    if compact[j:j + 5] == '\\sqrt':
+                        j += 5  # skip '\sqrt'
+                        if j < len(compact) and compact[j] == '{':
+                            depth = 1
+                            j += 1
+                            while j < len(compact) and depth > 0:
+                                if compact[j] == '{':
+                                    depth += 1
+                                elif compact[j] == '}':
+                                    depth -= 1
+                                j += 1
 
                     already_wrapped = (prev == '(' and j < len(compact) and compact[j] == ')')
                     token = compact[i:j]
