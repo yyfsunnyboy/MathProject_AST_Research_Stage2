@@ -144,7 +144,7 @@ def run_ab3_full_healer(
     if "FourOperationsOfRadicals" in (skill_id or ""):
         from core.routes.live_show import _assemble_radical_orchestrator_code
         final_code = _assemble_radical_orchestrator_code(final_code)
-        print(f"⚙️ [UNIVERSAL_ASSEMBLER] Applied orchestrator scaffold for {skill_id}")
+        print(f"[ASSEMBLER] [UNIVERSAL] Applied orchestrator scaffold for {skill_id}")
 
     healed_code = final_code
     regex_fixes = 0
@@ -160,7 +160,7 @@ def run_ab3_full_healer(
         # Radical Orchestrator: skip the general healer entirely
         anti_dup_fixes = 0
         detail_logs.insert(0, "[HEALER_STATUS] ✅ Radical Orchestrator — general healer bypassed.")
-        print("⚙️ [RADICAL_ASSEMBLER] healer bypassed.")
+        print("[ASSEMBLER] [RADICAL] healer bypassed.")
     else:
         try:
             healed_code, *healer_stats = advanced_healer_fn(final_code, ablation_id=3, skill_id=skill_id)
@@ -386,13 +386,12 @@ def run_ab3_full_healer(
 
         generated_expr_final = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
         generated_fp = build_structural_profile_fn(generated_expr_final)
-        # Radical Orchestrator: structural isomorphism is guaranteed by
-        # DomainFunctionHelper; force True so the UI always shows a green mirror.
         # [UI FIX] Populate generated_fp with supercharged radical profile so the frontend mirror isn't blank.
         if radical_reassemble_fn is not None:
-            iso_isomorphic = True
-            from core.code_utils.live_show_math_utils import _build_radical_profile
+            # 🌟 拔除強制的 True！改用真實的根式 DNA 比對！
+            from core.code_utils.live_show_math_utils import _build_radical_profile, _is_radical_isomorphic
             generated_fp = _build_radical_profile(generated_expr_final)
+            iso_isomorphic = _is_radical_isomorphic(expected_fp, generated_expr_final)
         else:
             iso_isomorphic = is_expression_isomorphic_fn(expected_fp, generated_expr_final)
         recompute_result_answer_fn(

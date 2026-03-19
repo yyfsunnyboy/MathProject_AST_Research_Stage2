@@ -1,0 +1,408 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>MathProject 壓力測試渲染報表 (Ab3)</title>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$']] }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; vertical-align: top; }
+        th { background-color: #f2f2f2; }
+        tr:nth-child(even) { background: #fafafa; }
+    </style>
+</head>
+<body>
+    <h2>根式四則運算 (Qwen3-VL-8B + Active Healer) 壓力測試渲染結果</h2>
+    <p>流程：每題先 <code>/api/classify</code>（text_data = 大題原文 + 小題算式），再以回傳的 <code>json_spec</code> + <code>ocr_text</code> 呼叫 <code>/api/generate_live</code>。</p>
+    <p>總測試數: 42 | 成功: 39 | 失敗: 3 | 崩潰: 0</p>
+    <table>
+        <tr><th>編號</th><th>課本小題 / classify 結果</th><th>AI 生成題幹 (LaTeX渲染測試)</th><th>生成答案</th><th>狀態</th><th>耗時 (classify / generate)</th></tr>
+        
+                <tr>
+                    <td>1</td>
+                    <td>$(-2)\times3\sqrt{5}$<br><small>classify ocr: (-2)\times3\sqrt{5}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{75}-3\sqrt{75}$。</td>
+                    <td>-10\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 9.52s / gen 11.00s</td>
+                </tr>
+                
+                <tr>
+                    <td>2</td>
+                    <td>$4\sqrt{2}\times\frac{1}{6}$<br><small>classify ocr: 4\sqrt{2}\times\frac{1}{6}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $-\sqrt{32}+4\sqrt{27}+2\sqrt{8}$。</td>
+                    <td>12\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.52s / gen 6.91s</td>
+                </tr>
+                
+                <tr>
+                    <td>3</td>
+                    <td>$\frac{2}{3}\times\frac{\sqrt{3}}{3}$<br><small>classify ocr: \frac{2}{3}\times\frac{\sqrt{3}}{3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $2\sqrt{18}-\sqrt{45}+5\sqrt{18}$。</td>
+                    <td>21\sqrt{2} - 3\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 5.68s / gen 6.73s</td>
+                </tr>
+                
+                <tr>
+                    <td>4</td>
+                    <td>$\frac{3}{5}\times5\sqrt{2}$<br><small>classify ocr: \frac{3}{5}\times5\sqrt{2}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $5\sqrt{8}+4\sqrt{48}+2\sqrt{12}$。</td>
+                    <td>10\sqrt{2} + 20\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.38s / gen 6.96s</td>
+                </tr>
+                
+                <tr>
+                    <td>5</td>
+                    <td>$\frac{\sqrt{5}}{12}\times(-16)$<br><small>classify ocr: \frac{\sqrt{5}}{12}\times(-16)</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{72}-4\sqrt{50}+\sqrt{18}$。</td>
+                    <td>-11\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.35s / gen 7.34s</td>
+                </tr>
+                
+                <tr>
+                    <td>6</td>
+                    <td>$\frac{3\sqrt{7}}{4}\times\frac{1}{9}$<br><small>classify ocr: \frac{3\sqrt{7}}{4}\times\frac{1}{9}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-4\sqrt{48})+2\sqrt{48}$。</td>
+                    <td>-8\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.97s / gen 7.25s</td>
+                </tr>
+                
+                <tr>
+                    <td>7</td>
+                    <td>$\sqrt{2}\times\sqrt{3}$<br><small>classify ocr: \sqrt{2}\times\sqrt{3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{50}+5\sqrt{50}$。</td>
+                    <td>45\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.16s / gen 7.10s</td>
+                </tr>
+                
+                <tr>
+                    <td>8</td>
+                    <td>$(-\frac{2}{3}\sqrt{5}\quad)\times4\sqrt{7}$<br><small>classify ocr: (-\frac{2}{3}\sqrt{5}\quad)\times4\sqrt{7}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-2\sqrt{18})-4\sqrt{32}$。</td>
+                    <td>-22\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.98s / gen 7.10s</td>
+                </tr>
+                
+                <tr>
+                    <td>9</td>
+                    <td>$7\sqrt{2}\times5\sqrt{2}$<br><small>classify ocr: 7\sqrt{2}\times5\sqrt{2}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $3\sqrt{20}+\sqrt{45}$。</td>
+                    <td>9\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 5.52s / gen 7.10s</td>
+                </tr>
+                
+                <tr>
+                    <td>10</td>
+                    <td>$\sqrt{35}\div\sqrt{5}$<br><small>classify ocr: \sqrt{35}\div\sqrt{5}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $-\sqrt{24}-5\sqrt{24}$。</td>
+                    <td>-12\sqrt{6}</td>
+                    <td>✅ </td>
+                    <td>cls 5.16s / gen 7.08s</td>
+                </tr>
+                
+                <tr>
+                    <td>11</td>
+                    <td>$(-12\sqrt{6})\div(8\sqrt{3})$<br><small>classify ocr: (-12\sqrt{6})\div(8\sqrt{3})</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{50}+2\sqrt{32}$。</td>
+                    <td>13\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.69s / gen 7.27s</td>
+                </tr>
+                
+                <tr>
+                    <td>12</td>
+                    <td>$\frac{1}{\sqrt{3}}\div\frac{\sqrt{6}}{\sqrt{2}}$<br><small>classify ocr: \frac{1}{\sqrt{3}}\div\frac{\sqrt{6}}{\sqrt{2}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $2\sqrt{24}+3\sqrt{45}-5\sqrt{45}$。</td>
+                    <td>-6\sqrt{5} + 4\sqrt{6}</td>
+                    <td>✅ </td>
+                    <td>cls 6.18s / gen 6.99s</td>
+                </tr>
+                
+                <tr>
+                    <td>13</td>
+                    <td>$\sqrt{5^3}$<br><small>classify ocr: \sqrt{5^3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $-\sqrt{50}-2\sqrt{12}+4\sqrt{8}$。</td>
+                    <td>3\sqrt{2} - 4\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.21s / gen 7.08s</td>
+                </tr>
+                
+                <tr>
+                    <td>14</td>
+                    <td>$\sqrt{18}$<br><small>classify ocr: \sqrt{18}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-2\sqrt{32})+5\sqrt{50}+3\sqrt{45}$。</td>
+                    <td>17\sqrt{2} + 9\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 5.12s / gen 6.97s</td>
+                </tr>
+                
+                <tr>
+                    <td>15</td>
+                    <td>$\sqrt{8}\times\sqrt{45}$<br><small>classify ocr: \sqrt{8}\times\sqrt{45}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{12}+2\sqrt{12}$。</td>
+                    <td>6\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.60s / gen 7.08s</td>
+                </tr>
+                
+                <tr>
+                    <td>16</td>
+                    <td>$\frac{2}{\sqrt{10}}$<br><small>classify ocr: \frac{2}{\sqrt{10}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-5\sqrt{32})+5\sqrt{72}+5\sqrt{75}$。</td>
+                    <td>10\sqrt{2} + 25\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.49s / gen 7.06s</td>
+                </tr>
+                
+                <tr>
+                    <td>17</td>
+                    <td>$\frac{5}{\sqrt{12}}$<br><small>classify ocr: \frac{5}{\sqrt{12}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $3\sqrt{20}-3\sqrt{72}+5\sqrt{8}$。</td>
+                    <td>-8\sqrt{2} + 6\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 5.59s / gen 7.11s</td>
+                </tr>
+                
+                <tr>
+                    <td>18</td>
+                    <td>$\sqrt{0.8}$<br><small>classify ocr: \sqrt{0.8}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-5\sqrt{72})-5\sqrt{20}+3\sqrt{50}$。</td>
+                    <td>-15\sqrt{2} - 10\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 5.45s / gen 7.03s</td>
+                </tr>
+                
+                <tr>
+                    <td>19</td>
+                    <td>$\sqrt{\frac{5}{27}}$<br><small>classify ocr: \sqrt{\frac{5}{27}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-3\sqrt{27})+2\sqrt{48}-2\sqrt{32}$。</td>
+                    <td>-8\sqrt{2} - \sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.46s / gen 7.14s</td>
+                </tr>
+                
+                <tr>
+                    <td>20</td>
+                    <td>$\sqrt{6}$<br><small>classify ocr: \sqrt{6}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $5\sqrt{8}-3\sqrt{12}-\sqrt{75}$。</td>
+                    <td>10\sqrt{2} - 11\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 9.29s / gen 7.77s</td>
+                </tr>
+                
+                <tr>
+                    <td>21</td>
+                    <td>$\sqrt{12}$<br><small>classify ocr: \sqrt{12}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $3\sqrt{8}+\sqrt{75}-3\sqrt{8}$。</td>
+                    <td>5\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 9.96s / gen 6.95s</td>
+                </tr>
+                
+                <tr>
+                    <td>22</td>
+                    <td>$\sqrt{24}$<br><small>classify ocr: \sqrt{24}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{8}+3\sqrt{24}-3\sqrt{72}$。</td>
+                    <td>-16\sqrt{2} + 6\sqrt{6}</td>
+                    <td>✅ </td>
+                    <td>cls 9.66s / gen 7.13s</td>
+                </tr>
+                
+                <tr>
+                    <td>23</td>
+                    <td>$\sqrt{16}$<br><small>classify ocr: \sqrt{16}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-4\sqrt{48})+2\sqrt{32}+\sqrt{48}$。</td>
+                    <td>8\sqrt{2} - 12\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 8.99s / gen 7.04s</td>
+                </tr>
+                
+                <tr>
+                    <td>24</td>
+                    <td>$\sqrt{\frac{2}{3}}$<br><small>classify ocr: \sqrt{\frac{2}{3}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-5\sqrt{8})-3\sqrt{12}+5\sqrt{18}$。</td>
+                    <td>5\sqrt{2} - 6\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 9.67s / gen 6.94s</td>
+                </tr>
+                
+                <tr>
+                    <td>25</td>
+                    <td>$\frac{2}{\sqrt{3}}$<br><small>classify ocr: \frac{2}{\sqrt{3}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $5\sqrt{50}-4\sqrt{72}-5\sqrt{72}$。</td>
+                    <td>-29\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 9.82s / gen 7.08s</td>
+                </tr>
+                
+                <tr>
+                    <td>26</td>
+                    <td>$\sqrt{0.06}$<br><small>classify ocr: \sqrt{0.06}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $5\sqrt{18}+2\sqrt{32}-\sqrt{24}$。</td>
+                    <td>23\sqrt{2} - 2\sqrt{6}</td>
+                    <td>✅ </td>
+                    <td>cls 9.48s / gen 6.93s</td>
+                </tr>
+                
+                <tr>
+                    <td>27</td>
+                    <td>$2\sqrt{3}+3\sqrt{3}$<br><small>classify ocr: 2\sqrt{3}+3\sqrt{3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $2\sqrt{48}-4\sqrt{27}$。</td>
+                    <td>-4\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.31s / gen 7.20s</td>
+                </tr>
+                
+                <tr>
+                    <td>28</td>
+                    <td>$4\sqrt{6}-3\sqrt{6}$<br><small>classify ocr: 4\sqrt{6}-3\sqrt{6}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{72}-\sqrt{32}$。</td>
+                    <td>20\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.31s / gen 7.19s</td>
+                </tr>
+                
+                <tr>
+                    <td>29</td>
+                    <td>$5\sqrt{10}-3\sqrt{5}-2\sqrt{10}+4\sqrt{5}$<br><small>classify ocr: 5\sqrt{10}-3\sqrt{5}-2\sqrt{10}+4\sqrt{5}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-2\sqrt{12})+2\sqrt{12}-3\sqrt{8}-2\sqrt{24}$。</td>
+                    <td>-6\sqrt{2} - 4\sqrt{6}</td>
+                    <td>✅ </td>
+                    <td>cls 6.64s / gen 7.20s</td>
+                </tr>
+                
+                <tr>
+                    <td>30</td>
+                    <td>$3\sqrt{2}+\sqrt{8}$<br><small>classify ocr: 3\sqrt{2}+\sqrt{8}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{32}-4\sqrt{32}$。</td>
+                    <td>0</td>
+                    <td>✅ </td>
+                    <td>cls 5.20s / gen 7.13s</td>
+                </tr>
+                
+                <tr>
+                    <td>31</td>
+                    <td>$\sqrt{1\frac{9}{16}}+\sqrt{4\frac{25}{36}}$<br><small>classify ocr: \sqrt{1\frac{9}{16}}+\sqrt{4\frac{25}{36}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\dfrac{\sqrt{7}}{3\sqrt{2}-5}$。</td>
+                    <td>\frac{-5\sqrt{7} - 3\sqrt{14}}{7}</td>
+                    <td>✅ </td>
+                    <td>cls 6.31s / gen 7.00s</td>
+                </tr>
+                
+                <tr>
+                    <td>32</td>
+                    <td>$\frac{1}{\sqrt{3}}-\frac{2}{3}\sqrt{3}$<br><small>classify ocr: \frac{1}{\sqrt{3}}-\frac{2}{3}\sqrt{3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\dfrac{\sqrt{2}}{2\sqrt{11}+4}$。</td>
+                    <td>\frac{-2\sqrt{2} + \sqrt{22}}{14}</td>
+                    <td>✅ </td>
+                    <td>cls 5.89s / gen 6.96s</td>
+                </tr>
+                
+                <tr>
+                    <td>33</td>
+                    <td>$3\sqrt{3}+2\sqrt{5}-(\sqrt{12}-\sqrt{45})$<br><small>classify ocr: 3\sqrt{3}+2\sqrt{5}-(\sqrt{12}-\sqrt{45})</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-4\sqrt{48})+2\sqrt{45}+\sqrt{8}+4\sqrt{72}$。</td>
+                    <td>26\sqrt{2} - 16\sqrt{3} + 6\sqrt{5}</td>
+                    <td>✅ </td>
+                    <td>cls 6.31s / gen 6.96s</td>
+                </tr>
+                
+                <tr>
+                    <td>34</td>
+                    <td>$\sqrt{\frac{1}{2}}\times\sqrt{\frac{1}{5}}\div\sqrt{\frac{1}{6}}$<br><small>classify ocr: \sqrt{\frac{1}{2}}\times\sqrt{\frac{1}{5}}\div\sqrt{\frac{1}{6}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{18}+5\sqrt{32}-4\sqrt{32}$。</td>
+                    <td>16\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 6.77s / gen 6.96s</td>
+                </tr>
+                
+                <tr>
+                    <td>35</td>
+                    <td>$(-4\sqrt{15})\times(-\sqrt{\frac{1}{3}})-4\sqrt{5}$<br><small>classify ocr: (-4\sqrt{15})\times(-\sqrt{\frac{1}{3}})-4\sqrt{5}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>計算下列複合根式運算（子題型：p3b_÷_simple與p1_add_sub）。</td>
+                    <td>(\frac{5\sqrt{3}}{3}) - (16\sqrt{3} - 4\sqrt{6})</td>
+                    <td>❌ ❌ 嚴重瑕疵：遺失數學模式符號 $</td>
+                    <td>cls 6.50s / gen 7.15s</td>
+                </tr>
+                
+                <tr>
+                    <td>36</td>
+                    <td>$2\sqrt{3}\times(\sqrt{12}-\sqrt{2})$<br><small>classify ocr: 2\sqrt{3}\times(\sqrt{12}-\sqrt{2})</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>計算下列複合根式運算（子題型：p2b_mult_distrib與p1_add_sub）。</td>
+                    <td>(-18\sqrt{15} - 2\sqrt{55}) - (-5\sqrt{3} - 8\sqrt{5})</td>
+                    <td>❌ ❌ 嚴重瑕疵：遺失數學模式符號 $</td>
+                    <td>cls 5.80s / gen 6.96s</td>
+                </tr>
+                
+                <tr>
+                    <td>37</td>
+                    <td>$(-3\sqrt{2}+\sqrt{15})\div\sqrt{3}$<br><small>classify ocr: (-3\sqrt{2}+\sqrt{15})\div\sqrt{3}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>計算下列複合根式運算（子題型：p5a_conjugate_int與p1_add_sub）。</td>
+                    <td>(\frac{1 + \sqrt{7}}{12}) + (2\sqrt{3} + 2\sqrt{5})</td>
+                    <td>❌ ❌ 嚴重瑕疵：遺失數學模式符號 $</td>
+                    <td>cls 5.85s / gen 7.14s</td>
+                </tr>
+                
+                <tr>
+                    <td>38</td>
+                    <td>$(\sqrt{3}+\sqrt{2})(\sqrt{6}-1)$<br><small>classify ocr: (\sqrt{3}+\sqrt{2})(\sqrt{6}-1)</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-3\sqrt{75})-2\sqrt{50}+3\sqrt{27}$。</td>
+                    <td>-10\sqrt{2} - 6\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 5.56s / gen 7.03s</td>
+                </tr>
+                
+                <tr>
+                    <td>39</td>
+                    <td>$(\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})$<br><small>classify ocr: (\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-3\sqrt{75})-4\sqrt{75}-5\sqrt{8}-2\sqrt{48}$。</td>
+                    <td>-10\sqrt{2} - 43\sqrt{3}</td>
+                    <td>✅ </td>
+                    <td>cls 6.38s / gen 7.03s</td>
+                </tr>
+                
+                <tr>
+                    <td>40</td>
+                    <td>$(\sqrt{3}+2\sqrt{2}\quad)^2$<br><small>classify ocr: (\sqrt{3}+2\sqrt{2}\quad)^2</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $-\sqrt{72}-3\sqrt{50}$。</td>
+                    <td>-21\sqrt{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.83s / gen 6.92s</td>
+                </tr>
+                
+                <tr>
+                    <td>41</td>
+                    <td>$\frac{1}{\sqrt{3}-\sqrt{2}}$<br><small>classify ocr: \frac{1}{\sqrt{3}-\sqrt{2}}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\dfrac{\sqrt{7}}{3\sqrt{5}+3}$。</td>
+                    <td>\frac{-\sqrt{7} + \sqrt{35}}{12}</td>
+                    <td>✅ </td>
+                    <td>cls 5.83s / gen 6.94s</td>
+                </tr>
+                
+                <tr>
+                    <td>42</td>
+                    <td>$\frac{\sqrt{2}}{3\sqrt{2}+4}$<br><small>classify ocr: \frac{\sqrt{2}}{3\sqrt{2}+4}</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\dfrac{\sqrt{5}}{\sqrt{3}+1}$。</td>
+                    <td>\frac{-\sqrt{5} + \sqrt{15}}{2}</td>
+                    <td>✅ </td>
+                    <td>cls 5.91s / gen 7.06s</td>
+                </tr>
+                
+    </table>
+</body>
+</html>

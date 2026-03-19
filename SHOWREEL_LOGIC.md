@@ -301,6 +301,46 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 - Orchestrator（Path A / DomainFunctionHelper / RadicalSolver）方向：**優先以 RadicalOps/FractionOps 的 deterministic API 完成出題/排版/求解**，避免把版面控制丟回 LLM 或 SymPy。
 - 括號/排版策略：題幹端維持標準 LaTeX，Healer 負責 token-level 的「負數整項括號」修復，並已擴充到 `\\sqrt{...}`。
 
+### 8.11 今日進度（2026-03-19）
+
+**主題：Live Show 根式單元「分類前置 → Monolithic Orchestrator → Healer」實戰修正與壓測對齊**
+
+| 類別 | 檔案 | 今日最終狀態 |
+|------|------|-------------|
+| 壓測流程對齊 UI | `tests/comprehensive_stress_test.py` | 改為兩階段：先打 `/api/classify`，再用回傳 `ocr_text/json_spec/skill_id` 打 `/api/generate_live`；HTML 報表新增 classify 資訊與 cls/gen 耗時。 |
+| 壓測 classify 輸入 | `tests/comprehensive_stress_test.py` | `build_classify_text_data` 最終改為**只送純算式**：`"${safe_expr}$"`（拔除中文敘述干擾）。 |
+| 壓測 normalize 行為 | `tests/comprehensive_stress_test.py` | 已刪除「把 classify 的 ocr_text 強制洗回 math_expr（條件式重置）」那段；僅保留 `if not ocr_text` fallback。 |
+| 根式統一路徑 | `core/routes/live_show.py` | 根式 skill（`FourOperationsOfRadicals`）在 Ab3 下可走 monolithic 編排（含 `text_monolithic_ab3` / `image_monolithic_ab3`）；payload 動態加 `images`，避免 `None` 造成上游 API 問題。 |
+| 根式分類 Prompt | `core/routes/live_show.py` | Radical prompt 多次迭代後，最終採「4 行輸出 + 結構觀察」版本：`structure_analysis` + `pattern_id` + `difficulty` + `term_count`，並強化分數/單根式誤判警告。 |
+| Orchestrator scaffold 組裝 | `core/routes/live_show.py` | 目前保持簡化版：根式分支直接 `_assemble_radical_orchestrator_code(final_code)`，不再做額外 pattern 強制覆寫。 |
+| UI 同構顯示真實化 | `core/routes/live_show_pipeline.py` | Radical 分支移除 `iso_isomorphic=True` 硬綁，改為 `_build_radical_profile` + `_is_radical_isomorphic(expected_fp, generated_expr_final)` 真實比對。 |
+| Regex Healer 防護 | `core/healers/regex_healer.py` | `apply_professor_strong_meds` 的 safe injection 升級為終極版：先替 `{text}`→`{_math_str_fb}`，再注入 `_math_str_fb/question_text/correct_answer` 防護塊。 |
+
+#### 8.11.1 今天實際踩到的關鍵問題
+
+1. `classify` 偶發回傳 `skill_id=Unknown`，且 `ocr_text` 夾帶整段提示語，導致 `generate_live` 回 `HTTP 400`。  
+2. 根式 prompt 若含 `<VALUE>` 佔位字，模型容易照抄模板而非真分類。  
+3. UI 曾把 Radical 同構結果強制標綠（`iso_isomorphic=True`），造成誤導，已改為真比對。  
+4. `regex_healer` 在 `text` 變數幻覺情境可能出現 NameError 或題幹缺 `$`，已補注入防護。  
+
+#### 8.11.2 目前建議的「下次啟動順序」
+
+1. 啟動服務：`python app.py`（確認 Ollama 模型可用）。  
+2. 先跑小樣本（3~5 題）`tests/comprehensive_stress_test.py`，看 classify 是否仍出現 Unknown。  
+3. 再跑全量 42 題，檢查：
+   - Unknown 比率（是否需要在 `/api/classify` 再加 guard）  
+   - `pattern_id` 是否仍常落到過粗類別（例如把分數根式乘法判成一般乘法）  
+   - `iso_isomorphic` 是否與實際題幹骨架一致  
+4. 若分類仍漂移，優先調整 `core/routes/live_show.py` 的 radical `system_prompt`，其次才調 Healer。  
+
+#### 8.11.3 待完成事項（下次從這裡接）
+
+- [ ] **A. classify 穩定性治理**：在 `/api/classify` 增加針對 Radical 的最小後處理（例如偵測 `\\sqrt`/`\\frac` 特徵後限制可選 skill 範圍），降低 `Unknown`。  
+- [ ] **B. prompt A/B 驗證**：比較「4 行 CoT 版」vs「3 行極簡版」在真實題組的 pattern 命中率。  
+- [ ] **C. 壓測報表加欄**：統計 `skill fallback` 次數、`iso_isomorphic` 通過率、pattern 分布。  
+- [ ] **D. 回歸測試補件**：新增針對 Radical monolithic 的 smoke test（至少覆蓋：單根式化簡、分配律、分數根式乘除、有理化）。  
+- [ ] **E. 文檔清理**：將 8.9/8.10/8.11 的重複口徑收斂成「現行生效規則」單一章節，避免交接誤讀。  
+
 ---
 
 ## 9. 歷史修復摘要（僅關鍵清單）

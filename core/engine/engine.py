@@ -33,7 +33,7 @@ class MathEngine:
                 "error": "無法識別題目類型，請提供更清晰的描述或照片。"
             }
             
-        print(f"✅ 識別完成: [ {skill_name} ] (耗時: {time.time()-start_time:.1f}s)")
+        print(f"[OK] 識別完成: [ {skill_name} ] (耗時: {time.time()-start_time:.1f}s)")
         
         # 2. 為特定題型生成題目
         try:
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     output = engine.generate_practice_set(input_text=user_input)
     
     if output["success"]:
-        print(f"\n🎯 推薦練習場：{output['skill']}")
+        print(f"\n[RECOMMEND] 推薦練習場：{output['skill']}")
         for i, data in enumerate(output["problems"]):
             print(f"--- [題目 {i+1}] ---")
             if "error" in data:
@@ -87,4 +87,4 @@ if __name__ == "__main__":
                 print(f"Q: {data.get('question_text', '')}")
                 print(f"A: {data.get('correct_answer', '')}")
     else:
-        print(f"❌ 錯誤: {output['error']}")
+        print(f"[ERR] 錯誤: {output['error']}")

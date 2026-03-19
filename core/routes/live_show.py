@@ -121,20 +121,6 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
 
     # Clean markdown first
     raw = re.sub(r'```python|```', '', raw).strip()
-
-    # [SMART WRAPPER V2]
-    # If AI wrote `def generate`, it chose Path B (or hallucinated a hybrid).
-    if "def generate" in raw:
-        # Check if it tried to use `df` but forgot to import it
-        if "df." in raw and "DomainFunctionHelper" not in raw:
-            # Inject the missing imports at the very top
-            imports = "from core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n"
-            return imports + raw
-        # Otherwise, it's a pure Path B Coder output, return as is
-        return raw
-
-    # [PATH A: Pure Orchestrator Assembly]
-    # If no `def generate`, we assume it's just the 3 variables.
     pid_match = re.search(r'pattern_id\s*=\s*["\'](p[a-zA-Z0-9_]+)["\']', raw)
     diff_match = re.search(r'difficulty\s*=\s*["\'](easy|mid|hard)["\']', raw)
     tc_match = re.search(r'term_count\s*=\s*(\d+|None)', raw)
@@ -142,6 +128,41 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
     pid = pid_match.group(1).strip() if pid_match else "p1_add_sub"
     diff = diff_match.group(1).strip() if diff_match else "mid"
     tc = tc_match.group(1).strip() if tc_match else "None"
+
+    # Safety normalization:
+    # Always rebuild via the orchestrator scaffold (even if model emitted def generate)
+    # to avoid runtime crashes from free-form code (e.g. tuple.items, undefined names).
+    # Keep pattern ids within currently supported solver set.
+    alias = {
+        "p1b_add_sub_bracket": "p1_add_sub",
+        "p1c_mixed_frac_rad_add_sub": "p1_add_sub",
+        "p4d_frac_rad_div_mixed": "p4b_frac_rad_div",
+    }
+    pid = alias.get(pid, pid)
+    supported_pids = {
+        "p0_simplify",
+        "p1_add_sub",
+        "p2a_mult_direct",
+        "p2b_mult_distrib",
+        "p2c_mult_binomial",
+        "p2f_int_mult_rad",
+        "p2g_rad_mult_frac",
+        "p2h_frac_mult_rad",
+        "p2d_perfect_square",
+        "p2e_diff_of_squares",
+        "p3a_div_expr",
+        "p3c_div_direct",
+        "p3b_div_simple",
+        "p4_frac_mult",
+        "p4b_frac_rad_div",
+        "p4c_nested_frac_chain",
+        "p5a_conjugate_int",
+        "p5b_conjugate_rad",
+        "p6_combo",
+        "p7_mixed_rad_add",
+    }
+    if pid not in supported_pids:
+        pid = "p1_add_sub"
 
     decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
 
@@ -623,6 +644,7 @@ def generate_live():
         
     input_text = data.get("prompt") or data.get("input_text", "")
     ablation_mode = data.get("ablation_mode", False)
+    skip_native = data.get("skip_native", False)  # 若 True：僅跑 Ab3，不觸發 Ab1（減輕 VRAM）
     count = data.get("count", 1)
     model_id = data.get("model_id", "qwen3.5-9b")
     skill_id = (data.get("skill_id") or "").strip() or None
@@ -642,10 +664,11 @@ def generate_live():
         # is absent (e.g. direct API calls or old clients).
         canonical_ocr_text = json_spec.get("ocr_text") or input_text
 
+        # ablation_mode=False → 僅跑 Ab3（Healer）；單一請求不會並行 Ab1，避免雙倍 VRAM（skip_native 由前端/腳本傳入以明示）
         route_mode = "text_engine_ab1" if ablation_mode else "text_engine_ab3"
         if input_text and image_data:
             image_data = None
-            print(">>> 🛡️ [PATH] image_data ignored due to text-priority guard")
+            print(">>> [GUARD] [PATH] image_data ignored due to text-priority guard")
         
         if skill_id == "Unknown":
             return jsonify({
@@ -659,13 +682,17 @@ def generate_live():
                 }
             }), 400
         
-        if image_data and not ablation_mode:
-            route_mode = "image_monolithic_ab3"
-            print(f">>> 🧭 [PATH] /api/generate_live route_mode={route_mode}")
-            print(">>> 👁️ 觸發 Monolithic Multimodal Brain (Qwen3-VL 代碼生成)")
-            import re
-            image_data = re.sub(r'^data:image/.+;base64,', '', image_data)
-                
+        # 🌟 教授的架構大統一：只要是根式單元，無論圖文一律走 Orchestrator 管線！
+        is_radical_skill = "FourOperationsOfRadicals" in (skill_id or "")
+
+        if (image_data or is_radical_skill) and not ablation_mode:
+            route_mode = "image_monolithic_ab3" if image_data else "text_monolithic_ab3"
+            print(f">>> [PATH] /api/generate_live route_mode={route_mode}")
+
+            if image_data:
+                import re
+                image_data = re.sub(r'^data:image/.+;base64,', '', image_data)
+
             from core.engine.scaler import AdaptiveScaler
             scaler = AdaptiveScaler()
             
@@ -793,18 +820,23 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
             model_name = 'qwen3-vl:8b-instruct-q4_k_m'  # 鎖定模型名稱
             
             if "FourOperationsOfRadicals" in (skill_id or ""):
-                # ── Radical Orchestrator: minimal 3-line classifier prompt ──────
-                # Model must ONLY identify pattern_id + difficulty + term_count.
-                # No digit-count mirroring, no IntegerOps, no bracket guards.
+                # ── Radical Orchestrator: 強制思維鏈 (CoT) 分類提示詞 ──────
                 system_prompt = (
-                    "你是根式題型辨識引擎（Radical Pattern Classifier）。\n"
-                    "根據圖片中的根號算式，從 Pattern Catalogue 選出 pattern_id，並判斷難度與根式項數。\n"
-                    "只輸出 3 行 Python 代碼，格式如下（直接照輸，僅替換值）：\n"
-                    "pattern_id = \"p1_add_sub\"\n"
+                    "你是頂級數學程式設計師與題型辨識引擎。\n"
+                    "請閱讀下方的【SCAFFOLD PROMPT】，了解 Pattern Catalogue 支援的精確題型。\n\n"
+                    f"【SCAFFOLD PROMPT】\n{scaffold_prompt}\n\n"
+                    "==================================\n"
+                    "【分類任務開始】\n"
+                    f"請仔細分析待辨識算式：【 {ocr_text} 】\n"
+                    "【重要步驟】你必須先觀察算式中是否包含：分數(\\frac)、多個根號、加減號、括號，或者是單一根式。\n"
+                    "根據算式真實的骨架特徵，從 Pattern Catalogue 選出『最精確、最細分』的 pattern_id。\n"
+                    "請輸出 4 行 Python 代碼，格式如下：\n"
+                    "structure_analysis = \"你的結構觀察(例如：包含分數與單一根式)\"\n"
+                    "pattern_id = \"你的判斷結果\"\n"
                     "difficulty  = \"mid\"\n"
                     "term_count = 2\n"
-                    "禁止輸出其他任何文字、markdown、import 或函式定義。\n\n"
-                    f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
+                    "【警告】嚴禁將分數題型誤判為一般乘除！嚴禁將單一根式化簡誤判為乘法！\n"
+                    "禁止輸出其他任何文字、markdown、import 或函式定義。\n"
                 )
             else:
                 # ── Integer / Fraction skills: full structural-mirror prompt ────
@@ -836,21 +868,23 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                     f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
                 )
             
+            # 🌟 動態組合訊息：只有在真的有圖片時才加入 images 欄位
+            msg_dict = {
+                "role": "user",
+                "content": system_prompt
+            }
+            if image_data:
+                msg_dict["images"] = [image_data]
+
             payload = {
                 "model": model_name,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": system_prompt,
-                        "images": [image_data]
-                    }
-                ],
+                "messages": [msg_dict],
                 "stream": False,
                 "options": {
                     "temperature": vl_config.get("temperature", 0.1),
-                    "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),  # 動態讀取 config
+                    "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),
                     "num_gpu": -1,
-                    "keep_alive": 30  # keep model hot for 30s — avoids reload cost on rapid retries
+                    "keep_alive": 30
                 }
             }
 
@@ -877,6 +911,7 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
 
             # [CRITICAL FIX] Radical Orchestrator: Assemble full scaffold
             if "FourOperationsOfRadicals" in (skill_id or ""):
+                # 這裡不需要任何覆寫了，我們相信 AI！
                 final_code = _assemble_radical_orchestrator_code(final_code)
                 target_radical_profile = _build_radical_profile(ocr_text)
                 expected_fp = target_radical_profile  # Send to UI!
@@ -1012,7 +1047,7 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                 ab2_result=ab2_result,
             )
         else:
-            print(f">>> 🧭 [PATH] /api/generate_live route_mode={route_mode}")
+            print(f">>> [PATH] /api/generate_live route_mode={route_mode}")
             engine = get_engine()
             # Use canonical_ocr_text so image-paste and text-box reach the same point.
             enriched_input = canonical_ocr_text
@@ -1324,7 +1359,7 @@ def classify_input():
     try:
         process_logs.append("> 🧬 Initiating Vision DNA Sequencing [Qwen3-VL Mode]...")
         process_logs.append(f"> 🧭 Route Mode: {route_mode}")
-        print(f">>> 🧭 [PATH] /api/classify route_mode={route_mode}")
+        print(f">>> [PATH] /api/classify route_mode={route_mode}")
         
         skill_name = "Unknown"
         confidence = 0
@@ -1422,7 +1457,7 @@ def classify_input():
 
             chat_url = "http://127.0.0.1:11434/api/chat"
             
-            print(f">>> 🎯 準備連線 Ollama 模型: {model_name} (URL: {chat_url})")
+            print(f">>> [TARGET] 準備連線 Ollama 模型: {model_name} (URL: {chat_url})")
             try:
                 response = requests.post(chat_url, json=payload, timeout=120)
                 response.raise_for_status()
@@ -1430,7 +1465,7 @@ def classify_input():
                 
                 # 從 Chat API 結構中取出回覆
                 raw_out = result.get("message", {}).get("content", "").strip()
-                print(f">>> 📝 Qwen3-VL raw_out (前300字): {repr(raw_out[:300])}")
+                print(f">>> [RAW] Qwen3-VL raw_out (前300字): {repr(raw_out[:300])}")
                 process_logs.append(f"> 🔍 VL raw (前150字): {repr(raw_out[:150])}")
 
                 import re
@@ -1552,9 +1587,9 @@ def classify_input():
                         raw_skill_id = raw_skill_id.strip()
                         skill_name = normalize_skill_id(raw_skill_id, available_skills)
                         if skill_name == "Unknown":
-                            print(f">>> ❌ 找不到對應的 Skill ID: {raw_skill_id}")
+                            print(f">>> [ERR] 找不到對應的 Skill ID: {raw_skill_id}")
                         elif skill_name != raw_skill_id:
-                            print(f">>> ⚠️ 觸發 Policy Normalization 修正 Skill ID: {raw_skill_id} -> {skill_name}")
+                            print(f">>> [WARN] 觸發 Policy Normalization 修正 Skill ID: {raw_skill_id} -> {skill_name}")
                                     
                         
                         print(f"DEBUG: Available skills are {available_skills}")
@@ -1564,11 +1599,11 @@ def classify_input():
                             if os.path.exists(target_path):
                                 confidence = 100
                                 process_logs.append(f"> 🧬 DNA Mapping Success: [{raw_skill_id}] -> [{skill_name}]")
-                                print(f">>> 🎯 動態路徑確認存在: {target_path} (信心度設為 100)")
+                                print(f">>> [TARGET] 動態路徑確認存在: {target_path} (信心度設為 100)")
                             else:
                                 confidence = 0
                                 skill_name = "Unknown"
-                                print(f">>> ❌ 嚴重錯誤: 已匹配 ID {skill_name} 但實體路徑不存在！")
+                                print(f">>> [ERR] 嚴重錯誤: 已匹配 ID {skill_name} 但實體路徑不存在！")
 
                         guarded_skill, guard_reason = _apply_skill_safety_guard(skill_name, ocr_text, available_skills)
                         if guarded_skill != skill_name:
@@ -1576,20 +1611,20 @@ def classify_input():
                                 f"> 🛡️ Classification Safety Guard: [{skill_name}] -> [{guarded_skill}] ({guard_reason})"
                             )
                             print(
-                                f">>> 🛡️ Classification Safety Guard 修正: {skill_name} -> {guarded_skill} ({guard_reason})"
+                                f">>> [GUARD] Classification Safety Guard 修正: {skill_name} -> {guarded_skill} ({guard_reason})"
                             )
                             skill_name = guarded_skill
                             confidence = min(int(confidence or 0), 95)
                                 
-                        print(f">>> ✅ Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
+                        print(f">>> [OK] Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
                         
                     except Exception as e:
-                        print(f">>> ❌ JSON 後處理失敗: {e}")
-                        print(f">>> ❌ 清理後文字(前500字): {repr(raw_out_clean[:500])}")
+                        print(f">>> [ERR] JSON 後處理失敗: {e}")
+                        print(f">>> [ERR] 清理後文字(前500字): {repr(raw_out_clean[:500])}")
                         skill_name = "Unknown"
                         ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
                 else:
-                    print(f">>> ❌ 所有 {{ 位置均無法解析出有效 JSON。清理後文字(前500字): {repr(raw_out_clean[:500])}")
+                    print(f">>> [ERR] 所有 {{ 位置均無法解析出有效 JSON。清理後文字(前500字): {repr(raw_out_clean[:500])}")
                     process_logs.append(f"> ❌ JSON scan failed. clean(前150字): {repr(raw_out_clean[:150])}")
                     # [Last-resort fallback] 直接用 regex 抽 ocr_text 值（容許 LaTeX 反斜線）
                     _fb = re.search(r'"ocr_text"\s*:\s*"((?:[^"\\]|\\.)*)"', raw_out)
@@ -1599,7 +1634,7 @@ def classify_input():
                             ocr_text = ocr_text.encode('raw_unicode_escape').decode('unicode_escape')
                         except Exception:
                             pass
-                        print(f">>> ⚠️ Last-resort OCR fallback: {ocr_text}")
+                        print(f">>> [WARN] Last-resort OCR fallback: {ocr_text}")
                         process_logs.append(f"> ⚠️ OCR last-resort fallback: {ocr_text}")
                         skill_name = "Unknown"  # skill 仍 unknown，但 ocr_text 保留
                     else:
@@ -1613,11 +1648,11 @@ def classify_input():
                 if len(response_text) > 400:
                     response_text = response_text[:400] + "..."
                 api_error = f"Qwen3-VL API HTTP {status_code}: {response_text or str(e)}"
-                print(f">>> ❌ Qwen3-VL HTTP 錯誤: {api_error}")
+                print(f">>> [ERR] Qwen3-VL HTTP 錯誤: {api_error}")
                 process_logs.append(f"> ❌ Ollama Upstream Error: HTTP {status_code}")
                 ocr_text = "ERROR: Failed to reach Qwen3-VL API."
             except requests.exceptions.RequestException as e:
-                print(f">>> ❌ Qwen3-VL 執行失敗: {e}")
+                print(f">>> [ERR] Qwen3-VL 執行失敗: {e}")
                 api_error = f"Qwen3-VL API Request failed: {e}"
                 process_logs.append("> ❌ Ollama Upstream Error: Request failed")
                 ocr_text = "ERROR: Failed to reach Qwen3-VL API."
@@ -1763,7 +1798,7 @@ def classify_input():
         })
 
     except Exception as e:
-        print(f">>> ❌ OCR 階段崩潰: {str(e)}")
+        print(f">>> [ERR] OCR 階段崩潰: {str(e)}")
         import traceback
         traceback.print_exc()
         return jsonify({

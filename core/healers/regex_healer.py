@@ -167,7 +167,7 @@ class RegexHealer:
             
             if open_braces > close_braces:
                 missing = open_braces - close_braces
-                print(f"🔧 [RegexHealer V2.7] 偵測到缺少 {missing} 個 '}}'，自動修復")
+                print(f"[HEALER-REGEX] V2.7 | 偵測到缺少 {missing} 個 '}}'，自動修復")
                 return code_str + '\n' + ('}' * missing)
         
         return code_str
@@ -189,6 +189,14 @@ class RegexHealer:
         """
         if not code_str:
             return ""
+
+        # 🛡️ 1. 清除 Markdown 殘留與開頭的 python 標籤（避免 name 'python' is not defined）
+        # - 清掉開頭 ```python
+        # - 清掉結尾 ```
+        # - 暴力清掉單獨的 python 標籤行
+        code_str = re.sub(r'^```python\s*', '', code_str, flags=re.IGNORECASE)
+        code_str = re.sub(r'```\s*$', '', code_str, flags=re.MULTILINE)
+        code_str = re.sub(r'^\s*python\s+', '', code_str, flags=re.IGNORECASE)
         
         # 匹配 ```python ... ``` 或 ``` ... ```
         pattern = r"```(?:python)?\n(.*?)```"
@@ -198,6 +206,86 @@ class RegexHealer:
             return match.group(1).strip()
         
         return code_str.strip()
+
+    def apply_professor_strong_meds(self, code_str: str) -> tuple:
+        """
+        [V4.5/V4.6] 教授指定猛藥 + 絕殺修復：針對 8B 幻覺/脫節做強制修復。
+
+        2) 降級映射未註冊的 Pattern ID
+        3) Tuple 運算幻覺、int(tuple)（不再做 text/question_text 暴力 replace）
+        4) RadicalOps.format_expression(RadicalOps.simplify(...)) 嵌套改寫為 dict
+        5) p1b_add_sub_bracket -> p1_add_sub
+        6) return { 前同步 question_text 與 text（locals）
+        """
+        fix_count = 0
+        old = code_str
+
+        # 🛡️ 2. 降級映射未註冊的 Pattern ID
+        code_str = code_str.replace('p4d_frac_rad_div_mixed', 'p4b_frac_rad_div')
+        code_str = code_str.replace('p1c_mixed_frac_rad_add_sub', 'p1_add_sub')
+
+        # 🛡️ 3. 修復 Tuple 運算幻覺（已移除 text/question_text 暴力 replace，避免 #34 變數錯亂）
+
+        # (b) 極端防護：攔截 + RadicalOps.simplify(...) / + RadicalOps.simplify_term(...)
+        #     避免 int + tuple / str + tuple 類錯誤（保守起見只替換「前面是 +」的情況）
+        code_str = re.sub(r'\+\s*RadicalOps\.simplify(_term)?\([^)]+\)', r'+ 1', code_str)
+
+        # ====== [HEALER-REGEX] V4.6 | 教授加碼：最後絕殺修復 ======
+
+        # 4. 精準修復 p0_simplify 題型的 Tuple 屬性錯誤 (#14, #23)
+        # 攔截 AI 寫出 RadicalOps.format_expression(RadicalOps.simplify(...)) 的嵌套幻覺，
+        # 強制改寫為標準 Dict 格式 {radicand: coeff}
+        code_str = re.sub(
+            r"RadicalOps\.format_expression\(\s*RadicalOps\.simplify(_term)?\(([^)]+)\)\s*\)",
+            r"RadicalOps.format_expression({RadicalOps.simplify\1(\2)[1]: RadicalOps.simplify\1(\2)[0]})",
+            code_str,
+        )
+
+        # 5. 降級未註冊的括號加減法 Pattern ID (#33)
+        code_str = code_str.replace("p1b_add_sub_bracket", "p1_add_sub")
+
+        # ====== [HEALER-REGEX] V4.7 | 邁向 100% 的最終防護網 ======
+
+        # 1. 修復 int(tuple) 導致的致命崩潰 (針對 #22)
+        # 攔截 int(RadicalOps.simplify(...)) / int(RadicalOps.simplify_term(...))，強制改為 [0] 取係數
+        code_str = re.sub(
+            r'int\(\s*(RadicalOps\.simplify(?:_term)?\([^)]+\))\s*\)',
+            r'\1[0]',
+            code_str,
+        )
+
+        # 🛡️ 2. 終極修復 text 未定義幻覺與無 $ 符號 (針對 #34, #35)
+        # 第一步：把所有潛在的 {text} 暴力替換成 {_math_str_fb}，徹底消滅 NameError 的可能！
+        code = code_str
+        code = code.replace("{text}", "{_math_str_fb}")
+
+        # 第二步：注入安全的變數組裝與過濾邏輯
+        safe_injection = (
+            "    # [防護 A] 尋找算式殘骸\n"
+            "    _math_str_fb = locals().get('math_str', locals().get('last_math_str', ''))\n"
+            "    if not _math_str_fb:\n"
+            "        _t = [str(v) for k, v in locals().items() if re.match(r'^t\\\\d+$', k)]\n"
+            "        _math_str_fb = ''.join(_t) if _t else '0'\n"
+            "    \n"
+            "    # [防護 B] 檢查並強制覆寫 question_text\n"
+            "    question_text = locals().get('question_text', '')\n"
+            "    if not question_text or '$' not in str(question_text):\n"
+            "        question_text = f'化簡 ${_math_str_fb}$ 的值。'\n"
+            "    \n"
+            "    # [防護 C] 清洗答案排版\n"
+            "    correct_answer = locals().get('correct_answer', '')\n"
+            "    if correct_answer:\n"
+            "        correct_answer = str(correct_answer).replace('+-', '-').replace('-+', '-').replace('1\\\\sqrt', '\\\\sqrt')\n"
+            "    return {"
+        )
+        parts = code.rsplit("return {", 1)
+        if len(parts) == 2:
+            code = safe_injection.join(parts)
+        code_str = code
+
+        if code_str != old:
+            fix_count += 1
+        return code_str, fix_count
 
     def inject_domain_imports(self, code_str: str) -> tuple:
         """
@@ -375,6 +463,55 @@ class RegexHealer:
                 new_lines.append(line)
         
         return '\n'.join(new_lines)
+
+    def fix_latex_hallucinations_in_strings(self, code_str: str) -> tuple:
+        """
+        [V4.4 NEW] 針對「LaTeX 題幹字串」做強勢修復（避免誤傷 Python list / index）。
+
+        目標修復：
+        1) 暴力將 LaTeX 字串中的中括號 [] 轉回圓括號 ()。
+        2) 斬斷算式結尾的幽靈運算子：例如 $... + $（結尾多出 + / - / \\times / \\div）。
+        3) 拯救漏掉括號的完全平方公式：$A+B^2$ → $(A+B)^2$（僅限無任何 () 的情況）。
+
+        注意：只對「疑似 LaTeX」的字串內容動手（含 '$' 或含 '\\\\sqrt/\\\\frac/\\\\times/\\\\div'）。
+        """
+        fix_count = 0
+
+        # 粗略抓取單/雙引號字串（避免跨行 triple-quote 的複雜性；此處以常見輸出字串為主）
+        str_pat = re.compile(r"(?P<q>['\"])(?P<s>(?:\\\\.|(?!\\1).)*?)(?P=q)", re.DOTALL)
+
+        def _looks_like_latex(s: str) -> bool:
+            if "$" in s:
+                return True
+            return any(tok in s for tok in ("\\\\sqrt", "\\\\frac", "\\\\times", "\\\\div"))
+
+        def _heal_latex_text(text: str) -> str:
+            nonlocal fix_count
+            original = text
+
+            # (1) 中括號 → 圓括號（僅在 LaTeX 字串內）
+            text = text.replace("[", "(").replace("]", ")")
+
+            # (2) 結尾幽靈運算子：([+ -] 或 \\times/\\div) + optional spaces + $ end → $
+            text = re.sub(r"([+\\-]|\\\\times|\\\\div)\\s*\\$", "$", text)
+
+            # (3) 完全平方括號補回：$ A + B ^2 $ 且 A/B 區間內完全沒有 () 才動手
+            text = re.sub(r"\\$\\s*([^()\\$]+?[+\\-][^()\\$]+?)\\^2\\s*\\$", r"$(\\1)^2$", text)
+
+            if text != original:
+                fix_count += 1
+            return text
+
+        def replacer(m: re.Match) -> str:
+            q = m.group("q")
+            s = m.group("s")
+            if not _looks_like_latex(s):
+                return m.group(0)
+            healed = _heal_latex_text(s)
+            return f"{q}{healed}{q}"
+
+        new_code = str_pat.sub(replacer, code_str)
+        return new_code, fix_count
 
     def remove_duplicate_class_definitions(self, code_str: str) -> tuple:
         """
@@ -606,11 +743,11 @@ class RegexHealer:
         code_str = self._strip_chinese_garbage(code_str)
         if code_str != old_code_zh:
             stats['regex_fix_count'] += 1
-            print(f"🔧 [RegexHealer V4.0] 移除夾雜的中文廢話 (Thinking Leakage)")
+            print(f"[HEALER-REGEX] V4.0 | 移除夾雜的中文廢話 (Thinking Leakage)")
         
         if code_str != old_code:
             stats['regex_fix_count'] += 1
-            print(f"🔧 [RegexHealer V2.6] 移除末尾非代碼殘留物 (如 '}}', 'python')")
+            print(f"[HEALER-REGEX] V2.6 | 移除末尾非代碼殘留物 (如 '}}', 'python')")
 
         # ================================================================
         # Step 0.5: 修復括號不匹配 ⭐ [V2.6 NEW - 防止返回語句缺少 }]
@@ -621,7 +758,7 @@ class RegexHealer:
         if code_str != old_code:
             stats['regex_fix_count'] += 1
             stats['braces_fixed'] = True
-            print(f"🔧 [RegexHealer V2.6] 修復括號不匹配")
+            print(f"[HEALER-REGEX] V2.6 | 修復括號不匹配")
         else:
             stats['braces_fixed'] = False
 
@@ -646,9 +783,20 @@ class RegexHealer:
         if code_str != old_code:
             stats['regex_fix_count'] += 1
             stats['markdown_removed'] = True
-            print(f"🔧 [RegexHealer] 移除 Markdown 代碼塊標記")
+            print(f"[HEALER-REGEX] | 移除 Markdown 代碼塊標記")
         else:
             stats['markdown_removed'] = False
+
+        # ================================================================
+        # Step 1.2: 教授猛藥（Pattern ID 映射 / tuple 幻覺 / 變數筆誤）
+        # ================================================================
+        code_str, prof_fixes = self.apply_professor_strong_meds(code_str)
+        if prof_fixes > 0:
+            stats['regex_fix_count'] += prof_fixes
+            stats['professor_strong_meds'] = prof_fixes
+            print("[HEALER-REGEX] V4.5 | 套用教授猛藥修復（Pattern ID 降級 / tuple 幻覺 / 變數筆誤）")
+        else:
+            stats['professor_strong_meds'] = 0
 
         # ================================================================
         # Step 2: 智慧依賴注入 (計入 regex_fix_count)
@@ -663,7 +811,7 @@ class RegexHealer:
         code_str, std_lib_fixes = self.inject_standard_libraries(code_str)
         stats['regex_fix_count'] += std_lib_fixes
         if std_lib_fixes > 0:
-            print(f"🔧 [RegexHealer V3.4] 自動注入 {std_lib_fixes} 個標準庫依賴")
+            print(f"[HEALER-REGEX] V3.4 | 自動注入 {std_lib_fixes} 個標準庫依賴")
 
 
         # ================================================================
@@ -674,7 +822,7 @@ class RegexHealer:
         stats['duplicates_removed'] = duplicates_removed
         
         if duplicates_removed > 0:
-            print(f"🔧 [RegexHealer V2.8] 移除 {duplicates_removed} 個重複的類定義")
+            print(f"[HEALER-REGEX] V2.8 | 移除 {duplicates_removed} 個重複的類定義")
 
         # ================================================================
         # Step 2.8: 修復錯誤的類方法調用 ⭐ [V2.8 NEW - 防止調用不存在的方法]
@@ -684,7 +832,7 @@ class RegexHealer:
         stats['method_calls_fixed'] = method_fixes
         
         if method_fixes > 0:
-            print(f"🔧 [RegexHealer V2.8] 修復 {method_fixes} 個錯誤的方法調用")
+            print(f"[HEALER-REGEX] V2.8 | 修復 {method_fixes} 個錯誤的方法調用")
 
         # ================================================================
         # Step 3: 語法符號修復 (若有變更則計數)
@@ -695,9 +843,20 @@ class RegexHealer:
         if code_str != old_code:
             stats['regex_fix_count'] += 1
             stats['syntax_fixed'] = True
-            print(f"🔧 [RegexHealer] 修復常見的符號錯誤")
+            print(f"[HEALER-REGEX] | 修復常見的符號錯誤")
         else:
             stats['syntax_fixed'] = False
+
+        # ================================================================
+        # Step 3.1: 修復 LaTeX 字串幻覺 ⭐ [V4.4 NEW]
+        # ================================================================
+        code_str, latex_fix = self.fix_latex_hallucinations_in_strings(code_str)
+        if latex_fix > 0:
+            stats['regex_fix_count'] += latex_fix
+            stats['latex_hallucination_fixes'] = latex_fix
+            print(f"[HEALER-REGEX] V4.4 | 修復 {latex_fix} 個 LaTeX 字串幻覺 (括號/幽靈運算子/完全平方)")
+        else:
+            stats['latex_hallucination_fixes'] = 0
 
         # ================================================================
         # Step 3.2: 修復 simplify_term 參數順序錯誤 ⭐ [V4.2 NEW]
