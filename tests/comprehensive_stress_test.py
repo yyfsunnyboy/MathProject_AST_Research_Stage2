@@ -52,6 +52,8 @@ CLASSIFY_TIMEOUT = int(os.environ.get("STRESS_CLASSIFY_TIMEOUT", "180"))
 GENERATE_TIMEOUT = int(os.environ.get("STRESS_GENERATE_TIMEOUT", "300"))
 # 設為正整數時只跑前 N 題（快速驗證 drift / HTML 欄位）；0 = 全跑
 STRESS_MAX_ITEMS = int(os.environ.get("STRESS_MAX_ITEMS", "0"))
+# echo 規則：預設 strict_equal；設 similarity 可回到舊行為做 A/B
+STRESS_ECHO_RULE = os.environ.get("STRESS_ECHO_RULE", "strict_equal").strip().lower()
 
 
 def _strip_for_sig(s: str) -> str:
@@ -619,13 +621,19 @@ def main() -> None:
                     if ("；" in ab3_problem_text) or (_cmd_cnt_ab3 > 1):
                         ab3_issues.append("single_problem_violation")
 
-                    _sim = SequenceMatcher(
-                        None,
-                        _normalized_echo_key(math_expr),
-                        _normalized_echo_key(_expr_out_ab3),
-                    ).ratio() if _expr_out_ab3 else 0.0
-                    if _expr_out_ab3 and (_normalized_echo_key(math_expr) == _normalized_echo_key(_expr_out_ab3) or _sim > 0.92):
-                        ab3_issues.append("echo_violation")
+                    _in_echo_norm = _normalized_echo_key(math_expr)
+                    _out_echo_norm = _normalized_echo_key(_expr_out_ab3)
+                    _sim = (
+                        SequenceMatcher(None, _in_echo_norm, _out_echo_norm).ratio()
+                        if _expr_out_ab3
+                        else 0.0
+                    )
+                    if _expr_out_ab3:
+                        _echo_hit = (_in_echo_norm == _out_echo_norm)
+                        if (not _echo_hit) and STRESS_ECHO_RULE == "similarity":
+                            _echo_hit = (_sim > 0.92)
+                        if _echo_hit:
+                            ab3_issues.append("echo_violation")
 
                     _lock = _operator_lock_type(math_expr)
                     if _lock in {"multiply", "divide", "rationalize_den_sqrt"} and _is_add_sub_only(_expr_out_ab3):

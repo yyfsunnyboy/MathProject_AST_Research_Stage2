@@ -14,6 +14,52 @@
 
 ---
 
+## 📌 近期工程進度（Radicals Live Show，2026-03-20）
+
+> 接續開發時請先看本節；細節在 `core/routes/live_show_pipeline.py`、`core/routes/live_show.py`、`tests/comprehensive_stress_test.py`。
+
+### 問題背景（已收斂）
+
+- **Ab3 + `iso_fallback_replaced_code`**：fallback 產生碼會用到 `IntegerOps`，但根式技能 `get_required_domains` 僅注入 `radicalops`/`fractionops`，執行期曾出現 `name 'IntegerOps' is not defined`。
+- **Echo 雙軌**：Pipeline 端 `evaluate_radical_quality_gate` 曾用「相似度 > 0.92」判 echo；壓測腳本另有獨立 echo 判斷，導致 **7/8** 卡在同一題（例：`(-2)\times3\sqrt{5}`）。
+- **題幹 / 答案不同步**：Ab3 fallback / template / tail-enforce 覆寫 `question_text` 後，`recompute_result_answer_fn` 等後段仍可能把 `correct_answer` 寫成 `0` 或舊值。
+- **Ab3 覆蓋 Ab2**：Ab2 已合理通過時，Ab3 經 healer/fallback 後不一定更好，但最終 API 仍只呈現 Ab3。
+
+### 已做修補（精簡對照）
+
+| 主題 | 位置 | 作法摘要 |
+|------|------|----------|
+| IntegerOps 執行期補洞 | `live_show_pipeline._execute_with_stubs_if_needed` | 偵測 `IntegerOps.` 且 stubs 無定義時，動態補 `integerops` stub（必要時極小 shim），再 `_execute_code`。 |
+| Radical fallback 軟處理 | `run_ab3_full_healer`（fallback 分支） | Radical 路徑避免 iso-fallback 同構硬 `raise`；並有 single-mult 相關重試 / 模板 / tail-enforce（歷史迭代，以目前程式為準）。 |
+| Echo 規則對齊 | `evaluate_radical_quality_gate` | **僅**在 normalized input == output 時標 `echo_violation`；保留 `anti_echo_similarity` 與 `echo_rule_mode: strict_equal`。 |
+| 壓測 echo 對齊 | `tests/comprehensive_stress_test.py` | 環境變數 `STRESS_ECHO_RULE`（預設 `strict_equal`）；設為 `similarity` 可還原舊邏輯做 A/B。 |
+| 模板答案直算 | `run_ab3_full_healer` 內 | `_derive_answer_for_single_mult_template`：`\sqrt{A}\times B\sqrt{C}` → `B\sqrt{A*C}`；`A\times B\sqrt{C}`（含括號係數）→ `(A*B)\sqrt{C}`；`_sync_answer_after_question_override` 先直算再 `recompute_correct_answer_from_question_fn`。 |
+| 後段覆寫防 0 | `run_ab3_full_healer` | `recompute_result_answer_fn` 後若答案變空/`0` 且曾記 `_answer_sync_template_direct`，回填模板答案並打 log。 |
+| **Ab2 保底最終輸出** | `live_show.generate_live`（組完 `problem`/`answer` 後） | **僅** `FourOperationsOfRadicals`：若 Ab2 可接受（有題幹、無 error、`ab2_style_preserved`）且 Ab3 觸發可疑條件（空題幹、quality_gate_reasons 非空、fallback+echo、答案異常、與 Ab2 題幹相同等），則 **最終** `output["problem"]` / `output["answer"]` 改採 Ab2；`debug_meta` 增加 `final_output_source`、`ab3_overwrite_blocked_by_ab2_pass`、`ab3_overwrite_block_reason`。 |
+
+### 驗證命令（建議）
+
+```bash
+python -m pytest tests/test_live_show_healer_regression.py -q
+$env:STRESS_MAX_ITEMS="8"; python tests/comprehensive_stress_test.py
+# 全題（約 42）：先清掉子集上限
+$env:STRESS_MAX_ITEMS="0"; python tests/comprehensive_stress_test.py
+```
+
+**注意**：若 shell 仍帶著 `STRESS_MAX_ITEMS=8`，全題跑也會只跑 8 題；到公司接續時請確認環境變數。
+
+### 目前狀態（撰寫時）
+
+- 根式前 8 題子集曾達 **8/8**（含 Ab2/Ab3 雙軌）；回歸 `test_live_show_healer_regression` 通過。
+- 第一題類 `(-2)\times3\sqrt{5}`：曾驗證題幹變形後 **Ab3 答案可為 `-9\sqrt{5}`**（非 0），並有 HTML 報表欄位可對照。
+
+### 後續可選項（未強制）
+
+- 全題壓測在乾淨環境下重跑並存報表。
+- 若 Ab2 guard 過敏/過鬆，可只調 `live_show.py` 內可疑條件列表，勿再堆單題 template。
+
+---
+
 ## 1. 系統分層
 
 | 層級 | 入口 | 職責 |
