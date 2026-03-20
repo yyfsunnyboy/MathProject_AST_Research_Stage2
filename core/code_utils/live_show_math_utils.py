@@ -449,6 +449,154 @@ def _has_square_factor(n: int) -> bool:
     return False
 
 
+def _strip_all_frac_commands(text: str) -> str:
+    """Remove every top-level \\frac{..}{..} (and \\dfrac) from *text* for sqrt-outside-frac checks."""
+    s = str(text or "").replace(r"\dfrac{", r"\frac{")
+    out: list[str] = []
+    i, n = 0, len(s)
+    while i < n:
+        if s.startswith(r"\frac{", i):
+            j = i + 6
+            depth = 1
+            while j < n and depth:
+                if s[j] == "{":
+                    depth += 1
+                elif s[j] == "}":
+                    depth -= 1
+                j += 1
+            while j < n and s[j] in " \t\n":
+                j += 1
+            if j >= n or s[j] != "{":
+                out.append(s[i])
+                i += 1
+                continue
+            j += 1
+            depth = 1
+            while j < n and depth:
+                if s[j] == "{":
+                    depth += 1
+                elif s[j] == "}":
+                    depth -= 1
+                j += 1
+            i = j
+        else:
+            out.append(s[i])
+            i += 1
+    return "".join(out)
+
+
+def _iter_frac_num_den_strings(text: str):
+    """Yield (numerator_str, denominator_str) for each \\frac{}{} / \\dfrac{}{}."""
+    normalised = str(text or "").replace(r"\dfrac{", r"\frac{")
+    i = 0
+    while True:
+        pos = normalised.find(r"\frac{", i)
+        if pos == -1:
+            break
+        j = pos + 6
+        depth = 1
+        start_num = j
+        while j < len(normalised) and depth > 0:
+            if normalised[j] == "{":
+                depth += 1
+            elif normalised[j] == "}":
+                depth -= 1
+            j += 1
+        num_str = normalised[start_num : j - 1]
+        while j < len(normalised) and normalised[j] in " \t\n":
+            j += 1
+        if j >= len(normalised) or normalised[j] != "{":
+            i = pos + 1
+            continue
+        j += 1
+        start_den = j
+        depth = 1
+        while j < len(normalised) and depth > 0:
+            if normalised[j] == "{":
+                depth += 1
+            elif normalised[j] == "}":
+                depth -= 1
+            j += 1
+        den_str = normalised[start_den : j - 1]
+        yield num_str, den_str
+        i = pos + 1
+
+
+def classify_radical_style(expr: str) -> str:
+    """
+    Deterministic 8th-grade radical *display* class for OCR / generated LaTeX.
+
+    Returns one of:
+      - simple_radical: \\sqrt with square-free integer radicands only; no fraction+sqrt skeleton.
+      - simplifiable_radical: at least one integer radicand has a square factor > 1.
+      - fraction_radical: \\frac present and \\sqrt appears inside a numerator or denominator
+        (and no separate plain-radical strand that makes the item truly *mixed*).
+      - mixed: plain \\sqrt strand coexists with a fraction–radical strand (detectable).
+    """
+    text = str(expr or "")
+    if not text.strip():
+        return "mixed"
+
+    radicands: list[int] = []
+    for m in re.finditer(r"\\sqrt\{(\d+)\}", text):
+        try:
+            radicands.append(int(m.group(1)))
+        except ValueError:
+            continue
+
+    has_sqrt = bool(radicands) or r"\sqrt" in text
+    pairs = list(_iter_frac_num_den_strings(text))
+    has_frac = bool(pairs)
+    sqrt_in_frac = any(r"\sqrt" in n or r"\sqrt" in d for n, d in pairs)
+
+    has_simplifiable = any(_has_square_factor(n) for n in radicands if n >= 2)
+
+    sqrt_outside_frac_blocks = r"\sqrt" in _strip_all_frac_commands(text)
+
+    # True mixed: sqrt inside a \\frac numerator/denominator AND another \\sqrt outside those blocks.
+    if sqrt_in_frac and sqrt_outside_frac_blocks:
+        return "mixed"
+
+    # e.g. \\frac{3}{5}\\times5\\sqrt{2} (sqrt not inside \\frac braces) — teaching "fraction × radical".
+    if has_frac and has_sqrt and not sqrt_in_frac:
+        rem = _strip_all_frac_commands(text)
+        rem_core = re.sub(r"\$+", "", rem).strip()
+        if (
+            " + " in rem_core
+            or " - " in rem_core
+            or rem_core.startswith("+")
+            or rem_core.startswith("-")
+        ):
+            return "mixed"
+        return "fraction_radical"
+
+    if has_frac and sqrt_in_frac:
+        return "fraction_radical"
+
+    if has_simplifiable:
+        return "simplifiable_radical"
+
+    if has_sqrt:
+        return "simple_radical"
+
+    return "mixed"
+
+
+def radical_hard_style_preserved(input_style: str | None, output_style: str) -> tuple[bool, str]:
+    """Hard teaching constraint: output class must match input class (mixed matches mixed only)."""
+    if input_style is None:
+        return True, ""
+    out = (output_style or "").strip() or "mixed"
+    inp = input_style
+    if inp == "mixed":
+        if out != "mixed":
+            return False, f"input=mixed requires output=mixed, got {out}"
+        return True, ""
+    if out != inp:
+        return False, f"style drift {inp}->{out}"
+    return True, ""
+
+
 def _frac_denominators(text: str) -> list:
     """Return a list of denominator strings from all \\frac{}{} / \\dfrac{}{} in *text*.
 
@@ -556,3 +704,96 @@ def _radical_profile_diff(target_rp: dict, generated_text: str) -> list:
         if exp is not None and exp != got:
             diffs.append(f"{field}: expected={exp} got={got}")
     return diffs
+
+
+def _max_bracket_depth(text: str) -> int:
+    depth = 0
+    max_depth = 0
+    for ch in str(text or ""):
+        if ch in "([{":
+            depth += 1
+            if depth > max_depth:
+                max_depth = depth
+        elif ch in ")]}":
+            depth = max(0, depth - 1)
+    return max_depth
+
+
+def build_radical_complexity_mirror_profile(latex_text: str) -> dict:
+    """
+    Radicals-only「複雜度鏡像」profile（jh_*_FourOperationsOfRadicals 專用呼叫點）。
+
+    實作等同 _build_radical_profile；呼叫端必須以 skill_id gate 限制僅根式技能使用，
+    整數／分數技能請沿用 _build_structural_profile / operator fingerprint 路徑。
+    """
+    profile = _build_radical_profile(latex_text)
+    profile["fraction_count"] = len(list(_iter_frac_num_den_strings(latex_text or "")))
+    profile["bracket_depth"] = _max_bracket_depth(_normalize_math_text(latex_text or ""))
+    return profile
+
+
+def radical_complexity_mirror_isomorphic(expected_profile: dict, generated_expr_latex: str) -> bool:
+    """Radicals-only：比對預期 profile 與產出 LaTeX 片段是否同構（rad_count、simplifiable_count）。"""
+    return _is_radical_isomorphic(expected_profile, generated_expr_latex)
+
+
+def radical_complexity_mirror_diff(expected_profile: dict, generated_expr_latex: str) -> list:
+    """Radicals-only：回傳鏡像欄位差異說明列表（與 _radical_profile_diff 相同語意）。"""
+    return _radical_profile_diff(expected_profile, generated_expr_latex)
+
+
+def radical_complexity_mirror_compare(
+    expected_profile: dict,
+    generated_expr_latex: str,
+    *,
+    selected_pattern_id: str | None = None,
+    style_preserved: bool = False,
+) -> tuple[bool, bool, str]:
+    """
+    Radicals-only mirror comparator with p2a_mult_direct lightweight tolerance.
+
+    Returns:
+      (isomorphic, tolerance_applied, tolerance_reason)
+    """
+    generated_profile = build_radical_complexity_mirror_profile(generated_expr_latex or "")
+    strict_ok = radical_complexity_mirror_isomorphic(expected_profile, generated_expr_latex or "")
+    if strict_ok:
+        return True, False, ""
+
+    if selected_pattern_id != "p2a_mult_direct":
+        return False, False, ""
+    if style_preserved is not True:
+        return False, False, ""
+
+    counts = generated_profile.get("counts") if isinstance(generated_profile, dict) else {}
+    only_times = (
+        isinstance(counts, dict)
+        and int(counts.get("times", 0) or 0) >= 1
+        and int(counts.get("plus", 0) or 0) == 0
+        and int(counts.get("minus", 0) or 0) == 0
+        and int(counts.get("divide", 0) or 0) == 0
+    )
+    if not only_times:
+        return False, False, ""
+
+    exp_frac = int(expected_profile.get("fraction_count", 0) or 0)
+    got_frac = int(generated_profile.get("fraction_count", 0) or 0)
+    if exp_frac != got_frac:
+        return False, False, ""
+
+    exp_bd = int(expected_profile.get("bracket_depth", 0) or 0)
+    got_bd = int(generated_profile.get("bracket_depth", 0) or 0)
+    if got_bd > exp_bd:
+        return False, False, ""
+
+    exp_rad = int(expected_profile.get("rad_count", 0) or 0)
+    got_rad = int(generated_profile.get("rad_count", 0) or 0)
+    if abs(exp_rad - got_rad) > 1:
+        return False, False, ""
+
+    reason = (
+        "p2a_mult_direct tolerance: style_preserved=True, multiplication-only, "
+        f"fraction_count unchanged ({exp_frac}), bracket_depth {exp_bd}->{got_bd}, "
+        f"rad_count delta={abs(exp_rad - got_rad)}<=1"
+    )
+    return True, True, reason

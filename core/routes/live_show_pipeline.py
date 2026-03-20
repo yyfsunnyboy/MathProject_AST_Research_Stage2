@@ -5,9 +5,460 @@
 """
 
 import os
+import re
 import time
 import uuid
 import json
+from difflib import SequenceMatcher
+from typing import Any
+
+
+def recompute_radical_style_fields_for_api(
+    ocr_text: str,
+    *,
+    input_radical_style: str | None = None,
+    ab3_question_text: str | None = None,
+    ab2_question_text: str | None = None,
+    style_mismatch_after_retry_ab3: bool = False,
+) -> dict[str, Any]:
+    """
+    以「最終題幹字串」重新計算根式 style 欄位（與壓測相同：
+    classify_radical_style + radical_hard_style_preserved）。
+
+    input_radical_style：若提供（例如 pipeline 已對 OCR 分類），優先使用，避免與
+    classify(canonical_ocr) 因字串正規化差異而與 gate 不一致。
+    """
+    from core.code_utils.live_show_math_utils import (
+        classify_radical_style,
+        radical_hard_style_preserved,
+    )
+
+    if input_radical_style is not None:
+        inp = input_radical_style
+    else:
+        inp = classify_radical_style(ocr_text or "")
+    out: dict[str, Any] = {"input_radical_style": inp}
+    if ab3_question_text is not None:
+        o3 = classify_radical_style(ab3_question_text or "")
+        p3, r3 = radical_hard_style_preserved(inp, o3 or "mixed")
+        if style_mismatch_after_retry_ab3 and not p3:
+            r3 = f"{r3} [after_style_retry]".strip()
+        out["output_radical_style"] = o3
+        out["style_preserved"] = p3
+        out["style_mismatch_reason"] = r3 if not p3 else ""
+    if ab2_question_text is not None:
+        o2 = classify_radical_style(ab2_question_text or "")
+        p2, r2 = radical_hard_style_preserved(inp, o2 or "mixed")
+        out["ab2_output_radical_style"] = o2
+        out["ab2_style_preserved"] = p2
+        out["ab2_style_mismatch_reason"] = r2 if not p2 else ""
+    return out
+
+
+# 根式新版本對照表：input_style -> allowed_patterns（8年級弱基礎）
+RADICAL_STYLE_PATTERN_MAP = {
+    "simple_radical": {
+        "allowed_patterns": [
+            "p2a_mult_direct",
+            "p2c_mult_binomial",
+            "p2d_perfect_square",
+            "p2e_diff_of_squares",
+            "p3a_div_expr",
+            "p3b_div_simple",
+            "p0_simplify",
+            "p1_add_sub",
+        ],
+        "default_pattern": "p2a_mult_direct",
+    },
+    "simplifiable_radical": {
+        "allowed_patterns": [
+            "p0_simplify",
+            "p2a_mult_direct",
+            "p2b_mult_distrib",
+            "p2d_perfect_square",
+            "p2e_diff_of_squares",
+            "p6_combo",
+        ],
+        "default_pattern": "p2b_mult_distrib",
+    },
+    "fraction_radical": {
+        "allowed_patterns": [
+            "p2h_frac_mult_rad",
+            "p2g_rad_mult_frac",
+            "p3a_div_expr",
+            "p3b_div_simple",
+            "p5a_conjugate_int",
+            "p5b_conjugate_rad",
+            "p4_frac_mult",
+        ],
+        "default_pattern": "p2h_frac_mult_rad",
+    },
+    "mixed": {
+        "allowed_patterns": [
+            "p2b_mult_distrib",
+            "p2c_mult_binomial",
+            "p6_combo",
+            "p4_frac_mult",
+            "p2h_frac_mult_rad",
+        ],
+        "default_pattern": "p6_combo",
+    },
+}
+
+
+def _allowed_patterns_for_radical_style(style: str | None) -> frozenset | None:
+    entry = RADICAL_STYLE_PATTERN_MAP.get(style) if style else None
+    if not entry:
+        return None
+    return frozenset(entry["allowed_patterns"])
+
+
+def _style_gate_default_pid(input_style: str, ocr_text: str) -> str:
+    entry = RADICAL_STYLE_PATTERN_MAP.get(input_style)
+    if entry:
+        default = entry.get("default_pattern")
+        if default:
+            return default
+    ocr = ocr_text or ""
+    if input_style == "fraction_radical":
+        if r"\div" in ocr:
+            return "p3a_div_expr"
+        if r"\frac" in ocr:
+            return "p2h_frac_mult_rad"
+        return "p3b_div_simple"
+    return "p2a_mult_direct"
+
+
+def apply_radical_style_pattern_gate(
+    skill_id: str,
+    input_radical_style: str | None,
+    raw_pattern_id: str | None,
+    ocr_text: str,
+    healed_code: str,
+    healed_exec_code: str,
+    p1_guard_candidates: list[str] | None,
+) -> tuple[str | None, str, str, dict]:
+    """
+    Restrict pattern_id to RADICAL_STYLE_PATTERN_MAP[input_style].allowed_patterns.
+    Runs after apply_radical_pattern_p1_guard. Returns (effective_pid, hc, hx, trace).
+    """
+    pid_before = (raw_pattern_id or "").strip()
+    trace: dict = {
+        "input_radical_style": input_radical_style,
+        "rejected_pattern_id": None,
+        "selected_pattern_id": pid_before,
+        "style_gate_reason": None,
+        "style_gate_applied": False,
+        "selected_pattern_before_style_gate": pid_before,
+        "selected_pattern_after_style_gate": pid_before,
+    }
+    if "FourOperationsOfRadicals" not in (skill_id or ""):
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    allowed = _allowed_patterns_for_radical_style(input_radical_style)
+    if allowed is None:
+        trace["style_gate_reason"] = "skipped_unknown_style"
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    pid = pid_before
+    if pid in allowed:
+        trace["style_gate_reason"] = "pattern_ok"
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    trace["rejected_pattern_id"] = pid
+    trace["style_gate_applied"] = True
+    pool = [p for p in (p1_guard_candidates or []) if p in allowed]
+    new_pid = pool[0] if pool else _style_gate_default_pid(input_radical_style or "", ocr_text)
+    trace["style_gate_reason"] = f"remap_for_style:{input_radical_style}:{pid}->{new_pid}"
+    trace["selected_pattern_id"] = new_pid
+    trace["selected_pattern_after_style_gate"] = new_pid
+
+    _pat = re.compile(
+        r"^(\s*)pattern_id\s*=\s*[\"']([^\"']+)[\"']",
+        re.MULTILINE,
+    )
+
+    def _patch(code: str) -> str:
+        if not _pat.search(code):
+            return code
+        return _pat.sub(lambda m: f'{m.group(1)}pattern_id = "{new_pid}"', code, count=1)
+
+    hc = _patch(healed_code)
+    hx = _patch(healed_exec_code)
+    print(
+        f"[INFO] [PIPE] [STYLE_GATE] input_style={input_radical_style!r} "
+        f"rejected={pid!r} -> {new_pid!r} reason={trace['style_gate_reason']!r}"
+    )
+    return new_pid, hc, hx, trace
+
+
+def inject_required_radical_style_into_exec_code(
+    code: str | None, required_style: str | None
+) -> str:
+    """Inject required_radical_style for RADICAL_V4 scaffold (after model decision lines)."""
+    if not code or not required_style:
+        return code or ""
+    code = code.replace("\r\n", "\n").replace("\r", "\n")
+    if "required_radical_style" in code:
+        return code
+    insert = f'\n    required_radical_style = "{required_style}"'
+    m = re.search(r"^(\s*term_count\s*=.*)$", code, re.MULTILINE)
+    if m:
+        return code[: m.end()] + insert + code[m.end() :]
+    m2 = re.search(r"^(\s*difficulty\s*=.*)$", code, re.MULTILINE)
+    if m2:
+        return code[: m2.end()] + insert + code[m2.end() :]
+    return code
+
+
+def inject_radical_style_retry_hint(code: str | None) -> str:
+    if not code or "_radical_style_retry" in code:
+        return code or ""
+    code = code.replace("\r\n", "\n").replace("\r", "\n")
+    insert = "\n    _radical_style_retry = True"
+    m = re.search(r"^(\s*required_radical_style\s*=.*)$", code, re.MULTILINE)
+    if m:
+        return code[: m.end()] + insert + code[m.end() :]
+    m2 = re.search(r"^(\s*term_count\s*=.*)$", code, re.MULTILINE)
+    if m2:
+        return code[: m2.end()] + insert + code[m2.end() :]
+    m3 = re.search(r"^(\s*difficulty\s*=.*)$", code, re.MULTILINE)
+    if m3:
+        return code[: m3.end()] + insert + code[m3.end() :]
+    return code
+
+
+def inject_radical_anti_echo_retry_hint(code: str | None) -> str:
+    if not code or "_anti_echo_retry" in code:
+        return code or ""
+    code = code.replace("\r\n", "\n").replace("\r", "\n")
+    insert = "\n    _anti_echo_retry = True"
+    m = re.search(r"^(\s*_radical_style_retry\s*=.*)$", code, re.MULTILINE)
+    if m:
+        return code[: m.end()] + insert + code[m.end() :]
+    m2 = re.search(r"^(\s*required_radical_style\s*=.*)$", code, re.MULTILINE)
+    if m2:
+        return code[: m2.end()] + insert + code[m2.end() :]
+    m3 = re.search(r"^(\s*term_count\s*=.*)$", code, re.MULTILINE)
+    if m3:
+        return code[: m3.end()] + insert + code[m3.end() :]
+    return code
+
+
+def _normalize_expr_for_echo(text: str) -> str:
+    t = str(text or "")
+    t = t.replace("$", "").replace("。", "").replace("．", "").replace(".", "")
+    t = t.replace("（", "(").replace("）", ")").replace("＋", "+").replace("－", "-")
+    t = t.replace(" ", "")
+    return t.strip().lower()
+
+
+def _input_operator_lock_type(ocr_expr: str) -> str:
+    o = str(ocr_expr or "")
+    if not o.strip():
+        return "unknown"
+    if r"\frac" in o and re.search(r"\\frac\{[^{}]+\}\{\s*\\sqrt", o):
+        return "rationalize_den_sqrt"
+    if re.search(r"1\s*\\div\s*\\sqrt", o):
+        return "rationalize_den_sqrt"
+    if r"\div" in o:
+        return "divide"
+    if r"\times" in o:
+        return "multiply"
+    return "unknown"
+
+
+def _execute_with_stubs_if_needed(scaler, code: str, api_stubs: str):
+    payload = code or ""
+    if "IntegerOps." in payload and "class IntegerOps" not in payload and api_stubs:
+        payload = api_stubs + "\n\n" + payload
+    return scaler._execute_code(payload, level=1)
+
+
+def _is_add_sub_only_expr(expr: str) -> bool:
+    e = str(expr or "")
+    if not e.strip():
+        return False
+    has_add_sub = bool(re.search(r"[+\-]", e))
+    has_mul_div = (r"\times" in e) or (r"\div" in e)
+    return has_add_sub and not has_mul_div
+
+
+def evaluate_radical_quality_gate(
+    *,
+    source_ocr_expr: str,
+    question_text: str,
+    generated_expr: str,
+) -> dict[str, Any]:
+    reasons: list[str] = []
+    qt = str(question_text or "")
+    ge = str(generated_expr or "")
+    src_norm = _normalize_expr_for_echo(source_ocr_expr)
+    gen_norm = _normalize_expr_for_echo(ge)
+    similarity = SequenceMatcher(None, src_norm, gen_norm).ratio() if src_norm and gen_norm else 0.0
+
+    cmd_cnt = qt.count("化簡") + qt.count("計算")
+    if ("；" in qt) or cmd_cnt > 1:
+        reasons.append("single_problem_violation")
+    if not ge.strip():
+        reasons.append("empty_expr_violation")
+    if src_norm and gen_norm and (src_norm == gen_norm or similarity > 0.92):
+        reasons.append("echo_violation")
+
+    lock_type = _input_operator_lock_type(source_ocr_expr)
+    if lock_type in {"multiply", "divide", "rationalize_den_sqrt"} and _is_add_sub_only_expr(ge):
+        reasons.append("operator_lock_violation")
+
+    return {
+        "passed": len(reasons) == 0,
+        "reasons": reasons,
+        "anti_echo_similarity": similarity,
+        "operator_lock_type": lock_type,
+    }
+
+
+RADICAL_EXEMPLAR_POOL = frozenset(
+    {
+        r"(\sqrt{3}+2\sqrt{2})^2",
+        r"(\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})",
+        r"\frac{1}{\sqrt{3}-\sqrt{2}}",
+        r"\frac{\sqrt{2}}{3\sqrt{2}+4}",
+        r"\sqrt{\frac{1}{2}}\times\sqrt{\frac{1}{5}}\div\sqrt{\frac{1}{6}}",
+        r"\frac{1}{\sqrt{3}}\div\frac{\sqrt{6}}{\sqrt{2}}",
+    }
+)
+
+
+def extract_selected_pattern_id_from_code(code: str):
+    """從執行用程式碼取出第一個非註解行的 pattern_id 賦值（略過 # 註解行，降低誤匹配）。"""
+    if not code or not isinstance(code, str):
+        return None
+    for line in code.splitlines():
+        s = line.strip()
+        if not s or s.startswith("#"):
+            continue
+        m = re.match(r'pattern_id\s*=\s*["\']([^"\']+)["\']', s)
+        if m:
+            return m.group(1).strip()
+    return None
+
+
+def apply_radical_pattern_p1_guard(
+    skill_id: str,
+    ocr_text: str,
+    raw_pattern_id: str | None,
+    healed_code: str,
+    healed_exec_code: str,
+) -> tuple[str | None, str, str, dict]:
+    """
+    Radicals：OCR 含 \\times / \\div 時禁止沿用 p1_add_sub，改選乘法/除法 pattern 並改寫程式碼中的 pattern_id 行。
+    回傳 (effective_pattern_id, healed_code, healed_exec_code, trace)。
+    """
+    trace: dict = {
+        "detected_signals": [],
+        "candidate_patterns": [],
+        "selected_pattern_id": raw_pattern_id,
+        "reject_reason": None,
+    }
+    ocr = ocr_text or ""
+    if r"\times" in ocr:
+        trace["detected_signals"].append(r"\times")
+    if r"\div" in ocr:
+        trace["detected_signals"].append(r"\div")
+    if re.search(r"\\sqrt\{\s*\d+\.\d+", ocr) or re.search(r"\\sqrt\{\s*\\frac", ocr):
+        trace["detected_signals"].append("decimal_root")
+    if re.search(r"\)\s*\^\s*\d+", ocr) or re.search(r"\\sqrt\{[^{}]*\}\s*\^\s*\d+", ocr):
+        trace["detected_signals"].append("power_root")
+
+    if "FourOperationsOfRadicals" not in (skill_id or ""):
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    pid = (raw_pattern_id or "").strip()
+    if pid != "p1_add_sub":
+        trace["selected_pattern_id"] = pid or None
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    new_pid: str | None = None
+    candidates: list[str] = []
+    o = ocr.replace(" ", "")
+
+    # Formula-level detectors (highest priority)
+    if re.search(r"\)\s*\^\s*2", o) and re.search(r"\\sqrt", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: perfect_square_formula"
+        candidates = ["p2d_perfect_square", "p2c_mult_binomial", "p2b_mult_distrib"]
+        new_pid = "p2d_perfect_square"
+    elif re.search(r"\(.*-.*\)\(.*\+.*\)", o) and re.search(r"\\sqrt", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: diff_of_squares_formula"
+        candidates = ["p2e_diff_of_squares", "p2c_mult_binomial", "p2b_mult_distrib"]
+        new_pid = "p2e_diff_of_squares"
+    elif re.search(r"\\frac\{1\}\{[^{}]*\\sqrt[^{}]*[+\-][^{}]*\}", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: conjugate_int_formula"
+        candidates = ["p5a_conjugate_int", "p3b_div_simple", "p3a_div_expr"]
+        new_pid = "p5a_conjugate_int"
+    elif re.search(r"\\frac\{\\sqrt\{[^{}]+\}\}\{[^{}]*\\sqrt[^{}]*[+\-][^{}]*\}", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: conjugate_rad_formula"
+        candidates = ["p5b_conjugate_rad", "p5a_conjugate_int", "p3a_div_expr"]
+        new_pid = "p5b_conjugate_rad"
+    elif re.search(r"\\sqrt\{\\frac\{[^{}]+\}\{[^{}]+\}\}.*\\times.*\\sqrt\{\\frac\{[^{}]+\}\{[^{}]+\}\}.*\\div.*\\sqrt\{\\frac\{[^{}]+\}\{[^{}]+\}\}", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: nested_frac_chain_formula"
+        candidates = ["p4c_nested_frac_chain", "p4b_frac_rad_div", "p4d_frac_rad_div_mixed"]
+        new_pid = "p4c_nested_frac_chain"
+    elif re.search(r"\\frac\{[^{}]+\}\{\\sqrt\{[^{}]+\}\}.*\\div.*\\frac\{\\sqrt\{[^{}]+\}\}\{\\sqrt\{[^{}]+\}\}", o):
+        trace["reject_reason"] = "p1_add_sub forbidden: frac_rad_div_mixed_formula"
+        candidates = ["p4d_frac_rad_div_mixed", "p4b_frac_rad_div", "p3a_div_expr"]
+        new_pid = "p4d_frac_rad_div_mixed"
+
+    if (not new_pid) and (("decimal_root" in trace["detected_signals"]) or ("power_root" in trace["detected_signals"])):
+        trace["reject_reason"] = "p1_add_sub forbidden: OCR contains decimal_root/power_root"
+        candidates = ["p0_simplify", "p2b_mult_distrib", "p2a_mult_direct", "p6_combo"]
+        new_pid = "p0_simplify"
+    elif (not new_pid) and r"\times" in ocr:
+        trace["reject_reason"] = "p1_add_sub forbidden: OCR contains \\times"
+        if re.search(r"\)\s*\\times", o) or re.search(r"\\times\s*\(", o):
+            candidates = ["p2c_mult_binomial", "p2b_mult_distrib", "p2a_mult_direct"]
+            new_pid = "p2c_mult_binomial"
+        elif r"\frac" in o and r"\times" in ocr:
+            candidates = ["p2b_mult_distrib", "p2a_mult_direct", "p2c_mult_binomial"]
+            new_pid = "p2b_mult_distrib"
+        else:
+            candidates = ["p2a_mult_direct", "p2b_mult_distrib", "p2c_mult_binomial"]
+            new_pid = "p2a_mult_direct"
+    elif (not new_pid) and r"\div" in ocr:
+        trace["reject_reason"] = "p1_add_sub forbidden: OCR contains \\div"
+        if re.search(r"\\frac\{1\}", o) or re.search(r"1\\div\\sqrt", o):
+            candidates = ["p5a_conjugate_int", "p3b_div_simple", "p3a_div_expr"]
+            new_pid = "p5a_conjugate_int"
+        elif re.search(r"\([^\)]*\\sqrt[^\)]*\)\\div", o) or ")\\div\\sqrt" in o:
+            candidates = ["p3a_div_expr", "p3b_div_simple", "p5a_conjugate_int"]
+            new_pid = "p3a_div_expr"
+        else:
+            candidates = ["p3b_div_simple", "p3a_div_expr", "p5a_conjugate_int"]
+            new_pid = "p3b_div_simple"
+
+    if not new_pid:
+        trace["selected_pattern_id"] = pid
+        return raw_pattern_id, healed_code, healed_exec_code, trace
+
+    trace["candidate_patterns"] = candidates
+    trace["selected_pattern_id"] = new_pid
+
+    _pat = re.compile(
+        r"^(\s*)pattern_id\s*=\s*[\"']p1_add_sub[\"']",
+        re.MULTILINE,
+    )
+
+    def _patch(code: str) -> str:
+        if not _pat.search(code):
+            return code
+        return _pat.sub(lambda m: f'{m.group(1)}pattern_id = "{new_pid}"', code, count=1)
+
+    hc = _patch(healed_code)
+    hx = _patch(healed_exec_code)
+    print(
+        f"[INFO] [PIPE] [PATTERN_GUARD] signals={trace['detected_signals']!r} "
+        f"candidates={candidates!r} -> {new_pid!r} reason={trace['reject_reason']!r}"
+    )
+    return new_pid, hc, hx, trace
 
 
 def run_ab2_interception(
@@ -35,6 +486,15 @@ def run_ab2_interception(
     recompute_correct_answer_from_question_fn,
     maybe_add_o1_fix_fn,
 ):
+    from core.code_utils.live_show_math_utils import classify_radical_style, radical_hard_style_preserved
+
+    input_radical_style_ab2 = (
+        classify_radical_style(ocr_text)
+        if "FourOperationsOfRadicals" in (skill_id or "")
+        else None
+    )
+    ab2_style_gate_trace: dict = {}
+
     ab2_exec_code = (final_code or "").strip()
     ab2_exec_code = ab2_exec_code.replace("\r\n", "\n")
     if ab2_exec_code.lower().startswith("```python"):
@@ -48,6 +508,41 @@ def run_ab2_interception(
     # loops are capped and time.sleep is stripped — same as Ab3.
     # This ensures CPU time comparison is fair (not confounded by loop size).
     ab2_exec_code = optimize_live_execution_code_fn(ab2_exec_code)
+    ab2_exec_code = patch_fraction_skill_eval_calls_fn(ab2_exec_code, skill_id)
+    import re as _re_ab2_safe
+
+    ab2_exec_code = _re_ab2_safe.sub(r"\beval\s*\(", "safe_eval(", ab2_exec_code)
+
+    ab2_healed_mirror = ab2_exec_code
+    _raw_pat_ab2 = extract_selected_pattern_id_from_code(ab2_exec_code)
+    _, ab2_healed_mirror, ab2_exec_code, ab2_pattern_guard_trace = apply_radical_pattern_p1_guard(
+        skill_id, ocr_text, _raw_pat_ab2, ab2_healed_mirror, ab2_exec_code
+    )
+    _ab2_cur = extract_selected_pattern_id_from_code(ab2_exec_code)
+    _, ab2_healed_mirror, ab2_exec_code, ab2_style_gate_trace = apply_radical_style_pattern_gate(
+        skill_id,
+        input_radical_style_ab2,
+        _ab2_cur,
+        ocr_text,
+        ab2_healed_mirror,
+        ab2_exec_code,
+        ab2_pattern_guard_trace.get("candidate_patterns") or [],
+    )
+    if "FourOperationsOfRadicals" in (skill_id or "") and input_radical_style_ab2 is not None:
+        ab2_exec_code = inject_required_radical_style_into_exec_code(
+            ab2_exec_code, input_radical_style_ab2
+        )
+    ab2_style_retry_used = False
+    ab2_style_output_exec_count = 0
+    ab2_style_output_mismatch_history: list[dict] = []
+    if ab2_pattern_guard_trace.get("reject_reason"):
+        print(
+            "[INFO] [PIPE] [Ab2] [PATTERN_GUARD] "
+            f"signals={ab2_pattern_guard_trace.get('detected_signals')!r} "
+            f"candidates={ab2_pattern_guard_trace.get('candidate_patterns')!r} "
+            f"selected={ab2_pattern_guard_trace.get('selected_pattern_id')!r} "
+            f"reason={ab2_pattern_guard_trace.get('reject_reason')!r}"
+        )
 
     ab2_result = {}
     ab2_save_dir = "generated_scripts"
@@ -59,8 +554,55 @@ def run_ab2_interception(
 
     ab2_cpu_start = time.time()
     try:
-        ab2_exe_res = scaler._execute_code(ab2_exec_code, level=1)
+        ab2_exe_res = _execute_with_stubs_if_needed(scaler, ab2_exec_code, api_stubs)
         ab2_exec_elapsed = time.time() - ab2_cpu_start
+
+        if (
+            "FourOperationsOfRadicals" in (skill_id or "")
+            and input_radical_style_ab2 is not None
+            and isinstance(ab2_exe_res, dict)
+            and "error" not in ab2_exe_res
+            and (ab2_exe_res.get("question_text") or "").strip()
+        ):
+            _ab2_out0 = classify_radical_style(ab2_exe_res.get("question_text", ""))
+            _ab2_ok0, _ab2_rsn0 = radical_hard_style_preserved(
+                input_radical_style_ab2, _ab2_out0 or "mixed"
+            )
+            ab2_style_output_exec_count = 1
+            if not _ab2_ok0:
+                ab2_style_output_mismatch_history.append(
+                    {
+                        "attempt": 1,
+                        "input_style": input_radical_style_ab2,
+                        "output_style": _ab2_out0,
+                        "reason": _ab2_rsn0,
+                    }
+                )
+                ab2_exec_code = inject_radical_style_retry_hint(ab2_exec_code)
+                try:
+                    ab2_exe_res = _execute_with_stubs_if_needed(scaler, ab2_exec_code, api_stubs)
+                except Exception as _ab2_ex:
+                    from core.domain_functions import StyleProfileExceededError
+                    if isinstance(_ab2_ex, StyleProfileExceededError):
+                        ab2_exe_res = {"question_text": "", "correct_answer": ""}
+                    else:
+                        raise
+                ab2_style_retry_used = True
+                ab2_style_output_exec_count = 2
+                ab2_exec_elapsed = time.time() - ab2_cpu_start
+                _ab2_out1 = classify_radical_style(ab2_exe_res.get("question_text", ""))
+                _ab2_ok1, _ab2_rsn1 = radical_hard_style_preserved(
+                    input_radical_style_ab2, _ab2_out1 or "mixed"
+                )
+                if not _ab2_ok1:
+                    ab2_style_output_mismatch_history.append(
+                        {
+                            "attempt": 2,
+                            "input_style": input_radical_style_ab2,
+                            "output_style": _ab2_out1,
+                            "reason": _ab2_rsn1,
+                        }
+                    )
 
         try:
             from scripts.evaluate_mcri import evaluate_math_hygiene
@@ -72,9 +614,64 @@ def run_ab2_interception(
             pass
 
         ab2_result = ab2_exe_res
+        ab2_final_exec_code = ab2_exec_code
     except Exception as e:
         ab2_exec_elapsed = time.time() - ab2_cpu_start
         ab2_result = {"error": f"執行錯誤: {e}"}
+
+    # Radicals-only hard guarantee: Ab2 must not be missing/empty question_text.
+    if "FourOperationsOfRadicals" in (skill_id or ""):
+        _ab2_qt_now = ""
+        if isinstance(ab2_result, dict) and "error" not in ab2_result:
+            _ab2_qt_now = (ab2_result.get("question_text") or "").strip()
+        if not _ab2_qt_now:
+            try:
+                _fb_code_ab2 = build_isomorphic_fallback_code_fn(ocr_text, skill_id=skill_id)
+            except Exception:
+                _fb_code_ab2 = ""
+            if _fb_code_ab2:
+                _fb_exec_ab2 = optimize_live_execution_code_fn(_fb_code_ab2)
+                _fb_exec_ab2 = patch_fraction_skill_eval_calls_fn(_fb_exec_ab2, skill_id)
+                _fb_exec_ab2 = re.sub(r"\beval\s*\(", "safe_eval(", _fb_exec_ab2)
+                try:
+                    _fb_exec_payload_ab2 = _fb_exec_ab2
+                    if (
+                        "IntegerOps." in _fb_exec_payload_ab2
+                        and "class IntegerOps" not in _fb_exec_payload_ab2
+                        and api_stubs
+                    ):
+                        _fb_exec_payload_ab2 = api_stubs + "\n\n" + _fb_exec_payload_ab2
+                    _fb_res_ab2 = _execute_with_stubs_if_needed(scaler, _fb_exec_payload_ab2, api_stubs)
+                except Exception:
+                    _fb_res_ab2 = {}
+                if isinstance(_fb_res_ab2, dict) and (_fb_res_ab2.get("question_text") or "").strip():
+                    ab2_result = _fb_res_ab2
+                    ab2_final_exec_code = _fb_exec_ab2
+                    ab2_exec_elapsed = time.time() - ab2_cpu_start
+            if not (isinstance(ab2_result, dict) and (ab2_result.get("question_text") or "").strip()):
+                _expr_fallback = (extract_math_expr_from_question_fn(ocr_text) or ocr_text or "1+1").strip()
+                ab2_result = {
+                    "question_text": f"化簡 ${_expr_fallback}$。",
+                    "correct_answer": "",
+                }
+
+    ab2_output_radical_style = None
+    ab2_style_preserved = True
+    ab2_style_mismatch_reason = ""
+    if input_radical_style_ab2 is not None:
+        if isinstance(ab2_result, dict) and "error" not in ab2_result:
+            _ab2_qt_final = (ab2_result.get("question_text") or "").strip()
+            _ab2_meta = recompute_radical_style_fields_for_api(
+                ocr_text,
+                input_radical_style=input_radical_style_ab2,
+                ab2_question_text=_ab2_qt_final,
+            )
+            ab2_output_radical_style = _ab2_meta.get("ab2_output_radical_style")
+            ab2_style_preserved = bool(_ab2_meta.get("ab2_style_preserved", True))
+            ab2_style_mismatch_reason = _ab2_meta.get("ab2_style_mismatch_reason", "")
+        else:
+            ab2_style_preserved = False
+            ab2_style_mismatch_reason = "ab2_exec_error"
 
     with open(ab2_file_path, "w", encoding="utf-8") as _fb:
         _fb.write(ab2_final_exec_code)
@@ -102,6 +699,16 @@ def run_ab2_interception(
         "ab2_file_path": ab2_file_path,
         "ab2_final_exec_code": ab2_final_exec_code,
         "final_code_with_stubs": final_code_with_stubs,
+        "ab2_pattern_guard_trace": ab2_pattern_guard_trace,
+        "ab2_selected_pattern_id": extract_selected_pattern_id_from_code(ab2_exec_code),
+        "ab2_input_radical_style": input_radical_style_ab2,
+        "ab2_output_radical_style": ab2_output_radical_style,
+        "ab2_style_preserved": ab2_style_preserved,
+        "ab2_style_mismatch_reason": ab2_style_mismatch_reason,
+        "ab2_style_gate_trace": ab2_style_gate_trace,
+        "ab2_style_retry_used": ab2_style_retry_used,
+        "ab2_style_output_exec_count": ab2_style_output_exec_count,
+        "ab2_style_output_mismatch_history": ab2_style_output_mismatch_history,
     }
 
 
@@ -139,12 +746,46 @@ def run_ab3_full_healer(
     cpu_start_ab3 = time.time()
     problems_result = []
     ab3_exec_elapsed = 0.0
+    pattern_guard_trace = {
+        "detected_signals": [],
+        "candidate_patterns": [],
+        "selected_pattern_id": None,
+        "reject_reason": None,
+    }
+    pid_before_univ: str | None = None
+    pattern_overwrite_reason = ""
+    from core.code_utils.live_show_math_utils import classify_radical_style, radical_hard_style_preserved
+
+    input_radical_style = (
+        classify_radical_style(ocr_text)
+        if "FourOperationsOfRadicals" in (skill_id or "")
+        else None
+    )
+    style_gate_trace: dict = {}
+    style_retry_used = False
+    style_mismatch_after_retry = False
+    style_profile_vars_error: str | None = None
+    style_output_exec_count = 0
+    style_output_mismatch_history: list[dict] = []
+    quality_gate_passed = True
+    quality_gate_reasons: list[str] = []
+    anti_echo_retry_used = False
+    anti_echo_similarity = 0.0
+    exemplar_echo_hit = False
+    exemplar_echo_retry_used = False
 
     # [UNIVERSAL FIX] Force Radical Scaffold Assembly here, for BOTH text and image paths
     if "FourOperationsOfRadicals" in (skill_id or ""):
         from core.routes.live_show import _assemble_radical_orchestrator_code
-        final_code = _assemble_radical_orchestrator_code(final_code)
-        print(f"[ASSEMBLER] [UNIVERSAL] Applied orchestrator scaffold for {skill_id}")
+
+        final_code = _assemble_radical_orchestrator_code(
+            final_code,
+            required_radical_style=input_radical_style,
+        )
+        print(f"[INFO] [ASSEMBLER] Applied orchestrator scaffold for skill_id={skill_id!r}")
+
+    pid_before_univ = extract_selected_pattern_id_from_code(final_code)
+    print(f"[INFO] [PIPE] selected_pattern_id_before_assemble={pid_before_univ!r}")
 
     healed_code = final_code
     regex_fixes = 0
@@ -155,12 +796,16 @@ def run_ab3_full_healer(
     detail_logs = []
     generated_fp = {}
     iso_isomorphic = False
+    iso_guard_triggered = False
+    fallback_used = False
+
+    healer_bypassed = bool("FourOperationsOfRadicals" in (skill_id or ""))
 
     if "FourOperationsOfRadicals" in (skill_id or ""):
         # Radical Orchestrator: skip the general healer entirely
         anti_dup_fixes = 0
-        detail_logs.insert(0, "[HEALER_STATUS] ✅ Radical Orchestrator — general healer bypassed.")
-        print("[ASSEMBLER] [RADICAL] healer bypassed.")
+        detail_logs.insert(0, "[HEALER_STATUS] [OK] Radical Orchestrator — general healer bypassed.")
+        print("[INFO] [ASSEMBLER] Radical path: general healer bypassed.")
     else:
         try:
             healed_code, *healer_stats = advanced_healer_fn(final_code, ablation_id=3, skill_id=skill_id)
@@ -174,16 +819,22 @@ def run_ab3_full_healer(
             anti_dup_fixes = max(0, (_healer_total - regex_code_fixes - ast_fixes)) if _healer_total is not None else 0
             regex_code_fixes += anti_dup_fixes
             regex_fixes = regex_code_fixes
-            detail_logs.insert(0, f"[HEALER_STATUS] ✅ Active Healer ran — regex_code={regex_code_fixes}, ast={ast_fixes}, anti_dup={anti_dup_fixes}")
-            print(f"=== [VL Pipeline Healer] Success! Regex: {regex_fixes}, AST: {ast_fixes}, AntiDup: {anti_dup_fixes} ===")
+            detail_logs.insert(0, f"[HEALER_STATUS] [OK] Active Healer ran — regex_code={regex_code_fixes}, ast={ast_fixes}, anti_dup={anti_dup_fixes}")
+            print(
+                f"[INFO] [HEALER] Success regex={regex_fixes} ast={ast_fixes} anti_dup={anti_dup_fixes}"
+            )
         except Exception as _healer_exc:
             import traceback as _healer_tb
-            print("=== [VL Pipeline Healer] CRASHED ===")
+            print("[ERROR] [HEALER] CRASHED")
             _healer_tb.print_exc()
             healed_code = final_code
             anti_dup_fixes = 0
-            detail_logs.append(f"[HEALER_STATUS] ❌ Healer CRASHED — {type(_healer_exc).__name__}: {_healer_exc}")
+            detail_logs.append(f"[HEALER_STATUS] [ERROR] Healer CRASHED — {type(_healer_exc).__name__}: {_healer_exc}")
             detail_logs.append("[HEALER_STATUS] 使用原始 AI 輸出，Skip 所有修復。")
+
+    _pid_healer = extract_selected_pattern_id_from_code(healed_code)
+    print(f"[INFO] [PIPE] selected_pattern_id={_pid_healer!r} (after healer)")
+    print(f"[INFO] [PIPE] healer_bypassed={healer_bypassed}")
 
     healed_exec_code = patch_fraction_skill_eval_calls_fn(
         optimize_live_execution_code_fn(healed_code),
@@ -194,8 +845,62 @@ def run_ab3_full_healer(
     import re as _re16
     healed_exec_code = _re16.sub(r'\beval\s*\(', 'safe_eval(', healed_exec_code)
 
+    _raw_pat = extract_selected_pattern_id_from_code(healed_exec_code)
+    _, healed_code, healed_exec_code, pattern_guard_trace = apply_radical_pattern_p1_guard(
+        skill_id, ocr_text, _raw_pat, healed_code, healed_exec_code
+    )
+    _pid_after_guard = extract_selected_pattern_id_from_code(healed_exec_code)
+    print(f"[INFO] [PIPE] selected_pattern_id_after_guard={_pid_after_guard!r}")
+    if pattern_guard_trace.get("reject_reason"):
+        detail_logs.append(
+            "[PATTERN_GUARD] "
+            f"signals={pattern_guard_trace.get('detected_signals')!r} "
+            f"candidates={pattern_guard_trace.get('candidate_patterns')!r} "
+            f"selected={pattern_guard_trace.get('selected_pattern_id')!r} "
+            f"reason={pattern_guard_trace.get('reject_reason')!r}"
+        )
+
+    _cur_style_pat = extract_selected_pattern_id_from_code(healed_exec_code)
+    _, healed_code, healed_exec_code, style_gate_trace = apply_radical_style_pattern_gate(
+        skill_id,
+        input_radical_style,
+        _cur_style_pat,
+        ocr_text,
+        healed_code,
+        healed_exec_code,
+        pattern_guard_trace.get("candidate_patterns") or [],
+    )
+    if style_gate_trace.get("style_gate_reason") not in (
+        None,
+        "pattern_ok",
+        "skipped_unknown_style",
+    ):
+        detail_logs.append(
+            "[STYLE_GATE] "
+            f"reason={style_gate_trace.get('style_gate_reason')!r} "
+            f"rejected={style_gate_trace.get('rejected_pattern_id')!r} "
+            f"selected={style_gate_trace.get('selected_pattern_id')!r}"
+        )
+
+    if "FourOperationsOfRadicals" in (skill_id or "") and input_radical_style is not None:
+        healed_exec_code = inject_required_radical_style_into_exec_code(
+            healed_exec_code, input_radical_style
+        )
+        healed_code = inject_required_radical_style_into_exec_code(
+            healed_code, input_radical_style
+        )
+
     try:
-        exe_res = scaler._execute_code(healed_exec_code, level=1)
+        try:
+            exe_res = _execute_with_stubs_if_needed(scaler, healed_exec_code, api_stubs)
+        except Exception as _ex:
+            from core.domain_functions import StyleProfileExceededError
+            if isinstance(_ex, StyleProfileExceededError):
+                style_profile_vars_error = str(_ex)
+                detail_logs.append(f"[STYLE_PROFILE_VARS] {style_profile_vars_error}")
+                exe_res = {"question_text": "", "correct_answer": ""}
+            else:
+                raise
         if "question_text" in exe_res:
             trace_seed = {
                 "regex_code_fixes": regex_code_fixes,
@@ -219,7 +924,143 @@ def run_ab3_full_healer(
             if negative_wrap_cnt > 0:
                 detail_logs.append(f"[DISPLAY_SANITIZE] wrapped {negative_wrap_cnt} bare negative literal(s) with parentheses.")
 
+        if (
+            "FourOperationsOfRadicals" in (skill_id or "")
+            and input_radical_style is not None
+            and isinstance(exe_res, dict)
+            and "error" not in exe_res
+            and (exe_res.get("question_text") or "").strip()
+        ):
+            _out_rs0 = classify_radical_style(exe_res.get("question_text", ""))
+            _ok_s0, _rsn0 = radical_hard_style_preserved(
+                input_radical_style, _out_rs0 or "mixed"
+            )
+            style_output_exec_count = 1
+            if not _ok_s0:
+                style_output_mismatch_history.append(
+                    {
+                        "attempt": 1,
+                        "input_style": input_radical_style,
+                        "output_style": _out_rs0,
+                        "reason": _rsn0,
+                    }
+                )
+                detail_logs.append(
+                    f"[STYLE_REGEN] same_pattern+style_profile exec#2 "
+                    f"input={input_radical_style!r} was_output={_out_rs0!r} {_rsn0!r}"
+                )
+                healed_exec_code = inject_radical_style_retry_hint(healed_exec_code)
+                healed_code = inject_radical_style_retry_hint(healed_code)
+                try:
+                    exe_res = _execute_with_stubs_if_needed(scaler, healed_exec_code, api_stubs)
+                except Exception as _ex2:
+                    from core.domain_functions import StyleProfileExceededError
+                    if isinstance(_ex2, StyleProfileExceededError):
+                        style_profile_vars_error = str(_ex2)
+                        detail_logs.append(f"[STYLE_PROFILE_VARS][regen] {style_profile_vars_error}")
+                        exe_res = {"question_text": "", "correct_answer": ""}
+                    else:
+                        raise
+                style_retry_used = True
+                style_output_exec_count = 2
+                if "question_text" in exe_res:
+                    trace_seed_sr = {
+                        "regex_code_fixes": regex_code_fixes,
+                        "regex_display_fixes": regex_display_fixes,
+                        "ast_fixes": ast_fixes,
+                        "o1_fixes": o1_fixes,
+                    }
+                    sanitize_report_sr, trace_shadow_sr = sanitize_result_question_fn(
+                        exe_res,
+                        detail_logs=detail_logs,
+                        after_fallback=False,
+                        trace_seed=trace_seed_sr,
+                    )
+                    regex_display_fixes = int(trace_shadow_sr.get("regex_display_fixes", 0) or 0)
+                    regex_fixes = int(trace_shadow_sr.get("regex_fixes", 0) or 0)
+                    sanitize_meta_sr = sanitize_report_sr if isinstance(sanitize_report_sr, dict) else {}
+                    double_paren_cnt_sr = int(sanitize_meta_sr.get("double_paren_fixes", 0) or 0)
+                    negative_wrap_cnt_sr = int(sanitize_meta_sr.get("negative_wrap_fixes", 0) or 0)
+                    if double_paren_cnt_sr > 0:
+                        detail_logs.append(
+                            f"[DISPLAY_SANITIZE] collapsed {double_paren_cnt_sr} nested numeric parenthesis pattern(s)."
+                        )
+                    if negative_wrap_cnt_sr > 0:
+                        detail_logs.append(
+                            f"[DISPLAY_SANITIZE] wrapped {negative_wrap_cnt_sr} bare negative literal(s) with parentheses."
+                        )
+                _out_rs1 = classify_radical_style(exe_res.get("question_text", ""))
+                _ok_s1, _rsn1 = radical_hard_style_preserved(
+                    input_radical_style, _out_rs1 or "mixed"
+                )
+                if not _ok_s1:
+                    style_mismatch_after_retry = True
+                    style_output_mismatch_history.append(
+                        {
+                            "attempt": 2,
+                            "input_style": input_radical_style,
+                            "output_style": _out_rs1,
+                            "reason": _rsn1,
+                        }
+                    )
+                    detail_logs.append(
+                        f"[STYLE_MISMATCH] after_regen output={_out_rs1!r} {_rsn1!r}"
+                    )
+
         generated_expr = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
+
+        _src_ocr_120 = (ocr_text or "")[:120]
+        _gen_ex_120 = (generated_expr or "")[:120]
+        print(f"[INFO] [PIPE] source_ocr_expr={_src_ocr_120!r}")
+        print(f"[INFO] [PIPE] generated_expr={_gen_ex_120!r} (post-first-exec)")
+
+        if "FourOperationsOfRadicals" in (skill_id or ""):
+            _gen_norm0 = _normalize_expr_for_echo(generated_expr)
+            exemplar_echo_hit = _gen_norm0 in {_normalize_expr_for_echo(x) for x in RADICAL_EXEMPLAR_POOL}
+            if exemplar_echo_hit:
+                detail_logs.append("[EXEMPLAR_ECHO] hit exemplar pool; regenerate same pattern once")
+                healed_exec_code = inject_radical_anti_echo_retry_hint(healed_exec_code)
+                healed_code = inject_radical_anti_echo_retry_hint(healed_code)
+                exemplar_echo_retry_used = True
+                try:
+                    exe_res = _execute_with_stubs_if_needed(scaler, healed_exec_code, api_stubs)
+                except Exception:
+                    exe_res = {"question_text": "", "correct_answer": ""}
+                generated_expr = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
+
+            _qg = evaluate_radical_quality_gate(
+                source_ocr_expr=ocr_text,
+                question_text=exe_res.get("question_text", ""),
+                generated_expr=generated_expr,
+            )
+            quality_gate_passed = bool(_qg.get("passed", True))
+            quality_gate_reasons = list(_qg.get("reasons") or [])
+            anti_echo_similarity = float(_qg.get("anti_echo_similarity", 0.0) or 0.0)
+            if not quality_gate_passed:
+                detail_logs.append(
+                    "[QUALITY_GATE][FAIL] " + ", ".join(quality_gate_reasons)
+                )
+                # First remediation: anti-echo retry (same pattern, regenerate values).
+                anti_echo_retry_used = True
+                healed_exec_code = inject_radical_anti_echo_retry_hint(healed_exec_code)
+                healed_code = inject_radical_anti_echo_retry_hint(healed_code)
+                try:
+                    exe_res = _execute_with_stubs_if_needed(scaler, healed_exec_code, api_stubs)
+                except Exception:
+                    exe_res = {"question_text": "", "correct_answer": ""}
+                generated_expr = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
+                _qg2 = evaluate_radical_quality_gate(
+                    source_ocr_expr=ocr_text,
+                    question_text=exe_res.get("question_text", ""),
+                    generated_expr=generated_expr,
+                )
+                quality_gate_passed = bool(_qg2.get("passed", True))
+                quality_gate_reasons = list(_qg2.get("reasons") or [])
+                anti_echo_similarity = float(_qg2.get("anti_echo_similarity", 0.0) or 0.0)
+                if not quality_gate_passed:
+                    detail_logs.append(
+                        "[QUALITY_GATE][RETRY_FAIL] " + ", ".join(quality_gate_reasons)
+                    )
 
         # ── Hard bypass: Radical / Orchestrator skills ───────────────────────
         # Two independent signals trigger the bypass (belt-and-suspenders):
@@ -236,12 +1077,12 @@ def run_ab3_full_healer(
                 _chk_policy = _gsp_chk(skill_id) or {}
                 if _chk_policy.get("skip_complexity_mirror", False) or "Radicals" in (skill_id or ""):
                     print(
-                        f"⚠️ [ADVISOR] Radical Skill Detected: "
+                        f"[WARN] [ADVISOR] Radical Skill Detected: "
                         f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
                     )
             except Exception:
                 print(
-                    f"⚠️ [ADVISOR] Radical Skill Detected: "
+                    f"[WARN] [ADVISOR] Radical Skill Detected: "
                     f"Bypassing Legacy Complexity Mirror. skill={skill_id!r}"
                 )
             detail_logs.append(
@@ -331,6 +1172,17 @@ def run_ab3_full_healer(
                         "生成題目無帶分數（僅 \\frac 無整數首項），強制觸發 iso-fallback。"
                     )
 
+        iso_guard_triggered = bool(guard_meta.get("triggered"))
+        print(f"[INFO] [PIPE] iso_guard_triggered={iso_guard_triggered} (pre-fallback branch)")
+
+        if "FourOperationsOfRadicals" in (skill_id or "") and not quality_gate_passed:
+            guard_meta["triggered"] = True
+            guard_meta["quality_gate_reasons"] = quality_gate_reasons
+            detail_logs.append(
+                "[QUALITY_GATE] forcing deterministic fallback due to "
+                + ", ".join(quality_gate_reasons)
+            )
+
         if guard_meta.get("triggered"):
             append_iso_style_guard_logs_fn(
                 detail_logs,
@@ -350,10 +1202,49 @@ def run_ab3_full_healer(
                     "（OCR 文字可能無數字 span），跳過 fallback，保留原始 AI 輸出。"
                 )
             if fallback_code:
+                fallback_used = True
                 healed_code = fallback_code
                 healed_exec_code = optimize_live_execution_code_fn(healed_code)
                 healed_exec_code = patch_fraction_skill_eval_calls_fn(healed_exec_code, skill_id)
-                exe_res = scaler._execute_code(healed_exec_code, level=1)
+                import re as _re_fb
+
+                healed_exec_code = _re_fb.sub(r"\beval\s*\(", "safe_eval(", healed_exec_code)
+                _raw_fb = extract_selected_pattern_id_from_code(healed_exec_code)
+                _, healed_code, healed_exec_code, pattern_guard_trace = apply_radical_pattern_p1_guard(
+                    skill_id, ocr_text, _raw_fb, healed_code, healed_exec_code
+                )
+                if pattern_guard_trace.get("reject_reason"):
+                    detail_logs.append(
+                        "[PATTERN_GUARD][POST_FALLBACK] "
+                        f"signals={pattern_guard_trace.get('detected_signals')!r} "
+                        f"selected={pattern_guard_trace.get('selected_pattern_id')!r} "
+                        f"reason={pattern_guard_trace.get('reject_reason')!r}"
+                    )
+                _cur_fb = extract_selected_pattern_id_from_code(healed_exec_code)
+                _, healed_code, healed_exec_code, style_gate_trace = apply_radical_style_pattern_gate(
+                    skill_id,
+                    input_radical_style,
+                    _cur_fb,
+                    ocr_text,
+                    healed_code,
+                    healed_exec_code,
+                    pattern_guard_trace.get("candidate_patterns") or [],
+                )
+                if "FourOperationsOfRadicals" in (skill_id or "") and input_radical_style is not None:
+                    healed_exec_code = inject_required_radical_style_into_exec_code(
+                        healed_exec_code, input_radical_style
+                    )
+                    healed_code = inject_required_radical_style_into_exec_code(
+                        healed_code, input_radical_style
+                    )
+                _exec_payload = healed_exec_code
+                if (
+                    "IntegerOps." in _exec_payload
+                    and "class IntegerOps" not in _exec_payload
+                    and api_stubs
+                ):
+                    _exec_payload = api_stubs + "\n\n" + _exec_payload
+                exe_res = _execute_with_stubs_if_needed(scaler, _exec_payload, api_stubs)
                 if "question_text" in exe_res:
                     trace_seed_2 = {
                         "regex_code_fixes": regex_code_fixes,
@@ -385,14 +1276,30 @@ def run_ab3_full_healer(
                     raise ValueError("ISO_GUARD fallback failed: generated structure still not isomorphic")
 
         generated_expr_final = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
-        generated_fp = build_structural_profile_fn(generated_expr_final)
-        # [UI FIX] Populate generated_fp with supercharged radical profile so the frontend mirror isn't blank.
-        if radical_reassemble_fn is not None:
-            # 🌟 拔除強制的 True！改用真實的根式 DNA 比對！
-            from core.code_utils.live_show_math_utils import _build_radical_profile, _is_radical_isomorphic
-            generated_fp = _build_radical_profile(generated_expr_final)
-            iso_isomorphic = _is_radical_isomorphic(expected_fp, generated_expr_final)
+        if "FourOperationsOfRadicals" in (skill_id or "") and not generated_expr_final.strip():
+            _expr_fallback = (extract_math_expr_from_question_fn(ocr_text) or ocr_text or "1+1").strip()
+            if not isinstance(exe_res, dict):
+                exe_res = {}
+            exe_res["question_text"] = f"化簡 ${_expr_fallback}$。"
+            exe_res.setdefault("correct_answer", "")
+            generated_expr_final = extract_math_expr_from_question_fn(exe_res.get("question_text", ""))
+        print(f"[INFO] [PIPE] fallback_used={fallback_used}")
+        _gen_final_120 = (generated_expr_final or "")[:120]
+        print(f"[INFO] [PIPE] generated_expr={_gen_final_120!r} (final pre-profile)")
+
+        # Radicals-only：複雜度鏡像 profile + 同構判斷（與 radical_reassemble 解耦，改以 skill_id gate）
+        if "FourOperationsOfRadicals" in (skill_id or ""):
+            from core.code_utils.live_show_math_utils import (
+                build_radical_complexity_mirror_profile,
+                radical_complexity_mirror_isomorphic,
+            )
+
+            generated_fp = build_radical_complexity_mirror_profile(generated_expr_final)
+            iso_isomorphic = radical_complexity_mirror_isomorphic(
+                expected_fp, generated_expr_final
+            )
         else:
+            generated_fp = build_structural_profile_fn(generated_expr_final)
             iso_isomorphic = is_expression_isomorphic_fn(expected_fp, generated_expr_final)
         recompute_result_answer_fn(
             exe_res,
@@ -476,6 +1383,78 @@ def run_ab3_full_healer(
     except Exception:
         pass
 
+    selected_pattern_id_after = extract_selected_pattern_id_from_code(healed_exec_code)
+    selected_pattern_id = selected_pattern_id_after
+    _gs = (pattern_guard_trace or {}).get("selected_pattern_id")
+    _rej = (pattern_guard_trace or {}).get("reject_reason")
+    if (
+        _rej
+        and _gs
+        and _gs != "p1_add_sub"
+        and selected_pattern_id_after == "p1_add_sub"
+    ):
+        print(
+            f"[WARN] [PIPE] pattern_guard intended id={_gs!r} but final code still "
+            f"p1_add_sub (regex patch likely missed pattern_id line)"
+        )
+        pattern_overwrite_reason = "pattern_guard_patch_failed"
+        selected_pattern_id = _gs
+    elif _rej:
+        pattern_overwrite_reason = "pattern_guard"
+    elif fallback_used:
+        pattern_overwrite_reason = "iso_fallback_replaced_code"
+    elif (
+        pid_before_univ is not None
+        and selected_pattern_id_after is not None
+        and pid_before_univ != selected_pattern_id_after
+    ):
+        pattern_overwrite_reason = "pipeline_mutation"
+    else:
+        pattern_overwrite_reason = ""
+
+    _patch_failed = bool(
+        _rej
+        and _gs
+        and _gs != "p1_add_sub"
+        and selected_pattern_id_after == "p1_add_sub"
+    )
+    pattern_overwritten = bool(
+        _patch_failed
+        or (
+            pid_before_univ is not None
+            and selected_pattern_id_after is not None
+            and pid_before_univ != selected_pattern_id_after
+        )
+    )
+    if pattern_overwritten:
+        print(
+            f"[WARN] [PIPE] pattern trace before_assemble={pid_before_univ!r} "
+            f"after_code={selected_pattern_id_after!r} api_selected={selected_pattern_id!r} "
+            f"overwrite_reason={pattern_overwrite_reason!r}"
+        )
+
+    _final_qt = ""
+    if problems_result:
+        _lr = problems_result[-1]
+        if isinstance(_lr, dict):
+            _final_qt = (_lr.get("question_text") or "").strip()
+
+    if input_radical_style is None:
+        output_radical_style = None
+        style_preserved = True
+        style_mismatch_reason = ""
+    else:
+        _ab3_meta = recompute_radical_style_fields_for_api(
+            ocr_text,
+            input_radical_style=input_radical_style,
+            ab3_question_text=_final_qt,
+            style_mismatch_after_retry_ab3=style_mismatch_after_retry,
+        )
+        input_radical_style = _ab3_meta["input_radical_style"]
+        output_radical_style = _ab3_meta["output_radical_style"]
+        style_preserved = _ab3_meta["style_preserved"]
+        style_mismatch_reason = _ab3_meta["style_mismatch_reason"]
+
     return {
         "problems_result": problems_result,
         "cpu_execution_time_sec": ab3_exec_elapsed,
@@ -490,6 +1469,31 @@ def run_ab3_full_healer(
         "detail_logs": detail_logs,
         "generated_fp": generated_fp,
         "iso_isomorphic": iso_isomorphic,
+        "iso_guard_triggered": iso_guard_triggered,
+        "fallback_used": fallback_used,
+        "selected_pattern_id": selected_pattern_id,
+        "selected_pattern_id_before_assemble": pid_before_univ,
+        "selected_pattern_id_after_assemble": selected_pattern_id_after,
+        "pattern_overwritten": pattern_overwritten,
+        "pattern_overwrite_reason": pattern_overwrite_reason,
+        "healer_bypassed": healer_bypassed,
+        "pattern_guard_trace": pattern_guard_trace,
+        "input_radical_style": input_radical_style,
+        "output_radical_style": output_radical_style,
+        "style_preserved": style_preserved,
+        "style_mismatch_reason": style_mismatch_reason,
+        "style_gate_trace": style_gate_trace,
+        "style_retry_used": style_retry_used,
+        "style_mismatch_after_retry": style_mismatch_after_retry,
+        "style_profile_vars_error": style_profile_vars_error,
+        "style_output_exec_count": style_output_exec_count,
+        "style_output_mismatch_history": style_output_mismatch_history,
+        "quality_gate_passed": quality_gate_passed,
+        "quality_gate_reasons": quality_gate_reasons,
+        "anti_echo_retry_used": anti_echo_retry_used,
+        "anti_echo_similarity": anti_echo_similarity,
+        "exemplar_echo_hit": exemplar_echo_hit,
+        "exemplar_echo_retry_used": exemplar_echo_retry_used,
     }
 
 
@@ -515,38 +1519,125 @@ def assemble_visual_output(
     iso_isomorphic,
     fraction_display_mode,
     ab2_result,
+    selected_pattern_id=None,
+    fallback_used=False,
+    iso_guard_triggered=False,
+    healer_bypassed=None,
+    pattern_guard_trace=None,
+    pattern_meta=None,
+    style_meta=None,
+    include_radical_style_fields: bool = True,
 ):
+    _code_pid = extract_selected_pattern_id_from_code(api_stubs + "\n\n" + healed_code)
+    _pgt = pattern_guard_trace if isinstance(pattern_guard_trace, dict) else {}
+    _caller_pid = selected_pattern_id
+    _gs = _pgt.get("selected_pattern_id")
+    _rej = _pgt.get("reject_reason")
+    if _rej and _gs and _gs != "p1_add_sub" and _code_pid == "p1_add_sub":
+        _pid = _caller_pid if (_caller_pid and _caller_pid != "p1_add_sub") else _gs
+        print(
+            "[WARN] [PIPE] assemble_visual_output: healed code still p1_add_sub but "
+            f"pattern_guard chose {_gs!r}; using selected_pattern_id={_pid!r} for debug_meta"
+        )
+    else:
+        _pid = _code_pid if _code_pid else _caller_pid
+
+    _pm = pattern_meta if isinstance(pattern_meta, dict) else {}
+    _p_before = _pm.get("selected_pattern_id_before_assemble")
+    _p_after = _pm.get("selected_pattern_id_after_assemble")
+    _p_ow = bool(_pm.get("pattern_overwritten", False))
+    _p_ow_r = _pm.get("pattern_overwrite_reason") or ""
+
+    _sm = style_meta if isinstance(style_meta, dict) else {}
+
+    _dm: dict[str, Any] = {
+        "performance": {
+            "ai_inference_time_sec": ai_inference_time_sec,
+            "cpu_execution_time_sec": cpu_execution_time_sec,
+        },
+        "raw_code": raw_out,
+        "final_code": api_stubs + "\n\n" + healed_code,
+        "file_path": file_path,
+        "bare_prompt": "",
+        "scaffold_prompt": system_prompt,
+        "architect_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
+        "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
+        "architect_model": "Qwen3-VL",
+        "healer_trace": {
+            "regex_fixes": regex_fixes,
+            "regex_code_fixes": regex_code_fixes,
+            "regex_display_fixes": regex_display_fixes,
+            "ast_fixes": ast_fixes,
+            "o1_fixes": o1_fixes,
+        },
+        "healer_logs": detail_logs if isinstance(detail_logs, list) else [],
+        "iso_profile_expected": expected_fp,
+        "iso_profile_generated": generated_fp,
+        "iso_isomorphic": iso_isomorphic,
+        "fraction_display_mode": fraction_display_mode,
+        "selected_pattern_id": _pid,
+        "selected_pattern_id_before_assemble": _p_before,
+        "selected_pattern_id_after_assemble": _p_after,
+        "pattern_overwritten": _p_ow,
+        "pattern_overwrite_reason": _p_ow_r,
+        "fallback_used": bool(fallback_used),
+        "iso_guard_triggered": bool(iso_guard_triggered),
+        "healer_bypassed": healer_bypassed,
+        "detected_signals": _pgt.get("detected_signals", []),
+        "candidate_patterns": _pgt.get("candidate_patterns", []),
+        "reject_reason": _pgt.get("reject_reason"),
+        "pattern_guard_trace": _pgt,
+    }
+    if include_radical_style_fields:
+        _dm.update(
+            {
+                "input_radical_style": _sm.get("input_radical_style"),
+                "output_radical_style": _sm.get("output_radical_style"),
+                "style_preserved": _sm.get("style_preserved"),
+                "style_mismatch_reason": _sm.get("style_mismatch_reason"),
+                "selected_pattern_before_style_gate": _sm.get(
+                    "selected_pattern_before_style_gate"
+                ),
+                "selected_pattern_after_style_gate": _sm.get(
+                    "selected_pattern_after_style_gate"
+                ),
+                "style_gate_applied": _sm.get("style_gate_applied", False),
+                "style_gate_reason": _sm.get("style_gate_reason"),
+                "ab2_output_radical_style": _sm.get("ab2_output_radical_style"),
+                "ab2_style_preserved": _sm.get("ab2_style_preserved"),
+                "ab2_style_mismatch_reason": _sm.get("ab2_style_mismatch_reason"),
+                "ab2_selected_pattern_before_style_gate": _sm.get(
+                    "ab2_selected_pattern_before_style_gate"
+                ),
+                "ab2_selected_pattern_after_style_gate": _sm.get(
+                    "ab2_selected_pattern_after_style_gate"
+                ),
+                "ab2_style_gate_applied": _sm.get("ab2_style_gate_applied", False),
+                "ab2_style_gate_reason": _sm.get("ab2_style_gate_reason"),
+                "style_retry_used": _sm.get("style_retry_used"),
+                "style_mismatch_after_retry": _sm.get("style_mismatch_after_retry"),
+                "style_profile_vars_error": _sm.get("style_profile_vars_error"),
+                "style_output_exec_count": _sm.get("style_output_exec_count"),
+                "style_output_mismatch_history": _sm.get("style_output_mismatch_history"),
+                "ab2_style_output_exec_count": _sm.get("ab2_style_output_exec_count"),
+                "ab2_style_output_mismatch_history": _sm.get(
+                    "ab2_style_output_mismatch_history"
+                ),
+                "quality_gate_passed": _sm.get("quality_gate_passed"),
+                "quality_gate_reasons": _sm.get("quality_gate_reasons"),
+                "anti_echo_retry_used": _sm.get("anti_echo_retry_used"),
+                "anti_echo_similarity": _sm.get("anti_echo_similarity"),
+                "exemplar_echo_hit": _sm.get("exemplar_echo_hit"),
+                "exemplar_echo_retry_used": _sm.get("exemplar_echo_retry_used"),
+            }
+        )
+    _dm["mcri_report"] = {
+        "robustness_grade": "MODERATE",
+        "robustness_reason": "Visual Generation with Full Healer",
+    }
+
     return {
         "problems": problems_result,
-        "debug_meta": {
-            "performance": {
-                "ai_inference_time_sec": ai_inference_time_sec,
-                "cpu_execution_time_sec": cpu_execution_time_sec,
-            },
-            "raw_code": raw_out,
-            "final_code": api_stubs + "\n\n" + healed_code,
-            "file_path": file_path,
-            "bare_prompt": "",
-            "scaffold_prompt": system_prompt,
-            "architect_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
-            "gemini_raw_spec": json.dumps(json_spec, ensure_ascii=False, indent=2) if json_spec else "",
-            "architect_model": "Qwen3-VL",
-            "healer_trace": {
-                "regex_fixes": regex_fixes,
-                "regex_code_fixes": regex_code_fixes,
-                "regex_display_fixes": regex_display_fixes,
-                "ast_fixes": ast_fixes,
-                "o1_fixes": o1_fixes,
-            },
-            "healer_logs": detail_logs if isinstance(detail_logs, list) else [],
-            "iso_profile_expected": expected_fp,
-            "iso_profile_generated": generated_fp,
-            "iso_isomorphic": iso_isomorphic,
-            "fraction_display_mode": fraction_display_mode,
-            "mcri_report": {
-                "robustness_grade": "MODERATE",
-                "robustness_reason": "Visual Generation with Full Healer",
-            },
-        },
+        "debug_meta": _dm,
         "ab2_result": ab2_result,
     }

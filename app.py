@@ -15,6 +15,19 @@ import re
 from sqlalchemy.orm import aliased
 import sys
 import os
+
+# Windows 主控台常為 cp950：請求流程中的 log 若含 emoji 會 UnicodeEncodeError
+if hasattr(sys.stdout, "reconfigure"):
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+if hasattr(sys.stderr, "reconfigure"):
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 # =========================================================
 # [新增] 強制路徑修正：解決 No module named 'core'
 # 這段程式碼必須放在所有 'from core ...' 之前

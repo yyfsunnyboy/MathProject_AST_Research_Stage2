@@ -341,6 +341,21 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 - [ ] **D. 回歸測試補件**：新增針對 Radical monolithic 的 smoke test（至少覆蓋：單根式化簡、分配律、分數根式乘除、有理化）。  
 - [ ] **E. 文檔清理**：將 8.9/8.10/8.11 的重複口徑收斂成「現行生效規則」單一章節，避免交接誤讀。  
 
+### 8.12 銜接筆記（2026-03-20）：「讀題後對不到預設題型」與 SHOWREEL_LOGIC 的易混點
+
+**先釐清**：Live Show 執行路徑**不會**讀取專案根目錄的 `SHOWREEL_LOGIC.md`。該檔僅供人類／Agent 交接。實際注入模型的內容來自 `agent_skills/<skill_id>/` 下的 `prompt_liveshow.md`（優先）與 `SKILL.md`（base），見 `core/routes/live_show.py`（`/api/classify` 預覽與 `/api/generate_live` monolithic 分支）。
+
+**為何會覺得「抓錯」**（與預設／預期題型不一致時）：
+
+| 環節 | 行為 | 相關程式位置 |
+|------|------|----------------|
+| 辨識技能 | VL 回傳的 `skill_id` 經 `normalize_skill_id`；若對應資料夾不存在 → 強制 `Unknown` | `live_show.py` `/api/classify` |
+| 根式安全閥 | 已判為根式技能，但 OCR 只有 `\frac` 等、**沒有** `\sqrt`／根號特徵 → 可改判到分數技能 | `_apply_skill_safety_guard()` |
+| 壓測腳本 | `classify` 若為 `Unknown`，腳本可後備成固定 `FALLBACK_SKILL_ID`（預設根式），與「純 UI 流程」不同 | `tests/comprehensive_stress_test.py` → `normalize_classify_result` |
+| Unknown 後 | `scaffold_prompt` 改為短句防禦文案，**不是**某個技能的完整 SKILL | `live_show.py` `/api/classify` `skill_name == "Unknown"` 分支 |
+
+**昨天進度停在**：已把「兩階段 classify → generate」與純算式輸入等行為寫入 §8.11；若接下來要處理「預期根式卻被判分數／Unknown」，優先檢查上表三列，再決定要改 classify prompt、放寬或調整 `_apply_skill_safety_guard`，還是 UI 上允許**手動鎖定 skill**（目前 Live Show 以 classify 結果為準）。
+
 ---
 
 ## 9. 歷史修復摘要（僅關鍵清單）
@@ -414,3 +429,102 @@ python -X utf8 -m pytest tests/test_live_show_healer_regression.py -q
 - **技能凍結協議 (Freeze Protocol)**：以下技能已通過完整測試驗收，**嚴禁**修改其關聯檔案與專屬邏輯（包含 `IntegerOps` / `FractionOps` 的現有行為）：
   - `jh_數學1上_FourArithmeticOperationsOfIntegers`
   - `jh_數學1上_FourArithmeticOperationsOfNumbers`
+
+---
+
+## 17. 今日進度交接（2026-03-20）
+
+### 17.1 今日修改方向（Radicals-only）
+
+- 目標聚焦在 `jh_數學2上_FourOperationsOfRadicals`：
+  - 強化 style/mirror 最終一致性。
+  - 新增 mirror tolerance（`p2a_mult_direct` 條件容忍）。
+  - 新增 quality gate（single-problem / anti-echo / operator-lock）。
+  - 加入公式級 pattern detector（優先使用 SKILL.md 已定義題型）。
+  - 不更動 Integers / Numbers 的既有 mirror、guard、pattern、fallback 規則。
+
+### 17.2 已完成成果（Completed ✅）
+
+1. **Radicals mirror comparator**
+   - 新增 `radical_complexity_mirror_compare(...)`，含 `p2a_mult_direct` 輕量容忍：
+     - `style_preserved=True`
+     - 乘法骨架
+     - `fraction_count` 不變
+     - `bracket_depth` 不惡化
+     - `rad_count` 差異 `<=1`
+   - `debug_meta` 已新增：
+     - `mirror_tolerance_applied`
+     - `mirror_tolerance_reason`
+
+2. **Radicals quality gate**
+   - `run_ab3_full_healer` 已掛入 Radicals-only gate：
+     - `single_problem_violation`
+     - `empty_expr_violation`
+     - `echo_violation`
+     - `operator_lock_violation`
+   - 失敗後先做同 pattern anti-echo retry，再強制 deterministic fallback。
+   - `debug_meta` 已新增：
+     - `quality_gate_passed`
+     - `quality_gate_reasons`
+     - `anti_echo_retry_used`
+     - `anti_echo_similarity`
+
+3. **Pattern detector 高優先**
+   - `apply_radical_pattern_p1_guard` 已補公式級判斷（先於 `\times/\div` 粗分流）：
+     - `(A±B)^2 -> p2d_perfect_square`
+     - `(A-B)(A+B) -> p2e_diff_of_squares`
+     - `1/(b√q±c) -> p5a_conjugate_int`
+     - `p√m/(b√q±c) -> p5b_conjugate_rad`
+     - `√(a/b)×√(c/d)÷√(e/f) -> p4c_nested_frac_chain`
+     - `(a/√b)÷(√c/√d) -> p4d_frac_rad_div_mixed`
+   - 並新增 signals：`decimal_root`、`power_root`（禁止 `p1_add_sub`）。
+
+4. **Style gate 對齊**
+   - `RADICAL_STYLE_PATTERN_MAP` 已擴充：
+     - `simple_radical` 至少允許 `p2c/p2d/p2e`
+     - `simplifiable_radical` 允許 `p2d/p2e`
+   - 目標是避免公式 pattern 被 style gate 回退到 `p1/p2a`。
+
+5. **Exemplar anti-echo（Radicals-only）**
+   - 已新增 `RADICAL_EXEMPLAR_POOL` 與 exemplar echo retry。
+   - `debug_meta` 已新增：
+     - `exemplar_echo_hit`
+     - `exemplar_echo_retry_used`
+
+6. **壓測腳本強化**
+   - `tests/comprehensive_stress_test.py` 已新增 fail 檢查：
+     - `single_problem_violation`
+     - `echo_violation`
+     - `operator_lock_violation`
+   - 新增 pattern family 驗收：
+     - `(√3+2√2)^2` 必須 `p2d family`
+     - `(√3-2√2)(√3+2√2)` 必須 `p2e family`
+     - `1/(√3-√2)` 必須 `p5a family`
+
+### 17.3 當前驗證結果（截至本次）
+
+- `python -m pytest tests/test_live_show_non_radical_regression.py -q`
+  - 結果：`2 passed, 1 skipped`
+  - 非 Radicals 回歸未退化（符合凍結原則）。
+
+- `python tests/comprehensive_stress_test.py`（42 題）
+  - 最新結果仍未達標（約 `35~36 / 42`）。
+  - 仍有固定缺口：
+    - 多題 Ab3 出現 `name 'IntegerOps' is not defined` 後轉為空輸出（#1/#12/#18/#26/#32 類）。
+    - `#10` style drift（simple -> fraction）。
+    - `#41` 仍有 `pattern_family_violation:p5a_required`（代表 `1/(√3-√2)` 仍偶發未鎖到 p5a）。
+
+### 17.4 待完成 / 待測試（Tonight TODO）
+
+1. **先修 Ab3 的 IntegerOps 缺口（最高優先）**
+   - 將 Ab3 所有 execute/fallback 路徑統一走同一執行入口（含 `api_stubs`）。
+   - 目標：清掉 `name 'IntegerOps' is not defined` 與空題幹連鎖。
+
+2. **強化 p5a 鎖定**
+   - 對 `\frac{1}{\sqrt{...}\pm...}` 再補一層 hard lock（guard/style gate 雙保險）。
+   - 目標：`#41` 必須穩定命中 `p5a family`。
+
+3. **再跑完整驗證**
+   - `python tests/comprehensive_stress_test.py`
+   - `python -m pytest tests/test_live_show_non_radical_regression.py -q`
+   - 驗收目標：`>=41/42`（理想 `42/42`）、`#18/#40` 無空輸出、`#32` 雙題合併被擋下。

@@ -160,6 +160,8 @@ class DomainFunctionHelper:
         target_profile: Optional[dict] = None,
         term_count: int = None,
         style: str = "mixed",
+        style_profile: Optional[str] = None,
+        style_retry_pass: bool = False,
     ) -> dict:
         """
         Generate a dictionary of safe, controlled random variables for the
@@ -180,6 +182,10 @@ class DomainFunctionHelper:
             term_count:     optional override for p1_add_sub term count.
             style:          "mixed" (default) or "simplified". When "simplified", radicands
                             are drawn only from SIMPLIFIED_RADICALS (square-free).
+            style_profile:  optional teaching class from OCR / pipeline
+                            (simple_radical | simplifiable_radical | fraction_radical | mixed);
+                            tightens vars so format_question_LaTeX matches that class.
+            style_retry_pass: when True (second exec after style mismatch), allow more retries.
 
         Returns:
             A dict of variables consumed by solve_problem_pattern and
@@ -189,8 +195,15 @@ class DomainFunctionHelper:
             RuntimeError if valid vars cannot be generated within max_retries
             AND no best-effort result is available.
         """
-        # [Style Enforcement] Use only simplified (square-free) radicands when requested
-        if style == "simplified":
+        if style_retry_pass and style_profile:
+            max_retries = max(max_retries, 380)
+        elif style_profile:
+            max_retries = min(max_retries, 20)
+
+        # Radicand pool: simple_radical profile always uses square-free pool.
+        if style_profile == "simple_radical":
+            self._simplifiable_pool = SIMPLIFIED_RADICALS
+        elif style == "simplified":
             self._simplifiable_pool = SIMPLIFIED_RADICALS
         else:
             self._simplifiable_pool = SIMPLIFIABLE_SET
@@ -243,9 +256,37 @@ class DomainFunctionHelper:
                     v = self._vars_p2f(difficulty)
                 elif pid in ("p2g_rad_mult_frac", "p2h_frac_mult_rad"):
                     v = self._vars_p2g_p2h(difficulty)
+                elif pid == "p6_combo":
+                    v = self._vars_p6(difficulty, style_profile=style_profile)
                 else:
                     v = generator_map[pid](difficulty)
                 best_effort_vars = v  # always keep latest mathematically-valid vars
+
+                if style_profile:
+                    from core.code_utils.live_show_math_utils import (
+                        classify_radical_style as _classify_rs,
+                    )
+
+                    if style_profile == "simple_radical":
+                        sc = self.count_simplifiable_in_vars(pid, v)
+                        if sc > 0:
+                            raise _RetrySignal()
+                        if sc == -1:
+                            qchk = self.format_question_LaTeX(pid, v)
+                            if _classify_rs(qchk) == "simplifiable_radical":
+                                raise _RetrySignal()
+                    elif style_profile == "simplifiable_radical":
+                        sc = self.count_simplifiable_in_vars(pid, v)
+                        if sc != -1 and sc == 0:
+                            raise _RetrySignal()
+                    elif style_profile == "fraction_radical":
+                        qchk = self.format_question_LaTeX(pid, v)
+                        if (r"\frac" not in qchk and r"\dfrac" not in qchk) or r"\sqrt" not in qchk:
+                            raise _RetrySignal()
+                    elif style_profile == "mixed":
+                        qchk = self.format_question_LaTeX(pid, v)
+                        if _classify_rs(qchk) != "mixed":
+                            raise _RetrySignal()
 
                 if target_sc is not None:
                     actual_sc = self.count_simplifiable_in_vars(pid, v)
@@ -262,10 +303,16 @@ class DomainFunctionHelper:
                     break
                 continue
 
-        # Profile constraint could not be met — return best-effort (math is correct).
-        if best_effort_vars is not None:
+        # Profile constraint could not be met — return best-effort only when not
+        # enforcing style_profile (otherwise pipeline must regen / fail visibly).
+        if best_effort_vars is not None and not style_profile:
             return best_effort_vars
 
+        if style_profile:
+            raise StyleProfileExceededError(
+                f"style_profile={style_profile!r} exceeded {max_retries} retries for "
+                f"pattern_id={pattern_id!r} difficulty={difficulty!r}"
+            )
         raise RuntimeError(
             f"get_safe_vars_for_pattern: could not generate valid vars for "
             f"'{pattern_id}' (difficulty='{difficulty}') within {max_retries} tries."
@@ -827,21 +874,45 @@ class DomainFunctionHelper:
                 return {"p": p, "b": b, "q": q, "c": c, "sign": sign}
         raise _RetrySignal()
 
-    def _vars_p6(self, difficulty: str) -> dict:
+    def _vars_p6(self, difficulty: str, style_profile: Optional[str] = None) -> dict:
         """Compose two sub-patterns for the multi-step combination."""
-        combos = [
+        combos_default = [
             ("p2b_mult_distrib", "p1_add_sub"),
-            ("p3b_div_simple",   "p1_add_sub"),
+            ("p3b_div_simple", "p1_add_sub"),
             ("p5a_conjugate_int", "p1_add_sub"),
         ]
+        combos_mixed = [
+            ("p2h_frac_mult_rad", "p1_add_sub"),
+            ("p2g_rad_mult_frac", "p1_add_sub"),
+            ("p4_frac_mult", "p0_simplify"),
+            ("p4_frac_mult", "p2a_mult_direct"),
+            ("p2h_frac_mult_rad", "p2a_mult_direct"),
+        ]
+        combos_simple = [
+            ("p2a_mult_direct", "p1_add_sub"),
+            ("p2b_mult_distrib", "p1_add_sub"),
+            ("p2c_mult_binomial", "p1_add_sub"),
+        ]
+        if style_profile == "mixed":
+            combos = combos_mixed
+        elif style_profile == "simple_radical":
+            combos = combos_simple
+        elif style_profile == "fraction_radical":
+            combos = combos_mixed
+        else:
+            combos = combos_default
         sp1, sp2 = random.choice(combos)
         combo_op = random.choice(["+", "-"])
         return {
             "sub_pattern1": sp1,
-            "vars1":        self.get_safe_vars_for_pattern(sp1, difficulty),
+            "vars1": self.get_safe_vars_for_pattern(
+                sp1, difficulty, max_retries=120, style_profile=None
+            ),
             "sub_pattern2": sp2,
-            "vars2":        self.get_safe_vars_for_pattern(sp2, difficulty),
-            "combo_op":     combo_op,
+            "vars2": self.get_safe_vars_for_pattern(
+                sp2, difficulty, max_retries=120, style_profile=None
+            ),
+            "combo_op": combo_op,
         }
 
     def _vars_p7_mixed_rad_add(self, difficulty: str) -> dict:
@@ -1045,6 +1116,11 @@ class DomainFunctionHelper:
     def _fmt_p6(self, v: dict) -> str:
         sp1 = v.get("sub_pattern1", "?")
         sp2 = v.get("sub_pattern2", "?")
+        v1, v2 = v.get("vars1"), v.get("vars2")
+        if isinstance(v1, dict) and isinstance(v2, dict) and sp1 != "?" and sp2 != "?":
+            q1 = self.format_question_LaTeX(sp1, v1).rstrip("。").strip()
+            q2 = self.format_question_LaTeX(sp2, v2).strip()
+            return f"{q1}；{q2}。"
         return rf"計算下列複合根式運算（子題型：{sp1} 與 {sp2}）。"
 
     def _fmt_p7_mixed_rad_add(self, v: dict) -> str:
@@ -1105,3 +1181,7 @@ class DomainFunctionHelper:
 class _RetrySignal(Exception):
     """Raised inside variable generators to trigger a retry loop cleanly."""
     pass
+
+
+class StyleProfileExceededError(RuntimeError):
+    """Raised when style_profile constraint cannot be satisfied within max retries."""

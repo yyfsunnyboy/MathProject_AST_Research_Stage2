@@ -57,6 +57,9 @@ from core.code_utils.live_show_math_utils import (
     _build_radical_profile,
     _is_radical_isomorphic,
     _radical_profile_diff,
+    build_radical_complexity_mirror_profile,
+    radical_complexity_mirror_compare,
+    radical_complexity_mirror_diff,
 )
 from core.healers.live_show_iso_guard import (
     evaluate_iso_style_guard as _evaluate_iso_style_guard_impl,
@@ -64,12 +67,57 @@ from core.healers.live_show_iso_guard import (
     append_fallback_switch_log as _append_fallback_switch_log_impl,
 )
 from core.skill_policies import get_skill_policy, normalize_skill_id
-from core.routes.live_show_pipeline import run_ab2_interception, run_ab3_full_healer, assemble_visual_output
+from core.routes.live_show_pipeline import (
+    assemble_visual_output,
+    recompute_radical_style_fields_for_api,
+    run_ab2_interception,
+    run_ab3_full_healer,
+)
 from core.prompt_architect import _RADICAL_ORCHESTRATOR_SKILL_ID as _RADICAL_SKILL_ID
 # (舊有 Pix2Text 套件已移除，OCR 全權交由 Qwen3-VL 處理)
 
 # 從 __init__.py 匯入已註冊的 Blueprint
 from . import live_show_bp
+
+# 非根式技能回應中應移除的 debug_meta 欄位（避免整數／分數路徑出現根式專用觀測）
+_RADICAL_ONLY_DEBUG_META_KEYS = frozenset(
+    {
+        "input_radical_style",
+        "output_radical_style",
+        "style_preserved",
+        "style_mismatch_reason",
+        "selected_pattern_before_style_gate",
+        "selected_pattern_after_style_gate",
+        "style_gate_applied",
+        "style_gate_reason",
+        "ab2_output_radical_style",
+        "ab2_style_preserved",
+        "ab2_style_mismatch_reason",
+        "ab2_selected_pattern_before_style_gate",
+        "ab2_selected_pattern_after_style_gate",
+        "ab2_style_gate_applied",
+        "ab2_style_gate_reason",
+        "style_retry_used",
+        "style_mismatch_after_retry",
+        "style_profile_vars_error",
+        "style_output_exec_count",
+        "style_output_mismatch_history",
+        "ab2_style_output_exec_count",
+        "ab2_style_output_mismatch_history",
+        "radical_complexity_mirror_expected",
+        "radical_complexity_mirror_generated",
+        "radical_complexity_mirror_isomorphic",
+        "radical_complexity_mirror_diff",
+        "mirror_tolerance_applied",
+        "mirror_tolerance_reason",
+        "quality_gate_passed",
+        "quality_gate_reasons",
+        "anti_echo_retry_used",
+        "anti_echo_similarity",
+        "exemplar_echo_hit",
+        "exemplar_echo_retry_used",
+    }
+)
 
 # 全局初始化 MathEngine (延遲載入以避免循環引用)
 _engine_instance = None
@@ -114,7 +162,10 @@ def compact_radical_skill_for_liveshow(skill_text: str) -> str:
 # Radical Orchestrator helpers
 # ===========================================================================
 
-def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
+def _assemble_radical_orchestrator_code(
+    raw_model_output: str,
+    required_radical_style: str | None = None,
+) -> str:
     import re
     from core.prompt_architect import RADICAL_V4_SCAFFOLD_PREFIX, RADICAL_V4_SCAFFOLD_SUFFIX
     raw = str(raw_model_output or "")
@@ -165,6 +216,8 @@ def _assemble_radical_orchestrator_code(raw_model_output: str) -> str:
         pid = "p1_add_sub"
 
     decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n'
+    if required_radical_style:
+        decisions += f'    required_radical_style = "{required_radical_style}"\n'
 
     return RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
 
@@ -626,6 +679,93 @@ def _apply_skill_safety_guard(skill_name: str, ocr_text: str, available_skills):
     return skill_name, None
 
 
+def canonicalize_math_text(text: str) -> str:
+    """classify / generate 共用：全形加減括號、空白、*→\\times、^ 正規化。"""
+    if text is None:
+        return ""
+    s = str(text).strip()
+    if not s:
+        return ""
+    s = s.replace("\uff0b", "+").replace("\uff0d", "-")
+    s = s.replace("－", "-").replace("﹣", "-").replace("−", "-")
+    s = s.replace("＋", "+")
+    s = s.replace("（", "(").replace("）", ")")
+    s = s.replace("［", "[").replace("］", "]")
+    s = s.replace("\x0c", "\\f")
+    s = re.sub(r"\s+", "", s)
+    s = s.replace("*", r"\times")
+    s = re.sub(r"(\w)\^(\d+)", r"\1^{\2}", s)
+    return s
+
+
+def deterministic_classify_skill_id(canonical_text: str, available_skills: list):
+    """符號規則判技能；無法判斷時回 (None, reason)。"""
+    if not canonical_text or not available_skills:
+        return None, "empty_or_no_skills"
+
+    def _pick(substr: str):
+        for sid in available_skills:
+            if substr in sid:
+                return sid
+        return None
+
+    t = canonical_text
+    if r"\sqrt" in t or "√" in t or "根號" in t or "方根" in t:
+        sid = _pick("FourOperationsOfRadicals")
+        if sid:
+            return sid, "rule:radical_marker"
+
+    if re.search(r"(?<![a-zA-Z0-9])x(?![a-zA-Z0-9])", t) or re.search(
+        r"\([^\)]*[a-zA-Z][^\)]*\)\s*[\^]", t
+    ):
+        sid = _pick("FourArithmeticOperationsOfPolynomial")
+        if sid:
+            return sid, "rule:polynomial_marker"
+
+    if r"\frac" in t or re.search(r"\d+/\d+", t):
+        sid = _pick("FourArithmeticOperationsOfNumbers")
+        if sid:
+            return sid, "rule:fraction_marker"
+
+    if re.search(r"\d", t) and r"\sqrt" not in t and r"\frac" not in t:
+        if re.search(r"\\times|\\div|[+\-]", t):
+            sid = _pick("FourArithmeticOperationsOfIntegers")
+            if sid:
+                return sid, "rule:integer_arithmetic"
+
+    return None, "no_rule_match"
+
+
+def _fill_classify_json_spec(skill_name: str, ocr_text: str, process_logs: list) -> dict:
+    json_spec = {}
+    if "FourOperationsOfRadicals" in (skill_name or ""):
+        op_fp = build_radical_complexity_mirror_profile(ocr_text)
+        iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
+        template_id, template_text = "", ""
+        process_logs.append(
+            f"> [INFO] Radical DNA Profile: rad_count={op_fp.get('rad_count', 0)}, "
+            f"simplifiable={op_fp.get('simplifiable_count', 0)}, "
+            f"rationalize={op_fp.get('rationalize_count', 0)}"
+        )
+    else:
+        iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
+        template_id, template_text = _select_liveshow_structure_template(op_fp)
+        process_logs.append(
+            f"> [INFO] Complexity Profile: nums={op_fp.get('number_count', 0)}, "
+            f"ops={op_fp.get('operator_count', 0)}, "
+            f"[]={op_fp.get('bracket_count', 0)}, "
+            f"||={op_fp.get('abs_count', 0)}"
+        )
+
+    json_spec["isomorphic_constraints"] = iso_constraints
+    json_spec["operator_fingerprint"] = op_fp
+    json_spec["structural_profile"] = op_fp
+    json_spec["structure_template_id"] = template_id
+    json_spec["structure_template_text"] = template_text
+    json_spec["ocr_text"] = ocr_text
+    return json_spec
+
+
 @live_show_bp.route('/live_show')
 def live_show():
     """渲染 Live Show 的前端展示頁面"""
@@ -648,27 +788,34 @@ def generate_live():
     count = data.get("count", 1)
     model_id = data.get("model_id", "qwen3.5-9b")
     skill_id = (data.get("skill_id") or "").strip() or None
+    use_image_hint_in_generate = bool(data.get("use_image_hint_in_generate", False))
+    had_image_payload = bool(data.get("image_data"))
+    generate_input_mode = "image" if had_image_payload else "text"
 
     start_time = time.time()
+    ab3_healer_bypassed_for_meta = None
     try:
         image_data = data.get("image_data")
         json_spec = data.get("json_spec") or {}
         if not isinstance(json_spec, dict):
             json_spec = {}
 
-        # ── Canonical OCR text ─────────────────────────────────────────────
-        # Both image-paste and text-box paths go through /api/classify first.
-        # Classify stores the final ocr_text (after LaTeX normalisation) into
-        # json_spec["ocr_text"].  Using it here keeps both paths on the exact
-        # same execution track; we fall back to input_text only when json_spec
-        # is absent (e.g. direct API calls or old clients).
-        canonical_ocr_text = json_spec.get("ocr_text") or input_text
+        if not use_image_hint_in_generate:
+            image_data = None
+
+        # ── Canonical OCR：僅採 json_spec["ocr_text"]，缺才退回 input_text ──
+        _spec_ocr = json_spec.get("ocr_text")
+        if _spec_ocr is not None and str(_spec_ocr).strip():
+            canonical_ocr_text = canonicalize_math_text(str(_spec_ocr))
+        else:
+            canonical_ocr_text = canonicalize_math_text(input_text)
+        json_spec["ocr_text"] = canonical_ocr_text
 
         # ablation_mode=False → 僅跑 Ab3（Healer）；單一請求不會並行 Ab1，避免雙倍 VRAM（skip_native 由前端/腳本傳入以明示）
         route_mode = "text_engine_ab1" if ablation_mode else "text_engine_ab3"
         if input_text and image_data:
             image_data = None
-            print(">>> [GUARD] [PATH] image_data ignored due to text-priority guard")
+            print("[INFO] [GUARD] image_data ignored (text-priority guard)")
         
         if skill_id == "Unknown":
             return jsonify({
@@ -687,7 +834,7 @@ def generate_live():
 
         if (image_data or is_radical_skill) and not ablation_mode:
             route_mode = "image_monolithic_ab3" if image_data else "text_monolithic_ab3"
-            print(f">>> [PATH] /api/generate_live route_mode={route_mode}")
+            print(f"[INFO] [PATH] /api/generate_live route_mode={route_mode}")
 
             if image_data:
                 import re
@@ -795,7 +942,7 @@ Template: {template_id}
 """
             # [Hybrid Pipeline] Inject exact blueprint for Radical skill so LLM mirrors complexity
             if "FourOperationsOfRadicals" in (skill_id or ""):
-                op_fp = json_spec.get("operator_fingerprint") or _build_radical_profile(ocr_text)
+                op_fp = json_spec.get("operator_fingerprint") or build_radical_complexity_mirror_profile(ocr_text)
                 rad_tot = op_fp.get("rad_total", 0)
                 rad_simp = op_fp.get("rad_simplified", 0)
                 rad_unsimp = op_fp.get("rad_simplifiable", 0)
@@ -868,12 +1015,12 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                     f"【SCAFFOLD PROMPT】\n{scaffold_prompt}"
                 )
             
-            # 🌟 動態組合訊息：只有在真的有圖片時才加入 images 欄位
+            # 預設不附圖（與純文字路徑一致）；僅 use_image_hint_in_generate 時附圖。
             msg_dict = {
                 "role": "user",
                 "content": system_prompt
             }
-            if image_data:
+            if image_data and use_image_hint_in_generate:
                 msg_dict["images"] = [image_data]
 
             payload = {
@@ -911,9 +1058,15 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
 
             # [CRITICAL FIX] Radical Orchestrator: Assemble full scaffold
             if "FourOperationsOfRadicals" in (skill_id or ""):
-                # 這裡不需要任何覆寫了，我們相信 AI！
-                final_code = _assemble_radical_orchestrator_code(final_code)
-                target_radical_profile = _build_radical_profile(ocr_text)
+                from core.code_utils.live_show_math_utils import (
+                    classify_radical_style as _classify_radical_style_for_assemble,
+                )
+
+                _req_rs = _classify_radical_style_for_assemble(ocr_text)
+                final_code = _assemble_radical_orchestrator_code(
+                    final_code, required_radical_style=_req_rs
+                )
+                target_radical_profile = build_radical_complexity_mirror_profile(ocr_text)
                 expected_fp = target_radical_profile  # Send to UI!
             else:
                 expected_fp = _build_structural_profile(ocr_text)
@@ -993,6 +1146,7 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
             detail_logs = ab3_pack["detail_logs"]
             generated_fp = ab3_pack["generated_fp"]
             iso_isomorphic = ab3_pack["iso_isomorphic"]
+            ab3_healer_bypassed_for_meta = ab3_pack.get("healer_bypassed")
 
             # ── Radical DNA Mirror (soft check) ──────────────────────────────
             # Runs only for the radical skill in place of the integer iso-guard.
@@ -1010,10 +1164,10 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                         _qt = _pr.get("question_text", "") if isinstance(_pr, dict) else ""
                         if not _qt:
                             continue
-                        _gen_rp = _build_radical_profile(_qt)
+                        _gen_rp = build_radical_complexity_mirror_profile(_qt)
                         if _is_radical_isomorphic(target_radical_profile, _qt):
                             detail_logs.append(
-                                "[RADICAL_DNA] ✓ profile match — "
+                                "[RADICAL_DNA] [OK] profile match — "
                                 f"rad_count={_gen_rp['rad_count']}, "
                                 f"simplifiable={_gen_rp['simplifiable_count']}, "
                                 f"rationalize={_gen_rp['rationalize_count']}"
@@ -1021,9 +1175,54 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                         else:
                             _diffs = _radical_profile_diff(target_radical_profile, _qt)
                             detail_logs.append(
-                                "[RADICAL_DNA] ✗ profile mismatch — " + "; ".join(_diffs)
+                                "[RADICAL_DNA] [MISMATCH] profile mismatch — " + "; ".join(_diffs)
                             )
             
+            _ab3_pm = {
+                "selected_pattern_id_before_assemble": ab3_pack.get(
+                    "selected_pattern_id_before_assemble"
+                ),
+                "selected_pattern_id_after_assemble": ab3_pack.get(
+                    "selected_pattern_id_after_assemble"
+                ),
+                "pattern_overwritten": ab3_pack.get("pattern_overwritten", False),
+                "pattern_overwrite_reason": ab3_pack.get("pattern_overwrite_reason") or "",
+            }
+            _sgt = ab3_pack.get("style_gate_trace") or {}
+            _ab2_sgt = ab2_pack.get("ab2_style_gate_trace") or {}
+            _style_meta = {
+                "input_radical_style": ab3_pack.get("input_radical_style"),
+                "output_radical_style": ab3_pack.get("output_radical_style"),
+                "style_preserved": ab3_pack.get("style_preserved"),
+                "style_mismatch_reason": ab3_pack.get("style_mismatch_reason"),
+                "selected_pattern_before_style_gate": _sgt.get("selected_pattern_before_style_gate"),
+                "selected_pattern_after_style_gate": _sgt.get("selected_pattern_after_style_gate"),
+                "style_gate_applied": _sgt.get("style_gate_applied", False),
+                "style_gate_reason": _sgt.get("style_gate_reason"),
+                "style_retry_used": ab3_pack.get("style_retry_used"),
+                "style_mismatch_after_retry": ab3_pack.get("style_mismatch_after_retry"),
+                "ab2_output_radical_style": ab2_pack.get("ab2_output_radical_style"),
+                "ab2_style_preserved": ab2_pack.get("ab2_style_preserved"),
+                "ab2_style_mismatch_reason": ab2_pack.get("ab2_style_mismatch_reason"),
+                "ab2_selected_pattern_before_style_gate": _ab2_sgt.get("selected_pattern_before_style_gate"),
+                "ab2_selected_pattern_after_style_gate": _ab2_sgt.get("selected_pattern_after_style_gate"),
+                "ab2_style_gate_applied": _ab2_sgt.get("style_gate_applied", False),
+                "ab2_style_gate_reason": _ab2_sgt.get("style_gate_reason"),
+                "ab2_style_retry_used": ab2_pack.get("ab2_style_retry_used"),
+                "style_profile_vars_error": ab3_pack.get("style_profile_vars_error"),
+                "style_output_exec_count": ab3_pack.get("style_output_exec_count"),
+                "style_output_mismatch_history": ab3_pack.get("style_output_mismatch_history"),
+                "ab2_style_output_exec_count": ab2_pack.get("ab2_style_output_exec_count"),
+                "ab2_style_output_mismatch_history": ab2_pack.get(
+                    "ab2_style_output_mismatch_history"
+                ),
+                "quality_gate_passed": ab3_pack.get("quality_gate_passed"),
+                "quality_gate_reasons": ab3_pack.get("quality_gate_reasons"),
+                "anti_echo_retry_used": ab3_pack.get("anti_echo_retry_used"),
+                "anti_echo_similarity": ab3_pack.get("anti_echo_similarity"),
+                "exemplar_echo_hit": ab3_pack.get("exemplar_echo_hit"),
+                "exemplar_echo_retry_used": ab3_pack.get("exemplar_echo_retry_used"),
+            }
             output = assemble_visual_output(
                 problems_result=problems_result,
                 ai_inference_time_sec=ai_inference_time_sec,
@@ -1045,9 +1244,52 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                 iso_isomorphic=iso_isomorphic,
                 fraction_display_mode=fraction_display_mode,
                 ab2_result=ab2_result,
+                selected_pattern_id=ab3_pack.get("selected_pattern_id"),
+                fallback_used=ab3_pack.get("fallback_used", False),
+                iso_guard_triggered=ab3_pack.get("iso_guard_triggered", False),
+                healer_bypassed=ab3_pack.get("healer_bypassed"),
+                pattern_guard_trace=ab3_pack.get("pattern_guard_trace"),
+                pattern_meta=_ab3_pm,
+                style_meta=_style_meta,
+                include_radical_style_fields=(
+                    "FourOperationsOfRadicals" in (skill_id or "")
+                ),
+            )
+            _dm_out = output.get("debug_meta")
+            if isinstance(_dm_out, dict):
+                _ab2_pg = ab2_pack.get("ab2_pattern_guard_trace") or {}
+                _dm_out["ab2_pattern_guard_trace"] = _ab2_pg
+                _dm_out["ab2_selected_pattern_id"] = ab2_pack.get("ab2_selected_pattern_id")
+                _dm_out["ab2_detected_signals"] = _ab2_pg.get("detected_signals", [])
+                _dm_out["ab2_candidate_patterns"] = _ab2_pg.get("candidate_patterns", [])
+                _dm_out["ab2_reject_reason"] = _ab2_pg.get("reject_reason")
+            _jsp = bool(isinstance(data.get("json_spec"), dict) and data.get("json_spec"))
+            _pg = ab3_pack.get("pattern_guard_trace") or {}
+            _pg2 = ab2_pack.get("ab2_pattern_guard_trace") or {}
+            print(
+                f"[INFO] [GEN] route_mode={route_mode} skill_id={skill_id!r} "
+                f"canonical_ocr_preview={(canonical_ocr_text or '')[:120]!r} "
+                f"has_json_spec={_jsp} selected_pattern_id={ab3_pack.get('selected_pattern_id')!r} "
+                f"pattern_before_assemble={_ab3_pm.get('selected_pattern_id_before_assemble')!r} "
+                f"pattern_after_assemble={_ab3_pm.get('selected_pattern_id_after_assemble')!r} "
+                f"pattern_overwritten={_ab3_pm.get('pattern_overwritten')!r} "
+                f"pattern_overwrite_reason={_ab3_pm.get('pattern_overwrite_reason')!r} "
+                f"detected_signals={_pg.get('detected_signals')!r} "
+                f"candidate_patterns={_pg.get('candidate_patterns')!r} "
+                f"reject_reason={_pg.get('reject_reason')!r} "
+                f"ab2_selected_pattern_id={ab2_pack.get('ab2_selected_pattern_id')!r} "
+                f"ab2_reject_reason={_pg2.get('reject_reason')!r} "
+                f"fallback_used={ab3_pack.get('fallback_used', False)} "
+                f"iso_guard_triggered={ab3_pack.get('iso_guard_triggered', False)} "
+                f"healer_bypassed={ab3_pack.get('healer_bypassed')} "
+                f"used_image_hint_in_generate={use_image_hint_in_generate} "
+                f"input_radical_style={ab3_pack.get('input_radical_style')!r} "
+                f"output_radical_style={ab3_pack.get('output_radical_style')!r} "
+                f"style_preserved={ab3_pack.get('style_preserved')!r} "
+                f"ab2_style_preserved={ab2_pack.get('ab2_style_preserved')!r}"
             )
         else:
-            print(f">>> [PATH] /api/generate_live route_mode={route_mode}")
+            print(f"[INFO] [PATH] /api/generate_live route_mode={route_mode}")
             engine = get_engine()
             # Use canonical_ocr_text so image-paste and text-box reach the same point.
             enriched_input = canonical_ocr_text
@@ -1070,7 +1312,31 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
         output["route_mode"] = route_mode
 
         # ── Flatten debug_meta fields for the frontend ────────────────────
-        dm = output.get("debug_meta", {})
+        if not isinstance(output.get("debug_meta"), dict):
+            output["debug_meta"] = {}
+        dm = output["debug_meta"]
+        if dm.get("selected_pattern_id") is None and isinstance(dm.get("final_code"), str):
+            from core.routes.live_show_pipeline import extract_selected_pattern_id_from_code
+
+            _pid_fc = extract_selected_pattern_id_from_code(dm["final_code"])
+            if _pid_fc:
+                dm["selected_pattern_id"] = _pid_fc
+        dm.setdefault("fallback_used", False)
+        dm.setdefault("iso_guard_triggered", False)
+        dm["input_mode"] = generate_input_mode
+        dm["canonical_ocr_text"] = canonical_ocr_text
+        dm["used_image_hint_in_generate"] = use_image_hint_in_generate
+        # Radicals / monolithic 觀測欄位（缺失時顯式為 None，便於對照 JSON）
+        _req_js = data.get("json_spec")
+        dm["route_mode"] = route_mode
+        dm["skill_id"] = skill_id
+        dm["canonical_ocr_text_preview"] = (canonical_ocr_text or "")[:120]
+        dm["has_json_spec"] = isinstance(_req_js, dict) and bool(_req_js)
+        dm["operator_fingerprint"] = (
+            json_spec.get("operator_fingerprint") if isinstance(json_spec, dict) else None
+        )
+        dm.setdefault("selected_pattern_id", None)
+        dm["healer_bypassed"] = ab3_healer_bypassed_for_meta
         perf = dm.get("performance", {})
         healer_trace = dm.get("healer_trace", {})
         mcri_report  = dm.get("mcri_report", {})
@@ -1260,6 +1526,71 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
             output["ab2_result"]["answer"] = output["answer"]
             output["ab2_result"]["_same_as_ab3"] = True
 
+        # 最終題幹（含 Ab2≡Ab3 同步後）與 debug_meta.style_* 對齊壓測判準
+        # input 一律對 canonical_ocr_text 做 classify（與壓測 classify(ocr_text) 在送 generate
+        # 前一致），勿沿用 dm.input_radical_style，以免與題幹上 radical_hard_style_preserved 不一致。
+        if (
+            "FourOperationsOfRadicals" in (skill_id or "")
+            and isinstance(dm, dict)
+            and (output.get("problem") or "").strip()
+        ):
+            _ocr_fin = dm.get("canonical_ocr_text") or canonical_ocr_text or ""
+            _ab3_fin = (output.get("problem") or "").strip()
+            _ab2_fin = ""
+            _ar2 = output.get("ab2_result")
+            if isinstance(_ar2, dict):
+                _ab2_fin = (
+                    _ar2.get("question_text") or _ar2.get("problem") or ""
+                ).strip()
+            if not _ab2_fin:
+                _ab2_fin = _ab3_fin
+            _sar_fin = bool(dm.get("style_mismatch_after_retry", False))
+            _style_fin = recompute_radical_style_fields_for_api(
+                _ocr_fin,
+                input_radical_style=None,
+                ab3_question_text=_ab3_fin,
+                ab2_question_text=_ab2_fin,
+                style_mismatch_after_retry_ab3=_sar_fin,
+            )
+            dm.update(_style_fin)
+            _exp_mirror = dm.get("iso_profile_expected")
+            dm["mirror_tolerance_applied"] = False
+            dm["mirror_tolerance_reason"] = ""
+            if isinstance(_exp_mirror, dict):
+                _expr_m = _extract_math_expr_from_question(_ab3_fin) or _ab3_fin
+                _gen_mirror_prof = build_radical_complexity_mirror_profile(_expr_m)
+                _iso_mirror, _tol_applied, _tol_reason = radical_complexity_mirror_compare(
+                    _exp_mirror,
+                    _expr_m,
+                    selected_pattern_id=dm.get("selected_pattern_id"),
+                    style_preserved=bool(_style_fin.get("style_preserved")),
+                )
+                _diff_mirror = (
+                    radical_complexity_mirror_diff(_exp_mirror, _expr_m)
+                    if not _iso_mirror
+                    else []
+                )
+                dm["radical_complexity_mirror_expected"] = _exp_mirror
+                dm["radical_complexity_mirror_generated"] = _gen_mirror_prof
+                dm["radical_complexity_mirror_isomorphic"] = _iso_mirror
+                dm["radical_complexity_mirror_diff"] = _diff_mirror
+                dm["mirror_tolerance_applied"] = bool(_tol_applied)
+                dm["mirror_tolerance_reason"] = _tol_reason or ""
+            print(
+                "[INFO] [STYLE_FINAL] "
+                f"in={_style_fin['input_radical_style']!r} "
+                f"out={_style_fin.get('output_radical_style')!r} "
+                f"preserved={_style_fin.get('style_preserved')!r} "
+                f"reason={_style_fin.get('style_mismatch_reason')!r} "
+                f"| ab2_out={_style_fin.get('ab2_output_radical_style')!r} "
+                f"ab2_preserved={_style_fin.get('ab2_style_preserved')!r} "
+                f"ab2_reason={_style_fin.get('ab2_style_mismatch_reason')!r}"
+            )
+
+        if isinstance(dm, dict) and "FourOperationsOfRadicals" not in (skill_id or ""):
+            for _rk in _RADICAL_ONLY_DEBUG_META_KEYS:
+                dm.pop(_rk, None)
+
         return jsonify(output)
     except Exception as e:
         import traceback
@@ -1357,23 +1688,22 @@ def classify_input():
     process_logs = []
 
     try:
-        process_logs.append("> 🧬 Initiating Vision DNA Sequencing [Qwen3-VL Mode]...")
-        process_logs.append(f"> 🧭 Route Mode: {route_mode}")
-        print(f">>> [PATH] /api/classify route_mode={route_mode}")
+        process_logs.append("> [INFO] Initiating Vision DNA Sequencing [Qwen3-VL Mode]...")
+        process_logs.append(f"> [INFO] Route Mode: {route_mode}")
+        print(f"[INFO] [PATH] /api/classify route_mode={route_mode}")
         
         skill_name = "Unknown"
         confidence = 0
         json_spec = {}
         api_error = None
+        classify_source = "none"
+        deterministic_rule = None
 
         if image_data or text_data:
             if image_data:
-                process_logs.append("> 🖼️ Detected Image Payload. Passing to Visual Logic Core...")
+                process_logs.append("> [INFO] Detected Image Payload. Passing to Visual Logic Core...")
             else:
-                process_logs.append("> 📝 Detected Text Payload. Passing to Visual Logic Core for Semantic Parsing...")
-            
-            # 使用 Qwen3-VL 進行「視覺/語義單次推理」架構
-            print(">>> 📥 傳送資料至 Qwen3-VL 進行聯合分析 (提取 + 分類)...")
+                process_logs.append("> [INFO] Detected Text Payload. Passing to Visual Logic Core for Semantic Parsing...")
             
             # 動態取得所有 Agent Skills 資料夾名稱
             # 修正：確保指向 core/agent_skills 而不依賴 current_app 執行環境限制
@@ -1386,8 +1716,53 @@ def classify_input():
                         available_skills.append(d)
             skills_list_str = ", ".join(available_skills) if available_skills else "Arithmetic, Algebra"
 
-            msg_content = []
-            if image_data:
+            canonical_input_text = canonicalize_math_text(text_data) if text_data else ""
+
+            if text_data and not image_data:
+                _ds, _drule = deterministic_classify_skill_id(
+                    canonical_input_text, available_skills
+                )
+                if _ds:
+                    _sn = normalize_skill_id(_ds, available_skills)
+                    if _sn != "Unknown":
+                        _tp = os.path.join(skills_dir, _sn)
+                        if os.path.exists(_tp):
+                            _sn, _gr = _apply_skill_safety_guard(
+                                _sn, canonical_input_text, available_skills
+                            )
+                            if _sn != "Unknown":
+                                skill_name = _sn
+                                ocr_text = canonical_input_text
+                                json_spec = _fill_classify_json_spec(
+                                    skill_name, ocr_text, process_logs
+                                )
+                                confidence = 100
+                                classify_source = "deterministic"
+                                deterministic_rule = _drule
+                                process_logs.append(
+                                    f"> [INFO] Deterministic classify ({_drule}) → {skill_name}"
+                                )
+                                if _gr:
+                                    process_logs.append(
+                                        f"> 🛡️ Safety guard on deterministic: {_gr}"
+                                    )
+                        else:
+                            process_logs.append(
+                                f"> [WARN] Deterministic folder missing: {_tp}, fallback to VL."
+                            )
+
+            must_call_vl = bool(image_data) or (
+                bool(text_data) and skill_name == "Unknown"
+            )
+
+            if not must_call_vl:
+                print("[INFO] [CLASSIFY] Skip VL (deterministic text hit).")
+
+            if must_call_vl:
+                classify_source = "vision_llm"
+                print("[INFO] [CLASSIFY] Sending payload to Qwen3-VL for classify...")
+
+            if must_call_vl and image_data:
                 prompt_text = f"""
 你現在是邏輯辨識核心。請觀察圖片，精確提取數學 LaTeX 算式（需忽略 \\tt 與噪音），並完成技能分類。
 【!! 你只能輸出一個 JSON 物件，嚴禁包含任何其他文字、分析過程或 markdown block !!】
@@ -1404,258 +1779,264 @@ def classify_input():
 }}
 [嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。嚴禁在 JSON 內加入 // 注解或任何額外文字。
 """
-                msg_content = [
-                    {"type": "text", "text": prompt_text},
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{image_data}"}}
-                ]
-            else:
+            elif must_call_vl:
                 prompt_text = f"""
-你現在是邏輯辨識核心。請閱讀以下使用者提供的數學算式或指令，精確完成技能分類。
+你現在是邏輯辨識核心。以下為使用者算式（系統已正規化，請勿改寫或另產生 ocr_text）。
 【!! 你只能輸出一個 JSON 物件，嚴禁包含任何其他文字、分析過程或 markdown block !!】
 
-【使用者輸入文字】
-{text_data.strip()}
+【正規化後的算式（僅供判斷技能，不要輸出此欄）】
+{canonical_input_text}
 
 【最高指令：技能 ID 選擇】
 你『必須』且『只能』從以下清單中選擇一個最符合的作為 skill_id：
 {skills_list_str}
 
-輸出格式要求（skill_id 必須是上面清單中的確切字串）：
+輸出格式（只要 skill_id 與 confidence，禁止 ocr_text）：
 {{
-  "ocr_text": "{text_data.strip()}",
-  "skill_id": "對應的資料夾名稱",
+  "skill_id": "清單中的確切資料夾名稱",
   "confidence": 95
 }}
-[嚴格要求] 嚴禁輸出多餘欄位；只輸出 ocr_text、skill_id、confidence。嚴禁在 JSON 內加入 // 注解或任何額外文字。
+[嚴格要求] 嚴禁輸出 ocr_text；不要多餘欄位；不要 // 註解。
 """
-                msg_content = prompt_text
 
-            # 從 Config 中動態取用 vision_analyzer 設定
-            vl_config = Config.MODEL_ROLES.get('vision_analyzer', Config.CODER_PRESETS.get('qwen3-vl-4b', {}))
-            model_name = vl_config.get('model', 'qwen3-vl:4b')  # 動態對應模型名稱
-            
-            # 準備 Ollama Chat API Payload (Compatible with both image and pure Text messages)
-            msg_dict = {"role": "user", "content": prompt_text}
-            if image_data:
-                # [Fix] Ollama Chat API requires raw base64, not the data URI scheme.
-                b64_str = image_data
-                if "base64," in b64_str:
-                    b64_str = b64_str.split("base64,")[1]
-                msg_dict["images"] = [b64_str]
-                
-            payload = {
-                "model": model_name,
-                "messages": [msg_dict],
-                "stream": False,
-                "options": {
-                    "temperature": vl_config.get("temperature", 0.1),
-                    "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),  # 動態讀取 config
-                    "num_gpu": -1,
-                    "repeat_penalty": 1.05
+            if must_call_vl:
+                vl_config = Config.MODEL_ROLES.get('vision_analyzer', Config.CODER_PRESETS.get('qwen3-vl-4b', {}))
+                model_name = vl_config.get('model', 'qwen3-vl:4b')
+
+                msg_dict = {"role": "user", "content": prompt_text}
+                if image_data:
+                    b64_str = image_data
+                    if "base64," in b64_str:
+                        b64_str = b64_str.split("base64,")[1]
+                    msg_dict["images"] = [b64_str]
+
+                payload = {
+                    "model": model_name,
+                    "messages": [msg_dict],
+                    "stream": False,
+                    "options": {
+                        "temperature": vl_config.get("temperature", 0.1),
+                        "num_ctx": vl_config.get("extra_body", {}).get("num_ctx", 4096),
+                        "num_gpu": -1,
+                        "repeat_penalty": 1.05
+                    },
                 }
-            }
 
-            chat_url = "http://127.0.0.1:11434/api/chat"
-            
-            print(f">>> [TARGET] 準備連線 Ollama 模型: {model_name} (URL: {chat_url})")
-            try:
-                response = requests.post(chat_url, json=payload, timeout=120)
-                response.raise_for_status()
-                result = response.json()
+                chat_url = "http://127.0.0.1:11434/api/chat"
+                print(f"[INFO] [TARGET] Ollama model={model_name!r} url={chat_url!r}")
+                try:
+                    response = requests.post(chat_url, json=payload, timeout=120)
+                    response.raise_for_status()
+                    result = response.json()
                 
-                # 從 Chat API 結構中取出回覆
-                raw_out = result.get("message", {}).get("content", "").strip()
-                print(f">>> [RAW] Qwen3-VL raw_out (前300字): {repr(raw_out[:300])}")
-                process_logs.append(f"> 🔍 VL raw (前150字): {repr(raw_out[:150])}")
+                    # 從 Chat API 結構中取出回覆
+                    raw_out = result.get("message", {}).get("content", "").strip()
+                    print(f"[INFO] [RAW] Qwen3-VL raw_out[:300]={raw_out[:300]!r}")
+                    process_logs.append(f"> [INFO] VL raw (前150字): {repr(raw_out[:150])}")
 
-                import re
-                import json
+                    import re
+                    import json
 
-                # 1. 清除 <think>...</think> 區塊
-                # 同時處理兩種情況：
-                #   a) 正常閉合：<think>...</think>
-                #   b) 未閉合（num_ctx 截斷導致 </think> 消失）：<think>...[EOF]
-                raw_out_clean = re.sub(r'<think>.*?</think>', '', raw_out, flags=re.DOTALL)
-                # 若仍有 <think> 開頭但沒閉合，截掉從 <think> 開始的所有內容
-                raw_out_clean = re.sub(r'<think>.*', '', raw_out_clean, flags=re.DOTALL)
-                raw_out_clean = raw_out_clean.strip()
-                # 若剝除思考區塊後為空（模型只輸出 think），退回原始文字並嘗試找 JSON
-                if not raw_out_clean:
-                    raw_out_clean = raw_out
+                    # 1. 清除 <think>...</think> 區塊
+                    # 同時處理兩種情況：
+                    #   a) 正常閉合：<think>...</think>
+                    #   b) 未閉合（num_ctx 截斷導致 </think> 消失）：<think>...[EOF]
+                    raw_out_clean = re.sub(r'<think>.*?</think>', '', raw_out, flags=re.DOTALL)
+                    # 若仍有 <think> 開頭但沒閉合，截掉從 <think> 開始的所有內容
+                    raw_out_clean = re.sub(r'<think>.*', '', raw_out_clean, flags=re.DOTALL)
+                    raw_out_clean = raw_out_clean.strip()
+                    # 若剝除思考區塊後為空（模型只輸出 think），退回原始文字並嘗試找 JSON
+                    if not raw_out_clean:
+                        raw_out_clean = raw_out
 
-                # 2. 清除 ```json ... ``` 包裝（模型可能照搬 markdown 格式）
-                raw_out_clean = re.sub(r'```(?:json)?\s*', '', raw_out_clean).strip()
-                raw_out_clean = raw_out_clean.replace('```', '').strip()
+                    # 2. 清除 ```json ... ``` 包裝（模型可能照搬 markdown 格式）
+                    raw_out_clean = re.sub(r'```(?:json)?\s*', '', raw_out_clean).strip()
+                    raw_out_clean = raw_out_clean.replace('```', '').strip()
 
-                # 3. JSON 提取：掃描每個 { 位置，找第一個含 ocr_text/skill_id 的合法 JSON
-                # [Bug 21 Fix] 原本的 greedy re.search(r'\{.*\}', ..., re.DOTALL) 會從第一個 {
-                # 一路貪婪匹配到最後一個 }。若模型在 </think> 後仍輸出說明文字（如
-                # "{some note}. Answer: {...}"），說明文字的 { 會讓 regex 擴展過頭 →
-                # 拼出非法 JSON → JSONDecodeError → OCR 失敗。
-                # 改用 json.JSONDecoder().raw_decode() 逐一嘗試每個 { 起點，
-                # 找到第一個能成功解析且含 ocr_text / skill_id 的合法 JSON 即停止。
-                _json_decoder = json.JSONDecoder()
-                parsed_res = None
-                for _scan_m in re.finditer(r'\{', raw_out_clean):
-                    _snip = raw_out_clean[_scan_m.start():]
-                    # [Bug 17 Fix] escape invalid JSON backslashes (e.g. bare \div → \\div)
-                    # [Bug 22 Fix] add (?<!\\) lookbehind: if the model already outputs \\div
-                    # (properly escaped), the old regex incorrectly re-escapes the second \
-                    # (followed by 'd' not in exclusion list) → \\\div (3 backslashes) → invalid JSON.
-                    # Lookbehind ensures we only touch lone \ (not \\ pairs).
-                    _snip_fixed = re.sub(r'(?<!\\)\\(?!["\\/bfnrtu])', r'\\\\', _snip)
-                    # remove // line-end comments (model sometimes copies prompt examples)
-                    _snip_fixed = re.sub(r'\s*//[^\n"]*', '', _snip_fixed)
-                    try:
-                        _obj, _ = _json_decoder.raw_decode(_snip_fixed)
-                        if isinstance(_obj, dict) and ('ocr_text' in _obj or 'skill_id' in _obj):
-                            parsed_res = _obj
-                            break
-                    except (json.JSONDecodeError, ValueError):
-                        continue
+                    # 3. JSON 提取：掃描每個 { 位置，找第一個含 ocr_text/skill_id 的合法 JSON
+                    # [Bug 21 Fix] 原本的 greedy re.search(r'\{.*\}', ..., re.DOTALL) 會從第一個 {
+                    # 一路貪婪匹配到最後一個 }。若模型在 </think> 後仍輸出說明文字（如
+                    # "{some note}. Answer: {...}"），說明文字的 { 會讓 regex 擴展過頭 →
+                    # 拼出非法 JSON → JSONDecodeError → OCR 失敗。
+                    # 改用 json.JSONDecoder().raw_decode() 逐一嘗試每個 { 起點，
+                    # 找到第一個能成功解析且含 ocr_text / skill_id 的合法 JSON 即停止。
+                    _json_decoder = json.JSONDecoder()
+                    parsed_res = None
+                    for _scan_m in re.finditer(r'\{', raw_out_clean):
+                        _snip = raw_out_clean[_scan_m.start():]
+                        # [Bug 17 Fix] escape invalid JSON backslashes (e.g. bare \div → \\div)
+                        # [Bug 22 Fix] add (?<!\\) lookbehind: if the model already outputs \\div
+                        # (properly escaped), the old regex incorrectly re-escapes the second \
+                        # (followed by 'd' not in exclusion list) → \\\div (3 backslashes) → invalid JSON.
+                        # Lookbehind ensures we only touch lone \ (not \\ pairs).
+                        _snip_fixed = re.sub(r'(?<!\\)\\(?!["\\/bfnrtu])', r'\\\\', _snip)
+                        # remove // line-end comments (model sometimes copies prompt examples)
+                        _snip_fixed = re.sub(r'\s*//[^\n"]*', '', _snip_fixed)
+                        try:
+                            _obj, _ = _json_decoder.raw_decode(_snip_fixed)
+                            if isinstance(_obj, dict) and ('ocr_text' in _obj or 'skill_id' in _obj):
+                                parsed_res = _obj
+                                break
+                        except (json.JSONDecodeError, ValueError):
+                            continue
 
-                if parsed_res is not None:
-                    try:
-                        ocr_text = parsed_res.get("ocr_text", text_data.strip() if text_data else "")
-                        raw_skill_id = parsed_res.get("skill_id", "Unknown")
-                        confidence = parsed_res.get("confidence", 95)
-                        json_spec = {}
-
-                        # [Bug 20 Fix] json.loads() interprets \t→tab, \r→CR, \f→FF, \b→BS, \n→LF.
-                        # LaTeX commands that start with these bytes get mangled after parsing:
-                        #   \times → (tab)imes,  \frac → (FF)rac,  \right → (CR)ight,
-                        #   \begin → (BS)egin,   \neq  → (LF)eq
-                        # Unmangle them back to proper LaTeX after json.loads().
-                        _LATEX_JSON_UNMANGLE = [
-                            ('\times',       r'\times'),
-                            ('\to',          r'\to'),
-                            ('\top',         r'\top'),
-                            ('\text',        r'\text'),
-                            ('\theta',       r'\theta'),
-                            ('\frac',        r'\frac'),
-                            ('\forall',      r'\forall'),
-                            ('\right',       r'\right'),
-                            ('\rightarrow',  r'\rightarrow'),
-                            ('\begin',       r'\begin'),
-                            ('\beta',        r'\beta'),
-                            ('\neq',         r'\neq'),
-                            ('\neg',         r'\neg'),
-                            ('\nabla',       r'\nabla'),
-                            ('\nleq',        r'\nleq'),
-                            ('\ngeq',        r'\ngeq'),
-                        ]
-                        for _mangled, _fixed in _LATEX_JSON_UNMANGLE:
-                            ocr_text = ocr_text.replace(_mangled, _fixed)
-
-                        # [新修復] 將 OCR 提取出來的 * 和 / 替換為 LaTeX 格式
-                        ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
-
-                        if not isinstance(json_spec, dict):
+                    if parsed_res is not None:
+                        try:
+                            raw_skill_id = parsed_res.get("skill_id", "Unknown")
+                            confidence = parsed_res.get("confidence", 95)
                             json_spec = {}
 
-                        if "FourOperationsOfRadicals" in (raw_skill_id or ""):
-                            # Radical Orchestrator: integer fingerprint is meaningless for
-                            # radical LaTeX — use DNA profile instead.
-                            op_fp          = _build_radical_profile(ocr_text)
-                            iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
-                            template_id, template_text = "", ""
-                            process_logs.append(
-                                f"> 🧬 Radical DNA Profile: rad_count={op_fp.get('rad_count', 0)}, "
-                                f"simplifiable={op_fp.get('simplifiable_count', 0)}, "
-                                f"rationalize={op_fp.get('rationalize_count', 0)}"
-                            )
-                        else:
-                            iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
-                            template_id, template_text = _select_liveshow_structure_template(op_fp)
-                            process_logs.append(
-                                f"> 🧪 Complexity Profile: nums={op_fp.get('number_count', 0)}, "
-                                f"ops={op_fp.get('operator_count', 0)}, "
-                                f"[]={op_fp.get('bracket_count', 0)}, "
-                                f"||={op_fp.get('abs_count', 0)}"
-                            )
+                            # 純文字 VL：只採信 skill_id，ocr_text 一律用系統 canonical（避免模型改寫）。
+                            if text_data and not image_data:
+                                ocr_text = canonical_input_text
+                            else:
+                                ocr_text = parsed_res.get(
+                                    "ocr_text", text_data.strip() if text_data else ""
+                                )
+                                # [Bug 20 Fix] json.loads() interprets \t→tab, \r→CR, \f→FF, \b→BS, \n→LF.
+                                _LATEX_JSON_UNMANGLE = [
+                                    ('\times',       r'\times'),
+                                    ('\to',          r'\to'),
+                                    ('\top',         r'\top'),
+                                    ('\text',        r'\text'),
+                                    ('\theta',       r'\theta'),
+                                    ('\frac',        r'\frac'),
+                                    ('\forall',      r'\forall'),
+                                    ('\right',       r'\right'),
+                                    ('\rightarrow',  r'\rightarrow'),
+                                    ('\begin',       r'\begin'),
+                                    ('\beta',        r'\beta'),
+                                    ('\neq',         r'\neq'),
+                                    ('\neg',         r'\neg'),
+                                    ('\nabla',       r'\nabla'),
+                                    ('\nleq',        r'\nleq'),
+                                    ('\ngeq',        r'\ngeq'),
+                                ]
+                                for _mangled, _fixed in _LATEX_JSON_UNMANGLE:
+                                    ocr_text = ocr_text.replace(_mangled, _fixed)
 
-                        json_spec["isomorphic_constraints"] = iso_constraints
-                        json_spec["operator_fingerprint"]   = op_fp
-                        json_spec["structural_profile"]     = op_fp
-                        json_spec["structure_template_id"]  = template_id
-                        json_spec["structure_template_text"] = template_text
-                        # Canonical OCR text — stored here so generate_live can use exactly the
-                        # same text regardless of whether the original input was an image or a
-                        # text-box entry, keeping both paths on the same execution track.
-                        json_spec["ocr_text"] = ocr_text
+                                ocr_text = ocr_text.replace("*", "\\times").replace("/", "\\div")
+                                ocr_text = canonicalize_math_text(ocr_text)
 
-                        raw_skill_id = raw_skill_id.strip()
-                        skill_name = normalize_skill_id(raw_skill_id, available_skills)
-                        if skill_name == "Unknown":
-                            print(f">>> [ERR] 找不到對應的 Skill ID: {raw_skill_id}")
-                        elif skill_name != raw_skill_id:
-                            print(f">>> [WARN] 觸發 Policy Normalization 修正 Skill ID: {raw_skill_id} -> {skill_name}")
+                            if not isinstance(json_spec, dict):
+                                json_spec = {}
+
+                            if "FourOperationsOfRadicals" in (raw_skill_id or ""):
+                                # Radical Orchestrator: integer fingerprint is meaningless for
+                                # radical LaTeX — use DNA profile instead.
+                                op_fp          = build_radical_complexity_mirror_profile(ocr_text)
+                                iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
+                                template_id, template_text = "", ""
+                                process_logs.append(
+                                    f"> [INFO] Radical DNA Profile: rad_count={op_fp.get('rad_count', 0)}, "
+                                    f"simplifiable={op_fp.get('simplifiable_count', 0)}, "
+                                    f"rationalize={op_fp.get('rationalize_count', 0)}"
+                                )
+                            else:
+                                iso_constraints, op_fp = _build_isomorphic_constraints(ocr_text, json_spec)
+                                template_id, template_text = _select_liveshow_structure_template(op_fp)
+                                process_logs.append(
+                                    f"> [INFO] Complexity Profile: nums={op_fp.get('number_count', 0)}, "
+                                    f"ops={op_fp.get('operator_count', 0)}, "
+                                    f"[]={op_fp.get('bracket_count', 0)}, "
+                                    f"||={op_fp.get('abs_count', 0)}"
+                                )
+
+                            json_spec["isomorphic_constraints"] = iso_constraints
+                            json_spec["operator_fingerprint"]   = op_fp
+                            json_spec["structural_profile"]     = op_fp
+                            json_spec["structure_template_id"]  = template_id
+                            json_spec["structure_template_text"] = template_text
+                            # Canonical OCR text — stored here so generate_live can use exactly the
+                            # same text regardless of whether the original input was an image or a
+                            # text-box entry, keeping both paths on the same execution track.
+                            json_spec["ocr_text"] = ocr_text
+
+                            raw_skill_id = raw_skill_id.strip()
+                            skill_name = normalize_skill_id(raw_skill_id, available_skills)
+                            if skill_name == "Unknown":
+                                print(f"[ERROR] [CLASSIFY] Unknown skill id: {raw_skill_id!r}")
+                            elif skill_name != raw_skill_id:
+                                print(
+                                    f"[WARN] [CLASSIFY] Policy normalization skill_id "
+                                    f"{raw_skill_id!r} -> {skill_name!r}"
+                                )
                                     
                         
-                        print(f"DEBUG: Available skills are {available_skills}")
-                        # 3. 動態路徑實體檢查 (強制 100% 信心度)
-                        if skill_name != "Unknown":
-                            target_path = os.path.join(skills_dir, skill_name)
-                            if os.path.exists(target_path):
-                                confidence = 100
-                                process_logs.append(f"> 🧬 DNA Mapping Success: [{raw_skill_id}] -> [{skill_name}]")
-                                print(f">>> [TARGET] 動態路徑確認存在: {target_path} (信心度設為 100)")
-                            else:
-                                confidence = 0
-                                skill_name = "Unknown"
-                                print(f">>> [ERR] 嚴重錯誤: 已匹配 ID {skill_name} 但實體路徑不存在！")
+                            print(f"[INFO] [CLASSIFY] available_skills={available_skills!r}")
+                            # 3. 動態路徑實體檢查 (強制 100% 信心度)
+                            if skill_name != "Unknown":
+                                target_path = os.path.join(skills_dir, skill_name)
+                                if os.path.exists(target_path):
+                                    confidence = 100
+                                    process_logs.append(f"> [OK] DNA Mapping Success: [{raw_skill_id}] -> [{skill_name}]")
+                                    print(f"[INFO] [TARGET] Skill path exists: {target_path!r}")
+                                else:
+                                    confidence = 0
+                                    skill_name = "Unknown"
+                                    print(
+                                        f"[ERROR] [CLASSIFY] Matched skill_id={skill_name!r} "
+                                        f"but path missing on disk"
+                                    )
 
-                        guarded_skill, guard_reason = _apply_skill_safety_guard(skill_name, ocr_text, available_skills)
-                        if guarded_skill != skill_name:
-                            process_logs.append(
-                                f"> 🛡️ Classification Safety Guard: [{skill_name}] -> [{guarded_skill}] ({guard_reason})"
-                            )
-                            print(
-                                f">>> [GUARD] Classification Safety Guard 修正: {skill_name} -> {guarded_skill} ({guard_reason})"
-                            )
-                            skill_name = guarded_skill
-                            confidence = min(int(confidence or 0), 95)
+                            guarded_skill, guard_reason = _apply_skill_safety_guard(skill_name, ocr_text, available_skills)
+                            if guarded_skill != skill_name:
+                                process_logs.append(
+                                    f"[GUARD] classify safety: [{skill_name}] -> [{guarded_skill}] ({guard_reason})"
+                                )
+                                print(
+                                    f"[WARN] [GUARD] classify safety: {skill_name!r} -> {guarded_skill!r} ({guard_reason})"
+                                )
+                                skill_name = guarded_skill
+                                confidence = min(int(confidence or 0), 95)
                                 
-                        print(f">>> [OK] Qwen3-VL 最終決策完成! Skill: {skill_name}, Confidence: {confidence}, OCR: {ocr_text}")
+                            print(
+                                f"[INFO] [CLASSIFY] done skill_id={skill_name!r} "
+                                f"confidence={confidence!r} ocr_preview={(ocr_text or '')[:120]!r}"
+                            )
                         
-                    except Exception as e:
-                        print(f">>> [ERR] JSON 後處理失敗: {e}")
-                        print(f">>> [ERR] 清理後文字(前500字): {repr(raw_out_clean[:500])}")
-                        skill_name = "Unknown"
-                        ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
-                else:
-                    print(f">>> [ERR] 所有 {{ 位置均無法解析出有效 JSON。清理後文字(前500字): {repr(raw_out_clean[:500])}")
-                    process_logs.append(f"> ❌ JSON scan failed. clean(前150字): {repr(raw_out_clean[:150])}")
-                    # [Last-resort fallback] 直接用 regex 抽 ocr_text 值（容許 LaTeX 反斜線）
-                    _fb = re.search(r'"ocr_text"\s*:\s*"((?:[^"\\]|\\.)*)"', raw_out)
-                    if _fb:
-                        ocr_text = re.sub(r'\\(?!["\\bfnrtu/])', r'\\', _fb.group(1))
-                        try:
-                            ocr_text = ocr_text.encode('raw_unicode_escape').decode('unicode_escape')
-                        except Exception:
-                            pass
-                        print(f">>> [WARN] Last-resort OCR fallback: {ocr_text}")
-                        process_logs.append(f"> ⚠️ OCR last-resort fallback: {ocr_text}")
-                        skill_name = "Unknown"  # skill 仍 unknown，但 ocr_text 保留
+                        except Exception as e:
+                            print(f"[ERROR] [CLASSIFY] JSON post-process failed: {e}")
+                            print(f"[ERROR] [CLASSIFY] cleaned_text[:500]={raw_out_clean[:500]!r}")
+                            skill_name = "Unknown"
+                            ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
                     else:
-                        skill_name = "Unknown"
-                        ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
-            except requests.exceptions.HTTPError as e:
-                status_code = e.response.status_code if e.response is not None else "N/A"
-                response_text = ""
-                if e.response is not None:
-                    response_text = (e.response.text or "").strip()
-                if len(response_text) > 400:
-                    response_text = response_text[:400] + "..."
-                api_error = f"Qwen3-VL API HTTP {status_code}: {response_text or str(e)}"
-                print(f">>> [ERR] Qwen3-VL HTTP 錯誤: {api_error}")
-                process_logs.append(f"> ❌ Ollama Upstream Error: HTTP {status_code}")
-                ocr_text = "ERROR: Failed to reach Qwen3-VL API."
-            except requests.exceptions.RequestException as e:
-                print(f">>> [ERR] Qwen3-VL 執行失敗: {e}")
-                api_error = f"Qwen3-VL API Request failed: {e}"
-                process_logs.append("> ❌ Ollama Upstream Error: Request failed")
-                ocr_text = "ERROR: Failed to reach Qwen3-VL API."
+                        print(
+                            f"[ERROR] [CLASSIFY] No valid JSON at any '{{' offset; "
+                            f"cleaned[:500]={raw_out_clean[:500]!r}"
+                        )
+                        process_logs.append(f"> [ERROR] JSON scan failed. clean(前150字): {repr(raw_out_clean[:150])}")
+                        # [Last-resort fallback] 直接用 regex 抽 ocr_text 值（容許 LaTeX 反斜線）
+                        _fb = re.search(r'"ocr_text"\s*:\s*"((?:[^"\\]|\\.)*)"', raw_out)
+                        if _fb:
+                            ocr_text = re.sub(r'\\(?!["\\bfnrtu/])', r'\\', _fb.group(1))
+                            try:
+                                ocr_text = ocr_text.encode('raw_unicode_escape').decode('unicode_escape')
+                            except Exception:
+                                pass
+                            ocr_text = canonicalize_math_text(ocr_text)
+                            print(f"[WARN] [CLASSIFY] last-resort OCR fallback ocr={ocr_text!r}")
+                            process_logs.append(f"> [WARN] OCR last-resort fallback: {ocr_text}")
+                            skill_name = "Unknown"  # skill 仍 unknown，但 ocr_text 保留
+                        else:
+                            skill_name = "Unknown"
+                            ocr_text = text_data.strip() if text_data else "(Text Extraction Failed due to JSON Error)"
+                except requests.exceptions.HTTPError as e:
+                    status_code = e.response.status_code if e.response is not None else "N/A"
+                    response_text = ""
+                    if e.response is not None:
+                        response_text = (e.response.text or "").strip()
+                    if len(response_text) > 400:
+                        response_text = response_text[:400] + "..."
+                    api_error = f"Qwen3-VL API HTTP {status_code}: {response_text or str(e)}"
+                    print(f"[ERROR] [CLASSIFY] Qwen3-VL HTTP error: {api_error}")
+                    process_logs.append(f"> [ERROR] Ollama Upstream Error: HTTP {status_code}")
+                    ocr_text = "ERROR: Failed to reach Qwen3-VL API."
+                except requests.exceptions.RequestException as e:
+                    print(f"[ERROR] [CLASSIFY] Qwen3-VL request failed: {e}")
+                    api_error = f"Qwen3-VL API Request failed: {e}"
+                    process_logs.append("> [ERROR] Ollama Upstream Error: Request failed")
+                    ocr_text = "ERROR: Failed to reach Qwen3-VL API."
 
             if api_error:
                 return jsonify({
@@ -1666,10 +2047,10 @@ def classify_input():
 
             display_text = ocr_text[:30] + "..." if len(ocr_text) > 30 else ocr_text
             if skill_name == "Unknown":
-                process_logs.append(f"> 📄 VL Extraction & Alignment Complete: [{display_text}] -> Unknown")
-                process_logs.append("> ⚠️ DNA Match Failed: Falling back to Unknown.")
+                process_logs.append(f"> [INFO] VL Extraction & Alignment Complete: [{display_text}] -> Unknown")
+                process_logs.append("> [WARN] DNA Match Failed: Falling back to Unknown.")
             else:
-                process_logs.append(f"> 📄 VL Extraction & Alignment Complete: [{display_text}]")
+                process_logs.append(f"> [INFO] VL Extraction & Alignment Complete: [{display_text}]")
         
         else:
             return jsonify({"success": False, "error": "Require image_data or text_data."}), 400
@@ -1678,7 +2059,7 @@ def classify_input():
         scaffold_prompt = ""
 
         if skill_name != "Unknown":
-            process_logs.append(f"> ✅ DNA Sequence Aligned: {skill_name}")
+            process_logs.append(f"> [OK] DNA Sequence Aligned: {skill_name}")
             
             # 確保 engine 已經初始化，因為 Qwen3-VL (image_data) 沒有呼叫 classifier
             import core.routes.live_show as live_show_module
@@ -1751,7 +2132,7 @@ def classify_input():
 
                 if "FourOperationsOfRadicals" in (skill_name or ""):
                     # Radical Orchestrator: DNA mirror — no integer iso constraints
-                    op_fp          = _build_radical_profile(ocr_text)
+                    op_fp          = build_radical_complexity_mirror_profile(ocr_text)
                     iso_constraints = "【根式專屬同構】由 DomainFunctionHelper 確保結構一致。"
                     template_id, template_text = "", ""
                     # scaffold_prompt is already complete from prompt_liveshow.md;
@@ -1777,12 +2158,17 @@ def classify_input():
                 scaffold_prompt = f"Error loading SKILL.md: {e}"
                 
         else:
-            process_logs.append("> ⚠️ DNA Match Failed: Falling back to Unknown.")
+            process_logs.append("> [WARN] DNA Match Failed: Falling back to Unknown.")
             confidence = 30
             # [強制防禦] 就算辨識出錯退回 Unknown，也幫前端準備乾淨的防禦性 scaffold_prompt 以免出問題
             fallback_knowledge = "題目結構與數字個數必須與【參考例題】完全相同，嚴禁增加額外數字或運算（如絕對值）。"
             fallback_knowledge_safe = apply_strict_mirroring(fallback_knowledge, ocr_text)
             scaffold_prompt = fallback_knowledge_safe
+
+        if isinstance(ocr_text, str) and not ocr_text.startswith("ERROR:"):
+            ocr_text = canonicalize_math_text(ocr_text)
+            if isinstance(json_spec, dict):
+                json_spec["ocr_text"] = ocr_text
 
         return jsonify({
             "success": True,
@@ -1794,11 +2180,13 @@ def classify_input():
             "bare_prompt": bare_prompt,
             "scaffold_prompt": scaffold_prompt,
             "json_spec": json_spec,
-            "structural_profile": json_spec.get("structural_profile", {}) if isinstance(json_spec, dict) else {}
+            "structural_profile": json_spec.get("structural_profile", {}) if isinstance(json_spec, dict) else {},
+            "classify_source": classify_source,
+            "deterministic_rule": deterministic_rule,
         })
 
     except Exception as e:
-        print(f">>> [ERR] OCR 階段崩潰: {str(e)}")
+        print(f"[ERROR] [CLASSIFY] OCR stage crashed: {e!r}")
         import traceback
         traceback.print_exc()
         return jsonify({

@@ -159,7 +159,7 @@ class AdaptiveScaler:
             raise FileNotFoundError(f"找不到技能定義: {skill_md_path}")
 
         difficulty_names = {1: "EASY (簡單)", 2: "NORMAL (標準)", 3: "HARD (進階/挑戰)"}
-        print(f"🚀 正在為 {skill_name} 生成 {difficulty_names.get(level)} 等級的題目代碼...")
+        print(f"[INFO] 正在為 {skill_name} 生成 {difficulty_names.get(level)} 等級的題目代碼...")
         
         # 使用 auto_generate_skill_code
         # 它會回傳一個結果路徑或狀態
@@ -278,7 +278,7 @@ class AdaptiveScaler:
             from core.code_generator import _call_ai, _basic_cleanup, _advanced_healer, _inject_domain_libs
             
             if ablation_mode:
-                print(f"⚠️ [Ab1] 載入 {skill_name} Baseline Prompt。")
+                print(f"[WARN] [Ab1] 載入 {skill_name} Baseline Prompt。")
                 skill_path = self._get_skill_path(skill_name)
                 ab1_prompt_path = os.path.join(skill_path, "experiments", "ab1_bare_prompt.md")
                 if os.path.exists(ab1_prompt_path):
@@ -296,7 +296,7 @@ class AdaptiveScaler:
                     prompt = f"請寫一個 generate(level=1) 函式，參考：\n{input_text}\n直接輸出代碼。"
                 active_ablation_id = 1
             else:
-                print(f"🚀 [Ab3] 鎖定 {skill_name} 基因庫...")
+                print(f"[INFO] [Ab3] 鎖定 {skill_name} 基因庫...")
                 skill_path = self._get_skill_path(skill_name)
                 skill_md_path = os.path.join(skill_path, "SKILL.md")
                 if not os.path.exists(skill_md_path):
@@ -438,7 +438,7 @@ class AdaptiveScaler:
             # ───────────────────────────────────────────────────────────────
             if not ablation_mode:
                 print("========================================")
-                print("🖥️ [Ab3] 單階段 Qwen 直出代碼...")
+                print("[INFO] [Ab3] 單階段 Qwen 直出代碼...")
                 print("========================================")
                 print("=== [DEBUG] 發送給 Qwen 的 PROMPT 內容 ===")
                 print(prompt)
@@ -477,7 +477,7 @@ class AdaptiveScaler:
                     _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
                     _decisions = f'    pattern_id = "p1_add_sub"\n    difficulty = "mid"\n    term_count = 2\n    radical_style = "{_style}"\n'
                     raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print("⚙️ [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p1_add_sub).")
+                    print("[INFO] [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p1_add_sub).")
                 else:
                     # [SMART INTERCEPTOR V4] Alias-aware: 僅當 AI 輸出很短（且沒寫 def generate）時才啟動強制萃取
                     _pid_m = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', _rr)
@@ -508,11 +508,11 @@ class AdaptiveScaler:
                         _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
                         _decisions = f'    pattern_id = "{_pid}"\n    difficulty = "{_diff}"\n    term_count = {_tc}\n    radical_style = "{_style}"\n'
                         raw_code = RADICAL_V4_SCAFFOLD_PREFIX + _decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                        print(f"⚙️ [ROOT_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {_pid}. Forcing Scaffold.")
+                        print(f"[INFO] [ROOT_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {_pid}. Forcing Scaffold.")
                     else:
                         if "df." in _rr and "DomainFunctionHelper" not in _rr:
                             raw_code = "import sympy as sp\nfrom core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + _rr
-                            print("⚙️ [ROOT_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
+                            print("[INFO] [ROOT_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
 
             # 2. 處理 <think> 標籤
             if '<think>' in raw_code:
@@ -579,7 +579,7 @@ class AdaptiveScaler:
                     _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
                     decisions = f'    pattern_id = "p0_simplify"\n    difficulty = "easy"\n    term_count = None\n    radical_style = "{_style}"\n'
                     final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                    print("⚙️ [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p0_simplify).")
+                    print("[INFO] [LOOP_BREAKER/scaler] Repetition loop detected. Forcing Path A (p0_simplify).")
                 else:
                     # [SMART INTERCEPTOR V4] Alias-aware: 僅當輸出很短且沒寫 def generate 時才強制萃取
                     pid_match = re.search(r'pattern_id\s*=\s*["\']([^"\']+)["\']', raw_code_temp)
@@ -610,11 +610,11 @@ class AdaptiveScaler:
                         _style = self._analyze_radical_style(input_text) if 'input_text' in locals() else 'mixed'
                         decisions = f'    pattern_id = "{pid}"\n    difficulty = "{diff}"\n    term_count = {tc}\n    radical_style = "{_style}"\n'
                         final_code_to_healer = RADICAL_V4_SCAFFOLD_PREFIX + decisions + RADICAL_V4_SCAFFOLD_SUFFIX
-                        print(f"⚙️ [UNIVERSAL_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {pid}. Forcing Scaffold.")
+                        print(f"[INFO] [UNIVERSAL_ASSEMBLER/scaler] Valid Pattern Detected (Resolved): {pid}. Forcing Scaffold.")
                     else:
                         if "df." in raw_code_temp and "DomainFunctionHelper" not in raw_code_temp:
                             final_code_to_healer = "import sympy as sp\nfrom core.domain_functions import DomainFunctionHelper\ndf = DomainFunctionHelper()\n\n" + raw_code_temp
-                            print("⚙️ [UNIVERSAL_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
+                            print("[INFO] [UNIVERSAL_ASSEMBLER/scaler] Path B Detected (Complex Logic). Skipping force-extraction.")
 
             # 🚨 關鍵偵錯點 2：檢查送給 Healer 的內容是否為空
             if not ablation_mode:
@@ -632,7 +632,7 @@ class AdaptiveScaler:
 
             # 只有在非 Scaffold (即 AI 自行撰寫的路徑 B) 的情況下，才檢查是否瘋狂跳針
             if not is_scaffold and (_final_str.count('pattern_id') > 3 or len(_final_str) > 2000):
-                print("🚨 [scaler] Circuit Breaker Triggered: Model Repetition Detected in Path B!")
+                print("[ERROR] [scaler] Circuit Breaker Triggered: Model Repetition Detected in Path B!")
                 final_code_to_healer = self._build_emergency_generate_code("計算 $\\sqrt{2} \\times \\sqrt{3}$ 的值。")
 
             clean_code = final_code_to_healer
@@ -648,7 +648,7 @@ class AdaptiveScaler:
                 dummy_stats = DummyASTStats()
                 dummy_stats.logs = []
                 healer_stats = [dummy_stats]
-                print("⚠️ [Ab1 模式] 已繞過 _advanced_healer 與 _inject_domain_libs。")
+                print("[WARN] [Ab1 模式] 已繞過 _advanced_healer 與 _inject_domain_libs。")
                 ab2_result = None
             else:
                 # --- [NEW] Ab2 Interception (Scaffold Prompt, No Healer) ---
@@ -1004,14 +1004,14 @@ def check(user_answer, correct_answer):
 
             return result
         except Exception as e:
-            print(f"❌ 執行生成的程式碼時出錯: {e}")
+            print(f"[ERROR] 執行生成的程式碼時出錯: {e}")
             raise e
 
     def generate_batch(self, skill_name, input_text, n=100, batch_size=5, ablation_mode=False):
         """
         新增批量模式 (直接用 Python 迴圈高速產出 100 題)
         """
-        print(f"🔄 正在為 {skill_name} 生產 {n} 題 (單次 AI 呼叫 + Python 高速迴圈)...")
+        print(f"[INFO] 正在為 {skill_name} 生產 {n} 題 (單次 AI 呼叫 + Python 高速迴圈)...")
         # 直接呼叫一次 custom_problems，要求他回傳 n 題，這也是在本地 Python 環境中跑 n 次 generate()
         batches = self.generate_custom_problems(skill_name, input_text, count=n, model_id=Config.DEFAULT_CODER_PRESET, ablation_mode=ablation_mode)
         return batches
