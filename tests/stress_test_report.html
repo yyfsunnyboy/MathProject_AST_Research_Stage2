@@ -21,11 +21,11 @@
 <body>
     <h2>根式四則運算 (Qwen3-VL-8B + Active Healer) 壓力測試 — Ab2 / Ab3 分軌</h2>
     <p>流程：每題先 <code>/api/classify</code>（text_data = 大題原文 + 小題算式），再以回傳的 <code>json_spec</code> + <code>ocr_text</code> 呼叫 <code>/api/generate_live</code>。</p>
-    <p>總測試數: 8 | 雙軌皆過: 8 | 失敗: 0 | 崩潰: 0</p>
-    <p>Ab2 通過: 8 | Ab2 失敗: 0 | Ab3 通過: 8 | Ab3 失敗: 0</p>
+    <p>總測試數: 42 | 雙軌皆過: 42 | 失敗: 0 | 崩潰: 0</p>
+    <p>Ab2 通過: 42 | Ab2 失敗: 0 | Ab3 通過: 42 | Ab3 失敗: 0</p>
     <p>Ab2 正常但 Ab3 漂移: 0 題 | Ab2 已失敗（含 missing）: 0 題</p>
-    <p>pattern_overwritten (debug_meta) 次數: 7</p>
-    <p>根式技能小題數: 8 | style 漂移 Ab2: 0 | Ab3: 0</p>
+    <p>pattern_overwritten (debug_meta) 次數: 20</p>
+    <p>根式技能小題數: 42 | style 漂移 Ab2: 0 | Ab3: 0</p>
     <table>
         <tr><th>編號</th><th>課本小題 / classify</th><th>Ab2 生成題幹</th><th>Ab2 狀態</th>
         <th>Ab3 生成題幹</th><th>Ab3 狀態</th><th>生成答案 (Ab3)</th>
@@ -35,129 +35,673 @@
                 <tr>
                     <td>1</td>
                     <td>$(-2)\times3\sqrt{5}$<br><small>classify ocr: $(-2)\times3\sqrt{5}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $(-3)\times3\sqrt{5}$。</td>
+                    <td>化簡 $(-3)\times4\sqrt{2}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $(-3)\times3\sqrt{5}$。</td>
+                    <td>化簡 $(-3)\times4\sqrt{2}$。</td>
                     <td>✅ PASS</td>
-                    <td>-9\sqrt{5}</td>
+                    <td></td>
                     <td>multiply</td>
                     <td><code>t*1 d/0 f0 sqrt1 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt1 top*1 top/0 dep1 imul1</small></td>
                     <td>—<br><small>fallback=True | iso_guard=False</small></td>
-                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.00s / gen 2.27s</td>
+                    <td>cls 0.00s / gen 9.53s</td>
                 </tr>
                 
                 <tr>
                     <td>2</td>
                     <td>$4\sqrt{2}\times\frac{1}{6}$<br><small>classify ocr: $4\sqrt{2}\times\frac{1}{6}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{3}{5}\times(-4\sqrt{6})$。</td>
+                    <td>化簡 $5\sqrt{3}\times\frac{2}{7}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{3}{5}\times(-4\sqrt{6})$。</td>
+                    <td>化簡 $5\sqrt{3}\times\frac{2}{7}$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{-12\sqrt{6}}{5}</td>
+                    <td></td>
                     <td>multiply</td>
-                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul1</small></td>
-                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
+                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.02s / gen 1.97s</td>
+                    <td>cls 0.02s / gen 7.84s</td>
                 </tr>
                 
                 <tr>
                     <td>3</td>
                     <td>$\frac{2}{3}\times\frac{\sqrt{3}}{3}$<br><small>classify ocr: $\frac{2}{3}\times\frac{\sqrt{3}}{3}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{3}{6}\times4\sqrt{3}$。</td>
+                    <td>化簡 $\frac{2}{3} \times 4\sqrt{7}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{3}{6}\times4\sqrt{3}$。</td>
+                    <td>化簡 $\frac{2}{3} \times 4\sqrt{7}$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{12\sqrt{3}}{6}</td>
+                    <td>\frac{8\sqrt{7}}{3}</td>
                     <td>multiply</td>
                     <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</small></td>
                     <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.01s / gen 2.07s</td>
+                    <td>cls 0.00s / gen 8.36s</td>
                 </tr>
                 
                 <tr>
                     <td>4</td>
                     <td>$\frac{3}{5}\times5\sqrt{2}$<br><small>classify ocr: $\frac{3}{5}\times5\sqrt{2}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{3}{2}\times3\sqrt{5}$。</td>
+                    <td>化簡 $\frac{5}{4} \times 5\sqrt{2}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{3}{2}\times3\sqrt{5}$。</td>
+                    <td>化簡 $\frac{5}{4} \times 5\sqrt{2}$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{9\sqrt{5}}{2}</td>
+                    <td>\frac{25\sqrt{2}}{4}</td>
                     <td>multiply</td>
                     <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</small></td>
                     <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.02s / gen 2.24s</td>
+                    <td>cls 0.00s / gen 7.70s</td>
                 </tr>
                 
                 <tr>
                     <td>5</td>
                     <td>$\frac{\sqrt{5}}{12}\times(-16)$<br><small>classify ocr: $\frac{\sqrt{5}}{12}\times(-16)$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{3}{6}\times3\sqrt{3}$。</td>
+                    <td>化簡 $\frac{\sqrt{2}}{13}\times(-17)$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{3}{6}\times3\sqrt{3}$。</td>
+                    <td>化簡 $\frac{\sqrt{2}}{13}\times(-17)$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{9\sqrt{3}}{6}</td>
+                    <td></td>
                     <td>multiply</td>
-                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</small></td>
-                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
+                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul0</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul0</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.00s / gen 2.08s</td>
+                    <td>cls 0.01s / gen 8.03s</td>
                 </tr>
                 
                 <tr>
                     <td>6</td>
                     <td>$\frac{3\sqrt{7}}{4}\times\frac{1}{9}$<br><small>classify ocr: $\frac{3\sqrt{7}}{4}\times\frac{1}{9}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{3}{6}\times(-3\sqrt{7})$。</td>
+                    <td>化簡 $\frac{4\sqrt{2}}{5}\times\frac{2}{10}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{3}{6}\times(-3\sqrt{7})$。</td>
+                    <td>化簡 $\frac{4\sqrt{2}}{5}\times\frac{2}{10}$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{-9\sqrt{7}}{6}</td>
+                    <td></td>
                     <td>multiply</td>
-                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep1 imul1</small></td>
-                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
+                    <td><code>t*1 d/0 f2 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f2 sqrt1 top*1 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.02s / gen 2.05s</td>
+                    <td>cls 0.00s / gen 8.45s</td>
                 </tr>
                 
                 <tr>
                     <td>7</td>
                     <td>$\sqrt{2}\times\sqrt{3}$<br><small>classify ocr: $\sqrt{2}\times\sqrt{3}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $(-4\sqrt{3})\times(-4\sqrt{11})$。</td>
+                    <td>化簡 $\sqrt{3}\times\sqrt{5}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $(-4\sqrt{3})\times(-4\sqrt{11})$。</td>
+                    <td>化簡 $\sqrt{3}\times\sqrt{5}$。</td>
                     <td>✅ PASS</td>
-                    <td>16\sqrt{33}</td>
+                    <td></td>
                     <td>multiply</td>
-                    <td><code>t*1 d/0 f0 sqrt2 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt2 top*1 top/0 dep1 imul1</small></td>
-                    <td>—<br><small>pattern=p2a_mult_direct | fallback=False | iso_guard=False</small></td>
-                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td><code>t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul0</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.02s / gen 2.12s</td>
+                    <td>cls 0.01s / gen 8.62s</td>
                 </tr>
                 
                 <tr>
                     <td>8</td>
                     <td>$(-\frac{2}{3}\sqrt{5}\quad)\times4\sqrt{7}$<br><small>classify ocr: $(-\frac{2}{3}\sqrt{5}\quad)\times4\sqrt{7}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
-                    <td>化簡 $\frac{5}{4}\times5\sqrt{6}$。</td>
+                    <td>化簡 $(-\frac{3}{4}\sqrt{2}\quad)\times5\sqrt{3}$。</td>
                     <td>✅ PASS</td>
-                    <td>化簡 $\frac{5}{4}\times5\sqrt{6}$。</td>
+                    <td>化簡 $(-\frac{3}{4}\sqrt{2}\quad)\times5\sqrt{3}$。</td>
                     <td>✅ PASS</td>
-                    <td>\frac{25\sqrt{6}}{4}</td>
+                    <td></td>
                     <td>multiply</td>
-                    <td><code>t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt1 top*1 top/0 dep0 imul1</small></td>
-                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=False | iso_guard=False</small></td>
+                    <td><code>t*1 d/0 f1 sqrt2 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt2 top*1 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
                     <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
                     <td>✅ </td>
-                    <td>cls 0.00s / gen 2.15s</td>
+                    <td>cls 0.02s / gen 7.79s</td>
+                </tr>
+                
+                <tr>
+                    <td>9</td>
+                    <td>$7\sqrt{2}\times5\sqrt{2}$<br><small>classify ocr: $7\sqrt{2}\times5\sqrt{2}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $8\sqrt{3}\times6\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $8\sqrt{3}\times6\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>multiply</td>
+                    <td><code>t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul1</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.71s</td>
+                </tr>
+                
+                <tr>
+                    <td>10</td>
+                    <td>$\sqrt{35}\div\sqrt{5}$<br><small>classify ocr: $\sqrt{35}\div\sqrt{5}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{2}\div\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{2}\div\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>divide</td>
+                    <td><code>t*0 d/1 f0 sqrt2 top*0 top/1 dep0 imul0</code><br><small>Ab2 sig: t*0 d/1 f0 sqrt2 top*0 top/1 dep0 imul0</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.48s</td>
+                </tr>
+                
+                <tr>
+                    <td>11</td>
+                    <td>$(-12\sqrt{6})\div(8\sqrt{3})$<br><small>classify ocr: $(-12\sqrt{6})\div(8\sqrt{3})$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-13\sqrt{2})\div(9\sqrt{5})$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(-13\sqrt{2})\div(9\sqrt{5})$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>divide</td>
+                    <td><code>t*0 d/1 f0 sqrt2 top*0 top/1 dep1 imul1</code><br><small>Ab2 sig: t*0 d/1 f0 sqrt2 top*0 top/1 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.40s</td>
+                </tr>
+                
+                <tr>
+                    <td>12</td>
+                    <td>$\frac{1}{\sqrt{3}}\div\frac{\sqrt{6}}{\sqrt{2}}$<br><small>classify ocr: $\frac{1}{\sqrt{3}}\div\frac{\sqrt{6}}{\sqrt{2}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{1}{\sqrt{5}}\div\frac{\sqrt{10}}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{1}{\sqrt{5}}\div\frac{\sqrt{10}}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/1 f2 sqrt3 top*0 top/1 dep0 imul0</code><br><small>Ab2 sig: t*0 d/1 f2 sqrt3 top*0 top/1 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 7.71s</td>
+                </tr>
+                
+                <tr>
+                    <td>13</td>
+                    <td>$\sqrt{5^3}$<br><small>classify ocr: $\sqrt{5^{3}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{2^{4}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{2^{4}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=True | iso_guard=False</small></td>
+                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.65s</td>
+                </tr>
+                
+                <tr>
+                    <td>14</td>
+                    <td>$\sqrt{18}$<br><small>classify ocr: $\sqrt{18}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{24}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{24}$。</td>
+                    <td>✅ PASS</td>
+                    <td>2\sqrt{6}</td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=False | iso_guard=False</small></td>
+                    <td>input=simplifiable_radical<br>Ab2 out=simplifiable_radical preserved=True<br>Ab3 out=simplifiable_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 7.81s</td>
+                </tr>
+                
+                <tr>
+                    <td>15</td>
+                    <td>$\sqrt{8}\times\sqrt{45}$<br><small>classify ocr: $\sqrt{8}\times\sqrt{45}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{12}\times\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{12}\times\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>multiply</td>
+                    <td><code>t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul0</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt2 top*1 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 8.48s</td>
+                </tr>
+                
+                <tr>
+                    <td>16</td>
+                    <td>$\frac{2}{\sqrt{10}}$<br><small>classify ocr: $\frac{2}{\sqrt{10}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{3}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{3}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.01s</td>
+                </tr>
+                
+                <tr>
+                    <td>17</td>
+                    <td>$\frac{5}{\sqrt{12}}$<br><small>classify ocr: $\frac{5}{\sqrt{12}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{6}{\sqrt{8}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{6}{\sqrt{8}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.37s</td>
+                </tr>
+                
+                <tr>
+                    <td>18</td>
+                    <td>$\sqrt{0.8}$<br><small>classify ocr: $\sqrt{0.8}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{1.2}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{1.2}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=True | iso_guard=False</small></td>
+                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.50s</td>
+                </tr>
+                
+                <tr>
+                    <td>19</td>
+                    <td>$\sqrt{\frac{5}{27}}$<br><small>classify ocr: $\sqrt{\frac{5}{27}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{\frac{6}{28}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{\frac{6}{28}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 7.29s</td>
+                </tr>
+                
+                <tr>
+                    <td>20</td>
+                    <td>$\sqrt{6}$<br><small>classify ocr: $\sqrt{6}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{2}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{2}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=True | iso_guard=False</small></td>
+                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 7.84s</td>
+                </tr>
+                
+                <tr>
+                    <td>21</td>
+                    <td>$\sqrt{12}$<br><small>classify ocr: $\sqrt{12}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{45}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{45}$。</td>
+                    <td>✅ PASS</td>
+                    <td>3\sqrt{5}</td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=False | iso_guard=False</small></td>
+                    <td>input=simplifiable_radical<br>Ab2 out=simplifiable_radical preserved=True<br>Ab3 out=simplifiable_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 7.74s</td>
+                </tr>
+                
+                <tr>
+                    <td>22</td>
+                    <td>$\sqrt{24}$<br><small>classify ocr: $\sqrt{24}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td>2\sqrt{3}</td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=False | iso_guard=False</small></td>
+                    <td>input=simplifiable_radical<br>Ab2 out=simplifiable_radical preserved=True<br>Ab3 out=simplifiable_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 7.80s</td>
+                </tr>
+                
+                <tr>
+                    <td>23</td>
+                    <td>$\sqrt{16}$<br><small>classify ocr: $\sqrt{16}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{27}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{27}$。</td>
+                    <td>✅ PASS</td>
+                    <td>3\sqrt{3}</td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=False | iso_guard=False</small></td>
+                    <td>input=simplifiable_radical<br>Ab2 out=simplifiable_radical preserved=True<br>Ab3 out=simplifiable_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 7.89s</td>
+                </tr>
+                
+                <tr>
+                    <td>24</td>
+                    <td>$\sqrt{\frac{2}{3}}$<br><small>classify ocr: $\sqrt{\frac{2}{3}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{\frac{3}{4}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{\frac{3}{4}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.76s</td>
+                </tr>
+                
+                <tr>
+                    <td>25</td>
+                    <td>$\frac{2}{\sqrt{3}}$<br><small>classify ocr: $\frac{2}{\sqrt{3}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{3}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{3}{\sqrt{2}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.03s</td>
+                </tr>
+                
+                <tr>
+                    <td>26</td>
+                    <td>$\sqrt{0.06}$<br><small>classify ocr: $\sqrt{0.06}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{1.2}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{1.2}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>simplify_single</td>
+                    <td><code>t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt1 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p0_simplify | fallback=True | iso_guard=False</small></td>
+                    <td>input=simple_radical<br>Ab2 out=simple_radical preserved=True<br>Ab3 out=simple_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 8.67s</td>
+                </tr>
+                
+                <tr>
+                    <td>27</td>
+                    <td>$2\sqrt{3}+3\sqrt{3}$<br><small>classify ocr: $2\sqrt{3}+3\sqrt{3}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $3\sqrt{2}+4\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $3\sqrt{2}+4\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.17s</td>
+                </tr>
+                
+                <tr>
+                    <td>28</td>
+                    <td>$4\sqrt{6}-3\sqrt{6}$<br><small>classify ocr: $4\sqrt{6}-3\sqrt{6}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $5\sqrt{2}-4\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $5\sqrt{2}-4\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.08s</td>
+                </tr>
+                
+                <tr>
+                    <td>29</td>
+                    <td>$5\sqrt{10}-3\sqrt{5}-2\sqrt{10}+4\sqrt{5}$<br><small>classify ocr: $5\sqrt{10}-3\sqrt{5}-2\sqrt{10}+4\sqrt{5}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $6\sqrt{2}-4\sqrt{3}-3\sqrt{5}+5\sqrt{6}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $6\sqrt{2}-4\sqrt{3}-3\sqrt{5}+5\sqrt{6}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt4 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt4 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.69s</td>
+                </tr>
+                
+                <tr>
+                    <td>30</td>
+                    <td>$3\sqrt{2}+\sqrt{8}$<br><small>classify ocr: $3\sqrt{2}+\sqrt{8}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{3}+\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $4\sqrt{3}+\sqrt{12}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt2 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.01s / gen 8.07s</td>
+                </tr>
+                
+                <tr>
+                    <td>31</td>
+                    <td>$\sqrt{1\frac{9}{16}}+\sqrt{4\frac{25}{36}}$<br><small>classify ocr: $\sqrt{1\frac{9}{16}}+\sqrt{4\frac{25}{36}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{2\frac{1}{4}}+\sqrt{5\frac{4}{9}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{2\frac{1}{4}}+\sqrt{5\frac{4}{9}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f2 sqrt2 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f2 sqrt2 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.03s / gen 8.31s</td>
+                </tr>
+                
+                <tr>
+                    <td>32</td>
+                    <td>$\frac{1}{\sqrt{3}}-\frac{2}{3}\sqrt{3}$<br><small>classify ocr: $\frac{1}{\sqrt{3}}-\frac{2}{3}\sqrt{3}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{1}{\sqrt{5}}-\frac{2}{3}\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{1}{\sqrt{5}}-\frac{2}{3}\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/0 f2 sqrt2 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f2 sqrt2 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.43s</td>
+                </tr>
+                
+                <tr>
+                    <td>33</td>
+                    <td>$3\sqrt{3}+2\sqrt{5}-(\sqrt{12}-\sqrt{45})$<br><small>classify ocr: $3\sqrt{3}+2\sqrt{5}-(\sqrt{12}-\sqrt{45})$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $4\sqrt{2}+3\sqrt{3}-(\sqrt{18}-\sqrt{20})$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $4\sqrt{2}+3\sqrt{3}-(\sqrt{18}-\sqrt{20})$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt4 top*0 top/0 dep1 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt4 top*0 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.40s</td>
+                </tr>
+                
+                <tr>
+                    <td>34</td>
+                    <td>$\sqrt{\frac{1}{2}}\times\sqrt{\frac{1}{5}}\div\sqrt{\frac{1}{6}}$<br><small>classify ocr: $\sqrt{\frac{1}{2}}\times\sqrt{\frac{1}{5}}\div\sqrt{\frac{1}{6}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\sqrt{\frac{1}{3}}\times\sqrt{\frac{1}{7}}\div\sqrt{\frac{1}{21}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\sqrt{\frac{1}{3}}\times\sqrt{\frac{1}{7}}\div\sqrt{\frac{1}{21}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>divide</td>
+                    <td><code>t*1 d/1 f3 sqrt3 top*1 top/1 dep0 imul0</code><br><small>Ab2 sig: t*1 d/1 f3 sqrt3 top*1 top/1 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p2h_frac_mult_rad | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.21s</td>
+                </tr>
+                
+                <tr>
+                    <td>35</td>
+                    <td>$(-4\sqrt{15})\times(-\sqrt{\frac{1}{3}})-4\sqrt{5}$<br><small>classify ocr: $(-4\sqrt{15})\times(-\sqrt{\frac{1}{3}})-4\sqrt{5}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-5\sqrt{2})\times(-\sqrt{\frac{2}{4}})-5\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(-5\sqrt{2})\times(-\sqrt{\frac{2}{4}})-5\sqrt{3}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>multiply</td>
+                    <td><code>t*1 d/0 f1 sqrt3 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f1 sqrt3 top*1 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.17s</td>
+                </tr>
+                
+                <tr>
+                    <td>36</td>
+                    <td>$2\sqrt{3}\times(\sqrt{12}-\sqrt{2})$<br><small>classify ocr: $2\sqrt{3}\times(\sqrt{12}-\sqrt{2})$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $3\sqrt{2}\times(\sqrt{18}-\sqrt{5})$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $3\sqrt{2}\times(\sqrt{18}-\sqrt{5})$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>multiply</td>
+                    <td><code>t*1 d/0 f0 sqrt3 top*1 top/0 dep1 imul1</code><br><small>Ab2 sig: t*1 d/0 f0 sqrt3 top*1 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 7.89s</td>
+                </tr>
+                
+                <tr>
+                    <td>37</td>
+                    <td>$(-3\sqrt{2}+\sqrt{15})\div\sqrt{3}$<br><small>classify ocr: $(-3\sqrt{2}+\sqrt{15})\div\sqrt{3}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(-4\sqrt{3}+\sqrt{3})\div\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(-4\sqrt{3}+\sqrt{3})\div\sqrt{5}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>divide</td>
+                    <td><code>t*0 d/1 f0 sqrt3 top*0 top/1 dep1 imul1</code><br><small>Ab2 sig: t*0 d/1 f0 sqrt3 top*0 top/1 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.27s</td>
+                </tr>
+                
+                <tr>
+                    <td>38</td>
+                    <td>$(\sqrt{3}+\sqrt{2})(\sqrt{6}-1)$<br><small>classify ocr: $(\sqrt{3}+\sqrt{2})(\sqrt{6}-1)$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(\sqrt{2}+\sqrt{3})(\sqrt{5}-2)$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(\sqrt{2}+\sqrt{3})(\sqrt{5}-2)$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt3 top*0 top/0 dep1 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt3 top*0 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 9.18s</td>
+                </tr>
+                
+                <tr>
+                    <td>39</td>
+                    <td>$(\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})$<br><small>classify ocr: $(\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(\sqrt{2}-3\sqrt{3})(\sqrt{5}+3\sqrt{6})$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(\sqrt{2}-3\sqrt{3})(\sqrt{5}+3\sqrt{6})$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt4 top*0 top/0 dep1 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt4 top*0 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>pattern=p2e_diff_of_squares | fallback=False | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 7.93s</td>
+                </tr>
+                
+                <tr>
+                    <td>40</td>
+                    <td>$(\sqrt{3}+2\sqrt{2}\quad)^2$<br><small>classify ocr: $(\sqrt{3}+2\sqrt{2}\quad)^2$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $(\sqrt{2}+3\sqrt{3}\quad)^2$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $(\sqrt{2}+3\sqrt{3}\quad)^2$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f0 sqrt2 top*0 top/0 dep1 imul1</code><br><small>Ab2 sig: t*0 d/0 f0 sqrt2 top*0 top/0 dep1 imul1</small></td>
+                    <td>—<br><small>fallback=True | iso_guard=False</small></td>
+                    <td>input=mixed<br>Ab2 out=mixed preserved=True<br>Ab3 out=mixed preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.45s</td>
+                </tr>
+                
+                <tr>
+                    <td>41</td>
+                    <td>$\frac{1}{\sqrt{3}-\sqrt{2}}$<br><small>classify ocr: $\frac{1}{\sqrt{3}-\sqrt{2}}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{1}{\sqrt{7}-\sqrt{5}}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{1}{\sqrt{7}-\sqrt{5}}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>rationalize_den_sqrt</td>
+                    <td><code>t*0 d/0 f1 sqrt2 top*0 top/0 dep0 imul0</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt2 top*0 top/0 dep0 imul0</small></td>
+                    <td>—<br><small>pattern=p5a_conjugate_int | fallback=True | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.02s / gen 8.27s</td>
+                </tr>
+                
+                <tr>
+                    <td>42</td>
+                    <td>$\frac{\sqrt{2}}{3\sqrt{2}+4}$<br><small>classify ocr: $\frac{\sqrt{2}}{3\sqrt{2}+4}$</small><br><small>skill: jh_數學2上_FourOperationsOfRadicals</small></td>
+                    <td>化簡 $\frac{\sqrt{3}}{2\sqrt{3}+5}$。</td>
+                    <td>✅ PASS</td>
+                    <td>化簡 $\frac{\sqrt{3}}{2\sqrt{3}+5}$。</td>
+                    <td>✅ PASS</td>
+                    <td></td>
+                    <td>add_sub</td>
+                    <td><code>t*0 d/0 f1 sqrt2 top*0 top/0 dep0 imul1</code><br><small>Ab2 sig: t*0 d/0 f1 sqrt2 top*0 top/0 dep0 imul1</small></td>
+                    <td>—<br><small>pattern=p5b_conjugate_rad | fallback=False | iso_guard=False</small></td>
+                    <td>input=fraction_radical<br>Ab2 out=fraction_radical preserved=True<br>Ab3 out=fraction_radical preserved=True</td>
+                    <td>✅ </td>
+                    <td>cls 0.00s / gen 8.57s</td>
                 </tr>
                 
     </table>

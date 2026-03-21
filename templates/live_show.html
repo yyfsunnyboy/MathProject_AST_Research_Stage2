@@ -1639,9 +1639,9 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="section-label">Generated Problem</div>
-                        <button class="action-btn"
+                        <button type="button" class="action-btn"
                             style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
-                            onclick="runNextQuestion('ab1');">
+                            onclick="runNextQuestion('ab1', this); return false;">
                             下一題
                         </button>
                     </div>
@@ -1700,9 +1700,9 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="section-label">Generated Problem</div>
-                        <button class="action-btn"
+                        <button type="button" class="action-btn"
                             style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
-                            onclick="runNextQuestion('ab2');">
+                            onclick="runNextQuestion('ab2', this); return false;">
                             下一題
                         </button>
                     </div>
@@ -1764,9 +1764,9 @@
                 <div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="section-label">Generated Problem</div>
-                        <button class="action-btn"
+                        <button type="button" class="action-btn"
                             style="padding: 0.2rem 0.5rem; font-size: 0.8rem; background: var(--border-subtle); color: var(--text-main); cursor: pointer;"
-                            onclick="runNextQuestion('ab3');">
+                            onclick="runNextQuestion('ab3', this); return false;">
                             下一題
                         </button>
                     </div>
@@ -2048,7 +2048,7 @@
         HELPER UTILITIES
         ═══════════════════════════════════════════ */
         const GPU_MAX = 60, CPU_MAX = 5;
-        let lastFinalFilePath = { ab1: null, ab3: null };
+        let lastFinalFilePath = { ab1: null, ab2: null, ab3: null };
         let lastHealerFixes = { ab1: 0, ab2: 0, ab3: 0 };
         let latestExpectedProfile = null;
 
@@ -2067,6 +2067,8 @@
         }
 
         function startLoading(target) {
+            lastFinalFilePath[target] = null;
+            lastHealerFixes[target] = 0;
             // Keep result panel visible so prompts shown in code blocks remain visible
             document.getElementById('result-' + target).classList.remove('hidden');
             // Inject a small skeleton loader into the math block
@@ -2113,6 +2115,12 @@
             const isAb1 = target === 'ab1';
             const isAb2 = target === 'ab2';
             const isAb3 = target === 'ab3';
+
+            if (data && !data.error) {
+                lastFinalFilePath[target] = data.file_path || null;
+                lastHealerFixes[target] = data.fixes ?? 0;
+                console.debug('[renderResult] target=', target, 'file_path=', lastFinalFilePath[target]);
+            }
 
             document.getElementById('loader-' + target).classList.add('hidden');
             const panel = document.getElementById('panel-' + target);
@@ -2291,10 +2299,6 @@
                     '<span class="log-badge badge-qwen">QWEN</span> <span style="color:#27ae60">>> OUTPUT ACCEPTED.</span>';
             }
 
-            // Update last final code for the Next Question button
-            lastFinalFilePath[target] = res.file_path || null;
-            lastHealerFixes[target] = totalFixes;
-
             // Re-typeset MathJax
             if (window.MathJax) MathJax.typesetPromise();
 
@@ -2302,7 +2306,11 @@
             if (isAb1) renderThinkContent(res.raw_code || '');
 
             // [PLAN B] Update the Ablation Comparison section
-            updateComparisonSection(target, res);
+            try {
+                updateComparisonSection(target, res);
+            } catch (err) {
+                console.error('updateComparisonSection failed:', target, err);
+            }
         }
 
         /* ═══════════════════════════════════════════
@@ -2399,14 +2407,19 @@
             });
         }
 
-        async function runNextQuestion(target) {
+        async function runNextQuestion(target, btnEl = null) {
             const filePath = lastFinalFilePath[target];
+            console.debug('[runNextQuestion] target=', target, 'file_path=', filePath);
             if (!filePath) {
-                alert("尚未生成程式碼或沒有可用的程式碼。");
+                alert(`?????????? file_path: ${target}`);
                 return;
             }
-
-            const btn = document.querySelector(`#result-${target} .action-btn`);
+            const btn = btnEl || document.querySelector(`#result-${target} .action-btn`);
+            if (!btn) {
+                console.error('runNextQuestion button not found for target=', target);
+                alert(`下一題按鈕初始化失敗: ${target}`);
+                return;
+            }
             const originalText = btn.innerHTML;
             btn.innerHTML = '生成中...';
             btn.disabled = true;

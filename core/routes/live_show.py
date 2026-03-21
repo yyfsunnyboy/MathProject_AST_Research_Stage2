@@ -69,6 +69,9 @@ from core.healers.live_show_iso_guard import (
 from core.skill_policies import get_skill_policy, normalize_skill_id
 from core.routes.live_show_pipeline import (
     assemble_visual_output,
+    evaluate_radical_quality_gate,
+    _build_non_echo_radical_expr,
+    _build_radical_fallback_question_text,
     recompute_radical_style_fields_for_api,
     run_ab2_interception,
     run_ab3_full_healer,
@@ -1432,14 +1435,31 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                     _ab3_a = str(output.get("answer") or "").strip()
                     _qg_reasons = dm.get("quality_gate_reasons") or []
                     _fallback_used = bool(dm.get("fallback_used", False))
+                    _ab3_expr = _extract_math_expr_from_question(_ab3_q)
+                    _final_qg = evaluate_radical_quality_gate(
+                        source_ocr_expr=canonical_ocr_text or _ab2_q or "",
+                        question_text=_ab3_q,
+                        generated_expr=_ab3_expr,
+                    )
+                    _final_qg_reasons = list(_final_qg.get("reasons") or [])
 
                     _ab3_suspicious: list[str] = []
                     if not _ab3_q:
                         _ab3_suspicious.append("ab3_empty_problem")
                     if _qg_reasons:
                         _ab3_suspicious.append("ab3_quality_gate_reasons_nonempty")
+                    if _final_qg_reasons:
+                        _ab3_suspicious.append("ab3_final_quality_gate_reasons_nonempty")
+                    if _fallback_used:
+                        _ab3_suspicious.append("ab3_fallback_used")
                     if _fallback_used and ("echo_violation" in _qg_reasons):
                         _ab3_suspicious.append("ab3_fallback_echo_violation")
+                    if _fallback_used and ("operator_lock_violation" in _qg_reasons):
+                        _ab3_suspicious.append("ab3_fallback_operator_lock_violation")
+                    if "echo_violation" in _final_qg_reasons:
+                        _ab3_suspicious.append("ab3_final_echo_violation")
+                    if "operator_lock_violation" in _final_qg_reasons:
+                        _ab3_suspicious.append("ab3_final_operator_lock_violation")
                     if _ab3_a in {"", "None"}:
                         _ab3_suspicious.append("ab3_empty_answer")
                     elif _ab3_a in {"0", "0.0"} and any(k in _ab3_q for k in (r"\sqrt", r"\times", r"\div")):
@@ -1447,16 +1467,26 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                     if _ab2_q and (_ab3_q == _ab2_q):
                         _ab3_suspicious.append("ab3_not_better_same_problem")
 
-                    if _ab2_ok and _ab3_suspicious:
+                    if _ab2_ok:
                         output["problem"] = _ab2_q
                         output["answer"] = _ab2_a
                         dm["final_output_source"] = "ab2"
                         dm["ab3_overwrite_blocked_by_ab2_pass"] = True
-                        dm["ab3_overwrite_block_reason"] = _ab3_suspicious[0]
+                        dm["ab3_overwrite_block_reason"] = (
+                            _ab3_suspicious[0] if _ab3_suspicious else "ab2_preferred_for_radicals"
+                        )
                     else:
                         dm["final_output_source"] = "ab3"
                         dm["ab3_overwrite_blocked_by_ab2_pass"] = False
                         dm["ab3_overwrite_block_reason"] = ""
+
+                if (not str(output.get("answer") or "").strip()) and (output.get("problem") or "").strip():
+                    try:
+                        _ans_fill = _recompute_correct_answer_from_question(output.get("problem", ""))
+                    except Exception:
+                        _ans_fill = None
+                    if _ans_fill is not None:
+                        output["answer"] = str(_ans_fill)
 
                 if not output.get("iso_profile_expected") and isinstance(json_spec, dict):
                     output["iso_profile_expected"] = (
@@ -1558,6 +1588,21 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                     "breakdown":       _ab2_live_mcri.get("breakdown", {}),
                 }
             }
+            if (not str(output["ab2_result"].get("answer") or "").strip()) and (output["ab2_result"].get("problem") or "").strip():
+                try:
+                    _ab2_ans_fill = _recompute_correct_answer_from_question(output["ab2_result"].get("problem", ""))
+                except Exception:
+                    _ab2_ans_fill = None
+                if _ab2_ans_fill is not None:
+                    output["ab2_result"]["answer"] = str(_ab2_ans_fill)
+            # If radicals flow already selected Ab2 as final source, keep top-level answer
+            # synchronized after Ab2 answer backfill.
+            if (
+                dm.get("final_output_source") == "ab2"
+                and (not str(output.get("answer") or "").strip())
+                and str(output["ab2_result"].get("answer") or "").strip()
+            ):
+                output["answer"] = str(output["ab2_result"].get("answer") or "")
 
         # [Bug 26 companion — ab2 ≡ ab3 when fixes=0]
         # 當 ab3 healer 修復數 = 0 時，ab2 與 ab3 使用相同程式碼，共享同一運行結果。
@@ -1569,9 +1614,10 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
             and "error" not in output
             and "problem" in output
         ):
-            output["ab2_result"]["problem"] = output["problem"]
-            output["ab2_result"]["answer"] = output["answer"]
-            output["ab2_result"]["_same_as_ab3"] = True
+            output["ab2_result"]["_same_as_ab3"] = bool(
+                output["ab2_result"].get("problem") == output.get("problem")
+                and output["ab2_result"].get("answer") == output.get("answer")
+            )
 
         # 最終題幹（含 Ab2≡Ab3 同步後）與 debug_meta.style_* 對齊壓測判準
         # input 一律對 canonical_ocr_text 做 classify（與壓測 classify(ocr_text) 在送 generate
@@ -2296,12 +2342,83 @@ def run_generated_code():
         engine = get_engine()
         
         # 下一題執行防護：重用 live_show 的執行補丁，避免 file_path 舊碼造成第二題 Error
+        runtime_stubs = ""
+        try:
+            from core.prompts.domain_function_library import get_domain_helpers_code, get_required_domains
+
+            needed_domains = list(get_required_domains(skill_id) or []) if skill_id else []
+            code_lower = str(code or "").lower()
+            if ("integerops." in code_lower) and ("integerops" not in needed_domains):
+                needed_domains.append("integerops")
+            if ("fractionops." in code_lower) and ("fractionops" not in needed_domains):
+                needed_domains.append("fractionops")
+            if ("radicalops." in code_lower) and ("radicalops" not in needed_domains):
+                needed_domains.append("radicalops")
+
+            missing_domains = []
+            for domain, cls_name in (
+                ("integerops", "class IntegerOps"),
+                ("fractionops", "class FractionOps"),
+                ("radicalops", "class RadicalOps"),
+            ):
+                if (domain in needed_domains) and (cls_name not in code):
+                    missing_domains.append(domain)
+
+            if missing_domains:
+                runtime_stubs = get_domain_helpers_code(missing_domains, stub_mode=True) or ""
+        except Exception:
+            runtime_stubs = ""
+
         exec_code = _optimize_live_execution_code(code)
         exec_code = _patch_fraction_skill_eval_calls(exec_code, skill_id)
         exec_code = _patch_fraction_eval_calls_heuristic(exec_code)
+        if runtime_stubs:
+            exec_code = runtime_stubs + "\n\n" + exec_code
+        if (
+            "safe_eval(" in exec_code
+            and "def safe_eval" not in exec_code
+            and "safe_eval =" not in exec_code
+        ):
+            exec_code += (
+                "\n\n"
+                "def safe_eval(expr):\n"
+                "    from fractions import Fraction\n"
+                "    import math\n"
+                "    safe_dict = {\n"
+                "        '__builtins__': {},\n"
+                "        'Fraction': Fraction,\n"
+                "        'math': math,\n"
+                "        'abs': abs,\n"
+                "        'sum': sum,\n"
+                "        'max': max,\n"
+                "        'min': min,\n"
+                "    }\n"
+                "    clean_expr = str(expr).replace('\\\\div', '/').replace('\\\\times', '*')\n"
+                "    clean_expr = clean_expr.replace('\\\\', '').replace('[', '(').replace(']', ')')\n"
+                "    return eval(clean_expr, safe_dict)\n"
+            )
 
         # 執行程式碼
         res = engine.scaler._execute_code(exec_code, level=level)
+        _radical_question_invalid = False
+        if "FourOperationsOfRadicals" in (skill_id or "") and isinstance(res, dict):
+            _qt_raw = str(res.get("question_text") or "").strip()
+            _qt_expr = _extract_math_expr_from_question(_qt_raw)
+            _radical_question_invalid = (
+                (_qt_raw == "Error")
+                or (not _qt_raw)
+                or ("$" not in _qt_raw)
+                or (not str(_qt_expr or "").strip())
+            )
+        if (
+            "FourOperationsOfRadicals" in (skill_id or "")
+            and isinstance(res, dict)
+            and _radical_question_invalid
+        ):
+            _fallback_q = _build_radical_fallback_question_text(source_ocr_text)
+            res["question_text"] = _fallback_q
+            _fallback_ans = _recompute_correct_answer_from_question(_fallback_q)
+            res["correct_answer"] = _fallback_ans if _fallback_ans is not None else ""
         if "question_text" in res:
             sanitized_q, sanitize_report = _sanitize_question_text_display(
                 res.get("question_text", ""),
@@ -2322,6 +2439,13 @@ def run_generated_code():
             fixed_ans = _recompute_correct_answer_from_question(res.get("question_text", ""))
             if fixed_ans is not None:
                 res["correct_answer"] = fixed_ans
+            if "FourOperationsOfRadicals" in (skill_id or ""):
+                _cur_ans = str(res.get("correct_answer") or "").strip()
+                _qtxt = str(res.get("question_text") or "")
+                if _cur_ans in {"", "0", "0.0"} and any(tok in _qtxt for tok in (r"\sqrt", r"\times", r"\div")):
+                    _rad_ans = _recompute_correct_answer_from_question(_qtxt)
+                    if _rad_ans is not None and str(_rad_ans).strip():
+                        res["correct_answer"] = str(_rad_ans)
             res["correct_answer"] = _force_fraction_answer_text(res.get("correct_answer", ""), skill_id)
         
         # ── V6.7 MCRI 真實評分（下一題路徑）──────────────────────

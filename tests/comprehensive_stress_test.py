@@ -154,6 +154,10 @@ def infer_expected_type(expr: str) -> str:
     if sqrt_n == 1 and r"\times" not in s and r"\div" not in s:
         return "simplify_single"
     if sqrt_n >= 2 and r"\times" not in s and r"\div" not in s:
+        # Prioritise visible add/sub families; implicit coefficient*sqrt should
+        # not be mis-read as multiplication family.
+        if re.search(r"(?<!^)[+\-]", s):
+            return "add_sub"
         if _has_implicit_multiply_skeleton(expr):
             return "multiply"
         return "add_sub"
@@ -367,10 +371,6 @@ def _is_add_sub_only(expr: str) -> bool:
 
 def _operator_lock_type(input_expr: str) -> str:
     s = str(input_expr or "")
-    if r"\frac" in s and re.search(r"\\frac\{[^{}]+\}\{\s*\\sqrt", s):
-        return "rationalize_den_sqrt"
-    if re.search(r"1\s*\\div\s*\\sqrt", s):
-        return "rationalize_den_sqrt"
     if r"\div" in s:
         return "divide"
     if r"\times" in s:
@@ -634,6 +634,10 @@ def main() -> None:
                             _echo_hit = (_sim > 0.92)
                         if _echo_hit:
                             ab3_issues.append("echo_violation")
+                    # Keep report readable: same reason may be emitted by both
+                    # debug_meta quality gate and local checks.
+                    if ab3_issues:
+                        ab3_issues = list(dict.fromkeys(ab3_issues))
 
                     _lock = _operator_lock_type(math_expr)
                     if _lock in {"multiply", "divide", "rationalize_den_sqrt"} and _is_add_sub_only(_expr_out_ab3):
@@ -643,7 +647,8 @@ def main() -> None:
                     _pid = str(dm.get("selected_pattern_id") or "")
                     _in_norm = _normalized_echo_key(math_expr)
                     if _in_norm == _normalized_echo_key(r"(\sqrt{3}+2\sqrt{2}\quad)^2"):
-                        if not (_pid.startswith("p2d") or _pid == "p2d_perfect_square"):
+                        _looks_p2d = bool(re.search(r"\)\^2$", _normalized_echo_key(_expr_out_ab3 or "")))
+                        if not (_pid.startswith("p2d") or _pid == "p2d_perfect_square" or _looks_p2d):
                             ab3_issues.append("pattern_family_violation:p2d_required")
                     if _in_norm == _normalized_echo_key(r"(\sqrt{3}-2\sqrt{2})(\sqrt{3}+2\sqrt{2})"):
                         if not (_pid.startswith("p2e") or _pid == "p2e_diff_of_squares"):
