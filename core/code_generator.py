@@ -119,6 +119,14 @@ def _inject_domain_libs(code_str, skill_id: str | None = None):
         'PolynomialOps': 'PolynomialOps'
     }
 
+    if (
+        skill_id
+        and "OfPolynomial" in skill_id
+        and "PolynomialOps" not in code_str
+        and re.search(r'(?<!\.)\b(add|sub|mul|normalize|format_plain|format_latex|random_poly)\s*\(', code_str)
+    ):
+        code_str = "# [skill.json declared: PolynomialOps]\n" + code_str
+
     # 強制注入 skill.json 宣告的 APIs（即使 code_str 未引用）
     for api in declared_apis:
         if api in target_libs and api not in code_str:
@@ -195,7 +203,14 @@ def _inject_domain_libs(code_str, skill_id: str | None = None):
                               "poly_add = PolynomialOps.add\n" \
                               "poly_sub = PolynomialOps.sub\n" \
                               "poly_mul = PolynomialOps.mul\n" \
-                              "poly_random = PolynomialOps.random_poly\n"
+                              "poly_random = PolynomialOps.random_poly\n" \
+                              "normalize = PolynomialOps.normalize\n" \
+                              "format_latex = PolynomialOps.format_latex\n" \
+                              "format_plain = PolynomialOps.format_plain\n" \
+                              "add = PolynomialOps.add\n" \
+                              "sub = PolynomialOps.sub\n" \
+                              "mul = PolynomialOps.mul\n" \
+                              "random_poly = PolynomialOps.random_poly\n"
                 
                 feature_code += f"{header}{class_code}{aliases}\n"
                 injected_names.append(class_name)

@@ -57,6 +57,30 @@ class LocalAIClient:
         self.max_tokens = kwargs.get('max_tokens', 4096)
         self.extra_options = kwargs.get('extra_body', {})
 
+    def _fallback_chat_url(self):
+        if self.api_url.endswith("/api/generate"):
+            return self.api_url[:-len("/api/generate")] + "/api/chat"
+        return self.api_url
+
+    def _build_chat_payload(self, prompt, options, system_prompt=None, images=None, stream=False):
+        content = prompt
+        if images:
+            content = [{"type": "text", "text": prompt}]
+            for image in images:
+                content.append({"type": "image", "image": image})
+
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": content})
+
+        return {
+            "model": self.model,
+            "messages": messages,
+            "stream": stream,
+            "options": options,
+        }
+
     def generate_content(self, prompt, image_path=None):
         # [V4.0] Support Vision/Multi-modal
         images = []
@@ -104,7 +128,21 @@ class LocalAIClient:
             # [V3.1] Add Latency Measurement
             import time
             start_time = time.perf_counter()
-            response = requests.post(self.api_url, json=payload, timeout=1200) # [FIX] Increase timeout for Thinking Models
+            request_url = self.api_url
+            response = requests.post(request_url, json=payload, timeout=1200) # [FIX] Increase timeout for Thinking Models
+            using_chat_fallback = False
+            if response.status_code == 404 and self.api_url.endswith("/api/generate"):
+                request_url = self._fallback_chat_url()
+                using_chat_fallback = True
+                logger.warning(f"Local generate endpoint unavailable, retrying chat endpoint: {request_url}")
+                chat_payload = self._build_chat_payload(
+                    prompt,
+                    options,
+                    system_prompt=system_prompt,
+                    images=images,
+                    stream=False,
+                )
+                response = requests.post(request_url, json=chat_payload, timeout=1200)
             end_time = time.perf_counter()
             latency_ms = int((end_time - start_time) * 1000)
 
@@ -115,13 +153,19 @@ class LocalAIClient:
             # print(f"[DEBUG OLLAMA RAW]: {str(result)[:500]}")
             
             # 取出 Ollama 回傳的真正內容與 token 計數
-            generated_text = result.get("response", "")
+            if using_chat_fallback:
+                generated_text = (result.get("message") or {}).get("content", "")
+            else:
+                generated_text = result.get("response", "")
             
             # [Fallback] 如果 response 為空，保留空字串，不要將 thinking 倒進來
             # 因為現在我們已經獨立將 thinking 透過 .thinking 屬性向外傳遞了
-            if not generated_text and result.get("thinking"):
+            if using_chat_fallback:
+                thinking_text = (result.get("message") or {}).get("thinking", "") or result.get("thinking", "")
+            else:
+                thinking_text = result.get("thinking", "")
+            if not generated_text and thinking_text:
                 print("[WARN] Response empty, but 'thinking' content exists (handled natively now).")
-            thinking_text = result.get("thinking", "")
             prompt_tokens = result.get("prompt_eval_count", 0)
             completion_tokens = result.get("eval_count", 0)
             

@@ -1107,14 +1107,41 @@ class PolynomialOps:
     '''多項式運算模組 - 四則運算與 LaTeX 格式化 (降冪係數列表)'''
 
     @staticmethod
+    def _coerce_poly(value):
+        '''將純量或係數序列統一轉成降冪係數列表'''
+        if isinstance(value, (list, tuple)):
+            return list(value) if value else [0]
+        if isinstance(value, bool):
+            value = int(value)
+        if isinstance(value, (int, float)):
+            return [value]
+        raise TypeError(f'Unsupported polynomial operand: {type(value).__name__}')
+
+    @staticmethod
     def normalize(coeffs):
         '''移除前導零；全零回傳 [0]'''
+        coeffs = PolynomialOps._coerce_poly(coeffs)
         if not coeffs:
             return [0]
         i = 0
         while i < len(coeffs) - 1 and coeffs[i] == 0:
             i += 1
         return list(coeffs[i:])
+
+    @staticmethod
+    def const(value):
+        '''常數多項式，例如 3 -> [3]'''
+        return PolynomialOps.normalize([value])
+
+    @staticmethod
+    def x():
+        '''一次項 x'''
+        return [1, 0]
+
+    @staticmethod
+    def x2():
+        '''二次項 x^2'''
+        return [1, 0, 0]
 
     @staticmethod
     def format_latex(coeffs, var='x', shuffle=False):
@@ -1234,6 +1261,8 @@ class PolynomialOps:
     @staticmethod
     def add(c1, c2):
         '''多項式加法'''
+        c1 = PolynomialOps._coerce_poly(c1)
+        c2 = PolynomialOps._coerce_poly(c2)
         max_len = max(len(c1), len(c2))
         p1 = [0] * (max_len - len(c1)) + list(c1)
         p2 = [0] * (max_len - len(c2)) + list(c2)
@@ -1242,6 +1271,8 @@ class PolynomialOps:
     @staticmethod
     def sub(c1, c2):
         '''多項式減法：c1 - c2'''
+        c1 = PolynomialOps._coerce_poly(c1)
+        c2 = PolynomialOps._coerce_poly(c2)
         max_len = max(len(c1), len(c2))
         p1 = [0] * (max_len - len(c1)) + list(c1)
         p2 = [0] * (max_len - len(c2)) + list(c2)
@@ -1250,6 +1281,8 @@ class PolynomialOps:
     @staticmethod
     def mul(c1, c2):
         '''多項式乘法'''
+        c1 = PolynomialOps._coerce_poly(c1)
+        c2 = PolynomialOps._coerce_poly(c2)
         if not c1 or not c2:
             return [0]
         result = [0] * (len(c1) + len(c2) - 1)

@@ -67,6 +67,7 @@ from core.healers.live_show_iso_guard import (
     append_fallback_switch_log as _append_fallback_switch_log_impl,
 )
 from core.skill_policies import get_skill_policy, normalize_skill_id
+from core.skill_policies.registry import list_registered_skill_ids
 from core.routes.live_show_pipeline import (
     assemble_visual_output,
     evaluate_radical_quality_gate,
@@ -159,6 +160,50 @@ def compact_radical_skill_for_liveshow(skill_text: str) -> str:
         "【API 與規範】RadicalOps",
     )
     return out.strip()
+
+
+def compact_polynomial_skill_for_liveshow(skill_text: str) -> str:
+    """
+    Return an ultra-compact operational summary for qwen3-vl 8B.
+    """
+    if not skill_text or not skill_text.strip():
+        return skill_text
+
+    return """
+# Polynomial Skill Specification
+
+Use pure Python only.
+
+Required output:
+- define `generate(level=1, **kwargs)`
+- define `check(user_answer, correct_answer)`
+- `generate()` returns `question_text`, `answer`, `correct_answer`, `mode`
+
+Hard rules:
+1. Preserve the same polynomial family as the source question.
+2. `question_text` math must use LaTeX `$...$`.
+3. Use `x^{2}` style exponents in `question_text`.
+4. `correct_answer` must never be empty.
+5. Prefer `PolynomialOps` for formatting and arithmetic.
+6. Do not use `sympy`, `numpy`, or markdown fences.
+
+Main families:
+- add/sub
+- nested add/sub
+- unknown polynomial
+- multiplication
+- special identities
+- quotient/remainder
+- reverse division
+- mixed simplify
+- geometry formula
+- composite region
+
+Answer format:
+- plain polynomial: `3x^2-2x+1`
+- quotient/remainder: `商式：x+2；餘式：3`
+- two targets: `周長：6x+18；面積：3x^2+4x+7`
+""".strip()
 
 
 # ===========================================================================
@@ -673,12 +718,24 @@ def _looks_like_radical_expression(text: str) -> bool:
     return ("\\sqrt" in content) or ("√" in content) or ("radical" in lowered) or ("根號" in content)
 
 
+def _looks_like_polynomial_geometry_word_problem(text: str) -> bool:
+    content = str(text or "")
+    has_variable = bool(re.search(r"(?<![a-zA-Z0-9])[a-z](?![a-zA-Z0-9])", content))
+    has_trapezoid = "\u68af\u5f62" in content and "\u9762\u7a4d" in content and "\u9ad8" in content
+    has_region = "\u9577\u65b9\u5f62" in content and "\u5468\u9577" in content and "\u9762\u7a4d" in content
+    return has_variable and (has_trapezoid or has_region)
+
+
 def _apply_skill_safety_guard(skill_name: str, ocr_text: str, available_skills):
     if "FourOperationsOfRadicals" in (skill_name or ""):
         if _looks_like_fraction_expression(ocr_text) and not _looks_like_radical_expression(ocr_text):
             corrected = normalize_skill_id("Fractions", available_skills)
             if corrected != "Unknown":
                 return corrected, "fraction_without_radical_symbol"
+        if _looks_like_polynomial_geometry_word_problem(ocr_text) and not _looks_like_radical_expression(ocr_text):
+            corrected = normalize_skill_id("FourArithmeticOperationsOfPolynomial", available_skills)
+            if corrected != "Unknown":
+                return corrected, "polynomial_geometry_without_radical_symbol"
     return skill_name, None
 
 
@@ -718,17 +775,17 @@ def deterministic_classify_skill_id(canonical_text: str, available_skills: list)
         if sid:
             return sid, "rule:radical_marker"
 
+    if r"\frac" in t or re.search(r"\d+/\d+", t):
+        sid = _pick("FourArithmeticOperationsOfNumbers")
+        if sid:
+            return sid, "rule:fraction_marker"
+
     if re.search(r"(?<![a-zA-Z0-9])x(?![a-zA-Z0-9])", t) or re.search(
         r"\([^\)]*[a-zA-Z][^\)]*\)\s*[\^]", t
     ):
         sid = _pick("FourArithmeticOperationsOfPolynomial")
         if sid:
             return sid, "rule:polynomial_marker"
-
-    if r"\frac" in t or re.search(r"\d+/\d+", t):
-        sid = _pick("FourArithmeticOperationsOfNumbers")
-        if sid:
-            return sid, "rule:fraction_marker"
 
     if re.search(r"\d", t) and r"\sqrt" not in t and r"\frac" not in t:
         if re.search(r"\\times|\\div|[+\-]", t):
@@ -789,8 +846,13 @@ def generate_live():
     ablation_mode = data.get("ablation_mode", False)
     skip_native = data.get("skip_native", False)  # 若 True：僅跑 Ab3，不觸發 Ab1（減輕 VRAM）
     count = data.get("count", 1)
-    model_id = data.get("model_id", "qwen3.5-9b")
+    model_id = data.get("model_id", Config.DEFAULT_CODER_PRESET)
     skill_id = (data.get("skill_id") or "").strip() or None
+    if skill_id:
+        try:
+            skill_id = normalize_skill_id(skill_id, list_registered_skill_ids())
+        except Exception:
+            pass
     use_image_hint_in_generate = bool(data.get("use_image_hint_in_generate", False))
     had_image_payload = bool(data.get("image_data"))
     generate_input_mode = "image" if had_image_payload else "text"
@@ -833,6 +895,176 @@ def generate_live():
             }), 400
         
         # 🌟 教授的架構大統一：只要是根式單元，無論圖文一律走 Orchestrator 管線！
+        if (not ablation_mode) and skill_id and "FourArithmeticOperationsOfPolynomial" in skill_id:
+            try:
+                from core.polynomial_domain_functions import PolynomialFunctionHelper
+                from core.engine.scaler import AdaptiveScaler
+
+                poly_helper = PolynomialFunctionHelper()
+                if poly_helper.can_handle(canonical_ocr_text):
+                    scaler = AdaptiveScaler()
+                    final_code = poly_helper.build_generator_code(canonical_ocr_text)
+                    result = scaler._execute_code(final_code, level=1)
+
+                    save_dir = os.path.join(os.getcwd(), "generated_scripts")
+                    os.makedirs(save_dir, exist_ok=True)
+                    unique_filename = f"live_show_poly_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
+                    file_path = os.path.join(save_dir, unique_filename)
+                    with open(file_path, "w", encoding="utf-8") as handle:
+                        handle.write(final_code)
+
+                    try:
+                        _LIVE_FILE_DISPLAY_MODE[os.path.abspath(file_path)] = {
+                            "mode": "auto",
+                            "skill_id": skill_id,
+                            "ocr_text": canonical_ocr_text,
+                        }
+                    except Exception:
+                        pass
+
+                    question_text = str(result.get("question_text") or "")
+                    correct_answer = str(result.get("correct_answer") or result.get("answer") or "")
+                    return jsonify({
+                        "success": True,
+                        "problem": question_text,
+                        "answer": correct_answer,
+                        "question_text": question_text,
+                        "correct_answer": correct_answer,
+                        "problems": [result],
+                        "api_time": time.time() - start_time,
+                        "fixes": 0,
+                        "file_path": file_path,
+                        "raw_text": final_code,
+                        "raw_code": final_code,
+                        "final_code": final_code,
+                        "architect_model": "PolynomialFunctionHelper",
+                        "ab2_result": {
+                            "question_text": question_text,
+                            "correct_answer": correct_answer,
+                            "raw_text": final_code,
+                            "raw_code": final_code,
+                            "final_code": final_code,
+                            "file_path": file_path,
+                        },
+                        "json_spec": json_spec or {},
+                        "healer_logs": ["POLYNOMIAL_ORCHESTRATOR", "deterministic helper path"],
+                    })
+            except Exception as poly_exc:
+                print(f"[WARN] [POLY_ORCH] deterministic polynomial path failed: {poly_exc}")
+
+        if (not ablation_mode) and skill_id and "FourArithmeticOperationsOfIntegers" in skill_id:
+            try:
+                from core.integer_domain_functions import IntegerFunctionHelper
+                from core.engine.scaler import AdaptiveScaler
+
+                int_helper = IntegerFunctionHelper()
+                if int_helper.can_handle(canonical_ocr_text):
+                    scaler = AdaptiveScaler()
+                    final_code = int_helper.build_generator_code(canonical_ocr_text)
+                    result = scaler._execute_code(final_code, level=1)
+
+                    save_dir = os.path.join(os.getcwd(), "generated_scripts")
+                    os.makedirs(save_dir, exist_ok=True)
+                    unique_filename = f"live_show_int_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
+                    file_path = os.path.join(save_dir, unique_filename)
+                    with open(file_path, "w", encoding="utf-8") as handle:
+                        handle.write(final_code)
+
+                    try:
+                        _LIVE_FILE_DISPLAY_MODE[os.path.abspath(file_path)] = {
+                            "mode": "auto",
+                            "skill_id": skill_id,
+                            "ocr_text": canonical_ocr_text,
+                        }
+                    except Exception:
+                        pass
+
+                    question_text = str(result.get("question_text") or "")
+                    correct_answer = str(result.get("correct_answer") or result.get("answer") or "")
+                    return jsonify({
+                        "success": True,
+                        "problem": question_text,
+                        "answer": correct_answer,
+                        "question_text": question_text,
+                        "correct_answer": correct_answer,
+                        "problems": [result],
+                        "api_time": time.time() - start_time,
+                        "fixes": 0,
+                        "file_path": file_path,
+                        "raw_text": final_code,
+                        "raw_code": final_code,
+                        "final_code": final_code,
+                        "architect_model": "IntegerFunctionHelper",
+                        "ab2_result": {
+                            "question_text": question_text,
+                            "correct_answer": correct_answer,
+                            "raw_text": final_code,
+                            "raw_code": final_code,
+                            "final_code": final_code,
+                            "file_path": file_path,
+                        },
+                        "json_spec": json_spec or {},
+                        "healer_logs": ["INTEGER_ORCHESTRATOR", "deterministic helper path"],
+                    })
+            except Exception as int_exc:
+                print(f"[WARN] [INT_ORCH] deterministic integer path failed: {int_exc}")
+
+        if (not ablation_mode) and skill_id and "FourArithmeticOperationsOfNumbers" in skill_id:
+            try:
+                from core.fraction_domain_functions import FractionFunctionHelper
+                from core.engine.scaler import AdaptiveScaler
+
+                frac_helper = FractionFunctionHelper()
+                if frac_helper.can_handle(canonical_ocr_text):
+                    final_code = frac_helper.build_generator_code(canonical_ocr_text)
+                    result = frac_helper.generate_from_config(frac_helper.build_config(canonical_ocr_text))
+
+                    save_dir = os.path.join(os.getcwd(), "generated_scripts")
+                    os.makedirs(save_dir, exist_ok=True)
+                    unique_filename = f"live_show_frac_{int(time.time())}_{uuid.uuid4().hex[:6]}.py"
+                    file_path = os.path.join(save_dir, unique_filename)
+                    with open(file_path, "w", encoding="utf-8") as handle:
+                        handle.write(final_code)
+
+                    try:
+                        _LIVE_FILE_DISPLAY_MODE[os.path.abspath(file_path)] = {
+                            "mode": "auto",
+                            "skill_id": skill_id,
+                            "ocr_text": canonical_ocr_text,
+                        }
+                    except Exception:
+                        pass
+
+                    question_text = str(result.get("question_text") or "")
+                    correct_answer = str(result.get("correct_answer") or result.get("answer") or "")
+                    return jsonify({
+                        "success": True,
+                        "problem": question_text,
+                        "answer": correct_answer,
+                        "question_text": question_text,
+                        "correct_answer": correct_answer,
+                        "problems": [result],
+                        "api_time": time.time() - start_time,
+                        "fixes": 0,
+                        "file_path": file_path,
+                        "raw_text": final_code,
+                        "raw_code": final_code,
+                        "final_code": final_code,
+                        "architect_model": "FractionFunctionHelper",
+                        "ab2_result": {
+                            "question_text": question_text,
+                            "correct_answer": correct_answer,
+                            "raw_text": final_code,
+                            "raw_code": final_code,
+                            "final_code": final_code,
+                            "file_path": file_path,
+                        },
+                        "json_spec": json_spec or {},
+                        "healer_logs": ["FRACTION_ORCHESTRATOR", "deterministic helper path"],
+                    })
+            except Exception as frac_exc:
+                print(f"[WARN] [FRAC_ORCH] deterministic fraction path failed: {frac_exc}")
+
         is_radical_skill = "FourOperationsOfRadicals" in (skill_id or "")
 
         if (image_data or is_radical_skill) and not ablation_mode:
@@ -880,6 +1112,8 @@ def generate_live():
             knowledge = apply_strict_mirroring(knowledge, ocr_text)
             if skill_id and "FourOperationsOfRadicals" in skill_id:
                 knowledge = compact_radical_skill_for_liveshow(knowledge)
+            elif skill_id and "FourArithmeticOperationsOfPolynomial" in skill_id:
+                knowledge = compact_polynomial_skill_for_liveshow(knowledge)
             # Re-use pre-computed structural profile from classify when available.
             if json_spec.get("operator_fingerprint"):
                 iso_block = json_spec.get("isomorphic_constraints", "")
@@ -1480,6 +1714,32 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                         dm["ab3_overwrite_blocked_by_ab2_pass"] = False
                         dm["ab3_overwrite_block_reason"] = ""
 
+                if "FourArithmeticOperationsOfPolynomial" in (skill_id or ""):
+                    _ab2_raw = output.get("ab2_result") if isinstance(output.get("ab2_result"), dict) else {}
+                    _ab2_q = (_ab2_raw.get("question_text") or "").strip()
+                    _ab2_a = str(_ab2_raw.get("correct_answer") or "").strip()
+                    _ab2_ok = bool(_ab2_q) and ("error" not in _ab2_raw) and bool(_ab2_a)
+                    _ab3_q = (output.get("problem") or "").strip()
+                    _ab3_a = str(output.get("answer") or "").strip()
+                    _ab3_bad = (
+                        (not _ab3_q)
+                        or _ab3_q == "Error"
+                        or ("\\sqrt" in _ab3_q)
+                        or ("\\sqrt" in _ab3_a)
+                        or (not _ab3_a)
+                        or (_ab3_a == "0" and ("x" in _ab2_q or "x^" in _ab2_a))
+                    )
+                    if _ab2_ok and _ab3_bad:
+                        output["problem"] = _ab2_q
+                        output["answer"] = _ab2_a
+                        output["raw_text"] = _ab2_raw.get("raw_text", output.get("raw_text", ""))
+                        output["raw_code"] = _ab2_raw.get("raw_code", output.get("raw_code", ""))
+                        output["final_code"] = _ab2_raw.get("final_code", output.get("final_code", ""))
+                        output["file_path"] = _ab2_raw.get("file_path", output.get("file_path", ""))
+                        dm["final_output_source"] = "ab2"
+                        dm["ab3_overwrite_blocked_by_ab2_pass"] = True
+                        dm["ab3_overwrite_block_reason"] = "ab3_polynomial_suspicious"
+
                 if (not str(output.get("answer") or "").strip()) and (output.get("problem") or "").strip():
                     try:
                         _ans_fill = _recompute_correct_answer_from_question(output.get("problem", ""))
@@ -1603,6 +1863,33 @@ Python 核心已精確掃描此題結構，你必須 100% 遵守以下數量，�
                 and str(output["ab2_result"].get("answer") or "").strip()
             ):
                 output["answer"] = str(output["ab2_result"].get("answer") or "")
+
+        if (
+            "FourArithmeticOperationsOfPolynomial" in (skill_id or "")
+            and isinstance(output.get("ab2_result"), dict)
+            and str(output["ab2_result"].get("problem") or "").strip()
+            and str(output["ab2_result"].get("answer") or "").strip()
+        ):
+            _top_problem = str(output.get("problem") or "").strip()
+            _top_answer = str(output.get("answer") or "").strip()
+            _top_bad = (
+                (not _top_problem)
+                or _top_problem == "Error"
+                or (not _top_answer)
+                or (_top_answer == "0" and "x" in str(output["ab2_result"].get("problem") or ""))
+                or ("\\sqrt" in _top_problem)
+                or ("\\sqrt" in _top_answer)
+            )
+            if _top_bad:
+                output["problem"] = str(output["ab2_result"].get("problem") or "")
+                output["answer"] = str(output["ab2_result"].get("answer") or "")
+                output["raw_text"] = str(output["ab2_result"].get("raw_text") or output.get("raw_text") or "")
+                output["raw_code"] = str(output["ab2_result"].get("raw_code") or output.get("raw_code") or "")
+                output["final_code"] = str(output["ab2_result"].get("final_code") or output.get("final_code") or "")
+                output["file_path"] = str(output["ab2_result"].get("file_path") or output.get("file_path") or "")
+                dm["final_output_source"] = "ab2"
+                dm["ab3_overwrite_blocked_by_ab2_pass"] = True
+                dm["ab3_overwrite_block_reason"] = "ab3_polynomial_top_level_suspicious"
 
         # [Bug 26 companion — ab2 ≡ ab3 when fixes=0]
         # 當 ab3 healer 修復數 = 0 時，ab2 與 ab3 使用相同程式碼，共享同一運行結果。
@@ -1811,7 +2098,7 @@ def classify_input():
 
             canonical_input_text = canonicalize_math_text(text_data) if text_data else ""
 
-            if text_data and not image_data:
+            if text_data:
                 _ds, _drule = deterministic_classify_skill_id(
                     canonical_input_text, available_skills
                 )
@@ -2082,6 +2369,31 @@ def classify_input():
                                 )
                                 skill_name = guarded_skill
                                 confidence = min(int(confidence or 0), 95)
+
+                            _det_sid, _det_rule = deterministic_classify_skill_id(
+                                canonicalize_math_text(ocr_text), available_skills
+                            )
+                            if _det_sid:
+                                _det_norm = normalize_skill_id(_det_sid, available_skills)
+                                _det_guarded, _det_guard_reason = _apply_skill_safety_guard(
+                                    _det_norm, ocr_text, available_skills
+                                )
+                                if _det_guarded != "Unknown" and _det_guarded != skill_name:
+                                    process_logs.append(
+                                        f"> [INFO] Deterministic override ({_det_rule}) : [{skill_name}] -> [{_det_guarded}]"
+                                    )
+                                    if _det_guard_reason:
+                                        process_logs.append(
+                                            f"> [INFO] Deterministic override guard: {_det_guard_reason}"
+                                        )
+                                    print(
+                                        f"[INFO] [CLASSIFY] deterministic override {_det_rule}: "
+                                        f"{skill_name!r} -> {_det_guarded!r}"
+                                    )
+                                    skill_name = _det_guarded
+                                    classify_source = "deterministic_override"
+                                    deterministic_rule = _det_rule
+                                    confidence = 100
                                 
                             print(
                                 f"[INFO] [CLASSIFY] done skill_id={skill_name!r} "
@@ -2215,6 +2527,8 @@ def classify_input():
 
                 if skill_spec_distilled and skill_name and "FourOperationsOfRadicals" in skill_name:
                     skill_spec_distilled = compact_radical_skill_for_liveshow(skill_spec_distilled)
+                elif skill_spec_distilled and skill_name and "FourArithmeticOperationsOfPolynomial" in skill_name:
+                    skill_spec_distilled = compact_polynomial_skill_for_liveshow(skill_spec_distilled)
 
                 if skill_spec_distilled:
                     scaffold_prompt = f"""{skill_spec_distilled}\n=== SKILL_END_PROMPT ===\n\n{live_show_content}"""
