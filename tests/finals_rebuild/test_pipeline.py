@@ -71,6 +71,11 @@ _SCAFFOLD_PROMPT = "Solve this problem step-by-step with hints: 2 + 2."
 _RAW_AB1 = "```python\ndef solve_ab1():\n    return 4\n```"
 _RAW_SCAFFOLD = "```python\ndef solve_scaffold():\n    return 4\n```"
 
+# Deliberately DIFFERENT from PairMetadata.source_git_commit ("2d8a0fb" in
+# _make_input below) — proves evaluator_git_commit is an independent fact,
+# not silently aliased to source_git_commit.
+_EVALUATOR_GIT_COMMIT = "e3d2e1b"
+
 # ---------------------------------------------------------------------------
 # Factory helper
 # ---------------------------------------------------------------------------
@@ -83,12 +88,17 @@ def _make_input(
     raw_ab1: str = _RAW_AB1,
     raw_scaffold: str = _RAW_SCAFFOLD,
     skill_id: str = "algebra_01",
+    evaluator_git_commit: str = _EVALUATOR_GIT_COMMIT,
 ) -> PairedPipelineInput:
     """Build a fully-consistent PairedPipelineInput for tests.
 
     skill_id defaults to a non-K12-math id ("algebra_01") so the Spec
     Adapter's default behaviour in most tests is a no-op; pass a
     jh_/gh_-prefixed skill_id to exercise the applicable-domain path.
+
+    evaluator_git_commit defaults to a value distinct from
+    PairMetadata.source_git_commit ("2d8a0fb" below), proving the pipeline
+    keeps them as independent facts rather than aliasing one to the other.
     """
     bare_hash = sha256_text(bare_prompt)
     scaffold_hash = sha256_text(scaffold_prompt)
@@ -124,6 +134,7 @@ def _make_input(
         raw_ab1_response=raw_ab1,
         raw_scaffold_response=raw_scaffold,
         artifact_root=tmp_path,
+        evaluator_git_commit=evaluator_git_commit,
     )
 
 
@@ -258,6 +269,7 @@ def test_bare_prompt_hash_mismatch_fails(tmp_path):
         raw_ab1_response=inp.raw_ab1_response,
         raw_scaffold_response=inp.raw_scaffold_response,
         artifact_root=tmp_path,
+        evaluator_git_commit=inp.evaluator_git_commit,
     )
     with pytest.raises(PipelineError, match="bare_prompt"):
         run_paired_pipeline(bad)
@@ -272,6 +284,7 @@ def test_scaffold_prompt_hash_mismatch_fails(tmp_path):
         raw_ab1_response=inp.raw_ab1_response,
         raw_scaffold_response=inp.raw_scaffold_response,
         artifact_root=tmp_path,
+        evaluator_git_commit=inp.evaluator_git_commit,
     )
     with pytest.raises(PipelineError, match="scaffold_prompt"):
         run_paired_pipeline(bad)
@@ -295,6 +308,7 @@ def test_pair_id_mismatch_fails(tmp_path):
         raw_ab1_response=inp.raw_ab1_response,
         raw_scaffold_response=inp.raw_scaffold_response,
         artifact_root=tmp_path,
+        evaluator_git_commit=inp.evaluator_git_commit,
     )
     with pytest.raises(PipelineError, match="pair_id"):
         run_paired_pipeline(bad)
@@ -333,6 +347,7 @@ def test_second_run_different_raw_raises(tmp_path):
         raw_ab1_response=inp.raw_ab1_response,
         raw_scaffold_response=different_scaffold,
         artifact_root=tmp_path,
+        evaluator_git_commit=inp.evaluator_git_commit,
     )
     # With strict ID validation, a different scaffold raw produces a different
     # run_id for ab2/ab3_core/ab3_full → ExistingMetadataMismatchError.
@@ -1060,8 +1075,13 @@ def test_13_evaluation_json_cannot_be_silently_overwritten(tmp_path):
     eval_path.write_text('{"tampered": true}', encoding="utf-8")
 
     # Re-running must fail closed rather than silently accept different
-    # content at the same immutable path.
-    with pytest.raises(ImmutableWriteError):
+    # content at the same immutable path. The pipeline reuses an existing
+    # evaluation.json on idempotent re-runs (bounded execution is not
+    # deterministic — see _read_existing_evaluation in pipeline.py), so
+    # tampered/incomplete content is caught by that consistency check
+    # (ExistingMetadataMismatchError) before immutable_write_json would
+    # even be reached; either fail-closed signal is acceptable.
+    with pytest.raises((ImmutableWriteError, ExistingMetadataMismatchError)):
         run_paired_pipeline(inp)
 
 
@@ -1132,16 +1152,69 @@ def test_run_metadata_never_rewritten_to_add_evaluation_hash(tmp_path):
         assert result2.treatment_outputs[treatment].run_metadata.evaluation_hash is not None
 
 
-def test_evaluation_result_execution_and_test_fields_are_not_run(tmp_path):
+def test_evaluation_result_test_and_mcri_fields_are_not_run(tmp_path):
+    """
+    Commit 4B adds real execution (execution_status is now "success" for
+    ordinary code), but test_status/mcri_* remain "not_run"/None — no
+    test cases are run and no MCRI is computed this commit.
+    """
     inp = _make_input(tmp_path, skill_id="jh_math_skill")
     result = run_paired_pipeline(inp)
     for treatment in ALLOWED_TREATMENTS:
         ev = result.treatment_outputs[treatment].evaluation
-        assert ev.execution_status == "not_run"
-        assert ev.execution_success is None
         assert ev.test_status == "not_run"
         assert ev.test_pass is None
         assert ev.tests_passed is None
         assert ev.tests_total is None
         assert ev.mcri_code is None
         assert ev.mcri_math is None
+
+
+# ============================================================
+# Commit 4B: bounded execution evaluator, full pipeline
+# ============================================================
+
+
+def test_evaluator_git_commit_differs_from_source_git_commit(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    assert inp.pair_metadata.source_git_commit != inp.evaluator_git_commit
+
+    result = run_paired_pipeline(inp)
+    for treatment in ALLOWED_TREATMENTS:
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.evaluator_git_commit == inp.evaluator_git_commit
+        assert ev.evaluator_git_commit != inp.pair_metadata.source_git_commit
+        # RunMetadata.source_git_commit is unaffected — still the
+        # generation commit, never silently swapped for the evaluator's.
+        run_meta = result.treatment_outputs[treatment].run_metadata
+        assert run_meta.source_git_commit == inp.pair_metadata.source_git_commit
+
+
+def test_all_four_treatments_get_independent_execution_results(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    statuses = {
+        t: result.treatment_outputs[t].evaluation.execution_status
+        for t in ALLOWED_TREATMENTS
+    }
+    # All four ran independently and successfully for this well-formed
+    # fixture (each is valid, side-effect-free Python).
+    assert all(status == "success" for status in statuses.values())
+    assert len(statuses) == 4
+
+
+def test_one_treatment_execution_failure_does_not_block_others(tmp_path):
+    """
+    ab1's raw response is swapped for code that raises at module level;
+    ab2/ab3_core/ab3_full must still be fully evaluated (not skipped, not
+    aborted) even though ab1's execution genuinely fails.
+    """
+    raising_ab1 = "```python\nraise ValueError('boom')\n```"
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", raw_ab1=raising_ab1)
+    result = run_paired_pipeline(inp)  # must not raise
+
+    assert result.treatment_outputs["ab1"].evaluation.execution_status == "failure"
+    for treatment in ("ab2", "ab3_core", "ab3_full"):
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.execution_status == "success"
+        assert ev.execution_success is True

@@ -109,7 +109,11 @@ def test_non_not_run_execution_requires_bool_success():
 
 def test_non_not_run_execution_with_bool_passes():
     validate_evaluation_result(
-        _result(execution_status="success", execution_success=True)
+        _result(
+            execution_status="success",
+            execution_success=True,
+            isolation_level="guarded_subprocess_not_security_sandbox",
+        )
     )
 
 

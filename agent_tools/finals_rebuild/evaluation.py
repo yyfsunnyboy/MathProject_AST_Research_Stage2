@@ -31,14 +31,31 @@ from agent_tools.finals_rebuild.artifacts import ALLOWED_TREATMENTS, sha256_text
 
 CONTRACT_STATUSES: frozenset[str] = frozenset({"pass", "fail", "not_required"})
 
-# Broader than what Commit 4A ever produces (only "not_run" is emitted this
-# commit) so the schema does not need to change again once execution/tests
-# land in a later commit.
+# "blocked" (Commit 4B: AST preflight denylist rejected the code before any
+# subprocess was spawned) joins the set introduced in Commit 4A.
 EXECUTION_STATUSES: frozenset[str] = frozenset({
-    "not_run", "success", "failure", "timeout", "error",
+    "not_run", "success", "failure", "timeout", "blocked", "error",
 })
 TEST_STATUSES: frozenset[str] = frozenset({
     "not_run", "passed", "failed", "error",
+})
+
+# execution_status -> required execution_success value. Enforced exactly
+# (not just "must be a bool") so a caller can never report e.g.
+# execution_status="failure", execution_success=True.
+EXECUTION_SUCCESS_BY_STATUS: Dict[str, bool] = {
+    "success": True,
+    "failure": False,
+    "timeout": False,
+    "blocked": False,
+    "error": False,
+}
+
+# Commit 4B ships exactly one isolation level: a bounded subprocess, NOT a
+# security sandbox. See execution_evaluator.py's module docstring for what
+# that does and does not guarantee.
+ALLOWED_ISOLATION_LEVELS: frozenset[str] = frozenset({
+    "guarded_subprocess_not_security_sandbox",
 })
 
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
@@ -61,9 +78,15 @@ class EvaluationResult:
     """One evaluator run against one treatment artifact.
 
     execution_status/test_status carry an explicit "not_run" sentinel;
-    their corresponding value fields (execution_success, test_pass,
+    their corresponding value fields (execution_success, isolation_level,
+    stdout_summary, stderr_summary, return_code, duration_ms, test_pass,
     tests_passed, tests_total, mcri_code, mcri_math) must be None while
     that sentinel is set — never False or 0.
+
+    isolation_level, when set, always reports what kind of execution
+    boundary was actually used (Commit 4B: a bounded subprocess, NOT a
+    security sandbox — see execution_evaluator.py). It is never omitted
+    or left implicit once execution_status != "not_run".
     """
 
     pair_id: str
@@ -79,6 +102,11 @@ class EvaluationResult:
     discovered_functions: List[str] = field(default_factory=list)
     execution_status: str = "not_run"
     execution_success: Optional[bool] = None
+    isolation_level: Optional[str] = None
+    stdout_summary: Optional[str] = None
+    stderr_summary: Optional[str] = None
+    return_code: Optional[int] = None
+    duration_ms: Optional[float] = None
     test_status: str = "not_run"
     test_pass: Optional[bool] = None
     tests_passed: Optional[int] = None
@@ -155,14 +183,43 @@ def validate_evaluation_result(result: EvaluationResult) -> None:
             f"got {result.execution_status!r}"
         )
     if result.execution_status == "not_run":
-        if result.execution_success is not None:
+        for fname in (
+            "execution_success", "isolation_level", "stdout_summary",
+            "stderr_summary", "return_code", "duration_ms",
+        ):
+            if getattr(result, fname) is not None:
+                raise EvaluationValidationError(
+                    f"execution_status='not_run' requires {fname}=None"
+                )
+    else:
+        expected_success = EXECUTION_SUCCESS_BY_STATUS[result.execution_status]
+        if result.execution_success is not expected_success:
             raise EvaluationValidationError(
-                "execution_status='not_run' requires execution_success=None"
+                f"execution_status={result.execution_status!r} requires "
+                f"execution_success={expected_success!r}, "
+                f"got {result.execution_success!r}"
             )
-    elif not isinstance(result.execution_success, bool):
-        raise EvaluationValidationError(
-            "execution_success must be a bool once execution_status != 'not_run'"
-        )
+        if result.isolation_level not in ALLOWED_ISOLATION_LEVELS:
+            raise EvaluationValidationError(
+                f"isolation_level must be one of {sorted(ALLOWED_ISOLATION_LEVELS)} "
+                f"once execution_status != 'not_run', got {result.isolation_level!r}"
+            )
+        for fname in ("stdout_summary", "stderr_summary"):
+            value = getattr(result, fname)
+            if value is not None and not isinstance(value, str):
+                raise EvaluationValidationError(f"{fname} must be None or a string")
+        if result.return_code is not None and (
+            isinstance(result.return_code, bool) or not isinstance(result.return_code, int)
+        ):
+            raise EvaluationValidationError("return_code must be None or an int")
+        if result.duration_ms is not None and (
+            isinstance(result.duration_ms, bool)
+            or not isinstance(result.duration_ms, (int, float))
+            or result.duration_ms < 0
+        ):
+            raise EvaluationValidationError(
+                "duration_ms must be None or a non-negative number"
+            )
 
     if result.test_status not in TEST_STATUSES:
         raise EvaluationValidationError(
@@ -250,6 +307,11 @@ def evaluation_result_to_dict(result: EvaluationResult) -> Dict[str, Any]:
         "discovered_functions": list(result.discovered_functions),
         "execution_status": result.execution_status,
         "execution_success": result.execution_success,
+        "isolation_level": result.isolation_level,
+        "stdout_summary": result.stdout_summary,
+        "stderr_summary": result.stderr_summary,
+        "return_code": result.return_code,
+        "duration_ms": result.duration_ms,
         "test_status": result.test_status,
         "test_pass": result.test_pass,
         "tests_passed": result.tests_passed,
@@ -279,6 +341,11 @@ def evaluation_result_from_dict(d: Dict[str, Any]) -> EvaluationResult:
         discovered_functions=list(d.get("discovered_functions", [])),
         execution_status=d.get("execution_status", "not_run"),
         execution_success=d.get("execution_success"),
+        isolation_level=d.get("isolation_level"),
+        stdout_summary=d.get("stdout_summary"),
+        stderr_summary=d.get("stderr_summary"),
+        return_code=d.get("return_code"),
+        duration_ms=d.get("duration_ms"),
         test_status=d.get("test_status", "not_run"),
         test_pass=d.get("test_pass"),
         tests_passed=d.get("tests_passed"),

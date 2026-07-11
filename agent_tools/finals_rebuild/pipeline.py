@@ -44,13 +44,21 @@ Re-running the pipeline with the same inputs succeeds without errors:
   original created_at_utc so that repeated serialisation produces
   bit-identical files.
 
-Static evaluation (Commit 4A)
-------------------------------
-evaluate_static() only ast.parse()s the code and inspects top-level
-function names — it never imports, execs, compiles-for-execution, or
-spawns a subprocess against artifact code. execution_status/test_status
-are always "not_run" this commit; their value fields (execution_success,
-test_pass, tests_passed, tests_total, mcri_code, mcri_math) are always
+Evaluation (Commit 4A static + Commit 4B bounded execution)
+--------------------------------------------------------------
+evaluate_with_execution() (execution_evaluator.py) combines:
+  - evaluate_static() (Commit 4A): ast.parse() + top-level function
+    inspection only — never imports/execs/compiles-for-execution here.
+  - run_bounded_execution() (Commit 4B): an AST preflight denylist, then
+    (if not blocked) a subprocess running execution_worker.py in a fresh
+    temp dir, closed stdin, stripped env, and a wall-clock timeout. This
+    is NOT a security sandbox — see execution_evaluator.py's module
+    docstring. execution_status is one of "not_run"/"success"/"failure"/
+    "timeout"/"blocked"/"error"; isolation_level is always
+    "guarded_subprocess_not_security_sandbox" whenever execution actually
+    ran (or was blocked before running).
+test_status/mcri_* remain "not_run"/None this commit; their value fields
+(test_pass, tests_passed, tests_total, mcri_code, mcri_math) are always
 None — not False/0 — because "not evaluated yet" and "evaluated and
 failed" are different claims.
 
@@ -98,12 +106,13 @@ from agent_tools.finals_rebuild.core_adapter import run_core_adapter
 from agent_tools.finals_rebuild.evaluation import (
     EvaluationResult,
     compute_evaluation_hash,
+    evaluation_result_from_dict,
     evaluation_result_to_dict,
     validate_evaluation_result,
 )
+from agent_tools.finals_rebuild.execution_evaluator import evaluate_with_execution
 from agent_tools.finals_rebuild.extraction import ExtractionResult, extract_code
 from agent_tools.finals_rebuild.spec_adapter import run_spec_adapter
-from agent_tools.finals_rebuild.static_evaluator import evaluate_static
 from agent_tools.finals_rebuild.trace import (
     TreatmentTrace,
     compute_trace_hash,
@@ -157,6 +166,16 @@ class PairedPipelineInput:
     ``raw_ab3_core_response``, or ``raw_ab3_full_response`` parameter –
     making it structurally impossible to supply different scaffold raws per
     treatment.
+
+    ``evaluator_git_commit`` is the commit of the finals_rebuild evaluator
+    code itself at evaluation time — the caller must pass this explicitly
+    (e.g. the output of ``git rev-parse HEAD`` for THIS repo, or a fixed
+    value in tests). It is deliberately a separate field from
+    ``pair_metadata.source_git_commit`` (the commit the pair's artifacts
+    were GENERATED under): evaluator code changes on its own schedule,
+    independent of when a given pair was generated, and conflating the two
+    would make it impossible to tell "the artifact changed" from "the
+    evaluator changed" when comparing runs across commits.
     """
 
     pair_metadata: PairMetadata
@@ -165,6 +184,7 @@ class PairedPipelineInput:
     raw_ab1_response: str
     raw_scaffold_response: str
     artifact_root: pathlib.Path
+    evaluator_git_commit: str
 
 
 @dataclass(frozen=True)
@@ -335,20 +355,33 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             validate_treatment_trace(finalized_trace)
             trace_hash = compute_trace_hash(finalized_trace)
 
-        # Static evaluation runs for every treatment. Computed here, BEFORE
-        # RunMetadata is built, so evaluation_hash is correct on RunMetadata's
-        # first (and only) write — RunMetadata is immutable, so this order is
-        # deliberate: evaluation_hash must never require rewriting an
-        # already-written run metadata file.
-        raw_eval = evaluate_static(
-            code=slot["output_code"],
-            pair_id=meta.pair_id,
-            run_id=run_id,
-            treatment=treatment,
-            artifact_hash=output_hash,
-            evaluator_git_commit=meta.source_git_commit,
+        # Static + bounded-execution evaluation runs for every treatment.
+        # Computed here, BEFORE RunMetadata is built, so evaluation_hash is
+        # correct on RunMetadata's first (and only) write — RunMetadata is
+        # immutable, so this order is deliberate: evaluation_hash must
+        # never require rewriting an already-written run metadata file.
+        #
+        # evaluator_git_commit is the evaluator's OWN commit (caller-
+        # supplied via PairedPipelineInput), never meta.source_git_commit
+        # (the commit the artifacts were generated under) — those are
+        # independent facts that must stay distinguishable.
+        finalized_eval = _read_existing_evaluation(
+            path=ap.run_evaluation_json(treatment),
+            expected_pair_id=meta.pair_id,
+            expected_run_id=run_id,
+            expected_treatment=treatment,
+            expected_artifact_hash=output_hash,
         )
-        finalized_eval = replace(raw_eval, created_at_utc=run_ts)
+        if finalized_eval is None:
+            raw_eval = evaluate_with_execution(
+                code=slot["output_code"],
+                pair_id=meta.pair_id,
+                run_id=run_id,
+                treatment=treatment,
+                artifact_hash=output_hash,
+                evaluator_git_commit=inp.evaluator_git_commit,
+            )
+            finalized_eval = replace(raw_eval, created_at_utc=run_ts)
         validate_evaluation_result(finalized_eval)
         evaluation_hash = compute_evaluation_hash(finalized_eval)
 
@@ -570,3 +603,68 @@ def _read_existing_created_at(
             f"Existing run metadata at {path!r} is missing created_at_utc"
         )
     return ts
+
+
+def _read_existing_evaluation(
+    path: pathlib.Path,
+    expected_pair_id: str,
+    expected_run_id: str,
+    expected_treatment: str,
+    expected_artifact_hash: str,
+) -> Optional[EvaluationResult]:
+    """Return the EvaluationResult already persisted at *path*, or None if
+    it does not exist yet.
+
+    Bounded-subprocess execution is NOT deterministic — duration_ms and
+    captured stdout/stderr can legitimately differ between two runs of the
+    exact same code (system load, OS scheduling, etc). Re-executing on
+    every idempotent pipeline re-run would therefore make evaluation.json
+    fail immutable_write_json's "byte-identical or reject" check on every
+    single re-run, defeating idempotency entirely. So: if a matching
+    evaluation.json already exists, it is reused as-is (never
+    re-executed) — exactly the same idempotency strategy already used for
+    RunMetadata.created_at_utc via _read_existing_created_at().
+
+    Raises
+    ------
+    ExistingMetadataMismatchError
+        If the file exists but cannot be parsed, is missing required
+        fields, or any of pair_id / run_id / treatment / artifact_hash
+        disagrees with the expected values — fail closed rather than
+        silently reusing a mismatched evaluation.
+    """
+    if not path.is_file():
+        return None
+
+    try:
+        stored = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        raise ExistingMetadataMismatchError(
+            f"Failed to parse existing evaluation at {path!r}: {exc}"
+        ) from exc
+
+    for field_name, expected in (
+        ("pair_id", expected_pair_id),
+        ("run_id", expected_run_id),
+        ("treatment", expected_treatment),
+        ("artifact_hash", expected_artifact_hash),
+    ):
+        actual = stored.get(field_name)
+        if actual is None:
+            raise ExistingMetadataMismatchError(
+                f"Existing evaluation at {path!r} is missing required "
+                f"field {field_name!r}"
+            )
+        if actual != expected:
+            raise ExistingMetadataMismatchError(
+                f"Existing evaluation at {path!r}: "
+                f"{field_name}={actual!r} does not match "
+                f"expected {expected!r}"
+            )
+
+    try:
+        return evaluation_result_from_dict(stored)
+    except KeyError as exc:
+        raise ExistingMetadataMismatchError(
+            f"Existing evaluation at {path!r} is missing required field {exc}"
+        ) from exc
