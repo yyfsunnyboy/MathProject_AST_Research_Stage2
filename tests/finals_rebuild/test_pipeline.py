@@ -1085,6 +1085,94 @@ def test_13_evaluation_json_cannot_be_silently_overwritten(tmp_path):
         run_paired_pipeline(inp)
 
 
+# ============================================================
+# Fix: evaluation reuse validation (evaluator_git_commit /
+# evaluator_config_hash / isolation_level / missing fields)
+# ============================================================
+
+
+def _tamper_evaluation_field(eval_path, field_name, new_value):
+    stored = json.loads(eval_path.read_text(encoding="utf-8"))
+    stored[field_name] = new_value
+    eval_path.write_text(json.dumps(stored, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+def _delete_evaluation_field(eval_path, field_name):
+    stored = json.loads(eval_path.read_text(encoding="utf-8"))
+    del stored[field_name]
+    eval_path.write_text(json.dumps(stored, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+
+
+def test_reuse_rejects_different_evaluator_git_commit(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab1")
+    _tamper_evaluation_field(eval_path, "evaluator_git_commit", "totally-different-commit")
+
+    with pytest.raises(ExistingMetadataMismatchError, match="evaluator_git_commit"):
+        run_paired_pipeline(inp)
+
+
+def test_reuse_rejects_different_evaluator_config_hash(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab1")
+    _tamper_evaluation_field(eval_path, "evaluator_config_hash", "f" * 64)
+
+    with pytest.raises(ExistingMetadataMismatchError, match="evaluator_config_hash"):
+        run_paired_pipeline(inp)
+
+
+def test_reuse_rejects_different_isolation_level(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab1")
+    _tamper_evaluation_field(eval_path, "isolation_level", "some_other_isolation_level")
+
+    with pytest.raises(ExistingMetadataMismatchError, match="isolation_level"):
+        run_paired_pipeline(inp)
+
+
+def test_reuse_rejects_missing_required_field(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab1")
+    _delete_evaluation_field(eval_path, "evaluator_config_hash")
+
+    with pytest.raises(ExistingMetadataMismatchError, match="evaluator_config_hash"):
+        run_paired_pipeline(inp)
+
+
+def test_reuse_never_falls_back_to_none_and_reexecute_on_mismatch(tmp_path):
+    """
+    A mismatch must always be an explicit, fail-closed error — never a
+    silent None-return that triggers a fresh execution and a subsequent
+    ImmutableWriteError from writing conflicting content to the same
+    already-tampered path in a confusing way. Confirms the specific
+    exception type/message, not just "some exception".
+    """
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab2")
+    _tamper_evaluation_field(eval_path, "pair_id", "1" * 64)
+
+    with pytest.raises(ExistingMetadataMismatchError, match="pair_id"):
+        run_paired_pipeline(inp)
+
+
+def test_identical_evaluation_reuses_cleanly(tmp_path):
+    """Fully identical evaluation.json content (an untouched idempotent
+    re-run) must reuse without error and without any field changing."""
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result1 = run_paired_pipeline(inp)
+    result2 = run_paired_pipeline(inp)  # must not raise
+
+    for treatment in ALLOWED_TREATMENTS:
+        ev1 = result1.treatment_outputs[treatment].evaluation
+        ev2 = result2.treatment_outputs[treatment].evaluation
+        assert ev1 == ev2
+
+
 def test_14_full_pipeline_passes_when_core_actually_changed_with_evaluation(tmp_path):
     """
     Restores the paired invariant across the FULL evaluation feature: a

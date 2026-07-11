@@ -262,6 +262,13 @@ def evaluate_with_execution(
     fail-closed EvaluationResult, so evaluating four treatments in a loop
     means one bad treatment can never prevent the other three from being
     evaluated.
+
+    Code that fails to parse (static_result.syntax_pass is False) is
+    reported as execution_status="failure" WITHOUT ever spawning a
+    subprocess — a syntax error can only ever fail to compile, so
+    launching a process to observe that is pure overhead. This is
+    distinct from a genuine runtime test failure: it just means the code
+    could not be executed at all.
     """
     static_result = evaluate_static(
         code=code,
@@ -272,6 +279,24 @@ def evaluate_with_execution(
         evaluator_git_commit=evaluator_git_commit,
         required_functions=required_functions,
     )
+
+    if not static_result.syntax_pass:
+        return replace(
+            static_result,
+            execution_status="failure",
+            execution_success=False,
+            isolation_level=ISOLATION_LEVEL,
+            stdout_summary="",
+            stderr_summary="",
+            return_code=None,
+            duration_ms=0.0,
+            timeout=timeout,
+            fail_closed=True,
+            # exception_type/exception_message intentionally left
+            # untouched here — static_result already carries the
+            # SyntaxError info from evaluate_static(), which remains the
+            # accurate explanation for why execution could not happen.
+        )
 
     outcome = run_bounded_execution(code=code, timeout=timeout)
 

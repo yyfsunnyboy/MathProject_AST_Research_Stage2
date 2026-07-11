@@ -110,9 +110,16 @@ from agent_tools.finals_rebuild.evaluation import (
     evaluation_result_to_dict,
     validate_evaluation_result,
 )
-from agent_tools.finals_rebuild.execution_evaluator import evaluate_with_execution
+from agent_tools.finals_rebuild.execution_evaluator import (
+    ISOLATION_LEVEL,
+    evaluate_with_execution,
+)
 from agent_tools.finals_rebuild.extraction import ExtractionResult, extract_code
 from agent_tools.finals_rebuild.spec_adapter import run_spec_adapter
+from agent_tools.finals_rebuild.static_evaluator import (
+    STATIC_EVALUATOR_VERSION,
+    compute_evaluator_config_hash,
+)
 from agent_tools.finals_rebuild.trace import (
     TreatmentTrace,
     compute_trace_hash,
@@ -365,12 +372,18 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
         # supplied via PairedPipelineInput), never meta.source_git_commit
         # (the commit the artifacts were generated under) — those are
         # independent facts that must stay distinguishable.
+        expected_evaluator_config_hash = compute_evaluator_config_hash(
+            STATIC_EVALUATOR_VERSION, []
+        )
         finalized_eval = _read_existing_evaluation(
             path=ap.run_evaluation_json(treatment),
             expected_pair_id=meta.pair_id,
             expected_run_id=run_id,
             expected_treatment=treatment,
             expected_artifact_hash=output_hash,
+            expected_evaluator_git_commit=inp.evaluator_git_commit,
+            expected_evaluator_config_hash=expected_evaluator_config_hash,
+            expected_isolation_level=ISOLATION_LEVEL,
         )
         if finalized_eval is None:
             raw_eval = evaluate_with_execution(
@@ -611,6 +624,9 @@ def _read_existing_evaluation(
     expected_run_id: str,
     expected_treatment: str,
     expected_artifact_hash: str,
+    expected_evaluator_git_commit: str,
+    expected_evaluator_config_hash: str,
+    expected_isolation_level: str,
 ) -> Optional[EvaluationResult]:
     """Return the EvaluationResult already persisted at *path*, or None if
     it does not exist yet.
@@ -625,13 +641,27 @@ def _read_existing_evaluation(
     re-executed) — exactly the same idempotency strategy already used for
     RunMetadata.created_at_utc via _read_existing_created_at().
 
+    "Matching" is checked strictly: pair_id, run_id, treatment,
+    artifact_hash, evaluator_git_commit, evaluator_config_hash, AND
+    isolation_level must all agree with what THIS run would produce.
+    evaluator_git_commit/evaluator_config_hash changing means the
+    evaluator itself changed since the stored result was produced (a
+    different evaluator version/config must never be silently presented
+    as "this run's" result); isolation_level changing means the execution
+    boundary itself changed. Any mismatch fails closed rather than
+    reusing a result that no longer describes what this run would do —
+    and this function NEVER falls back to returning None (which would
+    trigger a fresh execution that immutable_write_json would then reject
+    as a conflicting overwrite of the same path); a mismatch is always an
+    explicit, fail-closed error.
+
     Raises
     ------
     ExistingMetadataMismatchError
         If the file exists but cannot be parsed, is missing required
-        fields, or any of pair_id / run_id / treatment / artifact_hash
-        disagrees with the expected values — fail closed rather than
-        silently reusing a mismatched evaluation.
+        fields, or any of the checked fields disagrees with the expected
+        values — fail closed rather than silently reusing a mismatched
+        evaluation.
     """
     if not path.is_file():
         return None
@@ -648,6 +678,9 @@ def _read_existing_evaluation(
         ("run_id", expected_run_id),
         ("treatment", expected_treatment),
         ("artifact_hash", expected_artifact_hash),
+        ("evaluator_git_commit", expected_evaluator_git_commit),
+        ("evaluator_config_hash", expected_evaluator_config_hash),
+        ("isolation_level", expected_isolation_level),
     ):
         actual = stored.get(field_name)
         if actual is None:

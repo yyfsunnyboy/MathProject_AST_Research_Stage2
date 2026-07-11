@@ -280,3 +280,90 @@ def test_evaluate_with_execution_never_raises_on_bad_code():
             timeout=1.0,
         )
         assert result is not None
+
+
+# ---------------------------------------------------------------------------
+# Fix 2: syntax failure skips run_bounded_execution entirely
+# ---------------------------------------------------------------------------
+
+
+def test_5_syntax_error_never_calls_subprocess_run(monkeypatch):
+    calls = []
+    import subprocess as _subprocess
+
+    original_run = _subprocess.run
+
+    def spy_run(*args, **kwargs):
+        calls.append((args, kwargs))
+        return original_run(*args, **kwargs)
+
+    monkeypatch.setattr(_subprocess, "run", spy_run)
+
+    result = evaluate_with_execution(
+        code="def f(:\n",
+        pair_id=_PAIR_ID,
+        run_id=_RUN_ID,
+        treatment="ab1",
+        artifact_hash=_HASH,
+        evaluator_git_commit="deadbeef",
+    )
+    assert result.syntax_pass is False
+    assert calls == [], "subprocess.run must never be called for syntax-invalid code"
+
+
+def test_6_syntax_error_execution_status_and_success():
+    result = evaluate_with_execution(
+        code="def f(:\n",
+        pair_id=_PAIR_ID,
+        run_id=_RUN_ID,
+        treatment="ab1",
+        artifact_hash=_HASH,
+        evaluator_git_commit="deadbeef",
+    )
+    assert result.execution_status == "failure"
+    assert result.execution_success is False
+    assert result.return_code is None
+    assert result.duration_ms == 0.0
+    assert result.isolation_level == ISOLATION_LEVEL
+    assert result.fail_closed is True
+    # exception_type/message preserved from the static SyntaxError, not
+    # overwritten by the (never-run) execution layer.
+    assert result.exception_type == "SyntaxError"
+    assert result.exception_message is not None
+
+
+def test_syntax_error_result_validates(tmp_path=None):
+    import dataclasses
+    result = evaluate_with_execution(
+        code="def f(:\n",
+        pair_id=_PAIR_ID,
+        run_id=_RUN_ID,
+        treatment="ab1",
+        artifact_hash=_HASH,
+        evaluator_git_commit="deadbeef",
+    )
+    finalized = dataclasses.replace(
+        result, created_at_utc="2026-07-11T09:00:00+00:00"
+    )
+    validate_evaluation_result(finalized)
+
+
+def test_run_bounded_execution_not_called_for_syntax_error(monkeypatch):
+    """Direct check on the orchestrator: run_bounded_execution itself
+    must never be invoked when static evaluation already failed to
+    parse."""
+    import agent_tools.finals_rebuild.execution_evaluator as mod
+
+    calls = []
+    monkeypatch.setattr(
+        mod, "run_bounded_execution", lambda **kw: calls.append(kw) or None
+    )
+    mod.evaluate_with_execution(
+        code="def f(:\n",
+        pair_id=_PAIR_ID,
+        run_id=_RUN_ID,
+        treatment="ab1",
+        artifact_hash=_HASH,
+        evaluator_git_commit="deadbeef",
+    )
+    assert calls == []
