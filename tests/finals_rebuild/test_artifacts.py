@@ -91,6 +91,7 @@ from agent_tools.finals_rebuild.artifacts import (
     validate_pair_metadata,
     validate_run_metadata,
     validate_shared_run_identity,
+    validate_treatment_chain_identity,
     _require_sha256,
     _require_optional_seed,
     _require_nonneg_int,
@@ -404,27 +405,92 @@ def test_X_pair_metadata_and_run_metadata_no_collision(tmp_path):
 
 
 # ============================================================
-# Group 7: shared run identity
+# Group 7: treatment chain identity
+#
+# Correct chain relationship (Core Adapter may or may not change the
+# code; Spec Adapter always consumes Core's own output):
+#   ab2.input_artifact_hash      == ab3_core.input_artifact_hash
+#     (both consume the same extracted scaffold)
+#   ab3_full.input_artifact_hash == ab3_core.output_artifact_hash
+#     (Spec Adapter's input is Core Adapter's output, never the raw
+#     extracted scaffold directly)
 # ============================================================
 
 
-def test_Y_shared_run_identity_passes():
+def test_Y_treatment_chain_identity_passes_when_core_is_noop():
+    """When Core makes no change, its output_hash == its input_hash, so
+    ab3_full's input transitively equals ab2/ab3_core's input too."""
     pid = _make_pair_id()
-    shared_input = _H_C
-    ab2 = _make_run_meta("ab2", pid, shared_input, _H_D)
-    ab3c = _make_run_meta("ab3_core", pid, shared_input, _H_E)
-    ab3f = _make_run_meta("ab3_full", pid, shared_input, _H_F)
-    validate_shared_run_identity(ab2, ab3c, ab3f)  # must not raise
+    scaffold_hash = _H_C
+    ab2 = _make_run_meta("ab2", pid, scaffold_hash, _H_D)
+    ab3c = _make_run_meta("ab3_core", pid, scaffold_hash, scaffold_hash)
+    ab3f = _make_run_meta("ab3_full", pid, scaffold_hash, _H_F)
+    validate_treatment_chain_identity(ab2, ab3c, ab3f)  # must not raise
 
 
-def test_Z_shared_run_identity_fails_on_input_hash_mismatch():
+def test_treatment_chain_identity_passes_when_core_actually_changed():
+    """When Core changes the code, ab3_full's input correctly diverges
+    from ab2/ab3_core's input — it must equal ab3_core's OUTPUT instead."""
+    pid = _make_pair_id()
+    scaffold_hash = _H_C
+    core_output_hash = _H_E  # different from scaffold_hash: Core changed it
+    ab2 = _make_run_meta("ab2", pid, scaffold_hash, _H_D)
+    ab3c = _make_run_meta("ab3_core", pid, scaffold_hash, core_output_hash)
+    ab3f = _make_run_meta("ab3_full", pid, core_output_hash, _H_F)
+    validate_treatment_chain_identity(ab2, ab3c, ab3f)  # must not raise
+
+
+def test_Z_treatment_chain_identity_fails_when_ab3_full_input_ne_core_output():
     pid = _make_pair_id()
     ab2 = _make_run_meta("ab2", pid, _H_C, _H_D)
     ab3c = _make_run_meta("ab3_core", pid, _H_C, _H_E)
-    # ab3_full uses a different input_artifact_hash
+    # ab3_full's input must equal ab3_core's OUTPUT (_H_E), not this.
     ab3f = _make_run_meta("ab3_full", pid, _H_F, _H_F)
-    with pytest.raises(ValueError, match="input_artifact_hash"):
-        validate_shared_run_identity(ab2, ab3c, ab3f)
+    with pytest.raises(ValueError, match="ab3_core.output_artifact_hash"):
+        validate_treatment_chain_identity(ab2, ab3c, ab3f)
+
+
+def test_treatment_chain_identity_fails_when_ab2_input_ne_ab3_core_input():
+    pid = _make_pair_id()
+    ab2 = _make_run_meta("ab2", pid, _H_C, _H_D)
+    ab3c = _make_run_meta("ab3_core", pid, _H_F, _H_E)  # wrong input
+    ab3f = _make_run_meta("ab3_full", pid, _H_E, _H_F)
+    with pytest.raises(ValueError, match="ab3_core.input_artifact_hash"):
+        validate_treatment_chain_identity(ab2, ab3c, ab3f)
+
+
+def test_treatment_chain_identity_fails_on_pair_id_mismatch():
+    pid1 = _make_pair_id()
+    pid2 = _make_pair_id(bare_prompt_hash=_H_D)
+    ab2 = _make_run_meta("ab2", pid1, _H_C, _H_D)
+    ab3c = _make_run_meta("ab3_core", pid1, _H_C, _H_E)
+    ab3f = _make_run_meta("ab3_full", pid2, _H_E, _H_F)  # different pair_id
+    with pytest.raises(ValueError, match="pair_id"):
+        validate_treatment_chain_identity(ab2, ab3c, ab3f)
+
+
+def test_treatment_chain_identity_fails_on_wrong_treatment_label():
+    pid = _make_pair_id()
+    ab2 = _make_run_meta("ab2", pid, _H_C, _H_D)
+    # mislabeled: treatment field says "ab3_full" but passed as ab3_core
+    wrong = _make_run_meta("ab3_full", pid, _H_C, _H_E)
+    ab3f = _make_run_meta("ab3_full", pid, _H_E, _H_F)
+    with pytest.raises(ValueError, match="treatment"):
+        validate_treatment_chain_identity(ab2, wrong, ab3f)
+
+
+def test_validate_shared_run_identity_is_alias_for_chain_identity():
+    """Backward-compatible alias must behave identically to the new name."""
+    pid = _make_pair_id()
+    scaffold_hash = _H_C
+    ab2 = _make_run_meta("ab2", pid, scaffold_hash, _H_D)
+    ab3c = _make_run_meta("ab3_core", pid, scaffold_hash, scaffold_hash)
+    ab3f = _make_run_meta("ab3_full", pid, scaffold_hash, _H_F)
+    validate_shared_run_identity(ab2, ab3c, ab3f)  # must not raise
+
+    bad_ab3f = _make_run_meta("ab3_full", pid, _H_F, _H_F)
+    with pytest.raises(ValueError, match="ab3_core.output_artifact_hash"):
+        validate_shared_run_identity(ab2, ab3c, bad_ab3f)
 
 
 # ============================================================

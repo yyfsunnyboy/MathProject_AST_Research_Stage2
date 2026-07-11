@@ -74,7 +74,7 @@ from agent_tools.finals_rebuild.artifacts import (
     utc_now_iso8601,
     validate_pair_metadata,
     validate_run_metadata,
-    validate_shared_run_identity,
+    validate_treatment_chain_identity,
 )
 from agent_tools.finals_rebuild.core_adapter import run_core_adapter
 from agent_tools.finals_rebuild.extraction import ExtractionResult, extract_code
@@ -339,8 +339,8 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             trace=finalized_trace,
         )
 
-    # ── Step 7: Shared run identity ─────────────────────────────────────────
-    validate_shared_run_identity(
+    # ── Step 7: Treatment chain identity ────────────────────────────────────
+    validate_treatment_chain_identity(
         ab2_run=treatment_outputs["ab2"].run_metadata,
         ab3_core_run=treatment_outputs["ab3_core"].run_metadata,
         ab3_full_run=treatment_outputs["ab3_full"].run_metadata,

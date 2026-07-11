@@ -790,18 +790,6 @@ def test_core_adapter_trace_hash_consistent_when_rule_actually_fires():
     Requirement 8 (trace hash matches actual output) exercised on a case
     where the Commit 3B-1 punctuation rule actually changes the code, at
     the adapter level.
-
-    NOTE: a full pipeline-level version of this test is intentionally
-    NOT included here. Running raw scaffold text containing fullwidth
-    punctuation through run_paired_pipeline() surfaces a pre-existing
-    invariant bug in artifacts.validate_shared_run_identity(), which
-    assumes ab2 / ab3_core / ab3_full always share the same
-    input_artifact_hash. That assumption silently held throughout Commit
-    3A only because no Core rule ever changed anything; now that Spec's
-    input (Core's output) can genuinely diverge from ab2/ab3_core's input
-    once Core makes a real edit, that shared-identity check fails.
-    artifacts.py is outside this commit's allowed file list, so this is
-    reported as a follow-up rather than patched here.
     """
     import dataclasses
 
@@ -817,6 +805,131 @@ def test_core_adapter_trace_hash_consistent_when_rule_actually_fires():
     # Recomputing from the same (now-finalized) trace object must be stable.
     assert trace_hash == compute_trace_hash(finalized)
     assert finalized.output_hash == sha256_text(result.output_code)
+
+
+# ============================================================
+# Treatment chain identity — full pipeline, Core actually changed
+#
+# Restores/extends the paired invariants that a stale
+# validate_shared_run_identity() (fixed in artifacts.py:
+# validate_treatment_chain_identity()) used to reject whenever Core
+# Adapter made a real edit. These run the FULL pipeline, not just the
+# adapter in isolation.
+# ============================================================
+
+
+def _make_input_with_fullwidth_scaffold(tmp_path, skill_id="jh_math_skill"):
+    """Scaffold raw whose def-line trailing colon is fullwidth '：', which
+    the Commit 3B-1 punctuation rule will normalize — i.e. this forces
+    Core Adapter to have changed=True."""
+    raw_with_fullwidth = "```python\ndef solve_scaffold(x)：\n    return x\n```"
+    return _make_input(
+        tmp_path, skill_id=skill_id, raw_scaffold=raw_with_fullwidth
+    )
+
+
+def test_1_fullwidth_scaffold_makes_core_actually_changed(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    assert core_trace.changed is True
+
+
+def test_2_full_pipeline_succeeds_when_core_changes_code(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)  # must not raise
+    assert result.validation_status == "complete"
+
+
+def test_3_ab2_input_equals_extracted_scaffold_hash(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab2_meta = result.treatment_outputs["ab2"].run_metadata
+    assert ab2_meta.input_artifact_hash == result.extracted_scaffold_hash
+
+
+def test_4_ab3_core_input_equals_extracted_scaffold_hash(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab3c_meta = result.treatment_outputs["ab3_core"].run_metadata
+    assert ab3c_meta.input_artifact_hash == result.extracted_scaffold_hash
+
+
+def test_5_ab3_full_input_equals_ab3_core_output(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab3c_meta = result.treatment_outputs["ab3_core"].run_metadata
+    ab3f_meta = result.treatment_outputs["ab3_full"].run_metadata
+    assert ab3f_meta.input_artifact_hash == ab3c_meta.output_artifact_hash
+
+
+def test_6_ab3_core_output_differs_from_ab2_output_when_core_changed(tmp_path):
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab2_out = result.treatment_outputs["ab2"].output_hash
+    ab3c_out = result.treatment_outputs["ab3_core"].output_hash
+    assert ab3c_out != ab2_out
+
+
+def test_7_spec_noop_means_ab3_full_output_equals_ab3_core_output(tmp_path):
+    """Spec Adapter has zero enabled rules in this commit, so whenever it
+    runs (applicable or not), its output must equal whatever it was
+    handed — Core's output — byte for byte."""
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab3c_out = result.treatment_outputs["ab3_core"].output_hash
+    ab3f_out = result.treatment_outputs["ab3_full"].output_hash
+    assert ab3f_out == ab3c_out
+
+
+def test_8_each_run_id_binds_its_own_output_hash(tmp_path):
+    from agent_tools.finals_rebuild.artifacts import build_run_id
+
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    for treatment in ("ab2", "ab3_core", "ab3_full"):
+        meta = result.treatment_outputs[treatment].run_metadata
+        expected_run_id = build_run_id(
+            meta.pair_id, treatment, meta.output_artifact_hash
+        )
+        assert meta.run_id == expected_run_id
+    run_ids = {
+        result.treatment_outputs[t].run_metadata.run_id
+        for t in ("ab2", "ab3_core", "ab3_full")
+    }
+    assert len(run_ids) == 3  # all distinct, since output hashes differ
+
+
+def test_9_tampered_ab3_full_input_hash_fails_chain_validation(tmp_path):
+    """
+    Direct unit-level counterpart of the pipeline invariant: feeding the
+    real validator a deliberately wrong ab3_full.input_artifact_hash (not
+    equal to ab3_core's output) must raise, proving validation is not
+    silently satisfied by construction.
+    """
+    from agent_tools.finals_rebuild.artifacts import (
+        RunMetadata,
+        build_run_id,
+        validate_treatment_chain_identity,
+    )
+
+    inp = _make_input_with_fullwidth_scaffold(tmp_path)
+    result = run_paired_pipeline(inp)
+    ab2_meta = result.treatment_outputs["ab2"].run_metadata
+    ab3c_meta = result.treatment_outputs["ab3_core"].run_metadata
+    ab3f_meta = result.treatment_outputs["ab3_full"].run_metadata
+
+    wrong_input_hash = "9" * 64
+    assert wrong_input_hash != ab3c_meta.output_artifact_hash
+    tampered_ab3f = dataclasses.replace(
+        ab3f_meta,
+        input_artifact_hash=wrong_input_hash,
+        run_id=build_run_id(
+            ab3f_meta.pair_id, "ab3_full", ab3f_meta.output_artifact_hash
+        ),
+    )
+    with pytest.raises(ValueError, match="ab3_core.output_artifact_hash"):
+        validate_treatment_chain_identity(ab2_meta, ab3c_meta, tampered_ab3f)
 
 
 def test_run_metadata_trace_hash_matches_trace_json(tmp_path):

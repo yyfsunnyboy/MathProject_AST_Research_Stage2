@@ -627,23 +627,38 @@ def validate_run_metadata(meta: RunMetadata) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Shared run identity validator
+# Treatment chain identity validator
 # ---------------------------------------------------------------------------
 
 
-def validate_shared_run_identity(
+def validate_treatment_chain_identity(
     ab2_run: RunMetadata,
     ab3_core_run: RunMetadata,
     ab3_full_run: RunMetadata,
 ) -> None:
     """
-    Assert that ab2 / ab3_core / ab3_full runs share:
+    Assert the ab2 / ab3_core / ab3_full runs form one consistent
+    treatment chain:
 
-    - pair_id
-    - input_artifact_hash  (all three use extracted_ab2 as their input)
+    - All three share the same pair_id.
+    - Each run's `treatment` field matches its position (ab2/ab3_core/
+      ab3_full).
+    - ab2.input_artifact_hash == ab3_core.input_artifact_hash — both are
+      fed the same extracted-scaffold code (see pipeline.py Step 5:
+      Core Adapter and Ab2 both consume extracted_scaffold directly).
+    - ab3_full.input_artifact_hash == ab3_core.output_artifact_hash —
+      Spec Adapter always consumes Core Adapter's own output, never the
+      raw extracted scaffold. This holds whether or not Core actually
+      changed anything: when Core is a no-op, its output_artifact_hash
+      equals its input_artifact_hash, so ab3_full's input transitively
+      equals ab2/ab3_core's input too; when Core changes the code,
+      ab3_full's input correctly diverges from ab2/ab3_core's input.
 
-    Their run_ids will legitimately differ because output_artifact_hash
-    differs across treatments.
+    This function does NOT weaken output_artifact_hash, run_id, or
+    pair_id validation — those are still fully checked by
+    validate_run_metadata() on each individual RunMetadata before this
+    function ever runs; this function only checks the *relationships*
+    between the three already-validated records.
 
     Raises ValueError on any inconsistency.
     """
@@ -659,14 +674,42 @@ def validate_shared_run_identity(
                 f"Expected treatment={name!r}, got {run.treatment!r}"
             )
 
-    for shared_field in ("pair_id", "input_artifact_hash"):
-        values = {
-            name: getattr(run, shared_field) for name, run in runs.items()
-        }
-        if len(set(values.values())) != 1:
-            raise ValueError(
-                f"Shared run identity mismatch on {shared_field!r}: {values}"
-            )
+    pair_ids = {name: run.pair_id for name, run in runs.items()}
+    if len(set(pair_ids.values())) != 1:
+        raise ValueError(f"Shared pair_id mismatch: {pair_ids}")
+
+    if ab2_run.input_artifact_hash != ab3_core_run.input_artifact_hash:
+        raise ValueError(
+            "ab2.input_artifact_hash must equal ab3_core.input_artifact_hash "
+            "(both consume the same extracted scaffold): "
+            f"ab2={ab2_run.input_artifact_hash!r}, "
+            f"ab3_core={ab3_core_run.input_artifact_hash!r}"
+        )
+
+    if ab3_full_run.input_artifact_hash != ab3_core_run.output_artifact_hash:
+        raise ValueError(
+            "ab3_full.input_artifact_hash must equal "
+            "ab3_core.output_artifact_hash (Spec Adapter always consumes "
+            "Core Adapter's own output): "
+            f"ab3_full.input={ab3_full_run.input_artifact_hash!r}, "
+            f"ab3_core.output={ab3_core_run.output_artifact_hash!r}"
+        )
+
+
+def validate_shared_run_identity(
+    ab2_run: RunMetadata,
+    ab3_core_run: RunMetadata,
+    ab3_full_run: RunMetadata,
+) -> None:
+    """Deprecated alias for :func:`validate_treatment_chain_identity`.
+
+    Retained so existing call sites/imports do not break. The original
+    name implied ab2/ab3_core/ab3_full always share one input hash, which
+    is only true while Core Adapter is a no-op; the chain relationship
+    checked by the new name is the actually-correct invariant. Prefer
+    validate_treatment_chain_identity() in new code.
+    """
+    validate_treatment_chain_identity(ab2_run, ab3_core_run, ab3_full_run)
 
 
 # ---------------------------------------------------------------------------
