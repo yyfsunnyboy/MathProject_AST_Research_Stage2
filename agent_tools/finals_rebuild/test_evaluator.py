@@ -1,11 +1,13 @@
 """
-Fixture test-case evaluator — Commit 4C.
+Fixture test-case evaluator — Commit 4C (revised: per-case subprocess
+isolation, see the "case isolation" fix below).
 
 Runs a TestSuite (see test_contract.py) against one treatment's artifact
-code inside ONE bounded subprocess per treatment: the worker
-(test_worker.py) loads the artifact once, then calls ONLY the top-level
-function named by each TestCase — never arbitrary code, never eval() of
-an assertion expression.
+code by spawning ONE FRESH SUBPROCESS PER TEST CASE — never a single
+shared subprocess for the whole suite. The worker (test_worker.py) loads
+the artifact fresh in each subprocess, then calls ONLY the top-level
+function named by that ONE TestCase — never arbitrary code, never eval()
+of an assertion expression.
 
 *** NOT A SECURITY SANDBOX *** — same caveat as execution_evaluator.py;
 this reuses that module's preflight denylist and minimal-subprocess-env
@@ -15,6 +17,24 @@ Only ever called by the pipeline when execution already succeeded
 (syntax_pass and execution_status=="success"); the preflight denylist
 check here is still applied independently as defense-in-depth for any
 direct caller that bypasses that gate.
+
+Case isolation (fix)
+---------------------
+The original Commit 4C implementation ran all cases inside ONE
+subprocess, each bounded by a daemon thread with thread.join(timeout).
+That is not a real timeout boundary: a thread that "times out" keeps
+running — burning CPU and free to mutate module-level state the artifact
+defines — and the NEXT case, sharing that same process, could silently
+observe whatever the hung case left behind.
+
+Now every case gets its OWN subprocess (see _run_one_case_subprocess()).
+A case's timeout is enforced by subprocess.Popen.communicate(timeout=...)
++ proc.kill() on TimeoutExpired — this terminates the ENTIRE process, not
+just a Python-level construct within it, so nothing survives to leak into
+another case. Every case also gets a completely fresh artifact exec (each
+subprocess only ever handles one case), which independently rules out
+global-state contamination between cases even before considering timeout
+at all.
 """
 
 from __future__ import annotations
@@ -23,24 +43,29 @@ import json
 import subprocess
 import sys
 import tempfile
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from agent_tools.finals_rebuild.execution_evaluator import (
     _minimal_subprocess_env,
+    _truncate,
     preflight_denylist_violation,
 )
 from agent_tools.finals_rebuild.test_contract import (
+    TestCase,
     TestSuite,
     compute_test_suite_hash,
-    test_suite_to_dict,
+    test_case_to_dict,
     validate_test_suite,
 )
 
 _WORKER_PATH = Path(__file__).with_name("test_worker.py")
 
 _CASE_STATUSES: frozenset[str] = frozenset({"passed", "failed", "error", "timeout"})
+
+_MAX_CASE_MESSAGE_CHARS = 500
 
 
 @dataclass(frozen=True)
@@ -62,6 +87,18 @@ class TestSuiteOutcome:
     cases: List[TestCaseOutcome] = field(default_factory=list)
 
 
+@dataclass(frozen=True)
+class _CaseSubprocessResult:
+    """Internal — carries diagnostic info (pid, confirmed termination)
+    alongside the outcome, so tests can independently verify a timed-out
+    case's process was actually killed. Never exposed through the public
+    TestSuiteOutcome/test_results.json schema."""
+
+    outcome: TestCaseOutcome
+    pid: Optional[int]
+    terminated: bool  # True once proc.poll() confirms the process has exited
+
+
 def _all_cases_as(suite: TestSuite, *, status: str, exception_type: str, exception_message: str) -> List[TestCaseOutcome]:
     return [
         TestCaseOutcome(
@@ -76,9 +113,143 @@ def _all_cases_as(suite: TestSuite, *, status: str, exception_type: str, excepti
     ]
 
 
+def _run_one_case_subprocess(
+    *,
+    code: str,
+    case: TestCase,
+    tolerance: float,
+    timeout: float,
+) -> _CaseSubprocessResult:
+    """
+    Spawn a FRESH subprocess for exactly this one case. Never imports/
+    execs/compiles *code* in THIS (calling) process — only the disposable
+    child process (test_worker.py) ever does that, and it only ever
+    handles this single case before exiting.
+    """
+    with tempfile.TemporaryDirectory(prefix="finals_rebuild_test_case_") as tmp_dir:
+        artifact_path = Path(tmp_dir) / "artifact.py"
+        artifact_path.write_text(code, encoding="utf-8")
+        case_path = Path(tmp_dir) / "case.json"
+        case_path.write_text(
+            json.dumps({
+                "case": test_case_to_dict(case),
+                "numeric_tolerance": tolerance,
+            }),
+            encoding="utf-8",
+        )
+        output_path = Path(tmp_dir) / "result.json"
+
+        proc = subprocess.Popen(
+            [
+                sys.executable, "-I", str(_WORKER_PATH),
+                str(artifact_path), str(case_path), str(output_path),
+            ],
+            cwd=tmp_dir,
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=_minimal_subprocess_env(),
+            text=True,
+        )
+        pid = proc.pid
+        start = time.monotonic()
+
+        try:
+            proc.communicate(timeout=timeout)
+        except subprocess.TimeoutExpired:
+            # Kill the ENTIRE process — this is what actually stops
+            # whatever the case was doing (CPU work, global mutation),
+            # unlike a thread timing out while continuing to run.
+            proc.kill()
+            proc.communicate()
+            duration_ms = (time.monotonic() - start) * 1000.0
+            terminated = proc.poll() is not None
+            return _CaseSubprocessResult(
+                outcome=TestCaseOutcome(
+                    case_id=case.case_id,
+                    status="timeout",
+                    passed=False,
+                    exception_type="TimeoutExpired",
+                    exception_message=_truncate(
+                        f"case exceeded {timeout}s timeout (pid={pid})",
+                        _MAX_CASE_MESSAGE_CHARS,
+                    ),
+                    duration_ms=duration_ms,
+                ),
+                pid=pid,
+                terminated=terminated,
+            )
+        except Exception as exc:  # fail-closed: infra failure must never crash the pipeline
+            try:
+                proc.kill()
+                proc.communicate()
+            except Exception:
+                pass
+            return _CaseSubprocessResult(
+                outcome=TestCaseOutcome(
+                    case_id=case.case_id,
+                    status="error",
+                    passed=False,
+                    exception_type=type(exc).__name__,
+                    exception_message=_truncate(str(exc), _MAX_CASE_MESSAGE_CHARS),
+                    duration_ms=0.0,
+                ),
+                pid=pid,
+                terminated=proc.poll() is not None,
+            )
+
+        terminated = proc.poll() is not None  # communicate() already returned -> exited
+
+        try:
+            raw = json.loads(output_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as exc:
+            return _CaseSubprocessResult(
+                outcome=TestCaseOutcome(
+                    case_id=case.case_id,
+                    status="error",
+                    passed=False,
+                    exception_type=type(exc).__name__,
+                    exception_message=_truncate(
+                        f"failed to read worker output: {exc}", _MAX_CASE_MESSAGE_CHARS
+                    ),
+                    duration_ms=0.0,
+                ),
+                pid=pid,
+                terminated=terminated,
+            )
+
+        status = raw.get("status")
+        if status not in _CASE_STATUSES:
+            return _CaseSubprocessResult(
+                outcome=TestCaseOutcome(
+                    case_id=case.case_id,
+                    status="error",
+                    passed=False,
+                    exception_type="InvalidWorkerStatus",
+                    exception_message=f"worker reported unrecognised status {status!r}",
+                    duration_ms=0.0,
+                ),
+                pid=pid,
+                terminated=terminated,
+            )
+
+        return _CaseSubprocessResult(
+            outcome=TestCaseOutcome(
+                case_id=raw.get("case_id", case.case_id),
+                status=status,
+                passed=bool(raw.get("passed", False)),
+                exception_type=raw.get("exception_type"),
+                exception_message=raw.get("exception_message"),
+                duration_ms=float(raw.get("duration_ms", 0.0)),
+            ),
+            pid=pid,
+            terminated=terminated,
+        )
+
+
 def run_test_suite(*, code: str, suite: TestSuite) -> TestSuiteOutcome:
     """
-    Run every case in *suite* against *code*.
+    Run every case in *suite* against *code*, each in its own subprocess.
 
     One case failing/erroring/timing out never stops the rest from
     running — every case is always recorded, even when the whole worker
@@ -103,100 +274,15 @@ def run_test_suite(*, code: str, suite: TestSuite) -> TestSuiteOutcome:
             tests_passed=0, tests_total=len(suite.cases), cases=cases,
         )
 
-    with tempfile.TemporaryDirectory(prefix="finals_rebuild_test_") as tmp_dir:
-        artifact_path = Path(tmp_dir) / "artifact.py"
-        artifact_path.write_text(code, encoding="utf-8")
-        suite_path = Path(tmp_dir) / "suite.json"
-        suite_path.write_text(
-            json.dumps(test_suite_to_dict(suite)), encoding="utf-8"
-        )
-        output_path = Path(tmp_dir) / "results.json"
-
-        # Each case gets its own timeout_seconds budget (enforced inside
-        # the worker via a per-case daemon thread); this outer bound must
-        # be generous enough to let every case reach its own limit even
-        # in the worst case where all of them individually time out.
-        outer_timeout = suite.timeout_seconds * max(1, len(suite.cases)) + 5.0
-
-        try:
-            subprocess.run(
-                [
-                    sys.executable, "-I", str(_WORKER_PATH),
-                    str(artifact_path), str(suite_path), str(output_path),
-                ],
-                cwd=tmp_dir,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=_minimal_subprocess_env(),
-                timeout=outer_timeout,
-                text=True,
-            )
-        except subprocess.TimeoutExpired:
-            cases = _all_cases_as(
-                suite, status="timeout",
-                exception_type="WorkerTimeoutExpired",
-                exception_message=f"test worker exceeded outer timeout {outer_timeout}s",
-            )
-            return TestSuiteOutcome(
-                suite_hash=suite_hash, test_pass=False,
-                tests_passed=0, tests_total=len(suite.cases), cases=cases,
-            )
-        except Exception as exc:  # fail-closed: infra failure must never crash the pipeline
-            cases = _all_cases_as(
-                suite, status="error",
-                exception_type=type(exc).__name__,
-                exception_message=str(exc)[:300],
-            )
-            return TestSuiteOutcome(
-                suite_hash=suite_hash, test_pass=False,
-                tests_passed=0, tests_total=len(suite.cases), cases=cases,
-            )
-
-        try:
-            raw_results = json.loads(output_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            cases = _all_cases_as(
-                suite, status="error",
-                exception_type=type(exc).__name__,
-                exception_message=f"failed to read worker output: {exc}",
-            )
-            return TestSuiteOutcome(
-                suite_hash=suite_hash, test_pass=False,
-                tests_passed=0, tests_total=len(suite.cases), cases=cases,
-            )
-
-    results_by_id: Dict[str, Any] = {
-        r["case_id"]: r for r in raw_results if isinstance(r, dict) and "case_id" in r
-    }
     case_outcomes: List[TestCaseOutcome] = []
-    for c in suite.cases:
-        r = results_by_id.get(c.case_id)
-        if r is None:
-            case_outcomes.append(TestCaseOutcome(
-                case_id=c.case_id, status="error", passed=False,
-                exception_type="MissingResult",
-                exception_message="worker did not report a result for this case",
-                duration_ms=0.0,
-            ))
-            continue
-        status = r.get("status")
-        if status not in _CASE_STATUSES:
-            case_outcomes.append(TestCaseOutcome(
-                case_id=c.case_id, status="error", passed=False,
-                exception_type="InvalidWorkerStatus",
-                exception_message=f"worker reported unrecognised status {status!r}",
-                duration_ms=0.0,
-            ))
-            continue
-        case_outcomes.append(TestCaseOutcome(
-            case_id=r["case_id"],
-            status=status,
-            passed=bool(r.get("passed", False)),
-            exception_type=r.get("exception_type"),
-            exception_message=r.get("exception_message"),
-            duration_ms=float(r.get("duration_ms", 0.0)),
-        ))
+    for case in suite.cases:
+        result = _run_one_case_subprocess(
+            code=code,
+            case=case,
+            tolerance=suite.numeric_tolerance,
+            timeout=suite.timeout_seconds,
+        )
+        case_outcomes.append(result.outcome)
 
     tests_passed = sum(1 for c in case_outcomes if c.passed)
     tests_total = len(case_outcomes)

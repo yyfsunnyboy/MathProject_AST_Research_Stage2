@@ -1,37 +1,48 @@
 """
-Test-case worker — Commit 4C.
+Test-case worker — Commit 4C (revised: per-case subprocess isolation).
 
 This script is NEVER imported by the main pipeline process. It is only
-ever invoked as a standalone subprocess:
+ever invoked as a standalone subprocess, ONCE PER TEST CASE:
 
-    sys.executable -I test_worker.py <artifact_path> <suite_path> <output_path>
+    sys.executable -I test_worker.py <artifact_path> <case_path> <output_path>
 
-by agent_tools/finals_rebuild/test_evaluator.py, which runs it inside a
-fresh temp directory with a stripped environment, closed stdin, and an
-outer wall-clock timeout — the same "bounded subprocess" principle as
-execution_worker.py (Commit 4B).
+by agent_tools/finals_rebuild/test_evaluator.py, which spawns a fresh
+process for EVERY case (never one process shared across a whole suite)
+inside a fresh temp directory with a stripped environment, closed stdin,
+and a per-case wall-clock timeout.
+
+Why per-case subprocess instead of a per-case thread
+------------------------------------------------------
+A thread that "times out" (thread.join(timeout) returning while the
+thread is still alive) does NOT stop the thread — it keeps running,
+consuming CPU, and can still mutate any module-level state the artifact
+defines, which the NEXT case (sharing that same process/namespace) would
+then silently observe. That is real cross-case contamination, not just a
+latency problem.
+
+A fresh subprocess per case has no such next case to contaminate: the
+whole process — its threads, its module globals, everything — is killed
+by the parent (test_evaluator.py's subprocess.run(timeout=...), which
+calls proc.kill() on timeout) the moment the case's budget is exceeded.
+Nothing survives to leak into another case, because there IS no shared
+process. Loading the artifact fresh every single case (this process only
+ever handles ONE case) is what removes the possibility of one case's
+mutation being observed by another in the first place.
 
 Behaviour
 ---------
-1. Load the artifact ONCE (exec'd here, in this disposable child process
-   — never in the pipeline's own process).
-2. For each fixture-described case, call ONLY the named top-level
-   function with its JSON-decoded args/kwargs. No eval() of assertion
-   expressions, no arbitrary code execution beyond that single call —
-   the fixture data (see test_contract.py) is restricted to JSON-
-   compatible values, never code or a callable.
-3. Each case runs in its own daemon thread with an individual timeout
-   (thread.join(timeout)) so one hung/slow case can never block the
-   remaining cases from running, and so the worker process itself can
-   still exit promptly once every case's timeout budget has elapsed —
-   daemon=True means an unfinished thread never keeps the process alive.
-   This is a best-effort bound, NOT true preemptive isolation (Python
-   cannot forcibly kill a running native thread) — consistent with the
-   rest of this evaluator's "bounded subprocess, not a security sandbox"
-   positioning (see execution_evaluator.py's module docstring).
-4. Write a JSON array of per-case outcomes to <output_path> and exit 0.
-   A case failing/erroring/timing out is recorded, never raised — one
-   bad case must never prevent the rest from running or being recorded.
+1. Load the artifact (exec'd here, in this disposable child process —
+   never in the pipeline's own process, never shared with another case).
+2. Call ONLY the named top-level function with its JSON-decoded args/
+   kwargs. No eval() of assertion expressions, no arbitrary code
+   execution beyond that single call — fixture data (test_contract.py)
+   is restricted to JSON-compatible values, never code or a callable.
+3. Compare the result via the case's comparison_mode.
+4. Write ONE JSON result object to <output_path> and exit 0. Any
+   exception (missing function, runtime error, comparison failure) is
+   caught and recorded here, never left to propagate uncaught — but a
+   genuine timeout is enforced from OUTSIDE this process (the parent
+   kills it), not by anything in this script.
 
 *** NOT A SECURITY SANDBOX ***
 """
@@ -39,11 +50,9 @@ Behaviour
 from __future__ import annotations
 
 import json
-import queue
 import sys
-import threading
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 
 def _load_artifact(path: str) -> Dict[str, Any]:
@@ -71,34 +80,7 @@ def _compare(actual: Any, expected: Any, mode: str, tolerance: float) -> bool:
     return False
 
 
-def _call_with_timeout(fn, args, kwargs, timeout_seconds):
-    """Run fn(*args, **kwargs) in a daemon thread bounded by timeout_seconds.
-
-    Returns (status, value_or_exception):
-      ("ok", return_value)
-      ("error", exception_instance)
-      ("timeout", None)
-    """
-    result_q: "queue.Queue" = queue.Queue(maxsize=1)
-
-    def _runner():
-        try:
-            result_q.put(("ok", fn(*args, **kwargs)))
-        except Exception as exc:  # noqa: BLE001 — must capture anything the case raises
-            result_q.put(("error", exc))
-
-    thread = threading.Thread(target=_runner, daemon=True)
-    thread.start()
-    thread.join(timeout_seconds)
-    if thread.is_alive():
-        return ("timeout", None)
-    try:
-        return result_q.get_nowait()
-    except queue.Empty:
-        return ("error", RuntimeError("worker thread finished without a result"))
-
-
-def _run_case(namespace: Dict[str, Any], case: Dict[str, Any], suite_timeout: float, tolerance: float) -> Dict[str, Any]:
+def _run_case(namespace: Dict[str, Any], case: Dict[str, Any], tolerance: float) -> Dict[str, Any]:
     case_id = case["case_id"]
     function_name = case["function_name"]
     args = case.get("args", [])
@@ -118,20 +100,10 @@ def _run_case(namespace: Dict[str, Any], case: Dict[str, Any], suite_timeout: fl
             "duration_ms": 0.0,
         }
 
-    status, payload = _call_with_timeout(fn, args, kwargs, suite_timeout)
-    duration_ms = (time.monotonic() - start) * 1000.0
-
-    if status == "timeout":
-        return {
-            "case_id": case_id,
-            "status": "timeout",
-            "passed": False,
-            "exception_type": "TimeoutError",
-            "exception_message": f"case exceeded {suite_timeout}s timeout",
-            "duration_ms": duration_ms,
-        }
-    if status == "error":
-        exc = payload
+    try:
+        actual = fn(*args, **kwargs)
+    except Exception as exc:  # noqa: BLE001 — must capture anything the case raises
+        duration_ms = (time.monotonic() - start) * 1000.0
         return {
             "case_id": case_id,
             "status": "error",
@@ -140,8 +112,8 @@ def _run_case(namespace: Dict[str, Any], case: Dict[str, Any], suite_timeout: fl
             "exception_message": str(exc)[:300],
             "duration_ms": duration_ms,
         }
+    duration_ms = (time.monotonic() - start) * 1000.0
 
-    actual = payload
     try:
         passed = _compare(actual, expected, comparison_mode, tolerance)
     except Exception as exc:  # noqa: BLE001 — comparison itself must never crash the worker
@@ -166,45 +138,38 @@ def _run_case(namespace: Dict[str, Any], case: Dict[str, Any], suite_timeout: fl
 def main() -> int:
     if len(sys.argv) != 4:
         print(
-            "test_worker: expected artifact_path, suite_path, output_path",
+            "test_worker: expected artifact_path, case_path, output_path",
             file=sys.stderr,
         )
         return 2
 
-    artifact_path, suite_path, output_path = sys.argv[1], sys.argv[2], sys.argv[3]
+    artifact_path, case_path, output_path = sys.argv[1], sys.argv[2], sys.argv[3]
 
-    with open(suite_path, "r", encoding="utf-8") as fh:
-        suite = json.load(fh)
-
-    cases: List[Dict[str, Any]] = suite.get("cases", [])
-    timeout_seconds = suite.get("timeout_seconds", 3.0)
-    tolerance = suite.get("numeric_tolerance", 1e-6)
+    with open(case_path, "r", encoding="utf-8") as fh:
+        payload = json.load(fh)
+    case: Dict[str, Any] = payload["case"]
+    tolerance = payload.get("numeric_tolerance", 1e-6)
 
     try:
         namespace = _load_artifact(artifact_path)
     except Exception as exc:
-        # Artifact itself failed to load — every case is unrunnable, but
-        # this worker still succeeds at reporting that fact.
-        results = [
-            {
-                "case_id": c["case_id"],
-                "status": "error",
-                "passed": False,
-                "exception_type": type(exc).__name__,
-                "exception_message": str(exc)[:300],
-                "duration_ms": 0.0,
-            }
-            for c in cases
-        ]
+        # Artifact itself failed to load — this one case is unrunnable,
+        # but this worker still succeeds at reporting that fact.
+        result = {
+            "case_id": case["case_id"],
+            "status": "error",
+            "passed": False,
+            "exception_type": type(exc).__name__,
+            "exception_message": str(exc)[:300],
+            "duration_ms": 0.0,
+        }
         with open(output_path, "w", encoding="utf-8") as fh:
-            json.dump(results, fh)
+            json.dump(result, fh)
         return 0
 
-    results = [
-        _run_case(namespace, case, timeout_seconds, tolerance) for case in cases
-    ]
+    result = _run_case(namespace, case, tolerance)
     with open(output_path, "w", encoding="utf-8") as fh:
-        json.dump(results, fh)
+        json.dump(result, fh)
     return 0
 
 

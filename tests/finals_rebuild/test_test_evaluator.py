@@ -261,3 +261,134 @@ def test_results_to_dict_binds_required_fields():
     case = d["cases"][0]
     for field_name in ("case_id", "status", "passed", "exception_type", "exception_message", "duration_ms"):
         assert field_name in case
+
+
+# ---------------------------------------------------------------------------
+# Fix: per-case subprocess isolation (each case gets its own process, not
+# a shared daemon thread) — timeout actually kills the process, and no
+# case can observe another case's mutated module-level state.
+# ---------------------------------------------------------------------------
+
+
+def test_timeout_case_pid_is_terminated():
+    from agent_tools.finals_rebuild.test_evaluator import _run_one_case_subprocess
+
+    code = "def hang():\n    while True:\n        pass\n"
+    case = _case(function_name="hang", args=[], expected=None)
+    result = _run_one_case_subprocess(code=code, case=case, tolerance=1e-6, timeout=1.0)
+
+    assert result.outcome.status == "timeout"
+    assert result.pid is not None
+    assert result.terminated is True
+
+
+def test_timeout_case_does_not_pollute_next_case_global_state():
+    """
+    The timed-out case mutates a module-level global right before hanging
+    forever; the next case reads that same global. If the two cases
+    shared a process (the old thread-based design), the second case
+    would observe the mutated value. With per-case subprocess isolation,
+    the second case gets a FRESH exec of the artifact and must see the
+    original value.
+    """
+    code = (
+        "_flag = 'clean'\n"
+        "def poison():\n"
+        "    global _flag\n"
+        "    _flag = 'poisoned'\n"
+        "    while True:\n"
+        "        pass\n"
+        "def read_flag():\n"
+        "    return _flag\n"
+    )
+    suite = _suite(
+        [
+            _case(case_id="c1", function_name="poison", args=[], expected=None),
+            _case(case_id="c2", function_name="read_flag", args=[], expected="clean"),
+        ],
+        timeout_seconds=1.0,
+    )
+    outcome = run_test_suite(code=code, suite=suite)
+    statuses = {c.case_id: c.status for c in outcome.cases}
+    assert statuses["c1"] == "timeout"
+    assert statuses["c2"] == "passed"  # saw 'clean', not 'poisoned' — no leakage
+
+
+def test_previous_case_mutating_global_does_not_affect_next_case():
+    """Same isolation guarantee, without any timeout involved: a normal
+    (fast, completed) case that mutates a module global must not affect
+    the next case's view of that same global."""
+    code = (
+        "_counter = 0\n"
+        "def bump():\n"
+        "    global _counter\n"
+        "    _counter += 1\n"
+        "    return _counter\n"
+    )
+    suite = _suite([
+        _case(case_id="c1", function_name="bump", args=[], expected=1),
+        _case(case_id="c2", function_name="bump", args=[], expected=1),  # would be 2 if shared state
+    ])
+    outcome = run_test_suite(code=code, suite=suite)
+    assert outcome.cases[0].status == "passed"
+    assert outcome.cases[1].status == "passed"
+
+
+def test_timeout_then_remaining_cases_still_run():
+    code = _CODE_MATH + "\ndef hang():\n    while True:\n        pass\n"
+    suite = _suite(
+        [
+            _case(case_id="c1", function_name="add", args=[1, 1], expected=2),
+            _case(case_id="c2", function_name="hang", args=[], expected=None),
+            _case(case_id="c3", function_name="sub", args=[5, 2], expected=3),
+        ],
+        timeout_seconds=1.0,
+    )
+    outcome = run_test_suite(code=code, suite=suite)
+    statuses = {c.case_id: c.status for c in outcome.cases}
+    assert statuses == {"c1": "passed", "c2": "timeout", "c3": "passed"}
+    assert outcome.tests_passed == 2
+    assert outcome.tests_total == 3
+
+
+def test_all_four_case_statuses_counted_correctly():
+    code = (
+        _CODE_MATH
+        + "\ndef hang():\n    while True:\n        pass\n"
+        + "\ndef boom():\n    raise ValueError('x')\n"
+    )
+    suite = _suite(
+        [
+            _case(case_id="c1", function_name="add", args=[1, 1], expected=2),       # passed
+            _case(case_id="c2", function_name="add", args=[1, 1], expected=999),     # failed
+            _case(case_id="c3", function_name="boom", args=[], expected=None),       # error
+            _case(case_id="c4", function_name="hang", args=[], expected=None),       # timeout
+        ],
+        timeout_seconds=1.0,
+    )
+    outcome = run_test_suite(code=code, suite=suite)
+    assert outcome.tests_total == 4
+    assert outcome.tests_passed == 1
+    statuses = [c.status for c in outcome.cases]
+    assert statuses == ["passed", "failed", "error", "timeout"]
+    assert outcome.test_pass is False
+
+
+def test_repeated_run_produces_consistent_pass_fail_status():
+    suite = _suite([_case(function_name="add", args=[2, 3], expected=5)])
+    outcome1 = run_test_suite(code=_CODE_MATH, suite=suite)
+    outcome2 = run_test_suite(code=_CODE_MATH, suite=suite)
+    assert outcome1.tests_passed == outcome2.tests_passed
+    assert [c.status for c in outcome1.cases] == [c.status for c in outcome2.cases]
+
+
+def test_no_daemon_thread_or_thread_join_in_worker_or_evaluator():
+    """Structural check: the thread-based timeout mechanism must be gone
+    entirely, not just unused."""
+    import agent_tools.finals_rebuild.test_worker as worker_mod
+    import agent_tools.finals_rebuild.test_evaluator as evaluator_mod
+
+    for mod in (worker_mod, evaluator_mod):
+        source = inspect.getsource(mod)
+        assert "threading" not in source, f"{mod.__name__} must not use threading"
+        assert "daemon=True" not in source, f"{mod.__name__} must not use daemon threads"
