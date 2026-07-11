@@ -1,5 +1,5 @@
 """
-Core Adapter — Commit 3A.
+Core Adapter — Commit 3A / 3B-1.
 
 Scope
 -----
@@ -9,22 +9,155 @@ K12-math domain knowledge, and it must never call the legacy Healer classes
 directly (RegexHealer, ASTHealer, AntiDuplicationHealer,
 UnifiedCleanupHealer) — this module owns its own rule registry instead.
 
-Commit 3A intentionally ships every candidate rule DISABLED. The registry
-below documents each rule that was inventoried from the legacy healers,
-why it is not safe to enable yet, and its safety classification. No rule
-executes in this commit; run_core_adapter() is a deterministic identity
-transform that still produces a full, rule-level TreatmentTrace.
+Commit 3A shipped every candidate rule DISABLED. Commit 3B-1 enables exactly
+one, "core.normalize_fullwidth_python_punctuation" (see below): a
+tokenize-based, fail-closed normaliser that only touches fullwidth
+punctuation sitting in Python syntax position, never inside strings,
+comments, or docstrings. Every other rule remains disabled; the registry
+still documents why, and run_core_adapter() still produces a full,
+rule-level TreatmentTrace for every candidate rule regardless of whether it
+ran.
 
 No model calls. No code execution. No file I/O.
 """
 
 from __future__ import annotations
 
+import ast
+import io
+import tokenize
 from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Tuple
 
 from agent_tools.finals_rebuild.artifacts import sha256_text
 from agent_tools.finals_rebuild.trace import TraceStep, TreatmentTrace
+
+# ---------------------------------------------------------------------------
+# core.normalize_fullwidth_python_punctuation
+# ---------------------------------------------------------------------------
+
+# Fullwidth punctuation → ASCII equivalent. Deliberately limited to bracket/
+# delimiter punctuation that can appear at Python syntax positions; no
+# operator glyphs (e.g. fullwidth '>', '=') are included because those were
+# not in the approved scope for this rule.
+_FULLWIDTH_PUNCT_MAP: Dict[str, str] = {
+    "，": ",",  # ，
+    "：": ":",  # ：
+    "；": ";",  # ；
+    "（": "(",  # （
+    "）": ")",  # ）
+    "［": "[",  # ［
+    "］": "]",  # ］
+    "｛": "{",  # ｛
+    "｝": "}",  # ｝
+}
+
+
+def normalize_fullwidth_python_punctuation(code: str) -> str:
+    """
+    Replace fullwidth punctuation (，：；（）［］｛｝) with ASCII equivalents,
+    but ONLY where they occur in Python syntax position — never inside
+    string literals, comments, docstrings, or f-string text segments.
+
+    Implementation
+    --------------
+    Token-boundary matching does NOT work here: CPython's tokenizer treats
+    several of these fullwidth punctuation characters as identifier
+    (XID_Continue) characters, so e.g. "f(x，y)" tokenizes '，' as *part of
+    the same NAME token* as the surrounding identifier characters, not as
+    its own OP/ERRORTOKEN. Splitting punctuation out of a merged NAME token
+    would be an unsafe, ambiguous edit.
+
+    Instead this uses tokenize.generate_tokens() only to find the exact
+    (row, col) spans of STRING and COMMENT tokens (and FSTRING_MIDDLE/START/
+    END on 3.12+, where present) — those spans are masked as "protected".
+    Every other character position in the source is then scanned directly:
+    any of the 9 mapped characters found outside a protected span is
+    replaced. Because none of the 9 characters are ever legal inside a
+    normal Python identifier's *meaning* (var/def names are never composed
+    of comma/colon/parenthesis/etc glyphs even though the tokenizer's
+    XID table happens to tolerate a few of them), this is safe: it reaches
+    every syntax-position occurrence including ones tokenize would have
+    bundled into a NAME token, while never touching string/comment content.
+
+    Fail-closed
+    -----------
+    - If tokenizing the input raises anything, the original code is
+      returned unchanged.
+    - After rewriting, the result is re-parsed with ast.parse(). If that
+      fails for any reason (e.g. an unmapped fullwidth character remains,
+      such as '＞'), the original code is returned unchanged.
+    - If no unprotected mapped character is found, the original code is
+      returned unchanged (byte-identical, not just semantically equivalent).
+    """
+    if not code:
+        return code
+
+    try:
+        tokens = list(tokenize.generate_tokens(io.StringIO(code).readline))
+    except Exception:
+        return code
+
+    protected_types = {tokenize.STRING, tokenize.COMMENT}
+    for _name in ("FSTRING_START", "FSTRING_MIDDLE", "FSTRING_END"):
+        _t = getattr(tokenize, _name, None)
+        if _t is not None:
+            protected_types.add(_t)
+
+    lines = code.splitlines(keepends=True)
+    # protected[row] (1-indexed, matching tokenize) -> list of (start_col, end_col)
+    protected: Dict[int, List[Tuple[int, int]]] = {}
+
+    def _mark_protected(start: Tuple[int, int], end: Tuple[int, int]) -> None:
+        (start_row, start_col), (end_row, end_col) = start, end
+        if start_row == end_row:
+            protected.setdefault(start_row, []).append((start_col, end_col))
+            return
+        # Multi-line span (e.g. a triple-quoted docstring): protect from
+        # start_col to end-of-line on the first line, every column on the
+        # interior lines, and 0..end_col on the last line.
+        protected.setdefault(start_row, []).append(
+            (start_col, len(lines[start_row - 1]))
+        )
+        for row in range(start_row + 1, end_row):
+            protected.setdefault(row, []).append((0, len(lines[row - 1])))
+        protected.setdefault(end_row, []).append((0, end_col))
+
+    for tok in tokens:
+        if tok.type in protected_types:
+            _mark_protected(tok.start, tok.end)
+
+    def _is_protected(row: int, col: int) -> bool:
+        for start_col, end_col in protected.get(row, ()):
+            if start_col <= col < end_col:
+                return True
+        return False
+
+    new_lines = list(lines)
+    changed_any = False
+    for row_idx, line in enumerate(lines, start=1):
+        chars = list(line)
+        line_changed = False
+        for col, ch in enumerate(chars):
+            if ch in _FULLWIDTH_PUNCT_MAP and not _is_protected(row_idx, col):
+                chars[col] = _FULLWIDTH_PUNCT_MAP[ch]
+                line_changed = True
+        if line_changed:
+            new_lines[row_idx - 1] = "".join(chars)
+            changed_any = True
+
+    if not changed_any:
+        return code
+
+    new_code = "".join(new_lines)
+
+    try:
+        ast.parse(new_code)
+    except Exception:
+        return code
+
+    return new_code
+
 
 # ---------------------------------------------------------------------------
 # Rule registry
@@ -45,6 +178,22 @@ class CoreRule:
 # the legacy healer method it was inventoried from and the reason it is not
 # yet proven safe for the Core boundary (see Commit 3 read-only inventory).
 CORE_RULE_REGISTRY: Dict[str, CoreRule] = {
+    "core.normalize_fullwidth_python_punctuation": CoreRule(
+        rule_id="core.normalize_fullwidth_python_punctuation",
+        enabled=True,
+        safety_classification="safe_format",
+        domain_specific=False,
+        reason=(
+            "Normalises fullwidth punctuation (，：；（）［］｛｝) that "
+            "appears in Python syntax position only. tokenize-based: uses "
+            "STRING/COMMENT/FSTRING_* token spans to mask string, comment, "
+            "and docstring content as protected, then rewrites the 9 "
+            "mapped characters only outside those spans. Fails closed to "
+            "the original code if tokenizing errors or the rewritten "
+            "result does not re-parse with ast.parse()."
+        ),
+        fn=normalize_fullwidth_python_punctuation,
+    ),
     "xor_to_power": CoreRule(
         rule_id="xor_to_power",
         enabled=False,

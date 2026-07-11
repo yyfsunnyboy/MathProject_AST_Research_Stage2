@@ -10,9 +10,14 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
+import ast
+
+import pytest
+
 from agent_tools.finals_rebuild.artifacts import sha256_text
 from agent_tools.finals_rebuild.core_adapter import (
     CORE_RULE_REGISTRY,
+    normalize_fullwidth_python_punctuation,
     run_core_adapter,
 )
 from agent_tools.finals_rebuild.trace import validate_treatment_trace
@@ -49,9 +54,19 @@ def test_no_rule_is_domain_specific_and_enabled():
             assert rule.domain_specific is False
 
 
-def test_no_rule_currently_enabled():
-    """Commit 3A is entirely conservative: nothing is enabled."""
-    assert all(not r.enabled for r in CORE_RULE_REGISTRY.values())
+def test_exactly_one_rule_currently_enabled():
+    """
+    Commit 3B-1 enables exactly one, safe_format, non-domain-specific rule:
+    core.normalize_fullwidth_python_punctuation. Everything else stays
+    disabled.
+    """
+    enabled = [r for r in CORE_RULE_REGISTRY.values() if r.enabled]
+    assert len(enabled) == 1
+    assert enabled[0].rule_id == "core.normalize_fullwidth_python_punctuation"
+    assert enabled[0].safety_classification == "safe_format"
+    assert enabled[0].domain_specific is False
+    for rule_id in _REQUIRED_DISABLED_RULE_IDS:
+        assert CORE_RULE_REGISTRY[rule_id].enabled is False
 
 
 def test_output_is_deterministic():
@@ -153,3 +168,133 @@ def test_no_model_or_network_calls():
     """Functional check: adapter runs to completion with no external I/O."""
     result = run_core_adapter(pair_id=_PAIR_ID, input_code=_CODE)
     assert result.trace.applied is True
+
+
+# ============================================================
+# Commit 3B-1: core.normalize_fullwidth_python_punctuation
+# ============================================================
+
+
+def test_1_fullwidth_colon_makes_code_legal():
+    code = "if x>0：\n    pass\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out != code
+    ast.parse(out)  # must not raise
+    assert "：" not in out
+
+
+def test_2_string_content_untouched():
+    code = 'x = "全形：，（）"\n'
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+
+
+def test_3_comment_untouched():
+    code = "x = 1  # 全形：，（）\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+
+
+def test_4_docstring_untouched():
+    code = 'def f():\n    """全形：，（）"""\n    pass\n'
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+
+
+def test_5_legal_code_is_noop():
+    code = "def f(x, y):\n    return x + y\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+
+
+def test_6_healed_output_parses():
+    code = "f(x，y)\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    ast.parse(out)  # must not raise
+    assert out == "f(x,y)\n"
+
+
+def test_7_unrecoverable_input_fails_closed_returns_original():
+    """
+    '＞' (fullwidth greater-than) is deliberately NOT in the mapped set.
+    Normalizing only the colon still leaves invalid syntax, so the rule
+    must detect the re-parse failure and return the ORIGINAL code
+    untouched rather than a half-fixed, still-broken result.
+    """
+    code = "if x＞0：\n    pass\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+    with pytest.raises(SyntaxError):
+        ast.parse(out)
+
+
+def test_mixed_identifier_and_fullwidth_comma_is_split_safely():
+    """
+    Regression guard for the tokenizer quirk that motivated the
+    span-masking implementation: CPython's tokenizer merges '，' into the
+    same NAME token as adjacent identifier characters (e.g. "x，y" is one
+    NAME token), so naive per-token rewriting would miss this case
+    entirely. The span-masking approach must still catch it.
+    """
+    code = "def f(a，b):\n    return a，b\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    ast.parse(out)
+    assert "，" not in out
+
+
+def test_empty_string_is_noop():
+    assert normalize_fullwidth_python_punctuation("") == ""
+
+
+def test_unparseable_input_is_noop():
+    code = "def f(:\n    this is not python at all ＠＃＄\n"
+    out = normalize_fullwidth_python_punctuation(code)
+    assert out == code
+
+
+def test_trace_step_for_enabled_rule_has_required_fields(tmp_path=None):
+    code = "if x>0：\n    pass\n"
+    result = run_core_adapter(pair_id=_PAIR_ID, input_code=code)
+    step = next(
+        s for s in result.trace.steps
+        if s.rule_id == "core.normalize_fullwidth_python_punctuation"
+    )
+    assert step.enabled is True
+    assert step.changed is True
+    assert step.domain_specific is False
+    assert step.safety_classification == "safe_format"
+    assert step.before_hash == sha256_text(code)
+    assert step.after_hash == sha256_text(result.output_code)
+    assert result.trace.changed is True
+    assert result.trace.implementation_status == "implemented"
+    assert result.trace.rules_triggered == [
+        "core.normalize_fullwidth_python_punctuation"
+    ]
+
+
+def test_trace_step_records_noop_when_rule_does_not_trigger():
+    result = run_core_adapter(pair_id=_PAIR_ID, input_code=_CODE)
+    step = next(
+        s for s in result.trace.steps
+        if s.rule_id == "core.normalize_fullwidth_python_punctuation"
+    )
+    assert step.enabled is True
+    assert step.changed is False
+    assert step.before_hash == step.after_hash == sha256_text(_CODE)
+
+
+def test_finalized_trace_hash_matches_actual_output(tmp_path):
+    """
+    End-to-end: run the adapter, finalize the trace as the pipeline would,
+    and confirm compute_trace_hash is consistent with the output_code the
+    adapter actually returned (before/after hashes on the enabled step
+    must match the real before/after code).
+    """
+    import dataclasses
+    code = "if x>0：\n    pass\n"
+    result = run_core_adapter(pair_id=_PAIR_ID, input_code=code)
+    finalized = dataclasses.replace(
+        result.trace, run_id="b" * 64, created_at_utc="2026-07-11T09:00:00+00:00"
+    )
+    validate_treatment_trace(finalized)
+    assert finalized.output_hash == sha256_text(result.output_code)

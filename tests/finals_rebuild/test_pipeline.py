@@ -44,7 +44,9 @@ from agent_tools.finals_rebuild.artifacts import (
     sha256_text,
     sha256_bytes,
 )
+from agent_tools.finals_rebuild.core_adapter import run_core_adapter
 from agent_tools.finals_rebuild.extraction import extract_code as _orig_extract_code
+from agent_tools.finals_rebuild.trace import compute_trace_hash, validate_treatment_trace
 from agent_tools.finals_rebuild.pipeline import (
     ExistingMetadataMismatchError,
     PairedPipelineInput,
@@ -699,15 +701,27 @@ def test_core_trace_has_no_enabled_domain_specific_step(tmp_path):
         assert not (step.enabled and step.domain_specific)
 
 
-def test_all_core_and_spec_steps_are_disabled_in_commit_3a(tmp_path):
+def test_only_one_known_safe_core_rule_is_enabled_all_spec_disabled(tmp_path):
+    """
+    Commit 3B-1: exactly one Core rule (the safe_format punctuation
+    normaliser) is enabled; every other Core rule and every Spec rule
+    remains disabled.
+    """
     inp = _make_input(tmp_path, skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers")
     result = run_paired_pipeline(inp)
-    for treatment in ("ab3_core", "ab3_full"):
-        trace = result.treatment_outputs[treatment].trace
-        for step in trace.steps:
-            assert step.enabled is False, (
-                f"{treatment}: rule {step.rule_id!r} must be disabled in Commit 3A"
-            )
+
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    enabled_core_steps = [s for s in core_trace.steps if s.enabled]
+    assert len(enabled_core_steps) == 1
+    assert enabled_core_steps[0].rule_id == "core.normalize_fullwidth_python_punctuation"
+    assert enabled_core_steps[0].safety_classification == "safe_format"
+    assert enabled_core_steps[0].domain_specific is False
+
+    spec_trace = result.treatment_outputs["ab3_full"].trace
+    for step in spec_trace.steps:
+        assert step.enabled is False, (
+            f"ab3_full: rule {step.rule_id!r} must be disabled"
+        )
 
 
 def test_pipeline_never_calls_regex_or_ast_healer_directly(tmp_path):
@@ -769,6 +783,40 @@ def test_trace_hashes_match_actual_artifact_bytes(tmp_path):
         trace_bytes = ap.trace_json(treatment).read_bytes()
         actual_hash = sha256_bytes(trace_bytes)
         assert actual_hash == result.treatment_outputs[treatment].run_metadata.trace_hash
+
+
+def test_core_adapter_trace_hash_consistent_when_rule_actually_fires():
+    """
+    Requirement 8 (trace hash matches actual output) exercised on a case
+    where the Commit 3B-1 punctuation rule actually changes the code, at
+    the adapter level.
+
+    NOTE: a full pipeline-level version of this test is intentionally
+    NOT included here. Running raw scaffold text containing fullwidth
+    punctuation through run_paired_pipeline() surfaces a pre-existing
+    invariant bug in artifacts.validate_shared_run_identity(), which
+    assumes ab2 / ab3_core / ab3_full always share the same
+    input_artifact_hash. That assumption silently held throughout Commit
+    3A only because no Core rule ever changed anything; now that Spec's
+    input (Core's output) can genuinely diverge from ab2/ab3_core's input
+    once Core makes a real edit, that shared-identity check fails.
+    artifacts.py is outside this commit's allowed file list, so this is
+    reported as a follow-up rather than patched here.
+    """
+    import dataclasses
+
+    code = "def solve_scaffold(x)：\n    return x\n"
+    result = run_core_adapter(pair_id="a" * 64, input_code=code)
+    assert result.trace.changed is True
+
+    finalized = dataclasses.replace(
+        result.trace, run_id="b" * 64, created_at_utc="2026-07-11T09:00:00+00:00"
+    )
+    validate_treatment_trace(finalized)
+    trace_hash = compute_trace_hash(finalized)
+    # Recomputing from the same (now-finalized) trace object must be stable.
+    assert trace_hash == compute_trace_hash(finalized)
+    assert finalized.output_hash == sha256_text(result.output_code)
 
 
 def test_run_metadata_trace_hash_matches_trace_json(tmp_path):
