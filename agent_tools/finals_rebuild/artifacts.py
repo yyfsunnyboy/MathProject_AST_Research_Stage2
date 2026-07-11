@@ -154,14 +154,18 @@ class ArtifactPaths:
           treatments/
             ab1.py  ab2.py  ab3_core.py  ab3_full.py
           traces/
-            healer_trace.json
+            healer_trace.json          (legacy; unused by finals_rebuild)
           evaluations/
-            evaluation.json
+            evaluation.json            (legacy pair-level; unused by finals_rebuild)
           runs/
-            ab1/metadata.json
-            ab2/metadata.json
-            ab3_core/metadata.json
-            ab3_full/metadata.json
+            ab1/metadata.json  evaluation.json
+            ab2/metadata.json  evaluation.json
+            ab3_core/metadata.json  trace.json  evaluation.json
+            ab3_full/metadata.json  trace.json  evaluation.json
+
+    trace.json exists only for ab3_core/ab3_full (Commit 3A+; see trace.py).
+    evaluation.json exists for all four treatments (Commit 4A+; see
+    evaluation.py / static_evaluator.py).
 
     study_id and pair_id are validated at construction time to prevent
     path traversal.
@@ -272,6 +276,16 @@ class ArtifactPaths:
     def trace_json(self, treatment: str) -> pathlib.Path:
         _validate_treatment(treatment)
         return self.run_dir(treatment) / "trace.json"
+
+    def run_evaluation_json(self, treatment: str) -> pathlib.Path:
+        """Per-treatment evaluation.json path (runs/<treatment>/evaluation.json).
+
+        Distinct from the legacy pair-level `evaluation_json` property
+        above (evaluations/evaluation.json), which predates the paired
+        per-treatment evaluator introduced in Commit 4A.
+        """
+        _validate_treatment(treatment)
+        return self.run_dir(treatment) / "evaluation.json"
 
 
 # ---------------------------------------------------------------------------

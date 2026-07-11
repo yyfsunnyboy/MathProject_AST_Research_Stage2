@@ -45,6 +45,11 @@ from agent_tools.finals_rebuild.artifacts import (
     sha256_bytes,
 )
 from agent_tools.finals_rebuild.core_adapter import run_core_adapter
+from agent_tools.finals_rebuild.evaluation import (
+    compute_evaluation_hash,
+    evaluation_result_to_dict,
+    validate_evaluation_result,
+)
 from agent_tools.finals_rebuild.extraction import extract_code as _orig_extract_code
 from agent_tools.finals_rebuild.trace import compute_trace_hash, validate_treatment_trace
 from agent_tools.finals_rebuild.pipeline import (
@@ -992,3 +997,151 @@ def test_all_87_plus_new_tests_still_pass_smoke(tmp_path):
         assert ap.run_metadata_json(treatment).exists()
     assert ap.trace_json("ab3_core").exists()
     assert ap.trace_json("ab3_full").exists()
+
+
+# ============================================================
+# Commit 4A: static evaluation.json for all four treatments
+# ============================================================
+
+
+def test_9_all_four_treatments_produce_evaluation_json(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ALLOWED_TREATMENTS:
+        assert ap.run_evaluation_json(treatment).exists()
+
+
+def test_10_evaluation_pair_id_and_run_id_match_run_metadata(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ALLOWED_TREATMENTS:
+        eval_json = json.loads(
+            ap.run_evaluation_json(treatment).read_text(encoding="utf-8")
+        )
+        run_meta = result.treatment_outputs[treatment].run_metadata
+        assert eval_json["pair_id"] == run_meta.pair_id
+        assert eval_json["run_id"] == run_meta.run_id
+        assert eval_json["treatment"] == treatment
+
+
+def test_11_evaluation_artifact_hash_matches_actual_treatment_file(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ALLOWED_TREATMENTS:
+        eval_json = json.loads(
+            ap.run_evaluation_json(treatment).read_text(encoding="utf-8")
+        )
+        actual_bytes = ap.treatment_file(treatment).read_bytes()
+        assert eval_json["artifact_hash"] == sha256_bytes(actual_bytes)
+
+
+def test_12_evaluation_json_immutable_rerun_unchanged(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result1 = run_paired_pipeline(inp)
+    eval_bytes_1 = {
+        t: result1.artifact_paths.run_evaluation_json(t).read_bytes()
+        for t in ALLOWED_TREATMENTS
+    }
+    result2 = run_paired_pipeline(inp)  # must not raise
+    eval_bytes_2 = {
+        t: result2.artifact_paths.run_evaluation_json(t).read_bytes()
+        for t in ALLOWED_TREATMENTS
+    }
+    assert eval_bytes_1 == eval_bytes_2
+
+
+def test_13_evaluation_json_cannot_be_silently_overwritten(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    eval_path = result.artifact_paths.run_evaluation_json("ab1")
+    eval_path.write_text('{"tampered": true}', encoding="utf-8")
+
+    # Re-running must fail closed rather than silently accept different
+    # content at the same immutable path.
+    with pytest.raises(ImmutableWriteError):
+        run_paired_pipeline(inp)
+
+
+def test_14_full_pipeline_passes_when_core_actually_changed_with_evaluation(tmp_path):
+    """
+    Restores the paired invariant across the FULL evaluation feature: a
+    scaffold raw that makes Core Adapter actually change code must still
+    produce a fully self-consistent evaluation.json for all four
+    treatments, with RunMetadata.evaluation_hash matching on-disk bytes.
+    """
+    raw_with_fullwidth = "```python\ndef solve_scaffold(x)：\n    return x\n```"
+    inp = _make_input(
+        tmp_path, skill_id="jh_math_skill", raw_scaffold=raw_with_fullwidth
+    )
+    result = run_paired_pipeline(inp)
+    assert result.validation_status == "complete"
+
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    assert core_trace.changed is True
+
+    ap = result.artifact_paths
+    # ab1/ab2 are pass-through: they still contain the raw fullwidth colon,
+    # so their static evaluation correctly reports syntax_pass=False. Only
+    # ab3_core/ab3_full (post-Core-Adapter) have valid Python.
+    expected_syntax_pass = {
+        "ab1": True,  # ab1's raw has no fullwidth punctuation
+        "ab2": False,
+        "ab3_core": True,
+        "ab3_full": True,
+    }
+    for treatment in ALLOWED_TREATMENTS:
+        to = result.treatment_outputs[treatment]
+        assert to.evaluation is not None
+        validate_evaluation_result(to.evaluation)
+        assert to.evaluation.syntax_pass is expected_syntax_pass[treatment], (
+            f"{treatment}: expected syntax_pass={expected_syntax_pass[treatment]}, "
+            f"got {to.evaluation.syntax_pass}"
+        )
+
+        eval_bytes = ap.run_evaluation_json(treatment).read_bytes()
+        assert sha256_bytes(eval_bytes) == to.run_metadata.evaluation_hash
+        assert sha256_bytes(eval_bytes) == compute_evaluation_hash(to.evaluation)
+
+
+def test_run_metadata_never_rewritten_to_add_evaluation_hash(tmp_path):
+    """
+    RunMetadata is written exactly once per treatment (immutable_write_json
+    returns "written" the first time), and evaluation_hash is already
+    correct on that first write — this test asserts the run metadata file
+    is not touched a second time by evaluation.json's own write.
+    """
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    run_meta_bytes_after_first_run = {
+        t: ap.run_metadata_json(t).read_bytes() for t in ALLOWED_TREATMENTS
+    }
+
+    # Second (idempotent) run must not alter any run metadata file, and
+    # every RunMetadata.evaluation_hash must already be non-None (i.e. it
+    # was correct on the very first write, never patched in afterward).
+    result2 = run_paired_pipeline(inp)
+    for treatment in ALLOWED_TREATMENTS:
+        assert (
+            ap.run_metadata_json(treatment).read_bytes()
+            == run_meta_bytes_after_first_run[treatment]
+        )
+        assert result2.treatment_outputs[treatment].run_metadata.evaluation_hash is not None
+
+
+def test_evaluation_result_execution_and_test_fields_are_not_run(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    for treatment in ALLOWED_TREATMENTS:
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.execution_status == "not_run"
+        assert ev.execution_success is None
+        assert ev.test_status == "not_run"
+        assert ev.test_pass is None
+        assert ev.tests_passed is None
+        assert ev.tests_total is None
+        assert ev.mcri_code is None
+        assert ev.mcri_math is None

@@ -21,20 +21,38 @@ No model API calls are made here.  The pipeline:
    re-uses existing created_at_utc if run metadata already exists).
 6. Builds and validates RunMetadata for each treatment; binds each
    adapter's TreatmentTrace to the resolved run_id/timestamp and computes
-   RunMetadata.trace_hash from it.
-7. Verifies shared run identity (ab2/ab3_core/ab3_full).
+   RunMetadata.trace_hash from it. Also runs the static evaluator
+   (agent_tools/finals_rebuild/static_evaluator.py) on every treatment's
+   own output code and computes RunMetadata.evaluation_hash BEFORE
+   RunMetadata is constructed — RunMetadata is immutable once written, so
+   evaluation_hash is only ever correct-on-first-write, never patched in
+   afterward.
+7. Verifies the ab2/ab3_core/ab3_full treatment chain identity.
 8. Completes PairMetadata (stage="complete") and validates.
-9. Writes all artifacts via immutable helpers, including trace.json for
-   ab3_core / ab3_full.
-10. Verifies on-disk output hashes (and trace hashes) match RunMetadata.
+9. Writes all artifacts via immutable helpers: trace.json for ab3_core /
+   ab3_full only, evaluation.json for all four treatments (ab1, ab2,
+   ab3_core, ab3_full).
+10. Verifies on-disk output hashes (and trace/evaluation hashes) match
+    RunMetadata.
 
 Idempotency
 -----------
 Re-running the pipeline with the same inputs succeeds without errors:
 - All text/extracted artifacts are byte-identical → immutable write
   returns "unchanged".
-- run metadata JSONs and trace.json preserve their original created_at_utc
-  so that repeated serialisation produces bit-identical files.
+- run metadata JSONs, trace.json, and evaluation.json preserve their
+  original created_at_utc so that repeated serialisation produces
+  bit-identical files.
+
+Static evaluation (Commit 4A)
+------------------------------
+evaluate_static() only ast.parse()s the code and inspects top-level
+function names — it never imports, execs, compiles-for-execution, or
+spawns a subprocess against artifact code. execution_status/test_status
+are always "not_run" this commit; their value fields (execution_success,
+test_pass, tests_passed, tests_total, mcri_code, mcri_math) are always
+None — not False/0 — because "not evaluated yet" and "evaluated and
+failed" are different claims.
 
 Treatment status marker
 ------------------------
@@ -77,8 +95,15 @@ from agent_tools.finals_rebuild.artifacts import (
     validate_treatment_chain_identity,
 )
 from agent_tools.finals_rebuild.core_adapter import run_core_adapter
+from agent_tools.finals_rebuild.evaluation import (
+    EvaluationResult,
+    compute_evaluation_hash,
+    evaluation_result_to_dict,
+    validate_evaluation_result,
+)
 from agent_tools.finals_rebuild.extraction import ExtractionResult, extract_code
 from agent_tools.finals_rebuild.spec_adapter import run_spec_adapter
+from agent_tools.finals_rebuild.static_evaluator import evaluate_static
 from agent_tools.finals_rebuild.trace import (
     TreatmentTrace,
     compute_trace_hash,
@@ -119,6 +144,7 @@ class TreatmentOutput:
     implementation_status: str
     run_metadata: RunMetadata
     trace: Optional[TreatmentTrace] = None
+    evaluation: Optional[EvaluationResult] = None
 
 
 @dataclass(frozen=True)
@@ -309,6 +335,23 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             validate_treatment_trace(finalized_trace)
             trace_hash = compute_trace_hash(finalized_trace)
 
+        # Static evaluation runs for every treatment. Computed here, BEFORE
+        # RunMetadata is built, so evaluation_hash is correct on RunMetadata's
+        # first (and only) write — RunMetadata is immutable, so this order is
+        # deliberate: evaluation_hash must never require rewriting an
+        # already-written run metadata file.
+        raw_eval = evaluate_static(
+            code=slot["output_code"],
+            pair_id=meta.pair_id,
+            run_id=run_id,
+            treatment=treatment,
+            artifact_hash=output_hash,
+            evaluator_git_commit=meta.source_git_commit,
+        )
+        finalized_eval = replace(raw_eval, created_at_utc=run_ts)
+        validate_evaluation_result(finalized_eval)
+        evaluation_hash = compute_evaluation_hash(finalized_eval)
+
         run_meta = RunMetadata(
             study_id=meta.study_id,
             pair_id=meta.pair_id,
@@ -319,7 +362,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             source_git_commit=meta.source_git_commit,
             created_at_utc=run_ts,
             trace_hash=trace_hash,
-            evaluation_hash=None,
+            evaluation_hash=evaluation_hash,
             extra={
                 "treatment_applied": slot["treatment_applied"],
                 "changed": slot["changed"],
@@ -337,6 +380,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             implementation_status=slot["implementation_status"],
             run_metadata=run_meta,
             trace=finalized_trace,
+            evaluation=finalized_eval,
         )
 
     # ── Step 7: Treatment chain identity ────────────────────────────────────
@@ -404,6 +448,15 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
                 artifact_root,
             )
 
+    # Static evaluation.json is written for all four treatments (unlike
+    # trace.json, which only exists for ab3_core/ab3_full).
+    for treatment, to in treatment_outputs.items():
+        immutable_write_json(
+            ap.run_evaluation_json(treatment),
+            evaluation_result_to_dict(to.evaluation),
+            artifact_root,
+        )
+
     # ── Step 10: Verify output hashes ───────────────────────────────────────
     for treatment, to in treatment_outputs.items():
         actual_bytes = ap.treatment_file(treatment).read_bytes()
@@ -423,6 +476,14 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
                     f"{treatment}: trace hash mismatch after write: "
                     f"expected={expected_trace_hash!r}, actual={actual_trace_hash!r}"
                 )
+        actual_eval_bytes = ap.run_evaluation_json(treatment).read_bytes()
+        actual_eval_hash = sha256_bytes(actual_eval_bytes)
+        expected_eval_hash = to.run_metadata.evaluation_hash
+        if actual_eval_hash != expected_eval_hash:
+            raise PipelineError(
+                f"{treatment}: evaluation hash mismatch after write: "
+                f"expected={expected_eval_hash!r}, actual={actual_eval_hash!r}"
+            )
 
     return PairedPipelineResult(
         pair_id=meta.pair_id,
