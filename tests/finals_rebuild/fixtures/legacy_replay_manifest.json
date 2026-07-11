@@ -1,0 +1,93 @@
+[
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_14b_temp",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder:14b",
+    "sample_index": 0,
+    "source_ab2_path": "skills/temp/gh_ApplicationsOfDerivatives_14B_Ab2.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "d66e1783e0159eca3a83c92ac14d456853e08c99559c2a131e2b3d18d3e5ea65"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_cloud_temp",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "gemini-2.5-flash",
+    "sample_index": 0,
+    "source_ab2_path": "skills/temp/gh_ApplicationsOfDerivatives_Cloud_Ab2.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "62a6d8e6a310ea8a09f4c05af3c8d9728ddf262373b7650541416bb009d55b0b"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_qwen14b_run01",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-14b",
+    "sample_index": 0,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab2_run01.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "5af1f0f75a3f36489d400c94b3992b0c5569b82513876779ac9cf8bb8dfd4527"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_qwen14b_run02",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-14b",
+    "sample_index": 1,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab2_run02.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "2b8dda63f8d7922491bbb1e260db5a165cc344687c44db8a403f463e19450e04"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_qwen14b_run03",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-14b",
+    "sample_index": 2,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab2_run03.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "517fd33926a27314a5aba00802380f19004c1acf3b5dd66c7546854751d2d881"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_qwen7b_run01",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-7b",
+    "sample_index": 0,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab2_run01.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "7666ef59b7e7212ad86d5ada46e3e538cd895e9d4dd9265c29a48398aa2295c2"
+  },
+  {
+    "sample_id": "gh_ApplicationsOfDerivatives_Ab2_qwen7b_run02",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-7b",
+    "sample_index": 1,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab2_run02.py",
+    "prompt_path": "experiments/golden_prompts/gh_ApplicationsOfDerivatives_Ab2.txt",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "425d5fcd552fe9b8eca61e3016d71680562c18d1f5ed80d55e9aa57196d48dc6"
+  }
+]
