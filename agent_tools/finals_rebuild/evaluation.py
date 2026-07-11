@@ -36,8 +36,13 @@ CONTRACT_STATUSES: frozenset[str] = frozenset({"pass", "fail", "not_required"})
 EXECUTION_STATUSES: frozenset[str] = frozenset({
     "not_run", "success", "failure", "timeout", "blocked", "error",
 })
+# "completed" (Commit 4C: the fixture test-case evaluator actually ran)
+# joins the speculative set from Commit 4A. Per-case pass/fail/error/
+# timeout detail lives in runs/<treatment>/test_results.json — test_status
+# itself only ever reports "not_run" or "completed" this commit; overall
+# pass/fail is test_pass, not test_status.
 TEST_STATUSES: frozenset[str] = frozenset({
-    "not_run", "passed", "failed", "error",
+    "not_run", "completed", "passed", "failed", "error",
 })
 
 # execution_status -> required execution_success value. Enforced exactly
@@ -111,6 +116,7 @@ class EvaluationResult:
     test_pass: Optional[bool] = None
     tests_passed: Optional[int] = None
     tests_total: Optional[int] = None
+    test_suite_hash: Optional[str] = None
     mcri_code: Optional[float] = None
     mcri_math: Optional[float] = None
     timeout: Optional[float] = None
@@ -227,7 +233,10 @@ def validate_evaluation_result(result: EvaluationResult) -> None:
             f"got {result.test_status!r}"
         )
     if result.test_status == "not_run":
-        for fname in ("test_pass", "tests_passed", "tests_total", "mcri_code", "mcri_math"):
+        for fname in (
+            "test_pass", "tests_passed", "tests_total", "test_suite_hash",
+            "mcri_code", "mcri_math",
+        ):
             if getattr(result, fname) is not None:
                 raise EvaluationValidationError(
                     f"test_status='not_run' requires {fname}=None"
@@ -245,6 +254,13 @@ def validate_evaluation_result(result: EvaluationResult) -> None:
                 )
         if result.tests_passed > result.tests_total:
             raise EvaluationValidationError("tests_passed cannot exceed tests_total")
+        if not isinstance(result.test_suite_hash, str) or not _SHA256_RE.match(
+            result.test_suite_hash
+        ):
+            raise EvaluationValidationError(
+                f"test_suite_hash must be a 64-char lowercase hex SHA-256 "
+                f"once test_status != 'not_run', got {result.test_suite_hash!r}"
+            )
         for fname in ("mcri_code", "mcri_math"):
             value = getattr(result, fname)
             if value is not None and (
@@ -316,6 +332,7 @@ def evaluation_result_to_dict(result: EvaluationResult) -> Dict[str, Any]:
         "test_pass": result.test_pass,
         "tests_passed": result.tests_passed,
         "tests_total": result.tests_total,
+        "test_suite_hash": result.test_suite_hash,
         "mcri_code": result.mcri_code,
         "mcri_math": result.mcri_math,
         "timeout": result.timeout,
@@ -350,6 +367,7 @@ def evaluation_result_from_dict(d: Dict[str, Any]) -> EvaluationResult:
         test_pass=d.get("test_pass"),
         tests_passed=d.get("tests_passed"),
         tests_total=d.get("tests_total"),
+        test_suite_hash=d.get("test_suite_hash"),
         mcri_code=d.get("mcri_code"),
         mcri_math=d.get("mcri_math"),
         timeout=d.get("timeout"),

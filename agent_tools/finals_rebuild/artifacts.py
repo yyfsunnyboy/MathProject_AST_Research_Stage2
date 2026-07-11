@@ -158,14 +158,17 @@ class ArtifactPaths:
           evaluations/
             evaluation.json            (legacy pair-level; unused by finals_rebuild)
           runs/
-            ab1/metadata.json  evaluation.json
-            ab2/metadata.json  evaluation.json
-            ab3_core/metadata.json  trace.json  evaluation.json
-            ab3_full/metadata.json  trace.json  evaluation.json
+            ab1/metadata.json  evaluation.json  [test_results.json]
+            ab2/metadata.json  evaluation.json  [test_results.json]
+            ab3_core/metadata.json  trace.json  evaluation.json  [test_results.json]
+            ab3_full/metadata.json  trace.json  evaluation.json  [test_results.json]
 
     trace.json exists only for ab3_core/ab3_full (Commit 3A+; see trace.py).
     evaluation.json exists for all four treatments (Commit 4A+; see
-    evaluation.py / static_evaluator.py).
+    evaluation.py / static_evaluator.py). test_results.json (Commit 4C+;
+    see test_evaluator.py) exists only when a TestSuite was supplied AND
+    that treatment's syntax/execution both succeeded — otherwise
+    test_status stays "not_run" and no file is written.
 
     study_id and pair_id are validated at construction time to prevent
     path traversal.
@@ -286,6 +289,14 @@ class ArtifactPaths:
         """
         _validate_treatment(treatment)
         return self.run_dir(treatment) / "evaluation.json"
+
+    def run_test_results_json(self, treatment: str) -> pathlib.Path:
+        """Per-treatment fixture test-case results (Commit 4C):
+        runs/<treatment>/test_results.json. Only written when a
+        TestSuite was provided AND syntax/execution succeeded for this
+        treatment — see pipeline.py."""
+        _validate_treatment(treatment)
+        return self.run_dir(treatment) / "test_results.json"
 
 
 # ---------------------------------------------------------------------------

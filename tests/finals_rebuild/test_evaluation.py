@@ -146,6 +146,7 @@ def test_non_not_run_test_status_requires_full_fields():
             test_pass=True,
             tests_passed=5,
             tests_total=5,
+            test_suite_hash="d" * 64,
             mcri_code=1.0,
             mcri_math=1.0,
         )

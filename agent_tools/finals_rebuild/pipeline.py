@@ -31,21 +31,26 @@ No model API calls are made here.  The pipeline:
 8. Completes PairMetadata (stage="complete") and validates.
 9. Writes all artifacts via immutable helpers: trace.json for ab3_core /
    ab3_full only, evaluation.json for all four treatments (ab1, ab2,
-   ab3_core, ab3_full).
-10. Verifies on-disk output hashes (and trace/evaluation hashes) match
-    RunMetadata.
+   ab3_core, ab3_full), test_results.json only where test_status ended up
+   "completed".
+10. Verifies on-disk output hashes (and trace/evaluation/test_results
+    consistency) match RunMetadata / the values just written.
 
 Idempotency
 -----------
 Re-running the pipeline with the same inputs succeeds without errors:
 - All text/extracted artifacts are byte-identical → immutable write
   returns "unchanged".
-- run metadata JSONs, trace.json, and evaluation.json preserve their
-  original created_at_utc so that repeated serialisation produces
-  bit-identical files.
+- run metadata JSONs, trace.json, evaluation.json, and test_results.json
+  preserve their original created_at_utc / content so that repeated
+  serialisation produces bit-identical files. Bounded-subprocess
+  execution and test-case running are NOT deterministic (duration_ms
+  etc), so on a re-run an existing evaluation.json/test_results.json is
+  reused as-is rather than re-executed — see _read_existing_evaluation()
+  / _read_existing_test_results().
 
-Evaluation (Commit 4A static + Commit 4B bounded execution)
---------------------------------------------------------------
+Evaluation (Commit 4A static + Commit 4B execution + Commit 4C tests)
+------------------------------------------------------------------------
 evaluate_with_execution() (execution_evaluator.py) combines:
   - evaluate_static() (Commit 4A): ast.parse() + top-level function
     inspection only — never imports/execs/compiles-for-execution here.
@@ -57,10 +62,17 @@ evaluate_with_execution() (execution_evaluator.py) combines:
     "timeout"/"blocked"/"error"; isolation_level is always
     "guarded_subprocess_not_security_sandbox" whenever execution actually
     ran (or was blocked before running).
-test_status/mcri_* remain "not_run"/None this commit; their value fields
-(test_pass, tests_passed, tests_total, mcri_code, mcri_math) are always
-None — not False/0 — because "not evaluated yet" and "evaluated and
-failed" are different claims.
+run_test_suite() (test_evaluator.py, Commit 4C) only runs when
+PairedPipelineInput.test_suite is not None AND that treatment's
+syntax_pass is True AND execution_status=="success" — otherwise
+test_status stays "not_run"/test_pass stays None (never False/0: "not
+evaluated" and "evaluated and failed" are different claims). When it does
+run, it calls ONLY the top-level function named by each fixture TestCase
+(test_contract.py) inside a bounded subprocess (test_worker.py) — never
+arbitrary code, never eval() of an assertion expression. test_status only
+ever becomes "not_run" or "completed" this commit; overall pass/fail is
+test_pass (true only if every case passed). mcri_code/mcri_math remain
+None — no MCRI computation this commit.
 
 Treatment status marker
 ------------------------
@@ -120,6 +132,8 @@ from agent_tools.finals_rebuild.static_evaluator import (
     STATIC_EVALUATOR_VERSION,
     compute_evaluator_config_hash,
 )
+from agent_tools.finals_rebuild.test_contract import TestSuite, compute_test_suite_hash
+from agent_tools.finals_rebuild.test_evaluator import run_test_suite, test_results_to_dict
 from agent_tools.finals_rebuild.trace import (
     TreatmentTrace,
     compute_trace_hash,
@@ -161,6 +175,7 @@ class TreatmentOutput:
     run_metadata: RunMetadata
     trace: Optional[TreatmentTrace] = None
     evaluation: Optional[EvaluationResult] = None
+    test_results: Optional[Dict[str, Any]] = None
 
 
 @dataclass(frozen=True)
@@ -183,6 +198,12 @@ class PairedPipelineInput:
     independent of when a given pair was generated, and conflating the two
     would make it impossible to tell "the artifact changed" from "the
     evaluator changed" when comparing runs across commits.
+
+    ``test_suite`` is optional (Commit 4C). When None, test_status stays
+    "not_run" for every treatment (the default). When provided, the exact
+    same TestSuite is used for all four treatments — there is no separate
+    per-treatment suite parameter, making it structurally impossible to
+    silently compare treatments against different fixtures.
     """
 
     pair_metadata: PairMetadata
@@ -192,6 +213,7 @@ class PairedPipelineInput:
     raw_scaffold_response: str
     artifact_root: pathlib.Path
     evaluator_git_commit: str
+    test_suite: Optional[TestSuite] = None
 
 
 @dataclass(frozen=True)
@@ -375,6 +397,11 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
         expected_evaluator_config_hash = compute_evaluator_config_hash(
             STATIC_EVALUATOR_VERSION, []
         )
+        expected_test_suite_hash = (
+            compute_test_suite_hash(inp.test_suite)
+            if inp.test_suite is not None
+            else None
+        )
         finalized_eval = _read_existing_evaluation(
             path=ap.run_evaluation_json(treatment),
             expected_pair_id=meta.pair_id,
@@ -384,7 +411,9 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             expected_evaluator_git_commit=inp.evaluator_git_commit,
             expected_evaluator_config_hash=expected_evaluator_config_hash,
             expected_isolation_level=ISOLATION_LEVEL,
+            expected_test_suite_hash=expected_test_suite_hash,
         )
+        test_results: Optional[Dict[str, Any]] = None
         if finalized_eval is None:
             raw_eval = evaluate_with_execution(
                 code=slot["output_code"],
@@ -395,6 +424,46 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
                 evaluator_git_commit=inp.evaluator_git_commit,
             )
             finalized_eval = replace(raw_eval, created_at_utc=run_ts)
+
+            # Fixture test cases (Commit 4C) only ever run when a suite was
+            # supplied AND static syntax passed AND execution genuinely
+            # succeeded — a suite provided against code that can't even
+            # execute leaves test_status="not_run" (see evaluation.py).
+            if (
+                inp.test_suite is not None
+                and finalized_eval.syntax_pass
+                and finalized_eval.execution_status == "success"
+            ):
+                outcome = run_test_suite(
+                    code=slot["output_code"], suite=inp.test_suite
+                )
+                finalized_eval = replace(
+                    finalized_eval,
+                    test_status="completed",
+                    test_pass=outcome.test_pass,
+                    tests_passed=outcome.tests_passed,
+                    tests_total=outcome.tests_total,
+                    test_suite_hash=outcome.suite_hash,
+                )
+                test_results = test_results_to_dict(
+                    outcome,
+                    pair_id=meta.pair_id,
+                    run_id=run_id,
+                    artifact_hash=output_hash,
+                )
+        elif finalized_eval.test_status == "completed":
+            # Reused evaluation.json already reflects a completed test run
+            # under the exact same suite (test_suite_hash was verified by
+            # _read_existing_evaluation above) — reuse its test_results.json
+            # too rather than re-running (bounded-subprocess test execution
+            # is not deterministic, same reasoning as evaluation.json reuse).
+            test_results = _read_existing_test_results(
+                path=ap.run_test_results_json(treatment),
+                expected_pair_id=meta.pair_id,
+                expected_run_id=run_id,
+                expected_artifact_hash=output_hash,
+                expected_test_suite_hash=finalized_eval.test_suite_hash,
+            )
         validate_evaluation_result(finalized_eval)
         evaluation_hash = compute_evaluation_hash(finalized_eval)
 
@@ -427,6 +496,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             run_metadata=run_meta,
             trace=finalized_trace,
             evaluation=finalized_eval,
+            test_results=test_results,
         )
 
     # ── Step 7: Treatment chain identity ────────────────────────────────────
@@ -503,6 +573,17 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             artifact_root,
         )
 
+    # test_results.json (Commit 4C) only exists where test_status ended
+    # up "completed" — i.e. a TestSuite was supplied and syntax/execution
+    # both succeeded for that treatment.
+    for treatment, to in treatment_outputs.items():
+        if to.test_results is not None:
+            immutable_write_json(
+                ap.run_test_results_json(treatment),
+                to.test_results,
+                artifact_root,
+            )
+
     # ── Step 10: Verify output hashes ───────────────────────────────────────
     for treatment, to in treatment_outputs.items():
         actual_bytes = ap.treatment_file(treatment).read_bytes()
@@ -530,6 +611,17 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
                 f"{treatment}: evaluation hash mismatch after write: "
                 f"expected={expected_eval_hash!r}, actual={actual_eval_hash!r}"
             )
+        if to.test_results is not None:
+            actual_test_results = json.loads(
+                ap.run_test_results_json(treatment).read_text(encoding="utf-8")
+            )
+            for field_name in ("pair_id", "run_id", "artifact_hash", "test_suite_hash"):
+                if actual_test_results.get(field_name) != to.test_results.get(field_name):
+                    raise PipelineError(
+                        f"{treatment}: test_results {field_name} mismatch after "
+                        f"write: expected={to.test_results.get(field_name)!r}, "
+                        f"actual={actual_test_results.get(field_name)!r}"
+                    )
 
     return PairedPipelineResult(
         pair_id=meta.pair_id,
@@ -627,6 +719,7 @@ def _read_existing_evaluation(
     expected_evaluator_git_commit: str,
     expected_evaluator_config_hash: str,
     expected_isolation_level: str,
+    expected_test_suite_hash: Optional[str],
 ) -> Optional[EvaluationResult]:
     """Return the EvaluationResult already persisted at *path*, or None if
     it does not exist yet.
@@ -642,18 +735,23 @@ def _read_existing_evaluation(
     RunMetadata.created_at_utc via _read_existing_created_at().
 
     "Matching" is checked strictly: pair_id, run_id, treatment,
-    artifact_hash, evaluator_git_commit, evaluator_config_hash, AND
-    isolation_level must all agree with what THIS run would produce.
-    evaluator_git_commit/evaluator_config_hash changing means the
-    evaluator itself changed since the stored result was produced (a
-    different evaluator version/config must never be silently presented
-    as "this run's" result); isolation_level changing means the execution
-    boundary itself changed. Any mismatch fails closed rather than
-    reusing a result that no longer describes what this run would do —
-    and this function NEVER falls back to returning None (which would
-    trigger a fresh execution that immutable_write_json would then reject
-    as a conflicting overwrite of the same path); a mismatch is always an
-    explicit, fail-closed error.
+    artifact_hash, evaluator_git_commit, evaluator_config_hash,
+    isolation_level, AND test_suite_hash must all agree with what THIS run
+    would produce. evaluator_git_commit/evaluator_config_hash changing
+    means the evaluator itself changed since the stored result was
+    produced (a different evaluator version/config must never be silently
+    presented as "this run's" result); isolation_level changing means the
+    execution boundary itself changed; test_suite_hash changing (Commit
+    4C) means a DIFFERENT fixture suite was used to produce the stored
+    test_pass/tests_passed/tests_total — reusing it would silently present
+    one suite's results as another's. test_suite_hash is the one field
+    here that may legitimately be None (no TestSuite this run), so it is
+    compared directly rather than via the "None means missing" loop below.
+    Any mismatch fails closed rather than reusing a result that no longer
+    describes what this run would do — and this function NEVER falls back
+    to returning None (which would trigger a fresh execution that
+    immutable_write_json would then reject as a conflicting overwrite of
+    the same path); a mismatch is always an explicit, fail-closed error.
 
     Raises
     ------
@@ -695,9 +793,84 @@ def _read_existing_evaluation(
                 f"expected {expected!r}"
             )
 
+    # test_suite_hash may legitimately be None (no TestSuite was used),
+    # so it is NOT checked via the "actual is None -> missing field" loop
+    # above — None is a valid value here, not evidence of a corrupt file.
+    if "test_suite_hash" not in stored:
+        raise ExistingMetadataMismatchError(
+            f"Existing evaluation at {path!r} is missing required "
+            f"field 'test_suite_hash'"
+        )
+    actual_test_suite_hash = stored["test_suite_hash"]
+    if actual_test_suite_hash != expected_test_suite_hash:
+        raise ExistingMetadataMismatchError(
+            f"Existing evaluation at {path!r}: "
+            f"test_suite_hash={actual_test_suite_hash!r} does not match "
+            f"expected {expected_test_suite_hash!r}"
+        )
+
     try:
         return evaluation_result_from_dict(stored)
     except KeyError as exc:
         raise ExistingMetadataMismatchError(
             f"Existing evaluation at {path!r} is missing required field {exc}"
         ) from exc
+
+
+def _read_existing_test_results(
+    path: pathlib.Path,
+    expected_pair_id: str,
+    expected_run_id: str,
+    expected_artifact_hash: str,
+    expected_test_suite_hash: str,
+) -> Dict[str, Any]:
+    """Return the test_results.json content already persisted at *path*.
+
+    Only ever called once evaluation.json reuse has already succeeded
+    with test_status="completed" (see run_paired_pipeline) — by that
+    point test_suite_hash consistency was already verified by
+    _read_existing_evaluation, so test_results.json is expected to exist
+    with matching content from that same earlier run. This function
+    re-verifies it anyway (fail closed rather than assume) since it is a
+    separate file that could in principle have been tampered with
+    independently of evaluation.json.
+
+    Raises
+    ------
+    ExistingMetadataMismatchError
+        If the file is missing, cannot be parsed, or any of pair_id /
+        run_id / artifact_hash / test_suite_hash disagrees with the
+        expected values.
+    """
+    if not path.is_file():
+        raise ExistingMetadataMismatchError(
+            f"Expected existing test_results at {path!r} (evaluation.json "
+            f"reuse reported test_status='completed') but the file is missing"
+        )
+
+    try:
+        stored = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        raise ExistingMetadataMismatchError(
+            f"Failed to parse existing test_results at {path!r}: {exc}"
+        ) from exc
+
+    for field_name, expected in (
+        ("pair_id", expected_pair_id),
+        ("run_id", expected_run_id),
+        ("artifact_hash", expected_artifact_hash),
+        ("test_suite_hash", expected_test_suite_hash),
+    ):
+        actual = stored.get(field_name)
+        if actual is None:
+            raise ExistingMetadataMismatchError(
+                f"Existing test_results at {path!r} is missing required "
+                f"field {field_name!r}"
+            )
+        if actual != expected:
+            raise ExistingMetadataMismatchError(
+                f"Existing test_results at {path!r}: "
+                f"{field_name}={actual!r} does not match expected {expected!r}"
+            )
+
+    return stored

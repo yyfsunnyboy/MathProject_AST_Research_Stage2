@@ -51,6 +51,7 @@ from agent_tools.finals_rebuild.evaluation import (
     validate_evaluation_result,
 )
 from agent_tools.finals_rebuild.extraction import extract_code as _orig_extract_code
+from agent_tools.finals_rebuild.test_contract import TestCase, TestSuite
 from agent_tools.finals_rebuild.trace import compute_trace_hash, validate_treatment_trace
 from agent_tools.finals_rebuild.pipeline import (
     ExistingMetadataMismatchError,
@@ -89,6 +90,7 @@ def _make_input(
     raw_scaffold: str = _RAW_SCAFFOLD,
     skill_id: str = "algebra_01",
     evaluator_git_commit: str = _EVALUATOR_GIT_COMMIT,
+    test_suite=None,
 ) -> PairedPipelineInput:
     """Build a fully-consistent PairedPipelineInput for tests.
 
@@ -135,6 +137,7 @@ def _make_input(
         raw_scaffold_response=raw_scaffold,
         artifact_root=tmp_path,
         evaluator_git_commit=evaluator_git_commit,
+        test_suite=test_suite,
     )
 
 
@@ -1306,3 +1309,151 @@ def test_one_treatment_execution_failure_does_not_block_others(tmp_path):
         ev = result.treatment_outputs[treatment].evaluation
         assert ev.execution_status == "success"
         assert ev.execution_success is True
+
+
+# ============================================================
+# Commit 4C: fixture test-case evaluator
+# ============================================================
+
+
+def test_9_all_treatments_share_same_test_suite_hash(tmp_path):
+    suite = TestSuite(
+        suite_id="s_shared",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)],
+    )
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=suite)
+    result = run_paired_pipeline(inp)
+
+    hashes = set()
+    for treatment in ALLOWED_TREATMENTS:
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.test_status == "completed"
+        assert ev.test_suite_hash is not None
+        hashes.add(ev.test_suite_hash)
+    assert len(hashes) == 1
+    ap = result.artifact_paths
+    for treatment in ALLOWED_TREATMENTS:
+        stored = json.loads(ap.run_test_results_json(treatment).read_text(encoding="utf-8"))
+        assert stored["test_suite_hash"] == next(iter(hashes))
+
+
+def test_10_core_fix_enables_test_pass_that_could_not_run_before(tmp_path):
+    """
+    Core Adapter's only enabled rule (Commit 3B-1) fixes fullwidth
+    punctuation — it cannot change program logic. So the honest version
+    of "Core fix flips test_pass" is: ab2 (unhealed) can't even run the
+    test (syntax_pass=False -> test_status="not_run"), while ab3_core/
+    ab3_full (Core-healed) both parse AND pass the fixture.
+    """
+    raw_with_fullwidth = "```python\ndef solve_scaffold(x)：\n    return x\n```"
+    suite = TestSuite(
+        suite_id="s_core_fix",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[7], expected=7)],
+    )
+    inp = _make_input(
+        tmp_path, skill_id="jh_math_skill",
+        raw_scaffold=raw_with_fullwidth, test_suite=suite,
+    )
+    result = run_paired_pipeline(inp)
+
+    ab2_eval = result.treatment_outputs["ab2"].evaluation
+    assert ab2_eval.syntax_pass is False
+    assert ab2_eval.test_status == "not_run"
+    assert ab2_eval.test_pass is None
+
+    for treatment in ("ab3_core", "ab3_full"):
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.syntax_pass is True
+        assert ev.test_status == "completed"
+        assert ev.test_pass is True
+
+
+def test_11_syntax_fail_means_test_not_run(tmp_path):
+    broken_ab1 = "```python\ndef f(:\n```"
+    suite = TestSuite(
+        suite_id="s", cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)]
+    )
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", raw_ab1=broken_ab1, test_suite=suite)
+    result = run_paired_pipeline(inp)
+
+    ab1_eval = result.treatment_outputs["ab1"].evaluation
+    assert ab1_eval.syntax_pass is False
+    assert ab1_eval.test_status == "not_run"
+    assert ab1_eval.test_pass is None
+    assert ab1_eval.test_suite_hash is None
+
+
+def test_12_execution_blocked_means_test_not_run(tmp_path):
+    blocked_ab1 = "```python\nimport socket\ndef f():\n    return 1\n```"
+    suite = TestSuite(
+        suite_id="s", cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)]
+    )
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", raw_ab1=blocked_ab1, test_suite=suite)
+    result = run_paired_pipeline(inp)
+
+    ab1_eval = result.treatment_outputs["ab1"].evaluation
+    assert ab1_eval.execution_status == "blocked"
+    assert ab1_eval.test_status == "not_run"
+    assert ab1_eval.test_pass is None
+
+
+def test_15_test_results_json_immutable_rerun_unchanged(tmp_path):
+    suite = TestSuite(
+        suite_id="s_idempotent",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)],
+    )
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=suite)
+    result1 = run_paired_pipeline(inp)
+    bytes1 = {
+        t: result1.artifact_paths.run_test_results_json(t).read_bytes()
+        for t in ALLOWED_TREATMENTS
+    }
+    result2 = run_paired_pipeline(inp)  # must not raise
+    bytes2 = {
+        t: result2.artifact_paths.run_test_results_json(t).read_bytes()
+        for t in ALLOWED_TREATMENTS
+    }
+    assert bytes1 == bytes2
+
+
+def test_16_suite_change_does_not_reuse_stale_results(tmp_path):
+    suite_a = TestSuite(
+        suite_id="suite_a",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)],
+    )
+    suite_b = TestSuite(
+        suite_id="suite_b",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=999)],
+    )
+    inp_a = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=suite_a)
+    run_paired_pipeline(inp_a)
+
+    inp_b = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=suite_b)
+    with pytest.raises(ExistingMetadataMismatchError, match="test_suite_hash"):
+        run_paired_pipeline(inp_b)
+
+
+def test_17_mcri_remains_null_even_when_tests_completed(tmp_path):
+    suite = TestSuite(
+        suite_id="s_mcri",
+        cases=[TestCase(case_id="c1", function_name="solve_scaffold", args=[], expected=4)],
+    )
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=suite)
+    result = run_paired_pipeline(inp)
+    for treatment in ALLOWED_TREATMENTS:
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.test_status == "completed"
+        assert ev.mcri_code is None
+        assert ev.mcri_math is None
+
+
+def test_no_test_suite_means_test_not_run_for_all_treatments(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill", test_suite=None)
+    result = run_paired_pipeline(inp)
+    for treatment in ALLOWED_TREATMENTS:
+        ev = result.treatment_outputs[treatment].evaluation
+        assert ev.test_status == "not_run"
+        assert ev.test_pass is None
+        assert ev.test_suite_hash is None
+        ap = result.artifact_paths
+        assert not ap.run_test_results_json(treatment).exists()
