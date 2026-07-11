@@ -560,6 +560,9 @@ def validate_run_metadata(meta: RunMetadata) -> None:
 
     Verifies run_id is consistent with pair_id + treatment +
     output_artifact_hash.
+
+    Raises ValueError if meta.extra contains any key that is an official
+    RunMetadata field name (would shadow the authoritative value).
     """
     _require_nonempty(meta.study_id, "study_id")
     _require_sha256(meta.pair_id, "pair_id")
@@ -571,6 +574,13 @@ def validate_run_metadata(meta: RunMetadata) -> None:
     _validate_utc_timestamp(meta.created_at_utc, "created_at_utc")
     _require_optional_sha256(meta.trace_hash, "trace_hash")
     _require_optional_sha256(meta.evaluation_hash, "evaluation_hash")
+
+    extra_conflicts = set(meta.extra) & _RUN_KNOWN_FIELDS
+    if extra_conflicts:
+        raise ValueError(
+            f"RunMetadata.extra must not contain official field names; "
+            f"conflicts: {sorted(extra_conflicts)}"
+        )
 
     expected_run_id = build_run_id(
         meta.pair_id, meta.treatment, meta.output_artifact_hash
@@ -795,7 +805,12 @@ def pair_metadata_json_round_trip(meta: PairMetadata) -> PairMetadata:
 
 
 def run_metadata_to_dict(meta: RunMetadata) -> Dict[str, Any]:
-    """Serialise *meta* to a plain dict (JSON-safe)."""
+    """Serialise *meta* to a plain dict (JSON-safe).
+
+    Raises ValueError if meta.extra conflicts with any official field
+    (defence-in-depth: validate_run_metadata enforces this too, but
+    serialisation must never silently shadow authoritative values).
+    """
     d: Dict[str, Any] = {
         "study_id": meta.study_id,
         "pair_id": meta.pair_id,
@@ -808,6 +823,12 @@ def run_metadata_to_dict(meta: RunMetadata) -> Dict[str, Any]:
         "trace_hash": meta.trace_hash,
         "evaluation_hash": meta.evaluation_hash,
     }
+    conflicts = set(meta.extra) & set(d)
+    if conflicts:
+        raise ValueError(
+            f"run_metadata_to_dict: extra fields conflict with official fields; "
+            f"conflicts: {sorted(conflicts)}"
+        )
     d.update(meta.extra)
     return d
 

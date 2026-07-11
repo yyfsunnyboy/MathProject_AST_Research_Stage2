@@ -56,7 +56,8 @@ class ExtractionResult:
     extraction_status
         "extracted"   – exactly one candidate found; code returned.
         "ambiguous"   – multiple candidates at the winning priority level.
-        "empty"       – raw text is blank or all-whitespace.
+        "empty"       – raw text is blank/all-whitespace, OR a fenced block
+                        was found but its content was empty/whitespace-only.
         "unsupported" – reserved for future format restrictions.
 
     extraction_method
@@ -66,7 +67,10 @@ class ExtractionResult:
         "none"          – nothing extracted.
 
     original_raw_hash is always populated.
-    extracted_code and extracted_code_hash are None when status ≠ "extracted".
+    extracted_code is None when status is "ambiguous" or "unsupported",
+    empty string ("") when status is "empty" due to an empty fenced block,
+    and None when status is "empty" due to blank raw text.
+    extracted_code_hash is None whenever status ≠ "extracted".
     """
 
     original_raw_hash: str
@@ -106,6 +110,9 @@ def extract_code(raw_text: str) -> ExtractionResult:
     if python_fences:
         if len(python_fences) == 1:
             code = python_fences[0][1]
+            if not code.strip():
+                diag["empty_reason"] = "fenced python block contains no code"
+                return _make(raw_hash, "", "empty", "fenced_python", diag)
             return _make(raw_hash, code, "extracted", "fenced_python", diag)
         diag["ambiguity_reason"] = (
             f"{len(python_fences)} python-fenced blocks found"
@@ -118,6 +125,9 @@ def extract_code(raw_text: str) -> ExtractionResult:
             lang_label = other_fences[0][0].strip() or "unlabelled"
             diag["fence_language"] = lang_label
             code = other_fences[0][1]
+            if not code.strip():
+                diag["empty_reason"] = "fenced block contains no code"
+                return _make(raw_hash, "", "empty", "fenced_other", diag)
             return _make(raw_hash, code, "extracted", "fenced_other", diag)
         diag["ambiguity_reason"] = (
             f"{len(other_fences)} non-python fenced blocks found"
@@ -139,7 +149,8 @@ def _make(
     method: str,
     diag: Dict[str, Any],
 ) -> ExtractionResult:
-    code_hash = sha256_text(code) if code is not None else None
+    # Compute hash only for non-None, non-empty extracted code.
+    code_hash = sha256_text(code) if code else None
     return ExtractionResult(
         original_raw_hash=raw_hash,
         extracted_code=code,

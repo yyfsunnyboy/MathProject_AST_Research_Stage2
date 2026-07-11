@@ -67,6 +67,16 @@ class PipelineError(Exception):
     """Raised on any invariant violation; pipeline fails closed."""
 
 
+class ExistingMetadataMismatchError(PipelineError):
+    """Raised when an existing run-metadata file is inconsistent with the
+    current pipeline run (study_id / pair_id / treatment / run_id mismatch,
+    missing required field, or corrupt JSON).
+
+    The pipeline must fail closed rather than silently mixing metadata from
+    two different runs.
+    """
+
+
 # ---------------------------------------------------------------------------
 # Input / Output data classes
 # ---------------------------------------------------------------------------
@@ -232,8 +242,16 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
         output_hash = sha256_text(slot["output_code"])
         run_id = build_run_id(meta.pair_id, treatment, output_hash)
 
-        # Preserve existing created_at_utc on re-runs for idempotency
-        run_ts = _read_existing_created_at(ap.run_metadata_json(treatment), now)
+        # Preserve existing created_at_utc on re-runs for idempotency.
+        # Full ID validation: fail-closed on any mismatch or corruption.
+        run_ts = _read_existing_created_at(
+            path=ap.run_metadata_json(treatment),
+            expected_study_id=meta.study_id,
+            expected_pair_id=meta.pair_id,
+            expected_treatment=treatment,
+            expected_run_id=run_id,
+            default=now,
+        )
 
         run_meta = RunMetadata(
             study_id=meta.study_id,
@@ -360,21 +378,60 @@ def _assert_extractable(result: ExtractionResult, label: str) -> None:
     )
 
 
-def _read_existing_created_at(path: pathlib.Path, default: str) -> str:
-    """
-    Return the ``created_at_utc`` stored in *path* if the file exists and is
-    valid JSON; otherwise return *default*.
+def _read_existing_created_at(
+    path: pathlib.Path,
+    expected_study_id: str,
+    expected_pair_id: str,
+    expected_treatment: str,
+    expected_run_id: str,
+    default: str,
+) -> str:
+    """Return ``created_at_utc`` from an existing run-metadata file,
+    preserving the original timestamp across idempotent re-runs so that
+    repeated serialisation produces byte-identical JSON.
 
-    This preserves the original timestamp across idempotent re-runs so that
-    the serialised run metadata JSON remains byte-identical and passes the
-    immutable write content check.
+    If *path* does not exist, returns *default* (the current timestamp).
+
+    Raises
+    ------
+    ExistingMetadataMismatchError
+        If the file exists but cannot be parsed, is missing required fields,
+        or any of study_id / pair_id / treatment / run_id disagrees with the
+        expected values.  The pipeline must fail closed rather than silently
+        mixing metadata from two different runs.
     """
-    if path.is_file():
-        try:
-            d = json.loads(path.read_text(encoding="utf-8"))
-            ts = d.get("created_at_utc", "")
-            if ts:
-                return ts
-        except (json.JSONDecodeError, OSError):
-            pass
-    return default
+    if not path.is_file():
+        return default
+
+    try:
+        stored = json.loads(path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError) as exc:
+        raise ExistingMetadataMismatchError(
+            f"Failed to parse existing run metadata at {path!r}: {exc}"
+        ) from exc
+
+    for field_name, expected in (
+        ("study_id", expected_study_id),
+        ("pair_id", expected_pair_id),
+        ("treatment", expected_treatment),
+        ("run_id", expected_run_id),
+    ):
+        actual = stored.get(field_name)
+        if actual is None:
+            raise ExistingMetadataMismatchError(
+                f"Existing run metadata at {path!r} is missing required "
+                f"field {field_name!r}"
+            )
+        if actual != expected:
+            raise ExistingMetadataMismatchError(
+                f"Existing run metadata at {path!r}: "
+                f"{field_name}={actual!r} does not match "
+                f"expected {expected!r}"
+            )
+
+    ts = stored.get("created_at_utc", "")
+    if not ts:
+        raise ExistingMetadataMismatchError(
+            f"Existing run metadata at {path!r} is missing created_at_utc"
+        )
+    return ts

@@ -574,3 +574,90 @@ def test_AI_stable_json_serialization():
     # Changing a value must change the hash
     obj_d = {"a": 1, "b": 99, "c": 3}
     assert sha256_json(obj_a) != sha256_json(obj_d)
+
+
+# ---------------------------------------------------------------------------
+# Group 10 – RunMetadata.extra reserved-key protection (Fix 2)
+# ---------------------------------------------------------------------------
+
+
+def _make_run_meta_with_extra(pid: str, extra: dict) -> RunMetadata:
+    """Build a RunMetadata with the given extra dict (skipping validation)."""
+    run_id = build_run_id(pid, "ab2", _H_C)
+    return RunMetadata(
+        study_id="study_test",
+        pair_id=pid,
+        treatment="ab2",
+        run_id=run_id,
+        input_artifact_hash=_H_C,
+        output_artifact_hash=_H_C,
+        source_git_commit="abc123",
+        created_at_utc=_TIMESTAMP,
+        extra=extra,
+    )
+
+
+def test_AJ_extra_with_study_id_rejected_in_validate():
+    """extra containing 'study_id' must be rejected by validate_run_metadata."""
+    pid = _make_pair_id()
+    meta = _make_run_meta_with_extra(pid, {"study_id": "injected"})
+    with pytest.raises(ValueError, match="study_id"):
+        validate_run_metadata(meta)
+
+
+def test_AK_extra_with_treatment_rejected_in_validate():
+    """extra containing 'treatment' must be rejected by validate_run_metadata."""
+    pid = _make_pair_id()
+    meta = _make_run_meta_with_extra(pid, {"treatment": "ab3_full"})
+    with pytest.raises(ValueError, match="treatment"):
+        validate_run_metadata(meta)
+
+
+def test_AL_extra_with_run_id_rejected_in_validate():
+    """extra containing 'run_id' must be rejected by validate_run_metadata."""
+    pid = _make_pair_id()
+    meta = _make_run_meta_with_extra(pid, {"run_id": "b" * 64})
+    with pytest.raises(ValueError, match="run_id"):
+        validate_run_metadata(meta)
+
+
+def test_AM_extra_with_created_at_utc_rejected_in_validate():
+    """extra containing 'created_at_utc' must be rejected."""
+    pid = _make_pair_id()
+    meta = _make_run_meta_with_extra(pid, {"created_at_utc": "2099-01-01T00:00:00Z"})
+    with pytest.raises(ValueError, match="created_at_utc"):
+        validate_run_metadata(meta)
+
+
+def test_AN_run_metadata_to_dict_raises_on_conflicting_extra():
+    """run_metadata_to_dict must also reject extra keys that shadow official fields."""
+    pid = _make_pair_id()
+    meta = _make_run_meta_with_extra(pid, {"pair_id": "injected"})
+    with pytest.raises(ValueError):
+        run_metadata_to_dict(meta)
+
+
+def test_AO_valid_extra_fields_round_trip():
+    """Non-conflicting extra keys must survive a full JSON round-trip."""
+    pid = _make_pair_id()
+    run_id = build_run_id(pid, "ab2", _H_C)
+    meta = RunMetadata(
+        study_id="study_test",
+        pair_id=pid,
+        treatment="ab2",
+        run_id=run_id,
+        input_artifact_hash=_H_C,
+        output_artifact_hash=_H_C,
+        source_git_commit="abc123",
+        created_at_utc=_TIMESTAMP,
+        extra={
+            "treatment_applied": False,
+            "implementation_status": "pass_through",
+            "changed": False,
+        },
+    )
+    validate_run_metadata(meta)   # must not raise
+    restored = run_metadata_json_round_trip(meta)
+    assert restored.extra.get("treatment_applied") is False
+    assert restored.extra.get("implementation_status") == "pass_through"
+    assert restored.extra.get("changed") is False

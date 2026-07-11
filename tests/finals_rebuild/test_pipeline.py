@@ -46,6 +46,7 @@ from agent_tools.finals_rebuild.artifacts import (
 )
 from agent_tools.finals_rebuild.extraction import extract_code as _orig_extract_code
 from agent_tools.finals_rebuild.pipeline import (
+    ExistingMetadataMismatchError,
     PairedPipelineInput,
     PairedPipelineResult,
     PipelineError,
@@ -320,7 +321,11 @@ def test_second_run_different_raw_raises(tmp_path):
         raw_scaffold_response=different_scaffold,
         artifact_root=tmp_path,
     )
-    with pytest.raises(ImmutableWriteError):
+    # With strict ID validation, a different scaffold raw produces a different
+    # run_id for ab2/ab3_core/ab3_full → ExistingMetadataMismatchError.
+    # If for any reason the validation order changes, ImmutableWriteError is
+    # also an acceptable fail-closed signal.
+    with pytest.raises((ExistingMetadataMismatchError, ImmutableWriteError)):
         run_paired_pipeline(inp2)
 
 
@@ -489,3 +494,69 @@ def test_run_metadata_json_files_are_valid(tmp_path):
         assert stored["pair_id"] == result.pair_id
         assert stored["treatment_applied"] is False
         assert stored["implementation_status"] == "pass_through"
+
+
+# ============================================================
+# Fix 1: ExistingMetadataMismatchError on tampered metadata
+# ============================================================
+
+
+def test_existing_metadata_pair_id_mismatch_raises(tmp_path):
+    """If existing run metadata has wrong pair_id, pipeline fails closed."""
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+
+    meta_path = result.artifact_paths.run_metadata_json("ab1")
+    stored = json.loads(meta_path.read_text())
+    stored["pair_id"] = "a" * 64   # tampered (valid SHA-256 format, wrong value)
+    meta_path.write_text(json.dumps(stored, sort_keys=True, indent=2) + "\n")
+
+    with pytest.raises(ExistingMetadataMismatchError, match="pair_id"):
+        run_paired_pipeline(inp)
+
+
+def test_existing_metadata_run_id_mismatch_raises(tmp_path):
+    """If existing run metadata has wrong run_id, pipeline fails closed."""
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+
+    meta_path = result.artifact_paths.run_metadata_json("ab1")
+    stored = json.loads(meta_path.read_text())
+    stored["run_id"] = "b" * 64   # tampered
+    meta_path.write_text(json.dumps(stored, sort_keys=True, indent=2) + "\n")
+
+    with pytest.raises(ExistingMetadataMismatchError, match="run_id"):
+        run_paired_pipeline(inp)
+
+
+def test_existing_metadata_corrupt_json_raises(tmp_path):
+    """If existing run metadata contains invalid JSON, pipeline fails closed."""
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+
+    meta_path = result.artifact_paths.run_metadata_json("ab1")
+    meta_path.write_text("{ not valid json at all }")
+
+    with pytest.raises(ExistingMetadataMismatchError):
+        run_paired_pipeline(inp)
+
+
+# ============================================================
+# Fix 3: pipeline fails closed on empty fenced extraction
+# ============================================================
+
+
+def test_pipeline_fails_on_empty_fenced_ab1(tmp_path):
+    """If ab1 raw contains an empty python fence, pipeline must fail closed."""
+    empty_raw = "```python\n```"
+    inp = _make_input(tmp_path, raw_ab1=empty_raw)
+    with pytest.raises(PipelineError):
+        run_paired_pipeline(inp)
+
+
+def test_pipeline_fails_on_empty_fenced_scaffold(tmp_path):
+    """If scaffold raw contains an empty python fence, pipeline must fail closed."""
+    empty_raw = "```python\n   \n```"
+    inp = _make_input(tmp_path, raw_scaffold=empty_raw)
+    with pytest.raises(PipelineError):
+        run_paired_pipeline(inp)

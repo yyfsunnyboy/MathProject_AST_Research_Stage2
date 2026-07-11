@@ -184,3 +184,34 @@ def test_different_raw_produces_different_hash():
     r1 = extract_code("```python\ndef a(): return 1\n```")
     r2 = extract_code("```python\ndef b(): return 2\n```")
     assert r1.extracted_code_hash != r2.extracted_code_hash
+
+
+# ── Fix 3: empty fenced code blocks ─────────────────────────────────────────
+
+def test_empty_python_fence_returns_empty_status():
+    """A python fence with no body must return status='empty', not 'extracted'."""
+    raw = "```python\n```"
+    result = extract_code(raw)
+    assert result.extraction_status == "empty"
+    assert result.extraction_method == "fenced_python"
+    assert result.extracted_code == ""
+    assert result.extracted_code_hash is None
+    assert "empty_reason" in result.diagnostics
+
+
+def test_whitespace_only_python_fence_returns_empty_status():
+    """A python fence whose body is only whitespace/newlines must be 'empty'."""
+    raw = "```python\n   \n   \n```"
+    result = extract_code(raw)
+    assert result.extraction_status == "empty"
+    assert result.extraction_method == "fenced_python"
+    assert result.extracted_code == ""
+    assert result.extracted_code_hash is None
+
+
+def test_newline_only_python_fence_returns_empty_status():
+    """A python fence with just a single newline body must be 'empty'."""
+    raw = "```python\n\n```"
+    result = extract_code(raw)
+    assert result.extraction_status == "empty"
+    assert result.extracted_code == ""
