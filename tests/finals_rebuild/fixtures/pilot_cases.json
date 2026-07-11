@@ -1,0 +1,186 @@
+[
+  {
+    "case_id": "success_all",
+    "description": "Bare and Scaffold both produce correct code; all four treatments pass.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_add",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function add(a, b) that returns a + b.",
+    "scaffold_prompt": "Implement add(a, b). Step 1: sum a and b. Return the sum.",
+    "raw_ab1_response": "```python\ndef add(a, b):\n    return a + b\n```",
+    "raw_scaffold_response": "```python\ndef add(a, b):\n    return a + b\n```",
+    "test_suite": {
+      "suite_id": "suite_add",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_add_1", "function_name": "add", "args": [1, 2], "expected": 3, "comparison_mode": "exact"},
+        {"case_id": "tc_add_2", "function_name": "add", "args": [0, 0], "expected": 0, "comparison_mode": "exact"},
+        {"case_id": "tc_add_3", "function_name": "add", "args": [-1, 5], "expected": 4, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "core_rescues_fullwidth",
+    "description": "Scaffold uses full-width Python punctuation (（）：，); ab2 fails syntax; Core Healer normalises it; ab3_core passes.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_fullwidth",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function add_fw(a, b) that returns a + b.",
+    "scaffold_prompt": "Implement add_fw using full-width style delimiters.",
+    "raw_ab1_response": "```python\ndef add_fw(a, b):\n    return a + b\n```",
+    "raw_scaffold_response": "```python\ndef add_fw\uff08a\uff0c b\uff09\uff1a\n    return a + b\n```",
+    "test_suite": {
+      "suite_id": "suite_add_fw",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_fw_1", "function_name": "add_fw", "args": [3, 4], "expected": 7, "comparison_mode": "exact"},
+        {"case_id": "tc_fw_2", "function_name": "add_fw", "args": [10, -3], "expected": 7, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "core_noop",
+    "description": "Scaffold code is already clean; Core Healer makes no change (no-op).",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_multiply",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function multiply(a, b) returning a * b.",
+    "scaffold_prompt": "Implement multiply(a, b) using the multiplication operator.",
+    "raw_ab1_response": "```python\ndef multiply(a, b):\n    return a * b\n```",
+    "raw_scaffold_response": "```python\ndef multiply(a, b):\n    return a * b\n```",
+    "test_suite": {
+      "suite_id": "suite_multiply",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_mul_1", "function_name": "multiply", "args": [3, 4], "expected": 12, "comparison_mode": "exact"},
+        {"case_id": "tc_mul_2", "function_name": "multiply", "args": [0, 100], "expected": 0, "comparison_mode": "exact"},
+        {"case_id": "tc_mul_3", "function_name": "multiply", "args": [-2, 5], "expected": -10, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "syntax_fail_ab1",
+    "description": "ab1 (bare) response has a syntax error; scaffold (ab2/ab3_core/ab3_full) is clean.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_syntax",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function identity(x) that returns x.",
+    "scaffold_prompt": "Implement identity(x) that returns its argument unchanged.",
+    "raw_ab1_response": "```python\ndef identity(:\n    return 0\n```",
+    "raw_scaffold_response": "```python\ndef identity(x):\n    return x\n```",
+    "test_suite": {
+      "suite_id": "suite_identity",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_id_1", "function_name": "identity", "args": [42], "expected": 42, "comparison_mode": "exact"},
+        {"case_id": "tc_id_2", "function_name": "identity", "args": [0], "expected": 0, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "execution_fail",
+    "description": "Code has valid syntax but raises ZeroDivisionError at module level; execution_success=False for all treatments.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_execfail",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a function execfail() that returns 0.",
+    "scaffold_prompt": "Implement execfail() returning 0.",
+    "raw_ab1_response": "```python\n_ZERO = 1 // 0\ndef execfail():\n    return 0\n```",
+    "raw_scaffold_response": "```python\n_ZERO = 1 // 0\ndef execfail():\n    return 0\n```",
+    "test_suite": {
+      "suite_id": "suite_execfail",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_ef_1", "function_name": "execfail", "args": [], "expected": 0, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "test_fail",
+    "description": "Code has correct syntax and executes, but returns the wrong answer; test_pass=False.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_testfail",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function wrong_add(a, b) that adds a and b.",
+    "scaffold_prompt": "Implement wrong_add(a, b) that sums a and b.",
+    "raw_ab1_response": "```python\ndef wrong_add(a, b):\n    return a - b\n```",
+    "raw_scaffold_response": "```python\ndef wrong_add(a, b):\n    return a - b\n```",
+    "test_suite": {
+      "suite_id": "suite_wrong_add",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_wa_1", "function_name": "wrong_add", "args": [1, 2], "expected": 3, "comparison_mode": "exact"},
+        {"case_id": "tc_wa_2", "function_name": "wrong_add", "args": [5, 5], "expected": 10, "comparison_mode": "exact"}
+      ]
+    }
+  },
+  {
+    "case_id": "spec_noop",
+    "description": "Verifies Spec treatment is currently a no-op: ab3_full equals ab3_core; spec_changed=False.",
+    "study_id": "pilot_2026",
+    "skill_id": "pilot_spec",
+    "model_id": "stub_model",
+    "model_revision": "v0",
+    "sample_index": 0,
+    "seed": 0,
+    "generation_config": {},
+    "created_at_utc": "2026-07-11T00:00:00+00:00",
+    "source_git_commit": "pilot_stub",
+    "bare_prompt": "Write a Python function square(x) returning x squared.",
+    "scaffold_prompt": "Implement square(x) = x * x using the multiplication operator.",
+    "raw_ab1_response": "```python\ndef square(x):\n    return x * x\n```",
+    "raw_scaffold_response": "```python\ndef square(x):\n    return x * x\n```",
+    "test_suite": {
+      "suite_id": "suite_square",
+      "timeout_seconds": 3.0,
+      "numeric_tolerance": 1e-6,
+      "cases": [
+        {"case_id": "tc_sq_1", "function_name": "square", "args": [3], "expected": 9, "comparison_mode": "exact"},
+        {"case_id": "tc_sq_2", "function_name": "square", "args": [0], "expected": 0, "comparison_mode": "exact"},
+        {"case_id": "tc_sq_3", "function_name": "square", "args": [-2], "expected": 4, "comparison_mode": "exact"}
+      ]
+    }
+  }
+]
