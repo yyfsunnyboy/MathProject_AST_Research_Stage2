@@ -10,21 +10,30 @@ ab3_full   : Scaffold + Core Healer + Math Adapter  (shared raw with ab2 / ab3_c
 
 Identity rules
 --------------
-pair_id  = SHA-256( study_id | model_id | skill_id | sample_index
-                    | scaffold_prompt_hash | generation_config_hash )
-raw_id   = SHA-256( pair_id | raw_response_hash )
-run_id   = SHA-256( pair_id | treatment | output_artifact_hash )
+pair_id = SHA-256(
+    study_id | model_id | model_revision | skill_id | sample_index
+    | seed | bare_prompt_hash | scaffold_prompt_hash | generation_config_hash
+)
 
-timestamp_utc is EXCLUDED from all three IDs.
+raw_id = SHA-256( pair_id | raw_role | raw_response_hash )
+    raw_role in {"ab1_raw", "scaffold_raw"}
+
+run_id = SHA-256( pair_id | treatment | output_artifact_hash )
+
+created_at_utc and source_git_commit are EXCLUDED from all three IDs.
+
+Metadata layers
+---------------
+PairMetadata  – one record per experimental sample; no treatment, no run_id.
+RunMetadata   – one record per treatment execution; validated independently.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
-import os
-import re
 import pathlib
+import re
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Dict, Literal, Optional
@@ -37,12 +46,16 @@ ALLOWED_TREATMENTS: frozenset[str] = frozenset(
     {"ab1", "ab2", "ab3_core", "ab3_full"}
 )
 
-_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
-_ISO8601_UTC_RE = re.compile(
-    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(\+00:00|Z)$"
-)
+ALLOWED_RAW_ROLES: frozenset[str] = frozenset({"ab1_raw", "scaffold_raw"})
 
 SHARED_TREATMENTS: frozenset[str] = frozenset({"ab2", "ab3_core", "ab3_full"})
+
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+# Accepts Z and +00:00; rejects naive datetimes and non-UTC offsets.
+_ISO8601_UTC_RE = re.compile(
+    r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|\+00:00)$"
+)
 
 # ---------------------------------------------------------------------------
 # Data classes
@@ -50,52 +63,122 @@ SHARED_TREATMENTS: frozenset[str] = frozenset({"ab2", "ab3_core", "ab3_full"})
 
 
 @dataclass(frozen=True)
-class ArtifactIdentity:
-    """Core IDs that never change for a given experimental unit."""
+class PairMetadata:
+    """
+    Pair-level metadata for one experimental sample.
+
+    Covers one (study, model, skill, sample_index) unit.
+
+    - Does NOT include treatment, run_id, or per-treatment output hashes.
+    - Supports incremental population: nullable fields may be None until the
+      corresponding artifacts are produced.
+    - Use validate_pair_metadata(stage="draft") during construction and
+      validate_pair_metadata(stage="complete") once all artifacts exist.
+    """
 
     study_id: str
     pair_id: str
-    raw_id: str
-    run_id: str
-    treatment: str
+    model_id: str
+    model_revision: str
+    skill_id: str
+    sample_index: int
+    seed: Optional[int]
+    bare_prompt_hash: str
+    scaffold_prompt_hash: str
+    generation_config_hash: str
+    source_git_commit: str
+    created_at_utc: str
+    # Nullable until artifacts are produced
+    raw_ab1_id: Optional[str] = None
+    raw_ab2_id: Optional[str] = None
+    raw_ab1_hash: Optional[str] = None
+    raw_ab2_hash: Optional[str] = None
+    extracted_ab1_hash: Optional[str] = None
+    extracted_ab2_hash: Optional[str] = None
+    extra: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
-class ArtifactMetadata:
-    """Full metadata record attached to every run artifact."""
+class RunMetadata:
+    """
+    Run-level metadata for one treatment execution.
+
+    Each treatment (ab1, ab2, ab3_core, ab3_full) has its own RunMetadata.
+    run_id is deterministic: SHA-256(pair_id | treatment | output_artifact_hash).
+
+    trace_hash and evaluation_hash are nullable until those artifacts exist.
+    Validation is independent of other treatments.
+    """
 
     study_id: str
     pair_id: str
-    raw_id: str
-    run_id: str
-    model_id: str
-    skill_id: str
-    sample_index: int
-    seed: int
-    prompt_hash: str
-    generation_config_hash: str
-    source_git_commit: str
-    timestamp_utc: str
     treatment: str
-    raw_ab1_hash: str
-    raw_ab2_hash: str
-    extracted_ab1_hash: str
-    extracted_ab2_hash: str
+    run_id: str
+    input_artifact_hash: str
+    output_artifact_hash: str
+    source_git_commit: str
+    created_at_utc: str
+    trace_hash: Optional[str] = None
+    evaluation_hash: Optional[str] = None
     extra: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class ArtifactPaths:
-    """Canonical path layout under a given artifact root."""
+    """
+    Canonical path layout under a given artifact root.
+
+    Directory structure::
+
+        artifacts/<study_id>/<pair_id>/
+          pair_metadata.json
+          prompts/
+            ab1.txt
+            ab2.txt
+          raw/
+            ab1_response.txt
+            ab2_response.txt
+          extracted/
+            ab1.py
+            ab2.py
+          treatments/
+            ab1.py  ab2.py  ab3_core.py  ab3_full.py
+          traces/
+            healer_trace.json
+          evaluations/
+            evaluation.json
+          runs/
+            ab1/metadata.json
+            ab2/metadata.json
+            ab3_core/metadata.json
+            ab3_full/metadata.json
+
+    study_id and pair_id are validated at construction time to prevent
+    path traversal.
+    """
 
     root: pathlib.Path
     study_id: str
     pair_id: str
 
-    # Directories
+    def __post_init__(self) -> None:
+        _validate_path_component(self.study_id, "study_id")
+        _validate_path_component(self.pair_id, "pair_id")
+        resolved_root = pathlib.Path(self.root).resolve()
+        candidate = (resolved_root / self.study_id / self.pair_id).resolve()
+        try:
+            candidate.relative_to(resolved_root)
+        except ValueError:
+            raise ValueError(
+                f"Constructed pair_dir {candidate!r} escapes artifact root "
+                f"{resolved_root!r}"
+            )
+
+    # -- Directories --
+
     @property
     def pair_dir(self) -> pathlib.Path:
-        return self.root / self.study_id / self.pair_id
+        return pathlib.Path(self.root) / self.study_id / self.pair_id
 
     @property
     def prompts_dir(self) -> pathlib.Path:
@@ -121,10 +204,15 @@ class ArtifactPaths:
     def evaluations_dir(self) -> pathlib.Path:
         return self.pair_dir / "evaluations"
 
-    # Files
     @property
-    def metadata_json(self) -> pathlib.Path:
-        return self.pair_dir / "metadata.json"
+    def runs_dir(self) -> pathlib.Path:
+        return self.pair_dir / "runs"
+
+    # -- Pair-level files --
+
+    @property
+    def pair_metadata_json(self) -> pathlib.Path:
+        return self.pair_dir / "pair_metadata.json"
 
     @property
     def prompt_ab1(self) -> pathlib.Path:
@@ -162,6 +250,15 @@ class ArtifactPaths:
     def evaluation_json(self) -> pathlib.Path:
         return self.evaluations_dir / "evaluation.json"
 
+    # -- Run-level paths --
+
+    def run_dir(self, treatment: str) -> pathlib.Path:
+        _validate_treatment(treatment)
+        return self.runs_dir / treatment
+
+    def run_metadata_json(self, treatment: str) -> pathlib.Path:
+        return self.run_dir(treatment) / "metadata.json"
+
 
 # ---------------------------------------------------------------------------
 # SHA-256 helpers
@@ -180,14 +277,17 @@ def sha256_bytes(data: bytes) -> str:
 
 def sha256_json(obj: Any) -> str:
     """Return lowercase hex SHA-256 of *obj* serialised with sorted keys
-    and no extraneous whitespace (stable across Python versions)."""
-    canonical = json.dumps(obj, sort_keys=True, separators=(",", ":"),
-                           ensure_ascii=True)
+    and minimal separators (stable regardless of dict insertion order)."""
+    canonical = json.dumps(
+        obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    )
     return sha256_text(canonical)
 
 
 def _join_fields(*parts: str) -> str:
-    """Concatenate fields with NUL separator to prevent length-extension."""
+    """Concatenate fields with NUL separators to prevent field-boundary
+    ambiguity (e.g. "ab"+"c" would otherwise be indistinguishable from
+    "a"+"bc")."""
     return "\x00".join(parts)
 
 
@@ -199,36 +299,70 @@ def _join_fields(*parts: str) -> str:
 def build_pair_id(
     study_id: str,
     model_id: str,
+    model_revision: str,
     skill_id: str,
     sample_index: int,
+    seed: Optional[int],
+    bare_prompt_hash: str,
     scaffold_prompt_hash: str,
     generation_config_hash: str,
 ) -> str:
-    """Deterministic pair_id; timestamp is intentionally excluded."""
+    """
+    Deterministic pair_id.
+
+    Inputs  : study_id, model_id, model_revision, skill_id, sample_index,
+              seed, bare_prompt_hash, scaffold_prompt_hash,
+              generation_config_hash.
+    Excluded: created_at_utc, source_git_commit.
+
+    seed=None is represented as the canonical string "null".
+    """
     _require_nonempty(study_id, "study_id")
     _require_nonempty(model_id, "model_id")
+    _require_nonempty(model_revision, "model_revision")
     _require_nonempty(skill_id, "skill_id")
     _require_nonneg_int(sample_index, "sample_index")
+    _require_optional_seed(seed, "seed")
+    _require_sha256(bare_prompt_hash, "bare_prompt_hash")
     _require_sha256(scaffold_prompt_hash, "scaffold_prompt_hash")
     _require_sha256(generation_config_hash, "generation_config_hash")
 
+    seed_str = "null" if seed is None else str(seed)
     payload = _join_fields(
         study_id,
         model_id,
+        model_revision,
         skill_id,
         str(sample_index),
+        seed_str,
+        bare_prompt_hash,
         scaffold_prompt_hash,
         generation_config_hash,
     )
     return sha256_text(payload)
 
 
-def build_raw_id(pair_id: str, raw_response_hash: str) -> str:
-    """Deterministic raw_id; timestamp is intentionally excluded."""
+def build_raw_id(
+    pair_id: str,
+    raw_role: str,
+    raw_response_hash: str,
+) -> str:
+    """
+    Deterministic raw_id.
+
+    raw_role must be "ab1_raw" (bare prompt response) or "scaffold_raw"
+    (scaffold prompt response).  The explicit role ensures Ab1 and Scaffold
+    raw IDs are distinguishable even if their content happens to be identical.
+    """
     _require_sha256(pair_id, "pair_id")
+    if raw_role not in ALLOWED_RAW_ROLES:
+        raise ValueError(
+            f"raw_role must be one of {sorted(ALLOWED_RAW_ROLES)}, "
+            f"got {raw_role!r}"
+        )
     _require_sha256(raw_response_hash, "raw_response_hash")
 
-    payload = _join_fields(pair_id, raw_response_hash)
+    payload = _join_fields(pair_id, raw_role, raw_response_hash)
     return sha256_text(payload)
 
 
@@ -237,7 +371,11 @@ def build_run_id(
     treatment: str,
     output_artifact_hash: str,
 ) -> str:
-    """Deterministic run_id; timestamp is intentionally excluded."""
+    """
+    Deterministic run_id reflecting the treatment's actual output.
+
+    Excluded: created_at_utc, source_git_commit.
+    """
     _require_sha256(pair_id, "pair_id")
     _validate_treatment(treatment)
     _require_sha256(output_artifact_hash, "output_artifact_hash")
@@ -247,7 +385,7 @@ def build_run_id(
 
 
 # ---------------------------------------------------------------------------
-# Validation helpers (private)
+# Private validation helpers
 # ---------------------------------------------------------------------------
 
 
@@ -257,9 +395,20 @@ def _require_nonempty(value: str, name: str) -> None:
 
 
 def _require_nonneg_int(value: int, name: str) -> None:
-    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+    """Non-negative integer; bool subclass is always rejected."""
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ValueError(
             f"{name} must be a non-negative integer, got {value!r}"
+        )
+
+
+def _require_optional_seed(value: Optional[int], name: str) -> None:
+    """seed may be None or a non-negative integer; bool is always rejected."""
+    if value is None:
+        return
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError(
+            f"{name} must be None or a non-negative integer, got {value!r}"
         )
 
 
@@ -270,6 +419,11 @@ def _require_sha256(value: str, name: str) -> None:
         )
 
 
+def _require_optional_sha256(value: Optional[str], name: str) -> None:
+    if value is not None:
+        _require_sha256(value, name)
+
+
 def _validate_treatment(treatment: str) -> None:
     if treatment not in ALLOWED_TREATMENTS:
         raise ValueError(
@@ -278,152 +432,196 @@ def _validate_treatment(treatment: str) -> None:
         )
 
 
+def _validate_utc_timestamp(ts: str, name: str) -> None:
+    """Require UTC ISO-8601 with Z or +00:00.  Naive datetimes are rejected.
+    Non-UTC offsets (e.g. +08:00) are rejected."""
+    if not isinstance(ts, str) or not _ISO8601_UTC_RE.match(ts):
+        raise ValueError(
+            f"{name} must be UTC ISO-8601 with Z or +00:00 offset, "
+            f"got {ts!r}"
+        )
+
+
 def _validate_path_component(component: str, label: str) -> None:
-    """Reject empty string, '..' , '/' , and '\\'."""
-    if not component:
+    """Reject '', '.', '..', and any component containing '/' or '\\'."""
+    if not isinstance(component, str) or not component:
         raise ValueError(f"{label}: path component must not be empty")
-    for forbidden in ("..", "/", "\\"):
-        if forbidden in component:
+    if component in {".", ".."}:
+        raise ValueError(
+            f"{label}: path component {component!r} is forbidden"
+        )
+    for char in ("/", "\\"):
+        if char in component:
             raise ValueError(
                 f"{label}: path component {component!r} contains "
-                f"forbidden sequence {forbidden!r}"
+                f"forbidden character {char!r}"
             )
 
 
 # ---------------------------------------------------------------------------
-# Public metadata validator
+# PairMetadata validation
 # ---------------------------------------------------------------------------
 
-_REQUIRED_FIELDS = (
-    "study_id", "pair_id", "raw_id", "run_id", "model_id", "skill_id",
-    "sample_index", "seed", "prompt_hash", "generation_config_hash",
-    "source_git_commit", "timestamp_utc", "treatment",
-    "raw_ab1_hash", "raw_ab2_hash", "extracted_ab1_hash", "extracted_ab2_hash",
-)
-
-_SHA256_FIELDS = (
-    "pair_id", "raw_id", "run_id",
-    "prompt_hash", "generation_config_hash",
+_PAIR_NULLABLE_FIELDS = (
+    "raw_ab1_id", "raw_ab2_id",
     "raw_ab1_hash", "raw_ab2_hash",
     "extracted_ab1_hash", "extracted_ab2_hash",
 )
 
 
-def validate_metadata(meta: Dict[str, Any]) -> None:
+def validate_pair_metadata(
+    meta: PairMetadata,
+    stage: Literal["draft", "complete"] = "draft",
+) -> None:
     """
-    Raise *ValueError* if *meta* violates schema rules.
+    Validate *meta*.
 
-    Unknown extra fields are tolerated but do NOT participate in ID
-    recalculation.
+    stage="draft"
+        Nullable raw / extracted fields may be None.
+        Identity fields and non-nullable fields must be valid.
+
+    stage="complete"
+        All hash fields must be present and internally consistent
+        (raw IDs verified against raw hashes).
     """
-    # 1. Required fields present
-    for f in _REQUIRED_FIELDS:
-        if f not in meta:
-            raise ValueError(f"Missing required field: {f!r}")
-
-    # 2. Non-empty strings
-    for f in ("study_id", "model_id", "skill_id"):
-        _require_nonempty(meta[f], f)
-
-    # 3. sample_index non-negative int
-    _require_nonneg_int(meta["sample_index"], "sample_index")
-
-    # 4. SHA-256 fields
-    for f in _SHA256_FIELDS:
-        _require_sha256(meta[f], f)
-
-    # 5. timestamp UTC ISO-8601
-    ts = meta["timestamp_utc"]
-    if not isinstance(ts, str) or not _ISO8601_UTC_RE.match(ts):
+    if stage not in ("draft", "complete"):
         raise ValueError(
-            f"timestamp_utc must be UTC ISO-8601, got {ts!r}"
+            f"stage must be 'draft' or 'complete', got {stage!r}"
         )
 
-    # 6. treatment in allowed list
-    _validate_treatment(meta["treatment"])
+    _require_nonempty(meta.study_id, "study_id")
+    _require_nonempty(meta.model_id, "model_id")
+    _require_nonempty(meta.model_revision, "model_revision")
+    _require_nonempty(meta.skill_id, "skill_id")
+    _require_nonneg_int(meta.sample_index, "sample_index")
+    _require_optional_seed(meta.seed, "seed")
+    _require_sha256(meta.bare_prompt_hash, "bare_prompt_hash")
+    _require_sha256(meta.scaffold_prompt_hash, "scaffold_prompt_hash")
+    _require_sha256(meta.generation_config_hash, "generation_config_hash")
+    _require_sha256(meta.pair_id, "pair_id")
+    _require_nonempty(meta.source_git_commit, "source_git_commit")
+    _validate_utc_timestamp(meta.created_at_utc, "created_at_utc")
 
-    # 7. Re-derive IDs and compare
-    #    (requires scaffold_prompt_hash == prompt_hash for ab2/ab3 treatments,
-    #     but the spec stores it under prompt_hash generically)
+    # Verify pair_id is consistent with identity fields
     expected_pair_id = build_pair_id(
-        study_id=meta["study_id"],
-        model_id=meta["model_id"],
-        skill_id=meta["skill_id"],
-        sample_index=meta["sample_index"],
-        scaffold_prompt_hash=meta["prompt_hash"],
-        generation_config_hash=meta["generation_config_hash"],
+        study_id=meta.study_id,
+        model_id=meta.model_id,
+        model_revision=meta.model_revision,
+        skill_id=meta.skill_id,
+        sample_index=meta.sample_index,
+        seed=meta.seed,
+        bare_prompt_hash=meta.bare_prompt_hash,
+        scaffold_prompt_hash=meta.scaffold_prompt_hash,
+        generation_config_hash=meta.generation_config_hash,
     )
-    if meta["pair_id"] != expected_pair_id:
+    if meta.pair_id != expected_pair_id:
         raise ValueError(
-            f"pair_id mismatch: stored={meta['pair_id']!r}, "
+            f"pair_id mismatch: stored={meta.pair_id!r}, "
             f"recalculated={expected_pair_id!r}"
         )
 
-    raw_hash = (
-        meta["raw_ab1_hash"]
-        if meta["treatment"] == "ab1"
-        else meta["raw_ab2_hash"]
-    )
-    expected_raw_id = build_raw_id(meta["pair_id"], raw_hash)
-    if meta["raw_id"] != expected_raw_id:
-        raise ValueError(
-            f"raw_id mismatch: stored={meta['raw_id']!r}, "
-            f"recalculated={expected_raw_id!r}"
-        )
+    # Validate format of nullable fields when present
+    for fname in _PAIR_NULLABLE_FIELDS:
+        _require_optional_sha256(getattr(meta, fname), fname)
 
-    output_hash = (
-        meta["extracted_ab1_hash"]
-        if meta["treatment"] == "ab1"
-        else meta["extracted_ab2_hash"]
-    )
+    if stage == "complete":
+        for fname in _PAIR_NULLABLE_FIELDS:
+            if getattr(meta, fname) is None:
+                raise ValueError(
+                    f"stage='complete' requires {fname!r} to be present"
+                )
+        # Verify raw IDs against hashes
+        expected_raw_ab1_id = build_raw_id(
+            meta.pair_id, "ab1_raw", meta.raw_ab1_hash
+        )
+        if meta.raw_ab1_id != expected_raw_ab1_id:
+            raise ValueError(
+                f"raw_ab1_id mismatch: stored={meta.raw_ab1_id!r}, "
+                f"recalculated={expected_raw_ab1_id!r}"
+            )
+        expected_raw_ab2_id = build_raw_id(
+            meta.pair_id, "scaffold_raw", meta.raw_ab2_hash
+        )
+        if meta.raw_ab2_id != expected_raw_ab2_id:
+            raise ValueError(
+                f"raw_ab2_id mismatch: stored={meta.raw_ab2_id!r}, "
+                f"recalculated={expected_raw_ab2_id!r}"
+            )
+
+
+# ---------------------------------------------------------------------------
+# RunMetadata validation
+# ---------------------------------------------------------------------------
+
+
+def validate_run_metadata(meta: RunMetadata) -> None:
+    """
+    Validate *meta*.  Independent of other treatments.
+
+    Verifies run_id is consistent with pair_id + treatment +
+    output_artifact_hash.
+    """
+    _require_nonempty(meta.study_id, "study_id")
+    _require_sha256(meta.pair_id, "pair_id")
+    _validate_treatment(meta.treatment)
+    _require_sha256(meta.run_id, "run_id")
+    _require_sha256(meta.input_artifact_hash, "input_artifact_hash")
+    _require_sha256(meta.output_artifact_hash, "output_artifact_hash")
+    _require_nonempty(meta.source_git_commit, "source_git_commit")
+    _validate_utc_timestamp(meta.created_at_utc, "created_at_utc")
+    _require_optional_sha256(meta.trace_hash, "trace_hash")
+    _require_optional_sha256(meta.evaluation_hash, "evaluation_hash")
+
     expected_run_id = build_run_id(
-        meta["pair_id"], meta["treatment"], output_hash
+        meta.pair_id, meta.treatment, meta.output_artifact_hash
     )
-    if meta["run_id"] != expected_run_id:
+    if meta.run_id != expected_run_id:
         raise ValueError(
-            f"run_id mismatch: stored={meta['run_id']!r}, "
+            f"run_id mismatch: stored={meta.run_id!r}, "
             f"recalculated={expected_run_id!r}"
         )
 
 
 # ---------------------------------------------------------------------------
-# Shared paired-identity validator
+# Shared run identity validator
 # ---------------------------------------------------------------------------
 
 
-def validate_shared_identity(
-    ab2_meta: Dict[str, Any],
-    ab3_core_meta: Dict[str, Any],
-    ab3_full_meta: Dict[str, Any],
+def validate_shared_run_identity(
+    ab2_run: RunMetadata,
+    ab3_core_run: RunMetadata,
+    ab3_full_run: RunMetadata,
 ) -> None:
     """
-    Assert that ab2 / ab3_core / ab3_full share:
-      - pair_id
-      - raw_id
-      - raw_ab2_hash
-      - extracted_ab2_hash
+    Assert that ab2 / ab3_core / ab3_full runs share:
 
-    Raises *ValueError* on any inconsistency.
+    - pair_id
+    - input_artifact_hash  (all three use extracted_ab2 as their input)
+
+    Their run_ids will legitimately differ because output_artifact_hash
+    differs across treatments.
+
+    Raises ValueError on any inconsistency.
     """
-    metas = {
-        "ab2": ab2_meta,
-        "ab3_core": ab3_core_meta,
-        "ab3_full": ab3_full_meta,
+    runs = {
+        "ab2": ab2_run,
+        "ab3_core": ab3_core_run,
+        "ab3_full": ab3_full_run,
     }
 
-    for shared_field in ("pair_id", "raw_id", "raw_ab2_hash",
-                         "extracted_ab2_hash"):
-        values = {name: m[shared_field] for name, m in metas.items()}
-        unique = set(values.values())
-        if len(unique) != 1:
+    for name, run in runs.items():
+        if run.treatment != name:
             raise ValueError(
-                f"Shared identity mismatch on {shared_field!r}: {values}"
+                f"Expected treatment={name!r}, got {run.treatment!r}"
             )
 
-    for name, meta in metas.items():
-        if meta.get("treatment") != name:
+    for shared_field in ("pair_id", "input_artifact_hash"):
+        values = {
+            name: getattr(run, shared_field) for name, run in runs.items()
+        }
+        if len(set(values.values())) != 1:
             raise ValueError(
-                f"Expected treatment={name!r}, got {meta.get('treatment')!r}"
+                f"Shared run identity mismatch on {shared_field!r}: {values}"
             )
 
 
@@ -437,16 +635,17 @@ class ImmutableWriteError(Exception):
     different content."""
 
 
-_UNCHANGED = "unchanged"
-
-
 def immutable_write_bytes(
     path: pathlib.Path,
     data: bytes,
     artifact_root: pathlib.Path,
 ) -> Literal["written", "unchanged"]:
     """
-    Write *data* to *path* immutably.
+    Write *data* to *path* immutably using exclusive file creation.
+
+    Uses ``open(..., 'xb')`` to atomically create the file.  If the file
+    already exists (FileExistsError), reads the existing content and either
+    returns "unchanged" or raises ImmutableWriteError.
 
     Returns
     -------
@@ -456,22 +655,22 @@ def immutable_write_bytes(
     Raises
     ------
     ImmutableWriteError  – file existed with *different* content.
-    ValueError           – *path* escapes *artifact_root* (path traversal).
+    ValueError           – *path* escapes *artifact_root*.
     """
     _check_no_traversal(path, artifact_root)
-
-    if path.exists():
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with open(path, "xb") as fh:
+            fh.write(data)
+        return "written"
+    except FileExistsError:
         existing = path.read_bytes()
         if existing == data:
-            return _UNCHANGED
+            return "unchanged"
         raise ImmutableWriteError(
             f"Cannot overwrite existing artifact with different content: "
             f"{path}"
         )
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_bytes(data)
-    return "written"
 
 
 def immutable_write_text(
@@ -489,19 +688,21 @@ def immutable_write_json(
     obj: Any,
     artifact_root: pathlib.Path,
 ) -> Literal["written", "unchanged"]:
-    """Stable-serialise *obj* and write immutably."""
-    serialised = json.dumps(obj, sort_keys=True, indent=2,
-                            ensure_ascii=True) + "\n"
+    """Stable-serialise *obj* (sorted keys) and write immutably."""
+    serialised = (
+        json.dumps(obj, sort_keys=True, indent=2, ensure_ascii=True) + "\n"
+    )
     return immutable_write_text(path, serialised, artifact_root)
 
 
 def _check_no_traversal(
-    path: pathlib.Path, artifact_root: pathlib.Path
+    path: pathlib.Path,
+    artifact_root: pathlib.Path,
 ) -> None:
-    """Raise *ValueError* if *path* is outside *artifact_root*."""
+    """Raise ValueError if *path* resolves outside *artifact_root*."""
     try:
-        resolved_path = path.resolve()
-        resolved_root = artifact_root.resolve()
+        resolved_path = pathlib.Path(path).resolve()
+        resolved_root = pathlib.Path(artifact_root).resolve()
         resolved_path.relative_to(resolved_root)
     except ValueError:
         raise ValueError(
@@ -511,26 +712,42 @@ def _check_no_traversal(
 
 
 # ---------------------------------------------------------------------------
-# JSON round-trip helper
+# JSON round-trip helpers
 # ---------------------------------------------------------------------------
 
+_PAIR_KNOWN_FIELDS: frozenset[str] = frozenset({
+    "study_id", "pair_id", "model_id", "model_revision", "skill_id",
+    "sample_index", "seed", "bare_prompt_hash", "scaffold_prompt_hash",
+    "generation_config_hash", "source_git_commit", "created_at_utc",
+    "raw_ab1_id", "raw_ab2_id", "raw_ab1_hash", "raw_ab2_hash",
+    "extracted_ab1_hash", "extracted_ab2_hash",
+})
 
-def metadata_to_dict(meta: ArtifactMetadata) -> Dict[str, Any]:
+_RUN_KNOWN_FIELDS: frozenset[str] = frozenset({
+    "study_id", "pair_id", "treatment", "run_id",
+    "input_artifact_hash", "output_artifact_hash",
+    "source_git_commit", "created_at_utc",
+    "trace_hash", "evaluation_hash",
+})
+
+
+def pair_metadata_to_dict(meta: PairMetadata) -> Dict[str, Any]:
     """Serialise *meta* to a plain dict (JSON-safe)."""
     d: Dict[str, Any] = {
         "study_id": meta.study_id,
         "pair_id": meta.pair_id,
-        "raw_id": meta.raw_id,
-        "run_id": meta.run_id,
         "model_id": meta.model_id,
+        "model_revision": meta.model_revision,
         "skill_id": meta.skill_id,
         "sample_index": meta.sample_index,
         "seed": meta.seed,
-        "prompt_hash": meta.prompt_hash,
+        "bare_prompt_hash": meta.bare_prompt_hash,
+        "scaffold_prompt_hash": meta.scaffold_prompt_hash,
         "generation_config_hash": meta.generation_config_hash,
         "source_git_commit": meta.source_git_commit,
-        "timestamp_utc": meta.timestamp_utc,
-        "treatment": meta.treatment,
+        "created_at_utc": meta.created_at_utc,
+        "raw_ab1_id": meta.raw_ab1_id,
+        "raw_ab2_id": meta.raw_ab2_id,
         "raw_ab1_hash": meta.raw_ab1_hash,
         "raw_ab2_hash": meta.raw_ab2_hash,
         "extracted_ab1_hash": meta.extracted_ab1_hash,
@@ -540,51 +757,95 @@ def metadata_to_dict(meta: ArtifactMetadata) -> Dict[str, Any]:
     return d
 
 
-def metadata_from_dict(d: Dict[str, Any]) -> ArtifactMetadata:
-    """Deserialise a plain dict to *ArtifactMetadata*."""
-    known = set(_REQUIRED_FIELDS)
-    extra = {k: v for k, v in d.items() if k not in known}
-    return ArtifactMetadata(
+def pair_metadata_from_dict(d: Dict[str, Any]) -> PairMetadata:
+    """Deserialise a plain dict to :class:`PairMetadata`."""
+    extra = {k: v for k, v in d.items() if k not in _PAIR_KNOWN_FIELDS}
+    return PairMetadata(
         study_id=d["study_id"],
         pair_id=d["pair_id"],
-        raw_id=d["raw_id"],
-        run_id=d["run_id"],
         model_id=d["model_id"],
+        model_revision=d["model_revision"],
         skill_id=d["skill_id"],
         sample_index=d["sample_index"],
-        seed=d["seed"],
-        prompt_hash=d["prompt_hash"],
+        seed=d.get("seed"),
+        bare_prompt_hash=d["bare_prompt_hash"],
+        scaffold_prompt_hash=d["scaffold_prompt_hash"],
         generation_config_hash=d["generation_config_hash"],
         source_git_commit=d["source_git_commit"],
-        timestamp_utc=d["timestamp_utc"],
-        treatment=d["treatment"],
-        raw_ab1_hash=d["raw_ab1_hash"],
-        raw_ab2_hash=d["raw_ab2_hash"],
-        extracted_ab1_hash=d["extracted_ab1_hash"],
-        extracted_ab2_hash=d["extracted_ab2_hash"],
+        created_at_utc=d["created_at_utc"],
+        raw_ab1_id=d.get("raw_ab1_id"),
+        raw_ab2_id=d.get("raw_ab2_id"),
+        raw_ab1_hash=d.get("raw_ab1_hash"),
+        raw_ab2_hash=d.get("raw_ab2_hash"),
+        extracted_ab1_hash=d.get("extracted_ab1_hash"),
+        extracted_ab2_hash=d.get("extracted_ab2_hash"),
         extra=extra,
     )
 
 
-def metadata_json_round_trip(meta: ArtifactMetadata) -> ArtifactMetadata:
-    """Serialise to JSON string and deserialise; used for round-trip tests."""
+def pair_metadata_json_round_trip(meta: PairMetadata) -> PairMetadata:
+    """Serialise to JSON string and back; used for round-trip tests."""
     raw_json = json.dumps(
-        metadata_to_dict(meta), sort_keys=True, separators=(",", ":"),
-        ensure_ascii=True
+        pair_metadata_to_dict(meta),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
     )
-    restored_dict = json.loads(raw_json)
-    return metadata_from_dict(restored_dict)
+    return pair_metadata_from_dict(json.loads(raw_json))
+
+
+def run_metadata_to_dict(meta: RunMetadata) -> Dict[str, Any]:
+    """Serialise *meta* to a plain dict (JSON-safe)."""
+    d: Dict[str, Any] = {
+        "study_id": meta.study_id,
+        "pair_id": meta.pair_id,
+        "treatment": meta.treatment,
+        "run_id": meta.run_id,
+        "input_artifact_hash": meta.input_artifact_hash,
+        "output_artifact_hash": meta.output_artifact_hash,
+        "source_git_commit": meta.source_git_commit,
+        "created_at_utc": meta.created_at_utc,
+        "trace_hash": meta.trace_hash,
+        "evaluation_hash": meta.evaluation_hash,
+    }
+    d.update(meta.extra)
+    return d
+
+
+def run_metadata_from_dict(d: Dict[str, Any]) -> RunMetadata:
+    """Deserialise a plain dict to :class:`RunMetadata`."""
+    extra = {k: v for k, v in d.items() if k not in _RUN_KNOWN_FIELDS}
+    return RunMetadata(
+        study_id=d["study_id"],
+        pair_id=d["pair_id"],
+        treatment=d["treatment"],
+        run_id=d["run_id"],
+        input_artifact_hash=d["input_artifact_hash"],
+        output_artifact_hash=d["output_artifact_hash"],
+        source_git_commit=d["source_git_commit"],
+        created_at_utc=d["created_at_utc"],
+        trace_hash=d.get("trace_hash"),
+        evaluation_hash=d.get("evaluation_hash"),
+        extra=extra,
+    )
+
+
+def run_metadata_json_round_trip(meta: RunMetadata) -> RunMetadata:
+    """Serialise to JSON string and back; used for round-trip tests."""
+    raw_json = json.dumps(
+        run_metadata_to_dict(meta),
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
+    )
+    return run_metadata_from_dict(json.loads(raw_json))
 
 
 # ---------------------------------------------------------------------------
-# Utility: current UTC timestamp
+# Utility
 # ---------------------------------------------------------------------------
 
 
 def utc_now_iso8601() -> str:
-    """Return current UTC time as ISO-8601 string (always +00:00 suffix)."""
-    return (
-        datetime.now(tz=timezone.utc)
-        .isoformat(timespec="microseconds")
-        .replace("+00:00", "+00:00")
-    )
+    """Return current UTC time as ISO-8601 string with +00:00 offset."""
+    return datetime.now(tz=timezone.utc).isoformat(timespec="microseconds")
