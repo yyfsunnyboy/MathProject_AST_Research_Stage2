@@ -44,16 +44,21 @@ class ASTHealer(ast.NodeTransformer):
     5. 修復 fmt_num 參數問題
     """
     
-    def __init__(self, ai_client=None):
+    def __init__(self, ai_client=None, require_entry_point: bool = True,
+                 entry_point: str = "generate"):
         """
         初始化 AST Healer
         
         Args:
             ai_client: (Optional) 用於執行 Semantic Healing 的 AI 客戶端
+            require_entry_point: 是否在缺失進入點函式時注入備用函式（數學出題預設 True）
+            entry_point: 進入點函式名稱（數學出題預設 generate）
         """
         self.fixes = 0
         self.ai_client = ai_client
         self.logs = []
+        self.require_entry_point = require_entry_point
+        self.entry_point = entry_point
 
     def visit_BinOp(self, node):
         """修復二元運算符"""
@@ -401,13 +406,16 @@ class ASTHealer(ast.NodeTransformer):
             new_tree = self.visit(tree)
             ast.fix_missing_locations(new_tree)
             
-            # [V52.0 Core Safety Net] 保證 generate() 函數存在
-            # 這是為了防範嚴重的幻覺，導致整個模組缺失進入點 (MCRI 會因 Load Failed 全盤掛掉)
-            has_generate = any(isinstance(node, ast.FunctionDef) and node.name == 'generate' for node in new_tree.body)
-            if not has_generate:
+            # [V52.0 Core Safety Net] 保證進入點函式存在（僅數學出題等 require_entry_point 模式）
+            has_entry = any(isinstance(node, ast.FunctionDef) and node.name == self.entry_point
+                            for node in new_tree.body)
+            if self.require_entry_point and not has_entry:
                 self.fixes += 1
-                self.logs.append("AST Healer: Critical Hallucination - Injected missing generate() fallback.")
-                logger.error("🛑 偵測到致命性幻覺：完全缺失 generate() 函式。正在啟動【最後防線】注入備用函式...")
+                self.logs.append(
+                    f"AST Healer: Critical Hallucination - Injected missing {self.entry_point}() fallback.")
+                logger.error(
+                    f"🛑 偵測到致命性幻覺：完全缺失 {self.entry_point}() 函式。"
+                    f"正在啟動【最後防線】注入備用函式...")
 
                 # ── Context-aware fallback ───────────────────────────────────
                 # If the code already references DomainFunctionHelper (radical
@@ -419,10 +427,10 @@ class ASTHealer(ast.NodeTransformer):
                 # NOTE: this function is appended AFTER self.visit() already ran,
                 # so visit_ImportFrom will NOT strip the import inside the try block.
                 _fallback_src = (
-                    "def generate(level=1, **kwargs):\n"
-                    "    # Injected by AST Healer — assembly failure signal\n"
+                    f"def {self.entry_point}(level=1, **kwargs):\n"
+                    f"    # Injected by AST Healer — assembly failure signal\n"
                     "    return {\n"
-                    "        'question_text':  'Fallback due to missing generate() wrapper',\n"
+                    f"        'question_text':  'Fallback due to missing {self.entry_point}() wrapper',\n"
                     "        'correct_answer': '\\\\text{Failed}',\n"
                     "    }\n"
                 )
@@ -432,7 +440,7 @@ class ASTHealer(ast.NodeTransformer):
                 except Exception:
                     # Ultra-safe last resort: plain dict return via AST nodes
                     fallback_func = ast.FunctionDef(
-                        name='generate',
+                        name=self.entry_point,
                         args=ast.arguments(
                             posonlyargs=[], args=[], kwonlyargs=[],
                             kw_defaults=[], defaults=[],
@@ -445,7 +453,8 @@ class ASTHealer(ast.NodeTransformer):
                                         ast.Constant(value="correct_answer"),
                                     ],
                                     values=[
-                                        ast.Constant(value="Fallback due to missing generate() wrapper"),
+                                        ast.Constant(
+                                            value=f"Fallback due to missing {self.entry_point}() wrapper"),
                                         ast.Constant(value="\\text{Failed}"),
                                     ],
                                 )
