@@ -7,39 +7,55 @@ No model API calls are made here.  The pipeline:
 2. Computes raw hashes and IDs (ab1_raw / scaffold_raw roles).
 3. Runs canonical extraction – scaffold raw is extracted ONCE and shared
    across Ab2, Ab3-Core, and Ab3-Full.
-4. Applies pass-through treatment adapters (real Healer/Adapter to be
-   wired in Commit 3).
+4. Applies treatment adapters:
+     - Ab1, Ab2: pure pass-through, no adapter invoked.
+     - Ab3-Core: Core Adapter runs once on the extracted scaffold
+       (agent_tools/finals_rebuild/core_adapter.py).
+     - Ab3-Full: Spec Adapter runs once on the Core Adapter's own output
+       (agent_tools/finals_rebuild/spec_adapter.py) — never on the raw
+       extracted scaffold.
+   Commit 3A ships every adapter rule disabled; see core_adapter.py /
+   spec_adapter.py for the rule registries and trace.py for the
+   TreatmentTrace schema.
 5. Builds ArtifactPaths and resolves per-treatment timestamps (idempotent:
    re-uses existing created_at_utc if run metadata already exists).
-6. Builds and validates RunMetadata for each treatment.
+6. Builds and validates RunMetadata for each treatment; binds each
+   adapter's TreatmentTrace to the resolved run_id/timestamp and computes
+   RunMetadata.trace_hash from it.
 7. Verifies shared run identity (ab2/ab3_core/ab3_full).
 8. Completes PairMetadata (stage="complete") and validates.
-9. Writes all artifacts via immutable helpers.
-10. Verifies on-disk output hashes match RunMetadata.
+9. Writes all artifacts via immutable helpers, including trace.json for
+   ab3_core / ab3_full.
+10. Verifies on-disk output hashes (and trace hashes) match RunMetadata.
 
 Idempotency
 -----------
 Re-running the pipeline with the same inputs succeeds without errors:
 - All text/extracted artifacts are byte-identical → immutable write
   returns "unchanged".
-- run metadata JSONs preserve their original created_at_utc so that
-  repeated serialisation produces bit-identical files.
+- run metadata JSONs and trace.json preserve their original created_at_utc
+  so that repeated serialisation produces bit-identical files.
 
-Pass-through marker
--------------------
-All four treatments carry (stored in RunMetadata.extra / run JSON):
-    treatment_applied = false
-    changed           = false
-    implementation_status = "pass_through"
+Treatment status marker
+------------------------
+Stored in RunMetadata.extra / run JSON for every treatment:
+    treatment_applied
+    changed
+    implementation_status  (see artifacts.ALLOWED_IMPLEMENTATION_STATUSES)
 
-This is NOT "healer_applied=True" or "repaired=True".
+Ab1/Ab2 always carry treatment_applied=false, changed=false,
+implementation_status="pass_through". Ab3-Core/Ab3-Full reflect their
+adapter's TreatmentTrace; in Commit 3A both are "implemented" or
+"implemented_no_safe_rule_triggered" (Core, and Spec on applicable
+domains) or "not_applicable" (Spec on non-applicable domains) — never
+"healer_applied=True" or "repaired=True" in the misleading sense.
 """
 
 from __future__ import annotations
 
 import json
 import pathlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, Dict, Optional
 
 from agent_tools.finals_rebuild.artifacts import (
@@ -60,7 +76,15 @@ from agent_tools.finals_rebuild.artifacts import (
     validate_run_metadata,
     validate_shared_run_identity,
 )
+from agent_tools.finals_rebuild.core_adapter import run_core_adapter
 from agent_tools.finals_rebuild.extraction import ExtractionResult, extract_code
+from agent_tools.finals_rebuild.spec_adapter import run_spec_adapter
+from agent_tools.finals_rebuild.trace import (
+    TreatmentTrace,
+    compute_trace_hash,
+    treatment_trace_to_dict,
+    validate_treatment_trace,
+)
 
 
 class PipelineError(Exception):
@@ -94,6 +118,7 @@ class TreatmentOutput:
     changed: bool
     implementation_status: str
     run_metadata: RunMetadata
+    trace: Optional[TreatmentTrace] = None
 
 
 @dataclass(frozen=True)
@@ -197,7 +222,22 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
     extracted_scaffold: str = ext_scaffold.extracted_code  # type: ignore[assignment]
     extracted_scaffold_hash: str = ext_scaffold.extracted_code_hash  # type: ignore[assignment]
 
-    # ── Step 5: Pass-through treatment adapters ─────────────────────────────
+    # ── Step 5: Treatment adapters ───────────────────────────────────────────
+    # Ab1 and Ab2 remain pure pass-through — no adapter is invoked for either.
+    # Ab3-Core runs the Core Adapter once on the shared extracted scaffold.
+    # Ab3-Full runs the Spec Adapter once on the Core Adapter's own output
+    # (never on the raw extracted scaffold), so Core always executes exactly
+    # once and Spec always receives Core's output as its input.
+    core_result = run_core_adapter(
+        pair_id=meta.pair_id,
+        input_code=extracted_scaffold,
+    )
+    spec_result = run_spec_adapter(
+        pair_id=meta.pair_id,
+        skill_id=meta.skill_id,
+        input_code=core_result.output_code,
+    )
+
     _slot: Dict[str, Dict[str, Any]] = {
         "ab1": {
             "output_code": extracted_ab1,
@@ -205,6 +245,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             "treatment_applied": False,
             "changed": False,
             "implementation_status": "pass_through",
+            "trace": None,
         },
         "ab2": {
             "output_code": extracted_scaffold,
@@ -212,20 +253,23 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             "treatment_applied": False,
             "changed": False,
             "implementation_status": "pass_through",
+            "trace": None,
         },
         "ab3_core": {
-            "output_code": extracted_scaffold,
+            "output_code": core_result.output_code,
             "input_hash": extracted_scaffold_hash,
-            "treatment_applied": False,
-            "changed": False,
-            "implementation_status": "pass_through",
+            "treatment_applied": core_result.trace.applied,
+            "changed": core_result.trace.changed,
+            "implementation_status": core_result.trace.implementation_status,
+            "trace": core_result.trace,
         },
         "ab3_full": {
-            "output_code": extracted_scaffold,
-            "input_hash": extracted_scaffold_hash,
-            "treatment_applied": False,
-            "changed": False,
-            "implementation_status": "pass_through",
+            "output_code": spec_result.output_code,
+            "input_hash": spec_result.trace.input_hash,
+            "treatment_applied": spec_result.trace.applied,
+            "changed": spec_result.trace.changed,
+            "implementation_status": spec_result.trace.implementation_status,
+            "trace": spec_result.trace,
         },
     }
 
@@ -253,6 +297,18 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             default=now,
         )
 
+        # Adapters cannot know run_id or the idempotent timestamp in advance
+        # (both depend on output_hash / on-disk state resolved above), so
+        # they return a trace with placeholders that is bound here.
+        finalized_trace: Optional[TreatmentTrace] = None
+        trace_hash: Optional[str] = None
+        if slot["trace"] is not None:
+            finalized_trace = replace(
+                slot["trace"], run_id=run_id, created_at_utc=run_ts
+            )
+            validate_treatment_trace(finalized_trace)
+            trace_hash = compute_trace_hash(finalized_trace)
+
         run_meta = RunMetadata(
             study_id=meta.study_id,
             pair_id=meta.pair_id,
@@ -262,7 +318,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             output_artifact_hash=output_hash,
             source_git_commit=meta.source_git_commit,
             created_at_utc=run_ts,
-            trace_hash=None,
+            trace_hash=trace_hash,
             evaluation_hash=None,
             extra={
                 "treatment_applied": slot["treatment_applied"],
@@ -280,6 +336,7 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             changed=slot["changed"],
             implementation_status=slot["implementation_status"],
             run_metadata=run_meta,
+            trace=finalized_trace,
         )
 
     # ── Step 7: Shared run identity ─────────────────────────────────────────
@@ -339,6 +396,14 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
             artifact_root,
         )
 
+    for treatment, to in treatment_outputs.items():
+        if to.trace is not None:
+            immutable_write_json(
+                ap.trace_json(treatment),
+                treatment_trace_to_dict(to.trace),
+                artifact_root,
+            )
+
     # ── Step 10: Verify output hashes ───────────────────────────────────────
     for treatment, to in treatment_outputs.items():
         actual_bytes = ap.treatment_file(treatment).read_bytes()
@@ -349,6 +414,15 @@ def run_paired_pipeline(inp: PairedPipelineInput) -> PairedPipelineResult:
                 f"{treatment}: output hash mismatch after write: "
                 f"expected={expected_hash!r}, actual={actual_hash!r}"
             )
+        if to.trace is not None:
+            actual_trace_bytes = ap.trace_json(treatment).read_bytes()
+            actual_trace_hash = sha256_bytes(actual_trace_bytes)
+            expected_trace_hash = to.run_metadata.trace_hash
+            if actual_trace_hash != expected_trace_hash:
+                raise PipelineError(
+                    f"{treatment}: trace hash mismatch after write: "
+                    f"expected={expected_trace_hash!r}, actual={actual_trace_hash!r}"
+                )
 
     return PairedPipelineResult(
         pair_id=meta.pair_id,

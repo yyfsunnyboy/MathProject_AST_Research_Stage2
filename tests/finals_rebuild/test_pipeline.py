@@ -75,15 +75,21 @@ def _make_input(
     scaffold_prompt: str = _SCAFFOLD_PROMPT,
     raw_ab1: str = _RAW_AB1,
     raw_scaffold: str = _RAW_SCAFFOLD,
+    skill_id: str = "algebra_01",
 ) -> PairedPipelineInput:
-    """Build a fully-consistent PairedPipelineInput for tests."""
+    """Build a fully-consistent PairedPipelineInput for tests.
+
+    skill_id defaults to a non-K12-math id ("algebra_01") so the Spec
+    Adapter's default behaviour in most tests is a no-op; pass a
+    jh_/gh_-prefixed skill_id to exercise the applicable-domain path.
+    """
     bare_hash = sha256_text(bare_prompt)
     scaffold_hash = sha256_text(scaffold_prompt)
     pair_id = build_pair_id(
         study_id="test_study",
         model_id="test_model",
         model_revision="v1",
-        skill_id="algebra_01",
+        skill_id=skill_id,
         sample_index=0,
         seed=0,
         bare_prompt_hash=bare_hash,
@@ -95,7 +101,7 @@ def _make_input(
         pair_id=pair_id,
         model_id="test_model",
         model_revision="v1",
-        skill_id="algebra_01",
+        skill_id=skill_id,
         sample_index=0,
         seed=0,
         bare_prompt_hash=bare_hash,
@@ -354,16 +360,32 @@ def test_run_metadata_output_hash_matches_file(tmp_path):
 
 
 def test_treatment_applied_is_false(tmp_path):
+    """
+    Ab1/Ab2 remain pure pass-through (treatment_applied=False). Ab3-Core
+    always runs the Core Adapter (treatment_applied=True, even though
+    Commit 3A has no enabled rule so changed=False). Ab3-Full's
+    treatment_applied reflects Spec applicability for this skill_id; the
+    fixture's "algebra_01" skill_id is not K12-math, so Spec is a no-op.
+    """
     inp = _make_input(tmp_path)
     result = run_paired_pipeline(inp)
 
-    for treatment, to in result.treatment_outputs.items():
+    for treatment in ("ab1", "ab2"):
+        to = result.treatment_outputs[treatment]
         assert to.treatment_applied is False, (
             f"{treatment}: treatment_applied must be False in pass-through"
         )
         assert to.changed is False, (
             f"{treatment}: changed must be False in pass-through"
         )
+
+    core_to = result.treatment_outputs["ab3_core"]
+    assert core_to.treatment_applied is True
+    assert core_to.changed is False  # no rule enabled in Commit 3A
+
+    full_to = result.treatment_outputs["ab3_full"]
+    assert full_to.treatment_applied is False  # non-K12-math skill_id → no-op
+    assert full_to.changed is False
 
 
 # ============================================================
@@ -375,11 +397,23 @@ def test_implementation_status_is_pass_through(tmp_path):
     inp = _make_input(tmp_path)
     result = run_paired_pipeline(inp)
 
-    for treatment, to in result.treatment_outputs.items():
+    for treatment in ("ab1", "ab2"):
+        to = result.treatment_outputs[treatment]
         assert to.implementation_status == "pass_through", (
             f"{treatment}: expected 'pass_through', "
             f"got {to.implementation_status!r}"
         )
+
+    # Core Adapter ran (no enabled rule triggered in Commit 3A).
+    assert (
+        result.treatment_outputs["ab3_core"].implementation_status
+        == "implemented_no_safe_rule_triggered"
+    )
+    # Spec Adapter is a no-op for this fixture's non-K12-math skill_id.
+    assert (
+        result.treatment_outputs["ab3_full"].implementation_status
+        == "not_applicable"
+    )
 
 
 # ============================================================
@@ -487,13 +521,25 @@ def test_run_metadata_json_files_are_valid(tmp_path):
     result = run_paired_pipeline(inp)
     ap = result.artifact_paths
 
+    expected_status = {
+        "ab1": "pass_through",
+        "ab2": "pass_through",
+        "ab3_core": "implemented_no_safe_rule_triggered",
+        "ab3_full": "not_applicable",  # non-K12-math skill_id in this fixture
+    }
+    expected_applied = {
+        "ab1": False,
+        "ab2": False,
+        "ab3_core": True,
+        "ab3_full": False,
+    }
     for treatment in ALLOWED_TREATMENTS:
         raw_json = ap.run_metadata_json(treatment).read_text(encoding="utf-8")
         stored = json.loads(raw_json)
         assert stored["treatment"] == treatment
         assert stored["pair_id"] == result.pair_id
-        assert stored["treatment_applied"] is False
-        assert stored["implementation_status"] == "pass_through"
+        assert stored["treatment_applied"] is expected_applied[treatment]
+        assert stored["implementation_status"] == expected_status[treatment]
 
 
 # ============================================================
@@ -560,3 +606,228 @@ def test_pipeline_fails_on_empty_fenced_scaffold(tmp_path):
     inp = _make_input(tmp_path, raw_scaffold=empty_raw)
     with pytest.raises(PipelineError):
         run_paired_pipeline(inp)
+
+
+# ============================================================
+# Commit 3A: Core → Spec adapter chain
+# ============================================================
+
+
+def test_ab2_does_not_invoke_core_or_spec(tmp_path, monkeypatch):
+    calls = []
+    import agent_tools.finals_rebuild.pipeline as pipe_mod
+
+    orig_core = pipe_mod.run_core_adapter
+    orig_spec = pipe_mod.run_spec_adapter
+
+    def spy_core(**kwargs):
+        calls.append("core")
+        return orig_core(**kwargs)
+
+    def spy_spec(**kwargs):
+        calls.append("spec")
+        return orig_spec(**kwargs)
+
+    monkeypatch.setattr(pipe_mod, "run_core_adapter", spy_core)
+    monkeypatch.setattr(pipe_mod, "run_spec_adapter", spy_spec)
+
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+
+    # Ab2 is untouched pass-through content, identical to extracted scaffold.
+    ab2_code = result.artifact_paths.extracted_ab2.read_text(encoding="utf-8")
+    assert result.treatment_outputs["ab2"].output_code == ab2_code
+    assert result.treatment_outputs["ab2"].trace is None
+
+    # Core/Spec run exactly once each (for ab3_core / ab3_full), never twice
+    # and never on behalf of ab2.
+    assert calls == ["core", "spec"]
+
+
+def test_core_input_hash_equals_scaffold_extracted_hash(tmp_path):
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    assert core_trace.input_hash == result.extracted_scaffold_hash
+
+
+def test_spec_input_hash_equals_core_output_hash(tmp_path):
+    inp = _make_input(tmp_path)
+    result = run_paired_pipeline(inp)
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    spec_trace = result.treatment_outputs["ab3_full"].trace
+    assert spec_trace.input_hash == core_trace.output_hash
+
+
+def test_core_runs_exactly_once(tmp_path, monkeypatch):
+    import agent_tools.finals_rebuild.pipeline as pipe_mod
+
+    call_count = {"n": 0}
+    orig_core = pipe_mod.run_core_adapter
+
+    def spy_core(**kwargs):
+        call_count["n"] += 1
+        return orig_core(**kwargs)
+
+    monkeypatch.setattr(pipe_mod, "run_core_adapter", spy_core)
+    inp = _make_input(tmp_path)
+    run_paired_pipeline(inp)
+    assert call_count["n"] == 1
+
+
+def test_spec_runs_exactly_once(tmp_path, monkeypatch):
+    import agent_tools.finals_rebuild.pipeline as pipe_mod
+
+    call_count = {"n": 0}
+    orig_spec = pipe_mod.run_spec_adapter
+
+    def spy_spec(**kwargs):
+        call_count["n"] += 1
+        return orig_spec(**kwargs)
+
+    monkeypatch.setattr(pipe_mod, "run_spec_adapter", spy_spec)
+    inp = _make_input(tmp_path)
+    run_paired_pipeline(inp)
+    assert call_count["n"] == 1
+
+
+def test_core_trace_has_no_enabled_domain_specific_step(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers")
+    result = run_paired_pipeline(inp)
+    core_trace = result.treatment_outputs["ab3_core"].trace
+    for step in core_trace.steps:
+        assert not (step.enabled and step.domain_specific)
+
+
+def test_all_core_and_spec_steps_are_disabled_in_commit_3a(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers")
+    result = run_paired_pipeline(inp)
+    for treatment in ("ab3_core", "ab3_full"):
+        trace = result.treatment_outputs[treatment].trace
+        for step in trace.steps:
+            assert step.enabled is False, (
+                f"{treatment}: rule {step.rule_id!r} must be disabled in Commit 3A"
+            )
+
+
+def test_pipeline_never_calls_regex_or_ast_healer_directly(tmp_path):
+    """
+    Structural check: pipeline.py must not import or call the legacy
+    Healer classes/methods it is explicitly forbidden from touching.
+    """
+    import agent_tools.finals_rebuild.pipeline as pipe_mod
+    source = inspect.getsource(pipe_mod)
+    for forbidden in (
+        "RegexHealer",
+        "ASTHealer",
+        "AntiDuplicationHealer",
+        "UnifiedCleanupHealer",
+        "heal_minimal",
+        "heal_unified",
+        ".heal(",
+        "semantic_heal",
+        "google.generativeai",
+        "openai",
+        "anthropic",
+        "call_ai_with_retry",
+    ):
+        assert forbidden not in source, f"pipeline.py must not contain {forbidden!r}"
+
+
+def test_no_generate_fallback_in_output(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_數學1上_FourArithmeticOperationsOfIntegers")
+    result = run_paired_pipeline(inp)
+    for treatment in ("ab3_core", "ab3_full"):
+        code = result.treatment_outputs[treatment].output_code
+        assert "Fallback due to missing generate() wrapper" not in code
+        assert "\\text{Failed}" not in code
+
+
+def test_non_math_domain_spec_is_applicable_false_changed_false(tmp_path):
+    inp = _make_input(tmp_path, skill_id="algebra_01")
+    result = run_paired_pipeline(inp)
+    spec_trace = result.treatment_outputs["ab3_full"].trace
+    assert spec_trace.applicable is False
+    assert spec_trace.changed is False
+    assert spec_trace.implementation_status == "not_applicable"
+
+
+def test_k12_math_domain_spec_has_no_safe_rule_yet(tmp_path):
+    inp = _make_input(tmp_path, skill_id="gh_ApplicationsOfDerivatives")
+    result = run_paired_pipeline(inp)
+    spec_trace = result.treatment_outputs["ab3_full"].trace
+    assert spec_trace.applicable is True
+    assert spec_trace.changed is False
+    assert spec_trace.implementation_status == "implemented_no_safe_rule_triggered"
+
+
+def test_trace_hashes_match_actual_artifact_bytes(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ("ab3_core", "ab3_full"):
+        trace_bytes = ap.trace_json(treatment).read_bytes()
+        actual_hash = sha256_bytes(trace_bytes)
+        assert actual_hash == result.treatment_outputs[treatment].run_metadata.trace_hash
+
+
+def test_run_metadata_trace_hash_matches_trace_json(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ("ab3_core", "ab3_full"):
+        stored_meta = json.loads(ap.run_metadata_json(treatment).read_text(encoding="utf-8"))
+        trace_bytes = ap.trace_json(treatment).read_bytes()
+        assert stored_meta["trace_hash"] == sha256_bytes(trace_bytes)
+
+
+def test_ab1_and_ab2_have_no_trace_json(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    ap = result.artifact_paths
+    for treatment in ("ab1", "ab2"):
+        assert not ap.trace_json(treatment).exists()
+
+
+def test_second_run_same_input_trace_json_is_idempotent(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result1 = run_paired_pipeline(inp)
+    trace_bytes_1 = {
+        t: result1.artifact_paths.trace_json(t).read_bytes()
+        for t in ("ab3_core", "ab3_full")
+    }
+    result2 = run_paired_pipeline(inp)  # must not raise
+    trace_bytes_2 = {
+        t: result2.artifact_paths.trace_json(t).read_bytes()
+        for t in ("ab3_core", "ab3_full")
+    }
+    assert trace_bytes_1 == trace_bytes_2
+
+
+def test_core_and_spec_run_ids_differ_and_bind_own_output(tmp_path):
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    core_to = result.treatment_outputs["ab3_core"]
+    full_to = result.treatment_outputs["ab3_full"]
+    assert core_to.run_id != full_to.run_id
+    assert core_to.trace.run_id == core_to.run_id
+    assert full_to.trace.run_id == full_to.run_id
+    assert core_to.trace.output_hash == core_to.output_hash
+    assert full_to.trace.output_hash == full_to.output_hash
+
+
+def test_all_87_plus_new_tests_still_pass_smoke(tmp_path):
+    """
+    Smoke test: a full pipeline run with a K12-math skill_id completes and
+    produces a fully self-consistent artifact tree (existing invariants +
+    Commit 3A additions all hold simultaneously).
+    """
+    inp = _make_input(tmp_path, skill_id="jh_math_skill")
+    result = run_paired_pipeline(inp)
+    assert result.validation_status == "complete"
+    ap = result.artifact_paths
+    for treatment in ALLOWED_TREATMENTS:
+        assert ap.treatment_file(treatment).exists()
+        assert ap.run_metadata_json(treatment).exists()
+    assert ap.trace_json("ab3_core").exists()
+    assert ap.trace_json("ab3_full").exists()

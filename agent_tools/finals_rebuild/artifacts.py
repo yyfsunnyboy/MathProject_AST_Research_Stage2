@@ -50,6 +50,16 @@ ALLOWED_RAW_ROLES: frozenset[str] = frozenset({"ab1_raw", "scaffold_raw"})
 
 SHARED_TREATMENTS: frozenset[str] = frozenset({"ab2", "ab3_core", "ab3_full"})
 
+# RunMetadata.extra["implementation_status"] allowlist. "pass_through" is the
+# Ab1/Ab2 (and pre-Commit-3A Ab3) value; the other three are emitted by the
+# Core/Spec adapters (see agent_tools/finals_rebuild/trace.py).
+ALLOWED_IMPLEMENTATION_STATUSES: frozenset[str] = frozenset({
+    "pass_through",
+    "implemented",
+    "implemented_no_safe_rule_triggered",
+    "not_applicable",
+})
+
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 
 # Accepts Z and +00:00; rejects naive datetimes and non-UTC offsets.
@@ -258,6 +268,10 @@ class ArtifactPaths:
 
     def run_metadata_json(self, treatment: str) -> pathlib.Path:
         return self.run_dir(treatment) / "metadata.json"
+
+    def trace_json(self, treatment: str) -> pathlib.Path:
+        _validate_treatment(treatment)
+        return self.run_dir(treatment) / "trace.json"
 
 
 # ---------------------------------------------------------------------------
@@ -581,6 +595,26 @@ def validate_run_metadata(meta: RunMetadata) -> None:
             f"RunMetadata.extra must not contain official field names; "
             f"conflicts: {sorted(extra_conflicts)}"
         )
+
+    # extra["implementation_status"] / extra["treatment_applied"] /
+    # extra["changed"] are not yet official RunMetadata fields, but they are
+    # not free-form either: unknown implementation_status values are
+    # rejected so a typo or an unreviewed new status can never slip through.
+    if "implementation_status" in meta.extra:
+        status = meta.extra["implementation_status"]
+        if status not in ALLOWED_IMPLEMENTATION_STATUSES:
+            raise ValueError(
+                f"RunMetadata.extra['implementation_status'] must be one of "
+                f"{sorted(ALLOWED_IMPLEMENTATION_STATUSES)}, got {status!r}"
+            )
+    if "treatment_applied" in meta.extra and not isinstance(
+        meta.extra["treatment_applied"], bool
+    ):
+        raise ValueError(
+            "RunMetadata.extra['treatment_applied'] must be a bool"
+        )
+    if "changed" in meta.extra and not isinstance(meta.extra["changed"], bool):
+        raise ValueError("RunMetadata.extra['changed'] must be a bool")
 
     expected_run_id = build_run_id(
         meta.pair_id, meta.treatment, meta.output_artifact_hash
