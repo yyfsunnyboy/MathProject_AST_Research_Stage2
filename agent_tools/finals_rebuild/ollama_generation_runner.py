@@ -11,20 +11,26 @@ local Ollama HTTP API. This module never:
     an existing Ab2g completion, produced by core_adapter.py/spec_adapter.py
     via agent_tools.finals_rebuild.public_benchmark_runner; this module
     never regenerates them and never calls those adapters)
-  - calls the Ollama CLI (HTTP API only, via `requests`)
+  - calls the Ollama CLI (HTTP API only, via the standard library `urllib`)
   - persists chain-of-thought: a non-empty `thinking` field in the API
-    response, or a literal `<think>`/`</think>` tag in the `response` text,
-    fails the run closed rather than being silently stripped
-  - silently strips Markdown code fences from a completion — a fenced
-    response fails closed instead of being "cleaned up" into a fabricated
-    completion
-  - prepends the task prompt onto the completion, or accepts a completion
-    that repeats the task's `def <entry_point>(...)` signature
+    response, or a literal `<think>`/`</think>` tag in the raw `response`
+    text, fails the run closed rather than being silently stripped
+  - runs its own regex/LLM extraction: the completion is always produced by
+    the existing, deterministic `agent_tools.finals_rebuild.extraction
+    .extract_code()` — this module never re-implements fence/prose parsing
+    and never asks a model to "clean up" a response
+  - prepends the task prompt onto the completion, or edits the code that
+    `extract_code()` returned
   - retries a timed-out or non-200 request
 
-Every failure mode is fail-closed: raises OllamaGenerationError (stage
-selects "failed_preflight" vs "failed_generation") before any output file
-is written for that task/treatment.
+A Markdown code fence or explanatory prose surrounding the code is *not* a
+failure by itself — `extract_code()` is expected to and does handle a
+single fenced block plus surrounding text. Only an ambiguous extraction
+(multiple candidate blocks), an empty extraction, or an unsupported
+extraction status fails closed. Every failure mode is fail-closed: raises
+OllamaGenerationError (stage selects "failed_preflight" vs
+"failed_generation") before any output file is written for that
+task/treatment.
 """
 
 from __future__ import annotations
@@ -38,11 +44,16 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from typing import Any, Dict, List, Optional, Sequence, Union
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 from agent_tools.finals_rebuild.benchmarks_adapter import (
     PublicBenchmarkTask,
     load_benchmark_tasks,
+)
+from agent_tools.finals_rebuild.extraction import (
+    _FENCE_RE,
+    ExtractionResult,
+    extract_code,
 )
 
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
@@ -78,9 +89,8 @@ _STAGE_STATUS: Dict[str, str] = {
     "json_parse": "failed_generation",
     "empty_response": "failed_generation",
     "think_leak": "failed_generation",
-    "markdown_fence": "failed_generation",
-    "duplicate_signature": "failed_generation",
-    "empty_completion": "failed_generation",
+    "extraction_failed": "failed_generation",
+    "task_identity": "failed_generation",
 }
 
 
@@ -217,17 +227,15 @@ def _post_generate(prompt: str, base_url: str, timeout_seconds: float) -> Dict[s
         ) from exc
 
 
-_FENCE_PATTERN = re.compile(r"```")
 _THINK_PATTERN = re.compile(r"</?think>", re.IGNORECASE)
 
 
-def extract_completion(raw_json: Dict[str, Any], entry_point: Optional[str]) -> str:
+def validate_raw_response(raw_json: Dict[str, Any]) -> str:
     """Validate *raw_json* (the parsed /api/generate response body) and
-    return the completion text, unmodified. Fails closed on: empty
-    response, a non-empty `thinking` field, a `<think>`/`</think>` tag in
-    the response text, a Markdown code fence, or a repeated function
-    signature. Never strips a fence or a think-tag and proceeds — that
-    would silently fabricate a "clean" completion from tainted output."""
+    return the raw response text, unmodified. Fails closed on: empty
+    response, a non-empty `thinking` field, or a `<think>`/`</think>` tag
+    in the response text. Never strips a think-tag and proceeds — that
+    would silently discard a chain-of-thought leak instead of refusing it."""
     response_text = raw_json.get("response")
     if not isinstance(response_text, str) or not response_text.strip():
         raise OllamaGenerationError(
@@ -249,20 +257,42 @@ def extract_completion(raw_json: Dict[str, Any], entry_point: Optional[str]) -> 
             "and proceed",
         )
 
-    if _FENCE_PATTERN.search(response_text):
-        raise OllamaGenerationError(
-            "markdown_fence",
-            "response text contains a Markdown code fence ('```'); refusing to "
-            "strip it and proceed",
-        )
-
-    if entry_point and re.search(rf"\bdef\s+{re.escape(entry_point)}\s*\(", response_text):
-        raise OllamaGenerationError(
-            "duplicate_signature",
-            f"response repeats the function signature for entry_point={entry_point!r}",
-        )
-
     return response_text
+
+
+def _has_surrounding_text(raw_text: str, result: ExtractionResult) -> bool:
+    """True if *raw_text* has non-whitespace content outside the single
+    fenced block `extract_code()` used, for diagnostics only — never used
+    to alter the extracted completion itself."""
+    if result.extraction_method not in ("fenced_python", "fenced_other"):
+        return False
+    match = _FENCE_RE.search(raw_text)
+    if match is None:
+        return False
+    before = raw_text[: match.start()].strip()
+    after = raw_text[match.end() :].strip()
+    return bool(before or after)
+
+
+def extract_completion(raw_text: str) -> Tuple[str, ExtractionResult, bool, bool]:
+    """Run the canonical, deterministic `extraction.extract_code()` over
+    *raw_text* and return (completion, extraction_result, had_markdown_fence,
+    had_surrounding_text). Fails closed unless extraction_status ==
+    "extracted" with non-empty code — a single fence or surrounding prose is
+    not itself a failure, only ambiguous/empty/unsupported extraction is."""
+    result = extract_code(raw_text)
+    had_fence = result.diagnostics.get("total_fenced_blocks", 0) > 0
+    had_surrounding_text = _has_surrounding_text(raw_text, result)
+
+    if result.extraction_status != "extracted" or not result.extracted_code or not result.extracted_code.strip():
+        raise OllamaGenerationError(
+            "extraction_failed",
+            f"extraction_status={result.extraction_status!r} "
+            f"extraction_method={result.extraction_method!r} "
+            f"diagnostics={result.diagnostics!r}",
+        )
+
+    return result.extracted_code, result, had_fence, had_surrounding_text
 
 
 # ---------------------------------------------------------------------------
@@ -300,29 +330,43 @@ def generate_treatment(
     benchmark: str,
     base_url: str,
     timeout_seconds: float,
-) -> List[Dict[str, Any]]:
+) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """Generate one treatment's completions for every task in *tasks*, in
-    order. Fails closed (raises) on the first invalid task/treatment/HTTP
-    outcome; never partially writes output for a failed task."""
+    order. Fails closed (raises) on the first invalid task/treatment/HTTP/
+    extraction outcome; never partially writes output for a failed task.
+
+    Returns (completion_records, raw_records) — completion_records hold the
+    extract_code()-derived completion; raw_records hold the full,
+    unmodified raw model response for every task, 1:1 with completion_records.
+    """
     if treatment not in ALLOWED_TREATMENTS:
         raise OllamaGenerationError(
             "treatment", f"treatment must be one of {ALLOWED_TREATMENTS}, got {treatment!r}"
         )
 
-    records: List[Dict[str, Any]] = []
+    completion_records: List[Dict[str, Any]] = []
+    raw_records: List[Dict[str, Any]] = []
     for task in tasks:
         prompt = build_prompt(task.prompt, treatment)
         start = time.monotonic()
         raw_json = _post_generate(prompt, base_url, timeout_seconds)
         elapsed_seconds = time.monotonic() - start
 
-        completion = extract_completion(raw_json, task.entry_point)
-        if not completion.strip():
-            raise OllamaGenerationError(
-                "empty_completion", f"task_id={task.task_id!r}: completion is empty"
-            )
+        raw_response = validate_raw_response(raw_json)
+        completion, extraction_result, had_fence, had_surrounding_text = extract_completion(
+            raw_response
+        )
 
-        records.append({
+        raw_response_sha256 = sha256_text(raw_response)
+        completion_sha256 = sha256_text(completion)
+
+        raw_records.append({
+            "task_id": task.task_id,
+            "sample_index": 0,
+            "raw_response": raw_response,
+            "raw_response_sha256": raw_response_sha256,
+        })
+        completion_records.append({
             "task_id": task.task_id,
             "sample_index": 0,
             "completion": completion,
@@ -334,11 +378,27 @@ def generate_treatment(
                 "temperature": TEMPERATURE,
                 "think": THINK,
                 "prompt_sha256": sha256_text(prompt),
-                "raw_response_sha256": sha256_text(json.dumps(raw_json, sort_keys=True)),
+                "raw_response_sha256": raw_response_sha256,
+                "completion_sha256": completion_sha256,
+                "extraction_method": extraction_result.extraction_method,
+                "had_markdown_fence": had_fence,
+                "had_surrounding_text": had_surrounding_text,
+                "raw_response_length": len(raw_response),
+                "completion_length": len(completion),
                 "generation_seconds": elapsed_seconds,
             },
         })
-    return records
+
+    result_task_ids = [r["task_id"] for r in completion_records]
+    expected_task_ids = [t.task_id for t in tasks]
+    if result_task_ids != expected_task_ids:
+        raise OllamaGenerationError(
+            "task_identity",
+            f"generated task_id order {result_task_ids!r} does not match "
+            f"input task order {expected_task_ids!r}",
+        )
+
+    return completion_records, raw_records
 
 
 def run_ollama_generation(
@@ -367,14 +427,19 @@ def run_ollama_generation(
     check_model_available(base_url, timeout_seconds)
 
     per_treatment: Dict[str, List[Dict[str, Any]]] = {}
+    per_treatment_raw: Dict[str, List[Dict[str, Any]]] = {}
     for treatment in ALLOWED_TREATMENTS:
-        per_treatment[treatment] = generate_treatment(
+        completion_records, raw_records = generate_treatment(
             tasks, treatment,
             benchmark=benchmark, base_url=base_url, timeout_seconds=timeout_seconds,
         )
+        per_treatment[treatment] = completion_records
+        per_treatment_raw[treatment] = raw_records
 
     for treatment, records in per_treatment.items():
         _write_completions_jsonl(records, output_dir / f"{treatment}.jsonl")
+    for treatment, raw_records in per_treatment_raw.items():
+        _write_completions_jsonl(raw_records, output_dir / f"{treatment}_raw.jsonl")
 
     manifest = {
         "benchmark": benchmark,

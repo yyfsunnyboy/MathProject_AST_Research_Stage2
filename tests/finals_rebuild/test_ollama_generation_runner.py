@@ -2,7 +2,8 @@
 Tests for agent_tools/finals_rebuild/ollama_generation_runner.py
 
 All Ollama HTTP calls are mocked at the urllib.request.urlopen boundary —
-this suite never calls a real model.
+this suite never calls a real model. Extraction itself is delegated to the
+real, unmocked agent_tools.finals_rebuild.extraction.extract_code().
 """
 
 from __future__ import annotations
@@ -18,7 +19,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 import pytest
 
 import agent_tools.finals_rebuild.ollama_generation_runner as runner
-from agent_tools.finals_rebuild.benchmarks_adapter import PublicBenchmarkTask
+from agent_tools.finals_rebuild.benchmarks_adapter import (
+    PublicBenchmarkTask,
+    load_benchmark_completions,
+)
 from agent_tools.finals_rebuild.ollama_generation_runner import (
     AB2G_SCAFFOLD,
     MODEL,
@@ -32,6 +36,7 @@ from agent_tools.finals_rebuild.ollama_generation_runner import (
     generate_treatment,
     main,
     run_ollama_generation,
+    validate_raw_response,
 )
 
 
@@ -107,7 +112,7 @@ def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None, htt
 
 def test_generate_payload_has_think_false_and_fixed_params(monkeypatch):
     calls = _install_fake_urlopen(
-        monkeypatch, generate_bodies=[{"response": "    return True\n"}]
+        monkeypatch, generate_bodies=[{"response": "```python\n    return True\n```"}]
     )
     runner._post_generate("PROMPT", runner.DEFAULT_BASE_URL, 5.0)
     payload = calls["payloads"][0]
@@ -135,38 +140,191 @@ def test_ab2g_prompt_has_fixed_scaffold():
 
 
 # ============================================================
-# 5. duplicate function signature fails closed
+# 1. single fenced code block extracts cleanly
 # ============================================================
 
 
-def test_duplicate_signature_fails_closed():
-    raw = {"response": "def has_close_elements(numbers, threshold):\n    return True\n"}
-    with pytest.raises(OllamaGenerationError, match="repeats the function signature"):
-        extract_completion(raw, "has_close_elements")
-
-
-def test_no_duplicate_signature_passes():
-    raw = {"response": "    return True\n"}
-    assert extract_completion(raw, "has_close_elements") == "    return True\n"
+def test_single_fenced_code_extracts():
+    raw = "```python\n    return True\n```"
+    completion, result, had_fence, had_surrounding = extract_completion(raw)
+    assert completion == "    return True\n"
+    assert result.extraction_method == "fenced_python"
+    assert had_fence is True
+    assert had_surrounding is False
 
 
 # ============================================================
-# 6. empty response fails closed
+# 2. explanatory prose + single fenced block extracts cleanly
 # ============================================================
 
 
-def test_empty_response_fails_closed():
+def test_prose_plus_single_fenced_code_extracts():
+    raw = (
+        "Here is the solution:\n\n"
+        "```python\n    return True\n```\n\n"
+        "Let me know if you need anything else!"
+    )
+    completion, result, had_fence, had_surrounding = extract_completion(raw)
+    assert completion == "    return True\n"
+    assert had_fence is True
+    assert had_surrounding is True
+
+
+# ============================================================
+# 3. raw response fully preserved
+# ============================================================
+
+
+def test_raw_response_fully_preserved(monkeypatch, tmp_path):
+    raw_text = "prose\n```python\n    return True\n```\nmore prose"
+    _install_fake_urlopen(monkeypatch, generate_bodies=[{"response": raw_text}])
+    completion_records, raw_records = generate_treatment(
+        [_TASK_0], "ab1",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    assert raw_records[0]["raw_response"] == raw_text
+    assert raw_records[0]["raw_response_sha256"] == runner.sha256_text(raw_text)
+
+
+# ============================================================
+# 4. completion never contains a fence
+# ============================================================
+
+
+def test_completion_never_contains_fence(monkeypatch):
+    raw_text = "prose\n```python\n    return True\n```\nmore prose"
+    _install_fake_urlopen(monkeypatch, generate_bodies=[{"response": raw_text}])
+    completion_records, _ = generate_treatment(
+        [_TASK_0], "ab1",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    assert "```" not in completion_records[0]["completion"]
+
+
+# ============================================================
+# 5. fence / surrounding-text metadata correct
+# ============================================================
+
+
+def test_fence_and_surrounding_text_metadata(monkeypatch):
+    raw_text = "prose before\n```python\n    return True\n```\nprose after"
+    _install_fake_urlopen(monkeypatch, generate_bodies=[{"response": raw_text}])
+    completion_records, _ = generate_treatment(
+        [_TASK_0], "ab1",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    meta = completion_records[0]["metadata"]
+    assert meta["had_markdown_fence"] is True
+    assert meta["had_surrounding_text"] is True
+    assert meta["extraction_method"] == "fenced_python"
+
+
+def test_no_fence_no_surrounding_text_metadata(monkeypatch):
+    raw_text = "    return True\n"
+    _install_fake_urlopen(monkeypatch, generate_bodies=[{"response": raw_text}])
+    completion_records, _ = generate_treatment(
+        [_TASK_0], "ab1",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    meta = completion_records[0]["metadata"]
+    assert meta["had_markdown_fence"] is False
+    assert meta["had_surrounding_text"] is False
+    assert meta["extraction_method"] == "plain_text"
+
+
+# ============================================================
+# 6. multiple ambiguous code blocks fail closed
+# ============================================================
+
+
+def test_multiple_python_fences_fail_closed():
+    raw = "```python\nA\n```\n```python\nB\n```"
+    with pytest.raises(OllamaGenerationError, match="extraction_status='ambiguous'"):
+        extract_completion(raw)
+
+
+# ============================================================
+# 7. no extractable code fails closed
+# ============================================================
+
+
+def test_empty_fenced_block_fails_closed():
+    raw = "```python\n\n```"
+    with pytest.raises(OllamaGenerationError, match="extraction_status='empty'"):
+        extract_completion(raw)
+
+
+# ============================================================
+# 8. <think> fails closed
+# ============================================================
+
+
+def test_think_tag_in_response_fails_closed():
+    raw = {"response": "<think>reasoning</think>\n    return True\n"}
+    with pytest.raises(OllamaGenerationError, match="think"):
+        validate_raw_response(raw)
+
+
+def test_thinking_field_fails_closed():
+    raw = {"response": "    return True\n", "thinking": "some reasoning"}
+    with pytest.raises(OllamaGenerationError, match="thinking"):
+        validate_raw_response(raw)
+
+
+def test_empty_response_field_fails_closed():
     with pytest.raises(OllamaGenerationError, match="empty or missing"):
-        extract_completion({"response": "   "}, "has_close_elements")
-
-
-def test_missing_response_field_fails_closed():
-    with pytest.raises(OllamaGenerationError, match="empty or missing"):
-        extract_completion({}, "has_close_elements")
+        validate_raw_response({"response": "   "})
 
 
 # ============================================================
-# 7. API timeout fails closed
+# 9. Ab1 and Ab2g share the same extraction path
+# ============================================================
+
+
+def test_ab1_and_ab2g_use_same_extraction(monkeypatch):
+    raw_text = "```python\n    return True\n```"
+    _install_fake_urlopen(
+        monkeypatch, generate_bodies=[{"response": raw_text}, {"response": raw_text}]
+    )
+    ab1_records, _ = generate_treatment(
+        [_TASK_0], "ab1",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    ab2g_records, _ = generate_treatment(
+        [_TASK_0], "ab2g",
+        benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    assert ab1_records[0]["completion"] == ab2g_records[0]["completion"]
+    assert ab1_records[0]["metadata"]["extraction_method"] == ab2g_records[0]["metadata"]["extraction_method"]
+
+
+# ============================================================
+# 10. output JSONL loadable by load_benchmark_completions()
+# ============================================================
+
+
+def test_output_jsonl_loadable_by_benchmarks_adapter(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    _install_fake_urlopen(
+        monkeypatch,
+        generate_bodies=[
+            {"response": "```python\n    return True\n```"},
+            {"response": "```python\n    return True\n```"},
+        ],
+    )
+    out_dir = tmp_path / "out"
+    run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    loaded = load_benchmark_completions(out_dir / "ab1.jsonl", "humaneval", "ab1")
+    assert len(loaded) == 1
+    assert loaded[0].task_id == "HumanEval/0"
+    assert loaded[0].completion == "    return True\n"
+
+
+# ============================================================
+# API timeout / non-200 fail closed
 # ============================================================
 
 
@@ -182,11 +340,6 @@ def test_tags_timeout_fails_closed(monkeypatch):
         runner.check_model_available(runner.DEFAULT_BASE_URL, 1.0)
 
 
-# ============================================================
-# 8. API non-200 fails closed
-# ============================================================
-
-
 def test_generate_http_error_fails_closed(monkeypatch):
     _install_fake_urlopen(monkeypatch, http_error=500)
     with pytest.raises(OllamaGenerationError, match="status 500"):
@@ -200,57 +353,29 @@ def test_tags_http_error_fails_closed(monkeypatch):
 
 
 # ============================================================
-# 9. <think> leak fails closed
+# task identity correctness
 # ============================================================
 
 
-def test_think_tag_in_response_fails_closed():
-    raw = {"response": "<think>reasoning</think>\n    return True\n"}
-    with pytest.raises(OllamaGenerationError, match="think"):
-        extract_completion(raw, "has_close_elements")
-
-
-def test_thinking_field_fails_closed():
-    raw = {"response": "    return True\n", "thinking": "some reasoning"}
-    with pytest.raises(OllamaGenerationError, match="thinking"):
-        extract_completion(raw, "has_close_elements")
-
-
-# ============================================================
-# 10. Markdown fence fails closed
-# ============================================================
-
-
-def test_markdown_fence_fails_closed():
-    raw = {"response": "```python\n    return True\n```"}
-    with pytest.raises(OllamaGenerationError, match="fence"):
-        extract_completion(raw, "has_close_elements")
-
-
-# ============================================================
-# 11. task identity correct across a full generation run
-# ============================================================
-
-
-def test_task_identity_correct(monkeypatch, tmp_path):
-    tasks_path = _write_tasks(tmp_path, [_TASK_0, _TASK_1])
+def test_task_identity_correct(monkeypatch):
     _install_fake_urlopen(
         monkeypatch,
         generate_bodies=[
-            {"response": "    return True\n"},
-            {"response": "    return []\n"},
+            {"response": "```python\n    return True\n```"},
+            {"response": "```python\n    return []\n```"},
         ],
     )
-    records = generate_treatment(
+    records, raw_records = generate_treatment(
         [_TASK_0, _TASK_1], "ab1",
         benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
     )
     assert [r["task_id"] for r in records] == ["HumanEval/0", "HumanEval/1"]
+    assert [r["task_id"] for r in raw_records] == ["HumanEval/0", "HumanEval/1"]
     assert all(r["sample_index"] == 0 for r in records)
 
 
 # ============================================================
-# 12. manifest deterministic across reruns
+# manifest deterministic across reruns
 # ============================================================
 
 
@@ -258,7 +383,10 @@ def test_manifest_deterministic_across_reruns(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
 
     def _bodies():
-        return [{"response": "    return True\n"}, {"response": "    return True\n"}]
+        return [
+            {"response": "```python\n    return True\n```"},
+            {"response": "```python\n    return True\n```"},
+        ]
 
     _install_fake_urlopen(monkeypatch, generate_bodies=_bodies())
     out1 = tmp_path / "out1"
@@ -284,7 +412,7 @@ def test_manifest_deterministic_across_reruns(monkeypatch, tmp_path):
 
 
 # ============================================================
-# Additional: model not found in /api/tags fails closed
+# model tags preflight
 # ============================================================
 
 
@@ -299,48 +427,6 @@ def test_model_found_in_tags_passes(monkeypatch):
     runner.check_model_available(runner.DEFAULT_BASE_URL, 5.0)  # no raise
 
 
-# ============================================================
-# Additional: full run writes ab1.jsonl / ab2g.jsonl with correct schema
-# ============================================================
-
-
-def test_full_run_writes_expected_files_and_schema(monkeypatch, tmp_path):
-    tasks_path = _write_tasks(tmp_path, [_TASK_0])
-    _install_fake_urlopen(
-        monkeypatch,
-        generate_bodies=[
-            {"response": "    return True\n"},  # ab1
-            {"response": "    return True\n"},  # ab2g
-        ],
-    )
-    out_dir = tmp_path / "out"
-    manifest = run_ollama_generation(
-        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
-    assert manifest["counts"] == {"ab1": 1, "ab2g": 1}
-
-    for name in ("ab1.jsonl", "ab2g.jsonl", "generation_manifest.json"):
-        assert (out_dir / name).exists()
-
-    ab1_rec = json.loads((out_dir / "ab1.jsonl").read_text(encoding="utf-8").splitlines()[0])
-    assert ab1_rec["task_id"] == "HumanEval/0"
-    assert ab1_rec["sample_index"] == 0
-    assert ab1_rec["completion"] == "    return True\n"
-    meta = ab1_rec["metadata"]
-    for key in ("benchmark", "treatment", "model", "seed", "temperature", "think",
-                "prompt_sha256", "raw_response_sha256"):
-        assert key in meta
-    assert meta["model"] == MODEL
-    assert meta["seed"] == SEED
-    assert meta["treatment"] == "ab1"
-
-
-# ============================================================
-# Additional: model not available preflight blocks the whole run
-# ============================================================
-
-
 def test_model_unavailable_blocks_full_run(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
     _install_fake_urlopen(monkeypatch, tags_body={"models": [{"name": "llama3:8b"}]})
@@ -350,6 +436,50 @@ def test_model_unavailable_blocks_full_run(monkeypatch, tmp_path):
             base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
         )
     assert not (tmp_path / "out" / "generation_manifest.json").exists()
+
+
+# ============================================================
+# full run writes expected files and schema
+# ============================================================
+
+
+def test_full_run_writes_expected_files_and_schema(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    _install_fake_urlopen(
+        monkeypatch,
+        generate_bodies=[
+            {"response": "```python\n    return True\n```"},  # ab1
+            {"response": "```python\n    return True\n```"},  # ab2g
+        ],
+    )
+    out_dir = tmp_path / "out"
+    manifest = run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    )
+    assert manifest["counts"] == {"ab1": 1, "ab2g": 1}
+
+    for name in ("ab1.jsonl", "ab2g.jsonl", "ab1_raw.jsonl", "ab2g_raw.jsonl", "generation_manifest.json"):
+        assert (out_dir / name).exists()
+
+    ab1_rec = json.loads((out_dir / "ab1.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert ab1_rec["task_id"] == "HumanEval/0"
+    assert ab1_rec["sample_index"] == 0
+    assert ab1_rec["completion"] == "    return True\n"
+    meta = ab1_rec["metadata"]
+    for key in (
+        "benchmark", "treatment", "model", "seed", "temperature", "think",
+        "prompt_sha256", "raw_response_sha256", "completion_sha256",
+        "extraction_method", "had_markdown_fence", "had_surrounding_text",
+        "raw_response_length", "completion_length",
+    ):
+        assert key in meta
+    assert meta["model"] == MODEL
+    assert meta["seed"] == SEED
+    assert meta["treatment"] == "ab1"
+
+    ab1_raw_rec = json.loads((out_dir / "ab1_raw.jsonl").read_text(encoding="utf-8").splitlines()[0])
+    assert ab1_raw_rec["raw_response"] == "```python\n    return True\n```"
 
 
 # ============================================================
