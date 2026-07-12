@@ -1,0 +1,86 @@
+[
+  {
+    "sample_id": "jh_math1_integers_gemini3flash_Ab2_run01",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id": "gemini-3-flash",
+    "sample_index": 0,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run01.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "1eecf61d1f96005fb853971e1470c49754f314feb6cb8c723daebbbe94ad49b8"
+  },
+  {
+    "sample_id": "jh_math1_integers_qwen3_14b_Ab2_run02",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id": "qwen3-14b",
+    "sample_index": 1,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_qwen3-14b_Ab2_run02.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "3ddb51627315e00b4218c18a4bceffaf55eb5f1abee6e1a8922ac2aab809032a"
+  },
+  {
+    "sample_id": "jh_math1_numbers_qwen3_14b_Ab2_run02",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+    "model_id": "qwen3-14b",
+    "sample_index": 1,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_qwen3-14b_Ab2_run02.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "738d3453772db69029253f89379dd1c58756c152aa5ec7ae7660c6c09d8d0841"
+  },
+  {
+    "sample_id": "jh_math1_integers_qwen3_8b_Ab2_run04",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id": "qwen3-8b",
+    "sample_index": 3,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_qwen3-8b_Ab2_run04.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "d7ef450cc7efa65345be77c4299b6faece4bfda54c387ff18a49ffb2a6ed5dcf"
+  },
+  {
+    "sample_id": "jh_math1_numbers_gemini3flash_Ab2_run01",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfNumbers",
+    "model_id": "gemini-3-flash",
+    "sample_index": 0,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run01.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "74774221d01279af905b21b9fd57e5009b4af7dec1d55b057191a01f0004f9c6"
+  },
+  {
+    "sample_id": "gh_derivatives_qwen25coder14b_Ab2_run05",
+    "skill_id": "gh_ApplicationsOfDerivatives",
+    "model_id": "qwen2.5-coder-14b",
+    "sample_index": 4,
+    "source_ab2_path": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab2_run05.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "basic_only",
+    "source_file_hash": "1e0f799018c33896d20e3a8b1a3f7bc41a5806eb52fdebdd90829823a439b698"
+  },
+  {
+    "sample_id": "jh_math1_integers_qwen3_14b_Ab2_run01",
+    "skill_id": "jh_數學1上_FourArithmeticOperationsOfIntegers",
+    "model_id": "qwen3-14b",
+    "sample_index": 0,
+    "source_ab2_path": "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_qwen3-14b_Ab2_run01.py",
+    "source_kind": "legacy_extracted_code",
+    "is_original_raw": false,
+    "legacy_replay": true,
+    "healer_status": "unknown",
+    "source_file_hash": "cc259827c943e183531190de7429f58b4462ed3ae880bc2ca1230b7e71233ae5"
+  }
+]
