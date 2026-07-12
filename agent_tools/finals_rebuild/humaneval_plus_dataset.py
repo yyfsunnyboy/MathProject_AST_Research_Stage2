@@ -21,6 +21,11 @@ from typing import Any, Dict, List, Optional, Sequence, Union
 OFFICIAL_SOURCE_REPOSITORY = "https://github.com/evalplus/humanevalplus_release"
 OFFICIAL_RELEASE_TAG = "v0.1.10"
 OFFICIAL_ASSET_NAME = "HumanEvalPlus.jsonl.gz"
+OFFICIAL_DATASET_NAME = "HumanEval+"
+OFFICIAL_TASKS_RELATIVE = pathlib.Path("data/humaneval_plus/tasks.jsonl")
+OFFICIAL_MANIFEST_RELATIVE = pathlib.Path("data/humaneval_plus/dataset_manifest.json")
+DATASET_PROVENANCE_VERIFIED = "verified"
+DATASET_PROVENANCE_UNVERIFIED_FIXTURE = "unverified_fixture"
 OFFICIAL_SOURCE_URL = (
     f"{OFFICIAL_SOURCE_REPOSITORY}/releases/download/"
     f"{OFFICIAL_RELEASE_TAG}/{OFFICIAL_ASSET_NAME}"
@@ -295,6 +300,104 @@ def fetch_official_source(
         "downloaded_at_utc": utc_now_iso(),
         "skipped_download": False,
     }
+
+
+def load_dataset_manifest_file(
+    path: Union[str, pathlib.Path],
+) -> Dict[str, Any]:
+    """Load a dataset_manifest.json written by prepare_tasks_file()."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        raise HumanevalPlusDatasetError(f"dataset manifest not found: {p}")
+    try:
+        manifest = json.loads(p.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise HumanevalPlusDatasetError(
+            f"{p}: invalid JSON in dataset manifest: {exc}"
+        ) from exc
+    if not isinstance(manifest, dict):
+        raise HumanevalPlusDatasetError(f"{p}: dataset manifest must be a JSON object")
+    return manifest
+
+
+def _resolve_repo_relative(path: Union[str, pathlib.Path], repo_root: pathlib.Path) -> pathlib.Path:
+    candidate = pathlib.Path(path)
+    if candidate.is_absolute():
+        return candidate.resolve()
+    return (repo_root / candidate).resolve()
+
+
+def build_run_manifest_dataset_fields(manifest: Dict[str, Any]) -> Dict[str, Any]:
+    """Map dataset_manifest.json fields onto generation_manifest.json keys."""
+    return {
+        "dataset_name": manifest.get("dataset_name"),
+        "dataset_release_tag": manifest.get("release_tag_or_dataset_version"),
+        "dataset_task_count": manifest.get("task_count"),
+        "source_asset_name": manifest.get("source_asset_name"),
+        "source_sha256": manifest.get("source_sha256"),
+        "tasks_sha256": manifest.get("tasks_sha256"),
+        "evalplus_package_version": manifest.get("evalplus_package_version"),
+        "evalplus_dataset_hash": manifest.get("evalplus_dataset_hash"),
+        "task_order_policy": manifest.get("task_order_policy"),
+    }
+
+
+def resolve_run_dataset_provenance(
+    tasks_path: Union[str, pathlib.Path],
+    *,
+    repo_root: Optional[Union[str, pathlib.Path]] = None,
+    dataset_manifest_path: Optional[Union[str, pathlib.Path]] = None,
+) -> Dict[str, Any]:
+    """Resolve dataset provenance for a run manifest.
+
+    When *tasks_path* matches the official HumanEval+ tasks file recorded in
+    *dataset_manifest_path* (or the repo default), verify the on-disk tasks
+    SHA-256 against the manifest and return ``dataset_provenance_status=
+    verified`` plus the mapped provenance fields.
+
+    Fixture or custom task files never receive official provenance — they are
+    labelled ``unverified_fixture`` without guessing release metadata.
+    Fail-closed when the tasks file matches the official path but its SHA-256
+    does not match the manifest.
+    """
+    tasks_p = pathlib.Path(tasks_path).resolve()
+    root = pathlib.Path(repo_root).resolve() if repo_root is not None else pathlib.Path.cwd().resolve()
+
+    manifest_p: Optional[pathlib.Path]
+    if dataset_manifest_path is not None:
+        manifest_p = _resolve_repo_relative(dataset_manifest_path, root)
+    else:
+        default_manifest = root / OFFICIAL_MANIFEST_RELATIVE
+        manifest_p = default_manifest if default_manifest.is_file() else None
+
+    if manifest_p is None or not manifest_p.is_file():
+        return {"dataset_provenance_status": DATASET_PROVENANCE_UNVERIFIED_FIXTURE}
+
+    manifest = load_dataset_manifest_file(manifest_p)
+    manifest_tasks = _resolve_repo_relative(manifest.get("tasks_file", ""), root)
+    official_tasks = (root / OFFICIAL_TASKS_RELATIVE).resolve()
+
+    if tasks_p != manifest_tasks and tasks_p != official_tasks:
+        return {"dataset_provenance_status": DATASET_PROVENANCE_UNVERIFIED_FIXTURE}
+
+    if not tasks_p.is_file():
+        raise HumanevalPlusDatasetError(f"tasks file not found: {tasks_p}")
+
+    actual_tasks_sha = sha256_file(tasks_p)
+    expected_tasks_sha = manifest.get("tasks_sha256")
+    if not isinstance(expected_tasks_sha, str) or not expected_tasks_sha:
+        raise HumanevalPlusDatasetError(
+            f"{manifest_p}: missing tasks_sha256 in dataset manifest"
+        )
+    if actual_tasks_sha != expected_tasks_sha.lower():
+        raise HumanevalPlusDatasetError(
+            f"tasks SHA256 mismatch for {tasks_p}: expected "
+            f"{expected_tasks_sha!r}, got {actual_tasks_sha!r}"
+        )
+
+    fields = build_run_manifest_dataset_fields(manifest)
+    fields["dataset_provenance_status"] = DATASET_PROVENANCE_VERIFIED
+    return fields
 
 
 def prepare_tasks_file(

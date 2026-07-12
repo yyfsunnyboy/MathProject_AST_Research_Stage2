@@ -69,6 +69,11 @@ from agent_tools.finals_rebuild.benchmarks_adapter import (
     load_benchmark_tasks,
 )
 from agent_tools.finals_rebuild.extraction import _FENCE_RE, extract_code
+from agent_tools.finals_rebuild.humaneval_plus_dataset import (
+    DATASET_PROVENANCE_UNVERIFIED_FIXTURE,
+    HumanevalPlusDatasetError,
+    resolve_run_dataset_provenance,
+)
 from agent_tools.finals_rebuild.public_benchmark_runner import (
     run_public_benchmark_treatments,
     run_public_benchmark_treatments_from_attempts,
@@ -99,6 +104,10 @@ RUN_TYPE_SMOKE = "engineering_smoke_test"
 ANALYSIS_STATUS_SMOKE_EXCLUDED = "excluded_from_confirmatory_results"
 OFFICIAL_EVALPLUS_STATUS_SMOKE = "not_run_engineering_smoke"
 OFFICIAL_EVALPLUS_BLOCKER = "requires_wsl_linux_and_supported_coverage"
+
+ATTEMPT_POLICY_ENGINEERING_SMOKE = "engineering_smoke"
+ATTEMPT_POLICY_CONFIRMATORY = "confirmatory"
+TREATMENT_DERIVATION_MODE = "offline_from_saved_raw_response"
 
 SMOKE_OUTPUT_RELATIVE = pathlib.Path(
     "artifacts/engineering_smoke_test/humaneval_plus/qwen3_4b_instruct_2507"
@@ -675,6 +684,213 @@ def load_completed_attempts(path: Union[str, pathlib.Path]) -> Dict[Tuple[str, s
     return completed
 
 
+def load_all_saved_attempts(
+    path: Union[str, pathlib.Path],
+) -> Dict[Tuple[str, str, str, str], Dict[str, Any]]:
+    """Load every saved first-attempt row for confirmatory resume gating."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        return {}
+    saved: Dict[Tuple[str, str, str, str], Dict[str, Any]] = {}
+    for line_no, line in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            rec = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise OllamaGenerationError(
+                "tasks_load",
+                f"{p}: line {line_no}: invalid JSON in generation_attempts.jsonl: {exc}",
+            ) from exc
+        if not isinstance(rec, dict):
+            continue
+        saved[_attempt_resume_key(rec)] = rec
+    return saved
+
+
+def resolve_attempt_policy(*, smoke: bool) -> str:
+    return ATTEMPT_POLICY_ENGINEERING_SMOKE if smoke else ATTEMPT_POLICY_CONFIRMATORY
+
+
+def attempt_policy_manifest_fields(attempt_policy: str) -> Dict[str, Any]:
+    if attempt_policy == ATTEMPT_POLICY_ENGINEERING_SMOKE:
+        return {
+            "attempt_policy": ATTEMPT_POLICY_ENGINEERING_SMOKE,
+            "retry_incomplete_allowed": True,
+            "first_attempt_is_itt": False,
+            "results_excluded_from_confirmatory": True,
+        }
+    if attempt_policy == ATTEMPT_POLICY_CONFIRMATORY:
+        return {
+            "attempt_policy": ATTEMPT_POLICY_CONFIRMATORY,
+            "retry_incomplete_allowed": False,
+            "first_attempt_is_itt": True,
+            "results_excluded_from_confirmatory": False,
+        }
+    raise OllamaGenerationError(
+        "benchmark", f"unknown attempt_policy {attempt_policy!r}"
+    )
+
+
+def _should_skip_on_resume(
+    resume_key: Tuple[str, str, str, str],
+    completed_attempts: Dict[Tuple[str, str, str, str], Dict[str, Any]],
+    *,
+    attempt_policy: str,
+    rerun_incomplete: bool,
+) -> bool:
+    if resume_key not in completed_attempts:
+        return False
+    if attempt_policy == ATTEMPT_POLICY_CONFIRMATORY:
+        return True
+    if rerun_incomplete:
+        return False
+    return is_resume_complete(completed_attempts[resume_key])
+
+
+def _write_tasks_jsonl(
+    tasks: Sequence[PublicBenchmarkTask], path: pathlib.Path
+) -> None:
+    _write_completions_jsonl(
+        [
+            {
+                "task_id": t.task_id,
+                "prompt": t.prompt,
+                "entry_point": t.entry_point,
+            }
+            for t in tasks
+        ],
+        path,
+    )
+
+
+def _resolve_derivation_tasks_path(
+    output_dir: pathlib.Path, tasks_path: Union[str, pathlib.Path]
+) -> pathlib.Path:
+    selected = output_dir / "tasks_selected.jsonl"
+    if selected.is_file():
+        return selected
+    return pathlib.Path(tasks_path)
+
+
+def synchronize_offline_treatment_artifacts(
+    *,
+    output_dir: Union[str, pathlib.Path],
+    tasks_path: Union[str, pathlib.Path],
+    benchmark: str,
+    evaluator_git_commit: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Re-derive Ab3 and EvalPlus completion JSONL from saved attempts only."""
+    out_dir = pathlib.Path(output_dir)
+    attempts_path = out_dir / "generation_attempts.jsonl"
+    if not attempts_path.is_file():
+        raise OllamaGenerationError(
+            "tasks_load", f"missing generation attempts file: {attempts_path}"
+        )
+    if evaluator_git_commit is None:
+        evaluator_git_commit = _resolve_runner_git_commit()
+    derivation_tasks_path = _resolve_derivation_tasks_path(out_dir, tasks_path)
+    summary = run_public_benchmark_treatments_from_attempts(
+        tasks_path=derivation_tasks_path,
+        generation_attempts_path=attempts_path,
+        benchmark=benchmark,
+        artifact_root=out_dir,
+        evaluator_git_commit=evaluator_git_commit,
+    )
+    return {
+        "ab3_summary": {
+            "total_tasks": summary.total_tasks,
+            "ab3_target_count": summary.ab3_target_count,
+            "core_changed_count": summary.core_changed_count,
+            "spec_changed_count": summary.spec_changed_count,
+        }
+    }
+
+
+def _merge_dataset_provenance_into_manifest(
+    manifest: Dict[str, Any],
+    tasks_path: Union[str, pathlib.Path],
+    *,
+    repo_root: Optional[pathlib.Path] = None,
+    dataset_manifest_path: Optional[Union[str, pathlib.Path]] = None,
+) -> None:
+    try:
+        provenance = resolve_run_dataset_provenance(
+            tasks_path,
+            repo_root=repo_root,
+            dataset_manifest_path=dataset_manifest_path,
+        )
+    except HumanevalPlusDatasetError as exc:
+        raise OllamaGenerationError("tasks_load", str(exc)) from exc
+    manifest.update(provenance)
+
+
+def _update_manifest_after_derivation(
+    manifest_path: pathlib.Path,
+    *,
+    derivation_result: Dict[str, Any],
+    completed_at: Optional[str] = None,
+) -> None:
+    if not manifest_path.is_file():
+        return
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["ab3_from_attempts"] = True
+    manifest["treatment_derivation_mode"] = TREATMENT_DERIVATION_MODE
+    manifest["ab3_summary"] = derivation_result.get("ab3_summary")
+    manifest["completed_at"] = completed_at or _utc_now_iso()
+    _write_json_deterministic(manifest, manifest_path)
+
+
+def run_offline_artifact_replay(
+    *,
+    output_dir: Union[str, pathlib.Path],
+    tasks_path: Union[str, pathlib.Path],
+    benchmark: str,
+    runner_git_commit: Optional[str] = None,
+    evaluator_git_commit: Optional[str] = None,
+    dataset_manifest_path: Optional[Union[str, pathlib.Path]] = None,
+    repo_root: Optional[Union[str, pathlib.Path]] = None,
+) -> Dict[str, Any]:
+    """Offline-only artifact regeneration from generation_attempts.jsonl."""
+    out_dir = pathlib.Path(output_dir)
+    if runner_git_commit is None:
+        runner_git_commit = _resolve_runner_git_commit()
+    if evaluator_git_commit is None:
+        evaluator_git_commit = runner_git_commit
+
+    manifest_path = out_dir / "generation_manifest.json"
+    manifest: Dict[str, Any] = {}
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    else:
+        manifest["runner_git_commit"] = runner_git_commit
+
+    root = pathlib.Path(repo_root) if repo_root is not None else resolve_repo_root()
+    _merge_dataset_provenance_into_manifest(
+        manifest,
+        tasks_path,
+        repo_root=root,
+        dataset_manifest_path=dataset_manifest_path,
+    )
+    if manifest.get("run_type") == RUN_TYPE_SMOKE:
+        manifest.update(attempt_policy_manifest_fields(ATTEMPT_POLICY_ENGINEERING_SMOKE))
+    elif "attempt_policy" not in manifest:
+        manifest.update(attempt_policy_manifest_fields(ATTEMPT_POLICY_CONFIRMATORY))
+    derivation = synchronize_offline_treatment_artifacts(
+        output_dir=out_dir,
+        tasks_path=tasks_path,
+        benchmark=benchmark,
+        evaluator_git_commit=evaluator_git_commit,
+    )
+    manifest["ab3_from_attempts"] = True
+    manifest["treatment_derivation_mode"] = TREATMENT_DERIVATION_MODE
+    manifest["ab3_summary"] = derivation["ab3_summary"]
+    manifest["completed_at"] = _utc_now_iso()
+    _write_json_deterministic(manifest, manifest_path)
+    return {"output_dir": str(out_dir), **derivation}
+
+
 def _sha256_or_none(text: Optional[str]) -> Optional[str]:
     return sha256_text(text) if text is not None else None
 
@@ -891,12 +1107,17 @@ def run_generation_attempts(
     model_digest: str,
     completed_attempts: Optional[Dict[Tuple[str, str, str, str], Dict[str, Any]]] = None,
     rerun_incomplete: bool = False,
+    attempt_policy: str = ATTEMPT_POLICY_CONFIRMATORY,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """Run every (task, treatment) attempt in fixed order, optionally
     skipping attempts already present in *completed_attempts*."""
     completed_attempts = completed_attempts or {}
     attempts: List[Dict[str, Any]] = []
-    resume_stats = {"skipped_complete": 0, "rerun_incomplete": rerun_incomplete}
+    resume_stats = {
+        "skipped_complete": 0,
+        "rerun_incomplete": rerun_incomplete,
+        "attempt_policy": attempt_policy,
+    }
 
     for task in tasks:
         for treatment in ALLOWED_TREATMENTS:
@@ -907,10 +1128,11 @@ def run_generation_attempts(
                 model_digest,
                 sha256_text(prompt),
             )
-            if (
-                not rerun_incomplete
-                and resume_key in completed_attempts
-                and is_resume_complete(completed_attempts[resume_key])
+            if _should_skip_on_resume(
+                resume_key,
+                completed_attempts,
+                attempt_policy=attempt_policy,
+                rerun_incomplete=rerun_incomplete,
             ):
                 attempts.append(completed_attempts[resume_key])
                 resume_stats["skipped_complete"] += 1
@@ -981,6 +1203,11 @@ def run_ollama_generation(
     smoke: bool = False,
     manifest_benchmark: Optional[str] = None,
     started_at: Optional[str] = None,
+    attempt_policy: Optional[str] = None,
+    sync_treatment_artifacts: Optional[bool] = None,
+    dataset_manifest_path: Optional[Union[str, pathlib.Path]] = None,
+    provenance_tasks_path: Optional[Union[str, pathlib.Path]] = None,
+    repo_root: Optional[Union[str, pathlib.Path]] = None,
 ) -> Dict[str, Any]:
     """Run every (task, treatment) attempt for *tasks_path* against Ollama
     /api/chat. Writes generation_attempts.jsonl, generation_summary.json,
@@ -993,6 +1220,18 @@ def run_ollama_generation(
 
     output_dir = pathlib.Path(output_dir)
     started_at = started_at or _utc_now_iso()
+    root = pathlib.Path(repo_root) if repo_root is not None else resolve_repo_root()
+
+    if attempt_policy is None:
+        attempt_policy = resolve_attempt_policy(smoke=smoke)
+    if sync_treatment_artifacts is None:
+        sync_treatment_artifacts = smoke
+    policy_fields = attempt_policy_manifest_fields(attempt_policy)
+    if attempt_policy == ATTEMPT_POLICY_CONFIRMATORY and rerun_incomplete:
+        raise OllamaGenerationError(
+            "benchmark",
+            "confirmatory runs forbid --rerun-incomplete; first attempt is ITT",
+        )
 
     if settings is None:
         effective_model = model or (DEFAULT_SMOKE_MODEL if smoke else DEFAULT_MODEL_8B)
@@ -1007,9 +1246,21 @@ def run_ollama_generation(
     if not all_tasks:
         raise OllamaGenerationError("tasks_load", f"{tasks_path}: no tasks loaded")
 
+    provenance_tasks_for_dataset = provenance_tasks_path or tasks_path
+    dataset_provenance: Dict[str, Any] = {}
+    try:
+        dataset_provenance = resolve_run_dataset_provenance(
+            provenance_tasks_for_dataset,
+            repo_root=root,
+            dataset_manifest_path=dataset_manifest_path,
+        )
+    except HumanevalPlusDatasetError as exc:
+        raise OllamaGenerationError("tasks_load", str(exc)) from exc
+
     if max_tasks is not None:
         tasks = select_tasks_official_first_n(all_tasks, max_tasks)
         task_selection_policy = TASK_SELECTION_POLICY_FIRST_N
+        _write_tasks_jsonl(tasks, output_dir / "tasks_selected.jsonl")
     else:
         tasks = list(all_tasks)
         task_selection_policy = "full_input"
@@ -1026,7 +1277,13 @@ def run_ollama_generation(
         runner_git_commit = _resolve_runner_git_commit()
 
     attempts_path = output_dir / "generation_attempts.jsonl"
-    completed_attempts = load_completed_attempts(attempts_path) if resume else {}
+    if resume:
+        if attempt_policy == ATTEMPT_POLICY_CONFIRMATORY:
+            completed_attempts = load_all_saved_attempts(attempts_path)
+        else:
+            completed_attempts = load_completed_attempts(attempts_path)
+    else:
+        completed_attempts = {}
 
     attempts, resume_stats = run_generation_attempts(
         tasks,
@@ -1037,6 +1294,7 @@ def run_ollama_generation(
         model_digest=model_digest,
         completed_attempts=completed_attempts,
         rerun_incomplete=rerun_incomplete,
+        attempt_policy=attempt_policy,
     )
 
     _write_completions_jsonl(attempts, attempts_path)
@@ -1093,6 +1351,7 @@ def run_ollama_generation(
         "resume_enabled": resume,
         "resume_skipped_complete_attempts": resume_stats["skipped_complete"],
         "rerun_incomplete": rerun_incomplete,
+        **policy_fields,
     }
     if smoke:
         manifest.update(
@@ -1103,7 +1362,22 @@ def run_ollama_generation(
                 "official_evalplus_blocker": OFFICIAL_EVALPLUS_BLOCKER,
             }
         )
+    manifest.update(dataset_provenance)
     _write_json_deterministic(manifest, output_dir / "generation_manifest.json")
+
+    if sync_treatment_artifacts:
+        derivation = synchronize_offline_treatment_artifacts(
+            output_dir=output_dir,
+            tasks_path=tasks_path,
+            benchmark=benchmark,
+            evaluator_git_commit=runner_git_commit,
+        )
+        _update_manifest_after_derivation(
+            output_dir / "generation_manifest.json",
+            derivation_result=derivation,
+            completed_at=completed_at,
+        )
+
     return summary
 
 
@@ -1132,17 +1406,7 @@ def run_engineering_smoke_pipeline(
     all_tasks = load_benchmark_tasks(tasks_path, "humaneval")
     selected_tasks = select_tasks_official_first_n(all_tasks, max_tasks)
     selected_tasks_path = out_dir / "tasks_selected.jsonl"
-    _write_completions_jsonl(
-        [
-            {
-                "task_id": t.task_id,
-                "prompt": t.prompt,
-                "entry_point": t.entry_point,
-            }
-            for t in selected_tasks
-        ],
-        selected_tasks_path,
-    )
+    _write_tasks_jsonl(selected_tasks, selected_tasks_path)
 
     gen_summary = run_ollama_generation(
         tasks_path=selected_tasks_path,
@@ -1158,38 +1422,20 @@ def run_engineering_smoke_pipeline(
         smoke=True,
         manifest_benchmark="humaneval_plus",
         started_at=started_at,
+        sync_treatment_artifacts=run_ab3,
+        provenance_tasks_path=tasks_path,
+        repo_root=repo_root,
     )
 
     result: Dict[str, Any] = {
         "output_dir": str(out_dir),
         "generation_summary": gen_summary,
-        "ab3_ran": False,
+        "ab3_ran": run_ab3,
     }
-
-    if run_ab3:
-        if evaluator_git_commit is None:
-            evaluator_git_commit = runner_git_commit or _resolve_runner_git_commit()
-        ab3_summary = run_public_benchmark_treatments_from_attempts(
-            tasks_path=selected_tasks_path,
-            generation_attempts_path=out_dir / "generation_attempts.jsonl",
-            benchmark="humaneval",
-            artifact_root=out_dir,
-            evaluator_git_commit=evaluator_git_commit,
-        )
-        result["ab3_ran"] = True
-        result["ab3_summary"] = {
-            "total_tasks": ab3_summary.total_tasks,
-            "ab3_target_count": ab3_summary.ab3_target_count,
-            "core_changed_count": ab3_summary.core_changed_count,
-            "spec_changed_count": ab3_summary.spec_changed_count,
-        }
-
     manifest_path = out_dir / "generation_manifest.json"
-    if manifest_path.is_file():
+    if run_ab3 and manifest_path.is_file():
         manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-        manifest["ab3_from_attempts"] = result["ab3_ran"]
-        manifest["completed_at"] = _utc_now_iso()
-        _write_json_deterministic(manifest, manifest_path)
+        result["ab3_summary"] = manifest.get("ab3_summary")
 
     return result
 
@@ -1301,6 +1547,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Engineering smoke mode (isolated output, 4B instruct defaults).",
     )
     parser.add_argument(
+        "--offline-replay-artifacts",
+        action="store_true",
+        help="Re-derive treatment/EvalPlus artifacts from saved generation_attempts.jsonl only (no Ollama calls).",
+    )
+    parser.add_argument(
+        "--dataset-manifest-path",
+        default=None,
+        help="Optional dataset_manifest.json for provenance verification.",
+    )
+    parser.add_argument(
         "--runner-git-commit", default=None,
         help="Recorded in generation_manifest.json; resolved via "
              "`git rev-parse HEAD` (fail-closed) when omitted.",
@@ -1322,10 +1578,20 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
         if args.output_dir is not None:
             output_dir = args.output_dir
-        elif args.smoke:
+        elif args.smoke or args.offline_replay_artifacts:
             output_dir = str(default_smoke_output_dir())
         else:
             parser.error("--output-dir is required unless --smoke is set")
+
+        if args.offline_replay_artifacts:
+            run_offline_artifact_replay(
+                output_dir=output_dir,
+                tasks_path=args.tasks_path,
+                benchmark=args.benchmark,
+                runner_git_commit=args.runner_git_commit,
+                dataset_manifest_path=args.dataset_manifest_path,
+            )
+            return 0
 
         run_ollama_generation(
             tasks_path=args.tasks_path,
@@ -1340,8 +1606,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             resume=args.resume,
             rerun_incomplete=args.rerun_incomplete,
             smoke=args.smoke,
+            dataset_manifest_path=args.dataset_manifest_path,
         )
         return 0
+    except HumanevalPlusDatasetError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
     except OllamaGenerationError as exc:
         print(str(exc), file=sys.stderr)
         return 1

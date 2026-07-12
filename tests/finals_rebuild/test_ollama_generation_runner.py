@@ -13,6 +13,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import pathlib
 import sys
 import urllib.error
 
@@ -24,10 +25,14 @@ import agent_tools.finals_rebuild.ollama_generation_runner as runner
 from agent_tools.finals_rebuild.benchmarks_adapter import (
     PublicBenchmarkTask,
     load_benchmark_completions,
+    load_benchmark_tasks,
 )
+from agent_tools.finals_rebuild.humaneval_plus_dataset import prepare_tasks_file, sha256_file
 from agent_tools.finals_rebuild.ollama_generation_runner import (
     AB2G_SCAFFOLD,
     ANALYSIS_STATUS_SMOKE_EXCLUDED,
+    ATTEMPT_POLICY_CONFIRMATORY,
+    ATTEMPT_POLICY_ENGINEERING_SMOKE,
     DEFAULT_MODEL_8B,
     DEFAULT_SMOKE_MODEL,
     MODEL,
@@ -42,7 +47,9 @@ from agent_tools.finals_rebuild.ollama_generation_runner import (
     TEMPERATURE,
     TOP_K,
     TOP_P,
+    TREATMENT_DERIVATION_MODE,
     analyze_extraction,
+    attempt_policy_manifest_fields,
     build_arg_parser,
     build_prompt,
     build_summary,
@@ -51,15 +58,18 @@ from agent_tools.finals_rebuild.ollama_generation_runner import (
     detect_reasoning_leakage,
     entry_point_preflight,
     is_resume_complete,
+    load_all_saved_attempts,
     load_completed_attempts,
     main,
     run_attempt,
     run_engineering_smoke_pipeline,
     run_generation_attempts,
+    run_offline_artifact_replay,
     run_ollama_generation,
     run_treatment_stage,
     run_treatment_stage_from_attempts,
     select_tasks_official_first_n,
+    synchronize_offline_treatment_artifacts,
     validate_chat_response,
     validate_raw_response,
 )
@@ -1049,3 +1059,466 @@ def test_engineering_smoke_pipeline_writes_selected_tasks(monkeypatch, tmp_path)
     assert (out_dir / "tasks_selected.jsonl").exists()
     selected = (out_dir / "tasks_selected.jsonl").read_text(encoding="utf-8").strip().splitlines()
     assert len(selected) == 20
+
+
+def _install_smoke_urlopen(monkeypatch, chat_bodies=None):
+    return _install_fake_urlopen(
+        monkeypatch,
+        chat_bodies=chat_bodies,
+        model_name=DEFAULT_SMOKE_MODEL,
+        tags_body={"models": [{
+            "name": DEFAULT_SMOKE_MODEL,
+            "digest": _smoke_digest(),
+            "size": 2500000000,
+        }]},
+    )
+
+
+def _fake_ab3_summary(**kwargs):
+    from agent_tools.finals_rebuild.public_benchmark_runner import (
+        RawAb3RunSummary,
+        load_generation_attempts,
+    )
+
+    tasks_path = pathlib.Path(kwargs["tasks_path"])
+    tasks = load_benchmark_tasks(tasks_path, kwargs["benchmark"])
+    attempts = load_generation_attempts(kwargs["generation_attempts_path"])
+    by_key = {(a["task_id"], a["treatment"]): a for a in attempts}
+    results = []
+    for task in tasks:
+        ab1 = by_key.get((task.task_id, "ab1"))
+        ab2g = by_key.get((task.task_id, "ab2g"))
+        results.append(
+            {
+                "task_id": task.task_id,
+                "ab1_completion": ab1.get("completion") if ab1 and ab1.get("status") == "success" else None,
+                "ab2g_completion": ab2g.get("completion") if ab2g and ab2g.get("status") == "success" else None,
+                "ab3_core_completion": ab2g.get("completion") if ab2g and ab2g.get("status") == "success" else None,
+                "ab3_full_completion": ab2g.get("completion") if ab2g and ab2g.get("status") == "success" else None,
+            }
+        )
+    out_root = pathlib.Path(kwargs["artifact_root"]) / "public_benchmark_raw" / kwargs["benchmark"]
+    evalplus_dir = out_root / "evalplus"
+    evalplus_dir.mkdir(parents=True, exist_ok=True)
+    for name, key in [
+        ("ab1.jsonl", "ab1_completion"),
+        ("ab2g.jsonl", "ab2g_completion"),
+        ("ab3_core.jsonl", "ab3_core_completion"),
+        ("ab3_full.jsonl", "ab3_full_completion"),
+    ]:
+        lines = [
+            json.dumps({"task_id": r["task_id"], "completion": r[key]})
+            for r in results
+            if r.get(key)
+        ]
+        (evalplus_dir / name).write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+    return RawAb3RunSummary(
+        benchmark=kwargs["benchmark"],
+        total_tasks=len(tasks),
+        ab3_target_count=len(tasks),
+        core_changed_count=0,
+        spec_changed_count=0,
+        ab1_available_count=sum(1 for r in results if r["ab1_completion"]),
+        ab1_missing_count=0,
+        ab2g_raw_available_count=len(tasks),
+        ab2g_raw_missing_count=0,
+        ab2g_extraction_success_count=len(tasks),
+        ab2g_extraction_failure_count=0,
+        ab3_core_extraction_success_count=len(tasks),
+        ab3_core_extraction_failure_count=0,
+        ab3_full_extraction_success_count=len(tasks),
+        ab3_full_extraction_failure_count=0,
+        syntax_rescued_by_core=0,
+        syntax_rescued_by_full=0,
+        execution_rescued_by_core=0,
+        execution_rescued_by_full=0,
+        not_test_assessable_count=0,
+    )
+
+
+def test_smoke_sync_derivation_updates_evalplus_after_resume(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0, _TASK_1])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(
+        monkeypatch,
+        chat_bodies=[_AMBIGUOUS, _FENCED_OK, _FENCED_OK, _FENCED_OK],
+    )
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    evalplus_ab1 = out_dir / "public_benchmark_raw/humaneval/evalplus/ab1.jsonl"
+    assert len(evalplus_ab1.read_text(encoding="utf-8").splitlines()) == 1
+
+    calls = _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+        resume=True,
+    )
+    assert sum(1 for u in calls["urls"] if u.endswith("/api/chat")) == 1
+    assert len(evalplus_ab1.read_text(encoding="utf-8").splitlines()) == 2
+
+
+def test_offline_sync_makes_no_api_calls(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    attempts_before = (out_dir / "generation_attempts.jsonl").read_text(encoding="utf-8")
+
+    def _forbid_attempt(*args, **kwargs):
+        raise AssertionError("run_attempt must not be called during offline replay")
+
+    monkeypatch.setattr(runner, "run_attempt", _forbid_attempt)
+    calls = _install_fake_urlopen(monkeypatch, chat_bodies=[])
+    run_offline_artifact_replay(
+        output_dir=out_dir,
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        runner_git_commit="deadbeef",
+    )
+    assert not any(u.endswith("/api/chat") for u in calls["urls"])
+    assert (
+        out_dir / "generation_attempts.jsonl"
+    ).read_text(encoding="utf-8") == attempts_before
+
+
+def test_offline_sync_rewrite_has_no_duplicate_lines(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    evalplus_ab1 = out_dir / "public_benchmark_raw/humaneval/evalplus/ab1.jsonl"
+    synchronize_offline_treatment_artifacts(
+        output_dir=out_dir,
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        evaluator_git_commit="deadbeef",
+    )
+    first = evalplus_ab1.read_text(encoding="utf-8")
+    synchronize_offline_treatment_artifacts(
+        output_dir=out_dir,
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        evaluator_git_commit="deadbeef",
+    )
+    second = evalplus_ab1.read_text(encoding="utf-8")
+    assert first == second
+    assert len(second.strip().splitlines()) == 1
+
+
+def test_ambiguous_retained_in_attempts_excluded_from_evalplus(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_AMBIGUOUS, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    attempts = [
+        json.loads(line)
+        for line in (out_dir / "generation_attempts.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    ab1 = next(a for a in attempts if a["treatment"] == "ab1")
+    assert ab1["extraction_status"] == "ambiguous"
+    assert ab1["raw_response"]
+    evalplus_ab1 = out_dir / "public_benchmark_raw/humaneval/evalplus/ab1.jsonl"
+    assert evalplus_ab1.read_text(encoding="utf-8").strip() == ""
+
+
+def test_fixture_tasks_marked_unverified_fixture(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["dataset_provenance_status"] == "unverified_fixture"
+    assert "tasks_sha256" not in manifest or manifest.get("tasks_sha256") is None
+
+
+def _write_source_gzip(path, records):
+    import gzip
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with gzip.open(path, "wt", encoding="utf-8") as fh:
+        for rec in records:
+            fh.write(json.dumps(rec, ensure_ascii=False) + "\n")
+
+
+def _sample_records(n: int):
+    return [
+        {
+            "task_id": f"HumanEval/{i}",
+            "prompt": f"def f{i}():\n    \"\"\"doc {i}\"\"\"\n",
+            "entry_point": f"f{i}",
+            "canonical_solution": "    return 1\n",
+            "test": "def check(candidate): pass",
+        }
+        for i in range(n)
+    ]
+
+
+def test_official_dataset_provenance_verified(monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    data_dir = repo / "data/humaneval_plus"
+    data_dir.mkdir(parents=True)
+    src = data_dir / "source" / "HumanEvalPlus.jsonl.gz"
+    _write_source_gzip(src, _sample_records(164))
+    tasks_path = data_dir / "tasks.jsonl"
+    manifest_path = data_dir / "dataset_manifest.json"
+    manifest = prepare_tasks_file(
+        source_path=src,
+        tasks_path=tasks_path,
+        manifest_path=manifest_path,
+        creation_script="tests/fixture.py",
+        expected_source_sha256=sha256_file(src),
+    )
+
+    out_dir = repo / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    monkeypatch.setattr(runner, "resolve_repo_root", lambda start=None: repo)
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+        max_tasks=1,
+        sync_treatment_artifacts=False,
+        repo_root=repo,
+        dataset_manifest_path=manifest_path,
+    )
+    run_manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert run_manifest["dataset_provenance_status"] == "verified"
+    assert run_manifest["tasks_sha256"] == manifest["tasks_sha256"]
+    assert run_manifest["dataset_release_tag"] == manifest["release_tag_or_dataset_version"]
+
+
+def test_tasks_sha_mismatch_fail_closed(monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    data_dir = repo / "data/humaneval_plus"
+    data_dir.mkdir(parents=True)
+    tasks_jsonl = data_dir / "tasks.jsonl"
+    tasks_jsonl.write_text(
+        json.dumps(
+            {
+                "task_id": _TASK_0.task_id,
+                "prompt": _TASK_0.prompt,
+                "entry_point": _TASK_0.entry_point,
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    manifest_path = data_dir / "dataset_manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "dataset_name": "HumanEval+",
+                "release_tag_or_dataset_version": "v0.1.10",
+                "task_count": 164,
+                "source_asset_name": "HumanEvalPlus.jsonl.gz",
+                "source_sha256": "0" * 64,
+                "tasks_sha256": "f" * 64,
+                "tasks_file": "data/humaneval_plus/tasks.jsonl",
+                "task_order_policy": "official_source_order",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    out_dir = repo / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(runner, "resolve_repo_root", lambda start=None: repo)
+    with pytest.raises(OllamaGenerationError, match="SHA256 mismatch"):
+        run_ollama_generation(
+            tasks_path=tasks_jsonl,
+            benchmark="humaneval",
+            output_dir=out_dir,
+            base_url=runner.DEFAULT_BASE_URL,
+            timeout_seconds=5.0,
+            runner_git_commit="deadbeef",
+            smoke=True,
+            repo_root=repo,
+            dataset_manifest_path=manifest_path,
+        )
+
+
+def test_manifest_records_ab3_from_attempts_and_derivation_mode(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    monkeypatch.setattr(
+        runner, "run_public_benchmark_treatments_from_attempts", _fake_ab3_summary
+    )
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+    )
+    manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["ab3_from_attempts"] is True
+    assert manifest["treatment_derivation_mode"] == TREATMENT_DERIVATION_MODE
+
+
+def test_engineering_smoke_allows_retry_incomplete(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_smoke_urlopen(monkeypatch, chat_bodies=[_AMBIGUOUS, _FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+        sync_treatment_artifacts=False,
+    )
+    calls = _install_smoke_urlopen(monkeypatch, chat_bodies=[_FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=True,
+        resume=True,
+        sync_treatment_artifacts=False,
+    )
+    assert any(u.endswith("/api/chat") for u in calls["urls"])
+    manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["attempt_policy"] == ATTEMPT_POLICY_ENGINEERING_SMOKE
+    assert manifest["retry_incomplete_allowed"] is True
+
+
+def test_confirmatory_resume_skips_failed_first_attempt(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_AMBIGUOUS, _FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=False,
+        sync_treatment_artifacts=False,
+    )
+    before = (out_dir / "generation_attempts.jsonl").read_text(encoding="utf-8")
+    calls = _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        smoke=False,
+        resume=True,
+        sync_treatment_artifacts=False,
+    )
+    assert not any(u.endswith("/api/chat") for u in calls["urls"])
+    after = (out_dir / "generation_attempts.jsonl").read_text(encoding="utf-8")
+    assert before == after
+    manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["attempt_policy"] == ATTEMPT_POLICY_CONFIRMATORY
+    assert manifest["first_attempt_is_itt"] is True
+    assert manifest["retry_incomplete_allowed"] is False
+
+
+def test_confirmatory_forbids_rerun_incomplete_flag():
+    fields = attempt_policy_manifest_fields(ATTEMPT_POLICY_CONFIRMATORY)
+    assert fields["retry_incomplete_allowed"] is False
+
+
+def test_confirmatory_rerun_incomplete_flag_rejected(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    with pytest.raises(OllamaGenerationError, match="forbid --rerun-incomplete"):
+        run_ollama_generation(
+            tasks_path=tasks_path,
+            benchmark="humaneval",
+            output_dir=out_dir,
+            base_url=runner.DEFAULT_BASE_URL,
+            timeout_seconds=5.0,
+            runner_git_commit="deadbeef",
+            smoke=False,
+            rerun_incomplete=True,
+            sync_treatment_artifacts=False,
+        )
+
+
+def test_multi_fence_remains_ambiguous_without_heuristic():
+    analysis = analyze_extraction(_AMBIGUOUS["message"]["content"])
+    assert analysis["extraction_status"] == "ambiguous"
+    assert analysis["completion"] is None

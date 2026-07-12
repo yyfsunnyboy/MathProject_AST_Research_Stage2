@@ -15,11 +15,14 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from agent_tools.finals_rebuild.benchmarks_adapter import load_benchmark_tasks
 from agent_tools.finals_rebuild.humaneval_plus_dataset import (
+    DATASET_PROVENANCE_UNVERIFIED_FIXTURE,
+    DATASET_PROVENANCE_VERIFIED,
     EXPECTED_TASK_COUNT,
     HumanevalPlusDatasetError,
     load_source_records,
     prepare_tasks_file,
     prepare_tasks_from_source,
+    resolve_run_dataset_provenance,
     sha256_file,
     verify_source_sha256,
     write_tasks_jsonl,
@@ -148,3 +151,72 @@ def test_manifest_notes_no_humaneval_fallback(tmp_path):
     )
     manifest = json.loads(manifest_out.read_text(encoding="utf-8"))
     assert any("No fallback to original HumanEval" in note for note in manifest["notes"])
+
+
+def test_resolve_run_dataset_provenance_fixture(tmp_path):
+    tasks_path = tmp_path / "fixture_tasks.json"
+    tasks_path.write_text("{}\n", encoding="utf-8")
+    provenance = resolve_run_dataset_provenance(tasks_path, repo_root=tmp_path)
+    assert provenance["dataset_provenance_status"] == DATASET_PROVENANCE_UNVERIFIED_FIXTURE
+
+
+def test_resolve_run_dataset_provenance_verified(tmp_path):
+    repo = tmp_path / "repo"
+    data_dir = repo / "data/humaneval_plus"
+    data_dir.mkdir(parents=True)
+    src = data_dir / "source" / "HumanEvalPlus.jsonl.gz"
+    src.parent.mkdir(parents=True)
+    records = _sample_records(EXPECTED_TASK_COUNT)
+    _write_source_gzip(src, records)
+    tasks_path = data_dir / "tasks.jsonl"
+    manifest_path = data_dir / "dataset_manifest.json"
+    manifest = prepare_tasks_file(
+        source_path=src,
+        tasks_path=tasks_path,
+        manifest_path=manifest_path,
+        creation_script="tests/fixture.py",
+        expected_source_sha256=sha256_file(src),
+    )
+    provenance = resolve_run_dataset_provenance(
+        tasks_path,
+        repo_root=repo,
+        dataset_manifest_path=manifest_path,
+    )
+    assert provenance["dataset_provenance_status"] == DATASET_PROVENANCE_VERIFIED
+    assert provenance["tasks_sha256"] == manifest["tasks_sha256"]
+    assert provenance["dataset_release_tag"] == manifest["release_tag_or_dataset_version"]
+
+
+def test_resolve_run_dataset_provenance_hash_mismatch(tmp_path):
+    repo = tmp_path / "repo"
+    data_dir = repo / "data/humaneval_plus"
+    data_dir.mkdir(parents=True)
+    tasks_path = data_dir / "tasks.jsonl"
+    write_tasks_jsonl(
+        prepare_tasks_from_source(_sample_records(EXPECTED_TASK_COUNT)),
+        tasks_path,
+    )
+    manifest_path = data_dir / "dataset_manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "dataset_name": "HumanEval+",
+                "release_tag_or_dataset_version": "v0.1.10",
+                "task_count": EXPECTED_TASK_COUNT,
+                "source_asset_name": "HumanEvalPlus.jsonl.gz",
+                "source_sha256": "0" * 64,
+                "tasks_sha256": "f" * 64,
+                "tasks_file": "data/humaneval_plus/tasks.jsonl",
+                "task_order_policy": "official_source_order",
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(HumanevalPlusDatasetError, match="SHA256 mismatch"):
+        resolve_run_dataset_provenance(
+            tasks_path,
+            repo_root=repo,
+            dataset_manifest_path=manifest_path,
+        )
