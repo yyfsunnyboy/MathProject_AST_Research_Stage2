@@ -86,9 +86,22 @@ class _FakeResponse:
         return self._status
 
 
-def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None, http_error=None, timeout_error=False):
+_FAKE_DIGEST = "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+_FAKE_MODEL_ENTRY = {
+    "name": MODEL,
+    "digest": _FAKE_DIGEST,
+    "size": 5200000000,
+    "modified_at": "2026-01-01T00:00:00Z",
+}
+_FAKE_VERSION_BODY = {"version": "0.31.2"}
+
+
+def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None,
+                          http_error=None, timeout_error=False,
+                          version_body=None, version_http_error=None):
     """generate_bodies: list of dicts, consumed in call order for POST /api/generate."""
-    tags_body = tags_body if tags_body is not None else {"models": [{"name": MODEL}]}
+    tags_body = tags_body if tags_body is not None else {"models": [dict(_FAKE_MODEL_ENTRY)]}
+    version_body = version_body if version_body is not None else dict(_FAKE_VERSION_BODY)
     generate_bodies = list(generate_bodies or [])
     calls = {"urls": [], "payloads": []}
 
@@ -101,6 +114,10 @@ def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None, htt
             if http_error and not generate_bodies:
                 raise urllib.error.HTTPError(url, http_error, "err", {}, io.BytesIO(b""))
             return _FakeResponse(tags_body)
+        if url.endswith("/api/version"):
+            if version_http_error:
+                raise urllib.error.HTTPError(url, version_http_error, "err", {}, io.BytesIO(b""))
+            return _FakeResponse(version_body)
         if url.endswith("/api/generate"):
             if timeout_error:
                 raise TimeoutError("timed out")
@@ -660,6 +677,106 @@ def test_main_returns_zero_even_with_some_failed_attempts(monkeypatch, tmp_path)
     exit_code = main([
         "--tasks-path", str(tasks_path), "--benchmark", "humaneval",
         "--output-dir", str(tmp_path / "out"),
+        "--runner-git-commit", "deadbeef",
     ])
     assert exit_code == 0
     assert (tmp_path / "out" / "generation_summary.json").exists()
+
+
+# ============================================================
+# Ollama provenance (model digest / server version) in the manifest
+# ============================================================
+
+
+def _run_full(monkeypatch, tmp_path, **urlopen_kwargs):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    _install_fake_urlopen(
+        monkeypatch,
+        generate_bodies=urlopen_kwargs.pop("generate_bodies", [_FENCED_OK, _FENCED_OK]),
+        **urlopen_kwargs,
+    )
+    out_dir = tmp_path / "out"
+    run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+    )
+    return json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+
+
+def test_manifest_records_model_digest(monkeypatch, tmp_path):
+    manifest = _run_full(monkeypatch, tmp_path)
+    assert manifest["model_digest"] == _FAKE_DIGEST
+    assert manifest["model_name"] == MODEL
+    assert manifest["model_size"] == _FAKE_MODEL_ENTRY["size"]
+    assert manifest["model_modified_at"] == _FAKE_MODEL_ENTRY["modified_at"]
+    assert manifest["api_base_url"] == runner.DEFAULT_BASE_URL
+
+
+def test_manifest_records_ollama_version(monkeypatch, tmp_path):
+    manifest = _run_full(monkeypatch, tmp_path)
+    assert manifest["ollama_version"] == "0.31.2"
+
+
+def test_manifest_records_run_parameters(monkeypatch, tmp_path):
+    manifest = _run_full(monkeypatch, tmp_path)
+    assert manifest["runner_git_commit"] == "deadbeef"
+    assert manifest["benchmark"] == "humaneval"
+    assert manifest["model"] == MODEL
+    assert manifest["seed"] == SEED
+    assert manifest["temperature"] == TEMPERATURE
+    assert manifest["think"] is THINK
+    assert manifest["timeout_seconds"] == 5.0
+
+
+def test_missing_digest_fails_closed(monkeypatch, tmp_path):
+    tags_body = {"models": [{"name": MODEL}]}  # no digest field
+    _install_fake_urlopen(monkeypatch, tags_body=tags_body)
+    with pytest.raises(OllamaGenerationError, match="no digest"):
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+
+
+def test_blank_digest_fails_closed(monkeypatch):
+    tags_body = {"models": [{"name": MODEL, "digest": "   "}]}
+    _install_fake_urlopen(monkeypatch, tags_body=tags_body)
+    with pytest.raises(OllamaGenerationError, match="no digest"):
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+
+
+def test_version_endpoint_http_error_fails_closed(monkeypatch):
+    _install_fake_urlopen(monkeypatch, version_http_error=500)
+    with pytest.raises(OllamaGenerationError, match="status 500"):
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+
+
+def test_blank_version_fails_closed(monkeypatch):
+    _install_fake_urlopen(monkeypatch, version_body={"version": "   "})
+    with pytest.raises(OllamaGenerationError, match="no usable version"):
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+
+
+def test_model_missing_from_tags_provenance_fails_closed(monkeypatch):
+    _install_fake_urlopen(monkeypatch, tags_body={"models": [{"name": "llama3:8b", "digest": "sha256:x"}]})
+    with pytest.raises(OllamaGenerationError, match="not found in /api/tags"):
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+
+
+def test_digest_failure_blocks_full_run_before_any_attempt(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    calls = _install_fake_urlopen(monkeypatch, tags_body={"models": [{"name": MODEL}]})
+    with pytest.raises(OllamaGenerationError, match="no digest"):
+        run_ollama_generation(
+            tasks_path=tasks_path, benchmark="humaneval", output_dir=tmp_path / "out",
+            base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+            runner_git_commit="deadbeef",
+        )
+    assert not any(u.endswith("/api/generate") for u in calls["urls"])
+    assert not (tmp_path / "out" / "generation_manifest.json").exists()
+
+
+def test_manifest_deterministic_fields_stable(monkeypatch, tmp_path):
+    m1 = _run_full(monkeypatch, tmp_path)
+    tmp2 = tmp_path / "second"
+    tmp2.mkdir()
+    m2 = _run_full(monkeypatch, tmp2)
+    assert m1 == m2

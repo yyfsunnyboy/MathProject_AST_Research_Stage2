@@ -51,8 +51,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import pathlib
 import re
+import subprocess
 import sys
 import time
 import urllib.error
@@ -99,6 +101,8 @@ _STAGE_STATUS: Dict[str, str] = {
     "treatment": "failed_preflight",
     "tasks_load": "failed_preflight",
     "tags_preflight": "failed_preflight",
+    "version_preflight": "failed_preflight",
+    "git_commit": "failed_preflight",
     "connection": "failed_generation",
     "timeout": "failed_generation",
     "http_status": "failed_generation",
@@ -191,6 +195,86 @@ def check_model_available(base_url: str, timeout_seconds: float) -> None:
             "tags_preflight",
             f"model {MODEL!r} not found in /api/tags (available: {sorted(n for n in names if n)})",
         )
+
+
+def fetch_ollama_provenance(base_url: str, timeout_seconds: float) -> Dict[str, Any]:
+    """GET /api/tags and /api/version and return the reproducibility
+    provenance for MODEL: model_name, model_digest, model_size,
+    model_modified_at, ollama_version, api_base_url. This metadata can only
+    be captured at generation time (the model blob or server may change
+    later), so every field the server is expected to provide is fail-closed:
+    model missing, digest missing/blank, version endpoint failing, or a
+    blank version string all abort the run — a bare model *tag* alone is
+    never accepted as provenance."""
+    tags_url = base_url.rstrip("/") + "/api/tags"
+    tags_data = _http_get_json(tags_url, timeout_seconds, stage="tags_preflight")
+
+    models = tags_data.get("models") if isinstance(tags_data, dict) else None
+    entry: Optional[Dict[str, Any]] = None
+    for m in models or []:
+        if isinstance(m, dict) and (m.get("name") or m.get("model")) == MODEL:
+            entry = m
+            break
+    if entry is None:
+        available = sorted(
+            n for n in (
+                (m.get("name") or m.get("model"))
+                for m in models or [] if isinstance(m, dict)
+            ) if n
+        )
+        raise OllamaGenerationError(
+            "tags_preflight",
+            f"model {MODEL!r} not found in /api/tags (available: {available})",
+        )
+
+    digest = entry.get("digest")
+    if not isinstance(digest, str) or not digest.strip():
+        raise OllamaGenerationError(
+            "tags_preflight",
+            f"model {MODEL!r} has no digest in /api/tags — refusing to record "
+            f"a bare model tag as provenance",
+        )
+
+    version_url = base_url.rstrip("/") + "/api/version"
+    version_data = _http_get_json(version_url, timeout_seconds, stage="version_preflight")
+    version = version_data.get("version") if isinstance(version_data, dict) else None
+    if not isinstance(version, str) or not version.strip():
+        raise OllamaGenerationError(
+            "version_preflight",
+            f"GET /api/version returned no usable version string: {version_data!r}",
+        )
+
+    return {
+        "model_name": MODEL,
+        "model_digest": digest,
+        "model_size": entry.get("size"),
+        "model_modified_at": entry.get("modified_at"),
+        "ollama_version": version,
+        "api_base_url": base_url,
+    }
+
+
+def _resolve_runner_git_commit() -> str:
+    """Resolve the runner's own git commit for the generation manifest.
+    Fails closed if git is unavailable or the repo state can't be read —
+    a manifest without a pinned runner commit is not reproducible."""
+    try:
+        proc = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            capture_output=True, text=True, timeout=30,
+            cwd=os.path.dirname(os.path.abspath(__file__)),
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise OllamaGenerationError(
+            "git_commit", f"failed to resolve runner git commit: {exc}"
+        ) from exc
+    commit = (proc.stdout or "").strip()
+    if proc.returncode != 0 or not commit:
+        raise OllamaGenerationError(
+            "git_commit",
+            f"git rev-parse HEAD failed (rc={proc.returncode}, stderr={proc.stderr!r})",
+        )
+    return commit
 
 
 def _post_generate(prompt: str, base_url: str, timeout_seconds: float) -> Dict[str, Any]:
@@ -554,15 +638,21 @@ def run_ollama_generation(
     output_dir: Union[str, pathlib.Path],
     base_url: str = DEFAULT_BASE_URL,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+    runner_git_commit: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run every (task, treatment) attempt for *tasks_path* against the
     local Ollama HTTP API. Always writes generation_attempts.jsonl,
-    generation_summary.json, ab1_raw.jsonl, ab2g_raw.jsonl, ab1.jsonl, and
-    ab2g.jsonl to *output_dir* (the last two contain only successful
-    completions for that treatment, and are written empty rather than
-    omitted when a treatment has zero successes). Only a preflight failure
-    (invalid benchmark, no tasks, model not in /api/tags) aborts the run
-    before any attempt/output; a per-attempt failure never does."""
+    generation_summary.json, generation_manifest.json, ab1_raw.jsonl,
+    ab2g_raw.jsonl, ab1.jsonl, and ab2g.jsonl to *output_dir* (the last two
+    contain only successful completions for that treatment, and are written
+    empty rather than omitted when a treatment has zero successes). Only a
+    preflight failure (invalid benchmark, no tasks, model/digest missing
+    from /api/tags, /api/version unusable, unresolvable runner git commit)
+    aborts the run before any attempt/output; a per-attempt failure never
+    does.
+
+    *runner_git_commit* is recorded in the manifest; when None it is
+    resolved from `git rev-parse HEAD` (fail-closed if unresolvable)."""
     if benchmark not in ("humaneval", "mbpp"):
         raise OllamaGenerationError(
             "benchmark", f"benchmark must be 'humaneval' or 'mbpp', got {benchmark!r}"
@@ -574,7 +664,11 @@ def run_ollama_generation(
     if not tasks:
         raise OllamaGenerationError("tasks_load", f"{tasks_path}: no tasks loaded")
 
-    check_model_available(base_url, timeout_seconds)
+    # Captures /api/tags digest + /api/version and enforces MODEL presence
+    # (subsumes the bare check_model_available() existence check).
+    provenance = fetch_ollama_provenance(base_url, timeout_seconds)
+    if runner_git_commit is None:
+        runner_git_commit = _resolve_runner_git_commit()
 
     attempts = run_generation_attempts(
         tasks, benchmark=benchmark, base_url=base_url, timeout_seconds=timeout_seconds
@@ -607,6 +701,20 @@ def run_ollama_generation(
 
     summary = build_summary(attempts)
     _write_json_deterministic(summary, output_dir / "generation_summary.json")
+
+    manifest = {
+        **provenance,
+        "runner_git_commit": runner_git_commit,
+        "benchmark": benchmark,
+        "model": MODEL,
+        "seed": SEED,
+        "temperature": TEMPERATURE,
+        "think": THINK,
+        "timeout_seconds": timeout_seconds,
+        "task_ids": [t.task_id for t in tasks],
+        "treatments": list(ALLOWED_TREATMENTS),
+    }
+    _write_json_deterministic(manifest, output_dir / "generation_manifest.json")
     return summary
 
 
@@ -674,6 +782,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--timeout-seconds", type=float, default=DEFAULT_TIMEOUT_SECONDS)
+    parser.add_argument(
+        "--runner-git-commit", default=None,
+        help="Recorded in generation_manifest.json; resolved via "
+             "`git rev-parse HEAD` (fail-closed) when omitted.",
+    )
     return parser
 
 
@@ -687,6 +800,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             output_dir=args.output_dir,
             base_url=args.base_url,
             timeout_seconds=args.timeout_seconds,
+            runner_git_commit=args.runner_git_commit,
         )
         return 0
     except OllamaGenerationError as exc:
