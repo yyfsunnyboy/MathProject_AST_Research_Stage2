@@ -49,6 +49,7 @@ omitted, when a treatment has zero successes).
 from __future__ import annotations
 
 import argparse
+import ast
 import hashlib
 import json
 import os
@@ -59,6 +60,8 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
 
 from agent_tools.finals_rebuild.benchmarks_adapter import (
@@ -68,15 +71,80 @@ from agent_tools.finals_rebuild.benchmarks_adapter import (
 from agent_tools.finals_rebuild.extraction import _FENCE_RE, extract_code
 from agent_tools.finals_rebuild.public_benchmark_runner import (
     run_public_benchmark_treatments,
+    run_public_benchmark_treatments_from_attempts,
 )
 
 DEFAULT_BASE_URL = "http://127.0.0.1:11434"
 DEFAULT_TIMEOUT_SECONDS = 120.0
 
-MODEL = "qwen3:8b"
+DEFAULT_MODEL_8B = "qwen3:8b"
+MODEL = DEFAULT_MODEL_8B  # backward-compat alias for existing 8B runs/tests
+
+DEFAULT_SMOKE_MODEL = "qwen3:4b-instruct-2507-q4_K_M"
+SMOKE_MODEL_DIGEST_PREFIX = "0edcdef34593"
+SMOKE_TASK_COUNT = 20
+
 SEED = 20260712
 TEMPERATURE = 0
-THINK = False
+TOP_P = 1.0
+TOP_K = 1
+NUM_PREDICT = 2048  # conservative fixed cap for HumanEval-length completions
+API_ENDPOINT = "/api/chat"
+RESPONSE_FIELD = "message.content"
+
+PROMPT_TEMPLATE_VERSION = "humaneval_official_prompt_v1"
+BENCHMARK_VERSION_HUMANEVAL_PLUS = "evalplus_humaneval+"
+TASK_SELECTION_POLICY_FIRST_N = "official_input_order_first_n"
+RUN_TYPE_SMOKE = "engineering_smoke_test"
+ANALYSIS_STATUS_SMOKE_EXCLUDED = "excluded_from_confirmatory_results"
+OFFICIAL_EVALPLUS_STATUS_SMOKE = "not_run_engineering_smoke"
+OFFICIAL_EVALPLUS_BLOCKER = "requires_wsl_linux_and_supported_coverage"
+
+SMOKE_OUTPUT_RELATIVE = pathlib.Path(
+    "artifacts/engineering_smoke_test/humaneval_plus/qwen3_4b_instruct_2507"
+)
+
+_MODEL_PROFILES: Dict[str, Dict[str, Any]] = {
+    DEFAULT_SMOKE_MODEL: {
+        "architecture": "qwen3",
+        "parameters": "4.0B",
+        "quantization": "Q4_K_M",
+        "expected_digest_prefix": SMOKE_MODEL_DIGEST_PREFIX,
+    },
+    DEFAULT_MODEL_8B: {
+        "architecture": "qwen3",
+        "parameters": "8B",
+        "quantization": None,
+        "expected_digest_prefix": None,
+    },
+}
+
+
+@dataclass(frozen=True)
+class OllamaGenerationSettings:
+    """Fixed generation parameters sent to Ollama /api/chat on every call."""
+
+    model: str
+    seed: int = SEED
+    temperature: float = TEMPERATURE
+    top_p: float = TOP_P
+    top_k: int = TOP_K
+    num_predict: int = NUM_PREDICT
+    api_endpoint: str = API_ENDPOINT
+    response_field: str = RESPONSE_FIELD
+    expected_digest_prefix: Optional[str] = None
+
+    @classmethod
+    def for_model(cls, model: str) -> "OllamaGenerationSettings":
+        profile = _MODEL_PROFILES.get(model, {})
+        return cls(
+            model=model,
+            expected_digest_prefix=profile.get("expected_digest_prefix"),
+        )
+
+    @classmethod
+    def smoke_default(cls) -> "OllamaGenerationSettings":
+        return cls.for_model(DEFAULT_SMOKE_MODEL)
 
 # Fixed generation + write order: for every task, Ab1 is attempted before
 # Ab2g. Never reordered based on outcome.
@@ -178,9 +246,10 @@ def _http_get_json(url: str, timeout_seconds: float, *, stage: str) -> Any:
         raise OllamaGenerationError(stage, f"GET {url} returned invalid JSON: {exc}") from exc
 
 
-def check_model_available(base_url: str, timeout_seconds: float) -> None:
-    """GET /api/tags and fail closed (aborting the whole run — no attempt
-    can possibly succeed) unless MODEL is present."""
+def check_model_available(
+    base_url: str, timeout_seconds: float, *, model: str = MODEL
+) -> None:
+    """GET /api/tags and fail closed unless *model* is present."""
     url = base_url.rstrip("/") + "/api/tags"
     data = _http_get_json(url, timeout_seconds, stage="tags_preflight")
 
@@ -190,29 +259,30 @@ def check_model_available(base_url: str, timeout_seconds: float) -> None:
         for m in models or []
         if isinstance(m, dict)
     }
-    if MODEL not in names:
+    if model not in names:
         raise OllamaGenerationError(
             "tags_preflight",
-            f"model {MODEL!r} not found in /api/tags (available: {sorted(n for n in names if n)})",
+            f"model {model!r} not found in /api/tags (available: {sorted(n for n in names if n)})",
         )
 
 
-def fetch_ollama_provenance(base_url: str, timeout_seconds: float) -> Dict[str, Any]:
-    """GET /api/tags and /api/version and return the reproducibility
-    provenance for MODEL: model_name, model_digest, model_size,
-    model_modified_at, ollama_version, api_base_url. This metadata can only
-    be captured at generation time (the model blob or server may change
-    later), so every field the server is expected to provide is fail-closed:
-    model missing, digest missing/blank, version endpoint failing, or a
-    blank version string all abort the run — a bare model *tag* alone is
-    never accepted as provenance."""
+def fetch_ollama_provenance(
+    base_url: str,
+    timeout_seconds: float,
+    *,
+    model: str = MODEL,
+    expected_digest_prefix: Optional[str] = None,
+) -> Dict[str, Any]:
+    """GET /api/tags and /api/version and return reproducibility provenance
+    for *model*. When *expected_digest_prefix* is set, the model digest must
+    contain that prefix or the run aborts fail-closed."""
     tags_url = base_url.rstrip("/") + "/api/tags"
     tags_data = _http_get_json(tags_url, timeout_seconds, stage="tags_preflight")
 
     models = tags_data.get("models") if isinstance(tags_data, dict) else None
     entry: Optional[Dict[str, Any]] = None
     for m in models or []:
-        if isinstance(m, dict) and (m.get("name") or m.get("model")) == MODEL:
+        if isinstance(m, dict) and (m.get("name") or m.get("model")) == model:
             entry = m
             break
     if entry is None:
@@ -224,15 +294,22 @@ def fetch_ollama_provenance(base_url: str, timeout_seconds: float) -> Dict[str, 
         )
         raise OllamaGenerationError(
             "tags_preflight",
-            f"model {MODEL!r} not found in /api/tags (available: {available})",
+            f"model {model!r} not found in /api/tags (available: {available})",
         )
 
     digest = entry.get("digest")
     if not isinstance(digest, str) or not digest.strip():
         raise OllamaGenerationError(
             "tags_preflight",
-            f"model {MODEL!r} has no digest in /api/tags — refusing to record "
+            f"model {model!r} has no digest in /api/tags — refusing to record "
             f"a bare model tag as provenance",
+        )
+
+    if expected_digest_prefix and expected_digest_prefix not in digest:
+        raise OllamaGenerationError(
+            "tags_preflight",
+            f"model {model!r} digest {digest!r} does not match required prefix "
+            f"{expected_digest_prefix!r}; refusing to generate",
         )
 
     version_url = base_url.rstrip("/") + "/api/version"
@@ -244,12 +321,26 @@ def fetch_ollama_provenance(base_url: str, timeout_seconds: float) -> Dict[str, 
             f"GET /api/version returned no usable version string: {version_data!r}",
         )
 
+    profile = _MODEL_PROFILES.get(model, {})
+    model_size_gb = None
+    if isinstance(entry.get("size"), (int, float)) and entry["size"] > 0:
+        model_size_gb = round(entry["size"] / (1024 ** 3), 1)
+
     return {
-        "model_name": MODEL,
+        "model_tag": model,
+        "model_name": model,
         "model_digest": digest,
         "model_size": entry.get("size"),
+        "model_size_gb": model_size_gb,
         "model_modified_at": entry.get("modified_at"),
+        "architecture": profile.get("architecture"),
+        "parameters": profile.get("parameters"),
+        "quantization": profile.get("quantization"),
+        "runtime": "Ollama",
+        "runtime_version": version,
         "ollama_version": version,
+        "api_endpoint": API_ENDPOINT,
+        "response_field": RESPONSE_FIELD,
         "api_base_url": base_url,
     }
 
@@ -277,91 +368,124 @@ def _resolve_runner_git_commit() -> str:
     return commit
 
 
-def _post_generate(prompt: str, base_url: str, timeout_seconds: float) -> Dict[str, Any]:
-    """POST /api/generate with fixed model/seed/temperature/think. Never
-    shells out, never retries on timeout/non-200. Raises
-    OllamaGenerationError on any transport/HTTP/JSON failure — the caller
-    (run_attempt) converts this into a per-attempt failure record."""
-    url = base_url.rstrip("/") + "/api/generate"
+def _post_chat(
+    prompt: str,
+    base_url: str,
+    timeout_seconds: float,
+    settings: OllamaGenerationSettings,
+) -> Dict[str, Any]:
+    """POST /api/chat with fixed model/seed/temperature/top_p/top_k/num_predict.
+    Never shells out, never retries on timeout/non-200."""
+    url = base_url.rstrip("/") + settings.api_endpoint
     payload = {
-        "model": MODEL,
-        "prompt": prompt,
+        "model": settings.model,
+        "messages": [{"role": "user", "content": prompt}],
         "stream": False,
-        "think": THINK,
         "options": {
-            "temperature": TEMPERATURE,
-            "seed": SEED,
+            "temperature": settings.temperature,
+            "seed": settings.seed,
+            "top_p": settings.top_p,
+            "top_k": settings.top_k,
+            "num_predict": settings.num_predict,
         },
     }
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         url, data=data, method="POST", headers={"Content-Type": "application/json"}
     )
+    endpoint_label = settings.api_endpoint
     try:
         with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
             status = resp.getcode()
             body = resp.read().decode("utf-8")
     except urllib.error.HTTPError as exc:
         raise OllamaGenerationError(
-            "http_status", f"POST /api/generate returned status {exc.code}"
+            "http_status", f"POST {endpoint_label} returned status {exc.code}"
         ) from exc
     except TimeoutError as exc:
         raise OllamaGenerationError(
-            "timeout", f"POST /api/generate timed out after {timeout_seconds}s"
+            "timeout", f"POST {endpoint_label} timed out after {timeout_seconds}s"
         ) from exc
     except urllib.error.URLError as exc:
         if isinstance(exc.reason, TimeoutError):
             raise OllamaGenerationError(
-                "timeout", f"POST /api/generate timed out after {timeout_seconds}s"
+                "timeout", f"POST {endpoint_label} timed out after {timeout_seconds}s"
             ) from exc
         raise OllamaGenerationError(
-            "connection", f"POST /api/generate failed: {exc}"
+            "connection", f"POST {endpoint_label} failed: {exc}"
         ) from exc
 
     if status != 200:
         raise OllamaGenerationError(
-            "http_status", f"POST /api/generate returned status {status}"
+            "http_status", f"POST {endpoint_label} returned status {status}"
         )
 
     try:
-        return json.loads(body)
+        parsed = json.loads(body)
     except json.JSONDecodeError as exc:
         raise OllamaGenerationError(
-            "json_parse", f"POST /api/generate returned invalid JSON: {exc}"
+            "json_parse", f"POST {endpoint_label} returned invalid JSON: {exc}"
         ) from exc
+
+    if isinstance(parsed, dict):
+        parsed["_ollama_response_metadata"] = {
+            "http_status": status,
+            "raw_body": body,
+            "api_endpoint": settings.api_endpoint,
+            "response_field": settings.response_field,
+        }
+    return parsed
 
 
 _THINK_PATTERN = re.compile(r"</?think>", re.IGNORECASE)
 
 
-def validate_raw_response(raw_json: Dict[str, Any]) -> str:
-    """Validate *raw_json* (the parsed /api/generate response body) and
-    return the raw response text, unmodified. Fails closed on: empty
-    response, a non-empty `thinking` field, or a `<think>`/`</think>` tag
-    in the response text. Never strips a think-tag and proceeds — that
-    would silently discard a chain-of-thought leak instead of refusing it."""
-    response_text = raw_json.get("response")
-    if not isinstance(response_text, str) or not response_text.strip():
-        raise OllamaGenerationError(
-            "empty_response", f"empty or missing 'response' field: {raw_json!r}"
-        )
-
-    thinking = raw_json.get("thinking")
+def detect_reasoning_leakage(raw_json: Dict[str, Any], content: str) -> bool:
+    """Detect chain-of-thought leakage without stripping or repairing it."""
+    message = raw_json.get("message") if isinstance(raw_json.get("message"), dict) else {}
+    thinking = message.get("thinking")
     if isinstance(thinking, str) and thinking.strip():
+        return True
+    if _THINK_PATTERN.search(content):
+        return True
+    legacy_thinking = raw_json.get("thinking")
+    if isinstance(legacy_thinking, str) and legacy_thinking.strip():
+        return True
+    return False
+
+
+def validate_chat_response(raw_json: Dict[str, Any]) -> Tuple[str, bool]:
+    """Validate *raw_json* (/api/chat body) and return (message.content,
+    reasoning_leakage_detected). Fails closed on empty/missing content or
+    detected leakage — never strips think-tags and proceeds."""
+    message = raw_json.get("message")
+    if not isinstance(message, dict):
         raise OllamaGenerationError(
-            "think_leak",
-            "response contains a non-empty 'thinking' field despite think=false; "
-            "refusing to discard it and proceed",
+            "empty_response",
+            f"missing or invalid 'message' object: {raw_json!r}",
         )
 
-    if _THINK_PATTERN.search(response_text):
+    content = message.get("content")
+    if not isinstance(content, str) or not content.strip():
         raise OllamaGenerationError(
-            "think_leak",
-            "response text contains a <think>/</think> tag; refusing to strip it "
-            "and proceed",
+            "empty_response",
+            f"empty or missing message.content: {raw_json!r}",
         )
 
-    return response_text
+    leakage = detect_reasoning_leakage(raw_json, content)
+    if leakage:
+        raise OllamaGenerationError(
+            "think_leak",
+            "response contains reasoning leakage; refusing to discard it and proceed",
+        )
+
+    return content, leakage
+
+
+def validate_raw_response(raw_json: Dict[str, Any]) -> str:
+    """Backward-compatible wrapper: returns message.content only."""
+    content, _ = validate_chat_response(raw_json)
+    return content
 
 
 # ---------------------------------------------------------------------------
@@ -419,6 +543,138 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def resolve_repo_root(start: Optional[pathlib.Path] = None) -> pathlib.Path:
+    """Best-effort repo root for default smoke output paths."""
+    if start is None:
+        start = pathlib.Path(__file__).resolve()
+    for parent in [start, *start.parents]:
+        if (parent / ".git").is_dir():
+            return parent
+    return pathlib.Path.cwd()
+
+
+def default_smoke_output_dir(repo_root: Optional[Union[str, pathlib.Path]] = None) -> pathlib.Path:
+    root = pathlib.Path(repo_root) if repo_root is not None else resolve_repo_root()
+    return root / SMOKE_OUTPUT_RELATIVE
+
+
+def select_tasks_official_first_n(
+    tasks: Sequence[PublicBenchmarkTask], n: int
+) -> List[PublicBenchmarkTask]:
+    """Deterministic first-*n* selection in official input order."""
+    if n <= 0:
+        raise OllamaGenerationError("tasks_load", f"max_tasks must be positive, got {n!r}")
+    if len(tasks) < n:
+        raise OllamaGenerationError(
+            "tasks_load",
+            f"input has {len(tasks)} tasks but {n} required for "
+            f"{TASK_SELECTION_POLICY_FIRST_N}",
+        )
+    return list(tasks[:n])
+
+
+def entry_point_preflight(
+    extracted_candidate: Optional[str],
+    *,
+    entry_point: str,
+    prompt: str,
+) -> Dict[str, Any]:
+    """Record-only AST/entry-point checks before any official evaluator."""
+    if not extracted_candidate or not extracted_candidate.strip():
+        return {
+            "parse_status": "skipped_no_candidate",
+            "entry_point_definition_count": 0,
+            "entry_point_definition_category": "zero",
+            "duplicate_prompt_skeleton_suspected": False,
+        }
+
+    try:
+        tree = ast.parse(extracted_candidate)
+        parse_status = "success"
+        parse_error = None
+    except SyntaxError as exc:
+        return {
+            "parse_status": "failed",
+            "parse_error": str(exc),
+            "entry_point_definition_count": 0,
+            "entry_point_definition_category": "zero",
+            "duplicate_prompt_skeleton_suspected": False,
+        }
+
+    def_count = sum(
+        1
+        for node in tree.body
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == entry_point
+    )
+    if def_count == 0:
+        category = "zero"
+    elif def_count == 1:
+        category = "one"
+    else:
+        category = "multiple"
+
+    prompt_has_skeleton = f"def {entry_point}" in prompt
+    duplicate_suspected = prompt_has_skeleton and def_count > 1
+
+    return {
+        "parse_status": parse_status,
+        "parse_error": parse_error,
+        "entry_point_definition_count": def_count,
+        "entry_point_definition_category": category,
+        "duplicate_prompt_skeleton_suspected": duplicate_suspected,
+    }
+
+
+def _attempt_resume_key(
+    attempt: Dict[str, Any],
+) -> Tuple[str, str, str, str]:
+    meta = attempt.get("metadata") if isinstance(attempt.get("metadata"), dict) else {}
+    return (
+        str(attempt.get("task_id", "")),
+        str(attempt.get("treatment", "")),
+        str(meta.get("model_digest", "")),
+        str(meta.get("prompt_sha256", "")),
+    )
+
+
+def is_resume_complete(attempt: Dict[str, Any]) -> bool:
+    """An attempt is resumable only when raw response was fully saved."""
+    return (
+        attempt.get("generation_status") == "success"
+        or attempt.get("status") == "success"
+    ) and isinstance(attempt.get("raw_response"), str) and bool(
+        attempt["raw_response"].strip()
+    ) and bool(attempt.get("raw_response_sha256"))
+
+
+def load_completed_attempts(path: Union[str, pathlib.Path]) -> Dict[Tuple[str, str, str, str], Dict[str, Any]]:
+    p = pathlib.Path(path)
+    if not p.is_file():
+        return {}
+    completed: Dict[Tuple[str, str, str, str], Dict[str, Any]] = {}
+    for line_no, line in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            rec = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise OllamaGenerationError(
+                "tasks_load",
+                f"{p}: line {line_no}: invalid JSON in generation_attempts.jsonl: {exc}",
+            ) from exc
+        if not isinstance(rec, dict):
+            continue
+        if is_resume_complete(rec):
+            completed[_attempt_resume_key(rec)] = rec
+    return completed
+
+
 def _sha256_or_none(text: Optional[str]) -> Optional[str]:
     return sha256_text(text) if text is not None else None
 
@@ -449,6 +705,7 @@ def _build_attempt(
     *,
     task_id: str,
     treatment: str,
+    entry_point: Optional[str],
     status: str,
     failure_stage: Optional[str],
     failure_reason: Optional[str],
@@ -462,25 +719,44 @@ def _build_attempt(
     had_surrounding_text: Optional[bool],
     elapsed_seconds: float,
     metadata: Dict[str, Any],
+    reasoning_leakage_detected: Optional[bool] = None,
+    parse_status: Optional[str] = None,
+    entry_point_definition_count: Optional[int] = None,
+    entry_point_definition_category: Optional[str] = None,
+    duplicate_prompt_skeleton_suspected: Optional[bool] = None,
+    ollama_response_metadata: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
+    extracted_candidate = completion
     return {
         "task_id": task_id,
+        "entry_point": entry_point,
         "sample_index": 0,
         "treatment": treatment,
         "status": status,
+        "generation_status": status,
         "failure_stage": failure_stage,
         "failure_reason": failure_reason,
+        "prompt_sha256": metadata.get("prompt_sha256"),
         "raw_response": raw_response,
         "raw_response_sha256": _sha256_or_none(raw_response),
         "completion": completion,
+        "extracted_candidate": extracted_candidate,
+        "extracted_candidate_sha256": _sha256_or_none(extracted_candidate),
         "completion_sha256": _sha256_or_none(completion),
         "extraction_status": extraction_status,
         "extraction_method": extraction_method,
+        "parse_status": parse_status,
+        "entry_point_definition_count": entry_point_definition_count,
+        "entry_point_definition_category": entry_point_definition_category,
+        "duplicate_prompt_skeleton_suspected": duplicate_prompt_skeleton_suspected,
+        "reasoning_leakage_detected": reasoning_leakage_detected,
+        "generation_latency": elapsed_seconds,
         "total_fenced_blocks": total_fenced_blocks,
         "python_fenced_blocks": python_fenced_blocks,
         "had_markdown_fence": had_markdown_fence,
         "had_surrounding_text": had_surrounding_text,
         "elapsed_seconds": elapsed_seconds,
+        "ollama_response_metadata": ollama_response_metadata,
         "metadata": metadata,
     }
 
@@ -492,59 +768,85 @@ def run_attempt(
     benchmark: str,
     base_url: str,
     timeout_seconds: float,
+    settings: OllamaGenerationSettings,
+    model_digest: str,
 ) -> Dict[str, Any]:
-    """Run exactly one (task, treatment, sample_index=0) attempt and always
-    return an attempt record — never raises for a request/validation/
-    extraction failure (those become status="failed" records). Only an
-    invalid *treatment* itself raises, since that is a caller programming
-    error, not a runtime generation failure."""
+    """Run exactly one (task, treatment, sample_index=0) attempt."""
     prompt = build_prompt(task.prompt, treatment)
     metadata = {
         "benchmark": benchmark,
         "treatment": treatment,
-        "model": MODEL,
-        "seed": SEED,
-        "temperature": TEMPERATURE,
-        "think": THINK,
+        "model": settings.model,
+        "model_tag": settings.model,
+        "model_digest": model_digest,
+        "seed": settings.seed,
+        "temperature": settings.temperature,
+        "top_p": settings.top_p,
+        "top_k": settings.top_k,
+        "num_predict": settings.num_predict,
+        "api_endpoint": settings.api_endpoint,
+        "response_field": settings.response_field,
         "prompt_sha256": sha256_text(prompt),
     }
     start = time.monotonic()
 
+    def _preflight_fields(candidate: Optional[str]) -> Dict[str, Any]:
+        pre = entry_point_preflight(
+            candidate,
+            entry_point=task.entry_point or "",
+            prompt=task.prompt,
+        )
+        return {
+            "parse_status": pre["parse_status"],
+            "entry_point_definition_count": pre["entry_point_definition_count"],
+            "entry_point_definition_category": pre["entry_point_definition_category"],
+            "duplicate_prompt_skeleton_suspected": pre["duplicate_prompt_skeleton_suspected"],
+        }
+
     try:
-        raw_json = _post_generate(prompt, base_url, timeout_seconds)
+        raw_json = _post_chat(prompt, base_url, timeout_seconds, settings)
     except OllamaGenerationError as exc:
         return _build_attempt(
-            task_id=task.task_id, treatment=treatment, status="failed",
-            failure_stage="ollama_request", failure_reason=str(exc),
+            task_id=task.task_id, treatment=treatment, entry_point=task.entry_point,
+            status="failed", failure_stage="ollama_request", failure_reason=str(exc),
             raw_response=None, completion=None,
             extraction_status=None, extraction_method=None,
             total_fenced_blocks=None, python_fenced_blocks=None,
             had_markdown_fence=None, had_surrounding_text=None,
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            reasoning_leakage_detected=None,
+            **_preflight_fields(None),
         )
 
-    # Preserve whatever response text the API returned, even if validation
-    # below rejects it (e.g. a <think> leak) — the raw text is still saved.
-    raw_response_seen = raw_json.get("response") if isinstance(raw_json.get("response"), str) else None
+    ollama_meta = raw_json.pop("_ollama_response_metadata", None)
+    message = raw_json.get("message") if isinstance(raw_json.get("message"), dict) else {}
+    raw_response_seen = message.get("content") if isinstance(message.get("content"), str) else None
+    leakage_detected = False
+    if raw_response_seen is not None:
+        leakage_detected = detect_reasoning_leakage(raw_json, raw_response_seen)
 
     try:
-        validated_response = validate_raw_response(raw_json)
+        validated_response, leakage_detected = validate_chat_response(raw_json)
     except OllamaGenerationError as exc:
         return _build_attempt(
-            task_id=task.task_id, treatment=treatment, status="failed",
-            failure_stage="response_validation", failure_reason=str(exc),
+            task_id=task.task_id, treatment=treatment, entry_point=task.entry_point,
+            status="failed", failure_stage="response_validation", failure_reason=str(exc),
             raw_response=raw_response_seen, completion=None,
             extraction_status=None, extraction_method=None,
             total_fenced_blocks=None, python_fenced_blocks=None,
             had_markdown_fence=None, had_surrounding_text=None,
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            reasoning_leakage_detected=leakage_detected or None,
+            ollama_response_metadata=ollama_meta,
+            **_preflight_fields(None),
         )
 
     analysis = analyze_extraction(validated_response)
+    preflight = _preflight_fields(analysis["completion"] if analysis["ok"] else None)
     if not analysis["ok"]:
         return _build_attempt(
-            task_id=task.task_id, treatment=treatment, status="failed",
-            failure_stage="extraction",
+            task_id=task.task_id, treatment=treatment, entry_point=task.entry_point,
+            status="failed", failure_stage="extraction",
             failure_reason=(
                 f"extraction_status={analysis['extraction_status']!r} "
                 f"extraction_method={analysis['extraction_method']!r}"
@@ -557,11 +859,14 @@ def run_attempt(
             had_markdown_fence=analysis["had_markdown_fence"],
             had_surrounding_text=analysis["had_surrounding_text"],
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            reasoning_leakage_detected=leakage_detected,
+            ollama_response_metadata=ollama_meta,
+            **preflight,
         )
 
     return _build_attempt(
-        task_id=task.task_id, treatment=treatment, status="success",
-        failure_stage=None, failure_reason=None,
+        task_id=task.task_id, treatment=treatment, entry_point=task.entry_point,
+        status="success", failure_stage=None, failure_reason=None,
         raw_response=validated_response, completion=analysis["completion"],
         extraction_status=analysis["extraction_status"],
         extraction_method=analysis["extraction_method"],
@@ -570,6 +875,9 @@ def run_attempt(
         had_markdown_fence=analysis["had_markdown_fence"],
         had_surrounding_text=analysis["had_surrounding_text"],
         elapsed_seconds=time.monotonic() - start, metadata=metadata,
+        reasoning_leakage_detected=leakage_detected,
+        ollama_response_metadata=ollama_meta,
+        **preflight,
     )
 
 
@@ -579,20 +887,46 @@ def run_generation_attempts(
     benchmark: str,
     base_url: str,
     timeout_seconds: float,
-) -> List[Dict[str, Any]]:
-    """Run every (task, treatment) attempt in fixed order: task order, then
-    Ab1 before Ab2g within each task. A failed attempt never skips,
-    reorders, or removes any other attempt."""
+    settings: OllamaGenerationSettings,
+    model_digest: str,
+    completed_attempts: Optional[Dict[Tuple[str, str, str, str], Dict[str, Any]]] = None,
+    rerun_incomplete: bool = False,
+) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    """Run every (task, treatment) attempt in fixed order, optionally
+    skipping attempts already present in *completed_attempts*."""
+    completed_attempts = completed_attempts or {}
     attempts: List[Dict[str, Any]] = []
+    resume_stats = {"skipped_complete": 0, "rerun_incomplete": rerun_incomplete}
+
     for task in tasks:
         for treatment in ALLOWED_TREATMENTS:
+            prompt = build_prompt(task.prompt, treatment)
+            resume_key = (
+                task.task_id,
+                treatment,
+                model_digest,
+                sha256_text(prompt),
+            )
+            if (
+                not rerun_incomplete
+                and resume_key in completed_attempts
+                and is_resume_complete(completed_attempts[resume_key])
+            ):
+                attempts.append(completed_attempts[resume_key])
+                resume_stats["skipped_complete"] += 1
+                continue
+
             attempts.append(
                 run_attempt(
                     task, treatment,
-                    benchmark=benchmark, base_url=base_url, timeout_seconds=timeout_seconds,
+                    benchmark=benchmark,
+                    base_url=base_url,
+                    timeout_seconds=timeout_seconds,
+                    settings=settings,
+                    model_digest=model_digest,
                 )
             )
-    return attempts
+    return attempts, resume_stats
 
 
 # ---------------------------------------------------------------------------
@@ -639,42 +973,73 @@ def run_ollama_generation(
     base_url: str = DEFAULT_BASE_URL,
     timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
     runner_git_commit: Optional[str] = None,
+    model: Optional[str] = None,
+    settings: Optional[OllamaGenerationSettings] = None,
+    max_tasks: Optional[int] = None,
+    resume: bool = False,
+    rerun_incomplete: bool = False,
+    smoke: bool = False,
+    manifest_benchmark: Optional[str] = None,
+    started_at: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Run every (task, treatment) attempt for *tasks_path* against the
-    local Ollama HTTP API. Always writes generation_attempts.jsonl,
-    generation_summary.json, generation_manifest.json, ab1_raw.jsonl,
-    ab2g_raw.jsonl, ab1.jsonl, and ab2g.jsonl to *output_dir* (the last two
-    contain only successful completions for that treatment, and are written
-    empty rather than omitted when a treatment has zero successes). Only a
-    preflight failure (invalid benchmark, no tasks, model/digest missing
-    from /api/tags, /api/version unusable, unresolvable runner git commit)
-    aborts the run before any attempt/output; a per-attempt failure never
-    does.
-
-    *runner_git_commit* is recorded in the manifest; when None it is
-    resolved from `git rev-parse HEAD` (fail-closed if unresolvable)."""
+    """Run every (task, treatment) attempt for *tasks_path* against Ollama
+    /api/chat. Writes generation_attempts.jsonl, generation_summary.json,
+    generation_manifest.json, ab1_raw.jsonl, ab2g_raw.jsonl, ab1.jsonl, and
+    ab2g.jsonl to *output_dir*."""
     if benchmark not in ("humaneval", "mbpp"):
         raise OllamaGenerationError(
             "benchmark", f"benchmark must be 'humaneval' or 'mbpp', got {benchmark!r}"
         )
 
     output_dir = pathlib.Path(output_dir)
+    started_at = started_at or _utc_now_iso()
 
-    tasks = load_benchmark_tasks(tasks_path, benchmark)
-    if not tasks:
+    if settings is None:
+        effective_model = model or (DEFAULT_SMOKE_MODEL if smoke else DEFAULT_MODEL_8B)
+        settings = OllamaGenerationSettings.for_model(effective_model)
+    elif model is not None and model != settings.model:
+        raise OllamaGenerationError(
+            "benchmark",
+            f"conflicting model={model!r} and settings.model={settings.model!r}",
+        )
+
+    all_tasks = load_benchmark_tasks(tasks_path, benchmark)
+    if not all_tasks:
         raise OllamaGenerationError("tasks_load", f"{tasks_path}: no tasks loaded")
 
-    # Captures /api/tags digest + /api/version and enforces MODEL presence
-    # (subsumes the bare check_model_available() existence check).
-    provenance = fetch_ollama_provenance(base_url, timeout_seconds)
+    if max_tasks is not None:
+        tasks = select_tasks_official_first_n(all_tasks, max_tasks)
+        task_selection_policy = TASK_SELECTION_POLICY_FIRST_N
+    else:
+        tasks = list(all_tasks)
+        task_selection_policy = "full_input"
+
+    provenance = fetch_ollama_provenance(
+        base_url,
+        timeout_seconds,
+        model=settings.model,
+        expected_digest_prefix=settings.expected_digest_prefix,
+    )
+    model_digest = provenance["model_digest"]
+
     if runner_git_commit is None:
         runner_git_commit = _resolve_runner_git_commit()
 
-    attempts = run_generation_attempts(
-        tasks, benchmark=benchmark, base_url=base_url, timeout_seconds=timeout_seconds
+    attempts_path = output_dir / "generation_attempts.jsonl"
+    completed_attempts = load_completed_attempts(attempts_path) if resume else {}
+
+    attempts, resume_stats = run_generation_attempts(
+        tasks,
+        benchmark=benchmark,
+        base_url=base_url,
+        timeout_seconds=timeout_seconds,
+        settings=settings,
+        model_digest=model_digest,
+        completed_attempts=completed_attempts,
+        rerun_incomplete=rerun_incomplete,
     )
 
-    _write_completions_jsonl(attempts, output_dir / "generation_attempts.jsonl")
+    _write_completions_jsonl(attempts, attempts_path)
 
     for treatment in ALLOWED_TREATMENTS:
         raw_records = [
@@ -702,20 +1067,131 @@ def run_ollama_generation(
     summary = build_summary(attempts)
     _write_json_deterministic(summary, output_dir / "generation_summary.json")
 
-    manifest = {
+    completed_at = _utc_now_iso()
+    manifest_benchmark_name = manifest_benchmark or (
+        "humaneval_plus" if smoke else benchmark
+    )
+    manifest: Dict[str, Any] = {
         **provenance,
         "runner_git_commit": runner_git_commit,
-        "benchmark": benchmark,
-        "model": MODEL,
-        "seed": SEED,
-        "temperature": TEMPERATURE,
-        "think": THINK,
+        "benchmark": manifest_benchmark_name,
+        "benchmark_version": BENCHMARK_VERSION_HUMANEVAL_PLUS if smoke else benchmark,
+        "model": settings.model,
+        "seed": settings.seed,
+        "temperature": settings.temperature,
+        "top_p": settings.top_p,
+        "top_k": settings.top_k,
+        "num_predict": settings.num_predict,
+        "prompt_template_version": PROMPT_TEMPLATE_VERSION,
         "timeout_seconds": timeout_seconds,
         "task_ids": [t.task_id for t in tasks],
+        "task_count": len(tasks),
+        "task_selection_policy": task_selection_policy,
         "treatments": list(ALLOWED_TREATMENTS),
+        "started_at": started_at,
+        "completed_at": completed_at,
+        "resume_enabled": resume,
+        "resume_skipped_complete_attempts": resume_stats["skipped_complete"],
+        "rerun_incomplete": rerun_incomplete,
     }
+    if smoke:
+        manifest.update(
+            {
+                "run_type": RUN_TYPE_SMOKE,
+                "analysis_status": ANALYSIS_STATUS_SMOKE_EXCLUDED,
+                "official_evalplus_status": OFFICIAL_EVALPLUS_STATUS_SMOKE,
+                "official_evalplus_blocker": OFFICIAL_EVALPLUS_BLOCKER,
+            }
+        )
     _write_json_deterministic(manifest, output_dir / "generation_manifest.json")
     return summary
+
+
+def run_engineering_smoke_pipeline(
+    *,
+    tasks_path: Union[str, pathlib.Path],
+    repo_root: Optional[Union[str, pathlib.Path]] = None,
+    output_dir: Optional[Union[str, pathlib.Path]] = None,
+    base_url: str = DEFAULT_BASE_URL,
+    timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+    runner_git_commit: Optional[str] = None,
+    evaluator_git_commit: Optional[str] = None,
+    max_tasks: int = SMOKE_TASK_COUNT,
+    resume: bool = True,
+    rerun_incomplete: bool = False,
+    run_ab3: bool = True,
+) -> Dict[str, Any]:
+    """Isolated 20-task engineering smoke: generation + optional Ab3 derivation.
+
+    Does not write to confirmatory result directories. Does not run official
+    EvalPlus scoring."""
+    started_at = _utc_now_iso()
+    out_dir = pathlib.Path(output_dir) if output_dir is not None else default_smoke_output_dir(repo_root)
+    settings = OllamaGenerationSettings.smoke_default()
+
+    all_tasks = load_benchmark_tasks(tasks_path, "humaneval")
+    selected_tasks = select_tasks_official_first_n(all_tasks, max_tasks)
+    selected_tasks_path = out_dir / "tasks_selected.jsonl"
+    _write_completions_jsonl(
+        [
+            {
+                "task_id": t.task_id,
+                "prompt": t.prompt,
+                "entry_point": t.entry_point,
+            }
+            for t in selected_tasks
+        ],
+        selected_tasks_path,
+    )
+
+    gen_summary = run_ollama_generation(
+        tasks_path=selected_tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=base_url,
+        timeout_seconds=timeout_seconds,
+        runner_git_commit=runner_git_commit,
+        settings=settings,
+        max_tasks=max_tasks,
+        resume=resume,
+        rerun_incomplete=rerun_incomplete,
+        smoke=True,
+        manifest_benchmark="humaneval_plus",
+        started_at=started_at,
+    )
+
+    result: Dict[str, Any] = {
+        "output_dir": str(out_dir),
+        "generation_summary": gen_summary,
+        "ab3_ran": False,
+    }
+
+    if run_ab3:
+        if evaluator_git_commit is None:
+            evaluator_git_commit = runner_git_commit or _resolve_runner_git_commit()
+        ab3_summary = run_public_benchmark_treatments_from_attempts(
+            tasks_path=selected_tasks_path,
+            generation_attempts_path=out_dir / "generation_attempts.jsonl",
+            benchmark="humaneval",
+            artifact_root=out_dir,
+            evaluator_git_commit=evaluator_git_commit,
+        )
+        result["ab3_ran"] = True
+        result["ab3_summary"] = {
+            "total_tasks": ab3_summary.total_tasks,
+            "ab3_target_count": ab3_summary.ab3_target_count,
+            "core_changed_count": ab3_summary.core_changed_count,
+            "spec_changed_count": ab3_summary.spec_changed_count,
+        }
+
+    manifest_path = out_dir / "generation_manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["ab3_from_attempts"] = result["ab3_ran"]
+        manifest["completed_at"] = _utc_now_iso()
+        _write_json_deterministic(manifest, manifest_path)
+
+    return result
 
 
 # ---------------------------------------------------------------------------
@@ -734,6 +1210,26 @@ def check_ab2g_complete(
     }
     missing = [t.task_id for t in tasks if t.task_id not in ab2g_success_ids]
     return (not missing, missing)
+
+
+def run_treatment_stage_from_attempts(
+    *,
+    tasks_path: Union[str, pathlib.Path],
+    generation_attempts_path: Union[str, pathlib.Path],
+    benchmark: str,
+    artifact_root: Union[str, pathlib.Path],
+    evaluator_git_commit: str,
+) -> Dict[str, Any]:
+    """Offline Ab3 derivation from generation_attempts.jsonl — Ab1 failure
+    never blocks Ab3."""
+    summary = run_public_benchmark_treatments_from_attempts(
+        tasks_path=tasks_path,
+        generation_attempts_path=generation_attempts_path,
+        benchmark=benchmark,
+        artifact_root=artifact_root,
+        evaluator_git_commit=evaluator_git_commit,
+    )
+    return {"ran": True, "summary": summary}
 
 
 def run_treatment_stage(
@@ -779,9 +1275,31 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--tasks-path", required=True)
     parser.add_argument("--benchmark", required=True, choices=("humaneval", "mbpp"))
-    parser.add_argument("--output-dir", required=True)
+    parser.add_argument("--output-dir", default=None)
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--timeout-seconds", type=float, default=DEFAULT_TIMEOUT_SECONDS)
+    parser.add_argument(
+        "--model",
+        default=None,
+        help=f"Ollama model tag (default: {DEFAULT_MODEL_8B}, or smoke model with --smoke).",
+    )
+    parser.add_argument(
+        "--max-tasks",
+        type=int,
+        default=None,
+        help="Deterministic first-N task selection in official input order.",
+    )
+    parser.add_argument("--resume", action="store_true", help="Skip completed attempts in output dir.")
+    parser.add_argument(
+        "--rerun-incomplete",
+        action="store_true",
+        help="When resuming, also rerun failed/incomplete attempts.",
+    )
+    parser.add_argument(
+        "--smoke",
+        action="store_true",
+        help="Engineering smoke mode (isolated output, 4B instruct defaults).",
+    )
     parser.add_argument(
         "--runner-git-commit", default=None,
         help="Recorded in generation_manifest.json; resolved via "
@@ -794,13 +1312,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = build_arg_parser()
     args = parser.parse_args(argv)
     try:
+        if args.smoke and args.max_tasks is None:
+            args.max_tasks = SMOKE_TASK_COUNT
+        settings = None
+        if args.model is not None:
+            settings = OllamaGenerationSettings.for_model(args.model)
+        elif args.smoke:
+            settings = OllamaGenerationSettings.smoke_default()
+
+        if args.output_dir is not None:
+            output_dir = args.output_dir
+        elif args.smoke:
+            output_dir = str(default_smoke_output_dir())
+        else:
+            parser.error("--output-dir is required unless --smoke is set")
+
         run_ollama_generation(
             tasks_path=args.tasks_path,
             benchmark=args.benchmark,
-            output_dir=args.output_dir,
+            output_dir=output_dir,
             base_url=args.base_url,
             timeout_seconds=args.timeout_seconds,
             runner_git_commit=args.runner_git_commit,
+            model=args.model,
+            settings=settings,
+            max_tasks=args.max_tasks,
+            resume=args.resume,
+            rerun_incomplete=args.rerun_incomplete,
+            smoke=args.smoke,
         )
         return 0
     except OllamaGenerationError as exc:

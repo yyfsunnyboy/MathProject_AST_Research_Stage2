@@ -534,6 +534,22 @@ def _run_from_attempts(tmp_path, tasks, attempts, benchmark="humaneval"):
 # ------------------------------------------------------------
 
 
+def test_humaneval_spec_is_no_op_from_attempts(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    for r in results:
+        assert r["spec_trace"]["implementation_status"] == "not_applicable"
+        assert r["ab3_core_raw_hash"] == r["ab3_full_raw_hash"]
+        assert r["spec_trace"]["changed"] is False
+
+
 def test_ab1_all_failed_does_not_block_ab3(tmp_path):
     attempts = [
         _attempt("HumanEval/0", "ab1", status="failed", raw_response="```python\nA\n```\n```python\nB\n```",

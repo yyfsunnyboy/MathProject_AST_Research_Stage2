@@ -27,21 +27,40 @@ from agent_tools.finals_rebuild.benchmarks_adapter import (
 )
 from agent_tools.finals_rebuild.ollama_generation_runner import (
     AB2G_SCAFFOLD,
+    ANALYSIS_STATUS_SMOKE_EXCLUDED,
+    DEFAULT_MODEL_8B,
+    DEFAULT_SMOKE_MODEL,
     MODEL,
+    NUM_PREDICT,
     OllamaGenerationError,
+    OllamaGenerationSettings,
+    RUN_TYPE_SMOKE,
     SEED,
+    SMOKE_MODEL_DIGEST_PREFIX,
+    SMOKE_TASK_COUNT,
+    TASK_SELECTION_POLICY_FIRST_N,
     TEMPERATURE,
-    THINK,
+    TOP_K,
+    TOP_P,
     analyze_extraction,
     build_arg_parser,
     build_prompt,
     build_summary,
     check_ab2g_complete,
+    default_smoke_output_dir,
+    detect_reasoning_leakage,
+    entry_point_preflight,
+    is_resume_complete,
+    load_completed_attempts,
     main,
     run_attempt,
+    run_engineering_smoke_pipeline,
     run_generation_attempts,
     run_ollama_generation,
     run_treatment_stage,
+    run_treatment_stage_from_attempts,
+    select_tasks_official_first_n,
+    validate_chat_response,
     validate_raw_response,
 )
 
@@ -86,45 +105,55 @@ class _FakeResponse:
         return self._status
 
 
-_FAKE_DIGEST = "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+_FAKE_DIGEST = "sha256:0edcdef34593abcdef0123456789abcdef0123456789abcdef0123456789ab"
 _FAKE_MODEL_ENTRY = {
     "name": MODEL,
     "digest": _FAKE_DIGEST,
-    "size": 5200000000,
+    "size": 2500000000,
     "modified_at": "2026-01-01T00:00:00Z",
 }
 _FAKE_VERSION_BODY = {"version": "0.31.2"}
 
 
-def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None,
+def _chat_body(content: str, **extra) -> dict:
+    body = {"message": {"content": content}}
+    body.update(extra)
+    return body
+
+
+def _install_fake_urlopen(monkeypatch, tags_body=None, chat_bodies=None,
                           http_error=None, timeout_error=False,
-                          version_body=None, version_http_error=None):
-    """generate_bodies: list of dicts, consumed in call order for POST /api/generate."""
-    tags_body = tags_body if tags_body is not None else {"models": [dict(_FAKE_MODEL_ENTRY)]}
+                          version_body=None, version_http_error=None,
+                          model_name=None):
+    """chat_bodies: list of dicts consumed in call order for POST /api/chat."""
+    model_name = model_name or MODEL
+    tags_body = tags_body if tags_body is not None else {
+        "models": [{**_FAKE_MODEL_ENTRY, "name": model_name}]
+    }
     version_body = version_body if version_body is not None else dict(_FAKE_VERSION_BODY)
-    generate_bodies = list(generate_bodies or [])
+    chat_bodies = list(chat_bodies or [])
     calls = {"urls": [], "payloads": []}
 
     def fake_urlopen(req, timeout=None):
         url = req.full_url
         calls["urls"].append(url)
         if url.endswith("/api/tags"):
-            if timeout_error and not generate_bodies:
+            if timeout_error and not chat_bodies:
                 raise TimeoutError("timed out")
-            if http_error and not generate_bodies:
+            if http_error and not chat_bodies:
                 raise urllib.error.HTTPError(url, http_error, "err", {}, io.BytesIO(b""))
             return _FakeResponse(tags_body)
         if url.endswith("/api/version"):
             if version_http_error:
                 raise urllib.error.HTTPError(url, version_http_error, "err", {}, io.BytesIO(b""))
             return _FakeResponse(version_body)
-        if url.endswith("/api/generate"):
+        if url.endswith("/api/chat"):
             if timeout_error:
                 raise TimeoutError("timed out")
             if http_error:
                 raise urllib.error.HTTPError(url, http_error, "err", {}, io.BytesIO(b""))
             calls["payloads"].append(json.loads(req.data.decode("utf-8")))
-            body = generate_bodies.pop(0)
+            body = chat_bodies.pop(0)
             return _FakeResponse(body)
         raise AssertionError(f"unexpected URL {url}")
 
@@ -132,8 +161,35 @@ def _install_fake_urlopen(monkeypatch, tags_body=None, generate_bodies=None,
     return calls
 
 
-_FENCED_OK = {"response": "```python\n    return True\n```"}
-_AMBIGUOUS = {"response": "```python\nA\n```\n```python\nB\n```"}
+_FENCED_OK = _chat_body("```python\n    return True\n```")
+_AMBIGUOUS = _chat_body("```python\nA\n```\n```python\nB\n```")
+_DEFAULT_SETTINGS = OllamaGenerationSettings.for_model(MODEL)
+
+
+def _run_generation(monkeypatch, tasks, chat_bodies):
+    _install_fake_urlopen(monkeypatch, chat_bodies=chat_bodies)
+    attempts, _resume = run_generation_attempts(
+        tasks,
+        benchmark="humaneval",
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        settings=_DEFAULT_SETTINGS,
+        model_digest=_FAKE_DIGEST,
+    )
+    return attempts
+
+
+def _run_attempt(monkeypatch, task, treatment, chat_bodies=None):
+    _install_fake_urlopen(monkeypatch, chat_bodies=chat_bodies or [_FENCED_OK])
+    return run_attempt(
+        task,
+        treatment,
+        benchmark="humaneval",
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        settings=_DEFAULT_SETTINGS,
+        model_digest=_FAKE_DIGEST,
+    )
 
 
 # ============================================================
@@ -152,15 +208,20 @@ def test_ab2g_prompt_has_fixed_scaffold():
     assert prompt == _TASK_0.prompt + AB2G_SCAFFOLD
 
 
-def test_generate_payload_has_think_false_and_fixed_params(monkeypatch):
-    calls = _install_fake_urlopen(monkeypatch, generate_bodies=[_FENCED_OK])
-    runner._post_generate("PROMPT", runner.DEFAULT_BASE_URL, 5.0)
+def test_chat_payload_has_fixed_params(monkeypatch):
+    calls = _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK])
+    runner._post_chat("PROMPT", runner.DEFAULT_BASE_URL, 5.0, _DEFAULT_SETTINGS)
     payload = calls["payloads"][0]
-    assert payload["think"] is False
     assert payload["model"] == MODEL
+    assert payload["messages"] == [{"role": "user", "content": "PROMPT"}]
     assert payload["options"]["seed"] == SEED
     assert payload["options"]["temperature"] == TEMPERATURE
+    assert payload["options"]["top_p"] == TOP_P
+    assert payload["options"]["top_k"] == TOP_K
+    assert payload["options"]["num_predict"] == NUM_PREDICT
     assert payload["stream"] is False
+    assert "prompt" not in payload
+    assert "think" not in payload
 
 
 # ============================================================
@@ -169,11 +230,7 @@ def test_generate_payload_has_think_false_and_fixed_params(monkeypatch):
 
 
 def test_first_attempt_fails_second_still_runs(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS, _FENCED_OK])
-    attempts = run_generation_attempts(
-        [_TASK_0], benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
+    attempts = _run_generation(monkeypatch, [_TASK_0], [_AMBIGUOUS, _FENCED_OK])
     assert len(attempts) == 2
     assert attempts[0]["treatment"] == "ab1"
     assert attempts[0]["status"] == "failed"
@@ -187,11 +244,7 @@ def test_first_attempt_fails_second_still_runs(monkeypatch):
 
 
 def test_ab1_failure_does_not_block_ab2g(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS, _FENCED_OK])
-    attempts = run_generation_attempts(
-        [_TASK_0], benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
+    attempts = _run_generation(monkeypatch, [_TASK_0], [_AMBIGUOUS, _FENCED_OK])
     ab1 = next(a for a in attempts if a["treatment"] == "ab1")
     ab2g = next(a for a in attempts if a["treatment"] == "ab2g")
     assert ab1["status"] == "failed"
@@ -211,11 +264,7 @@ def test_ambiguous_extraction_recorded_failed():
 
 
 def test_ambiguous_attempt_has_failed_status(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS])
-    attempt = run_attempt(
-        _TASK_0, "ab1", benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
+    attempt = _run_attempt(monkeypatch, _TASK_0, "ab1", chat_bodies=[_AMBIGUOUS])
     assert attempt["status"] == "failed"
     assert attempt["failure_stage"] == "extraction"
     assert attempt["extraction_status"] == "ambiguous"
@@ -228,25 +277,19 @@ def test_ambiguous_attempt_has_failed_status(monkeypatch):
 
 
 def test_failed_extraction_attempt_saves_raw_response(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS])
-    attempt = run_attempt(
-        _TASK_0, "ab1", benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
-    assert attempt["raw_response"] == _AMBIGUOUS["response"]
-    assert attempt["raw_response_sha256"] == runner.sha256_text(_AMBIGUOUS["response"])
+    attempt = _run_attempt(monkeypatch, _TASK_0, "ab1", chat_bodies=[_AMBIGUOUS])
+    raw_text = _AMBIGUOUS["message"]["content"]
+    assert attempt["raw_response"] == raw_text
+    assert attempt["raw_response_sha256"] == runner.sha256_text(raw_text)
 
 
 def test_failed_validation_attempt_saves_raw_response(monkeypatch):
-    body = {"response": "<think>reasoning</think>\n    return True\n"}
-    _install_fake_urlopen(monkeypatch, generate_bodies=[body])
-    attempt = run_attempt(
-        _TASK_0, "ab1", benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
+    body = _chat_body("<think>reasoning</think>\n    return True\n")
+    attempt = _run_attempt(monkeypatch, _TASK_0, "ab1", chat_bodies=[body])
     assert attempt["status"] == "failed"
     assert attempt["failure_stage"] == "response_validation"
-    assert attempt["raw_response"] == body["response"]
+    assert attempt["raw_response"] == body["message"]["content"]
+    assert attempt["reasoning_leakage_detected"] is True
 
 
 def test_failed_request_attempt_has_null_raw_response(monkeypatch):
@@ -254,6 +297,7 @@ def test_failed_request_attempt_has_null_raw_response(monkeypatch):
     attempt = run_attempt(
         _TASK_0, "ab1", benchmark="humaneval",
         base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        settings=_DEFAULT_SETTINGS, model_digest=_FAKE_DIGEST,
     )
     assert attempt["status"] == "failed"
     assert attempt["failure_stage"] == "ollama_request"
@@ -267,11 +311,7 @@ def test_failed_request_attempt_has_null_raw_response(monkeypatch):
 
 
 def test_failed_attempt_completion_is_null(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS])
-    attempt = run_attempt(
-        _TASK_0, "ab1", benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
-    )
+    attempt = _run_attempt(monkeypatch, _TASK_0, "ab1", chat_bodies=[_AMBIGUOUS])
     assert attempt["completion"] is None
     assert attempt["completion_sha256"] is None
 
@@ -283,7 +323,7 @@ def test_failed_attempt_completion_is_null(monkeypatch):
 
 def test_success_attempt_writes_treatment_jsonl(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_FENCED_OK, _AMBIGUOUS])
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _AMBIGUOUS])
     out_dir = tmp_path / "out"
     run_ollama_generation(
         tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
@@ -305,7 +345,7 @@ def test_success_attempt_writes_treatment_jsonl(monkeypatch, tmp_path):
 
 def test_zero_successes_creates_empty_jsonl(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS, _AMBIGUOUS])
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_AMBIGUOUS, _AMBIGUOUS])
     out_dir = tmp_path / "out"
     run_ollama_generation(
         tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
@@ -318,7 +358,7 @@ def test_zero_successes_creates_empty_jsonl(monkeypatch, tmp_path):
     # raw files must still contain the failed attempts' raw responses
     raw_lines = (out_dir / "ab1_raw.jsonl").read_text(encoding="utf-8").splitlines()
     assert len(raw_lines) == 1
-    assert json.loads(raw_lines[0])["raw_response"] == _AMBIGUOUS["response"]
+    assert json.loads(raw_lines[0])["raw_response"] == _AMBIGUOUS["message"]["content"]
 
 
 # ============================================================
@@ -327,12 +367,9 @@ def test_zero_successes_creates_empty_jsonl(monkeypatch, tmp_path):
 
 
 def test_summary_counts_correct(monkeypatch):
-    _install_fake_urlopen(
-        monkeypatch, generate_bodies=[_AMBIGUOUS, _FENCED_OK, _FENCED_OK, _FENCED_OK]
-    )
-    attempts = run_generation_attempts(
-        [_TASK_0, _TASK_1], benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    attempts = _run_generation(
+        monkeypatch, [_TASK_0, _TASK_1],
+        [_AMBIGUOUS, _FENCED_OK, _FENCED_OK, _FENCED_OK],
     )
     summary = build_summary(attempts)
     assert summary["total_attempts"] == 4
@@ -358,12 +395,9 @@ def test_summary_counts_correct(monkeypatch):
 
 
 def test_attempt_order_is_task_then_ab1_ab2g(monkeypatch):
-    _install_fake_urlopen(
-        monkeypatch, generate_bodies=[_FENCED_OK, _FENCED_OK, _FENCED_OK, _FENCED_OK]
-    )
-    attempts = run_generation_attempts(
-        [_TASK_0, _TASK_1], benchmark="humaneval",
-        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+    attempts = _run_generation(
+        monkeypatch, [_TASK_0, _TASK_1],
+        [_FENCED_OK, _FENCED_OK, _FENCED_OK, _FENCED_OK],
     )
     order = [(a["task_id"], a["treatment"]) for a in attempts]
     assert order == [
@@ -383,14 +417,14 @@ def test_manifest_deterministic_across_reruns(monkeypatch, tmp_path):
     def _bodies():
         return [_FENCED_OK, _FENCED_OK]
 
-    _install_fake_urlopen(monkeypatch, generate_bodies=_bodies())
+    _install_fake_urlopen(monkeypatch, chat_bodies=_bodies())
     out1 = tmp_path / "out1"
     run_ollama_generation(
         tasks_path=tasks_path, benchmark="humaneval", output_dir=out1,
         base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
     )
 
-    _install_fake_urlopen(monkeypatch, generate_bodies=_bodies())
+    _install_fake_urlopen(monkeypatch, chat_bodies=_bodies())
     out2 = tmp_path / "out2"
     run_ollama_generation(
         tasks_path=tasks_path, benchmark="humaneval", output_dir=out2,
@@ -410,6 +444,8 @@ def test_manifest_deterministic_across_reruns(monkeypatch, tmp_path):
         for r1, r2 in zip(recs1, recs2):
             r1.pop("elapsed_seconds", None)
             r2.pop("elapsed_seconds", None)
+            r1.pop("generation_latency", None)
+            r2.pop("generation_latency", None)
             if isinstance(r1.get("metadata"), dict):
                 r1["metadata"].pop("generation_seconds", None)
             if isinstance(r2.get("metadata"), dict):
@@ -554,20 +590,27 @@ def test_empty_fenced_block_fails():
 
 
 def test_think_tag_in_response_fails_closed():
-    raw = {"response": "<think>reasoning</think>\n    return True\n"}
-    with pytest.raises(OllamaGenerationError, match="think"):
-        validate_raw_response(raw)
+    raw = _chat_body("<think>reasoning</think>\n    return True\n")
+    with pytest.raises(OllamaGenerationError, match="reasoning leakage"):
+        validate_chat_response(raw)
 
 
 def test_thinking_field_fails_closed():
-    raw = {"response": "    return True\n", "thinking": "some reasoning"}
-    with pytest.raises(OllamaGenerationError, match="thinking"):
-        validate_raw_response(raw)
+    raw = {"message": {"content": "    return True\n", "thinking": "some reasoning"}}
+    with pytest.raises(OllamaGenerationError, match="reasoning leakage"):
+        validate_chat_response(raw)
 
 
 def test_empty_response_field_fails_closed():
     with pytest.raises(OllamaGenerationError, match="empty or missing"):
-        validate_raw_response({"response": "   "})
+        validate_chat_response({"message": {"content": "   "}})
+
+
+def test_thinking_leakage_not_stripped_by_regex():
+    raw = _chat_body("before <think>secret</think> after")
+    assert detect_reasoning_leakage(raw, raw["message"]["content"]) is True
+    with pytest.raises(OllamaGenerationError):
+        validate_chat_response(raw)
 
 
 # ============================================================
@@ -576,13 +619,12 @@ def test_empty_response_field_fails_closed():
 
 
 def test_ab1_and_ab2g_use_same_extraction_and_schema(monkeypatch):
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_FENCED_OK, _FENCED_OK])
-    ab1 = run_attempt(_TASK_0, "ab1", benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0)
-    ab2g = run_attempt(_TASK_0, "ab2g", benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0)
+    ab1 = _run_attempt(monkeypatch, _TASK_0, "ab1")
+    ab2g = _run_attempt(monkeypatch, _TASK_0, "ab2g")
     assert ab1["completion"] == ab2g["completion"]
     assert ab1["extraction_method"] == ab2g["extraction_method"]
     assert set(ab1.keys()) == set(ab2g.keys())
-    for key in ("model", "seed", "temperature", "think"):
+    for key in ("model", "seed", "temperature", "top_p", "top_k", "num_predict"):
         assert ab1["metadata"][key] == ab2g["metadata"][key]
 
 
@@ -593,14 +635,22 @@ def test_ab1_and_ab2g_use_same_extraction_and_schema(monkeypatch):
 
 def test_generate_timeout_is_attempt_failure(monkeypatch):
     _install_fake_urlopen(monkeypatch, timeout_error=True)
-    attempt = run_attempt(_TASK_0, "ab1", benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=1.0)
+    attempt = run_attempt(
+        _TASK_0, "ab1", benchmark="humaneval",
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=1.0,
+        settings=_DEFAULT_SETTINGS, model_digest=_FAKE_DIGEST,
+    )
     assert attempt["status"] == "failed"
     assert attempt["failure_stage"] == "ollama_request"
 
 
 def test_generate_http_error_is_attempt_failure(monkeypatch):
     _install_fake_urlopen(monkeypatch, http_error=500)
-    attempt = run_attempt(_TASK_0, "ab1", benchmark="humaneval", base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0)
+    attempt = run_attempt(
+        _TASK_0, "ab1", benchmark="humaneval",
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        settings=_DEFAULT_SETTINGS, model_digest=_FAKE_DIGEST,
+    )
     assert attempt["status"] == "failed"
     assert attempt["failure_stage"] == "ollama_request"
 
@@ -613,7 +663,7 @@ def test_generate_http_error_is_attempt_failure(monkeypatch):
 def test_model_not_in_tags_fails_closed(monkeypatch):
     _install_fake_urlopen(monkeypatch, tags_body={"models": [{"name": "llama3:8b"}]})
     with pytest.raises(OllamaGenerationError, match="not found in /api/tags"):
-        runner.check_model_available(runner.DEFAULT_BASE_URL, 5.0)
+        runner.check_model_available(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_model_unavailable_blocks_full_run(monkeypatch, tmp_path):
@@ -634,7 +684,7 @@ def test_model_unavailable_blocks_full_run(monkeypatch, tmp_path):
 
 def test_output_jsonl_loadable_by_benchmarks_adapter(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_FENCED_OK, _FENCED_OK])
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
     out_dir = tmp_path / "out"
     run_ollama_generation(
         tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
@@ -673,7 +723,7 @@ def test_main_returns_nonzero_on_preflight_failure(monkeypatch, tmp_path):
 
 def test_main_returns_zero_even_with_some_failed_attempts(monkeypatch, tmp_path):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
-    _install_fake_urlopen(monkeypatch, generate_bodies=[_AMBIGUOUS, _FENCED_OK])
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_AMBIGUOUS, _FENCED_OK])
     exit_code = main([
         "--tasks-path", str(tasks_path), "--benchmark", "humaneval",
         "--output-dir", str(tmp_path / "out"),
@@ -692,7 +742,7 @@ def _run_full(monkeypatch, tmp_path, **urlopen_kwargs):
     tasks_path = _write_tasks(tmp_path, [_TASK_0])
     _install_fake_urlopen(
         monkeypatch,
-        generate_bodies=urlopen_kwargs.pop("generate_bodies", [_FENCED_OK, _FENCED_OK]),
+        chat_bodies=urlopen_kwargs.pop("chat_bodies", [_FENCED_OK, _FENCED_OK]),
         **urlopen_kwargs,
     )
     out_dir = tmp_path / "out"
@@ -725,7 +775,9 @@ def test_manifest_records_run_parameters(monkeypatch, tmp_path):
     assert manifest["model"] == MODEL
     assert manifest["seed"] == SEED
     assert manifest["temperature"] == TEMPERATURE
-    assert manifest["think"] is THINK
+    assert manifest["top_p"] == TOP_P
+    assert manifest["top_k"] == TOP_K
+    assert manifest["num_predict"] == NUM_PREDICT
     assert manifest["timeout_seconds"] == 5.0
 
 
@@ -733,32 +785,32 @@ def test_missing_digest_fails_closed(monkeypatch, tmp_path):
     tags_body = {"models": [{"name": MODEL}]}  # no digest field
     _install_fake_urlopen(monkeypatch, tags_body=tags_body)
     with pytest.raises(OllamaGenerationError, match="no digest"):
-        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_blank_digest_fails_closed(monkeypatch):
     tags_body = {"models": [{"name": MODEL, "digest": "   "}]}
     _install_fake_urlopen(monkeypatch, tags_body=tags_body)
     with pytest.raises(OllamaGenerationError, match="no digest"):
-        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_version_endpoint_http_error_fails_closed(monkeypatch):
     _install_fake_urlopen(monkeypatch, version_http_error=500)
     with pytest.raises(OllamaGenerationError, match="status 500"):
-        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_blank_version_fails_closed(monkeypatch):
     _install_fake_urlopen(monkeypatch, version_body={"version": "   "})
     with pytest.raises(OllamaGenerationError, match="no usable version"):
-        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_model_missing_from_tags_provenance_fails_closed(monkeypatch):
     _install_fake_urlopen(monkeypatch, tags_body={"models": [{"name": "llama3:8b", "digest": "sha256:x"}]})
     with pytest.raises(OllamaGenerationError, match="not found in /api/tags"):
-        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0)
+        runner.fetch_ollama_provenance(runner.DEFAULT_BASE_URL, 5.0, model=MODEL)
 
 
 def test_digest_failure_blocks_full_run_before_any_attempt(monkeypatch, tmp_path):
@@ -770,7 +822,7 @@ def test_digest_failure_blocks_full_run_before_any_attempt(monkeypatch, tmp_path
             base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
             runner_git_commit="deadbeef",
         )
-    assert not any(u.endswith("/api/generate") for u in calls["urls"])
+    assert not any(u.endswith("/api/chat") for u in calls["urls"])
     assert not (tmp_path / "out" / "generation_manifest.json").exists()
 
 
@@ -780,3 +832,220 @@ def test_manifest_deterministic_fields_stable(monkeypatch, tmp_path):
     tmp2.mkdir()
     m2 = _run_full(monkeypatch, tmp2)
     assert m1 == m2
+
+
+# ============================================================
+# Engineering smoke: 4B instruct model + isolated output
+# ============================================================
+
+
+def _smoke_digest():
+    return f"sha256:{SMOKE_MODEL_DIGEST_PREFIX}0123456789abcdef0123456789abcdef0123456789ab"
+
+
+def _make_n_tasks(n):
+    return [
+        PublicBenchmarkTask(
+            benchmark="humaneval",
+            task_id=f"HumanEval/{i}",
+            prompt=f"def f{i}():\n    \"\"\"doc\"\"\"\n",
+            entry_point=f"f{i}",
+            canonical_solution=None,
+        )
+        for i in range(n)
+    ]
+
+
+def test_smoke_model_defaults():
+    settings = OllamaGenerationSettings.smoke_default()
+    assert settings.model == DEFAULT_SMOKE_MODEL
+    assert settings.expected_digest_prefix == SMOKE_MODEL_DIGEST_PREFIX
+
+
+def test_smoke_digest_mismatch_fails_closed(monkeypatch):
+    tags = {"models": [{"name": DEFAULT_SMOKE_MODEL, "digest": "sha256:359d7dd4bcda"}]}
+    _install_fake_urlopen(monkeypatch, tags_body=tags, model_name=DEFAULT_SMOKE_MODEL)
+    with pytest.raises(OllamaGenerationError, match="does not match required prefix"):
+        runner.fetch_ollama_provenance(
+            runner.DEFAULT_BASE_URL, 5.0,
+            model=DEFAULT_SMOKE_MODEL,
+            expected_digest_prefix=SMOKE_MODEL_DIGEST_PREFIX,
+        )
+
+
+def test_select_first_twenty_tasks_deterministic():
+    tasks = _make_n_tasks(25)
+    selected = select_tasks_official_first_n(tasks, 20)
+    assert [t.task_id for t in selected] == [f"HumanEval/{i}" for i in range(20)]
+
+
+def test_select_insufficient_tasks_fail_closed():
+    with pytest.raises(OllamaGenerationError, match="20 required"):
+        select_tasks_official_first_n(_make_n_tasks(5), 20)
+
+
+def test_smoke_output_dir_isolated(tmp_path):
+    out = default_smoke_output_dir(tmp_path)
+    assert "engineering_smoke_test" in str(out)
+    assert "humaneval_plus" in str(out)
+    assert "qwen3_4b_instruct_2507" in str(out)
+
+
+def test_smoke_manifest_fields(monkeypatch, tmp_path):
+    tasks = _make_n_tasks(20)
+    tasks_path = _write_tasks(tmp_path, tasks)
+    bodies = [_FENCED_OK, _FENCED_OK] * 20
+    _install_fake_urlopen(
+        monkeypatch,
+        chat_bodies=bodies,
+        model_name=DEFAULT_SMOKE_MODEL,
+        tags_body={"models": [{
+            "name": DEFAULT_SMOKE_MODEL,
+            "digest": _smoke_digest(),
+            "size": 2500000000,
+        }]},
+    )
+    out_dir = tmp_path / "smoke_out"
+    run_ollama_generation(
+        tasks_path=tasks_path,
+        benchmark="humaneval",
+        output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL,
+        timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        settings=OllamaGenerationSettings.smoke_default(),
+        max_tasks=20,
+        smoke=True,
+    )
+    manifest = json.loads((out_dir / "generation_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["run_type"] == RUN_TYPE_SMOKE
+    assert manifest["analysis_status"] == ANALYSIS_STATUS_SMOKE_EXCLUDED
+    assert manifest["benchmark"] == "humaneval_plus"
+    assert manifest["task_selection_policy"] == TASK_SELECTION_POLICY_FIRST_N
+    assert manifest["task_count"] == 20
+    assert manifest["model_tag"] == DEFAULT_SMOKE_MODEL
+    assert SMOKE_MODEL_DIGEST_PREFIX in manifest["model_digest"]
+    assert manifest["api_endpoint"] == "/api/chat"
+    assert manifest["response_field"] == "message.content"
+    assert manifest["official_evalplus_status"] == "not_run_engineering_smoke"
+    assert "pass_at_1" not in json.dumps(manifest)
+    assert "official_evalplus_score" not in json.dumps(manifest)
+
+
+def test_resume_skips_complete_attempt(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+    )
+    calls = _install_fake_urlopen(monkeypatch, chat_bodies=[])
+    run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+        resume=True,
+    )
+    assert not any(u.endswith("/api/chat") for u in calls["urls"])
+
+
+def test_resume_key_requires_model_digest_and_prompt(monkeypatch, tmp_path):
+    tasks_path = _write_tasks(tmp_path, [_TASK_0])
+    out_dir = tmp_path / "out"
+    _install_fake_urlopen(monkeypatch, chat_bodies=[_FENCED_OK, _FENCED_OK])
+    run_ollama_generation(
+        tasks_path=tasks_path, benchmark="humaneval", output_dir=out_dir,
+        base_url=runner.DEFAULT_BASE_URL, timeout_seconds=5.0,
+        runner_git_commit="deadbeef",
+    )
+    completed = load_completed_attempts(out_dir / "generation_attempts.jsonl")
+    assert len(completed) == 2
+    for rec in completed.values():
+        assert is_resume_complete(rec)
+        meta = rec["metadata"]
+        assert meta["model_digest"]
+        assert meta["prompt_sha256"]
+
+
+def test_entry_point_preflight_counts(tmp_path):
+    code = "def has_close_elements(numbers, threshold):\n    return True\n"
+    pre = entry_point_preflight(
+        code,
+        entry_point="has_close_elements",
+        prompt=_TASK_0.prompt,
+    )
+    assert pre["parse_status"] == "success"
+    assert pre["entry_point_definition_count"] == 1
+    assert pre["entry_point_definition_category"] == "one"
+
+
+def test_entry_point_preflight_duplicate_skeleton(tmp_path):
+    code = (
+        "def has_close_elements(numbers, threshold):\n    pass\n"
+        "def has_close_elements(numbers, threshold):\n    return True\n"
+    )
+    pre = entry_point_preflight(
+        code,
+        entry_point="has_close_elements",
+        prompt=_TASK_0.prompt,
+    )
+    assert pre["entry_point_definition_count"] == 2
+    assert pre["entry_point_definition_category"] == "multiple"
+    assert pre["duplicate_prompt_skeleton_suspected"] is True
+
+
+def test_treatment_stage_from_attempts_delegates(monkeypatch, tmp_path):
+    called = {}
+
+    def _fake(**kwargs):
+        called.update(kwargs)
+        return {"total_tasks": 1}
+
+    monkeypatch.setattr(runner, "run_public_benchmark_treatments_from_attempts", _fake)
+    result = run_treatment_stage_from_attempts(
+        tasks_path="tasks.jsonl",
+        generation_attempts_path="attempts.jsonl",
+        benchmark="humaneval",
+        artifact_root=str(tmp_path),
+        evaluator_git_commit="deadbeef",
+    )
+    assert result["ran"] is True
+    assert called["generation_attempts_path"] == "attempts.jsonl"
+
+
+def test_engineering_smoke_pipeline_writes_selected_tasks(monkeypatch, tmp_path):
+    tasks = _make_n_tasks(20)
+    tasks_path = _write_tasks(tmp_path, tasks)
+    bodies = [_FENCED_OK, _FENCED_OK] * 20
+    _install_fake_urlopen(
+        monkeypatch,
+        chat_bodies=bodies,
+        model_name=DEFAULT_SMOKE_MODEL,
+        tags_body={"models": [{
+            "name": DEFAULT_SMOKE_MODEL,
+            "digest": _smoke_digest(),
+            "size": 2500000000,
+        }]},
+    )
+    monkeypatch.setattr(
+        runner,
+        "run_public_benchmark_treatments_from_attempts",
+        lambda **kwargs: type("S", (), {
+            "total_tasks": 20, "ab3_target_count": 20,
+            "core_changed_count": 0, "spec_changed_count": 0,
+        })(),
+    )
+    out_dir = tmp_path / "smoke"
+    result = run_engineering_smoke_pipeline(
+        tasks_path=tasks_path,
+        output_dir=out_dir,
+        runner_git_commit="deadbeef",
+        evaluator_git_commit="deadbeef",
+        resume=False,
+    )
+    assert result["ab3_ran"] is True
+    assert (out_dir / "tasks_selected.jsonl").exists()
+    selected = (out_dir / "tasks_selected.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(selected) == 20
