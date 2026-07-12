@@ -18,6 +18,11 @@ dataset and test harness. This module never:
   - falls back to the original (non-"+") HumanEval/MBPP dataset, or to a
     local HumanEval.jsonl.gz snapshot, if the official EvalPlus dataset
     loader is unavailable
+  - evaluates a caller-selected task_id subset: EvalPlus 0.3.1's
+    evaluate() hard-asserts len(completion_id) == len(problems) and
+    exposes no CLI flag or public API for partial-benchmark evaluation
+    (mini/noextreme only pick a fixed reduced dataset, not arbitrary
+    task_ids), so --task-ids fails closed rather than attempting one
 
 Every failure mode below is fail-closed: non-zero process exit, no
 `evalplus_summary.json`, and (where reached) a `failure.json` explicitly
@@ -80,6 +85,12 @@ _WINDOWS_GUARD_MESSAGE = (
     "EvalPlus evaluation is not supported in this native Windows execution path.\n"
     "Run this command inside WSL or Linux.\n"
     "Evaluation aborted without producing benchmark scores."
+)
+
+_TASK_IDS_UNSUPPORTED_MESSAGE = (
+    "EvalPlus 0.3.1 requires complete benchmark coverage and does not expose "
+    "a supported task-subset evaluation path. Partial evaluation was aborted "
+    "without producing scores."
 )
 
 
@@ -519,6 +530,18 @@ def run_evalplus_bridge(
         run_windows_preflight_guard()
 
         task_ids = parse_task_ids(task_ids_arg)
+        if task_ids is not None:
+            # EvalPlus 0.3.1's evaluate() hard-asserts
+            # len(completion_id) == len(problems) and exposes no CLI flag or
+            # public API parameter to evaluate a caller-selected task_id
+            # subset (mini/noextreme only select a *fixed* reduced dataset,
+            # not arbitrary task_ids). Silently running the full official
+            # CLI against a partial samples file would just reproduce that
+            # AssertionError, or worse, mislead about scope. Fail closed
+            # instead of attempting a subset evaluation this EvalPlus
+            # version cannot support without patching/replacing its loader.
+            raise EvalPlusBridgeError("task_ids", _TASK_IDS_UNSUPPORTED_MESSAGE)
+
         samples = load_completion_samples(samples_path)
         original_sample_count = len(samples)
         filtered_samples = filter_samples_by_task_ids(samples, task_ids)
@@ -631,7 +654,14 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument("--benchmark", required=True, choices=list(ALLOWED_BENCHMARKS))
     parser.add_argument("--samples", required=True)
     parser.add_argument("--output-dir", required=True)
-    parser.add_argument("--task-ids", default=None)
+    parser.add_argument(
+        "--task-ids", default=None,
+        help=(
+            "Not supported by EvalPlus 0.3.1 (no task-subset evaluation "
+            "path exists); passing this flag fails closed instead of "
+            "running a partial evaluation."
+        ),
+    )
     parser.add_argument("--dataset-version", default=None)
     parser.add_argument("--timeout-seconds", type=float, default=DEFAULT_TIMEOUT_SECONDS)
     return parser

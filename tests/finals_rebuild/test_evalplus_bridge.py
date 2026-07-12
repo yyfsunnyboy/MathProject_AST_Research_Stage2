@@ -188,6 +188,75 @@ def test_empty_task_id_fails_closed(tmp_path):
 
 
 # ============================================================
+# 8b. --task-ids fails closed: EvalPlus 0.3.1 has no subset path
+# ============================================================
+
+
+def test_task_ids_fails_closed_no_subset_support(monkeypatch, tmp_path):
+    monkeypatch.setattr(bridge, "is_native_windows", lambda: False)
+    samples_path = _write_samples(tmp_path, [
+        {"task_id": "HumanEval/0", "completion": "x"},
+        {"task_id": "HumanEval/1", "completion": "y"},
+    ])
+    with pytest.raises(EvalPlusBridgeError, match="does not expose a supported task-subset"):
+        run_evalplus_bridge(
+            benchmark="humaneval", samples_path=samples_path,
+            output_dir=tmp_path / "out", task_ids_arg="HumanEval/0",
+        )
+    failure = json.loads((tmp_path / "out" / "failure.json").read_text(encoding="utf-8"))
+    assert failure["status"] == "failed_preflight"
+    assert not (tmp_path / "out" / "evalplus_summary.json").exists()
+
+
+def test_task_ids_fails_closed_does_not_invoke_cli(monkeypatch, tmp_path):
+    monkeypatch.setattr(bridge, "is_native_windows", lambda: False)
+    called = {"invoked": False}
+
+    def _spy_invoke(**kw):
+        called["invoked"] = True
+        return _make_completed_process()
+
+    monkeypatch.setattr(bridge, "_invoke_evalplus_cli", _spy_invoke)
+    samples_path = _write_samples(tmp_path, [{"task_id": "HumanEval/0", "completion": "x"}])
+    with pytest.raises(EvalPlusBridgeError):
+        run_evalplus_bridge(
+            benchmark="humaneval", samples_path=samples_path,
+            output_dir=tmp_path / "out", task_ids_arg="HumanEval/0",
+        )
+    assert called["invoked"] is False
+
+
+def test_task_ids_fails_closed_completion_untouched(monkeypatch, tmp_path):
+    monkeypatch.setattr(bridge, "is_native_windows", lambda: False)
+    original = "    return a + b\n"
+    samples_path = _write_samples(tmp_path, [{"task_id": "HumanEval/0", "completion": original}])
+    before = samples_path.read_text(encoding="utf-8")
+    with pytest.raises(EvalPlusBridgeError):
+        run_evalplus_bridge(
+            benchmark="humaneval", samples_path=samples_path,
+            output_dir=tmp_path / "out", task_ids_arg="HumanEval/0",
+        )
+    after = samples_path.read_text(encoding="utf-8")
+    assert before == after
+
+
+def test_no_task_ids_still_runs_full_benchmark_path(monkeypatch, tmp_path):
+    monkeypatch.setattr(bridge, "is_native_windows", lambda: False)
+    _install_fake_evalplus(monkeypatch)
+    samples_path = _write_samples(tmp_path, [
+        {"task_id": "HumanEval/0", "completion": "def add(a, b):\n    return a + b\n"},
+    ])
+    monkeypatch.setattr(bridge, "_invoke_evalplus_cli", lambda **kw: _make_completed_process())
+    _write_official_result(samples_path, {"HumanEval/0": [{"plus_status": "pass"}]})
+
+    summary = run_evalplus_bridge(
+        benchmark="humaneval", samples_path=samples_path, output_dir=tmp_path / "out",
+        dataset_version="fixedhash123",
+    )
+    assert summary["status"] == "success"
+
+
+# ============================================================
 # 9. native Windows preflight blocks
 # ============================================================
 
