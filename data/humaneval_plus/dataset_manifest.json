@@ -1,0 +1,28 @@
+{
+  "created_at_utc": "2026-07-12T14:34:32+00:00",
+  "creation_script": "scripts/prepare_humaneval_plus_tasks.py",
+  "dataset_name": "HumanEval+",
+  "dataset_role": "official_task_prompts_and_evalplus_tests",
+  "downloaded_at_utc": "2026-07-12T14:20:00+00:00",
+  "evalplus_cache_path": "C:\\Users\\yehiv\\AppData\\Local\\evalplus\\evalplus\\Cache\\HumanEvalPlus-v0.1.10.jsonl",
+  "evalplus_dataset_hash": "916d9bfe7b490c2447245ec91595fa4f",
+  "evalplus_package_version": "0.3.1",
+  "notes": [
+    "No fallback to original HumanEval",
+    "HumanEval+ shares task prompts with HumanEval; Plus refers to expanded evaluation tests",
+    "The model receives only the official task prompt, not hidden tests",
+    "tasks.jsonl contains only task_id, prompt, and entry_point",
+    "source_sha256 is SHA-256 of HumanEvalPlus.jsonl.gz; evalplus_dataset_hash is EvalPlus loader MD5 of decompressed cache JSONL when available"
+  ],
+  "release_tag_or_dataset_version": "v0.1.10",
+  "source_asset_name": "HumanEvalPlus.jsonl.gz",
+  "source_file_size_bytes": 925932,
+  "source_path": "data/humaneval_plus/source/HumanEvalPlus.jsonl.gz",
+  "source_repository": "https://github.com/evalplus/humanevalplus_release",
+  "source_sha256": "272720b90ac375502c8ed23cd791c2a93dfb22a911641a494da74a426c09f101",
+  "source_url": "https://github.com/evalplus/humanevalplus_release/releases/download/v0.1.10/HumanEvalPlus.jsonl.gz",
+  "task_count": 164,
+  "task_order_policy": "official_source_order",
+  "tasks_file": "data/humaneval_plus/tasks.jsonl",
+  "tasks_sha256": "5e21f6174c138eb7200593c6b106b83931c616cb1e76524057114a9d36a85f29"
+}
