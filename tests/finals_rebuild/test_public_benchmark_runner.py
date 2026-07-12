@@ -17,7 +17,10 @@ import pytest
 from agent_tools.finals_rebuild.public_benchmark_runner import (
     PublicBenchmarkRunnerError,
     build_public_benchmark_pair_id,
+    load_generation_attempts,
     run_public_benchmark_treatments,
+    run_public_benchmark_treatments_from_attempts,
+    sha256_text,
 )
 
 _FIXTURES = pathlib.Path(__file__).parent / "fixtures"
@@ -458,3 +461,470 @@ def test_no_fake_test_pass_in_output_json(tmp_path):
     for forbidden in ("pass_at_1", "pass_rate", "\"accuracy\"", "\"score\""):
         assert forbidden not in blob
         assert forbidden not in summary_blob
+
+
+# =============================================================================
+# Raw-response-driven Ab3 pipeline (run_public_benchmark_treatments_from_attempts)
+# =============================================================================
+
+_RAW_TASKS = [
+    {"task_id": "HumanEval/0", "prompt": "def add(a, b):\n", "entry_point": "add"},
+    {"task_id": "HumanEval/1", "prompt": "def double(x):\n", "entry_point": "double"},
+]
+
+
+def _write_tasks_jsonl(tmp_path, tasks):
+    path = tmp_path / "tasks.jsonl"
+    with open(path, "w", encoding="utf-8") as fh:
+        for rec in tasks:
+            fh.write(json.dumps(rec) + "\n")
+    return path
+
+
+def _write_attempts_jsonl(tmp_path, attempts, name="generation_attempts.jsonl"):
+    path = tmp_path / name
+    with open(path, "w", encoding="utf-8") as fh:
+        for rec in attempts:
+            fh.write(json.dumps(rec) + "\n")
+    return path
+
+
+def _attempt(task_id, treatment, *, status="success", raw_response=None,
+             completion=None, extraction_status=None, sample_index=0):
+    return {
+        "task_id": task_id,
+        "sample_index": sample_index,
+        "treatment": treatment,
+        "status": status,
+        "failure_stage": None if status == "success" else "extraction",
+        "failure_reason": None,
+        "raw_response": raw_response,
+        "raw_response_sha256": sha256_text(raw_response) if raw_response is not None else None,
+        "completion": completion,
+        "completion_sha256": sha256_text(completion) if completion is not None else None,
+        "extraction_status": extraction_status,
+        "extraction_method": "plain_text" if extraction_status == "extracted" else None,
+        "total_fenced_blocks": 0,
+        "python_fenced_blocks": 0,
+        "had_markdown_fence": False,
+        "had_surrounding_text": False,
+        "elapsed_seconds": 1.0,
+        "metadata": {"benchmark": "humaneval", "treatment": treatment},
+    }
+
+
+def _run_from_attempts(tmp_path, tasks, attempts, benchmark="humaneval"):
+    tasks_path = _write_tasks_jsonl(tmp_path, tasks)
+    attempts_path = _write_attempts_jsonl(tmp_path, attempts)
+    out_root = tmp_path / "artifacts"
+    summary = run_public_benchmark_treatments_from_attempts(
+        tasks_path=tasks_path,
+        generation_attempts_path=attempts_path,
+        benchmark=benchmark,
+        artifact_root=out_root,
+        evaluator_git_commit=_EVALUATOR_GIT_COMMIT,
+    )
+    results_path = out_root / "public_benchmark_raw" / benchmark / "results.json"
+    results = json.loads(results_path.read_text(encoding="utf-8"))
+    return summary, results, out_root
+
+
+# ------------------------------------------------------------
+# 1. Ab1 fully failed does not block Ab3
+# ------------------------------------------------------------
+
+
+def test_ab1_all_failed_does_not_block_ab3(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab1", status="failed", raw_response="```python\nA\n```\n```python\nB\n```",
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab1", status="failed", raw_response="```python\nA\n```\n```python\nB\n```",
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    summary, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    assert summary.ab1_missing_count == 0
+    assert summary.ab1_available_count == 2
+    assert summary.ab3_target_count == 2
+    for r in results:
+        assert r["ab1_extraction_status"] == "ambiguous"
+        assert r["has_ab3_target"] is True
+        assert r["ab3_core_completion"] is not None
+
+
+# ------------------------------------------------------------
+# 2. Ab2g extraction success -> Core/Full built
+# ------------------------------------------------------------
+
+
+def test_ab2g_extraction_success_builds_core_and_full(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    summary, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    assert summary.ab3_core_extraction_success_count == 2
+    assert summary.ab3_full_extraction_success_count == 2
+    for r in results:
+        assert r["ab3_core_completion"] is not None
+        assert r["ab3_full_completion"] is not None
+        assert r["ab3_core_static"] is not None
+        assert r["ab3_full_static"] is not None
+
+
+# ------------------------------------------------------------
+# 3. Ab2g extraction ambiguous but raw exists -> Core/Full still built
+# ------------------------------------------------------------
+
+
+def test_ab2g_ambiguous_raw_still_builds_ab3(tmp_path):
+    raw = "```python\nA\n```\n```python\nB\n```"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="failed", raw_response=raw,
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    summary, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["has_ab3_target"] is True
+    assert r0["ab2g_extraction_status"] == "ambiguous"
+    # Core received the raw response, unmodified (identity transform since
+    # no fullwidth punctuation is present) -> re-extraction over Core's
+    # output hits the same ambiguity extraction.py already found.
+    assert r0["ab3_core_raw_output"] == raw
+    assert r0["ab3_core_extraction_status"] == "ambiguous"
+    assert r0["ab3_core_completion"] is None
+    assert r0["ab3_core_static"] is None
+
+
+# ------------------------------------------------------------
+# 4. Ab2g raw missing -> no Ab3
+# ------------------------------------------------------------
+
+
+def test_ab2g_raw_missing_no_ab3(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="failed", raw_response=None,
+                  extraction_status=None),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    summary, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["has_ab3_target"] is False
+    assert r0["ab3_core_raw_output"] is None
+    assert r0["ab3_core_completion"] is None
+    assert r0["ab3_full_completion"] is None
+    assert r0["core_trace"] is None
+    assert summary.ab2g_raw_missing_count == 1
+    assert summary.ab2g_raw_available_count == 1
+    assert summary.ab3_target_count == 1
+
+
+# ------------------------------------------------------------
+# 5 & 6. hash chain: Core input == Ab2g raw hash, Full input == Core raw hash
+# ------------------------------------------------------------
+
+
+def test_core_input_hash_equals_ab2g_raw_hash(tmp_path):
+    raw = "    return a + b\n"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success", raw_response=raw,
+                  completion=raw, extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["ab2g_raw_response_hash"] == sha256_text(raw)
+    assert r0["core_trace"]["input_hash"] == sha256_text(raw)
+
+
+def test_full_input_hash_equals_core_raw_hash(tmp_path):
+    raw = "    return a + b\n"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success", raw_response=raw,
+                  completion=raw, extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["spec_trace"]["input_hash"] == r0["ab3_core_raw_hash"]
+
+
+# ------------------------------------------------------------
+# 7 & 8. re-extraction after Core and after Full
+# ------------------------------------------------------------
+
+
+def test_reextraction_after_core(tmp_path):
+    raw = "    return a + b\n"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success", raw_response=raw,
+                  completion=raw, extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["ab3_core_extraction_status"] == "extracted"
+    # Core is a no-op identity transform here; plain_text extraction strips
+    # the raw text, so the completion is the stripped form of the raw.
+    assert r0["ab3_core_completion"] == raw.strip()
+
+
+def test_reextraction_after_full(tmp_path):
+    raw = "    return a + b\n"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success", raw_response=raw,
+                  completion=raw, extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["ab3_full_extraction_status"] == "extracted"
+    assert r0["ab3_full_completion"] is not None
+
+
+# ------------------------------------------------------------
+# 9. extraction failure -> evaluation is None
+# ------------------------------------------------------------
+
+
+def test_extraction_failure_evaluation_is_none(tmp_path):
+    raw = "```python\nA\n```\n```python\nB\n```"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="failed", raw_response=raw,
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["ab3_core_completion"] is None
+    assert r0["ab3_core_static"] is None
+    assert r0["ab3_core_execution"] is None
+    assert r0["ab3_full_completion"] is None
+    assert r0["ab3_full_static"] is None
+    assert r0["ab3_full_execution"] is None
+    assert r0["test_status"] == "not_run"
+    assert r0["test_pass"] is None
+
+
+# ------------------------------------------------------------
+# 10. never selects a fence among ambiguous blocks
+# ------------------------------------------------------------
+
+
+def test_does_not_select_any_fence_among_ambiguous(tmp_path):
+    raw = "```python\nFIRST\n```\n```python\nLAST\n```"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="failed", raw_response=raw,
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    _, results, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    r0 = next(r for r in results if r["task_id"] == "HumanEval/0")
+    assert r0["ab3_core_completion"] is None
+    assert "FIRST" not in (r0["ab3_core_completion"] or "")
+    assert "LAST" not in (r0["ab3_core_completion"] or "")
+
+
+# ------------------------------------------------------------
+# 11. extraction.py never modified — structural check
+# ------------------------------------------------------------
+
+
+def test_extraction_module_never_modified_structural():
+    import agent_tools.finals_rebuild.extraction as extraction_mod
+    # extract_code must still expose exactly the original public contract;
+    # this is a smoke check that public_benchmark_runner.py's new code
+    # only *calls* extract_code() and never monkeypatches/reassigns it.
+    assert callable(extraction_mod.extract_code)
+    src = inspect.getsource(
+        __import__("agent_tools.finals_rebuild.public_benchmark_runner", fromlist=["x"])
+    )
+    assert "extraction.extract_code =" not in src
+    assert "extraction_mod.extract_code =" not in src
+
+
+# ------------------------------------------------------------
+# 12. EvalPlus JSONL only contains successfully-extracted completions
+# ------------------------------------------------------------
+
+
+def test_evalplus_jsonl_only_successful_completions(tmp_path):
+    raw_ambiguous = "```python\nA\n```\n```python\nB\n```"
+    attempts = [
+        _attempt("HumanEval/0", "ab1", status="failed", raw_response=raw_ambiguous,
+                  extraction_status="ambiguous"),
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab1", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="failed", raw_response=raw_ambiguous,
+                  extraction_status="ambiguous"),
+    ]
+    _, _, out_root = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    evalplus_dir = out_root / "public_benchmark_raw" / "humaneval" / "evalplus"
+
+    ab1_lines = evalplus_dir.joinpath("ab1.jsonl").read_text(encoding="utf-8").splitlines()
+    ab2g_lines = evalplus_dir.joinpath("ab2g.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(ab1_lines) == 1  # only HumanEval/1's Ab1 extracted
+    assert json.loads(ab1_lines[0])["task_id"] == "HumanEval/1"
+    assert len(ab2g_lines) == 1  # only HumanEval/0's Ab2g extracted
+    assert json.loads(ab2g_lines[0])["task_id"] == "HumanEval/0"
+
+    # HumanEval/1's Ab2g is ambiguous -> no Ab3 completion for it either.
+    ab3_core_lines = evalplus_dir.joinpath("ab3_core.jsonl").read_text(encoding="utf-8").splitlines()
+    assert len(ab3_core_lines) == 1
+    assert json.loads(ab3_core_lines[0])["task_id"] == "HumanEval/0"
+
+    # Zero-success treatments still produce a valid (empty) file.
+    assert evalplus_dir.joinpath("ab3_full.jsonl").exists()
+
+
+# ------------------------------------------------------------
+# 13. summary counts correct
+# ------------------------------------------------------------
+
+
+def test_raw_summary_counts_correct(tmp_path):
+    raw_ambiguous = "```python\nA\n```\n```python\nB\n```"
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="failed", raw_response=raw_ambiguous,
+                  extraction_status="ambiguous"),
+    ]
+    summary, _, _ = _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+    assert summary.total_tasks == 2
+    assert summary.ab1_available_count == 0
+    assert summary.ab1_missing_count == 2
+    assert summary.ab2g_raw_available_count == 2
+    assert summary.ab2g_raw_missing_count == 0
+    assert summary.ab2g_extraction_success_count == 1
+    assert summary.ab2g_extraction_failure_count == 1
+    assert summary.ab3_target_count == 2
+    assert summary.ab3_core_extraction_success_count == 1
+    assert summary.ab3_core_extraction_failure_count == 1
+    assert "pass_at_1" not in json.dumps(_raw_summary_to_dict_for_test(summary))
+
+
+def _raw_summary_to_dict_for_test(summary):
+    import agent_tools.finals_rebuild.public_benchmark_runner as mod
+    return mod._raw_summary_to_dict(summary)
+
+
+# ------------------------------------------------------------
+# Identity / fail-closed
+# ------------------------------------------------------------
+
+
+def test_task_missing_ab2g_attempt_fails_closed(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        # HumanEval/1 has no ab2g attempt at all.
+    ]
+    with pytest.raises(PublicBenchmarkRunnerError, match="no Ab2g generation attempt"):
+        _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+
+
+def test_duplicate_attempt_fails_closed(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    with pytest.raises(PublicBenchmarkRunnerError, match="duplicate generation attempt"):
+        _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+
+
+def test_unknown_task_id_in_attempts_fails_closed(tmp_path):
+    attempts = [
+        _attempt("HumanEval/0", "ab2g", status="success",
+                  raw_response="    return a + b\n", completion="    return a + b\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+        _attempt("HumanEval/999", "ab2g", status="success",
+                  raw_response="    return 0\n", completion="    return 0\n",
+                  extraction_status="extracted"),
+    ]
+    with pytest.raises(PublicBenchmarkRunnerError, match="unknown task_id"):
+        _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+
+
+def test_ab2g_raw_hash_mismatch_fails_closed(tmp_path):
+    attempts = [
+        {
+            **_attempt("HumanEval/0", "ab2g", status="success",
+                       raw_response="    return a + b\n", completion="    return a + b\n",
+                       extraction_status="extracted"),
+            "raw_response_sha256": "0" * 64,  # deliberately wrong
+        },
+        _attempt("HumanEval/1", "ab2g", status="success",
+                  raw_response="    return x * 2\n", completion="    return x * 2\n",
+                  extraction_status="extracted"),
+    ]
+    with pytest.raises(PublicBenchmarkRunnerError, match="does not match"):
+        _run_from_attempts(tmp_path, _RAW_TASKS, attempts)
+
+
+# ------------------------------------------------------------
+# 14. existing full Ab1/Ab2g test still pass (see rest of this file above);
+# additional sanity: load_generation_attempts() itself
+# ------------------------------------------------------------
+
+
+def test_load_generation_attempts_missing_file(tmp_path):
+    with pytest.raises(PublicBenchmarkRunnerError, match="not found"):
+        load_generation_attempts(tmp_path / "missing.jsonl")
+
+
+def test_load_generation_attempts_missing_field(tmp_path):
+    path = tmp_path / "attempts.jsonl"
+    path.write_text(json.dumps({"task_id": "HumanEval/0"}) + "\n", encoding="utf-8")
+    with pytest.raises(PublicBenchmarkRunnerError, match="missing required field"):
+        load_generation_attempts(path)
+
+
+def test_load_generation_attempts_reads_real_schema(tmp_path):
+    attempts = [_attempt("HumanEval/0", "ab1", raw_response="x", completion="x", extraction_status="extracted")]
+    path = _write_attempts_jsonl(tmp_path, attempts)
+    loaded = load_generation_attempts(path)
+    assert len(loaded) == 1
+    assert loaded[0]["task_id"] == "HumanEval/0"

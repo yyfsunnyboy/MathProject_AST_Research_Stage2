@@ -54,6 +54,7 @@ from agent_tools.finals_rebuild.evaluation import (
     validate_evaluation_result,
 )
 from agent_tools.finals_rebuild.execution_evaluator import evaluate_with_execution
+from agent_tools.finals_rebuild.extraction import extract_code
 from agent_tools.finals_rebuild.spec_adapter import run_spec_adapter
 from agent_tools.finals_rebuild.static_evaluator import evaluate_static
 from agent_tools.finals_rebuild.trace import (
@@ -61,6 +62,7 @@ from agent_tools.finals_rebuild.trace import (
     treatment_trace_to_dict,
     validate_treatment_trace,
 )
+from typing import Optional, Tuple
 
 # Fixed, non-current placeholder timestamp — required only to satisfy the
 # UTC ISO-8601 format validators on TreatmentTrace/EvaluationResult/
@@ -627,5 +629,567 @@ def run_public_benchmark_treatments(
     write_evalplus_completion_jsonl(ab2g_completions, evalplus_dir / "ab2g.jsonl")
     write_evalplus_completion_jsonl(ab3_core_completions, evalplus_dir / "ab3_core.jsonl")
     write_evalplus_completion_jsonl(ab3_full_completions, evalplus_dir / "ab3_full.jsonl")
+
+    return summary
+
+
+# =============================================================================
+# Raw-response-driven Ab3 pipeline
+# =============================================================================
+#
+# The entrypoint above (run_public_benchmark_treatments) requires a
+# successfully-*extracted* Ab1 AND Ab2g completion for every task, because
+# it consumes ab1.jsonl/ab2g.jsonl (extraction-success-only files written by
+# ollama_generation_runner.py). That makes Ab3 availability accidentally
+# depend on Ab1 extraction succeeding, and on Ab2g extraction succeeding —
+# neither of which the research design intends.
+#
+# The functions below instead read
+# agent_tools.finals_rebuild.ollama_generation_runner's
+# generation_attempts.jsonl schema directly (task_id, sample_index,
+# treatment, status, raw_response, raw_response_sha256, extraction_status,
+# completion, ...) and gate Ab3 on exactly one condition: does the Ab2g
+# attempt have a non-empty raw_response? Ab1's outcome never affects
+# whether Ab3 runs, and Ab1 is never fed to Core/Spec. Core/Spec always
+# receive Ab2g's *raw* model response (not the extracted completion) — the
+# scaffold's own instructions are what ask the model for clean code;
+# whether that request was honored is exactly what Core/Spec + a
+# post-hoc extract_code() call are being used to observe. extraction.py is
+# never modified and never re-implemented here: `extract_code()` is called
+# as-is after Core and again after Spec, and the ambiguity/emptiness rule
+# it applies is authoritative — this module never selects a "first" or
+# "last" block among multiple candidates.
+#
+# This module does not import agent_tools.finals_rebuild.
+# ollama_generation_runner (that module already imports
+# run_public_benchmark_treatments from here — importing back would create
+# a cycle); it only depends on the plain JSON schema that module writes.
+
+
+class _Ab3RawPipelineError(PublicBenchmarkRunnerError):
+    """Raised on any invariant violation specific to the raw-response Ab3
+    pipeline; fails closed like PublicBenchmarkRunnerError."""
+
+
+@dataclass(frozen=True)
+class RawAb3TaskResult:
+    """One task's Ab1 (informational only) + Ab2g-raw-driven Ab3 outcome.
+
+    Ab1 fields are populated only if an Ab1 attempt exists for this task;
+    a missing Ab1 attempt never blocks the rest of this record (all Ab1
+    fields become None). All Ab3 fields are None whenever
+    has_ab3_target is False. test_status/test_pass are always fixed —
+    this module never runs the official benchmark tests."""
+
+    benchmark: str
+    task_id: str
+    sample_index: int
+
+    ab1_status: Optional[str]
+    ab1_completion: Optional[str]
+    ab1_extraction_status: Optional[str]
+
+    ab2g_generation_status: str
+    ab2g_raw_response_hash: Optional[str]
+    ab2g_extraction_status: Optional[str]
+    ab2g_completion: Optional[str]
+
+    ab3_core_raw_output: Optional[str]
+    ab3_core_raw_hash: Optional[str]
+    ab3_core_extraction_status: Optional[str]
+    ab3_core_completion: Optional[str]
+    ab3_core_static: Optional[Dict[str, Any]]
+    ab3_core_execution: Optional[Dict[str, Any]]
+    core_trace: Optional[Dict[str, Any]]
+
+    ab3_full_raw_output: Optional[str]
+    ab3_full_raw_hash: Optional[str]
+    ab3_full_extraction_status: Optional[str]
+    ab3_full_completion: Optional[str]
+    ab3_full_static: Optional[Dict[str, Any]]
+    ab3_full_execution: Optional[Dict[str, Any]]
+    spec_trace: Optional[Dict[str, Any]]
+
+    has_ab3_target: bool
+    test_status: str = "not_run"
+    test_pass: Optional[bool] = None
+
+
+@dataclass(frozen=True)
+class RawAb3RunSummary:
+    """Aggregate counts across every processed task. No pass@1 — only
+    availability/extraction/structural-change/operational-rescue counts."""
+
+    benchmark: str
+    total_tasks: int
+    ab1_available_count: int
+    ab1_missing_count: int
+    ab2g_raw_available_count: int
+    ab2g_raw_missing_count: int
+    ab2g_extraction_success_count: int
+    ab2g_extraction_failure_count: int
+    ab3_target_count: int
+    ab3_core_extraction_success_count: int
+    ab3_core_extraction_failure_count: int
+    ab3_full_extraction_success_count: int
+    ab3_full_extraction_failure_count: int
+    core_changed_count: int
+    spec_changed_count: int
+    syntax_rescued_by_core: int
+    execution_rescued_by_core: int
+    syntax_rescued_by_full: int
+    execution_rescued_by_full: int
+    not_test_assessable_count: int
+
+
+def load_generation_attempts(
+    path: Union[str, pathlib.Path]
+) -> List[Dict[str, Any]]:
+    """Load agent_tools.finals_rebuild.ollama_generation_runner's
+    generation_attempts.jsonl (or any file sharing its per-attempt schema:
+    task_id, sample_index, treatment, status, at minimum). Fails closed on
+    missing file, invalid JSON, a non-object line, or a missing required
+    field. Never guesses a default for a missing field."""
+    p = pathlib.Path(path)
+    if not p.is_file():
+        raise _Ab3RawPipelineError(f"generation attempts file not found: {p}")
+
+    records: List[Dict[str, Any]] = []
+    text = p.read_text(encoding="utf-8")
+    for line_no, line in enumerate(text.splitlines(), start=1):
+        stripped = line.strip()
+        if not stripped:
+            continue
+        try:
+            obj = json.loads(stripped)
+        except json.JSONDecodeError as exc:
+            raise _Ab3RawPipelineError(
+                f"{p}: line {line_no}: invalid JSON: {exc}"
+            ) from exc
+        if not isinstance(obj, dict):
+            raise _Ab3RawPipelineError(
+                f"{p}: line {line_no}: expected a JSON object"
+            )
+        for key in ("task_id", "sample_index", "treatment", "status"):
+            if key not in obj:
+                raise _Ab3RawPipelineError(
+                    f"{p}: line {line_no}: missing required field {key!r}"
+                )
+        records.append(obj)
+    return records
+
+
+def _extract_for_raw_pipeline(raw_text: str) -> Tuple[Optional[str], str]:
+    """Call extraction.extract_code() as-is (no local disambiguation, no
+    "first"/"last" fence selection) and return (completion_or_None,
+    extraction_status)."""
+    result = extract_code(raw_text)
+    ok = (
+        result.extraction_status == "extracted"
+        and bool(result.extracted_code)
+        and bool(result.extracted_code.strip())
+    )
+    return (result.extracted_code if ok else None), result.extraction_status
+
+
+def _process_raw_ab3_task(
+    *,
+    benchmark: str,
+    task_id: str,
+    sample_index: int,
+    ab1_attempt: Optional[Dict[str, Any]],
+    ab2g_attempt: Dict[str, Any],
+    evaluator_git_commit: str,
+) -> RawAb3TaskResult:
+    pair_id = build_public_benchmark_pair_id(benchmark, task_id, sample_index)
+
+    ab1_status = ab1_attempt.get("status") if ab1_attempt else None
+    ab1_completion = ab1_attempt.get("completion") if ab1_attempt else None
+    ab1_extraction_status = ab1_attempt.get("extraction_status") if ab1_attempt else None
+
+    ab2g_generation_status = ab2g_attempt["status"]
+    ab2g_raw_response = ab2g_attempt.get("raw_response")
+    ab2g_raw_response_hash = ab2g_attempt.get("raw_response_sha256")
+    ab2g_extraction_status = ab2g_attempt.get("extraction_status")
+    ab2g_completion = ab2g_attempt.get("completion")
+
+    has_ab3_target = bool(
+        isinstance(ab2g_raw_response, str) and ab2g_raw_response.strip()
+    )
+
+    if not has_ab3_target:
+        return RawAb3TaskResult(
+            benchmark=benchmark, task_id=task_id, sample_index=sample_index,
+            ab1_status=ab1_status, ab1_completion=ab1_completion,
+            ab1_extraction_status=ab1_extraction_status,
+            ab2g_generation_status=ab2g_generation_status,
+            ab2g_raw_response_hash=ab2g_raw_response_hash,
+            ab2g_extraction_status=ab2g_extraction_status,
+            ab2g_completion=ab2g_completion,
+            ab3_core_raw_output=None, ab3_core_raw_hash=None,
+            ab3_core_extraction_status=None, ab3_core_completion=None,
+            ab3_core_static=None, ab3_core_execution=None, core_trace=None,
+            ab3_full_raw_output=None, ab3_full_raw_hash=None,
+            ab3_full_extraction_status=None, ab3_full_completion=None,
+            ab3_full_static=None, ab3_full_execution=None, spec_trace=None,
+            has_ab3_target=False,
+        )
+
+    computed_ab2g_hash = sha256_text(ab2g_raw_response)
+    if ab2g_raw_response_hash is not None and ab2g_raw_response_hash != computed_ab2g_hash:
+        raise _Ab3RawPipelineError(
+            f"task_id={task_id!r}: ab2g raw_response_sha256 {ab2g_raw_response_hash!r} "
+            f"does not match sha256(raw_response)={computed_ab2g_hash!r}"
+        )
+    ab2g_raw_response_hash = computed_ab2g_hash
+
+    # --- Core: Ab2g's RAW response (never the extracted completion, never
+    # Ab1) -> Core, once. -----------------------------------------------
+    core_result = run_core_adapter(pair_id=pair_id, input_code=ab2g_raw_response)
+    ab3_core_raw_output = core_result.output_code
+    ab3_core_raw_hash = sha256_text(ab3_core_raw_output)
+    core_trace = _finalize_trace(
+        core_result.trace, pair_id, _EVAL_TREATMENT_AB3_CORE, ab3_core_raw_hash
+    )
+    if core_trace.input_hash != ab2g_raw_response_hash:
+        raise _Ab3RawPipelineError(
+            f"task_id={task_id!r}: Core input_hash does not equal Ab2g raw_response hash"
+        )
+
+    ab3_core_completion, ab3_core_extraction_status = _extract_for_raw_pipeline(
+        ab3_core_raw_output
+    )
+    if ab3_core_completion is not None:
+        ab3_core_static_res, ab3_core_execution_res = _evaluate(
+            code=ab3_core_completion, pair_id=pair_id, run_id=core_trace.run_id,
+            treatment=_EVAL_TREATMENT_AB3_CORE, artifact_hash=ab3_core_raw_hash,
+            evaluator_git_commit=evaluator_git_commit,
+        )
+        ab3_core_static = evaluation_result_to_dict(ab3_core_static_res)
+        ab3_core_execution = evaluation_result_to_dict(ab3_core_execution_res)
+    else:
+        ab3_core_static = None
+        ab3_core_execution = None
+
+    # --- Full: Core's own RAW output (never Ab2g's raw directly) -> Spec,
+    # once. ----------------------------------------------------------------
+    spec_result = run_spec_adapter(
+        pair_id=pair_id, skill_id=task_id, input_code=ab3_core_raw_output
+    )
+    ab3_full_raw_output = spec_result.output_code
+    ab3_full_raw_hash = sha256_text(ab3_full_raw_output)
+    spec_trace = _finalize_trace(
+        spec_result.trace, pair_id, _EVAL_TREATMENT_AB3_FULL, ab3_full_raw_hash
+    )
+    if spec_trace.input_hash != ab3_core_raw_hash:
+        raise _Ab3RawPipelineError(
+            f"task_id={task_id!r}: Full input_hash does not equal Core raw output hash"
+        )
+
+    ab3_full_completion, ab3_full_extraction_status = _extract_for_raw_pipeline(
+        ab3_full_raw_output
+    )
+    if ab3_full_completion is not None:
+        ab3_full_static_res, ab3_full_execution_res = _evaluate(
+            code=ab3_full_completion, pair_id=pair_id, run_id=spec_trace.run_id,
+            treatment=_EVAL_TREATMENT_AB3_FULL, artifact_hash=ab3_full_raw_hash,
+            evaluator_git_commit=evaluator_git_commit,
+        )
+        ab3_full_static = evaluation_result_to_dict(ab3_full_static_res)
+        ab3_full_execution = evaluation_result_to_dict(ab3_full_execution_res)
+    else:
+        ab3_full_static = None
+        ab3_full_execution = None
+
+    # --- Chain-identity check over the RAW hashes (Ab1 never participates). --
+    ab2g_run = RunMetadata(
+        study_id="public_benchmark_raw", pair_id=pair_id, treatment=_EVAL_TREATMENT_AB2G,
+        run_id=build_run_id(pair_id, _EVAL_TREATMENT_AB2G, ab2g_raw_response_hash),
+        input_artifact_hash=ab2g_raw_response_hash, output_artifact_hash=ab2g_raw_response_hash,
+        source_git_commit=_FIXED_SOURCE_GIT_COMMIT, created_at_utc=_FIXED_CREATED_AT_UTC,
+    )
+    ab3_core_run = RunMetadata(
+        study_id="public_benchmark_raw", pair_id=pair_id, treatment=_EVAL_TREATMENT_AB3_CORE,
+        run_id=core_trace.run_id,
+        input_artifact_hash=ab2g_raw_response_hash, output_artifact_hash=ab3_core_raw_hash,
+        source_git_commit=_FIXED_SOURCE_GIT_COMMIT, created_at_utc=_FIXED_CREATED_AT_UTC,
+    )
+    ab3_full_run = RunMetadata(
+        study_id="public_benchmark_raw", pair_id=pair_id, treatment=_EVAL_TREATMENT_AB3_FULL,
+        run_id=spec_trace.run_id,
+        input_artifact_hash=ab3_core_raw_hash, output_artifact_hash=ab3_full_raw_hash,
+        source_git_commit=_FIXED_SOURCE_GIT_COMMIT, created_at_utc=_FIXED_CREATED_AT_UTC,
+    )
+    for run_meta in (ab2g_run, ab3_core_run, ab3_full_run):
+        validate_run_metadata(run_meta)
+    try:
+        validate_treatment_chain_identity(ab2g_run, ab3_core_run, ab3_full_run)
+    except Exception as exc:
+        raise _Ab3RawPipelineError(
+            f"raw Ab3 treatment chain identity failed for task_id={task_id!r} "
+            f"sample_index={sample_index!r}: {exc}"
+        ) from exc
+
+    return RawAb3TaskResult(
+        benchmark=benchmark, task_id=task_id, sample_index=sample_index,
+        ab1_status=ab1_status, ab1_completion=ab1_completion,
+        ab1_extraction_status=ab1_extraction_status,
+        ab2g_generation_status=ab2g_generation_status,
+        ab2g_raw_response_hash=ab2g_raw_response_hash,
+        ab2g_extraction_status=ab2g_extraction_status,
+        ab2g_completion=ab2g_completion,
+        ab3_core_raw_output=ab3_core_raw_output, ab3_core_raw_hash=ab3_core_raw_hash,
+        ab3_core_extraction_status=ab3_core_extraction_status,
+        ab3_core_completion=ab3_core_completion,
+        ab3_core_static=ab3_core_static, ab3_core_execution=ab3_core_execution,
+        core_trace=treatment_trace_to_dict(core_trace),
+        ab3_full_raw_output=ab3_full_raw_output, ab3_full_raw_hash=ab3_full_raw_hash,
+        ab3_full_extraction_status=ab3_full_extraction_status,
+        ab3_full_completion=ab3_full_completion,
+        ab3_full_static=ab3_full_static, ab3_full_execution=ab3_full_execution,
+        spec_trace=treatment_trace_to_dict(spec_trace),
+        has_ab3_target=True,
+    )
+
+
+def _build_raw_ab3_summary(
+    benchmark: str, results: Sequence[RawAb3TaskResult]
+) -> RawAb3RunSummary:
+    total = len(results)
+
+    def _static_pass(d: Optional[Dict[str, Any]]) -> bool:
+        return d is not None and d.get("syntax_pass") is True
+
+    def _exec_pass(d: Optional[Dict[str, Any]]) -> bool:
+        return d is not None and d.get("execution_success") is True
+
+    syntax_rescued_by_core = 0
+    execution_rescued_by_core = 0
+    syntax_rescued_by_full = 0
+    execution_rescued_by_full = 0
+    not_test_assessable_count = 0
+    core_changed_count = 0
+    spec_changed_count = 0
+
+    for r in results:
+        # Baseline: Ab2g's raw response did not itself yield an assessable
+        # extracted completion. Core/Full "rescuing" it means they produced
+        # a completion that Ab2g's own raw response could not.
+        base_ok = r.ab2g_extraction_status == "extracted"
+
+        if r.core_trace is not None and r.core_trace.get("changed"):
+            core_changed_count += 1
+        if r.spec_trace is not None and r.spec_trace.get("changed"):
+            spec_changed_count += 1
+
+        if (not base_ok) and _static_pass(r.ab3_core_static):
+            syntax_rescued_by_core += 1
+        if (not base_ok) and _exec_pass(r.ab3_core_execution):
+            execution_rescued_by_core += 1
+        if (not base_ok) and _static_pass(r.ab3_full_static):
+            syntax_rescued_by_full += 1
+        if (not base_ok) and _exec_pass(r.ab3_full_execution):
+            execution_rescued_by_full += 1
+
+        if r.ab3_core_completion is None and r.ab3_full_completion is None:
+            not_test_assessable_count += 1
+
+    return RawAb3RunSummary(
+        benchmark=benchmark,
+        total_tasks=total,
+        ab1_available_count=sum(1 for r in results if r.ab1_status is not None),
+        ab1_missing_count=sum(1 for r in results if r.ab1_status is None),
+        ab2g_raw_available_count=sum(1 for r in results if r.has_ab3_target),
+        ab2g_raw_missing_count=sum(1 for r in results if not r.has_ab3_target),
+        ab2g_extraction_success_count=sum(
+            1 for r in results if r.ab2g_extraction_status == "extracted"
+        ),
+        ab2g_extraction_failure_count=sum(
+            1 for r in results
+            if r.ab2g_extraction_status is not None and r.ab2g_extraction_status != "extracted"
+        ),
+        ab3_target_count=sum(1 for r in results if r.has_ab3_target),
+        ab3_core_extraction_success_count=sum(
+            1 for r in results if r.ab3_core_extraction_status == "extracted"
+        ),
+        ab3_core_extraction_failure_count=sum(
+            1 for r in results
+            if r.ab3_core_extraction_status is not None and r.ab3_core_extraction_status != "extracted"
+        ),
+        ab3_full_extraction_success_count=sum(
+            1 for r in results if r.ab3_full_extraction_status == "extracted"
+        ),
+        ab3_full_extraction_failure_count=sum(
+            1 for r in results
+            if r.ab3_full_extraction_status is not None and r.ab3_full_extraction_status != "extracted"
+        ),
+        core_changed_count=core_changed_count,
+        spec_changed_count=spec_changed_count,
+        syntax_rescued_by_core=syntax_rescued_by_core,
+        execution_rescued_by_core=execution_rescued_by_core,
+        syntax_rescued_by_full=syntax_rescued_by_full,
+        execution_rescued_by_full=execution_rescued_by_full,
+        not_test_assessable_count=not_test_assessable_count,
+    )
+
+
+def _raw_result_to_dict(result: RawAb3TaskResult) -> Dict[str, Any]:
+    return {
+        "benchmark": result.benchmark,
+        "task_id": result.task_id,
+        "sample_index": result.sample_index,
+        "ab1_status": result.ab1_status,
+        "ab1_completion": result.ab1_completion,
+        "ab1_extraction_status": result.ab1_extraction_status,
+        "ab2g_generation_status": result.ab2g_generation_status,
+        "ab2g_raw_response_hash": result.ab2g_raw_response_hash,
+        "ab2g_extraction_status": result.ab2g_extraction_status,
+        "ab2g_completion": result.ab2g_completion,
+        "ab3_core_raw_output": result.ab3_core_raw_output,
+        "ab3_core_raw_hash": result.ab3_core_raw_hash,
+        "ab3_core_extraction_status": result.ab3_core_extraction_status,
+        "ab3_core_completion": result.ab3_core_completion,
+        "ab3_core_static": result.ab3_core_static,
+        "ab3_core_execution": result.ab3_core_execution,
+        "core_trace": result.core_trace,
+        "ab3_full_raw_output": result.ab3_full_raw_output,
+        "ab3_full_raw_hash": result.ab3_full_raw_hash,
+        "ab3_full_extraction_status": result.ab3_full_extraction_status,
+        "ab3_full_completion": result.ab3_full_completion,
+        "ab3_full_static": result.ab3_full_static,
+        "ab3_full_execution": result.ab3_full_execution,
+        "spec_trace": result.spec_trace,
+        "has_ab3_target": result.has_ab3_target,
+        "test_status": result.test_status,
+        "test_pass": result.test_pass,
+    }
+
+
+def _raw_summary_to_dict(summary: RawAb3RunSummary) -> Dict[str, Any]:
+    return {
+        "benchmark": summary.benchmark,
+        "total_tasks": summary.total_tasks,
+        "ab1_available_count": summary.ab1_available_count,
+        "ab1_missing_count": summary.ab1_missing_count,
+        "ab2g_raw_available_count": summary.ab2g_raw_available_count,
+        "ab2g_raw_missing_count": summary.ab2g_raw_missing_count,
+        "ab2g_extraction_success_count": summary.ab2g_extraction_success_count,
+        "ab2g_extraction_failure_count": summary.ab2g_extraction_failure_count,
+        "ab3_target_count": summary.ab3_target_count,
+        "ab3_core_extraction_success_count": summary.ab3_core_extraction_success_count,
+        "ab3_core_extraction_failure_count": summary.ab3_core_extraction_failure_count,
+        "ab3_full_extraction_success_count": summary.ab3_full_extraction_success_count,
+        "ab3_full_extraction_failure_count": summary.ab3_full_extraction_failure_count,
+        "core_changed_count": summary.core_changed_count,
+        "spec_changed_count": summary.spec_changed_count,
+        "syntax_rescued_by_core": summary.syntax_rescued_by_core,
+        "execution_rescued_by_core": summary.execution_rescued_by_core,
+        "syntax_rescued_by_full": summary.syntax_rescued_by_full,
+        "execution_rescued_by_full": summary.execution_rescued_by_full,
+        "not_test_assessable_count": summary.not_test_assessable_count,
+    }
+
+
+def _write_jsonl_allow_empty(
+    records: Sequence[Dict[str, Any]], path: pathlib.Path
+) -> None:
+    """Write *records* as JSONL, one per line, creating the file even when
+    *records* is empty — a treatment with zero extractable completions
+    still gets a valid, empty file rather than none at all, and never a
+    fabricated/padded row."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        for rec in records:
+            fh.write(json.dumps(rec, sort_keys=True, ensure_ascii=False) + "\n")
+
+
+def run_public_benchmark_treatments_from_attempts(
+    *,
+    tasks_path: Union[str, pathlib.Path],
+    generation_attempts_path: Union[str, pathlib.Path],
+    benchmark: str,
+    artifact_root: Union[str, pathlib.Path],
+    evaluator_git_commit: str,
+) -> RawAb3RunSummary:
+    """
+    Run Ab3-Core/Ab3-Full for every task in *tasks_path*, gated only on
+    whether that task's Ab2g attempt (from *generation_attempts_path*, the
+    schema ollama_generation_runner.py's generation_attempts.jsonl writes)
+    has a non-empty raw_response — never on Ab2g extraction success, and
+    never on Ab1 at all. Ab1 is recorded for reference only and never fed
+    to Core/Spec. Core/Spec always consume the raw model response (Ab2g's
+    raw -> Core; Core's own raw output -> Spec), and extract_code() is
+    re-run, unmodified and with no first/last-block disambiguation, after
+    each stage to decide whether that stage's output is assessable.
+
+    Fails closed (raises PublicBenchmarkRunnerError/_Ab3RawPipelineError)
+    on: a task with no Ab2g attempt at all, a duplicate (task_id,
+    sample_index, treatment) attempt row, an attempt referencing an
+    unknown task_id, an Ab2g raw_response_sha256 mismatch, a chain-identity
+    failure, or an unwritable artifact_root. Never fabricates a missing
+    completion and never silently skips a task.
+    """
+    tasks: List[PublicBenchmarkTask] = load_benchmark_tasks(tasks_path, benchmark)
+    attempts = load_generation_attempts(generation_attempts_path)
+
+    known_task_ids = {t.task_id for t in tasks}
+    seen_keys: set[tuple[str, int, str]] = set()
+    by_key: Dict[tuple[str, int, str], Dict[str, Any]] = {}
+    for a in attempts:
+        if a["task_id"] not in known_task_ids:
+            raise _Ab3RawPipelineError(
+                f"generation attempt references unknown task_id {a['task_id']!r}"
+            )
+        key = (a["task_id"], a["sample_index"], a["treatment"])
+        if key in seen_keys:
+            raise _Ab3RawPipelineError(f"duplicate generation attempt for {key!r}")
+        seen_keys.add(key)
+        by_key[key] = a
+
+    results: List[RawAb3TaskResult] = []
+    for task in tasks:
+        sample_index = 0
+        ab2g_key = (task.task_id, sample_index, "ab2g")
+        if ab2g_key not in by_key:
+            raise _Ab3RawPipelineError(
+                f"task_id={task.task_id!r}: no Ab2g generation attempt found "
+                f"(sample_index={sample_index!r})"
+            )
+        ab1_attempt = by_key.get((task.task_id, sample_index, "ab1"))
+        ab2g_attempt = by_key[ab2g_key]
+
+        results.append(
+            _process_raw_ab3_task(
+                benchmark=benchmark, task_id=task.task_id, sample_index=sample_index,
+                ab1_attempt=ab1_attempt, ab2g_attempt=ab2g_attempt,
+                evaluator_git_commit=evaluator_git_commit,
+            )
+        )
+
+    summary = _build_raw_ab3_summary(benchmark, results)
+
+    out_root = pathlib.Path(artifact_root) / "public_benchmark_raw" / benchmark
+    _write_json_deterministic(
+        [_raw_result_to_dict(r) for r in results], out_root / "results.json"
+    )
+    _write_json_deterministic(_raw_summary_to_dict(summary), out_root / "summary.json")
+
+    evalplus_dir = out_root / "evalplus"
+    _write_jsonl_allow_empty(
+        [{"task_id": r.task_id, "completion": r.ab1_completion} for r in results if r.ab1_completion],
+        evalplus_dir / "ab1.jsonl",
+    )
+    _write_jsonl_allow_empty(
+        [{"task_id": r.task_id, "completion": r.ab2g_completion} for r in results if r.ab2g_completion],
+        evalplus_dir / "ab2g.jsonl",
+    )
+    _write_jsonl_allow_empty(
+        [{"task_id": r.task_id, "completion": r.ab3_core_completion} for r in results if r.ab3_core_completion],
+        evalplus_dir / "ab3_core.jsonl",
+    )
+    _write_jsonl_allow_empty(
+        [{"task_id": r.task_id, "completion": r.ab3_full_completion} for r in results if r.ab3_full_completion],
+        evalplus_dir / "ab3_full.jsonl",
+    )
 
     return summary
