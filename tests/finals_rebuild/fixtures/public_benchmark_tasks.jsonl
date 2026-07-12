@@ -1,0 +1,2 @@
+{"task_id": "HumanEval/0", "prompt": "def add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n", "entry_point": "add"}
+{"task_id": "HumanEval/1", "prompt": "def double(x):\n    \"\"\"Double a number.\"\"\"\n", "entry_point": "double"}
