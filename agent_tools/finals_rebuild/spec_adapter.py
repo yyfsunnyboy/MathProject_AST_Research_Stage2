@@ -16,10 +16,15 @@ No model calls. No code execution. No file I/O.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Callable, Dict, List, Optional
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional, Set
 
 from agent_tools.finals_rebuild.artifacts import sha256_text
+from agent_tools.finals_rebuild.math_spec_rules import (
+    RATIONAL_LITERAL_DIVISION_RULE_ID,
+    repair_rational_literal_division,
+)
+from agent_tools.finals_rebuild.math_task_schema import MathOutputContract
 from agent_tools.finals_rebuild.trace import TraceStep, TreatmentTrace
 
 # ---------------------------------------------------------------------------
@@ -34,11 +39,21 @@ class SpecRule:
     safety_classification: str  # see trace.SAFETY_CLASSIFICATIONS
     domain_specific: bool
     reason: str
-    fn: Optional[Callable[[str], str]] = None  # unset while disabled
+    fn: Optional[Callable[[str, MathOutputContract], object]] = None
+    metadata: Dict[str, str] = field(default_factory=dict)
 
 
 # Every rule below is disabled by design in Commit 3A.
 SPEC_RULE_REGISTRY: Dict[str, SpecRule] = {
+    RATIONAL_LITERAL_DIVISION_RULE_ID: SpecRule(
+        rule_id=RATIONAL_LITERAL_DIVISION_RULE_ID,
+        enabled=False,
+        safety_classification="guarded_structural",
+        domain_specific=True,
+        reason="Disabled by default; only explicit callers may enable the guarded rational literal repair.",
+        fn=repair_rational_literal_division,
+        metadata={"requires_math_output_contract": "true"},
+    ),
     "calculation_skeleton_injection": SpecRule(
         rule_id="calculation_skeleton_injection",
         enabled=False,
@@ -153,6 +168,8 @@ def run_spec_adapter(
     skill_id: str,
     input_code: str,
     domain_applicable: Optional[bool] = None,
+    math_output_contract: Optional[MathOutputContract] = None,
+    enabled_rule_ids: Optional[Set[str]] = None,
 ) -> SpecAdapterResult:
     """
     Apply only ENABLED rules from SPEC_RULE_REGISTRY to *input_code*, which
@@ -203,12 +220,30 @@ def run_spec_adapter(
     steps: List[TraceStep] = []
     rules_triggered: List[str] = []
 
+    explicitly_enabled = enabled_rule_ids or set()
+    failure_reason: Optional[str] = None
     for rule_id, rule in SPEC_RULE_REGISTRY.items():
         before_hash = sha256_text(code)
-        if rule.enabled and rule.fn is not None:
-            new_code = rule.fn(code)
-            after_hash = sha256_text(new_code)
-            changed = after_hash != before_hash
+        enabled = rule.enabled or (rule_id in explicitly_enabled and rule.fn is not None)
+        if enabled and rule.fn is not None:
+            if math_output_contract is None:
+                new_code = code
+                after_hash = before_hash
+                changed = False
+                reason = "missing_math_output_contract"
+            else:
+                try:
+                    repair = rule.fn(code, math_output_contract)
+                    new_code = repair.code_after
+                    after_hash = repair.after_hash
+                    changed = repair.changed
+                    reason = repair.reason
+                except Exception as exc:
+                    new_code = code
+                    after_hash = before_hash
+                    changed = False
+                    reason = f"rule_error:{type(exc).__name__}"
+                    failure_reason = reason
             if changed:
                 code = new_code
                 rules_triggered.append(rule_id)
@@ -218,7 +253,7 @@ def run_spec_adapter(
                 changed=changed,
                 before_hash=before_hash,
                 after_hash=after_hash,
-                reason=rule.reason,
+                reason=reason,
                 domain_specific=rule.domain_specific,
                 safety_classification=rule.safety_classification,
                 enabled=True,
@@ -254,7 +289,7 @@ def run_spec_adapter(
         output_hash=output_hash,
         implementation_status=implementation_status,
         fail_closed=True,
-        failure_reason=None,
+        failure_reason=failure_reason,
         contract_changed=False,
         rules_triggered=rules_triggered,
         steps=steps,

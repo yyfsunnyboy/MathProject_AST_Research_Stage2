@@ -7,6 +7,7 @@ from __future__ import annotations
 import inspect
 import os
 import sys
+from dataclasses import replace
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -16,6 +17,8 @@ from agent_tools.finals_rebuild.spec_adapter import (
     is_k12_math_domain,
     run_spec_adapter,
 )
+from agent_tools.finals_rebuild.math_spec_rules import RATIONAL_LITERAL_DIVISION_RULE_ID
+from agent_tools.finals_rebuild.math_task_schema import MathOutputContract
 from agent_tools.finals_rebuild.trace import validate_treatment_trace
 
 _PAIR_ID = "a" * 64
@@ -32,6 +35,15 @@ _REQUIRED_DISABLED_RULE_IDS = {
 }
 
 
+def _rational_contract():
+    return MathOutputContract(
+        answer_type="rational", representation_subtype=None,
+        python_return_type="Fraction", representation_policy="exact_answer_type",
+        validator_type="rational_exact", allowed_tolerance=None,
+        symbolic_variables=(), answer_fields=(),
+    )
+
+
 def test_all_domain_rules_are_disabled():
     for rule_id in _REQUIRED_DISABLED_RULE_IDS:
         assert rule_id in SPEC_RULE_REGISTRY, f"{rule_id} missing from registry"
@@ -40,6 +52,13 @@ def test_all_domain_rules_are_disabled():
 
 def test_no_rule_currently_enabled():
     assert all(not r.enabled for r in SPEC_RULE_REGISTRY.values())
+
+
+def test_rational_spec_rule_is_registered_disabled_with_handler():
+    rule = SPEC_RULE_REGISTRY[RATIONAL_LITERAL_DIVISION_RULE_ID]
+    assert rule.enabled is False
+    assert rule.fn is not None
+    assert rule.metadata["requires_math_output_contract"] == "true"
 
 
 # ---------------------------------------------------------------------------
@@ -195,8 +214,8 @@ def test_spec_adapter_module_imports_nothing_forbidden():
         )
     # No rule in the registry has a live callable yet — fn is always None
     # while enabled=False, so nothing forbidden can actually execute.
-    for rule in SPEC_RULE_REGISTRY.values():
-        if not rule.enabled:
+    for rule_id, rule in SPEC_RULE_REGISTRY.items():
+        if rule_id != RATIONAL_LITERAL_DIVISION_RULE_ID and not rule.enabled:
             assert rule.fn is None
 
 
@@ -205,3 +224,63 @@ def test_no_model_or_network_calls():
         pair_id=_PAIR_ID, skill_id="jh_math_skill", input_code=_CODE,
     )
     assert result.trace.applied is True
+
+
+def test_rational_spec_rule_is_disabled_by_default():
+    source = "def solve():\n    return 3 / 5\n"
+    result = run_spec_adapter(
+        pair_id=_PAIR_ID, skill_id="jh_math_skill", input_code=source,
+        math_output_contract=_rational_contract(),
+    )
+    step = next(s for s in result.trace.steps if s.rule_id == RATIONAL_LITERAL_DIVISION_RULE_ID)
+    assert result.output_code == source
+    assert step.enabled is False
+    assert step.changed is False
+
+
+def test_explicitly_enabled_rational_spec_rule_repairs_literal_division():
+    source = "def solve():\n    return 3 / 5\n"
+    result = run_spec_adapter(
+        pair_id=_PAIR_ID, skill_id="jh_math_skill", input_code=source,
+        math_output_contract=_rational_contract(),
+        enabled_rule_ids={RATIONAL_LITERAL_DIVISION_RULE_ID},
+    )
+    step = next(s for s in result.trace.steps if s.rule_id == RATIONAL_LITERAL_DIVISION_RULE_ID)
+    assert "return Fraction(3, 5)" in result.output_code
+    assert step.enabled is True
+    assert step.changed is True
+    assert step.reason == "repaired"
+    assert step.before_hash != step.after_hash
+    assert result.trace.rules_triggered == [RATIONAL_LITERAL_DIVISION_RULE_ID]
+
+
+def test_enabled_rational_spec_rule_preserves_unsupported_expression():
+    source = "def solve():\n    return get_value() / 5\n"
+    result = run_spec_adapter(
+        pair_id=_PAIR_ID, skill_id="jh_math_skill", input_code=source,
+        math_output_contract=_rational_contract(),
+        enabled_rule_ids={RATIONAL_LITERAL_DIVISION_RULE_ID},
+    )
+    step = next(s for s in result.trace.steps if s.rule_id == RATIONAL_LITERAL_DIVISION_RULE_ID)
+    assert result.output_code == source
+    assert step.enabled is True
+    assert step.changed is False
+    assert step.reason == "unsupported_expression"
+
+
+def test_rational_rule_exception_is_isolated(monkeypatch):
+    def boom(*_args):
+        raise RuntimeError("boom")
+
+    rule = SPEC_RULE_REGISTRY[RATIONAL_LITERAL_DIVISION_RULE_ID]
+    monkeypatch.setitem(SPEC_RULE_REGISTRY, RATIONAL_LITERAL_DIVISION_RULE_ID, replace(rule, fn=boom))
+    source = "def solve():\n return 3 / 5\n"
+    result = run_spec_adapter(
+        pair_id=_PAIR_ID, skill_id="jh_math_skill", input_code=source,
+        math_output_contract=_rational_contract(),
+        enabled_rule_ids={RATIONAL_LITERAL_DIVISION_RULE_ID},
+    )
+    step = next(s for s in result.trace.steps if s.rule_id == RATIONAL_LITERAL_DIVISION_RULE_ID)
+    assert result.output_code == source
+    assert step.reason == "rule_error:RuntimeError"
+    assert result.trace.failure_reason == "rule_error:RuntimeError"
