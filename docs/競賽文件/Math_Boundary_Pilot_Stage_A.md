@@ -15,7 +15,7 @@ runtime_failure, answer_incorrect, intrinsic_safety, or infrastructure_failure.
 Run after validation:
 
 ```powershell
-.\.venv\Scripts\python.exe agent_tools/finals_rebuild/math_boundary_pilot.py --task-manifest tests/finals_rebuild/fixtures/math_generation_tasks_ce115_pilot.jsonl --output-root artifacts/finals_rebuild/math_boundary_pilot
+.\.venv\Scripts\python.exe -m agent_tools.finals_rebuild.math_boundary_pilot --task-manifest tests/finals_rebuild/fixtures/math_generation_tasks_ce115_pilot.jsonl --output-root artifacts/finals_rebuild/math_boundary_pilot
 ```
 
 Stage A does not run Ab2g, any Healer, or retries. Its results select candidate
