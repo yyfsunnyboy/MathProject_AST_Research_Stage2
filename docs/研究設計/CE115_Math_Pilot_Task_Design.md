@@ -1,6 +1,6 @@
 # CE115 Math Pilot Task Design
 
-This pilot records four abstracted, externally anchored mathematics task specifications. It does not reproduce examination wording, diagrams, answer choices, or solutions verbatim.
+This pilot records four abstracted, externally anchored mathematics task families, each stratified into L1, L2, and L3 for a 12-task pilot. It does not reproduce examination wording, diagrams, answer choices, or solutions verbatim.
 
 | Task | Anchor | Domain | Oracle |
 | --- | --- | --- | --- |
@@ -14,5 +14,7 @@ The manifest is immutable pilot input. It contains no fixed source-item numeric 
 The randomization contract requires local seeded RNG use: the same seed must reproduce the same sampled parameters, while different seeds are expected to vary them. The constraints prohibit degenerate, ambiguous, oversized, or impractical values; they are metadata requirements for a future generator, not an implementation in this commit.
 
 Each oracle operates only on a generated `oracle_payload` and a submitted answer; it neither imports generator code nor calls `generate()`.
+
+`math_task_sampler.py` samples parameters once from a task ID and seed using a local `random.Random` instance. The resulting frozen payload is intended to be reused by every paired model/prompt condition for that task-seed cell; sampler output is not model output and no Healer intervention occurs during sampling.
 
 All entries use `copyright_handling = abstracted_task_specification_not_verbatim_reproduction`. The sources are anchors for task-family provenance, not stored exam questions. This commit does not run generation, Healer derivation, evaluator execution, or a research batch.

@@ -11,12 +11,10 @@ def _tasks():
     return [json.loads(line) for line in MANIFEST.read_text(encoding="utf-8").splitlines() if line]
 
 
-def test_manifest_is_four_immutable_oracle_tasks():
+def test_manifest_is_twelve_immutable_oracle_tasks():
     tasks = _tasks()
-    assert [task["task_id"] for task in tasks] == [
-        "ce115_q07_polynomial_division", "ce115_q20_largest_proper_divisor",
-        "ce115_q24_rotation_speed_conversion", "ce115_cr01_training_sequence_threshold",
-    ]
+    assert len(tasks) == 12 and len({task["task_id"] for task in tasks}) == 12
+    assert {task["difficulty_level"] for task in tasks} == {1, 2, 3}
     assert all(task["required_entry_point"] == "generate" and task["seed"] == 20260713 for task in tasks)
     assert all(task["required_output_keys"] == ["question_text", "correct_answer", "oracle_payload"] for task in tasks)
     assert all("model" not in task and "treatment" not in task and "prompt" not in task for task in tasks)
@@ -31,9 +29,9 @@ def test_manifest_is_four_immutable_oracle_tasks():
         for value in task["parameter_ranges"].values():
             if "min" in value:
                 assert value["min"] <= value["max"]
-    q24 = tasks[2]["parameter_ranges"]["circumference_cm"]
+    q24 = next(task for task in tasks if task["skill_id"] == "rpm_circumference_to_kph")["parameter_ranges"]["circumference_cm"]
     assert q24["step"] > 0
-    assert tasks[3]["parameter_ranges"]["track_length_m"]["allowed_values"]
+    assert next(task for task in tasks if task["skill_id"] == "alternating_training_progression_threshold")["parameter_ranges"]["track_length_m"]["allowed_values"]
 
 
 def test_polynomial_oracle_exact_and_incorrect_cases():
