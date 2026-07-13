@@ -1,0 +1,5 @@
+[
+  {"case_id":"gemini_numbers_ab1_run01","source_file":"experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run01.py","expected_category":"unknown_baseline","curriculum_level":"grade_7","domain":"numbers","model":"gemini-3-flash","ablation":"Ab1","notes":"Historical raw generator source; evaluator-only baseline."},
+  {"case_id":"live_show_fraction_helper","source_file":"generated_scripts/live_show_frac_1774276147_3e063c.py","expected_category":"legacy_runtime_dependency","curriculum_level":"grade_7","domain":"fractions","model":"historical-live-show","ablation":"baseline","notes":"Historical helper-dependent generator; no legacy injection."},
+  {"case_id":"gemini_integers_ab1_run01","source_file":"experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run01.py","expected_category":"unknown_baseline","curriculum_level":"grade_7","domain":"integers","model":"gemini-3-flash","ablation":"Ab1","notes":"Historical raw generator source; evaluator-only baseline."}
+]

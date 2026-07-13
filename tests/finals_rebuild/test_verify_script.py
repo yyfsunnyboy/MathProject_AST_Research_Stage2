@@ -61,6 +61,13 @@ def test_modes_invoke_expected_pytest_targets(mode, expected, tmp_path):
     assert f"VERIFICATION PASSED: {mode}" in completed.stdout
 
 
+def test_related_mode_includes_generator_pilot_tests(tmp_path):
+    completed, calls = _run(tmp_path, "related")
+    assert completed.returncode == 0
+    assert "test_generator_evaluator.py" in calls
+    assert "test_generator_integration_pilot.py" in calls
+
+
 def test_pytest_failure_is_propagated_without_success_banner(tmp_path):
     completed, _ = _run(tmp_path, "targeted", pytest_exit=7)
     assert completed.returncode == 7
