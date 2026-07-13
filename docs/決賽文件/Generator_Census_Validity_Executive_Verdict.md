@@ -58,6 +58,16 @@ injected-utilities block. Full source remains available for parse, load, and
 execution. The safety blacklist is unchanged. Corrected census artifacts record
 raw and corrected outcomes plus safety provenance and attribution.
 
+## Execution failure adjudication
+
+The two corrected execution-failure rows are census_011 and census_013, both
+from four_arithmetic_operations_of_integers, qwen3-14b, Ab1. Each fails at the
+entry-point stage with GenerateEntryPointMissing: generate is not defined.
+This is an intrinsic generator failure, not a legacy-harness incompatibility.
+There is no existing deterministic Core repair rule, so neither is a true Tier
+1 candidate. With zero true candidates across the calibration census, the
+decision remains do_not_proceed_to_healer_pilot.
+
 Get-ChildItem : 拒絕存取路徑 'C:\Projects\MathProject_AST_Research\.pytest_cache'。
 位於 線路:2 字元:78
 + ... erdict.md'; Get-ChildItem -Recurse -File -Include 'test_generator_fai ...
