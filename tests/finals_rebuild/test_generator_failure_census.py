@@ -3,6 +3,7 @@ import json
 import pytest
 from agent_tools.finals_rebuild.generator_failure_census import GeneratorFailureCensusManifestError, _repairability, load_generator_failure_census_manifest, run_generator_failure_census, summarize_generator_failure_census, write_generator_failure_census_jsonl, write_generator_failure_census_summary
 from agent_tools.finals_rebuild.generator_evaluator import evaluate_generator_code
+from agent_tools.finals_rebuild.generator_failure_census import REQUIRED_DOMAINS, build_generator_failure_census_manifest, stratified_sample_generator_sources, GeneratorSource
 ROOT = Path(__file__).parents[2]
 MANIFEST = ROOT / "tests/finals_rebuild/fixtures/generator_failure_census_manifest.json"
 def test_manifest_loads_and_is_safe():
@@ -29,3 +30,12 @@ def test_real_manifest_summary_invariants():
     summary = summarize_generator_failure_census(records)
     assert summary.total == 30 and summary.passed + summary.failed == 30
     assert summary.tier1_candidates + summary.not_tier1 + summary.unknown_repairability == 30
+def test_production_sampler_is_stratified_and_deterministic():
+    first = build_generator_failure_census_manifest(ROOT / "experiments/results")
+    second = build_generator_failure_census_manifest(ROOT / "experiments/results")
+    assert first == second and first["selected_counts_by_domain"] == {domain: 10 for domain in REQUIRED_DOMAINS}
+    assert len({case["source_file"] for case in first["cases"]}) == 30
+def test_sampler_fails_fast_for_insufficient_domain():
+    sources = [GeneratorSource(f"x/{i}.py", "applications_of_derivatives", "m", "Ab1") for i in range(9)]
+    with pytest.raises(GeneratorFailureCensusManifestError, match="available=9"):
+        stratified_sample_generator_sources(sources, ("applications_of_derivatives",), 10, 20260713)

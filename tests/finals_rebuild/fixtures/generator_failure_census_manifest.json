@@ -1,323 +1,324 @@
 {
-    "census_type":  "cross_domain_calibration_census",
-    "sampling_validity":  "valid_stratified_sampling",
-    "selection_seed":  20260713,
-    "target_per_domain":  10,
-    "required_domains":  [
-                             "applications_of_derivatives",
-                             "four_arithmetic_operations_of_integers",
-                             "four_arithmetic_operations_of_numbers"
-                         ],
-    "eligible_counts_by_domain":  {
-                                      "applications_of_derivatives":  35,
-                                      "four_arithmetic_operations_of_integers":  45,
-                                      "four_arithmetic_operations_of_numbers":  45
-                                  },
-    "selected_counts_by_domain":  {
-                                      "applications_of_derivatives":  10,
-                                      "four_arithmetic_operations_of_integers":  10,
-                                      "four_arithmetic_operations_of_numbers":  10
-                                  },
-    "cases":  [
-                  {
-                      "case_id":  "applications_of_derivatives_01",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_02",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_03",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_04",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_05",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_06",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "qwen2.5-coder-14b",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_07",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "qwen2.5-coder-14b",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_08",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "qwen2.5-coder-14b",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_09",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "qwen2.5-coder-14b",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "applications_of_derivatives_10",
-                      "source_file":  "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "applications_of_derivatives",
-                      "model":  "qwen2.5-coder-14b",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_01",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_02",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_03",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_04",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_05",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_06",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_07",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_08",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_09",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_integers_10",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfIntegers/jh_數學1上_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_integers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_01",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_02",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_03",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_04",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_05",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab1",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_06",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run01.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_07",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run02.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_08",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run03.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_09",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run04.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  },
-                  {
-                      "case_id":  "four_arithmetic_operations_of_numbers_10",
-                      "source_file":  "experiments/results/jh_數學1上_FourArithmeticOperationsOfNumbers/jh_數學1上_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab2_run05.py",
-                      "source_group":  "experiments_results",
-                      "curriculum_level":  "unknown",
-                      "domain":  "four_arithmetic_operations_of_numbers",
-                      "model":  "gemini-2.5-flash",
-                      "ablation":  "Ab2",
-                      "selection_seed":  20260713
-                  }
-              ]
+  "cases": [
+    {
+      "ablation": "Ab3",
+      "case_id": "census_001",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab3_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_002",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-7b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab3_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_003",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_gemini-2.5-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_gemini-2.5-flash_Ab1_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_004",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab2_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_005",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-7b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab2_run02.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_006",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run02.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_007",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-14b_Ab1_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_008",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-7b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab2_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_009",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-7b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab1_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_010",
+      "curriculum_level": "unknown",
+      "domain": "applications_of_derivatives",
+      "model": "ApplicationsOfDerivatives_qwen2.5-coder-7b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/gh_ApplicationsOfDerivatives/gh_ApplicationsOfDerivatives_qwen2.5-coder-7b_Ab3_run01.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_011",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b_Ab1_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_012",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b_Ab1_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_013",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b_Ab1_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_014",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run02.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_015",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b_Ab2_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_016",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b_Ab3_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_017",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b_Ab1_run01.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_018",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab1_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab2",
+      "case_id": "census_019",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash_Ab2_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_020",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_integers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b_Ab1_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_021",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab1_run01.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_022",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b_Ab1_run02.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_023",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b_Ab1_run05.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_024",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b_Ab3_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_025",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b_Ab3_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_026",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b_Ab3_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_027",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab3_run03.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab1",
+      "case_id": "census_028",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b_Ab1_run01.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_029",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab3_run04.py",
+      "source_group": "experiments_results"
+    },
+    {
+      "ablation": "Ab3",
+      "case_id": "census_030",
+      "curriculum_level": "unknown",
+      "domain": "four_arithmetic_operations_of_numbers",
+      "model": "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash",
+      "selection_seed": 20260713,
+      "source_file": "experiments/results/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers/jh_\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash_Ab3_run05.py",
+      "source_group": "experiments_results"
+    }
+  ],
+  "census_type": "cross_domain_calibration_census",
+  "eligible_counts_by_domain": {
+    "applications_of_derivatives": 35,
+    "four_arithmetic_operations_of_integers": 45,
+    "four_arithmetic_operations_of_numbers": 45
+  },
+  "required_domains": [
+    "applications_of_derivatives",
+    "four_arithmetic_operations_of_integers",
+    "four_arithmetic_operations_of_numbers"
+  ],
+  "sampling_validity": "valid_stratified_sampling",
+  "selected_counts_by_domain": {
+    "applications_of_derivatives": 10,
+    "four_arithmetic_operations_of_integers": 10,
+    "four_arithmetic_operations_of_numbers": 10
+  },
+  "selected_total": 30,
+  "selection_seed": 20260713,
+  "target_per_domain": 10
 }

@@ -1,17 +1,23 @@
 """Raw generator failure census helpers."""
 from __future__ import annotations
+import argparse
 import hashlib
 import json
+import random
+import re
 from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Sequence
+from typing import Any, Mapping, Sequence
 from agent_tools.finals_rebuild.generator_evaluator import GeneratorEvaluationResult, evaluate_generator_code
 from agent_tools.finals_rebuild.generator_integration_pilot import _observed
 
 CATEGORIES = ("passed", "parse_failure", "safety_rejected", "load_failure", "entry_point_failure", "runtime_failure", "timeout", "output_failure", "instance_schema_failure", "legacy_runtime_dependency")
 REQUIRED_DOMAINS = ("applications_of_derivatives", "four_arithmetic_operations_of_integers", "four_arithmetic_operations_of_numbers")
 class GeneratorFailureCensusManifestError(ValueError): pass
+@dataclass(frozen=True)
+class GeneratorSource:
+    source_file: str; domain: str; model: str; ablation: str
 @dataclass(frozen=True)
 class GeneratorFailureCensusCase:
     case_id: str; source_file: str; source_group: str; curriculum_level: str; domain: str; model: str; ablation: str; selection_seed: int
@@ -21,6 +27,37 @@ class GeneratorFailureCensusRecord:
 @dataclass(frozen=True)
 class GeneratorFailureCensusSummary:
     total: int; passed: int; failed: int; category_counts: tuple[tuple[str,int],...]; tier1_candidates: int; not_tier1: int; unknown_repairability: int; model_counts: tuple[tuple[str,int],...]; ablation_counts: tuple[tuple[str,int],...]; domain_counts: tuple[tuple[str,int],...]
+def parse_generator_source_metadata(source_path: Path, results_root: Path) -> GeneratorSource:
+    relative=source_path.relative_to(results_root).as_posix()
+    lowered=relative.lower()
+    domain=next((d for d in REQUIRED_DOMAINS if d.replace("_","") in re.sub(r"[^a-z]","",lowered)),None)
+    if domain is None: raise GeneratorFailureCensusManifestError(f"unknown domain: {relative}")
+    stem=source_path.stem; ablation=(re.search(r"_(Ab\d+)_",stem) or re.search(r"_(Ab\d+)$",stem))
+    model_match=re.search(r"_(.+?)_(Ab\d+)_run\d+$",stem)
+    if not ablation or not model_match: raise GeneratorFailureCensusManifestError(f"unparseable metadata: {relative}")
+    return GeneratorSource(relative,domain,model_match.group(1),ablation.group(1))
+def discover_generator_sources(results_root: Path) -> list[GeneratorSource]:
+    if not results_root.is_dir(): raise GeneratorFailureCensusManifestError(f"missing results root: {results_root}")
+    sources=[]
+    for path in sorted(results_root.rglob("*.py")):
+        if path.name == "__init__.py" or any(x in path.name.lower() for x in ("manifest","report","cache","temp")): continue
+        try: sources.append(parse_generator_source_metadata(path,results_root))
+        except GeneratorFailureCensusManifestError:
+            continue
+    return sources
+def stratified_sample_generator_sources(sources: Sequence[GeneratorSource], required_domains: Sequence[str], per_domain: int, seed: int) -> list[GeneratorSource]:
+    selected=[]
+    for domain in required_domains:
+        pool=sorted((s for s in sources if s.domain == domain),key=lambda s:s.source_file)
+        if len(pool) < per_domain: raise GeneratorFailureCensusManifestError(f"domain={domain} available={len(pool)} required={per_domain}")
+        rng=random.Random(f"{seed}:{domain}"); selected.extend(rng.sample(pool,per_domain))
+    return selected
+def build_generator_failure_census_manifest(results_root: Path, required_domains: Sequence[str]=REQUIRED_DOMAINS, per_domain: int=10, seed: int=20260713) -> dict[str,Any]:
+    sources=discover_generator_sources(results_root); selected=stratified_sample_generator_sources(sources,required_domains,per_domain,seed)
+    cases=[{"case_id":f"census_{i:03d}","source_file":f"experiments/results/{s.source_file}","source_group":"experiments_results","curriculum_level":"unknown","domain":s.domain,"model":s.model,"ablation":s.ablation,"selection_seed":seed} for i,s in enumerate(selected,1)]
+    return {"census_type":"cross_domain_calibration_census","sampling_validity":"valid_stratified_sampling","selection_seed":seed,"target_per_domain":per_domain,"selected_total":len(cases),"required_domains":list(required_domains),"eligible_counts_by_domain":dict(sorted(Counter(s.domain for s in sources).items())),"selected_counts_by_domain":dict(sorted(Counter(s.domain for s in selected).items())),"cases":cases}
+def write_generator_failure_census_manifest(manifest: Mapping[str,Any], output_path: Path) -> None:
+    output_path.parent.mkdir(parents=True,exist_ok=True); output_path.write_text(json.dumps(manifest,indent=2,sort_keys=True)+"\n",encoding="utf-8")
 def load_generator_failure_census_manifest(manifest_path: str | Path, *, repo_root: str | Path) -> tuple[GeneratorFailureCensusCase,...]:
     try: data=json.loads(Path(manifest_path).read_text(encoding="utf-8"))
     except (OSError,json.JSONDecodeError) as exc: raise GeneratorFailureCensusManifestError(str(exc)) from exc
@@ -66,3 +103,15 @@ def write_generator_failure_census_summary(summary, output_path):
     data=asdict(summary)
     for key in ("category_counts","model_counts","ablation_counts","domain_counts"): data[key]=dict(data[key])
     Path(output_path).write_text(json.dumps(data,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+def main(argv: Sequence[str] | None=None) -> int:
+    parser=argparse.ArgumentParser()
+    commands=parser.add_subparsers(dest="command",required=True)
+    build=commands.add_parser("build-manifest")
+    build.add_argument("--results-root",type=Path,required=True); build.add_argument("--output",type=Path,required=True)
+    build.add_argument("--domain",action="append",required=True); build.add_argument("--per-domain",type=int,default=10)
+    build.add_argument("--seed",type=int,default=20260713); build.add_argument("--overwrite",action="store_true")
+    args=parser.parse_args(argv)
+    if args.output.exists() and not args.overwrite: parser.error("output exists; pass --overwrite")
+    write_generator_failure_census_manifest(build_generator_failure_census_manifest(args.results_root,args.domain,args.per_domain,args.seed),args.output)
+    return 0
+if __name__ == "__main__": raise SystemExit(main())

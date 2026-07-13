@@ -35,6 +35,12 @@ Retain the original census only as single_domain_sampling_bug_forensics:
 sampling-bug evidence, safety-harness calibration, and truncation examples.
 It must not support aggregate Math Track effectiveness claims.
 
+## Sampling implementation status
+
+A production deterministic stratified sampler now generates the calibration
+manifest from the eligible source frame: three required domains, ten cases per
+domain, fixed seed 20260713, and fail-fast availability validation.
+
 Get-ChildItem : 拒絕存取路徑 'C:\Projects\MathProject_AST_Research\.pytest_cache'。
 位於 線路:2 字元:78
 + ... erdict.md'; Get-ChildItem -Recurse -File -Include 'test_generator_fai ...
