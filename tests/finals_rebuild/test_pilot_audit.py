@@ -13,12 +13,22 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from agent_tools.finals_rebuild.artifacts import sha256_text
-from agent_tools.finals_rebuild.pilot_artifact_loader import PilotLoadedSample
+from agent_tools.finals_rebuild.pilot_artifact_loader import (
+    FIDELITY_EXTRACTED_ONLY,
+    FIDELITY_RAW_RESPONSE,
+    SOURCE_FORMAT_GENERATION_ATTEMPTS,
+    SOURCE_FORMAT_PUBLIC_BENCHMARK,
+    PilotLoadedSample,
+)
 from agent_tools.finals_rebuild.pilot_audit import (
     REPAIR_PATH_TIER1,
     REPAIR_PATH_TIER1_EXPLORATORY,
+    STAGE1_FULL,
+    STAGE1_PARTIAL,
     PilotAuditError,
+    analyze_extracted_code,
     analyze_raw_response,
+    assess_stage1_eligibility,
     audit_sample,
     build_summary,
     classify_taxonomy,
@@ -31,20 +41,41 @@ def _sample(
     task_id="HumanEval/0",
     treatment="ab1",
     raw_response="def f():\n    return 1\n",
+    extracted_code=None,
     entry_point="f",
+    source_fidelity=FIDELITY_RAW_RESPONSE,
+    source_type=SOURCE_FORMAT_GENERATION_ATTEMPTS,
+    skill_id=None,
 ):
     return PilotLoadedSample(
         source_id=f"{task_id}|{treatment}|0",
+        source_type=source_type,
+        source_fidelity=source_fidelity,
+        dataset="humaneval",
+        model_tag=None,
         task_id=task_id,
         treatment=treatment,
         attempt_kind="first_attempt",
         first_attempt_selection_status="only_record",
         raw_response=raw_response,
+        extracted_code=extracted_code,
         raw_response_sha256=sha256_text(raw_response) if raw_response else None,
         source_artifact_path="generation_attempts.jsonl",
         source_record_index=1,
         entry_point=entry_point,
+        skill_id=skill_id,
     )
+
+
+def _extracted_sample(**kwargs):
+    defaults = {
+        "raw_response": None,
+        "extracted_code": "def f():\n    return 1\n",
+        "source_fidelity": FIDELITY_EXTRACTED_ONLY,
+        "source_type": SOURCE_FORMAT_PUBLIC_BENCHMARK,
+    }
+    defaults.update(kwargs)
+    return _sample(**defaults)
 
 
 def test_ab1_tier1_audit_row():
@@ -53,6 +84,8 @@ def test_ab1_tier1_audit_row():
     assert row["repair_path"] == REPAIR_PATH_TIER1
     assert row["pilot_only"] is True
     assert row["confirmatory_eligible"] is False
+    assert row["stage1_mode"] == STAGE1_FULL
+    assert row["extraction_replay_available"] is True
 
 
 def test_ab2g_tier1_audit_row():
@@ -153,6 +186,35 @@ def test_exploratory_spec_no_op_on_humaneval():
     assert spec_traces[0]["implementation_status"] == "not_applicable"
 
 
+def test_partial_stage1_extracted_only():
+    row = audit_sample(_extracted_sample(), repair_path=REPAIR_PATH_TIER1)
+    assert row["stage1_mode"] == STAGE1_PARTIAL
+    assert row["extraction_replay_available"] is False
+    assert row["raw_response_available"] is False
+    assert row["extraction_status_before"] == "not_replayed"
+
+
+def test_assess_stage1_eligibility():
+    eligible, mode, reason = assess_stage1_eligibility(_sample())
+    assert eligible is True
+    assert mode == STAGE1_FULL
+    assert reason is None
+
+    eligible, mode, reason = assess_stage1_eligibility(_extracted_sample())
+    assert eligible is True
+    assert mode == STAGE1_PARTIAL
+
+    empty = _sample(raw_response=None, extracted_code=None)
+    eligible, mode, reason = assess_stage1_eligibility(empty)
+    assert eligible is False
+    assert reason == "missing_raw_response_and_extracted_code"
+
+
+def test_extracted_only_taxonomy_not_catastrophic():
+    analysis = analyze_extracted_code("def f():\n    return 1\n", entry_point="f")
+    assert analysis.taxonomy_primary == "none"
+
+
 def test_does_not_import_ollama_client():
     import agent_tools.finals_rebuild.pilot_audit as pilot_audit
 
@@ -161,18 +223,19 @@ def test_does_not_import_ollama_client():
     assert "urllib" not in text
 
 
-def test_summary_denominators_split_by_treatment():
+def test_summary_full_vs_partial_separation():
     rows = [
         audit_sample(_sample(task_id="HumanEval/0", treatment="ab1"), repair_path=REPAIR_PATH_TIER1),
-        audit_sample(_sample(task_id="HumanEval/1", treatment="ab1"), repair_path=REPAIR_PATH_TIER1),
-        audit_sample(_sample(task_id="HumanEval/0", treatment="ab2g"), repair_path=REPAIR_PATH_TIER1),
+        audit_sample(_extracted_sample(task_id="HumanEval/1", treatment="ab1"), repair_path=REPAIR_PATH_TIER1),
     ]
-    summary = build_summary(rows)
-    assert summary["by_treatment_repair_path"]["ab1__tier1"]["N"] == 2
-    assert summary["by_treatment_repair_path"]["ab2g__tier1"]["N"] == 1
-    for block in summary["by_treatment_repair_path"].values():
-        for forbidden in ("rescue", "regression", "net_gain", "pass@1"):
-            assert forbidden not in block
+    summary = build_summary(rows, source_bundle_id="test_bundle")
+    block = summary["by_source_treatment_repair_path"]["test_bundle__ab1__tier1"]
+    assert block["N_loaded"] == 2
+    assert block["N_full_stage1"] == 1
+    assert block["N_partial_stage1"] == 1
+    assert block["N_stage1_eligible"] == 2
+    for forbidden in ("rescue", "regression", "net_gain", "pass@1"):
+        assert forbidden not in block
 
 
 def test_run_pilot_audit_writes_outputs(tmp_path):
@@ -209,6 +272,9 @@ def test_run_pilot_audit_writes_outputs(tmp_path):
     assert result["unique_samples"] == 1
     assert (out / "sample_results.jsonl").is_file()
     assert (out / "summary.json").is_file()
+    sample_row = json.loads((out / "sample_results.jsonl").read_text(encoding="utf-8").strip())
+    assert sample_row["source_type"] == SOURCE_FORMAT_GENERATION_ATTEMPTS
+    assert sample_row["stage1_eligible"] is True
 
 
 def test_output_dir_refuses_overwrite_without_flag(tmp_path):

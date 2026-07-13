@@ -1,0 +1,8 @@
+[
+  {
+    "pair_id": "legacy-pair-1",
+    "skill_id": "jh_test_skill",
+    "source_path": "tests/finals_rebuild/fixtures/pilot_audit/legacy_ab2_sample.py",
+    "before_code_hash": "placeholder"
+  }
+]

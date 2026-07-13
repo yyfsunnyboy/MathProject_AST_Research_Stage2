@@ -1,0 +1,1 @@
+{"case_id": "jh_test_gemini_Ab2_run01", "skill_id": "jh_test_skill", "model_id": "gemini-3-flash", "source_ab2_path": "tests/finals_rebuild/fixtures/pilot_audit/legacy_ab2_sample.py", "before_hash": "abc"}
