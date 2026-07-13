@@ -15,3 +15,9 @@ def test_mock_live_generation_persists_metrics(tmp_path):
         seen.append(payload); return {"message":{"content":"def generate(level=1, **kwargs): return {'question_text':'q','correct_answer':'1'}"},"created_at":"now","prompt_eval_count":2,"eval_count":3}
     result=generate_live((task,),output_root=tmp_path,run_id="r",paired_run_id="p",model="qwen3:4b-instruct-2507-q4_K_M",conditions=("Ab1",),seed=1,cold_start_or_warm_run="cold_start",ollama_url="mock",client=client)
     assert len(seen)==1 and result["attempts"][0]["total_token_count"]==5 and result["attempts"][0]["repair_cpu_seconds"]==0.0
+def test_summary_includes_failed_and_missing_cells(tmp_path):
+    path=tmp_path/"run"; path.mkdir()
+    record={"paired_run_id":"p","run_id":"r","task_id":"t","model_tag":"qwen3:8b","prompt_condition":"math_ab1_minimal_domain_prompt","status":"failed","failure_stage":"generation"}
+    (path/"attempts.jsonl").write_text(__import__("json").dumps(record)+"\n",encoding="utf8")
+    summary=build_live_smoke_summary("p",[path])
+    assert summary["failed_attempts"]==1 and len(summary["missing_attempts"])==3

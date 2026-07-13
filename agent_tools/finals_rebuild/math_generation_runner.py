@@ -75,12 +75,33 @@ def generate_live(tasks, *, output_root, run_id, paired_run_id, model, condition
             except Exception as exc: row=base|{"status":"failed","failure_stage":"generation","exception_type":type(exc).__name__,"exception_message":str(exc),"retry_count":1 if isinstance(exc,(TimeoutError,urllib.error.URLError)) else 0,"raw_response_path":None,"model_source_path":None,"wall_clock_seconds":time.monotonic()-started}
             rows.append(row)
     (root/"attempts.jsonl").write_text("\n".join(json.dumps(x,sort_keys=True) for x in rows)+"\n",encoding="utf8"); return {"output":str(root),"attempts":rows}
+def build_live_smoke_summary(paired_run_id, run_dirs):
+    expected={(model,condition) for model in ALLOWED_MODELS for condition in ALLOWED_CONDITIONS}
+    records=[]
+    for directory in run_dirs:
+        path=Path(directory)/"attempts.jsonl"
+        if path.is_file():
+            records.extend(json.loads(line) for line in path.read_text(encoding="utf8").splitlines() if line.strip())
+    records=[r for r in records if r.get("paired_run_id")==paired_run_id]
+    seen=set()
+    for record in records:
+        cell=(record.get("model_tag"),next((k for k,v in ALLOWED_CONDITIONS.items() if v==record.get("prompt_condition")),None))
+        if cell in seen: raise MathGenerationManifestError(f"duplicate smoke cell: {cell}")
+        seen.add(cell)
+    missing=[{"model_tag":m,"condition":c} for m,c in sorted(expected-seen)]
+    completed=[r for r in records if r.get("status")!="failed"]
+    return {"paired_run_id":paired_run_id,"expected_attempts":4,"completed_attempts":len(completed),"failed_attempts":len(records)-len(completed),"missing_attempts":missing,"task_ids":sorted({r.get("task_id") for r in records}),"models":sorted({r.get("model_tag") for r in records}),"conditions":sorted({r.get("prompt_condition") for r in records}),"per_attempt":records}
+def write_live_smoke_summary(summary, output_path):
+    Path(output_path).parent.mkdir(parents=True,exist_ok=True); Path(output_path).write_text(json.dumps(summary,indent=2,sort_keys=True)+"\n",encoding="utf8")
 def main(argv:Sequence[str]|None=None)->int:
     parser=argparse.ArgumentParser(); sub=parser.add_subparsers(dest="command",required=True)
+    summary=sub.add_parser("summarize-smoke"); summary.add_argument("--paired-run-id",required=True); summary.add_argument("--run-dir",action="append",required=True); summary.add_argument("--output",required=True)
     for name in ("validate-manifest","dry-run","generate"):
         p=sub.add_parser(name); p.add_argument("--task-manifest",required=True)
         if name!="validate-manifest": p.add_argument("--output-root",required=True); p.add_argument("--run-id",required=True); p.add_argument("--paired-run-id",required=True); p.add_argument("--model",required=True); p.add_argument("--condition",action="append",required=True); p.add_argument("--seed",type=int,required=True); p.add_argument("--cold-start-or-warm-run",choices=("cold_start","warm_run"),required=True); p.add_argument("--ollama-url",default="http://localhost:11434"); p.add_argument("--temperature",type=float,default=0.0); p.add_argument("--top-k",type=int,default=20); p.add_argument("--top-p",type=float,default=.8); p.add_argument("--repeat-penalty",type=float,default=1.0); p.add_argument("--timeout",type=int,default=300)
-    args=parser.parse_args(argv); tasks=load_math_tasks(args.task_manifest)
+    args=parser.parse_args(argv)
+    if args.command=="summarize-smoke": write_live_smoke_summary(build_live_smoke_summary(args.paired_run_id,args.run_dir),args.output); return 0
+    tasks=load_math_tasks(args.task_manifest)
     if args.command=="validate-manifest": print(len(tasks)); return 0
     if args.command=="generate": generate_live(tasks,output_root=args.output_root,run_id=args.run_id,paired_run_id=args.paired_run_id,model=args.model,conditions=args.condition,seed=args.seed,cold_start_or_warm_run=args.cold_start_or_warm_run,ollama_url=args.ollama_url,temperature=args.temperature,top_k=args.top_k,top_p=args.top_p,repeat_penalty=args.repeat_penalty,timeout=args.timeout)
     else: dry_run(tasks,output_root=args.output_root,run_id=args.run_id,paired_run_id=args.paired_run_id,model=args.model,conditions=args.condition,seed=args.seed)
