@@ -21,16 +21,21 @@ def evaluate_polynomial_division(oracle_payload: dict[str, Any], submitted_answe
     oracle_type = "polynomial_division_exact"
     try:
         coefficients = oracle_payload["dividend_coefficients"]
-        root = _integer(oracle_payload["divisor_root"], "divisor_root")
+        root = Fraction(_integer(oracle_payload["divisor_root"], "divisor_root"), 1)
         if not isinstance(coefficients, list) or len(coefficients) != 3:
             raise ValueError("dividend_coefficients must contain three integers")
-        values = [_integer(value, "coefficient") for value in coefficients]
+        values = [Fraction(_integer(value, "coefficient"), 1) for value in coefficients]
         if values[0] == 0:
             raise ValueError("dividend must be degree two")
         quotient_leading = values[0]
         quotient_constant = values[1] + root * quotient_leading
         remainder = values[2] + root * quotient_constant
-        expected = {"quotient_coefficients": [quotient_leading, quotient_constant], "remainder": remainder}
+        expected = {
+            "quotient_coefficients": [_fraction_text(quotient_leading), _fraction_text(quotient_constant)],
+            "remainder": _fraction_text(remainder),
+        }
+        expected["quotient_coefficients"] = [int(value) if "/" not in value else value for value in expected["quotient_coefficients"]]
+        expected["remainder"] = int(expected["remainder"]) if "/" not in expected["remainder"] else expected["remainder"]
         return _result(oracle_type, expected, submitted_answer)
     except (KeyError, ValueError, TypeError) as exc:
         return _result(oracle_type, None, submitted_answer, str(exc))
