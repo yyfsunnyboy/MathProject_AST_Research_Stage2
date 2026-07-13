@@ -1,6 +1,6 @@
 """Current Math Track generation-run manifest and dry-run planner."""
 from __future__ import annotations
-import argparse, hashlib, json
+import argparse, hashlib, json, time, urllib.error, urllib.request
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Sequence
@@ -43,13 +43,35 @@ def dry_run(tasks: Sequence[MathGenerationTask], *, output_root: str|Path, run_i
     (root/"attempts.jsonl").write_text("\n".join(json.dumps(a,sort_keys=True) for a in attempts)+"\n",encoding="utf-8")
     (root/"raw_responses").mkdir(); (root/"model_sources").mkdir()
     return {"output":str(root),"attempts":attempts,"http_calls":0}
+def call_ollama_chat(url, payload, timeout):
+    request=urllib.request.Request(url.rstrip("/")+"/api/chat",data=json.dumps(payload).encode(),headers={"Content-Type":"application/json"})
+    for attempt in range(2):
+        try:
+            with urllib.request.urlopen(request,timeout=timeout) as response: return json.loads(response.read())
+        except (urllib.error.URLError, TimeoutError):
+            if attempt: raise
+def generate_live(tasks, *, output_root, run_id, paired_run_id, model, conditions, seed, ollama_url, temperature=0.0, top_k=20, top_p=.8, repeat_penalty=1.0, timeout=300, client=call_ollama_chat):
+    if model not in ALLOWED_MODELS: raise MathGenerationManifestError("unsupported model")
+    root=Path(output_root)/run_id
+    if root.exists(): raise MathGenerationManifestError("output directory already exists")
+    root.mkdir(parents=True); (root/"raw_responses").mkdir(); (root/"model_sources").mkdir(); rows=[]
+    for i,task in enumerate(tasks):
+        for condition in conditions:
+            prompt=build_math_ab1_prompt(task) if condition=="Ab1" else build_math_ab2g_prompt(task); started=time.monotonic()
+            payload={"model":model,"messages":[{"role":"user","content":prompt}],"stream":False,"options":{"temperature":temperature,"top_k":top_k,"top_p":top_p,"repeat_penalty":repeat_penalty,"seed":seed}}
+            raw=client(ollama_url,payload,timeout); content=raw.get("message",{}).get("content")
+            if not isinstance(content,str): raise MathGenerationManifestError("Ollama response missing message.content")
+            aid=f"{i:02d}_{condition.lower()}"; rp=root/"raw_responses"/f"{aid}.json"; sp=root/"model_sources"/f"{aid}.py"; rp.write_text(json.dumps(raw,indent=2,sort_keys=True)+"\n",encoding="utf8"); sp.write_text(content,encoding="utf8")
+            row={"run_id":run_id,"paired_run_id":paired_run_id,"task_id":task.task_id,"domain":task.domain,"skill_id":task.skill_id,"model_tag":model,**ALLOWED_MODELS[model],"runtime":"ollama","runtime_version":None,"generation_timestamp":raw.get("created_at"),"prompt_condition":ALLOWED_CONDITIONS[condition],"prompt_sha256":_hash(prompt),"seed":seed,"source_commit":None,"status":"generated","raw_response_path":str(rp),"raw_response_sha256":_hash(rp.read_text(encoding="utf8")),"model_source_path":str(sp),"model_source_sha256":_hash(content),"prompt_eval_count":raw.get("prompt_eval_count"),"eval_count":raw.get("eval_count"),"total_token_count":None if raw.get("prompt_eval_count") is None or raw.get("eval_count") is None else raw["prompt_eval_count"]+raw["eval_count"],"total_duration":raw.get("total_duration"),"load_duration":raw.get("load_duration"),"prompt_eval_duration":raw.get("prompt_eval_duration"),"eval_duration":raw.get("eval_duration"),"wall_clock_seconds":time.monotonic()-started,"repair_cpu_seconds":0.0,"cold_start_or_warm_run":"cold_start" if not rows else "warm_run","hardware":None}; rows.append(row)
+    (root/"attempts.jsonl").write_text("\n".join(json.dumps(x,sort_keys=True) for x in rows)+"\n",encoding="utf8"); return {"output":str(root),"attempts":rows}
 def main(argv:Sequence[str]|None=None)->int:
     parser=argparse.ArgumentParser(); sub=parser.add_subparsers(dest="command",required=True)
     for name in ("validate-manifest","dry-run","generate"):
         p=sub.add_parser(name); p.add_argument("--task-manifest",required=True)
-        if name!="validate-manifest": p.add_argument("--output-root",required=True); p.add_argument("--run-id",required=True); p.add_argument("--paired-run-id",required=True); p.add_argument("--model",required=True); p.add_argument("--condition",action="append",required=True); p.add_argument("--seed",type=int,required=True)
+        if name!="validate-manifest": p.add_argument("--output-root",required=True); p.add_argument("--run-id",required=True); p.add_argument("--paired-run-id",required=True); p.add_argument("--model",required=True); p.add_argument("--condition",action="append",required=True); p.add_argument("--seed",type=int,required=True); p.add_argument("--ollama-url",default="http://localhost:11434"); p.add_argument("--temperature",type=float,default=0.0); p.add_argument("--top-k",type=int,default=20); p.add_argument("--top-p",type=float,default=.8); p.add_argument("--repeat-penalty",type=float,default=1.0); p.add_argument("--timeout",type=int,default=300)
     args=parser.parse_args(argv); tasks=load_math_tasks(args.task_manifest)
     if args.command=="validate-manifest": print(len(tasks)); return 0
-    if args.command=="generate": parser.error("generate is intentionally disabled for Phase 1")
-    dry_run(tasks,output_root=args.output_root,run_id=args.run_id,paired_run_id=args.paired_run_id,model=args.model,conditions=args.condition,seed=args.seed); return 0
+    if args.command=="generate": generate_live(tasks,output_root=args.output_root,run_id=args.run_id,paired_run_id=args.paired_run_id,model=args.model,conditions=args.condition,seed=args.seed,ollama_url=args.ollama_url,temperature=args.temperature,top_k=args.top_k,top_p=args.top_p,repeat_penalty=args.repeat_penalty,timeout=args.timeout)
+    else: dry_run(tasks,output_root=args.output_root,run_id=args.run_id,paired_run_id=args.paired_run_id,model=args.model,conditions=args.condition,seed=args.seed)
+    return 0
 if __name__=="__main__": raise SystemExit(main())

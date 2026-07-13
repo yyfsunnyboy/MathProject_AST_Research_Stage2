@@ -8,3 +8,10 @@ def test_dry_run_never_calls_http(tmp_path):
     task=MathGenerationTask("t","integers","s","x","generate",("question_text","correct_answer"),1)
     result=dry_run((task,),output_root=tmp_path,run_id="r",paired_run_id="p",model="qwen3:4b-instruct-2507-q4_K_M",conditions=("Ab1","Ab2g"),seed=1)
     assert result["http_calls"]==0 and len(result["attempts"])==2
+def test_mock_live_generation_persists_metrics(tmp_path):
+    task=MathGenerationTask("t","integers","s","x","generate",("question_text","correct_answer"),1)
+    seen=[]
+    def client(url,payload,timeout):
+        seen.append(payload); return {"message":{"content":"def generate(level=1, **kwargs): return {'question_text':'q','correct_answer':'1'}"},"created_at":"now","prompt_eval_count":2,"eval_count":3}
+    result=generate_live((task,),output_root=tmp_path,run_id="r",paired_run_id="p",model="qwen3:4b-instruct-2507-q4_K_M",conditions=("Ab1",),seed=1,ollama_url="mock",client=client)
+    assert len(seen)==1 and result["attempts"][0]["total_token_count"]==5 and result["attempts"][0]["repair_cpu_seconds"]==0.0
