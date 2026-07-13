@@ -1,0 +1,50 @@
+{
+  "corpus_type": "legacy_mixed_model_corpus",
+  "current_model_experiment": false,
+  "eligible_domain_counts": {
+    "applications_of_derivatives": 35,
+    "four_arithmetic_operations_of_integers": 45,
+    "four_arithmetic_operations_of_numbers": 45
+  },
+  "eligible_model_counts": {
+    "ApplicationsOfDerivatives_gemini-2.5-flash": 5,
+    "ApplicationsOfDerivatives_qwen2.5-coder-14b": 15,
+    "ApplicationsOfDerivatives_qwen2.5-coder-7b": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b": 15,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b": 15
+  },
+  "eligible_total": 125,
+  "experiment_role": "evaluator_and_harness_calibration",
+  "model_metadata_source_counts": {
+    "filename": 125
+  },
+  "provenance_status": "historical_model_tags_without_current_runtime_verification",
+  "represents_current_qwen3_4b": false,
+  "represents_current_qwen3_8b": false,
+  "selected_domain_counts": {
+    "applications_of_derivatives": 10,
+    "four_arithmetic_operations_of_integers": 10,
+    "four_arithmetic_operations_of_numbers": 10
+  },
+  "selected_model_counts": {
+    "ApplicationsOfDerivatives_gemini-2.5-flash": 1,
+    "ApplicationsOfDerivatives_qwen2.5-coder-14b": 4,
+    "ApplicationsOfDerivatives_qwen2.5-coder-7b": 5,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash": 3,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b": 3,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b": 4,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash": 4,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b": 4,
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b": 2
+  },
+  "selected_total": 30,
+  "unverified_model_provenance_count": 125,
+  "valid_for_4b_inference": false,
+  "valid_for_4b_vs_8b_comparison": false,
+  "valid_for_8b_inference": false,
+  "verified_model_provenance_count": 0
+}

@@ -68,6 +68,19 @@ There is no existing deterministic Core repair rule, so neither is a true Tier
 1 candidate. With zero true candidates across the calibration census, the
 decision remains do_not_proceed_to_healer_pilot.
 
+## Corpus provenance correction
+
+The 125 files under experiments/results are a legacy mixed-model corpus with
+historical filename tags, not verified current-runtime Qwen3 4B or 8B output.
+The corrected 30-case census is therefore evaluator and harness calibration
+only. Its 22/30 pass rate, failure counts, and zero true Tier 1 candidates do
+not support current 4B inference, current 8B inference, or a 4B-versus-8B
+comparison.
+
+Future generation provenance requires model tag, digest, size, architecture,
+parameters, quantization, runtime/version, timestamp, hardware, prompt
+condition, task, seed, source commit, and generation timing/token metadata.
+
 Get-ChildItem : 拒絕存取路徑 'C:\Projects\MathProject_AST_Research\.pytest_cache'。
 位於 線路:2 字元:78
 + ... erdict.md'; Get-ChildItem -Recurse -File -Include 'test_generator_fai ...
