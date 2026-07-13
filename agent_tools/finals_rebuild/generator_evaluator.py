@@ -96,12 +96,13 @@ else:
   payload={"phase":"entry","error_type":"GenerateEntryPointNotCallable","error_message":"generate is not callable","stdout":out.getvalue(),"stderr":err.getvalue()}
  else:
   try:
-   sig=inspect.signature(generate)
-   params=sig.parameters
-   if not params: value=generate()
-   elif "level" in params or any(p.kind == p.VAR_KEYWORD for p in params.values()): value=generate(level=level)
-   elif len(params) == 1 and next(iter(params.values())).kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD): value=generate(level)
-   else: raise ValueError("UnsupportedGenerateSignature")
+   with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+    sig=inspect.signature(generate)
+    params=sig.parameters
+    if not params: value=generate()
+    elif "level" in params or any(p.kind == p.VAR_KEYWORD for p in params.values()): value=generate(level=level)
+    elif len(params) == 1 and next(iter(params.values())).kind in (inspect.Parameter.POSITIONAL_ONLY, inspect.Parameter.POSITIONAL_OR_KEYWORD): value=generate(level)
+    else: raise ValueError("UnsupportedGenerateSignature")
   except ValueError as exc:
    if str(exc) == "UnsupportedGenerateSignature": payload={"phase":"entry","error_type":"UnsupportedGenerateSignature","error_message":str(exc),"stdout":out.getvalue(),"stderr":err.getvalue()}
    else: payload={"phase":"execution","error_type":type(exc).__name__,"error_message":str(exc),"stdout":out.getvalue(),"stderr":err.getvalue()}
