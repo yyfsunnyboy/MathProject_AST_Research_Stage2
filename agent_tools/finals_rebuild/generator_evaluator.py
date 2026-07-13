@@ -33,6 +33,10 @@ class GeneratorEvaluationResult:
     stderr: str
     duration_ms: float
     returned_instance: dict[str, object] | None
+    safety_rule: str | None = None
+    safety_detail: str | None = None
+    code_origin: str = "unknown"
+    safety_attribution: str = "unknown"
 
 
 _FORBIDDEN_IMPORTS = frozenset({"os", "subprocess", "socket", "requests", "urllib", "http", "ftplib", "pathlib", "shutil", "multiprocessing", "ctypes", "importlib", "builtins"})
@@ -45,8 +49,14 @@ def _cut(value: str) -> str:
     return value if len(value) <= _MAX_OUTPUT else value[:_MAX_OUTPUT] + "...<truncated>"
 
 
-def _result(*, status="failed", success=False, parse="not_run", safety="not_run", load="not_run", entry="not_run", execution="not_run", output="not_run", question="not_run", answer="not_run", stage=None, error_type=None, error_message=None, stdout="", stderr="", duration=0.0, instance=None) -> GeneratorEvaluationResult:
-    return GeneratorEvaluationResult(status, success, parse, safety, load, entry, execution, output, question, answer, stage, error_type, error_message, _cut(stdout), _cut(stderr), duration, instance)
+def _result(*, status="failed", success=False, parse="not_run", safety="not_run", load="not_run", entry="not_run", execution="not_run", output="not_run", question="not_run", answer="not_run", stage=None, error_type=None, error_message=None, stdout="", stderr="", duration=0.0, instance=None, safety_rule=None, safety_detail=None, code_origin="unknown", safety_attribution="unknown") -> GeneratorEvaluationResult:
+    return GeneratorEvaluationResult(status, success, parse, safety, load, entry, execution, output, question, answer, stage, error_type, error_message, _cut(stdout), _cut(stderr), duration, instance, safety_rule, safety_detail, code_origin, safety_attribution)
+def split_model_and_injected_source(source: str) -> tuple[str, str]:
+    marker="# [INJECTED UTILS]"
+    model, found, injected=source.partition(marker)
+    return model, (marker+injected if found else "")
+def extract_model_generated_source(source: str) -> str:
+    return split_model_and_injected_source(source)[0]
 
 
 def _unsafe_reason(tree: ast.AST) -> str | None:
@@ -122,9 +132,11 @@ def evaluate_generator_code(code: str, *, level: int = 1, timeout_seconds: float
         tree = ast.parse(code)
     except SyntaxError as exc:
         return _result(parse="failed", stage="parse", error_type="SyntaxError", error_message=str(exc))
-    unsafe = _unsafe_reason(tree)
+    model_source, injected_source = split_model_and_injected_source(code)
+    unsafe = _unsafe_reason(ast.parse(model_source))
     if unsafe:
-        return _result(status="rejected", parse="passed", safety="rejected", stage="safety", error_type="UnsafeGeneratorCode", error_message=unsafe)
+        rule="forbidden_import" if unsafe == "forbidden import" else "forbidden_builtin_call" if unsafe.startswith("forbidden call") else "other_safety_rule"
+        return _result(status="rejected", parse="passed", safety="rejected", stage="safety", error_type="UnsafeGeneratorCode", error_message=unsafe, safety_rule=rule, safety_detail=unsafe, code_origin="model_generated", safety_attribution="intrinsic_generator_risk")
     worker = _WORKER % (code, level)
     start = time.monotonic()
     try:

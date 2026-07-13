@@ -51,6 +51,13 @@ four parse failures, eighteen safety rejections, and two execution failures.
 All parse failures were adjudicated as catastrophic truncation; true Tier 1
 candidates are zero, so a Healer repair pilot does not proceed.
 
+## Safety harness contract correction
+
+The evaluator now scans model-generated source for safety before the trusted
+injected-utilities block. Full source remains available for parse, load, and
+execution. The safety blacklist is unchanged. Corrected census artifacts record
+raw and corrected outcomes plus safety provenance and attribution.
+
 Get-ChildItem : 拒絕存取路徑 'C:\Projects\MathProject_AST_Research\.pytest_cache'。
 位於 線路:2 字元:78
 + ... erdict.md'; Get-ChildItem -Recurse -File -Include 'test_generator_fai ...
