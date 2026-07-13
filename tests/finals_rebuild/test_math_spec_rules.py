@@ -70,6 +70,27 @@ def test_forbidden_shapes_are_unchanged(source, reason):
     assert result.before_hash == result.after_hash
 
 
+@pytest.mark.parametrize("source", [
+    "def solve():\n return get_value() / 5",
+    "def solve():\n return 3 / get_value()",
+])
+def test_rejects_function_call_in_fraction_operands(source):
+    result = repair_rational_literal_division(source, contract())
+    assert not result.triggered and not result.changed
+    assert result.reason == "unsupported_expression"
+    assert result.code_after == result.code_before
+    assert result.before_hash == result.after_hash
+
+
+def test_rejects_multiple_direct_returns():
+    source = "def solve():\n return 3 / 5\n return 4 / 7"
+    result = repair_rational_literal_division(source, contract())
+    assert not result.triggered and not result.changed
+    assert result.reason == "unsupported_return_structure"
+    assert result.code_after == result.code_before
+    assert result.before_hash == result.after_hash
+
+
 def test_contract_gate_trace_determinism_and_idempotence():
     source = "def solve():\n return 3 / 5\n"
     not_applicable = repair_rational_literal_division(source, contract(representation_policy="semantic_only"))
