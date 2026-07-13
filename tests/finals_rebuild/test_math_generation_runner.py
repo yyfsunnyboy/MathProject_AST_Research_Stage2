@@ -1,0 +1,10 @@
+from agent_tools.finals_rebuild.math_generation_runner import *
+def test_manifest_and_prompts(tmp_path):
+    path=tmp_path/"tasks.jsonl"; path.write_text('{"task_id":"t","domain":"integers","skill_id":"s","task_description":"x","required_entry_point":"generate","required_output_keys":["question_text","correct_answer"],"seed":1}\n',encoding="utf8")
+    task=load_math_tasks(path)[0]
+    assert task.domain in build_math_ab1_prompt(task)
+    assert "# [INJECTED UTILS]" not in build_math_ab2g_prompt(task)
+def test_dry_run_never_calls_http(tmp_path):
+    task=MathGenerationTask("t","integers","s","x","generate",("question_text","correct_answer"),1)
+    result=dry_run((task,),output_root=tmp_path,run_id="r",paired_run_id="p",model="qwen3:4b-instruct-2507-q4_K_M",conditions=("Ab1","Ab2g"),seed=1)
+    assert result["http_calls"]==0 and len(result["attempts"])==2

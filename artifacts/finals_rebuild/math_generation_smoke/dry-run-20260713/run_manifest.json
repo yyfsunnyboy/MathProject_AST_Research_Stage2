@@ -1,0 +1,11 @@
+{
+  "conditions": [
+    "Ab1",
+    "Ab2g"
+  ],
+  "http_calls": 0,
+  "model": "qwen3:4b-instruct-2507-q4_K_M",
+  "paired_run_id": "math-smoke-20260713",
+  "run_id": "dry-run-20260713",
+  "task_count": 1
+}

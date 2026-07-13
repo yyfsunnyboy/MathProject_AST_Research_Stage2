@@ -1,0 +1,1 @@
+{"task_id":"math_smoke_integer_001","domain":"integers","skill_id":"math_smoke","task_description":"Create one integer arithmetic question.","required_entry_point":"generate","required_output_keys":["question_text","correct_answer"],"seed":20260713}
