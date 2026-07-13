@@ -1,0 +1,7 @@
+{
+  "positive_control_only": true,
+  "excluded_from_research_effect_estimate": true,
+  "expected_rule": "unified_cleanup_duplicate_definition",
+  "expected_source_changed": true,
+  "expected_ast_parse_after": true
+}

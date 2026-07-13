@@ -61,6 +61,32 @@ def _write_json(path: Path, value: dict[str, Any] | list[dict[str, Any]]) -> Non
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _unified_trace(healer: Any) -> list[dict[str, Any]]:
+    """Expose only the existing UnifiedCleanupHealer action counters."""
+    component = "core.healers.unified_cleanup_healer.UnifiedCleanupHealer"
+    definitions = (
+        ("unified_cleanup_duplicate_definition", "duplicate_definition", "duplicate class/function definition"),
+        ("unified_cleanup_shadowed_predefined_name", "shadowed_predefined_name", "assignment shadows a predefined name"),
+        ("unified_cleanup_variable_reorder", "variable_reorder", "existing variable-order issue"),
+    )
+    counters = ("duplicate_count", "shadowing_count", "variable_order_count")
+    trace = []
+    for (rule_id, change_type, pattern), counter in zip(definitions, counters):
+        if getattr(healer, counter, 0) > 0:
+            trace.append(
+                {
+                    "rule_id": rule_id,
+                    "healer_component": component,
+                    "change_type": change_type,
+                    "before_location_or_pattern": pattern,
+                    "after_location_or_pattern": "existing structure removed or normalized",
+                    "applied": True,
+                    "reason": f"existing UnifiedCleanupHealer {counter} > 0",
+                }
+            )
+    return trace
+
+
 def derive_ab3(
     *,
     source: str | Path,
@@ -124,17 +150,18 @@ def derive_ab3(
         record["after_ast_parse_success"] = record["after_validation"]["ast_parse_success"]
 
         if record["source_changed"]:
-            rule = {
-                "rule_id": "unified_cleanup",
-                "healer_component": "core.healers.unified_cleanup_healer.UnifiedCleanupHealer",
-                "change_type": "deterministic_structural_cleanup",
-                "before_location_or_pattern": "existing duplicate/shadowing structure",
-                "after_location_or_pattern": "existing structure removed or normalized",
-                "applied": True,
-                "reason": "existing UnifiedCleanupHealer reported a deterministic cleanup",
-            }
-            trace.append(rule)
-            record["applied_rules"] = [rule["rule_id"]]
+            trace = _unified_trace(healer)
+            if not trace:
+                trace = [{
+                    "rule_id": "unified_cleanup_unclassified_action",
+                    "healer_component": "core.healers.unified_cleanup_healer.UnifiedCleanupHealer",
+                    "change_type": "deterministic_structural_cleanup",
+                    "before_location_or_pattern": "existing UnifiedCleanupHealer action",
+                    "after_location_or_pattern": "existing structure removed or normalized",
+                    "applied": True,
+                    "reason": "existing healer changed source without an exposed action counter",
+                }]
+            record["applied_rules"] = [rule["rule_id"] for rule in trace]
             record["status"] = "derived"
         else:
             record["status"] = "no_op"
