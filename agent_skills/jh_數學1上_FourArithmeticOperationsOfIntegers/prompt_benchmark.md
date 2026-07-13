@@ -104,10 +104,14 @@ def generate(level=1, **kwargs):
 def check(user_answer, correct_answer):
     try:
         if str(user_answer).strip() == str(correct_answer).strip():
-            return {'correct': True, 'result': '正確'}
-        if abs(float(user_answer) - float(correct_answer)) < 1e-6:
-            return {'correct': True, 'result': '正確'}
-    except:
+            return {"correct": True, "result": "正確"}
+        if float(user_answer) == float(correct_answer):
+            return {"correct": True, "result": "正確"}
+    except Exception:
+        pass
+    return {"correct": False, "result": "錯誤"}
+```
+
 ❌ 輸出 Markdown 代碼塊 → 直接寫 code
 ⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
 /no_think
