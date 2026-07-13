@@ -1,8 +1,7 @@
 {
   "ablation_counts": {
-    "Ab1": 15,
-    "Ab2": 10,
-    "Ab3": 5
+    "Ab1": 20,
+    "Ab2": 10
   },
   "category_counts": {
     "entry_point_failure": 0,
@@ -11,23 +10,24 @@
     "load_failure": 0,
     "output_failure": 0,
     "parse_failure": 5,
-    "passed": 6,
+    "passed": 15,
     "runtime_failure": 0,
-    "safety_rejected": 19,
+    "safety_rejected": 10,
     "timeout": 0
   },
   "domain_counts": {
-    "applications_of_derivatives": 30
+    "applications_of_derivatives": 10,
+    "four_arithmetic_operations_of_integers": 10,
+    "four_arithmetic_operations_of_numbers": 10
   },
-  "failed": 24,
+  "failed": 15,
   "model_counts": {
-    "gemini-2.5-flash": 5,
-    "qwen2.5-coder-14b": 15,
-    "qwen2.5-coder-7b": 10
+    "gemini-2.5-flash": 25,
+    "qwen2.5-coder-14b": 5
   },
-  "not_tier1": 25,
-  "passed": 6,
-  "tier1_candidates": 5,
+  "not_tier1": 30,
+  "passed": 15,
+  "tier1_candidates": 0,
   "total": 30,
   "unknown_repairability": 0
 }

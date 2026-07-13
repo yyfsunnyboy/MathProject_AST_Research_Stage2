@@ -10,6 +10,7 @@ from agent_tools.finals_rebuild.generator_evaluator import GeneratorEvaluationRe
 from agent_tools.finals_rebuild.generator_integration_pilot import _observed
 
 CATEGORIES = ("passed", "parse_failure", "safety_rejected", "load_failure", "entry_point_failure", "runtime_failure", "timeout", "output_failure", "instance_schema_failure", "legacy_runtime_dependency")
+REQUIRED_DOMAINS = ("applications_of_derivatives", "four_arithmetic_operations_of_integers", "four_arithmetic_operations_of_numbers")
 class GeneratorFailureCensusManifestError(ValueError): pass
 @dataclass(frozen=True)
 class GeneratorFailureCensusCase:
@@ -23,6 +24,9 @@ class GeneratorFailureCensusSummary:
 def load_generator_failure_census_manifest(manifest_path: str | Path, *, repo_root: str | Path) -> tuple[GeneratorFailureCensusCase,...]:
     try: data=json.loads(Path(manifest_path).read_text(encoding="utf-8"))
     except (OSError,json.JSONDecodeError) as exc: raise GeneratorFailureCensusManifestError(str(exc)) from exc
+    if isinstance(data, dict):
+        if data.get("sampling_validity") != "valid_stratified_sampling" or data.get("census_type") != "cross_domain_calibration_census": raise GeneratorFailureCensusManifestError("invalid calibration metadata")
+        data = data.get("cases")
     if not isinstance(data,list) or not 30 <= len(data) <= 50: raise GeneratorFailureCensusManifestError("manifest must contain 30 to 50 cases")
     root=Path(repo_root).resolve(); cases=[]
     for item in data:
@@ -32,6 +36,8 @@ def load_generator_failure_census_manifest(manifest_path: str | Path, *, repo_ro
         if not case.case_id or not case.source_file or case.selection_seed != 20260713 or path.suffix != ".py" or path.is_absolute() or ".." in path.parts or root not in resolved.parents or not resolved.is_file(): raise GeneratorFailureCensusManifestError("invalid case")
         cases.append(case)
     if len({c.case_id for c in cases}) != len(cases) or len({c.source_file for c in cases}) != len(cases): raise GeneratorFailureCensusManifestError("case ids and source files must be unique")
+    counts = Counter(c.domain for c in cases)
+    if any(counts[d] != 10 for d in REQUIRED_DOMAINS): raise GeneratorFailureCensusManifestError(f"required domains need 10 cases; counts={dict(counts)}")
     return tuple(cases)
 def _repairability(category, evaluation, source):
     if category == "passed": return "not_tier1","already_executable"
@@ -39,6 +45,8 @@ def _repairability(category, evaluation, source):
     if category == "legacy_runtime_dependency": return "not_tier1","legacy_dependency"
     if category in {"output_failure","instance_schema_failure"}: return "not_tier1","output_contract_failure"
     if category == "runtime_failure": return "not_tier1","runtime_semantic_failure"
+    if category == "parse_failure": return "not_tier1","non_repairable_deterministically"
+    if category == "parse_failure" and source.rstrip().endswith("def _"): return "not_tier1","non_repairable_deterministically"
     if category == "parse_failure" and any(x in (source+" "+(evaluation.error_message or "")).lower() for x in ("```","markdown","cleanup")): return "tier1_candidate","markdown_fence_candidate"
     return "unknown","insufficient_evidence"
 def run_generator_failure_census_case(case, *, repo_root, timeout_seconds=2.0):
