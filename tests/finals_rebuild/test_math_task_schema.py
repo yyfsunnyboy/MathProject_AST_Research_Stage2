@@ -39,6 +39,8 @@ def _base_task_dict(**overrides):
         "source_question_number": 1,
         "domain": "algebra",
         "subdomain": "integers",
+        "curriculum_level": "grade_7",
+        "evidence_role": "development",
         "problem_text": "Compute 1 + 1.",
         "entry_point": MATH_ENTRY_POINT,
         "input_contract": {"kind": INPUT_CONTRACT_KIND_NO_ARGUMENTS},
@@ -77,6 +79,8 @@ def test_fixture_jsonl_loads_five_answer_types():
     for task in tasks:
         assert task.entry_point == MATH_ENTRY_POINT
         assert task.input_contract == {"kind": INPUT_CONTRACT_KIND_NO_ARGUMENTS}
+        assert task.curriculum_level == "grade_7"
+        assert task.evidence_role == "development"
         assert task.metadata["synthetic_fixture"] is True
         assert task.metadata["confirmatory_eligible"] is False
 
@@ -86,6 +90,118 @@ def test_reference_semantic_and_display_are_separate():
     radical = next(t for t in tasks if t.task_id.endswith("symbolic_radical"))
     assert radical.reference_semantic == "2*sqrt(2)"
     assert radical.reference_display == "2√2"
+
+
+def test_round_trip_preserves_curriculum_and_evidence_fields():
+    tasks = load_math_tasks_jsonl(FIXTURES / "synthetic_tasks.jsonl")
+    for task in tasks:
+        serialized = math_task_to_dict(task)
+        assert serialized["curriculum_level"] == task.curriculum_level
+        assert serialized["evidence_role"] == task.evidence_role
+
+
+def test_grade_7_development_is_valid():
+    task = parse_math_task(_base_task_dict())
+    assert task.curriculum_level == "grade_7"
+    assert task.evidence_role == "development"
+
+
+def test_grade_7_deployment_representative_is_valid():
+    task = parse_math_task(
+        _base_task_dict(evidence_role="deployment_representative")
+    )
+    assert task.evidence_role == "deployment_representative"
+
+
+def test_senior_high_cross_grade_challenge_is_valid():
+    task = parse_math_task(
+        _base_task_dict(
+            curriculum_level="senior_high",
+            evidence_role="cross_grade_challenge",
+        )
+    )
+    assert task.curriculum_level == "senior_high"
+    assert task.evidence_role == "cross_grade_challenge"
+
+
+def test_cross_grade_cross_grade_challenge_is_valid():
+    task = parse_math_task(
+        _base_task_dict(
+            curriculum_level="cross_grade",
+            evidence_role="cross_grade_challenge",
+        )
+    )
+    assert task.curriculum_level == "cross_grade"
+    assert task.evidence_role == "cross_grade_challenge"
+
+
+def test_validation_evidence_role_is_valid():
+    task = parse_math_task(_base_task_dict(evidence_role="validation"))
+    assert task.evidence_role == "validation"
+
+
+def test_holdout_non_synthetic_is_valid():
+    task = parse_math_task(
+        _base_task_dict(
+            evidence_role="holdout",
+            metadata={"confirmatory_eligible": False},
+        )
+    )
+    assert task.evidence_role == "holdout"
+    assert task.metadata.get("synthetic_fixture") is not True
+
+
+def test_missing_curriculum_level_fails_closed():
+    data = _base_task_dict()
+    del data["curriculum_level"]
+    with pytest.raises(MathTaskSchemaError, match="missing required fields"):
+        parse_math_task(data)
+
+
+def test_unknown_curriculum_level_rejected():
+    data = _base_task_dict(curriculum_level="grade_10")
+    with pytest.raises(MathTaskSchemaError, match="curriculum_level must be one of"):
+        parse_math_task(data)
+
+
+def test_blank_curriculum_level_rejected():
+    data = _base_task_dict(curriculum_level="   ")
+    with pytest.raises(MathTaskSchemaError, match="curriculum_level must be a non-empty string"):
+        parse_math_task(data)
+
+
+def test_missing_evidence_role_fails_closed():
+    data = _base_task_dict()
+    del data["evidence_role"]
+    with pytest.raises(MathTaskSchemaError, match="missing required fields"):
+        parse_math_task(data)
+
+
+def test_unknown_evidence_role_rejected():
+    data = _base_task_dict(evidence_role="pilot_only")
+    with pytest.raises(MathTaskSchemaError, match="evidence_role must be one of"):
+        parse_math_task(data)
+
+
+def test_blank_evidence_role_rejected():
+    data = _base_task_dict(evidence_role="   ")
+    with pytest.raises(MathTaskSchemaError, match="evidence_role must be a non-empty string"):
+        parse_math_task(data)
+
+
+def test_synthetic_fixture_cannot_be_holdout():
+    data = _base_task_dict(evidence_role="holdout")
+    with pytest.raises(MathTaskSchemaError, match="synthetic_fixture=true disallows"):
+        parse_math_task(data)
+
+
+def test_deployment_representative_cannot_use_cross_grade():
+    data = _base_task_dict(
+        curriculum_level="cross_grade",
+        evidence_role="deployment_representative",
+    )
+    with pytest.raises(MathTaskSchemaError, match="deployment_representative"):
+        parse_math_task(data)
 
 
 def test_round_trip_serialization_is_deterministic():

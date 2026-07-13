@@ -35,6 +35,25 @@ ALLOWED_SYMBOLIC_REPRESENTATION_SUBTYPES: frozenset[str] = frozenset(
     {"radical", "generic"}
 )
 
+ALLOWED_CURRICULUM_LEVELS: frozenset[str] = frozenset(
+    {"grade_7", "grade_8", "grade_9", "senior_high", "cross_grade"}
+)
+
+ALLOWED_EVIDENCE_ROLES: frozenset[str] = frozenset(
+    {
+        "development",
+        "validation",
+        "deployment_representative",
+        "cross_grade_challenge",
+        "holdout",
+    }
+)
+
+EVIDENCE_ROLE_DEPLOYMENT_REPRESENTATIVE = "deployment_representative"
+EVIDENCE_ROLE_CROSS_GRADE_CHALLENGE = "cross_grade_challenge"
+EVIDENCE_ROLE_HOLDOUT = "holdout"
+CURRICULUM_LEVEL_CROSS_GRADE = "cross_grade"
+
 _MATH_TASK_REQUIRED_KEYS: frozenset[str] = frozenset(
     {
         "task_id",
@@ -44,6 +63,8 @@ _MATH_TASK_REQUIRED_KEYS: frozenset[str] = frozenset(
         "source_question_number",
         "domain",
         "subdomain",
+        "curriculum_level",
+        "evidence_role",
         "problem_text",
         "entry_point",
         "input_contract",
@@ -242,6 +263,8 @@ class MathTask:
     source_question_number: Union[int, str]
     domain: str
     subdomain: str
+    curriculum_level: str
+    evidence_role: str
     problem_text: str
     entry_point: str
     input_contract: Dict[str, Any]
@@ -307,6 +330,40 @@ class MathTask:
                 )
         if self.visual_spec is not None and not isinstance(self.visual_spec, dict):
             raise MathTaskSchemaError("visual_spec must be null or an object")
+
+        if not isinstance(self.curriculum_level, str) or not self.curriculum_level.strip():
+            raise MathTaskSchemaError("curriculum_level must be a non-empty string")
+        if self.curriculum_level not in ALLOWED_CURRICULUM_LEVELS:
+            raise MathTaskSchemaError(
+                f"curriculum_level must be one of {sorted(ALLOWED_CURRICULUM_LEVELS)}, "
+                f"got {self.curriculum_level!r}"
+            )
+
+        if not isinstance(self.evidence_role, str) or not self.evidence_role.strip():
+            raise MathTaskSchemaError("evidence_role must be a non-empty string")
+        if self.evidence_role not in ALLOWED_EVIDENCE_ROLES:
+            raise MathTaskSchemaError(
+                f"evidence_role must be one of {sorted(ALLOWED_EVIDENCE_ROLES)}, "
+                f"got {self.evidence_role!r}"
+            )
+
+        self._validate_evidence_scope()
+
+    def _validate_evidence_scope(self) -> None:
+        if self.metadata.get("synthetic_fixture") is True and (
+            self.evidence_role == EVIDENCE_ROLE_HOLDOUT
+        ):
+            raise MathTaskSchemaError(
+                "metadata.synthetic_fixture=true disallows evidence_role='holdout'"
+            )
+        if (
+            self.evidence_role == EVIDENCE_ROLE_DEPLOYMENT_REPRESENTATIVE
+            and self.curriculum_level == CURRICULUM_LEVEL_CROSS_GRADE
+        ):
+            raise MathTaskSchemaError(
+                "evidence_role='deployment_representative' disallows "
+                "curriculum_level='cross_grade'"
+            )
 
 
 def _string_tuple(
@@ -468,6 +525,8 @@ def parse_math_task(data: Mapping[str, Any]) -> MathTask:
         source_question_number=data["source_question_number"],
         domain=data["domain"],
         subdomain=data["subdomain"],
+        curriculum_level=data["curriculum_level"],
+        evidence_role=data["evidence_role"],
         problem_text=data["problem_text"],
         entry_point=data["entry_point"],
         input_contract=dict(input_contract),
@@ -505,6 +564,8 @@ def math_task_to_dict(task: MathTask) -> Dict[str, Any]:
         "source_question_number": task.source_question_number,
         "domain": task.domain,
         "subdomain": task.subdomain,
+        "curriculum_level": task.curriculum_level,
+        "evidence_role": task.evidence_role,
         "problem_text": task.problem_text,
         "entry_point": task.entry_point,
         "input_contract": {"kind": INPUT_CONTRACT_KIND_NO_ARGUMENTS},
