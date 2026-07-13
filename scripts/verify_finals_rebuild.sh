@@ -55,7 +55,8 @@ case "$mode" in
       tests/finals_rebuild/test_math_validator.py \
       tests/finals_rebuild/test_math_evaluator.py \
       tests/finals_rebuild/test_generator_evaluator.py \
-      tests/finals_rebuild/test_generator_integration_pilot.py
+      tests/finals_rebuild/test_generator_integration_pilot.py \
+      tests/finals_rebuild/test_generator_healer_pilot.py
     ;;
   full)
     python -m pytest -q tests/finals_rebuild

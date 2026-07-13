@@ -66,6 +66,7 @@ def test_related_mode_includes_generator_pilot_tests(tmp_path):
     assert completed.returncode == 0
     assert "test_generator_evaluator.py" in calls
     assert "test_generator_integration_pilot.py" in calls
+    assert "test_generator_healer_pilot.py" in calls
 
 
 def test_pytest_failure_is_propagated_without_success_banner(tmp_path):
