@@ -5,6 +5,7 @@ import argparse
 import ast
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import time
@@ -74,7 +75,8 @@ except BaseException as exc:
     print(json.dumps({'ok': False, 'type': type(exc).__name__, 'message': str(exc)}))
 """
     try:
-        proc = subprocess.run([sys.executable, "-I", "-c", wrapper], input=source, capture_output=True, text=True, timeout=timeout)
+        environment = os.environ | {"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+        proc = subprocess.run([sys.executable, "-X", "utf8", "-c", wrapper], input=source, capture_output=True, text=True, encoding="utf-8", errors="replace", env=environment, timeout=timeout)
     except subprocess.TimeoutExpired:
         return "runtime_failure", None, "timeout"
     if proc.returncode:
@@ -120,7 +122,7 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) ->
     return "passed", source, {}
 
 
-def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_id: str = RUN_ID_DEFAULT, repeat_seeds: Sequence[int] = REPEAT_SEEDS, models: Sequence[str] = MODEL_TAGS, ollama_url: str = "http://localhost:11434", timeout: int = 300, client: Callable[..., dict[str, Any]] = call_ollama_chat) -> dict[str, Any]:
+def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_id: str = RUN_ID_DEFAULT, repeat_seeds: Sequence[int] = REPEAT_SEEDS, models: Sequence[str] = MODEL_TAGS, ollama_url: str = "http://localhost:11434", timeout: int = 300, client: Callable[..., dict[str, Any]] = call_ollama_chat, supersedes_run_id: str | None = None, supersede_reason: str | None = None) -> dict[str, Any]:
     if tuple(models) != MODEL_TAGS:
         raise ValueError("Stage A requires the fixed 4B and 8B model pair")
     root = Path(output_root) / run_id
@@ -155,9 +157,17 @@ def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_i
     (root / "cell_results.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in results), encoding="utf-8")
     (root / "failure_examples.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in results if row["outcome"] != "passed"), encoding="utf-8")
     (root / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    manifest = {"run_id": run_id, "treatment": "Ab1", "task_ids": list(TASK_IDS), "repeat_seeds": list(repeat_seeds), "models": list(models), "expected_cells": len(tasks) * len(repeat_seeds) * len(models), "healer_executed": False, "retry_executed": False}
+    manifest = {"run_id": run_id, "treatment": "Ab1", "task_ids": list(TASK_IDS), "repeat_seeds": list(repeat_seeds), "models": list(models), "expected_cells": len(tasks) * len(repeat_seeds) * len(models), "healer_executed": False, "retry_executed": False, "supersedes_run_id": supersedes_run_id, "supersede_reason": supersede_reason}
     (root / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return summary
+
+
+def mark_engineering_invalid(run_directory: str | Path) -> None:
+    root = Path(run_directory)
+    manifest_path = root / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8")) if manifest_path.is_file() else {"run_id": root.name}
+    manifest.update({"analysis_status": "engineering_invalid", "invalid_reason": "Windows CP950 subprocess encoding corrupted Unicode candidate execution"})
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def summarize_results(rows: Sequence[dict[str, Any]], run_id: str, duration: float = 0.0) -> dict[str, Any]:
@@ -170,9 +180,9 @@ def summarize_results(rows: Sequence[dict[str, Any]], run_id: str, duration: flo
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300)
+    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300); parser.add_argument("--supersedes-run-id"); parser.add_argument("--supersede-reason")
     args = parser.parse_args(argv)
-    run_pilot(load_pilot_tasks(args.task_manifest), output_root=args.output_root, run_id=args.run_id, ollama_url=args.ollama_url, timeout=args.timeout)
+    run_pilot(load_pilot_tasks(args.task_manifest), output_root=args.output_root, run_id=args.run_id, ollama_url=args.ollama_url, timeout=args.timeout, supersedes_run_id=args.supersedes_run_id, supersede_reason=args.supersede_reason)
     return 0
 
 

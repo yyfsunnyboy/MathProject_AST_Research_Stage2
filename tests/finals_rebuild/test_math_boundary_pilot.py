@@ -2,8 +2,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from agent_tools.finals_rebuild.math_boundary_pilot import TASK_IDS, classify_response, frozen_payloads, load_pilot_tasks, run_pilot
-
+from agent_tools.finals_rebuild.math_boundary_pilot import TASK_IDS, _execute_generate, classify_response, frozen_payloads, load_pilot_tasks, run_pilot
 
 MANIFEST = Path(__file__).parent / "fixtures" / "math_generation_tasks_ce115_pilot.jsonl"
 
@@ -29,6 +28,12 @@ def test_mock_run_writes_required_artifacts():
         return {"message": {"content": "def generate(level=1, **kwargs):\n return {}"}, "prompt_eval_count": 1, "eval_count": 2}
     with tempfile.TemporaryDirectory(dir=Path.cwd()) as directory:
         summary = run_pilot(tasks, output_root=directory, run_id="pilot", repeat_seeds=(1, 2, 3), client=client)
-        root = Path(directory) / "pilot"
         assert summary["total_cells"] == 30
-        assert {path.name for path in root.iterdir()} >= {"manifest.json", "frozen_payloads.jsonl", "cell_results.jsonl", "summary.json", "failure_examples.jsonl"}
+        assert {path.name for path in (Path(directory) / "pilot").iterdir()} >= {"manifest.json", "frozen_payloads.jsonl", "cell_results.jsonl", "summary.json", "failure_examples.jsonl"}
+
+
+def test_unicode_source_and_question_text_use_utf8_subprocess_io():
+    source = "def generate(level=1, **kwargs):\n return {'question_text': '\\u6c42 \\u00b2 \\u7684\\u503c', 'correct_answer': 1, 'oracle_payload': {}}\n"
+    status, value, error = _execute_generate(source)
+    assert status == "passed", error
+    assert error is None and value["question_text"] == chr(0x6C42) + " " + chr(0x00B2) + " " + chr(0x7684) + chr(0x503C)
