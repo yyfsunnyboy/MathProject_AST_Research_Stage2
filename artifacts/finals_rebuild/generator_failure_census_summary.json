@@ -1,0 +1,33 @@
+{
+  "ablation_counts": {
+    "Ab1": 15,
+    "Ab2": 10,
+    "Ab3": 5
+  },
+  "category_counts": {
+    "entry_point_failure": 0,
+    "instance_schema_failure": 0,
+    "legacy_runtime_dependency": 0,
+    "load_failure": 0,
+    "output_failure": 0,
+    "parse_failure": 5,
+    "passed": 6,
+    "runtime_failure": 0,
+    "safety_rejected": 19,
+    "timeout": 0
+  },
+  "domain_counts": {
+    "applications_of_derivatives": 30
+  },
+  "failed": 24,
+  "model_counts": {
+    "gemini-2.5-flash": 5,
+    "qwen2.5-coder-14b": 15,
+    "qwen2.5-coder-7b": 10
+  },
+  "not_tier1": 25,
+  "passed": 6,
+  "tier1_candidates": 5,
+  "total": 30,
+  "unknown_repairability": 0
+}
