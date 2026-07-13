@@ -20,29 +20,43 @@ def test_manifest_is_four_immutable_oracle_tasks():
     assert all(task["required_entry_point"] == "generate" and task["seed"] == 20260713 for task in tasks)
     assert all(task["required_output_keys"] == ["question_text", "correct_answer", "oracle_payload"] for task in tasks)
     assert all("model" not in task and "treatment" not in task and "prompt" not in task for task in tasks)
+    assert all("oracle_payload" not in task for task in tasks)
+    for task in tasks:
+        randomization = task["randomization_contract"]
+        assert randomization["seeded"] is True
+        assert randomization["local_rng_required"] is True
+        assert randomization["same_seed_reproducible"] is True
+        assert randomization["different_seed_variability_expected"] is True
+        assert all(task["k12_constraints"].values())
+        for value in task["parameter_ranges"].values():
+            if "min" in value:
+                assert value["min"] <= value["max"]
+    q24 = tasks[2]["parameter_ranges"]["circumference_cm"]
+    assert q24["step"] > 0
+    assert tasks[3]["parameter_ranges"]["track_length_m"]["allowed_values"]
 
 
 def test_polynomial_oracle_exact_and_incorrect_cases():
-    payload = _tasks()[0]["oracle_payload"]
-    assert evaluate_math_task_oracle("polynomial_division_exact", payload, {"quotient_coefficients": [4, -11], "remainder": 17})["is_correct"]
-    assert not evaluate_math_task_oracle("polynomial_division_exact", payload, {"quotient_coefficients": [4, -11], "remainder": 0})["is_correct"]
+    payload = {"dividend_coefficients": [2, 1, -3], "divisor_root": 1}
+    assert evaluate_math_task_oracle("polynomial_division_exact", payload, {"quotient_coefficients": [2, 3], "remainder": 0})["is_correct"]
+    assert not evaluate_math_task_oracle("polynomial_division_exact", payload, {"quotient_coefficients": [2, 3], "remainder": 1})["is_correct"]
 
 
 def test_divisor_oracle_and_invalid_payload():
-    payload = _tasks()[1]["oracle_payload"]
-    assert evaluate_math_task_oracle("largest_proper_divisor_logic", payload, {"claims": [False, False]})["is_correct"]
-    assert not evaluate_math_task_oracle("largest_proper_divisor_logic", payload, {"claims": [True, False]})["is_correct"]
+    payload = {"largest_proper_divisors": {"A": 6, "B": 15}, "claims": [{"subject": "A", "candidate_factor": 2, "asks_necessity": True}, {"subject": "B", "candidate_factor": 4, "asks_necessity": True}]}
+    assert evaluate_math_task_oracle("largest_proper_divisor_logic", payload, {"claims": [True, False]})["is_correct"]
+    assert not evaluate_math_task_oracle("largest_proper_divisor_logic", payload, {"claims": [False, False]})["is_correct"]
     assert evaluate_math_task_oracle("largest_proper_divisor_logic", {"largest_proper_divisors": {}, "claims": []}, None)["error"]
 
 
 def test_unit_conversion_oracle_exact_fraction():
-    payload = _tasks()[2]["oracle_payload"]
-    assert evaluate_math_task_oracle("rpm_circumference_kph", payload, {"coefficient": "3/25", "unit": "km/h"})["is_correct"]
+    payload = {"circumference_cm": 150, "rpm_symbol": "rpm", "requested_unit": "km/h"}
+    assert evaluate_math_task_oracle("rpm_circumference_kph", payload, {"coefficient": "9/100", "unit": "km/h"})["is_correct"]
     assert not evaluate_math_task_oracle("rpm_circumference_kph", payload, {"coefficient": "0.12", "unit": "km/h"})["is_correct"]
 
 
 def test_sequence_oracle_strict_threshold_and_multipart_answer():
-    payload = _tasks()[3]["oracle_payload"]
-    expected = {"specified_session_laps": 9, "first_exceed_week": 17, "first_exceed_day": "Thursday"}
+    payload = {"track_length_m": 200, "initial_first_day_laps": 3, "same_week_increment_laps": 1, "threshold_km": 2, "specified_week": 3, "specified_day": "Thursday", "day_labels": ["Monday", "Thursday"]}
+    expected = {"specified_session_laps": 6, "first_exceed_week": 8, "first_exceed_day": "Thursday"}
     assert evaluate_math_task_oracle("alternating_sequence_threshold", payload, expected)["is_correct"]
     assert not evaluate_math_task_oracle("alternating_sequence_threshold", payload, {**expected, "first_exceed_day": "Tuesday"})["is_correct"]
