@@ -2,7 +2,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from agent_tools.finals_rebuild.math_boundary_pilot import TASK_IDS, _execute_generate, classify_response, frozen_payloads, load_pilot_tasks, run_pilot
+from agent_tools.finals_rebuild.math_boundary_pilot import TASK_IDS, _execute_generate, build_ab1_prompt, classify_response, frozen_payloads, load_pilot_tasks, run_pilot
 
 MANIFEST = Path(__file__).parent / "fixtures" / "math_generation_tasks_ce115_pilot.jsonl"
 
@@ -20,6 +20,32 @@ def test_classification_passes_and_detects_schema_failure():
     source = "def generate(level=1, **kwargs):\n return {'question_text':'q','correct_answer':{'quotient_coefficients':[1, 1],'remainder':0},'oracle_payload':" + payload + "}\n"
     assert classify_response(source, frozen, task)[0] in {"passed", "answer_incorrect"}
     assert classify_response("def generate(): pass", frozen, task)[0] == "schema_failure"
+
+
+def test_polynomial_ab1_prompt_requires_canonical_answer_schema():
+    task = load_pilot_tasks(MANIFEST)[0]
+    frozen = frozen_payloads((task,), (2026071301,))[0]
+    prompt = build_ab1_prompt(task, frozen)
+    assert "quotient_coefficients" in prompt and "remainder" in prompt
+    assert "JSON-compatible dict" in prompt
+    assert "[3, -1]" not in prompt and '"remainder": 0' not in prompt
+    assert json.dumps(frozen["oracle_payload"], sort_keys=True) in prompt
+
+
+def test_non_polynomial_ab1_prompts_require_canonical_answer_schemas():
+    tasks = {task["oracle_type"]: task for task in load_pilot_tasks(MANIFEST)}
+    cases = {
+        "rpm_circumference_kph": (2026071301, ("coefficient", "unit", "1 rpm")),
+        "largest_proper_divisor_logic": (2026071301, ("claims", "boolean list", "frozen claims order")),
+        "alternating_sequence_threshold": (2026071301, ("specified_session_laps", "first_exceed_week", "first_exceed_day")),
+    }
+    for oracle_type, (seed, keys) in cases.items():
+        task = tasks[oracle_type]
+        frozen = frozen_payloads((task,), (seed,))[0]
+        prompt = build_ab1_prompt(task, frozen)
+        assert all(key in prompt for key in keys)
+        assert "JSON-compatible dict" in prompt
+        assert json.dumps(frozen["oracle_payload"], sort_keys=True) in prompt
 
 
 def test_mock_run_writes_required_artifacts():

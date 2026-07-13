@@ -54,13 +54,39 @@ def frozen_payloads(tasks: Iterable[dict[str, Any]], repeat_seeds: Iterable[int]
 
 
 def build_ab1_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
+    answer_contract = ""
+    if task["oracle_type"] == "polynomial_division_exact":
+        answer_contract = (
+            "correct_answer must be a JSON-compatible dict with exactly "
+            "quotient_coefficients (a two-number list ordered from highest degree to constant) "
+            "and remainder (a number). Do not return correct_answer as natural-language text. "
+        )
+    elif task["oracle_type"] == "rpm_circumference_kph":
+        answer_contract = (
+            "correct_answer must be a JSON-compatible dict with exactly coefficient (the exact speed "
+            "coefficient for 1 rpm as a p/q string) and unit (the requested unit). Do not return a "
+            "speed for an assumed rpm value or natural-language text. "
+        )
+    elif task["oracle_type"] == "largest_proper_divisor_logic":
+        answer_contract = (
+            "correct_answer must be a JSON-compatible dict with exactly claims (a boolean list in the "
+            "frozen claims order, answering whether each candidate factor is necessary). Do not return "
+            "largest proper divisor values or natural-language text. "
+        )
+    elif task["oracle_type"] == "alternating_sequence_threshold":
+        answer_contract = (
+            "correct_answer must be a JSON-compatible dict with exactly specified_session_laps (a number), "
+            "first_exceed_week (a number), and first_exceed_day (a frozen day label). Do not return only "
+            "a distance, a partial answer, or natural-language text. "
+        )
     return (
         "Write only Python source. Implement def generate(level=1, **kwargs).\n"
         f"Task: {task['task_id']} ({task['domain']}, difficulty level {task['difficulty_level']}).\n"
         f"Task specification: {task['skill_id']}.\n"
         f"Frozen sampled parameters: {json.dumps(frozen['oracle_payload'], sort_keys=True)}\n"
         "generate() must return a dict with exactly question_text, correct_answer, and oracle_payload. "
-        "oracle_payload must exactly equal the frozen sampled parameters. Do not use input, files, network, subprocess, Markdown fences, or explanations."
+        + answer_contract
+        + "oracle_payload must exactly equal the frozen sampled parameters. Do not use input, files, network, subprocess, Markdown fences, or explanations."
     )
 
 
