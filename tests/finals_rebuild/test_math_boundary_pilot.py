@@ -2,7 +2,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from agent_tools.finals_rebuild.math_boundary_pilot import TASK_IDS, _execute_generate, build_ab1_prompt, classify_response, frozen_payloads, load_pilot_tasks, run_pilot
+from agent_tools.finals_rebuild.math_boundary_pilot import CONDITIONS, TASK_IDS, _execute_generate, build_ab1_prompt, build_ab2g_prompt, classify_response, frozen_payloads, load_pilot_tasks, main, run_pilot
 
 MANIFEST = Path(__file__).parent / "fixtures" / "math_generation_tasks_ce115_pilot.jsonl"
 
@@ -56,6 +56,60 @@ def test_mock_run_writes_required_artifacts():
         summary = run_pilot(tasks, output_root=directory, run_id="pilot", repeat_seeds=(1, 2, 3), client=client)
         assert summary["total_cells"] == 30
         assert {path.name for path in (Path(directory) / "pilot").iterdir()} >= {"manifest.json", "frozen_payloads.jsonl", "cell_results.jsonl", "summary.json", "failure_examples.jsonl"}
+
+
+def test_ab2g_prompt_preserves_ab1_prompt_unchanged_as_a_prefix():
+    task = load_pilot_tasks(MANIFEST)[0]
+    frozen = frozen_payloads((task,), (2026071301,))[0]
+    ab1_prompt = build_ab1_prompt(task, frozen)
+    ab2g_prompt = build_ab2g_prompt(task, frozen)
+    assert ab2g_prompt.startswith(ab1_prompt)
+    assert "quotient_coefficients" in ab2g_prompt and "remainder" in ab2g_prompt
+    assert "JSON-compatible dict" in ab2g_prompt
+
+
+def test_ab2g_prompt_adds_generic_scaffold_without_task_specific_hints():
+    task = load_pilot_tasks(MANIFEST)[0]
+    frozen = frozen_payloads((task,), (2026071301,))[0]
+    ab2g_prompt = build_ab2g_prompt(task, frozen)
+    assert "Generic Safety-and-Format Scaffold" in ab2g_prompt
+    # no leaked candidate answer values (e.g. an actual solved quotient/remainder pair)
+    assert "[3, -1]" not in ab2g_prompt and '"remainder": 0' not in ab2g_prompt
+    for forbidden in ("retry", "Healer", "expected_answer", "self-correct", "chain-of-thought"):
+        assert forbidden.lower() not in ab2g_prompt.lower()
+
+
+def test_cli_condition_defaults_to_ab1(monkeypatch):
+    captured = {}
+
+    def fake_run_pilot(tasks, **kwargs):
+        captured.update(kwargs)
+        return {}
+
+    monkeypatch.setattr("agent_tools.finals_rebuild.math_boundary_pilot.run_pilot", fake_run_pilot)
+    main(["--task-manifest", str(MANIFEST), "--output-root", "unused"])
+    assert captured["condition"] == "ab1"
+
+
+def test_run_pilot_condition_ab2g_selects_build_ab2g_prompt():
+    tasks = load_pilot_tasks(MANIFEST)
+
+    def client(url, payload, timeout):
+        return {"message": {"content": "def generate(level=1, **kwargs):\n return {}"}, "prompt_eval_count": 1, "eval_count": 2}
+
+    with tempfile.TemporaryDirectory(dir=Path.cwd()) as directory:
+        run_pilot(tasks, output_root=directory, run_id="pilot_ab2g", repeat_seeds=(1,), client=client, condition="ab2g")
+        rows = [json.loads(line) for line in (Path(directory) / "pilot_ab2g" / "cell_results.jsonl").read_text(encoding="utf-8").splitlines()]
+        assert all("Generic Safety-and-Format Scaffold" in row["prompt_text"] for row in rows)
+        assert all(row["treatment"] == "Ab2g" for row in rows)
+        manifest = json.loads((Path(directory) / "pilot_ab2g" / "manifest.json").read_text(encoding="utf-8"))
+        assert manifest["condition"] == "ab2g"
+        assert manifest["treatment"] == "Ab2g"
+
+
+def test_condition_registry_maps_ab1_and_ab2g_builders():
+    assert CONDITIONS["ab1"][1] is build_ab1_prompt
+    assert CONDITIONS["ab2g"][1] is build_ab2g_prompt
 
 
 def test_unicode_source_and_question_text_use_utf8_subprocess_io():

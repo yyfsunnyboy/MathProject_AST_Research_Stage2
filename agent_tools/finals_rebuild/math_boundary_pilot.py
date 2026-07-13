@@ -90,6 +90,17 @@ def build_ab1_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
     )
 
 
+def build_ab2g_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
+    return (
+        build_ab1_prompt(task, frozen)
+        + "\n\nGeneric Safety-and-Format Scaffold: output only complete Python source, with no Markdown "
+        "fences and no explanatory prose. Define generate() exactly as specified above. Use the frozen "
+        "sampled parameters exactly as given, without altering any value. Before returning, verify that "
+        "field names, types, and structure match the required schema, and that question_text, "
+        "correct_answer, and oracle_payload are mutually consistent."
+    )
+
+
 def _execute_generate(source: str, timeout: float = 3.0) -> tuple[str, Any, str | None]:
     wrapper = """import json, sys, traceback
 source = sys.stdin.read()
@@ -148,9 +159,15 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) ->
     return "passed", source, {}
 
 
-def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_id: str = RUN_ID_DEFAULT, repeat_seeds: Sequence[int] = REPEAT_SEEDS, models: Sequence[str] = MODEL_TAGS, ollama_url: str = "http://localhost:11434", timeout: int = 300, client: Callable[..., dict[str, Any]] = call_ollama_chat, supersedes_run_id: str | None = None, supersede_reason: str | None = None) -> dict[str, Any]:
+CONDITIONS = {"ab1": ("Ab1", build_ab1_prompt), "ab2g": ("Ab2g", build_ab2g_prompt)}
+
+
+def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_id: str = RUN_ID_DEFAULT, repeat_seeds: Sequence[int] = REPEAT_SEEDS, models: Sequence[str] = MODEL_TAGS, ollama_url: str = "http://localhost:11434", timeout: int = 300, client: Callable[..., dict[str, Any]] = call_ollama_chat, supersedes_run_id: str | None = None, supersede_reason: str | None = None, condition: str = "ab1") -> dict[str, Any]:
     if tuple(models) != MODEL_TAGS:
         raise ValueError("Stage A requires the fixed 4B and 8B model pair")
+    if condition not in CONDITIONS:
+        raise ValueError(f"unsupported condition: {condition!r}")
+    treatment, build_prompt = CONDITIONS[condition]
     root = Path(output_root) / run_id
     if root.exists():
         raise ValueError(f"output directory already exists: {root}")
@@ -161,10 +178,10 @@ def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_i
     started_run = time.monotonic()
     for index, payload in enumerate(frozen):
         task = next(item for item in tasks if item["task_id"] == payload["task_id"])
-        prompt = build_ab1_prompt(task, payload)
+        prompt = build_prompt(task, payload)
         for model in models:
             started = time.monotonic()
-            row = {"run_id": run_id, "task_id": task["task_id"], "difficulty_rank": payload["difficulty_rank"], "difficulty_level": task["difficulty_level"], "model_tag": model, "model_digest": ALLOWED_MODELS[model]["model_digest"], "treatment": "Ab1", "repeat_seed": payload["repeat_seed"], "frozen_oracle_payload": payload["oracle_payload"], "prompt_text": prompt, "started_at": time.time(), "cold_start_or_warm_run": "cold_start" if not results else "warm_run"}
+            row = {"run_id": run_id, "task_id": task["task_id"], "difficulty_rank": payload["difficulty_rank"], "difficulty_level": task["difficulty_level"], "model_tag": model, "model_digest": ALLOWED_MODELS[model]["model_digest"], "treatment": treatment, "repeat_seed": payload["repeat_seed"], "frozen_oracle_payload": payload["oracle_payload"], "prompt_text": prompt, "started_at": time.time(), "cold_start_or_warm_run": "cold_start" if not results else "warm_run"}
             try:
                 response = client(ollama_url, {"model": model, "messages": [{"role": "user", "content": prompt}], "stream": False, "options": {"temperature": 0.0, "seed": payload["repeat_seed"]}}, timeout)
                 raw = response.get("message", {}).get("content")
@@ -183,7 +200,7 @@ def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_i
     (root / "cell_results.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in results), encoding="utf-8")
     (root / "failure_examples.jsonl").write_text("".join(json.dumps(row, sort_keys=True) + "\n" for row in results if row["outcome"] != "passed"), encoding="utf-8")
     (root / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    manifest = {"run_id": run_id, "treatment": "Ab1", "task_ids": list(TASK_IDS), "repeat_seeds": list(repeat_seeds), "models": list(models), "expected_cells": len(tasks) * len(repeat_seeds) * len(models), "healer_executed": False, "retry_executed": False, "supersedes_run_id": supersedes_run_id, "supersede_reason": supersede_reason}
+    manifest = {"run_id": run_id, "treatment": treatment, "condition": condition, "task_ids": list(TASK_IDS), "repeat_seeds": list(repeat_seeds), "models": list(models), "expected_cells": len(tasks) * len(repeat_seeds) * len(models), "healer_executed": False, "retry_executed": False, "supersedes_run_id": supersedes_run_id, "supersede_reason": supersede_reason}
     (root / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return summary
 
@@ -206,9 +223,9 @@ def summarize_results(rows: Sequence[dict[str, Any]], run_id: str, duration: flo
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300); parser.add_argument("--supersedes-run-id"); parser.add_argument("--supersede-reason")
+    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300); parser.add_argument("--supersedes-run-id"); parser.add_argument("--supersede-reason"); parser.add_argument("--condition", choices=("ab1", "ab2g"), default="ab1")
     args = parser.parse_args(argv)
-    run_pilot(load_pilot_tasks(args.task_manifest), output_root=args.output_root, run_id=args.run_id, ollama_url=args.ollama_url, timeout=args.timeout, supersedes_run_id=args.supersedes_run_id, supersede_reason=args.supersede_reason)
+    run_pilot(load_pilot_tasks(args.task_manifest), output_root=args.output_root, run_id=args.run_id, ollama_url=args.ollama_url, timeout=args.timeout, supersedes_run_id=args.supersedes_run_id, supersede_reason=args.supersede_reason, condition=args.condition)
     return 0
 
 
