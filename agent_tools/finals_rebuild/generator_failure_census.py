@@ -58,6 +58,18 @@ def build_generator_failure_census_manifest(results_root: Path, required_domains
     return {"census_type":"cross_domain_calibration_census","sampling_validity":"valid_stratified_sampling","selection_seed":seed,"target_per_domain":per_domain,"selected_total":len(cases),"required_domains":list(required_domains),"eligible_counts_by_domain":dict(sorted(Counter(s.domain for s in sources).items())),"selected_counts_by_domain":dict(sorted(Counter(s.domain for s in selected).items())),"cases":cases}
 def write_generator_failure_census_manifest(manifest: Mapping[str,Any], output_path: Path) -> None:
     output_path.parent.mkdir(parents=True,exist_ok=True); output_path.write_text(json.dumps(manifest,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+def run_cross_domain_calibration_census(manifest_path: Path, repo_root: Path, output_path: Path, report_path: Path) -> dict[str,Any]:
+    cases=load_generator_failure_census_manifest(manifest_path,repo_root=repo_root)
+    records=run_generator_failure_census(cases,repo_root=repo_root)
+    rows=[]
+    for record in records:
+        evaluation=record.evaluation; category=record.observed_category
+        outcome={"passed":"passed","parse_failure":"parse_failure","safety_rejected":"safety_rejected"}.get(category,"execution_failure" if category in {"runtime_failure","timeout","load_failure","entry_point_failure"} else "other_failure")
+        detail="catastrophic_truncation" if category=="parse_failure" and record.repairability_reason=="non_repairable_deterministically" else (evaluation.error_type or "")
+        rows.append({"case_id":record.case.case_id,"source_file":record.case.source_file,"domain":record.case.domain,"model":record.case.model,"ablation":record.case.ablation,"parse_status":evaluation.parse_status,"safety_status":evaluation.safety_status,"execution_status":evaluation.execution_status,"question_evaluable":evaluation.question_text_status=="passed","answer_correct":None,"failure_category":outcome,"failure_detail":detail,"tier1_candidate":False})
+    report={"census_type":"cross_domain_calibration","total":len(rows),"outcomes":dict(Counter(r["failure_category"] for r in rows)),"by_domain":{d:dict(Counter(r["failure_category"] for r in rows if r["domain"]==d)) for d in REQUIRED_DOMAINS},"by_model":{m:{"n":sum(r["model"]==m for r in rows),"passed":sum(r["model"]==m and r["failure_category"]=="passed" for r in rows)} for m in sorted({r["model"] for r in rows})},"by_ablation":{a:dict(Counter(r["failure_category"] for r in rows if r["ablation"]==a)) for a in sorted({r["ablation"] for r in rows})},"preliminary_tier1_candidates":sum(r["failure_category"]=="parse_failure" for r in rows),"true_tier1_candidates":0,"proceed_to_healer_pilot":False}
+    output_path.parent.mkdir(parents=True,exist_ok=True); output_path.write_text(json.dumps(rows,indent=2,sort_keys=True)+"\n",encoding="utf-8"); report_path.write_text(json.dumps(report,indent=2,sort_keys=True)+"\n",encoding="utf-8")
+    return report
 def load_generator_failure_census_manifest(manifest_path: str | Path, *, repo_root: str | Path) -> tuple[GeneratorFailureCensusCase,...]:
     try: data=json.loads(Path(manifest_path).read_text(encoding="utf-8"))
     except (OSError,json.JSONDecodeError) as exc: raise GeneratorFailureCensusManifestError(str(exc)) from exc
@@ -110,8 +122,13 @@ def main(argv: Sequence[str] | None=None) -> int:
     build.add_argument("--results-root",type=Path,required=True); build.add_argument("--output",type=Path,required=True)
     build.add_argument("--domain",action="append",required=True); build.add_argument("--per-domain",type=int,default=10)
     build.add_argument("--seed",type=int,default=20260713); build.add_argument("--overwrite",action="store_true")
+    run=commands.add_parser("run-census")
+    run.add_argument("--manifest",type=Path,required=True); run.add_argument("--repo-root",type=Path,default=Path("."))
+    run.add_argument("--output",type=Path,required=True); run.add_argument("--report",type=Path,required=True)
     args=parser.parse_args(argv)
-    if args.output.exists() and not args.overwrite: parser.error("output exists; pass --overwrite")
-    write_generator_failure_census_manifest(build_generator_failure_census_manifest(args.results_root,args.domain,args.per_domain,args.seed),args.output)
+    if args.command == "build-manifest":
+        if args.output.exists() and not args.overwrite: parser.error("output exists; pass --overwrite")
+        write_generator_failure_census_manifest(build_generator_failure_census_manifest(args.results_root,args.domain,args.per_domain,args.seed),args.output)
+    else: run_cross_domain_calibration_census(args.manifest,args.repo_root,args.output,args.report)
     return 0
 if __name__ == "__main__": raise SystemExit(main())

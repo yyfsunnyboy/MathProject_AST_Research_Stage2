@@ -1,0 +1,82 @@
+{
+  "by_ablation": {
+    "Ab1": {
+      "execution_failure": 2,
+      "parse_failure": 4,
+      "passed": 6,
+      "safety_rejected": 2
+    },
+    "Ab2": {
+      "safety_rejected": 6
+    },
+    "Ab3": {
+      "safety_rejected": 10
+    }
+  },
+  "by_domain": {
+    "applications_of_derivatives": {
+      "parse_failure": 1,
+      "passed": 3,
+      "safety_rejected": 6
+    },
+    "four_arithmetic_operations_of_integers": {
+      "execution_failure": 2,
+      "parse_failure": 3,
+      "passed": 1,
+      "safety_rejected": 4
+    },
+    "four_arithmetic_operations_of_numbers": {
+      "passed": 2,
+      "safety_rejected": 8
+    }
+  },
+  "by_model": {
+    "ApplicationsOfDerivatives_gemini-2.5-flash": {
+      "n": 1,
+      "passed": 0
+    },
+    "ApplicationsOfDerivatives_qwen2.5-coder-14b": {
+      "n": 4,
+      "passed": 2
+    },
+    "ApplicationsOfDerivatives_qwen2.5-coder-7b": {
+      "n": 5,
+      "passed": 1
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_gemini-3-flash": {
+      "n": 3,
+      "passed": 1
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-14b": {
+      "n": 3,
+      "passed": 0
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfIntegers_qwen3-8b": {
+      "n": 4,
+      "passed": 0
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_gemini-3-flash": {
+      "n": 4,
+      "passed": 1
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-14b": {
+      "n": 4,
+      "passed": 0
+    },
+    "\u6578\u5b781\u4e0a_FourArithmeticOperationsOfNumbers_qwen3-8b": {
+      "n": 2,
+      "passed": 1
+    }
+  },
+  "census_type": "cross_domain_calibration",
+  "outcomes": {
+    "execution_failure": 2,
+    "parse_failure": 4,
+    "passed": 6,
+    "safety_rejected": 18
+  },
+  "preliminary_tier1_candidates": 4,
+  "proceed_to_healer_pilot": false,
+  "total": 30,
+  "true_tier1_candidates": 0
+}

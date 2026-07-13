@@ -41,6 +41,16 @@ A production deterministic stratified sampler now generates the calibration
 manifest from the eligible source frame: three required domains, ten cases per
 domain, fixed seed 20260713, and fail-fast availability validation.
 
+## Cross-domain calibration census result
+
+Baseline commit: 15ad47fa. The calibration manifest
+tests/finals_rebuild/fixtures/generator_failure_census_manifest.json was
+evaluated into artifacts/finals_rebuild/cross_domain_generator_census.json.
+All three domains contributed ten cases. The result contains six passed,
+four parse failures, eighteen safety rejections, and two execution failures.
+All parse failures were adjudicated as catastrophic truncation; true Tier 1
+candidates are zero, so a Healer repair pilot does not proceed.
+
 Get-ChildItem : 拒絕存取路徑 'C:\Projects\MathProject_AST_Research\.pytest_cache'。
 位於 線路:2 字元:78
 + ... erdict.md'; Get-ChildItem -Recurse -File -Include 'test_generator_fai ...
