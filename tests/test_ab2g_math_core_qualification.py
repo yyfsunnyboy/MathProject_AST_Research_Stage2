@@ -9,6 +9,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import core.ai_wrapper as ai_wrapper
 
 from agent_tools.finals_rebuild.ab2d_local_prompt import (
     MATH_CORE_SCAFFOLD,
@@ -169,8 +170,54 @@ def test_mock_provider_failure_preserves_prior_incremental_rows(monkeypatch: pyt
         persisted = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
     assert calls == 4
     assert len(rows) == len(persisted) == 4
-    assert persisted[2]["failure_category"] == "infrastructure_failure"
+    assert persisted[2]["failure_category"] == "provider_error"
     assert all(row["task_family"] == runner.FAMILIES[index] for index, row in enumerate(persisted))
+
+
+def test_provider_failure_taxonomy_and_secret_redaction(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeResponse:
+        text = "def generate(level=1, **kwargs):\n    return {}\n"
+
+    calls = 0
+
+    def fake_call(_prompt: str, _preset: dict) -> FakeResponse:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise TimeoutError("not used in persisted detail")
+        if calls == 2:
+            raise RuntimeError("model not found; GEMINI_API_KEY=secret-value; AIzaSecretToken")
+        return FakeResponse()
+
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        rows = runner._run(Path(temp) / "rows.jsonl", fake_call)
+    assert rows[0]["failure_category"] == "provider_timeout"
+    assert rows[0]["failure_detail"] == "TimeoutError: provider request exceeded 120 seconds"
+    assert rows[1]["failure_category"] == "provider_error"
+    assert "model not found" in rows[1]["failure_detail"]
+    assert "secret-value" not in rows[1]["failure_detail"]
+    assert "AIzaSecretToken" not in rows[1]["failure_detail"]
+
+
+def test_client_call_preserves_model_and_passes_timeout_without_retry(monkeypatch: pytest.MonkeyPatch) -> None:
+    captured: dict[str, object] = {}
+
+    class FakeClient:
+        def __init__(self, model, temperature, **kwargs):
+            captured.update(model=model, temperature=temperature, **kwargs)
+
+    def fake_helper(client, prompt, **kwargs):
+        captured.update(client=client, prompt=prompt, **kwargs)
+        return "response"
+
+    monkeypatch.setattr(ai_wrapper, "GoogleAIClient", FakeClient)
+    monkeypatch.setattr(ai_wrapper, "call_ai_with_retry", fake_helper)
+    result = runner._client_call("prompt", {"model": "gemini-3.5-flash", "temperature": 0.0, "max_tokens": 4096})
+    assert result == "response"
+    assert captured["model"] == "gemini-3.5-flash"
+    assert captured["timeout"] == 120
+    assert captured["max_retries"] == 1  # one total attempt, zero retry attempts
 
 
 def test_fixed_runner_settings_and_qualification_gate() -> None:

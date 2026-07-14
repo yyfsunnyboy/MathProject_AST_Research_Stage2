@@ -6,6 +6,7 @@ import importlib.metadata
 import json
 import multiprocessing
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -124,6 +125,17 @@ def _client_call(prompt: str, preset: dict[str, Any]) -> Any:
     return call_ai_with_retry(client, prompt, max_retries=1, retry_delay=0, timeout=REQUEST_TIMEOUT_SECONDS)
 
 
+def _safe_provider_failure(exc: Exception) -> tuple[str, str]:
+    """Classify provider failures without retaining credentials in artifacts."""
+    if isinstance(exc, TimeoutError):
+        return "provider_timeout", f"TimeoutError: provider request exceeded {REQUEST_TIMEOUT_SECONDS} seconds"
+    message = str(exc)
+    message = re.sub(r"(?i)(api[_ -]?key\s*[=:]\s*)\S+", r"\1[REDACTED]", message)
+    message = re.sub(r"AIza[0-9A-Za-z_-]+", "[REDACTED]", message)
+    message = message[:500]
+    return "provider_error", f"{type(exc).__name__}: {message}" if message else type(exc).__name__
+
+
 def _run(output: Path, call: Callable[[str, dict[str, Any]], Any]) -> list[dict[str, Any]]:
     if output.exists():
         raise FileExistsError(f"refusing to overwrite existing output: {output}")
@@ -137,8 +149,8 @@ def _run(output: Path, call: Callable[[str, dict[str, Any]], Any]) -> list[dict[
         try:
             _apply_response(row, task, call(row["final_prompt"], preset))
         except Exception as exc:
-            row["failure_category"] = "infrastructure_failure"
-            row["failure_detail"] = type(exc).__name__
+            row["failure_category"], row["failure_detail"] = _safe_provider_failure(exc)
+            row["execution_timeout"] = False
         row["wall_clock_seconds"] = time.monotonic() - started
         _append(output, row)
         rows.append(row)
@@ -154,7 +166,8 @@ def _summary(rows: list[dict[str, Any]]) -> str:
         "# Gemini Ab2g-math-core L1 qualification — 2026-07-14", "",
         f"- Rows: {len(rows)}", f"- Evaluable: {sum(r['evaluable'] for r in rows)} / 4",
         f"- Oracle pass: {sum(r['oracle_pass'] for r in rows)} / 4",
-        f"- Provider timeouts: {sum(r['failure_category'] == 'infrastructure_failure' for r in rows)}",
+        f"- Provider timeouts: {sum(r['failure_category'] == 'provider_timeout' for r in rows)}",
+        f"- Provider errors: {sum(r['failure_category'] == 'provider_error' for r in rows)}",
         f"- Execution timeouts: {sum(bool(r['execution_timeout']) for r in rows)}",
         f"- Cloud qualified: {cloud_qualified(rows)}", "",
     ])
