@@ -61,10 +61,13 @@ def _output_paths(run_id: str | None) -> tuple[Path, Path]:
     )
 
 
-def _tasks() -> list[dict[str, Any]]:
+def _tasks(task_family: str | None = None) -> list[dict[str, Any]]:
+    if task_family is not None and task_family not in FAMILIES:
+        raise ValueError(f"unknown qualification task family: {task_family}")
     all_tasks = [json.loads(line) for line in MANIFEST.read_text(encoding="utf-8").splitlines() if line]
-    selected = [next(task for task in all_tasks if task["skill_id"] == family and task["difficulty_level"] == 1) for family in FAMILIES]
-    if [task["skill_id"] for task in selected] != list(FAMILIES):
+    families = (task_family,) if task_family is not None else FAMILIES
+    selected = [next(task for task in all_tasks if task["skill_id"] == family and task["difficulty_level"] == 1) for family in families]
+    if [task["skill_id"] for task in selected] != list(families):
         raise ValueError("qualification task selection is not the frozen four L1 families")
     return selected
 
@@ -148,14 +151,14 @@ def _safe_provider_failure(exc: Exception) -> tuple[str, str]:
     return "provider_error", f"{type(exc).__name__}: {message}" if message else type(exc).__name__
 
 
-def _run(output: Path, call: Callable[[str, dict[str, Any]], Any]) -> list[dict[str, Any]]:
+def _run(output: Path, call: Callable[[str, dict[str, Any]], Any], task_family: str | None = None) -> list[dict[str, Any]]:
     if output.exists():
         raise FileExistsError(f"refusing to overwrite existing output: {output}")
     preset = _preset()
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text("", encoding="utf-8")
     rows: list[dict[str, Any]] = []
-    for task in _tasks():
+    for task in _tasks(task_family):
         row = _make_row(task)
         started = time.monotonic()
         try:
@@ -176,7 +179,7 @@ def cloud_qualified(rows: list[dict[str, Any]]) -> bool:
 def _summary(rows: list[dict[str, Any]]) -> str:
     return "\n".join([
         "# Gemini Ab2g-math-core L1 qualification — 2026-07-14", "",
-        f"- Rows: {len(rows)}", f"- Evaluable: {sum(r['evaluable'] for r in rows)} / 4",
+        f"- Rows: {len(rows)}", f"- task_count: {len(rows)}", f"- Evaluable: {sum(r['evaluable'] for r in rows)} / {len(rows)}",
         f"- Oracle pass: {sum(r['oracle_pass'] for r in rows)} / 4",
         f"- Provider timeouts: {sum(r['failure_category'] == 'provider_timeout' for r in rows)}",
         f"- Provider errors: {sum(r['failure_category'] == 'provider_error' for r in rows)}",
@@ -185,9 +188,9 @@ def _summary(rows: list[dict[str, Any]]) -> str:
     ])
 
 
-def dry_run_records() -> list[dict[str, Any]]:
+def dry_run_records(task_family: str | None = None) -> list[dict[str, Any]]:
     """Return planned rows without creating clients, calling providers, or writing files."""
-    return [_make_row(task) for task in _tasks()]
+    return [_make_row(task) for task in _tasks(task_family)]
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -197,13 +200,14 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--dry-run", action="store_true", help="assemble and print the planned four rows without API calls")
     mode.add_argument("--execute-api", action="store_true", help="run the one-shot cloud qualification")
     parser.add_argument("--run-id", help="safe suffix for a distinct JSONL/summary artifact pair")
+    parser.add_argument("--task-family", choices=FAMILIES, help="run exactly one frozen L1 task family")
     args = parser.parse_args(argv)
     try:
         result_path, summary_path = _output_paths(args.run_id)
     except ValueError as exc:
         parser.error(str(exc))
     if args.dry_run:
-        print(json.dumps(dry_run_records(), ensure_ascii=False, sort_keys=True))
+        print(json.dumps(dry_run_records(args.task_family), ensure_ascii=False, sort_keys=True))
         return 0
     if not args.execute_api:
         parser.print_usage()
@@ -212,7 +216,7 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("GEMINI_API_KEY is not set")
     global API_LOOP_ENTERED
     API_LOOP_ENTERED = True
-    rows = _run(result_path, _client_call)
+    rows = _run(result_path, _client_call, args.task_family)
     summary_path.write_text(_summary(rows), encoding="utf-8")
     return 0
 

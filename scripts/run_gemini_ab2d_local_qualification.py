@@ -91,7 +91,7 @@ def _make_row(task: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _run(output: Path, call: Callable[[str, dict[str, Any]], Any] = _client_call) -> list[dict[str, Any]]:
+def _run(output: Path, call: Callable[[str, dict[str, Any]], Any] = _client_call, task_family: str | None = None) -> list[dict[str, Any]]:
     global API_LOOP_ENTERED
     if output.exists():
         raise FileExistsError(f"refusing to overwrite existing qualification output: {output}")
@@ -100,7 +100,7 @@ def _run(output: Path, call: Callable[[str, dict[str, Any]], Any] = _client_call
     output.write_text("", encoding="utf-8")
     records: list[dict[str, Any]] = []
     API_LOOP_ENTERED = True
-    for task in _tasks():
+    for task in _tasks(task_family):
         row = _make_row(task)
         started = time.monotonic()
         try:
@@ -115,8 +115,8 @@ def _run(output: Path, call: Callable[[str, dict[str, Any]], Any] = _client_call
     return records
 
 
-def dry_run_records() -> list[dict[str, Any]]:
-    return [_make_row(task) for task in _tasks()]
+def dry_run_records(task_family: str | None = None) -> list[dict[str, Any]]:
+    return [_make_row(task) for task in _tasks(task_family)]
 
 
 def _write_summary(path: Path, records: list[dict[str, Any]]) -> None:
@@ -140,13 +140,14 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--dry-run", action="store_true", help="assemble and validate without API calls")
     mode.add_argument("--execute-api", action="store_true", help="explicitly execute the four provider requests")
     parser.add_argument("--run-id", help="safe output suffix: [A-Za-z0-9_-]+")
+    parser.add_argument("--task-family", choices=FAMILIES, help="run exactly one frozen L1 task family")
     args = parser.parse_args(argv)
     try:
         output, summary = _output_paths(args.run_id)
     except ValueError as exc:
         parser.error(str(exc))
     if args.dry_run:
-        records = dry_run_records()
+        records = dry_run_records(args.task_family)
         print(json.dumps({"condition": PROMPT_CONDITION, "model": MODEL_TAG, "task_count": len(records), "api_calls": 0, "retry_count": 0, "first_attempt_only": True, "healer_enabled": False, "provider_timeout_seconds": REQUEST_TIMEOUT_SECONDS, "candidate_timeout_seconds": EXECUTION_TIMEOUT_SECONDS, "max_output_tokens": MAX_OUTPUT_TOKENS}, indent=2))
         return 0
     if not args.execute_api:
@@ -154,7 +155,7 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     if not os.environ.get("GEMINI_API_KEY"):
         parser.error("GEMINI_API_KEY is required for --execute-api")
-    records = _run(output)
+    records = _run(output, task_family=args.task_family)
     _write_summary(summary, records)
     print(json.dumps({"output": str(output), "summary": str(summary), "records": len(records)}, indent=2))
     return 0

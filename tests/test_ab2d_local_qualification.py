@@ -67,6 +67,44 @@ def test_dry_run_never_calls_provider_or_creates_artifacts(monkeypatch: pytest.M
     assert not output.exists() and not summary.exists()
 
 
+def test_task_family_cli_is_single_cell_and_unknown_fails_before_execution(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    family = "common_factor_quadratic_root_ordering"
+    with pytest.raises(SystemExit) as help_exit:
+        runner.main(["--help"])
+    assert help_exit.value.code == 0 and "--task-family" in capsys.readouterr().out
+    assert [row["task_family"] for row in runner.dry_run_records(family)] == [family]
+    assert len(runner.dry_run_records()) == 4
+    monkeypatch.setattr(runner, "_run", lambda *_: pytest.fail("unknown family must not execute"))
+    with pytest.raises(SystemExit) as error:
+        runner.main(["--dry-run", "--task-family", "unknown_family"])
+    assert error.value.code == 2
+    assert "invalid choice" in capsys.readouterr().err
+
+
+def test_single_task_dry_run_and_mock_execute_write_one_row(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    family = "common_factor_quadratic_root_ordering"
+    assert runner.main(["--dry-run", "--task-family", family]) == 0
+    assert json.loads(capsys.readouterr().out)["task_count"] == 1
+
+    class FakeResponse:
+        text = "def generate(level=1, **kwargs):\n    return {}\n"
+
+    calls = 0
+    def fake_call(_prompt: str, _preset: dict) -> FakeResponse:
+        nonlocal calls
+        calls += 1
+        return FakeResponse()
+
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        output, summary = Path(temp) / "single.jsonl", Path(temp) / "single.md"
+        rows = runner._run(output, fake_call, family)
+        runner._write_summary(summary, rows)
+        assert "task_count: 1" in summary.read_text(encoding="utf-8")
+        persisted = output.read_text(encoding="utf-8").splitlines()
+    assert calls == len(rows) == len(persisted) == 1
+
+
 @pytest.mark.parametrize("run_id", ("../escape", "two/parts", "two\\parts", "contains.dot", ""))
 def test_run_id_is_safe(run_id: str) -> None:
     with pytest.raises(ValueError, match="run-id"):

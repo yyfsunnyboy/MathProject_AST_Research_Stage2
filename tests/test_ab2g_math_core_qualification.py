@@ -81,6 +81,7 @@ def test_cli_help_and_safe_default_never_enter_execution(capsys: pytest.CaptureF
     assert "--dry-run" in help_text
     assert "--execute-api" in help_text
     assert "--run-id" in help_text
+    assert "--task-family" in help_text
 
 
 def test_cli_dry_run_and_conflicting_flags_never_enter_execution(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
@@ -106,10 +107,10 @@ def test_execute_api_is_the_only_execution_path(monkeypatch: pytest.MonkeyPatch)
     run_id = "20260714_rerun1"
     result_path, summary_path = runner._output_paths(run_id)
     monkeypatch.setattr(runner, "_output_paths", lambda value: (result_path, SummarySink()))
-    monkeypatch.setattr(runner, "_run", lambda output, call: called.append((output, call)) or [])
+    monkeypatch.setattr(runner, "_run", lambda output, call, task_family=None: called.append((output, call, task_family)) or [])
     monkeypatch.setattr(runner, "API_LOOP_ENTERED", False)
     assert runner.main(["--execute-api", "--run-id", run_id]) == 0
-    assert called == [(result_path, runner._client_call)]
+    assert called == [(result_path, runner._client_call, None)]
     assert runner.API_LOOP_ENTERED is True
     assert summary
 
@@ -134,6 +135,40 @@ def test_dry_run_with_run_id_does_not_create_artifacts(capsys: pytest.CaptureFix
     assert runner.main(["--dry-run", "--run-id", run_id]) == 0
     assert len(json.loads(capsys.readouterr().out)) == 4
     assert not result.exists() and not summary.exists()
+
+
+def test_task_family_filter_is_single_cell_and_unknown_fails_before_execution(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    family = "common_factor_quadratic_root_ordering"
+    assert [row["task_family"] for row in runner.dry_run_records(family)] == [family]
+    assert len(runner.dry_run_records()) == 4
+    monkeypatch.setattr(runner, "_run", lambda *_: pytest.fail("unknown family must not execute"))
+    with pytest.raises(SystemExit) as error:
+        runner.main(["--dry-run", "--task-family", "unknown_family"])
+    assert error.value.code == 2
+    assert "invalid choice" in capsys.readouterr().err
+
+
+def test_single_task_dry_run_and_mock_execute_write_one_row(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:
+    family = "common_factor_quadratic_root_ordering"
+    assert runner.main(["--dry-run", "--task-family", family]) == 0
+    assert len(json.loads(capsys.readouterr().out)) == 1
+
+    class FakeResponse:
+        text = "def generate(level=1, **kwargs):\n    return {}\n"
+
+    calls = 0
+    def fake_call(_prompt: str, _preset: dict) -> FakeResponse:
+        nonlocal calls
+        calls += 1
+        return FakeResponse()
+
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        output = Path(temp) / "single.jsonl"
+        rows = runner._run(output, fake_call, family)
+        assert "task_count: 1" in runner._summary(rows)
+        persisted = output.read_text(encoding="utf-8").splitlines()
+    assert calls == len(rows) == len(persisted) == 1
 
 
 def test_existing_run_id_output_is_never_overwritten(monkeypatch: pytest.MonkeyPatch) -> None:
