@@ -41,8 +41,10 @@ check therefore fails at the first requirement: the return value is not a dict;
 consequently all required top-level keys (`question_text`, `correct_answer`,
 `oracle_payload`) are absent.  Local re-evaluation remains `schema_failure`.
 
-- Taxonomy: `nonsemantic_structural_failure`
-- Ab3 eligible: yes (if a future, separately authorized repair study permits it)
+- Taxonomy: `incomplete_generation / semantic_content_missing`
+- Ab3 eligible: no.  The main progression, cumulative-distance computation,
+  threshold decision, and return logic are absent; supplying them would create
+  mathematical semantics rather than perform a deterministic nonsemantic repair.
 
 ## Re-evaluation matrix
 
@@ -53,6 +55,7 @@ consequently all required top-level keys (`question_text`, `correct_answer`,
 | rpm_circumference_to_kph | runtime_failure | passed |
 | alternating_training_progression_threshold | schema_failure | schema_failure |
 
-The original score is 2/4.  The pipeline-corrected score is 3/4, and the
-model-valid score is 3/4.  The original artifact remains the record of the
+The original observed Ab2g score is 2/4.  The pipeline-corrected Ab2g score is
+3/4, the model-valid Ab2g score is 3/4, and Ab3-eligible failures are 0.  The
+original artifact remains the record of the
 initial execution; this report is an offline forensic correction only.
