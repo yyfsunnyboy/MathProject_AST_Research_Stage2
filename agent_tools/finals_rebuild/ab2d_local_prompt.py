@@ -11,7 +11,7 @@ import re
 from typing import Any, Mapping
 
 
-CORE_SCAFFOLD = """Write only complete Python source code.
+MATH_CORE_SCAFFOLD = """Write only complete Python source code.
 No Markdown fences, prose, explanations, or prompt echoes.
 Implement exactly:
 def generate(level=1, **kwargs):
@@ -20,10 +20,14 @@ question_text
 correct_answer
 oracle_payload
 oracle_payload must exactly equal the frozen parameters below.
+correct_answer must follow the task-specific schema.
 Do not use input(), file I/O, network, subprocess, os.system, eval, or exec.
 Do not use float when exact arithmetic is required by the task contract.
 Make one complete first attempt; do not self-retry.
 """
+
+# Retained as a compatibility alias for the existing Ab2d-local experiment.
+CORE_SCAFFOLD = MATH_CORE_SCAFFOLD
 
 
 TASK_LOCAL_PRIMITIVES: dict[str, str] = {
@@ -61,8 +65,23 @@ def assemble_ab2d_local_prompt(
         raise ValueError("task_contract must be a non-empty string")
     frozen = json.dumps(dict(frozen_parameters), ensure_ascii=False, sort_keys=True)
     return (
-        f"{CORE_SCAFFOLD}\n"
+        f"{MATH_CORE_SCAFFOLD}\n"
         f"## Task-local domain primitive: {task_family}\n{primitive}\n\n"
+        f"## Task contract\n{task_contract.strip()}\n\n"
+        f"## Frozen parameters\n{frozen}\n"
+    )
+
+
+def assemble_ab2g_math_core_prompt(
+    task_contract: str,
+    frozen_parameters: Mapping[str, Any],
+) -> str:
+    """Assemble the shared-core-only Ab2g treatment deterministically."""
+    if not isinstance(task_contract, str) or not task_contract.strip():
+        raise ValueError("task_contract must be a non-empty string")
+    frozen = json.dumps(dict(frozen_parameters), ensure_ascii=False, sort_keys=True)
+    return (
+        f"{MATH_CORE_SCAFFOLD}\n"
         f"## Task contract\n{task_contract.strip()}\n\n"
         f"## Frozen parameters\n{frozen}\n"
     )
