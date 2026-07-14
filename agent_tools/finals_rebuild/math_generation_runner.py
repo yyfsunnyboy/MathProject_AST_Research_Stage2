@@ -9,6 +9,12 @@ ALLOWED_MODELS={"qwen3:8b":{"model_digest":"500a1f067a9f","architecture":"qwen3"
 ALLOWED_CONDITIONS={"Ab1":"math_ab1_minimal_domain_prompt","Ab2g":"math_ab2g_generic_scaffold"}
 REQUIRED_KEYS=("task_id","domain","skill_id","task_description","required_entry_point","required_output_keys","seed")
 class MathGenerationManifestError(ValueError): pass
+class OllamaHTTPError(RuntimeError):
+    """HTTP failure with the response body retained for smoke-run diagnostics."""
+    def __init__(self, status: int, body: str):
+        self.status = status
+        self.body = body
+        super().__init__(f"Ollama HTTP {status}: {body}")
 @dataclass(frozen=True)
 class MathGenerationTask:
     task_id:str; domain:str; skill_id:str; task_description:str; required_entry_point:str; required_output_keys:tuple[str,...]; seed:int
@@ -48,6 +54,9 @@ def call_ollama_chat(url, payload, timeout):
     for attempt in range(2):
         try:
             with urllib.request.urlopen(request,timeout=timeout) as response: return json.loads(response.read())
+        except urllib.error.HTTPError as exc:
+            body=exc.read().decode("utf-8", errors="replace")
+            raise OllamaHTTPError(exc.code, body) from exc
         except (urllib.error.URLError, TimeoutError):
             if attempt: raise
 def _extract(text):

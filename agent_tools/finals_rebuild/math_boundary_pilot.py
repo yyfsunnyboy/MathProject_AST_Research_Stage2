@@ -103,7 +103,7 @@ def build_ab2g_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
 
 def build_ab2d_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
     from core.skill_policies.registry import list_registered_skill_ids, normalize_skill_id
-    from agent_tools.benchmark import load_prompt_from_skill
+    from agent_tools.prompt_loader import load_prompt_from_skill
 
     skill_name = normalize_skill_id(task["skill_id"], list_registered_skill_ids())
     if skill_name == "Unknown":
@@ -115,11 +115,30 @@ def build_ab2d_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
     return prompt
 
 
-def _execute_generate(source: str, timeout: float = 3.0) -> tuple[str, Any, str | None]:
+def _domain_execution_namespace(skill_id: str) -> dict[str, Any]:
+    """Return the documented Domain APIs available to a pilot candidate.
+
+    The normal production generator injects these helpers before execution.  The
+    pilot runs candidates in a clean subprocess, so it must provide the same
+    runtime names rather than leaving Ab2d's API contract prompt-only.
+    """
+    from core.prompts.domain_function_library import FractionOps, IntegerOps, PolynomialOps, RadicalOps
+
+    names = {"IntegerOps": IntegerOps, "FractionOps": FractionOps}
+    if skill_id == "radical_simplification":
+        names["RadicalOps"] = RadicalOps
+    if skill_id in {"polynomial_division_quotient_remainder", "polynomial_division_general", "polynomial_factor_roots"}:
+        names["PolynomialOps"] = PolynomialOps
+    return names
+
+
+def _execute_generate(source: str, timeout: float = 3.0, *, skill_id: str | None = None) -> tuple[str, Any, str | None]:
     wrapper = """import json, sys, traceback
 source = sys.stdin.read()
 try:
+    from core.prompts.domain_function_library import FractionOps, IntegerOps, PolynomialOps, RadicalOps
     ns = {'__name__': '__main__'}
+    ns.update({name: globals()[name] for name in json.loads(sys.argv[1])})
     exec(compile(source, 'candidate.py', 'exec'), ns)
     print(json.dumps({'ok': True, 'value': ns['generate']()}, ensure_ascii=False))
 except BaseException as exc:
@@ -127,7 +146,8 @@ except BaseException as exc:
 """
     try:
         environment = os.environ | {"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
-        proc = subprocess.run([sys.executable, "-X", "utf8", "-c", wrapper], input=source, capture_output=True, text=True, encoding="utf-8", errors="replace", env=environment, timeout=timeout)
+        namespace = _domain_execution_namespace(skill_id or "")
+        proc = subprocess.run([sys.executable, "-X", "utf8", "-c", wrapper, json.dumps(list(namespace))], input=source, capture_output=True, text=True, encoding="utf-8", errors="replace", env=environment, timeout=timeout)
     except subprocess.TimeoutExpired:
         return "runtime_failure", None, "timeout"
     if proc.returncode:
@@ -160,7 +180,7 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) ->
     entries = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "generate"]
     if len(entries) != 1:
         return "missing_entry_point", source, {"entry_point_count": len(entries)}
-    status, value, error = _execute_generate(source)
+    status, value, error = _execute_generate(source, skill_id=task["skill_id"])
     if status != "passed":
         return status, source, {"runtime_error": error}
     if not isinstance(value, dict) or set(value) != {"question_text", "correct_answer", "oracle_payload"} or not isinstance(value.get("question_text"), str) or value.get("oracle_payload") != frozen["oracle_payload"]:

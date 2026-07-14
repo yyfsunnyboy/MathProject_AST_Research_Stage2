@@ -10,7 +10,7 @@ import pytest
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.skill_policies.registry import normalize_skill_id, list_registered_skill_ids, refresh_registry
-from agent_tools.benchmark import load_prompt_from_skill
+from agent_tools.prompt_loader import load_prompt_from_skill
 from agent_tools.finals_rebuild.math_answer_contracts import render_answer_contract
 
 MANIFEST = Path(__file__).parent / "finals_rebuild" / "fixtures" / "math_generation_tasks_ce115_pilot.jsonl"

@@ -117,3 +117,10 @@ def test_unicode_source_and_question_text_use_utf8_subprocess_io():
     status, value, error = _execute_generate(source)
     assert status == "passed", error
     assert error is None and value["question_text"] == chr(0x6C42) + " " + chr(0x00B2) + " " + chr(0x7684) + chr(0x503C)
+
+
+def test_ab2d_polynomial_candidate_receives_documented_domain_api():
+    source = "def generate(level=1, **kwargs):\n q, r = PolynomialOps.div_qr([4, -3, -5], [1, 2])\n return {'question_text':'q','correct_answer':{},'oracle_payload':{}}\n"
+    status, value, error = _execute_generate(source, skill_id="polynomial_division_general")
+    assert status == "passed", error
+    assert value["question_text"] == "q"

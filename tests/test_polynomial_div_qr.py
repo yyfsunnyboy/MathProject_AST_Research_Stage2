@@ -221,7 +221,7 @@ def test_runtime_injection_carries_div_qr():
 
 def test_ab2d_polynomial_prompt_exposes_div_qr():
     from core.skill_policies.registry import normalize_skill_id, list_registered_skill_ids, refresh_registry
-    from agent_tools.benchmark import load_prompt_from_skill
+    from agent_tools.prompt_loader import load_prompt_from_skill
     refresh_registry()
     available = list_registered_skill_ids()
     norm = normalize_skill_id("polynomial_division_general", available)
@@ -240,7 +240,7 @@ def test_ab2d_polynomial_prompt_exposes_div_qr():
 
 def test_ab1_and_ab2g_do_not_gain_div_qr():
     from core.skill_policies.registry import normalize_skill_id, list_registered_skill_ids, refresh_registry
-    from agent_tools.benchmark import load_prompt_from_skill
+    from agent_tools.prompt_loader import load_prompt_from_skill
     refresh_registry()
     available = list_registered_skill_ids()
     norm = normalize_skill_id("polynomial_division_quotient_remainder", available)
