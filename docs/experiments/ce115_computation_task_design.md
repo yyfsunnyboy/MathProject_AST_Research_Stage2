@@ -124,20 +124,32 @@ Direct manifest aliases only (no fuzzy fallback, thresholds untouched):
 |---|---|---|
 | radical_simplification | NO_GAP | `RadicalOps.simplify` / `simplify_term` / `get_prime_factors` already cover simplification; plain Python also suffices |
 | exact_rational_expression | NO_GAP | `fractions.Fraction` + `FractionOps` fully sufficient |
-| polynomial_division | REUSABLE_PRIMITIVE_GAP (mild) | `PolynomialOps` has add/sub/mul but no `div_qr`; see §12 |
+| polynomial_division | NO_GAP (resolved) | `PolynomialOps.div_qr` implemented, runtime-registered, and prompt-exposed; see §12 |
 | polynomial_factor_roots | MODEL_SHOULD_IMPLEMENT_WITH_NORMAL_PYTHON | Integer discriminant + `isqrt` is a ten-line exact routine; a factoring primitive is not justified yet |
 
-Domain sufficiency: IntegerOps ✅, FractionOps ✅, RadicalOps ✅,
-PolynomialOps ⚠️ (missing division primitive only).
+Domain sufficiency: IntegerOps ✅, FractionOps ✅, RadicalOps ✅, PolynomialOps ✅.
 
 ## 12. Primitive Recommendations
 
-- `PolynomialOps.div_qr(dividend_coeffs, divisor_coeffs) -> (quotient, remainder)`:
-  **recommended** as the single genuinely reusable primitive (serves both the legacy
-  `polynomial_division_exact` family and `polynomial_division_general`, plus the
-  polynomial skill's F8/F9/F10 catalogue). **Not implemented in this round** — this is a
-  capability decision only; models can implement linear-divisor synthetic division in
-  plain Python meanwhile.
+- `PolynomialOps.div_qr(dividend_coefficients, divisor_coefficients) -> (quotient_coefficients, remainder_coefficients)`:
+  **implemented** (`core/prompts/domain_function_library.py`, both the runtime-injected
+  class and the `POLYNOMIALOPS_HELPERS` prompt copy).
+  - Coefficient order: highest degree first, inputs and outputs.
+  - Inputs: `int`, `Fraction`, or irreducible `"p/q"` strings; floats, bools, decimal
+    strings, malformed fractions, zero denominators, empty lists, and zero divisors all
+    raise `ValueError` (fail closed).
+  - Exact arithmetic via `fractions.Fraction`; outputs canonical (`int` when integral,
+    otherwise irreducible `"p/q"` with positive denominator), leading zeros removed,
+    zero polynomial is `[0]`.
+  - Supports monic and non-monic divisors of **any** degree (not restricted to linear).
+  - Invariants `dividend = divisor × quotient + remainder` and
+    `degree(remainder) < degree(divisor)` are test-enforced.
+  - Prompt exposure: an Ab2d-only `REUSABLE` block appended after
+    `=== SKILL_END_PROMPT ===` in the Polynomial SKILL.md — picked up by the Ab2d
+    reusable-section loader but outside the Ab2g base-rules split, so the frozen
+    Ab2g prompt is byte-unchanged (regression-tested).
+  - Tests: `tests/test_polynomial_div_qr.py` (44 tests: correctness, canonicalization,
+    invariants, fail-closed, runtime injection, prompt exposure, Ab1/Ab2g regression).
 - No radical, rational, or factoring primitives are added: existing APIs plus standard
   library cover them.
 - No per-question solvers.

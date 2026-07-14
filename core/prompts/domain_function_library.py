@@ -592,6 +592,64 @@ class PolynomialOps:
                 coeffs.append(random.randint(range_val[0], range_val[1]))
         return coeffs
 
+    @staticmethod
+    def div_qr(dividend_coefficients, divisor_coefficients):
+        """精確多項式長除法（降冪係數）。
+
+        回傳 (quotient_coefficients, remainder_coefficients)。
+        係數可為 int、Fraction 或最簡分數字串 "p/q"；禁止 float。
+        輸出 canonical：整數輸出 int，非整數輸出最簡 "p/q"（分母為正）；
+        移除前導零；零多項式為 [0]；degree(remainder) < degree(divisor)。
+        """
+        from fractions import Fraction
+
+        def _exact(seq, name):
+            if not isinstance(seq, (list, tuple)) or len(seq) == 0:
+                raise ValueError(f"{name} must be a non-empty coefficient list")
+            values = []
+            for position, value in enumerate(seq):
+                if isinstance(value, bool) or isinstance(value, float):
+                    raise ValueError(f"{name}[{position}] must be int, Fraction, or 'p/q' string")
+                if isinstance(value, (int, Fraction)):
+                    values.append(Fraction(value))
+                    continue
+                if isinstance(value, str) and "." not in value:
+                    try:
+                        values.append(Fraction(value))
+                        continue
+                    except (ValueError, ZeroDivisionError):
+                        pass
+                raise ValueError(f"{name}[{position}] must be int, Fraction, or 'p/q' string")
+            return values
+
+        def _strip(values):
+            index = 0
+            while index < len(values) - 1 and values[index] == 0:
+                index += 1
+            return values[index:]
+
+        def _canonical(value):
+            return int(value) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+        dividend = _strip(_exact(dividend_coefficients, "dividend"))
+        divisor = _strip(_exact(divisor_coefficients, "divisor"))
+        if all(value == 0 for value in divisor):
+            raise ValueError("divisor must not be the zero polynomial")
+        if all(value == 0 for value in dividend):
+            return [0], [0]
+        quotient = []
+        remainder = list(dividend)
+        while len(remainder) >= len(divisor):
+            term = remainder[0] / divisor[0]
+            quotient.append(term)
+            for j in range(1, len(divisor)):
+                remainder[j] = remainder[j] - term * divisor[j]
+            remainder = remainder[1:]
+        if not quotient:
+            quotient = [Fraction(0)]
+        remainder = _strip(remainder) if remainder else [Fraction(0)]
+        return [_canonical(value) for value in quotient], [_canonical(value) for value in remainder]
+
 
 # ============================================================================
 # [V2.5 新增] FractionOps - 分數標準函數庫
@@ -1298,6 +1356,64 @@ class PolynomialOps:
         choices_nonzero = [x for x in range(range_val[0], range_val[1] + 1) if x != 0]
         coeffs = [random.choice(choices_nonzero)] + [random.randint(range_val[0], range_val[1]) for _ in range(degree)]
         return coeffs
+
+    @staticmethod
+    def div_qr(dividend_coefficients, divisor_coefficients):
+        '''精確多項式長除法（降冪係數）。
+
+        回傳 (quotient_coefficients, remainder_coefficients)。
+        係數可為 int、Fraction 或最簡分數字串 "p/q"；禁止 float。
+        輸出 canonical：整數輸出 int，非整數輸出最簡 "p/q"（分母為正）；
+        移除前導零；零多項式為 [0]；degree(remainder) < degree(divisor)。
+        '''
+        from fractions import Fraction
+
+        def _exact(seq, name):
+            if not isinstance(seq, (list, tuple)) or len(seq) == 0:
+                raise ValueError(f"{name} must be a non-empty coefficient list")
+            values = []
+            for position, value in enumerate(seq):
+                if isinstance(value, bool) or isinstance(value, float):
+                    raise ValueError(f"{name}[{position}] must be int, Fraction, or 'p/q' string")
+                if isinstance(value, (int, Fraction)):
+                    values.append(Fraction(value))
+                    continue
+                if isinstance(value, str) and "." not in value:
+                    try:
+                        values.append(Fraction(value))
+                        continue
+                    except (ValueError, ZeroDivisionError):
+                        pass
+                raise ValueError(f"{name}[{position}] must be int, Fraction, or 'p/q' string")
+            return values
+
+        def _strip(values):
+            index = 0
+            while index < len(values) - 1 and values[index] == 0:
+                index += 1
+            return values[index:]
+
+        def _canonical(value):
+            return int(value) if value.denominator == 1 else f"{value.numerator}/{value.denominator}"
+
+        dividend = _strip(_exact(dividend_coefficients, "dividend"))
+        divisor = _strip(_exact(divisor_coefficients, "divisor"))
+        if all(value == 0 for value in divisor):
+            raise ValueError("divisor must not be the zero polynomial")
+        if all(value == 0 for value in dividend):
+            return [0], [0]
+        quotient = []
+        remainder = list(dividend)
+        while len(remainder) >= len(divisor):
+            term = remainder[0] / divisor[0]
+            quotient.append(term)
+            for j in range(1, len(divisor)):
+                remainder[j] = remainder[j] - term * divisor[j]
+            remainder = remainder[1:]
+        if not quotient:
+            quotient = [Fraction(0)]
+        remainder = _strip(remainder) if remainder else [Fraction(0)]
+        return [_canonical(value) for value in quotient], [_canonical(value) for value in remainder]
 """
 
 # ============================================================================

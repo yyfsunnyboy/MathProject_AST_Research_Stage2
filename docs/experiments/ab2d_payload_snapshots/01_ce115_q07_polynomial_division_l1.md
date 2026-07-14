@@ -344,6 +344,16 @@ Before returning code, verify:
 5. `correct_answer` matches the actual computed result.
 6. Geometry families do not silently drop geometric meaning.
 
+## Injected API: PolynomialOps.div_qr
+
+- `PolynomialOps.div_qr(dividend_coefficients, divisor_coefficients)` returns `(quotient_coefficients, remainder_coefficients)`.
+- Coefficient order is highest degree first, for both inputs and outputs.
+- Input coefficients may be `int`, `Fraction`, or irreducible fraction strings `"p/q"`. Floats are rejected.
+- Uses exact rational arithmetic (`fractions.Fraction`); no floats, no tolerance.
+- Output coefficients are canonical: `int` when integral, otherwise irreducible `"p/q"` with a positive denominator; leading zeros are removed; the zero polynomial is `[0]`.
+- Supports monic and non-monic divisors of any degree (nonzero divisor); raises `ValueError` on a zero divisor, empty lists, floats, or malformed fraction strings.
+- Guarantees `dividend = divisor * quotient + remainder` exactly, with `degree(remainder) < degree(divisor)`.
+
 
 # Task Specification: Polynomial Division
 - Task Name: Polynomial Division
