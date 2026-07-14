@@ -144,16 +144,36 @@ try:
 except BaseException as exc:
     print(json.dumps({'ok': False, 'type': type(exc).__name__, 'message': str(exc)}))
 """
+    environment = os.environ | {"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+    namespace = _domain_execution_namespace(skill_id or "")
+    proc = subprocess.Popen(
+        [sys.executable, "-X", "utf8", "-c", wrapper, json.dumps(list(namespace))],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        encoding="utf-8",
+        errors="replace",
+        env=environment,
+    )
     try:
-        environment = os.environ | {"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
-        namespace = _domain_execution_namespace(skill_id or "")
-        proc = subprocess.run([sys.executable, "-X", "utf8", "-c", wrapper, json.dumps(list(namespace))], input=source, capture_output=True, text=True, encoding="utf-8", errors="replace", env=environment, timeout=timeout)
+        stdout, stderr = proc.communicate(source, timeout=timeout)
     except subprocess.TimeoutExpired:
-        return "runtime_failure", None, "timeout"
+        proc.terminate()
+        try:
+            proc.communicate(timeout=1.0)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.communicate()
+        return "runtime_failure", None, f"execution_timeout after {timeout:.3f}s"
+    finally:
+        if proc.poll() is None:
+            proc.kill()
+            proc.communicate()
     if proc.returncode:
-        return "infrastructure_failure", None, proc.stderr
+        return "infrastructure_failure", None, stderr
     try:
-        result = json.loads(proc.stdout)
+        result = json.loads(stdout)
     except json.JSONDecodeError:
         return "infrastructure_failure", None, "invalid evaluator response"
     return ("passed", result.get("value"), None) if result.get("ok") else ("runtime_failure", None, result.get("message") or result.get("type"))
@@ -164,7 +184,7 @@ def _looks_truncated(raw: str) -> bool:
     return stripped.count("```") % 2 == 1
 
 
-def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) -> tuple[str, str | None, dict[str, Any]]:
+def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any], *, execution_timeout: float = 3.0) -> tuple[str, str | None, dict[str, Any]]:
     if not raw.strip():
         return "empty_response", None, {}
     if _looks_truncated(raw):
@@ -180,7 +200,7 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) ->
     entries = [node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "generate"]
     if len(entries) != 1:
         return "missing_entry_point", source, {"entry_point_count": len(entries)}
-    status, value, error = _execute_generate(source, skill_id=task["skill_id"])
+    status, value, error = _execute_generate(source, timeout=execution_timeout, skill_id=task["skill_id"])
     if status != "passed":
         return status, source, {"runtime_error": error}
     if not isinstance(value, dict) or set(value) != {"question_text", "correct_answer", "oracle_payload"} or not isinstance(value.get("question_text"), str) or value.get("oracle_payload") != frozen["oracle_payload"]:
