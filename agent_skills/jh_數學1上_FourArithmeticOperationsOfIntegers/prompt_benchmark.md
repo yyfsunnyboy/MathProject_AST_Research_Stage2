@@ -100,16 +100,6 @@ def generate(level=1, **kwargs):
         'correct_answer': str(int(ans)),
         'mode': 1
     }
-
-def check(user_answer, correct_answer):
-    try:
-        if str(user_answer).strip() == str(correct_answer).strip():
-            return {"correct": True, "result": "正確"}
-        if float(user_answer) == float(correct_answer):
-            return {"correct": True, "result": "正確"}
-    except Exception:
-        pass
-    return {"correct": False, "result": "錯誤"}
 ```
 
 ❌ 輸出 Markdown 代碼塊 → 直接寫 code

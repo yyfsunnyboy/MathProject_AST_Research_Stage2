@@ -135,19 +135,6 @@ def generate(level=1, **kwargs):
             continue
 
     return {'question_text': 'Error', 'answer': '', 'correct_answer': '0', 'mode': 1}
-
-
-def check(user_answer, correct_answer):
-    try:
-        ua = str(user_answer).strip()
-        ca = str(correct_answer).strip()
-        if ua == ca:
-            return {'correct': True, 'result': '正確'}
-        if Fraction(ua) == Fraction(ca):
-            return {'correct': True, 'result': '正確'}
-    except Exception:
-        pass
-    return {'correct': False, 'result': '錯誤'}
 ```
 
 ❌ 輸出 Markdown 代碼塊 → 直接寫 code

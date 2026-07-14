@@ -138,7 +138,7 @@ def show_model_selection_menu():
             print("\n⚠️  已取消選擇")
             return None
 
-def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
+def load_prompt_from_skill(skill_name, ablation_target="Ab3", task_metadata=None):
     """
     從 agent_skills/{skill_name}/ 讀取 Prompt
     """
@@ -175,6 +175,11 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3"):
             # 3. 組合最終 Benchmark 指令
             final_prompt = f"{base_rules}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}"
             
+            if task_metadata is not None:
+                from agent_tools.finals_rebuild.math_answer_contracts import render_answer_contract
+                contract_text = render_answer_contract(task_metadata)
+                final_prompt = f"{final_prompt}\n{contract_text}"
+
             return final_prompt
             
         return full_text

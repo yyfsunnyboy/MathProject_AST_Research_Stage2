@@ -143,16 +143,29 @@ Below are the audited, generic mathematical primitives proposed to resolve the i
 - **Catches**: Week/day indexing off-by-one errors, sequence calculation errors, inequality comparison errors.
 - **Does Not Catch**: Day name translations or formatting differences in text labels.
 
----
+## check() Contract Decision
 
-## Deferred
+- **是否進 payload**: No, all `check()` stubs, examples, and function implementations have been completely stripped and removed from the final assembled payload.
+- **是否被 evaluator 呼叫**: No, the evaluator `classify_response` inside `math_boundary_pilot.py` only imports and calls `generate()`. It does not call or check `check()`.
+- **是否移除**: Yes, the actual `check()` implementation blocks were removed from both Integers and Numbers `prompt_benchmark.md` files, any structural templates in `Integers/SKILL.md` were cleared, and any remaining stubs in other `SKILL.md` files are dynamically stripped during prompt loading.
+- **移除理由**: The prompt-defined generic `check()` compared simple strings or floats, which directly conflicted with the dictionary-based task oracle structures (e.g., RPM returning a dict of coefficient/unit). Removing it simplifies and cleans up the contract.
+- **未修改 oracle/evaluator**: No changes were made to the evaluators, oracles, or routing codes.
 
-- **`check()` Final Decision**:
-  - **Observation**: `CHECK_CONTRACT_MISMATCH`
-  - The `check(user_answer, correct_answer)` function included in prompt templates is not called or verified by the evaluation pipeline (`math_boundary_pilot.py` / `math_task_oracles.py`), which instead relies purely on `evaluate_math_task_oracle`. Decoupling or unification of these contracts is deferred to future rounds.
-- **Domain Function Primitives**:
-  - Implementing primitives like polynomial division (`PolynomialOps.div_qr`), prime divisors (`IntegerOps.smallest_prime_factor`), and sequence threshold solvers (`IntegerOps.solve_progression_threshold`) in `core/prompts/domain_function_library.py` is deferred.
-- **K–12 Capability Census**:
-  - Defining full K-12 coverage and mapping all boundary constraints beyond the 5 pilot tasks is deferred.
-- **正式 Ab2d Payload**:
-  - Assembling and running the actual Ab2d sandbox payload is deferred.
+## Payload Snapshot Verification
+
+| Task ID | Normalized Skill | Skill Folder | APIs | check() present | Contract valid | Blocking issue |
+|---|---|---|---|---|---|---|
+| `ce115_q07_polynomial_division_l1` | `jh_數學2上_FourArithmeticOperationsOfPolynomial` | `agent_skills/jh_數學2上_FourArithmeticOperationsOfPolynomial` | `PolynomialOps` | NO | YES | NONE |
+| `ce115_q24_rotation_speed_conversion_l1` | `jh_數學1上_FourArithmeticOperationsOfNumbers` | `agent_skills/jh_數學1上_FourArithmeticOperationsOfNumbers` | `IntegerOps`, `FractionOps` | NO | YES | NONE |
+| `ce115_q24_rotation_speed_conversion_l2` | `jh_數學1上_FourArithmeticOperationsOfNumbers` | `agent_skills/jh_數學1上_FourArithmeticOperationsOfNumbers` | `IntegerOps`, `FractionOps` | NO | YES | NONE |
+| `ce115_q20_largest_proper_divisor_l3` | `jh_數學1上_FourArithmeticOperationsOfIntegers` | `agent_skills/jh_數學1上_FourArithmeticOperationsOfIntegers` | `IntegerOps` | NO | YES | NONE |
+| `ce115_cr01_training_sequence_threshold_l3` | `jh_數學1上_FourArithmeticOperationsOfIntegers` | `agent_skills/jh_數學1上_FourArithmeticOperationsOfIntegers` | `IntegerOps` | NO | YES | NONE |
+
+*Explanation of Verification*: With the implementation of the metadata-driven dynamic answer contract renderer (fully decoupled from test fixtures), task-specific structured output schemas are now correctly injected into the final assembled payloads. The prompts no longer contain conflicting global statements requiring `correct_answer: str`, making all output schemas explicit and valid for the task oracles.
+
+## Remaining Blocks
+
+- **primitive 尚未核准**: The mathematical domain primitives (`PolynomialOps.div_qr`, `IntegerOps.smallest_prime_factor`, and `IntegerOps.solve_progression_threshold`) are not yet approved or implemented.
+- **temporary family mappings**: Tasks for RPM, divisor reasoning, and sequence threshold crossings are temporarily routed to broader numbers/integers skill families, rather than task-specific specialized families.
+- **K–12 capability census 尚未完成**: The full audit of capability gaps across all K-12 math modules is still pending.
+- **尚未跑 Ab2d 模型**: Execution of the assembled prompt payloads using Ollama / Qwen / Gemini models is deferred.

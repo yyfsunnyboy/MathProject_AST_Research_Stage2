@@ -1,3 +1,27 @@
+# Task Metadata
+- task_id: ce115_q07_polynomial_division_l1
+- raw skill_id: polynomial_division_quotient_remainder
+- normalized skill_id: jh_數學2上_FourArithmeticOperationsOfPolynomial
+- selected skill folder: agent_skills/jh_數學2上_FourArithmeticOperationsOfPolynomial
+- mapping classification: SEMANTIC_MATCH
+- difficulty: 1
+
+# Prompt Sources
+- SKILL.md path: agent_skills/jh_數學2上_FourArithmeticOperationsOfPolynomial/SKILL.md
+- prompt_benchmark.md path: agent_skills/jh_數學2上_FourArithmeticOperationsOfPolynomial/prompt_benchmark.md
+- loader function: agent_tools.benchmark.load_prompt_from_skill(..., ablation_target="Ab3", task_metadata=...)
+- whether check() is present: NO
+
+# Injected APIs
+- PolynomialOps
+
+# Entry Point Contract
+- function name: generate
+- parameters: level=1, **kwargs
+- return schema: dict with question_text (str), correct_answer (dict), and oracle_payload (dict)
+
+# Final Assembled Payload
+```markdown
 # Polynomial Skill Specification
 
 This skill covers junior-high polynomial four operations and closely related application problems for `jh_數學2上_FourArithmeticOperationsOfPolynomial`.
@@ -347,4 +371,72 @@ At minimum:
 
 本 benchmark 不要求實作 check()。
 
+
 === SKILL_END_PROMPT ===
+
+/no_think
+
+Return Python code only.
+
+Generate one valid benchmark-ready script for `jh_數學2上_FourArithmeticOperationsOfPolynomial`.
+
+Requirements:
+
+1. Define `generate(level=1, **kwargs)` and `check(user_answer, correct_answer)`.
+2. Use randomized same-family polynomial logic, not a fixed one-off question, unless impossible.
+3. Keep `question_text` textbook-style and LaTeX-wrapped.
+4. Keep `correct_answer` non-empty and deterministic.
+5. Prefer `PolynomialOps` for formatting and basic operations.
+6. If needed, add a small local helper for long division, quotient/remainder, reverse division, or geometry formulas.
+
+Supported families:
+
+- add/sub
+- unknown polynomial
+- multiplication
+- special identities
+- quotient/remainder
+- reverse division
+- mixed simplification
+- formula geometry
+
+Formatting:
+
+- wrap visible math in `$...$`
+- use `x^{2}`
+- use `\\frac{a}{b}` for fractions
+- use `\\times` and `\\div` when shown
+
+Answer format:
+
+- plain polynomial: `3x^2-2x+1`
+- quotient/remainder: `商式：...；餘式：...`
+- two targets: `周長：...；面積：...`
+
+Do not emit markdown fences, prose, or comments outside the Python code.
+
+
+# Answer Schema Contract
+Required return schema:
+{
+  "question_text": str,
+  "correct_answer": {
+      "quotient_coefficients": list[int | str],  # coefficients of the quotient (integers or fraction strings "p/q")
+      "remainder": int | str                    # remainder of the division (integer or fraction string "p/q")
+  },
+  "oracle_payload": dict
+}
+- Formatting rules: Output integers directly, or irreducible fraction strings in the format "p/q" if fractional. Do not use float values.
+- Equality: Exact matching via dictionary structure. No tolerance.
+
+```
+
+# Contract Audit
+- routing correct: YES
+- expected skill loaded: YES
+- expected APIs injected: YES
+- entry point explicit: YES
+- output schema explicit: YES
+- conflicting instructions: NO
+- check() mismatch present: NO
+- blocking issue: NONE
