@@ -101,6 +101,20 @@ def build_ab2g_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
     )
 
 
+def build_ab2d_prompt(task: dict[str, Any], frozen: dict[str, Any]) -> str:
+    from core.skill_policies.registry import list_registered_skill_ids, normalize_skill_id
+    from agent_tools.benchmark import load_prompt_from_skill
+
+    skill_name = normalize_skill_id(task["skill_id"], list_registered_skill_ids())
+    if skill_name == "Unknown":
+        raise ValueError(f"Ab2d routing failed for skill_id: {task['skill_id']!r}")
+    prompt = load_prompt_from_skill(skill_name, ablation_target="Ab3", task_metadata=task,
+                                    frozen_payload=frozen["oracle_payload"])
+    if not prompt:
+        raise ValueError(f"Ab2d prompt assembly failed for task: {task['task_id']!r}")
+    return prompt
+
+
 def _execute_generate(source: str, timeout: float = 3.0) -> tuple[str, Any, str | None]:
     wrapper = """import json, sys, traceback
 source = sys.stdin.read()
@@ -159,7 +173,7 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any]) ->
     return "passed", source, {}
 
 
-CONDITIONS = {"ab1": ("Ab1", build_ab1_prompt), "ab2g": ("Ab2g", build_ab2g_prompt)}
+CONDITIONS = {"ab1": ("Ab1", build_ab1_prompt), "ab2g": ("Ab2g", build_ab2g_prompt), "ab2d": ("Ab2d", build_ab2d_prompt)}
 
 
 def run_pilot(tasks: Sequence[dict[str, Any]], *, output_root: str | Path, run_id: str = RUN_ID_DEFAULT, repeat_seeds: Sequence[int] = REPEAT_SEEDS, models: Sequence[str] = MODEL_TAGS, ollama_url: str = "http://localhost:11434", timeout: int = 300, client: Callable[..., dict[str, Any]] = call_ollama_chat, supersedes_run_id: str | None = None, supersede_reason: str | None = None, condition: str = "ab1") -> dict[str, Any]:
@@ -223,7 +237,7 @@ def summarize_results(rows: Sequence[dict[str, Any]], run_id: str, duration: flo
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300); parser.add_argument("--supersedes-run-id"); parser.add_argument("--supersede-reason"); parser.add_argument("--condition", choices=("ab1", "ab2g"), default="ab1")
+    parser = argparse.ArgumentParser(); parser.add_argument("--task-manifest", required=True); parser.add_argument("--output-root", required=True); parser.add_argument("--run-id", default=RUN_ID_DEFAULT); parser.add_argument("--ollama-url", default="http://localhost:11434"); parser.add_argument("--timeout", type=int, default=300); parser.add_argument("--supersedes-run-id"); parser.add_argument("--supersede-reason"); parser.add_argument("--condition", choices=("ab1", "ab2g", "ab2d"), default="ab1")
     args = parser.parse_args(argv)
     run_pilot(load_pilot_tasks(args.task_manifest), output_root=args.output_root, run_id=args.run_id, ollama_url=args.ollama_url, timeout=args.timeout, supersedes_run_id=args.supersedes_run_id, supersede_reason=args.supersede_reason, condition=args.condition)
     return 0

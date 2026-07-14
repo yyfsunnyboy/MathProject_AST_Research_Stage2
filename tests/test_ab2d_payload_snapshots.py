@@ -312,6 +312,36 @@ def test_ab1_ab2g_path_unchanged():
     assert payload_ab1 == expected_ab1
 
 
+@pytest.mark.parametrize("task_id", list(PREFIX_MAP.keys()))
+def test_production_frozen_payload_propagation(task_id):
+    """9. Verify the production runner path: the same frozen object the evaluator
+    compares against is embedded verbatim in the assembled Ab2d prompt."""
+    from agent_tools.finals_rebuild.math_boundary_pilot import build_ab2d_prompt, frozen_payloads
+
+    tasks = {t["task_id"]: t for t in load_pilot_tasks()}
+    task = tasks[task_id]
+
+    frozen_records = frozen_payloads([task], repeat_seeds=(2026071301,))
+    assert len(frozen_records) == 1
+    frozen = frozen_records[0]
+
+    prompt = build_ab2d_prompt(task, frozen)
+
+    # The exact frozen dictionary used by classify_response must appear verbatim.
+    frozen_json = json.dumps(frozen["oracle_payload"], sort_keys=True)
+    assert frozen_json in prompt
+    assert "`oracle_payload` must exactly equal the frozen sampled parameters above" in prompt
+
+    # No re-sampling: a second build with the same frozen record is identical.
+    assert build_ab2d_prompt(task, frozen) == prompt
+
+
+def test_production_condition_registered():
+    """10. Verify the ab2d condition is wired into the production runner."""
+    from agent_tools.finals_rebuild.math_boundary_pilot import CONDITIONS, build_ab2d_prompt
+    assert CONDITIONS.get("ab2d") == ("Ab2d", build_ab2d_prompt)
+
+
 def test_benchmark_no_fixture_reading():
     """8. Verify that benchmark.py does not read the fixture file."""
     benchmark_src_path = Path(__file__).parent.parent / "agent_tools" / "benchmark.py"
