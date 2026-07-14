@@ -6,6 +6,7 @@ import ast
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -184,6 +185,21 @@ def _looks_truncated(raw: str) -> bool:
     return stripped.count("```") % 2 == 1
 
 
+_GENERATE_SOURCE_START = re.compile(r"(?m)^def\s+generate\s*\(")
+
+
+def _candidate_generate_source(extracted_source: str) -> str | None:
+    """Drop leading response prose only when a complete candidate entry point follows.
+
+    ``extract_code`` intentionally preserves unfenced text verbatim.  A model
+    occasionally prefaces an otherwise valid generator with prose, which must
+    not make the source unparsable.  Conversely, prose-only output is not
+    candidate source and must not be sent to the Python parser.
+    """
+    match = _GENERATE_SOURCE_START.search(extracted_source)
+    return extracted_source[match.start():] if match else None
+
+
 def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any], *, execution_timeout: float = 3.0) -> tuple[str, str | None, dict[str, Any]]:
     if not raw.strip():
         return "empty_response", None, {}
@@ -192,7 +208,9 @@ def classify_response(raw: str, frozen: dict[str, Any], task: dict[str, Any], *,
     extracted = extract_code(raw)
     if extracted.extraction_status != "extracted" or not extracted.extracted_code:
         return "extraction_failure", extracted.extracted_code, {"extraction_status": extracted.extraction_status}
-    source = extracted.extracted_code
+    source = _candidate_generate_source(extracted.extracted_code)
+    if source is None:
+        return "extraction_failure", None, {"extraction_status": "no_generate_source"}
     try:
         tree = ast.parse(source)
     except SyntaxError as exc:
