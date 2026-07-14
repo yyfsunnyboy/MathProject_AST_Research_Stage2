@@ -11,7 +11,9 @@
     "Arithmetic",
     "IntegerArithmetic",
     "FourArithmeticOperationsOfIntegers",
-    "jh_數學1上_四則運算"
+    "jh_數學1上_四則運算",
+    "largest_proper_divisor_reasoning",
+    "alternating_training_progression_threshold"
   ],
   "schema_version": "1.0"
 }

@@ -10,7 +10,8 @@
   "aliases": [
     "Algebra",
     "Polynomial",
-    "jh_數學2上_多項式的四則運算"
+    "jh_數學2上_多項式的四則運算",
+    "polynomial_division_quotient_remainder"
   ],
   "schema_version": "1.0"
 }
