@@ -41,27 +41,6 @@ The objective is to produce stable, family-preserving generators for:
 - `family`: `polynomial`
 - supported modes: `BENCHMARK`, `LIVESHOW`
 
-## Output Contract
-
-Every final script must define:
-
-```python
-def generate(level=1, **kwargs):
-    ...
-```
-本 benchmark 不要求實作 check()。
-
-`generate()` must return:
-
-```python
-{
-    "question_text": str,
-    "answer": "",
-    "correct_answer": str,
-    "mode": 1
-}
-```
-
 Rules:
 
 1. `question_text` must contain textbook Chinese wording.
@@ -365,58 +344,24 @@ Before returning code, verify:
 5. `correct_answer` matches the actual computed result.
 6. Geometry families do not silently drop geometric meaning.
 
-## Minimum check() Guidance
 
-At minimum:
+# Task Specification: Polynomial Division
+- Task Name: Polynomial Division
+- Input Parameters: `dividend_coefficients` (coefficients of the dividend polynomial) and `divisor_root` (the root of the linear divisor).
+- Output: `question_text` must ask the user to divide the dividend polynomial by the linear divisor (i.e. x - divisor_root) to find the quotient and remainder.
+- Calculation: `correct_answer` must calculate and return the quotient coefficients and remainder.
+- Data Contract: `oracle_payload` must return exactly the input parameters.
 
-本 benchmark 不要求實作 check()。
+Frozen sampled parameters:
+{"dividend_coefficients": [3, 5, -2], "divisor_root": -2}
 
+`oracle_payload` must exactly equal the frozen sampled parameters above.
 
-=== SKILL_END_PROMPT ===
+Return exactly these three top-level keys and no others:
+`question_text`, `correct_answer`, and `oracle_payload`.
+Do not return `answer`, `mode`, or any additional key.
+The task-specific `correct_answer` schema below supersedes any earlier generic `correct_answer: str` instruction.
 
-/no_think
-
-Return Python code only.
-
-Generate one valid benchmark-ready script for `jh_數學2上_FourArithmeticOperationsOfPolynomial`.
-
-Requirements:
-
-1. Define `generate(level=1, **kwargs)` and `check(user_answer, correct_answer)`.
-2. Use randomized same-family polynomial logic, not a fixed one-off question, unless impossible.
-3. Keep `question_text` textbook-style and LaTeX-wrapped.
-4. Keep `correct_answer` non-empty and deterministic.
-5. Prefer `PolynomialOps` for formatting and basic operations.
-6. If needed, add a small local helper for long division, quotient/remainder, reverse division, or geometry formulas.
-
-Supported families:
-
-- add/sub
-- unknown polynomial
-- multiplication
-- special identities
-- quotient/remainder
-- reverse division
-- mixed simplification
-- formula geometry
-
-Formatting:
-
-- wrap visible math in `$...$`
-- use `x^{2}`
-- use `\\frac{a}{b}` for fractions
-- use `\\times` and `\\div` when shown
-
-Answer format:
-
-- plain polynomial: `3x^2-2x+1`
-- quotient/remainder: `商式：...；餘式：...`
-- two targets: `周長：...；面積：...`
-
-Do not emit markdown fences, prose, or comments outside the Python code.
-
-
-# Answer Schema Contract
 Required return schema:
 {
   "question_text": str,
@@ -435,8 +380,8 @@ Required return schema:
 - routing correct: YES
 - expected skill loaded: YES
 - expected APIs injected: YES
-- entry point explicit: YES
-- output schema explicit: YES
-- conflicting instructions: NO
+- entry point explicit: NO
+- output schema explicit: NO
+- conflicting instructions: YES
 - check() mismatch present: NO
-- blocking issue: NONE
+- blocking issue: YES

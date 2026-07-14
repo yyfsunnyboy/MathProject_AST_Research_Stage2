@@ -1,3 +1,4 @@
+=== REUSABLE_START ===
 /no_think
 
 # Fraction Arithmetic Skill Specification
@@ -14,6 +15,7 @@ This skill is best modeled as a hybrid of:
 - `strict structural data contract` from radicals for fraction display and answer normalization
 
 In production, this skill should prefer deterministic helper orchestration for textbook-shaped fraction questions. Prompt generation remains a fallback, not the primary source of truth.
+=== REUSABLE_END ===
 
 ## Output Contract
 
@@ -30,6 +32,7 @@ def generate(level=1, **kwargs):
 ```
 本 benchmark 不要求實作 check()。
 
+=== REUSABLE_START ===
 Hard requirements:
 - `correct_answer` must never be empty.
 - Fraction answers must be reduced.
@@ -287,4 +290,5 @@ Excluded in phase 1:
 - image-dependent shaded geometry
 - OCR cases where the diagram contains unlabeled region partition information not present in text
 
+=== REUSABLE_END ===
 === SKILL_END_PROMPT ===

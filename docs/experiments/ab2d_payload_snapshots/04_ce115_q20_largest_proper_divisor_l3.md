@@ -39,35 +39,6 @@
 - 核心能力：整數加減乘除、負數括號、中括號、絕對值、整除型運算、複合結構同構
 
 ════════════════════════════════════════════════════════════════
-【Output Contract】
-════════════════════════════════════════════════════════════════
-最終腳本必須定義：
-
-```python
-def generate(level=1, **kwargs):
-    ...
-```
-本 benchmark 不要求實作 check()。
-
-`generate()` 必須回傳：
-
-```python
-{
-    "question_text": str,
-    "answer": "",
-    "correct_answer": str,
-    "mode": 1
-}
-```
-
-規則：
-1. `answer` 必須固定為空字串。
-2. `correct_answer` 不可為空。
-3. `question_text` 中可見數學式必須用 `$...$` 包裹。
-4. 若題面出現乘除符號，顯示層必須用 `\\times`、`\\div`。
-5. 負整數在題面中應以 `IntegerOps.fmt_num` 維持 `(-n)` 風格。
-
-════════════════════════════════════════════════════════════════
 【Engineering Constraints】
 ════════════════════════════════════════════════════════════════
 1. 必須 `import random`、`import math`；若有需要可 `from fractions import Fraction`。
@@ -259,124 +230,24 @@ Family 到節點的對應：
 - 若有 `[]`、`| |`、`(-n)`，顯示層必須保留。
 - 若有除法，結果不得為非整數。
 
-════════════════════════════════════════════════════════════════
-【Minimum check() Contract】
-════════════════════════════════════════════════════════════════
-本 benchmark 不要求實作 check()。
 
+# Task Specification: Largest Proper Divisor Logic Reasoning
+- Task Name: Largest Proper Divisor Logic Reasoning
+- Input Parameters: `largest_proper_divisors` (mapping from labels to largest proper divisors) and `claims` (list of necessity claims).
+- Output: `question_text` must present the claims and ask whether each necessity claim is logically true or false.
+- Calculation: `correct_answer` must evaluate and return the boolean truth value (True or False) of each claim in the exact frozen order.
+- Data Contract: `oracle_payload` must return exactly the input parameters.
 
-=== SKILL_END_PROMPT ===
+Frozen sampled parameters:
+{"claims": [{"asks_necessity": true, "candidate_factor": 2, "subject": "A"}, {"asks_necessity": true, "candidate_factor": 3, "subject": "B"}, {"asks_necessity": true, "candidate_factor": 2, "subject": "C"}], "largest_proper_divisors": {"A": 120, "B": 22, "C": 120}}
 
-【任務】
-實作 `def generate(level=1, **kwargs)`，生成整數四則運算題目。
-題目結構必須為：括號內混合運算 + 絕對值 + (Level 3: 高難度多層混和)。
-返回 dict: `{'question_text': str, 'answer': '', 'correct_answer': str, 'mode': 1}`
+`oracle_payload` must exactly equal the frozen sampled parameters above.
 
-【絕對禁止輸出 thinking 或任何非 code 內容】
-- 嚴禁寫任何思考過程、解釋、註解
-- 嚴禁寫 "Okay, I need to..." 或 "Let me think..."
-- 直接輸出 Python code，沒有任何前言、後語
-- 如果違反，直接 0 分
+Return exactly these three top-level keys and no others:
+`question_text`, `correct_answer`, and `oracle_payload`.
+Do not return `answer`, `mode`, or any additional key.
+The task-specific `correct_answer` schema below supersedes any earlier generic `correct_answer: str` instruction.
 
-【核心規則】
-1. **題目結構**：
-   - Level 1: Part 1 + Part 2
-   - Level 2: Part 1 - Part 2 + Part 3
-   - Level 3: -Part 1 + Part 2 - Part 3 + K
-2. **數值範圍**：
-   - Level 1: -20 ~ 20
-   - Level 2: -50 ~ 50
-   - Level 3: -100 ~ 100
-3. **格式化要求**：
-   - 所有負數必須使用 `IntegerOps.fmt_num(n)` 包裹。
-   - 題目中的乘號用 `\times`，除號用 `\div`。
-
-【強烈建議程式碼結構】
-```python
-import random
-import math
-# IntegerOps is injected automatically
-
-def generate(level=1, **kwargs):
-    # 1. Scaling
-    if level == 1:
-        r_min, r_max = -20, 20
-        div_max = 10
-    elif level == 2:
-        r_min, r_max = -50, 50
-        div_max = 20
-    else:
-        r_min, r_max = -100, 100
-        div_max = 30
-        
-    def rand_nz(a, b):
-        choices = [x for x in range(a, b+1) if x != 0]
-        if not choices: return 1
-        return random.choice(choices)
-
-    # Part 1: Complex Division [(a*m + b) / divisor]
-    divisor = rand_nz(2, div_max)
-    quotient = rand_nz(-15, 15)
-    dividend = divisor * quotient
-    
-    m = rand_nz(2, 5)
-    a_approx = dividend // m
-    if a_approx == 0: a_approx = 5
-    a = rand_nz(a_approx - 5, a_approx + 5)
-    b = dividend - (a * m)
-    
-    # 格式化 Part 1
-    fmt = IntegerOps.fmt_num
-    part1_str = f"[({fmt(a)} \\times {fmt(m)}) + {fmt(b)}] \\div {fmt(divisor)}"
-    part1_val = quotient
-    
-    # Part 2: Absolute Value |d*e - f + g|
-    d = rand_nz(-10, 15)
-    e = rand_nz(-10, 10)
-    f = rand_nz(1, 20)
-    g = rand_nz(-10, 10)
-    
-    if level == 1:
-        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)}|"
-        part2_val = abs(d * e - f)
-    else:
-        part2_str = f"|{fmt(d)} \\times {fmt(e)} - {fmt(f)} + {fmt(g)}|"
-        part2_val = abs(d * e - f + g)
-
-    # Part 3: Extra Term (h*i - j)
-    h = rand_nz(-10, 10)
-    i = rand_nz(2, 5)
-    j = rand_nz(1, 10)
-    part3_str = f"({fmt(h)} \\times {fmt(i)} - {fmt(j)})"
-    part3_val = h * i - j
-        
-    # Final Assembly
-    k = rand_nz(-50, 50)
-    
-    if level == 1:
-        question_text = f"計算 ${part1_str} + {part2_str}$ 的值。"
-        ans = part1_val + part2_val
-    elif level == 2:
-        question_text = f"計算 ${part1_str} - {part2_str} + {part3_str}$ 的值。"
-        ans = part1_val - part2_val + part3_val
-    else:
-        question_text = f"計算 $- {part1_str} + {part2_str} - {part3_str} + {fmt(k)}$ 的值。"
-        ans = -part1_val + part2_val - part3_val + k
-        
-    return {
-        'question_text': question_text,
-        'answer': '',       # 必須為空字串
-        'correct_answer': str(int(ans)),
-        'mode': 1
-    }
-```
-
-❌ 輸出 Markdown 代碼塊 → 直接寫 code
-⚠️ Output Python code ONLY. No introduction. No comments. No thinking.
-/no_think
-
-
-# Answer Schema Contract
 Required return schema:
 {
   "question_text": str,
@@ -394,8 +265,8 @@ Required return schema:
 - routing correct: YES
 - expected skill loaded: YES
 - expected APIs injected: YES
-- entry point explicit: YES
-- output schema explicit: YES
-- conflicting instructions: NO
+- entry point explicit: NO
+- output schema explicit: NO
+- conflicting instructions: YES
 - check() mismatch present: NO
-- blocking issue: NONE
+- blocking issue: YES

@@ -6,7 +6,7 @@ Generate one valid benchmark-ready script for `jh_數學2上_FourArithmeticOpera
 
 Requirements:
 
-1. Define `generate(level=1, **kwargs)` and `check(user_answer, correct_answer)`.
+1. Define `generate(level=1, **kwargs)`.
 2. Use randomized same-family polynomial logic, not a fixed one-off question, unless impossible.
 3. Keep `question_text` textbook-style and LaTeX-wrapped.
 4. Keep `correct_answer` non-empty and deterministic.

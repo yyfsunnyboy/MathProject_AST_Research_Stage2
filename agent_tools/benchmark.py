@@ -73,17 +73,17 @@ except ImportError as e:
 def show_model_selection_menu():
     """
     顯示模型選擇菜單
-    
+
     Returns:
         str: 選擇的模型 KEY (如 'qwen3-14b', 'gemini-3-flash')
     """
     # 從 Config.CODER_PRESETS 構建模型列表
     # [白名單] 只顯示實驗用的主要模型，排除 Legacy 模型
     BENCHMARK_MODELS = ['gemini-3-flash', 'qwen3-14b', 'qwen3-8b']
-    
+
     available_models = []
     model_display_names = {}
-    
+
     if hasattr(Config, 'CODER_PRESETS'):
         for key in BENCHMARK_MODELS:
             if key in Config.CODER_PRESETS:
@@ -91,13 +91,13 @@ def show_model_selection_menu():
                 provider = preset.get('provider', 'unknown')
                 model_name = preset.get('model', key)
                 desc = preset.get('description', key)
-                
+
                 available_models.append(key)
                 if provider == 'google':
                     model_display_names[key] = f"☁️  {model_name} ({desc})"
                 else:
                     model_display_names[key] = f"💻 {model_name} ({desc})"
-    
+
     # Fallback if no CODER_PRESETS found
     if not available_models:
         available_models = ['qwen3-14b', 'qwen3-8b', 'gemini-3-flash']
@@ -106,22 +106,22 @@ def show_model_selection_menu():
             'qwen3-8b': '💻 Qwen3-8B (Local)',
             'gemini-3-flash': '☁️  Gemini 3.0 Flash (Cloud)'
         }
-    
+
     print("\n" + "="*70)
     print("🤖 [模型選擇] 請選擇要使用的 AI 模型")
     print("="*70)
-    
+
     # [NEW] Option 0: Run All
     print(f"   [0] 🔄 Run All Models (Sequential)")
 
     for i, model_key in enumerate(available_models, 1):
         display_name = model_display_names.get(model_key, model_key)
         print(f"   [{i}] {display_name}")
-    
+
     while True:
         try:
             choice = input(f"\n👉 請輸入選項 (0-{len(available_models)}): ").strip()
-            
+
             if choice == '0':
                 print(f"✅ 已選擇: Run All Models (將依序執行所有模型)")
                 return "ALL"
@@ -138,7 +138,7 @@ def show_model_selection_menu():
             print("\n⚠️  已取消選擇")
             return None
 
-def load_prompt_from_skill(skill_name, ablation_target="Ab3", task_metadata=None):
+def load_prompt_from_skill(skill_name, ablation_target="Ab3", task_metadata=None, frozen_payload=None):
     """
     從 agent_skills/{skill_name}/ 讀取 Prompt
     """
@@ -146,44 +146,55 @@ def load_prompt_from_skill(skill_name, ablation_target="Ab3", task_metadata=None
         path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "experiments", "ab1_bare_prompt.md")
     else:
         path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "SKILL.md")
-    
+
     if os.path.exists(path):
         with open(path, "r", encoding="utf-8") as f:
             full_text = f.read()
-            
+
         if ablation_target != "Ab1" and "SKILL.md" in path:
-            # 實作區塊裁剪：保留法規區與 BENCHMARK 專用區
-            
-            # 1. 提取核心法規區 (=== 之前的部分)
-            base_rules = full_text.split('=== SKILL_END_PROMPT ===')[0]
-            
-            # 2. [架構規範] 優先讀取 prompt_benchmark.md，fallback 到 SKILL.md [[MODE:BENCHMARK]]
-            benchmark_md_path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "prompt_benchmark.md")
-            if os.path.exists(benchmark_md_path):
-                with open(benchmark_md_path, "r", encoding="utf-8") as f:
-                    benchmark_content = f.read().strip()
-            else:
-                benchmark_match = re.search(
-                    r'\[\[MODE:BENCHMARK\]\](.*?)\[\[END_MODE:BENCHMARK\]\]',
-                    full_text,
-                    re.DOTALL
-                )
-                if not benchmark_match:
-                    raise ValueError(f"無法在 {path} 中找到 BENCHMARK 標記區塊，且 prompt_benchmark.md 不存在！")
-                benchmark_content = benchmark_match.group(1).strip()
-            
-            # 3. 組合最終 Benchmark 指令
-            final_prompt = f"{base_rules}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}"
-            
             if task_metadata is not None:
+                # Ab2d path: load ONLY the reusable domain rules section from SKILL.md
+                if "=== REUSABLE_START ===" in full_text:
+                    reusable_parts = []
+                    for match in re.finditer(r"=== REUSABLE_START ===(.*?)=== REUSABLE_END ===", full_text, re.DOTALL):
+                        reusable_parts.append(match.group(1).strip())
+                    base_rules = "\n\n".join(reusable_parts)
+                else:
+                    base_rules = full_text.split('=== SKILL_END_PROMPT ===')[0]
+
+                final_prompt = base_rules
+
+                # Dynamic contract injection
                 from agent_tools.finals_rebuild.math_answer_contracts import render_answer_contract
-                contract_text = render_answer_contract(task_metadata)
+                contract_text = render_answer_contract(task_metadata, frozen_payload)
                 final_prompt = f"{final_prompt}\n{contract_text}"
+            else:
+                # Normal path (backward-compatible)
+                # 1. 提取核心法規區 (=== 之前的部分)
+                base_rules = full_text.split('=== SKILL_END_PROMPT ===')[0]
+
+                # 2. [架構規範] 優先讀取 prompt_benchmark.md，fallback 到 SKILL.md [[MODE:BENCHMARK]]
+                benchmark_md_path = os.path.join(PROJECT_ROOT, "agent_skills", skill_name, "prompt_benchmark.md")
+                if os.path.exists(benchmark_md_path):
+                    with open(benchmark_md_path, "r", encoding="utf-8") as f:
+                        benchmark_content = f.read().strip()
+                else:
+                    benchmark_match = re.search(
+                        r'\[\[MODE:BENCHMARK\]\](.*?)\[\[END_MODE:BENCHMARK\]\]',
+                        full_text,
+                        re.DOTALL
+                    )
+                    if not benchmark_match:
+                        raise ValueError(f"無法在 {path} 中找到 BENCHMARK 標記區塊，且 prompt_benchmark.md 不存在！")
+                    benchmark_content = benchmark_match.group(1).strip()
+
+                # 3. 組合最終 Benchmark 指令
+                final_prompt = f"{base_rules}\n=== SKILL_END_PROMPT ===\n\n{benchmark_content}"
 
             return final_prompt
-            
+
         return full_text
-            
+
     print(f"⚠️ Prompt file not found: {path}")
     return None
 
@@ -198,9 +209,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     # 1. Load Evals (Dynamic Aggregation)
     # [V9.7 Refactor] Now aggregates from agent_skills/*/evals.json
     # ==============================================================================
-    
+
     evals = []
-    
+
     # [V9.8] Check for explicit evals file override first
     # If the provided filename is NOT the default 'evals_full.json', we try to load it directly.
     skip_scan = False
@@ -208,7 +219,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
          target_path = evals_file
          if not os.path.isabs(target_path):
              target_path = os.path.join(PROJECT_ROOT, evals_file)
-         
+
          if os.path.exists(target_path):
              try:
                  print(f"📂 Loading explicit evals from: {target_path}")
@@ -221,7 +232,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                  print(f"⚠️ Failed to load explicit evals file: {e}")
 
     agent_skills_dir = os.path.join(PROJECT_ROOT, "agent_skills")
-    
+
     # 優先從各 Skill 目錄載入 (除非已明確指定檔案)
     if not skip_scan and os.path.exists(agent_skills_dir):
         print(f"📂 Scanning skills in: {agent_skills_dir}")
@@ -229,7 +240,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             skill_path = os.path.join(agent_skills_dir, skill_dir)
             if not os.path.isdir(skill_path):
                 continue
-                
+
             eval_file = os.path.join(skill_path, "evals.json")
             if os.path.exists(eval_file):
                 try:
@@ -273,13 +284,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     # Filter logic
     if filter_skill:
         evals = [e for e in evals if filter_skill in e.get("skill_name", "")]
-        
+
     if filter_ablation:
         if isinstance(filter_ablation, list):
             evals = [e for e in evals if e.get("ablation_target") in filter_ablation]
         else:
             evals = [e for e in evals if e.get("ablation_target") == filter_ablation]
-        
+
     if not evals:
          print(f"⚠️ No matching test cases found. Exiting.")
          return
@@ -298,7 +309,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             max_tokens = preset.get('max_tokens', 16384)
             extra_body = preset.get('extra_body', {})
             safety_settings = preset.get('safety_settings')
-            
+
             # Instantiate client based on provider
             if provider in ['google', 'gemini']:
                 client = GoogleAIClient(model_name, temperature, max_tokens=max_tokens, safety_settings=safety_settings)
@@ -309,7 +320,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
             client = get_ai_client()
     else:
         client = get_ai_client()
-        
+
     regex_healer = RegexHealer()
     ast_healer = ASTHealer()
 
@@ -326,21 +337,21 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
     # 3. Setup Storage
     instance_dir = os.path.join(PROJECT_ROOT, "instance")
     os.makedirs(instance_dir, exist_ok=True)
-    
+
     # [V7.4] Isolated DB per run — each benchmark session gets its own DB file
     # This prevents historical data from accumulating and distorting sample counts.
     if forced_run_ts:
         run_ts = forced_run_ts
     else:
         run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
     db_filename = f"benchmark_{run_ts}.db"
     db_path = os.path.join(instance_dir, db_filename)
     print(f"🗄️  DB: {db_path}")
-    
+
     if MCRI_AVAILABLE:
         create_database(db_path)
-    
+
     all_runs = []
     all_items = []
 
@@ -350,7 +361,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         skill_name = test_case.get("skill_name", "")
         ablation_target = test_case.get("ablation_target", "Ab3")
         desc = test_case.get("description", "")
-        
+
         # Mapping logic for backwards compatibility
         if not skill_name and "prompt_file" in test_case:
              mapping = {
@@ -371,7 +382,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
         for run_i in range(repeat_count):
             print(f"  🔹 Gen {run_i+1}/{repeat_count}...", end="", flush=True)
-            
+
             response = None      # [V7.5 FIX] Initialize before try to prevent UnboundLocalError on timeout
             healer_fixes = None  # [V7.5 FIX] Initialize before try (healer may never run if AI fails)
             healer_applied = False  # [V7.5 FIX] Same reason
@@ -382,11 +393,11 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     raw_code = response.text
                 else:
                     raw_code = str(response)
-                
+
                 # B. Heal & Extract Code
                 # [Robust Extraction] Search for code blocks anywhere in the text
                 cleaned_code = raw_code.strip()
-                
+
                 # [V9.8 Robust Extraction]
                 # 1. Try Markdown Fences
                 code_block_match = re.search(r'```python\s*(.*?)```', cleaned_code, re.DOTALL)
@@ -396,7 +407,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     code_block_match = re.search(r'```\s*(.*?)```', cleaned_code, re.DOTALL)
                     if code_block_match:
                         cleaned_code = code_block_match.group(1).strip()
-                
+
                 # 2. [NEW] Aggressive Prelude Stripper
                 # Identify the start of valid code (import or def)
                 # This removes "好的，..." or "Sure, here is..." thinking text
@@ -406,13 +417,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     if start_index > 0:
                         # Keep only from the first code token onwards
                          cleaned_code = cleaned_code[start_index:]
-                
+
                 # 3. Cleanup Fences (Double Safety)
                 cleaned_code = re.sub(r'^```python\s*', '', cleaned_code, flags=re.MULTILINE)
                 cleaned_code = re.sub(r'^```\s*', '', cleaned_code, flags=re.MULTILINE)
                 cleaned_code = re.sub(r'```$', '', cleaned_code.strip(), flags=re.MULTILINE)
-                
-                
+
+
                 raw_code = cleaned_code.strip()
                 print(f" 🔍 [Pre-Heal] Code: {raw_code[:100].replace(chr(10), ' ')}...")
 
@@ -420,7 +431,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
                 healer_fixes = {}
                 healer_applied = False
-                
+
                 if ablation_target == "Ab1":
                     healed_code = raw_code
                 elif ablation_target == "Ab2":
@@ -450,13 +461,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 try:
                     # [V10.3] Organized by skill + model (or skill root for all-models run)
                     curr_model_name = override_model or test_case.get("model", "unknown")
-                    
+
                     # Alias mapping for filename
                     model_alias = curr_model_name
                     if "gemini" in curr_model_name.lower(): model_alias = "Cloud"
                     elif "14b" in curr_model_name.lower(): model_alias = "14B"
                     elif "8b" in curr_model_name.lower(): model_alias = "8B"
-                    
+
                     if run_in_skill_root:
                         debug_dir = os.path.join(
                             PROJECT_ROOT, "agent_tools", "reports",
@@ -470,16 +481,16 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         )
                     os.makedirs(debug_dir, exist_ok=True)
                     timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
-                    
+
                     # 1. Raw Response (Full Thinking + Code)
                     original_text = response.text if hasattr(response, 'text') else str(response)
                     with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_raw.txt"), "w", encoding="utf-8") as f:
                         f.write(original_text)
-                    
+
                     # 2. Extracted Code (Pre-Heal)
                     with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_extracted.py"), "w", encoding="utf-8") as f:
                         f.write(raw_code)
-                    
+
                     # 3. Healed Code (Final)
                     with open(os.path.join(debug_dir, f"{eval_id_base}_{model_alias}_gen{run_i+1}_{timestamp_str}_healed.py"), "w", encoding="utf-8") as f:
                         f.write(healed_code)
@@ -505,13 +516,13 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     # [V6.3 FIX] Inject Metadata Headers for L5 Scoring
                     header_lines = []
                     header_lines.append("# ==============================================================================")
-                    
+
                     # 1. ID & Model Info
                     header_lines.append(f"# ID: {skill_name}")
                     model_str = override_model or test_case.get("model", "unknown")
                     strategy_str = "V10.1 Modular Refactored" # [TODO] Dynamic strategy name if possible
                     header_lines.append(f"# Model: {model_str} | Strategy: {strategy_str}")
-                    
+
                     # 2. Ablation & Healer Config
                     if ab_id == 3:
                         ab_tag = "3"
@@ -528,41 +539,41 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         basic_cleanup = "DISABLED"
                         adv_healer = "OFF"
                         fix_tag = "[Bare]"
-                    
+
                     header_lines.append(f"# Ablation ID: {ab_tag} | Basic Cleanup: {basic_cleanup} | Advanced Healer: {adv_healer}")
-                    
+
                     # 3. Performance Metrics
                     latency_val = response.latency_ms/1000 if response and hasattr(response, 'latency_ms') else 0
                     tokens_in = response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0
                     tokens_out = response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0
                     header_lines.append(f"# Performance: {latency_val:.2f}s | Tokens: In={tokens_in}, Out={tokens_out}")
-                    
+
                     # 4. Creation Time
                     header_lines.append(f"# Created At: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                    
+
                     # 5. Fix Status
                     basic_fixes = healer_fixes.get('basic', 0) if healer_fixes else 0
                     regex_fixes = healer_fixes.get('regex', 0) if healer_fixes else 0
                     ast_fixes = healer_fixes.get('ast', 0) if healer_fixes else 0
                     header_lines.append(f"# Fix Status: {fix_tag} | Fixes: Basic={basic_fixes}, Advanced=(Regex={regex_fixes}, AST={ast_fixes})")
-                    
+
                     # 6. Verification Status (Placeholder, actual verification happens in run_mcri_eval)
                     # If we reached here, at least the healer didn't crash
                     verify_status = "Internal Logic Check = PASSED" if healer_applied else "Internal Logic Check = PENDING"
                     header_lines.append(f"# Verification: {verify_status}")
-                    
+
                     header_lines.append("# ==============================================================================")
-                    
+
                     final_file_content = "\n".join(header_lines) + "\n" + healed_code
-                    
+
                     with open(temp_path, "w", encoding="utf-8") as f:
                         f.write(final_file_content)
                     gen_kwargs = test_case.get("generation_kwargs", {})
                     result_queue = multiprocessing.Queue()
-                    
+
                     # [V9.7.1 FIX] Ensure model_name is never empty
                     curr_model_name = override_model or test_case.get("model") or "unknown"
-                    
+
                     p = multiprocessing.Process(target=run_mcri_eval, args=(temp_path, ab_id, curr_model_name, gen_kwargs, idx, healer_applied, healer_fixes, skill_name, run_i, result_queue))
                     p.start()
                     p.join(Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10)
@@ -582,7 +593,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             'notes': f"評分超時 (>={Config.EXECUTION_TIMEOUT if hasattr(Config, 'EXECUTION_TIMEOUT') else 10}s)",
                             'healer_applied': 1 if healer_applied else 0,
                             'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
-                            'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                            'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0,
                             'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                             'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
                             'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
@@ -591,9 +602,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                             'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
                             'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
                             'source_code_path': temp_path,
-                            'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
-                            'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                            'prompt_hash': '', 
+                            'code_commit_hash': '', 'python_version': '', 'mcri_version': '',
+                            'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '',
+                            'prompt_hash': '',
                             'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
                             'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
                             'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
@@ -636,7 +647,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     'notes': "Load Failed (SyntaxError or Import Error)",
                                     'healer_applied': 1 if healer_applied else 0,
                                     'healer_fix_count': sum(v for v in healer_fixes.values() if isinstance(v, int)) if healer_fixes else 0,
-                                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0,
                                     'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                                     'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
                                     'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
@@ -645,9 +656,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                                     'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
                                     'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
                                     'source_code_path': temp_path,
-                                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
-                                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                                    'prompt_hash': '', 
+                                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '',
+                                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '',
+                                    'prompt_hash': '',
                                     'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
                                     'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
                                     'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
@@ -674,7 +685,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
 
             except Exception as e:
                 print(f" -> Error: {e}")
-                
+
                 # Create failed record for Exception
                 failed_record = {
                     'run_id': str(uuid.uuid4()),
@@ -691,7 +702,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     'healer_fixes_basic': 0,
                     'healer_fixes_regex': 0,
                     'healer_fixes_ast': 0,
-                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0, 
+                    'avg_exec_time': 0, 'score_l1_total': 0, 'score_l2_total': 0,
                     'avg_l3_total': 0, 'avg_l4_total': 0, 'score_l5_architecture': 0,
                     'avg_l4_4_mqi': 0, 'avg_complexity_math_ops': 0, 'avg_complexity_inference_steps': 0,
                     'avg_complexity_ast_nodes': 0, 'avg_complexity_loop_depth': 0,
@@ -700,9 +711,9 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                     'avg_l3_1_internal': 0, 'avg_l3_2_external': 0,
                     'avg_l4_1_numeric': 0, 'avg_l4_2_visual': 0, 'avg_l4_3_artifacts': 0,
                     'source_code_path': "",
-                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '', 
-                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '', 
-                    'prompt_hash': '', 
+                    'code_commit_hash': '', 'python_version': '', 'mcri_version': '',
+                    'model_temperature': 0, 'batch_id': '', 'golden_prompt_path': '',
+                    'prompt_hash': '',
                     'prompt_tokens': response.prompt_tokens if response and hasattr(response, 'prompt_tokens') else 0,
                     'completion_tokens': response.completion_tokens if response and hasattr(response, 'completion_tokens') else 0,
                     'total_tokens': response.total_tokens if response and hasattr(response, 'total_tokens') else 0,
@@ -720,7 +731,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
         insert_evaluation_items(conn, all_items)
         summary_data = compute_and_insert_summary(conn)
         conn.close()
-        
+
         # Export CSVs
         # [V7.5] Organized by skill + model (or skill root for all-models run)
         _csv_skills = list(set(r['skill_name'] for r in all_runs))
@@ -735,7 +746,7 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                 _csv_skill_dir, model_slug
             )
         os.makedirs(report_dir, exist_ok=True)
-        
+
         # Determine Prefix based on report_name_prefix or filter
         if report_name_prefix:
             prefix = report_name_prefix
@@ -750,32 +761,32 @@ def run_benchmark(evals_file="math-problem-generator/evals/evals_full.json", fil
                         prefix += f"_{ab_str}"
                      else:
                         prefix += f"_{filter_ablation}"
-        
+
         # [V10.2] Single CSV file logic: Use run_ts for shared file
         ts = run_ts
-        
+
         run_file = os.path.join(report_dir, f"{prefix}_runs_{ts}.csv")
         item_file = os.path.join(report_dir, f"{prefix}_items_{ts}.csv")
         sum_file = os.path.join(report_dir, f"{prefix}_summary_{ts}.csv")
-        
+
         # Determine write mode (append if exists)
         w_mode = 'a' if os.path.exists(run_file) else 'w'
-        
+
         write_experiment_runs_csv(all_runs, run_file, mode=w_mode)
         write_evaluation_items_csv(all_items, item_file, mode=w_mode)
-        
+
         # [V7.3 FIX] Filter summary to only include skills from the current run
         # compute_and_insert_summary reads the ENTIRE DB; we narrow it to current scope.
         current_skills = set(r['skill_name'] for r in all_runs)
         current_models = set(r['model_name'] for r in all_runs)
-        
+
         # [V10.2] Filter by model too, to avoid duplicating previous models in append mode
         filtered_summary = [
-            s for s in summary_data 
+            s for s in summary_data
             if s['skill_name'] in current_skills and s['model_name'] in current_models
         ]
         write_ablation_summary_csv(filtered_summary, sum_file, mode=w_mode)
-        
+
         print(f"\n✅ Results saved to {report_dir}")
         print(f"   - {os.path.basename(run_file)}")
         print(f"   - {os.path.basename(item_file)}")
@@ -787,7 +798,7 @@ def show_interactive_menu(evals_file):
     print("\n" + "="*60)
     print("🔎 Benchmark Interactive Menu")
     print("="*60)
-    
+
     if os.path.isabs(evals_file):
         evals_path = evals_file
     else:
@@ -819,7 +830,7 @@ def show_interactive_menu(evals_file):
             skill_path = os.path.join(agent_skills_dir, skill_dir)
             if not os.path.isdir(skill_path):
                 continue
-                
+
             eval_file = os.path.join(skill_path, "evals.json")
             if os.path.exists(eval_file):
                 try:
@@ -835,19 +846,19 @@ def show_interactive_menu(evals_file):
                 except Exception as e:
                     print(f"⚠️ Failed to load {eval_file}: {e}")
 
-        
+
     skills = sorted(list(set(e.get("skill_name", "Unknown") for e in evals if e.get("skill_name"))))
-    
+
     # 暫時隱藏微積分模組 (目前專注重點為國中數學)
     if "gh_ApplicationsOfDerivatives" in skills:
         skills.remove("gh_ApplicationsOfDerivatives")
-    
+
     print("[0] Run All Skills")
     for i, skill in enumerate(skills, 1):
         print(f"[{i}] {skill}")
-        
+
     choice = input(f"\n👉 Select Skill (0-{len(skills)}): ").strip()
-    
+
     selected_skill = None
     if choice != '0':
         try:
@@ -861,13 +872,13 @@ def show_interactive_menu(evals_file):
     print("[1] Ab1 (Bare)")
     print("[2] Ab2 (Regex)")
     print("[3] Ab3 (AST)")
-    
+
     ab_choice = input("\n👉 Select Ablation (0-3): ").strip()
     selected_ablation = None
     if ab_choice == '1': selected_ablation = "Ab1"
     elif ab_choice == '2': selected_ablation = "Ab2"
     elif ab_choice == '3': selected_ablation = "Ab3"
-    
+
     print("\n[Repetitions for Generation]")
     rep_choice = input("👉 Enter number of generations per case (default 1): ").strip()
     try:
@@ -875,38 +886,38 @@ def show_interactive_menu(evals_file):
         if repeat_count < 1: repeat_count = 1
     except:
         repeat_count = 1
-    
+
     # Model Selection
     selected_model_or_all = show_model_selection_menu()
-    
+
     if selected_model_or_all == "ALL":
         # [V7.5 FIX] Use BENCHMARK_MODELS whitelist, not all CODER_PRESETS keys
         BENCHMARK_MODELS = ['gemini-3-flash', 'qwen3-14b', 'qwen3-8b']
         c_presets = [k for k in BENCHMARK_MODELS if hasattr(Config, 'CODER_PRESETS') and k in Config.CODER_PRESETS]
         if not c_presets:
             c_presets = ['qwen3-8b']
-        
+
         print("\n" + "="*80)
         print(f"🚀 開始執行全模型 Benchmark (共 {len(c_presets)} 個模型)")
         print("="*80)
-        
+
         # [V10.2] Generate shared timestamp for all models in this batch
         master_run_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         for i, model_name in enumerate(c_presets, 1):
              print(f"\n[{i}/{len(c_presets)}] 正在測試模型: {model_name} ...")
              run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=model_name, run_in_skill_root=True, forced_run_ts=master_run_ts)
              print(f"✅ 模型 {model_name} 測試完成。")
-             
+
         print("\n🎉 所有模型測試完畢！")
-        
+
     else:
         # Single Model
         selected_model = selected_model_or_all
         if not selected_model:
             print("⚠️  未選擇模型，使用預設模型")
             selected_model = None
-        
+
         run_benchmark(evals_path, filter_skill=selected_skill, filter_ablation=selected_ablation, repeat_count=repeat_count, override_model=selected_model)
 
 if __name__ == "__main__":
@@ -920,14 +931,14 @@ if __name__ == "__main__":
     parser.add_argument("--report_name", help="Custom name prefix for the report")
     parser.add_argument("--menu", action="store_true", help="Show interactive menu")
     args = parser.parse_args()
-    
+
     if args.skill or args.ablation or args.repeat > 1 or args.model:
         # Handle list or single string for ablation
         if isinstance(args.ablation, list):
             ablations = args.ablation
         else:
             ablations = [args.ablation] if args.ablation else None
-            
+
         run_benchmark(args.evals, filter_skill=args.skill, filter_ablation=ablations, repeat_count=args.repeat, override_model=args.model, report_name_prefix=args.report_name)
     else:
         show_interactive_menu(args.evals)

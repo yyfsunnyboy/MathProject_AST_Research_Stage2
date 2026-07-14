@@ -1,3 +1,4 @@
+=== REUSABLE_START ===
 # Polynomial Skill Specification
 
 This skill covers junior-high polynomial four operations and closely related application problems for `jh_數學2上_FourArithmeticOperationsOfPolynomial`.
@@ -16,6 +17,7 @@ The objective is to produce stable, family-preserving generators for:
 - `display_name`: Polynomial Four Operations
 - `family`: `polynomial`
 - supported modes: `BENCHMARK`, `LIVESHOW`
+=== REUSABLE_END ===
 
 ## Output Contract
 
@@ -38,6 +40,7 @@ def generate(level=1, **kwargs):
 }
 ```
 
+=== REUSABLE_START ===
 Rules:
 
 1. `question_text` must contain textbook Chinese wording.
@@ -341,6 +344,7 @@ Before returning code, verify:
 5. `correct_answer` matches the actual computed result.
 6. Geometry families do not silently drop geometric meaning.
 
+=== REUSABLE_END ===
 ## Minimum check() Guidance
 
 At minimum:

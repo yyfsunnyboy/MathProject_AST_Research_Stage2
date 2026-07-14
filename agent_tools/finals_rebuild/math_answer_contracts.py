@@ -1,5 +1,41 @@
 # -*- coding: utf-8 -*-
+import json
 from typing import Any, Mapping
+
+OVERRIDE_STATEMENT = """Return exactly these three top-level keys and no others:
+`question_text`, `correct_answer`, and `oracle_payload`.
+Do not return `answer`, `mode`, or any additional key.
+The task-specific `correct_answer` schema below supersedes any earlier generic `correct_answer: str` instruction."""
+
+NEUTRAL_TASK_STATEMENTS = {
+    "polynomial_division_exact": """# Task Specification: Polynomial Division
+- Task Name: Polynomial Division
+- Input Parameters: `dividend_coefficients` (coefficients of the dividend polynomial) and `divisor_root` (the root of the linear divisor).
+- Output: `question_text` must ask the user to divide the dividend polynomial by the linear divisor (i.e. x - divisor_root) to find the quotient and remainder.
+- Calculation: `correct_answer` must calculate and return the quotient coefficients and remainder.
+- Data Contract: `oracle_payload` must return exactly the input parameters.""",
+
+    "rpm_circumference_kph": """# Task Specification: Rotation Speed Conversion
+- Task Name: Rotation Speed Conversion
+- Input Parameters: `circumference_cm` (wheel circumference in cm), `rpm_symbol` (symbol for rpm), and `requested_unit` ("km/h").
+- Output: `question_text` must ask to calculate the linear speed in km/h for 1 RPM.
+- Calculation: `correct_answer` must calculate the speed coefficient for 1 RPM as a reduced fraction string, and the unit "km/h".
+- Data Contract: `oracle_payload` must return exactly the input parameters.""",
+
+    "largest_proper_divisor_logic": """# Task Specification: Largest Proper Divisor Logic Reasoning
+- Task Name: Largest Proper Divisor Logic Reasoning
+- Input Parameters: `largest_proper_divisors` (mapping from labels to largest proper divisors) and `claims` (list of necessity claims).
+- Output: `question_text` must present the claims and ask whether each necessity claim is logically true or false.
+- Calculation: `correct_answer` must evaluate and return the boolean truth value (True or False) of each claim in the exact frozen order.
+- Data Contract: `oracle_payload` must return exactly the input parameters.""",
+
+    "alternating_sequence_threshold": """# Task Specification: Alternating Sequence Threshold Crossing
+- Task Name: Alternating Sequence Threshold Crossing
+- Input Parameters: `track_length_m` (track length in meters), `initial_first_day_laps` (laps on first training day), `same_week_increment_laps` (lap increment), `threshold_km` (distance threshold in km), `specified_week` (specified week number), `specified_day` (specified day of week), and `day_labels` (list of training days in a week).
+- Output: `question_text` must ask to find the laps completed in the specified week/day, and the week and day when total cumulative distance first exceeds the threshold.
+- Calculation: `correct_answer` must compute the specified session laps, the first exceed week, and the first exceed day.
+- Data Contract: `oracle_payload` must return exactly the input parameters."""
+}
 
 POLYNOMIAL_DIVISION_CONTRACT = """Required return schema:
 {
@@ -57,10 +93,26 @@ CONTRACTS: Mapping[str, str] = {
 }
 
 
-def render_answer_contract(task_metadata: Mapping[str, Any]) -> str:
+def render_answer_contract(task_metadata: Mapping[str, Any], frozen_payload: Mapping[str, Any] | None = None) -> str:
     if not isinstance(task_metadata, Mapping):
         raise ValueError("ANSWER_CONTRACT_NOT_FOUND")
     oracle_type = task_metadata.get("oracle_type")
     if not oracle_type or oracle_type not in CONTRACTS:
         raise ValueError("ANSWER_CONTRACT_NOT_FOUND")
-    return f"\n\n# Answer Schema Contract\n{CONTRACTS[oracle_type]}\n"
+
+    parts = []
+
+    # 1. Neutral task statement
+    parts.append(NEUTRAL_TASK_STATEMENTS[oracle_type])
+
+    # 2. Frozen sampled parameters
+    if frozen_payload is not None:
+        parts.append(f"Frozen sampled parameters:\n{json.dumps(frozen_payload, sort_keys=True)}\n\n`oracle_payload` must exactly equal the frozen sampled parameters above.")
+
+    # 3. Override statement (B1)
+    parts.append(OVERRIDE_STATEMENT)
+
+    # 4. Task-specific contract
+    parts.append(CONTRACTS[oracle_type])
+
+    return "\n\n" + "\n\n".join(parts) + "\n"
