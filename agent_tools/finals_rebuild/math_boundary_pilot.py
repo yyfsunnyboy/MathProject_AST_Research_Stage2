@@ -189,13 +189,18 @@ _GENERATE_SOURCE_START = re.compile(r"(?m)^def\s+generate\s*\(")
 
 
 def _candidate_generate_source(extracted_source: str) -> str | None:
-    """Drop leading response prose only when a complete candidate entry point follows.
+    """Keep valid module prelude, or drop leading response prose.
 
-    ``extract_code`` intentionally preserves unfenced text verbatim.  A model
-    occasionally prefaces an otherwise valid generator with prose, which must
-    not make the source unparsable.  Conversely, prose-only output is not
-    candidate source and must not be sent to the Python parser.
+    ``extract_code`` intentionally preserves unfenced text verbatim.  A valid
+    response may have module imports needed by ``generate``; preserve that
+    whole module.  Only unparsable leading prose is removed.  Prose-only
+    output is not candidate source and must not be sent to the Python parser.
     """
+    try:
+        ast.parse(extracted_source)
+        return extracted_source
+    except SyntaxError:
+        pass
     match = _GENERATE_SOURCE_START.search(extracted_source)
     return extracted_source[match.start():] if match else None
 

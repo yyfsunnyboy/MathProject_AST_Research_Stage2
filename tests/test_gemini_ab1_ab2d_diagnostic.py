@@ -74,6 +74,13 @@ def test_fenced_python_source_is_evaluable() -> None:
     assert candidate == source
 
 
+def test_valid_module_import_prelude_is_preserved_for_generate() -> None:
+    source = "import math\n\n" + _valid_source()
+    outcome, candidate, _ = classify_response(source, _frozen(), TASK)
+    assert outcome == "passed"
+    assert candidate == source.strip()
+
+
 def test_leading_prose_is_removed_only_before_generate_source() -> None:
     source = _valid_source()
     outcome, candidate, _ = classify_response(f"Here is the generator:\n\n{source}", _frozen(), TASK)
