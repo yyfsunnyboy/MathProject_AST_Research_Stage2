@@ -4,6 +4,7 @@ Flask-Login
 pandas
 python-dotenv
 google-generativeai
+google-genai==2.11.0
 sqlalchemy
 flask_sqlalchemy
 openpyxl
