@@ -2,5 +2,5 @@
   {"task_family": "polynomial_division_quotient_remainder", "sha256": "02ac4b38d3f22a8da97c0a2c5e078dce7877d0b97ed8b5c655152f8d0928e4cf"},
   {"task_family": "largest_proper_divisor_reasoning", "sha256": "6daf12551aa3b9a16eee66dcbae901ed42d997aa8240ee7bfed252ff9fb059fc"},
   {"task_family": "rpm_circumference_to_kph", "sha256": "70b39697313a6b34b968a80d5e4c3a3d78a44be45ce4b4c3bbcd584ced438c26"},
-  {"task_family": "alternating_training_progression_threshold", "sha256": "98ec5959524c11ded0e1295fe9a1a6c48829fd2ef023ed0ef80923d406374520"}
+  {"task_family": "common_factor_quadratic_root_ordering", "sha256": "c280bf7f2b36e5c21753c89e41aed07ce3784116ff90fbfeb9c43f26bcdaccd9"}
 ]

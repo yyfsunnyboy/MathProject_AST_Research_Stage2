@@ -139,6 +139,29 @@ def evaluate_alternating_sequence_threshold(oracle_payload: dict[str, Any], subm
         return _result(oracle_type, None, submitted_answer, str(exc))
 
 
+def evaluate_common_factor_quadratic_root_ordering(oracle_payload: dict[str, Any], submitted_answer: Any) -> dict[str, Any]:
+    """Evaluate (leading*x - subtracted) * (x + shared_shift) = 0 exactly."""
+    oracle_type = "common_factor_quadratic_root_ordering"
+    try:
+        shift = _integer(oracle_payload["shared_shift"], "shared_shift")
+        leading = _integer(oracle_payload["leading_factor"], "leading_factor")
+        subtracted = _integer(oracle_payload["subtracted_factor"], "subtracted_factor")
+        order = oracle_payload["root_order"]
+        combination = oracle_payload["linear_combination"]
+        if shift <= 0 or leading == 0 or not isinstance(order, str) or order != "a>b" or not isinstance(combination, dict):
+            raise ValueError("positive shift, nonzero leading factor, a>b order, and linear_combination are required")
+        coefficient_a = _integer(combination["a"], "linear_combination.a")
+        coefficient_b = _integer(combination["b"], "linear_combination.b")
+        roots = [Fraction(subtracted, leading), Fraction(-shift, 1)]
+        if roots[0] == roots[1]:
+            raise ValueError("two distinct roots are required")
+        a, b = sorted(roots, reverse=True)
+        expected = {"value": _canonical_number(coefficient_a * a + coefficient_b * b)}
+        return _result(oracle_type, expected, submitted_answer)
+    except (KeyError, ValueError, TypeError) as exc:
+        return _result(oracle_type, None, submitted_answer, str(exc))
+
+
 def _canonical_number(value: Fraction) -> Any:
     text = _fraction_text(value)
     return int(text) if "/" not in text else text
@@ -245,6 +268,7 @@ _DISPATCH: dict[str, Callable[[dict[str, Any], Any], dict[str, Any]]] = {
     "largest_proper_divisor_logic": evaluate_largest_proper_divisor,
     "rpm_circumference_kph": evaluate_rpm_circumference_kph,
     "alternating_sequence_threshold": evaluate_alternating_sequence_threshold,
+    "common_factor_quadratic_root_ordering": evaluate_common_factor_quadratic_root_ordering,
     "radical_simplification": evaluate_radical_simplification,
     "exact_rational_expression": evaluate_exact_rational_expression,
     "polynomial_division_general": evaluate_polynomial_division_general,

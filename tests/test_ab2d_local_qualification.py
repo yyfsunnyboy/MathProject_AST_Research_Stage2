@@ -11,6 +11,7 @@ import pytest
 
 from agent_tools.finals_rebuild.ab2d_local_prompt import TASK_LOCAL_PRIMITIVES, assemble_ab2g_math_core_prompt
 from agent_tools.finals_rebuild.math_boundary_pilot import classify_response
+from agent_tools.finals_rebuild.math_task_oracles import evaluate_math_task_oracle
 from scripts import run_gemini_ab2d_local_qualification as runner
 
 
@@ -28,6 +29,32 @@ def test_local_prompts_have_only_the_required_additional_primitive() -> None:
         assert row["final_prompt"] == expected
         assert row["prompt_condition"] == "Ab2d-local"
         assert "oracle_expected" not in row["final_prompt"]
+
+
+def test_ce115_q09_common_factor_reconstruction_is_exact_and_not_run() -> None:
+    row = next(row for row in runner.dry_run_records() if row["task_family"] == "common_factor_quadratic_root_ordering")
+    payload = row["task_parameters"]
+    assert payload == {
+        "shared_shift": 7,
+        "leading_factor": 2,
+        "subtracted_factor": 10,
+        "root_order": "a>b",
+        "linear_combination": {"a": 1, "b": 2},
+    }
+    verdict = evaluate_math_task_oracle("common_factor_quadratic_root_ordering", payload, {"value": -9})
+    assert verdict["is_correct"] is True and verdict["expected_answer"] == {"value": -9}
+    assert evaluate_math_task_oracle("common_factor_quadratic_root_ordering", payload, {"value": 3})["is_correct"] is False
+    assert "alternating_training_progression_threshold" not in runner.FAMILIES
+
+
+def test_common_factor_prompt_treatment_has_no_answer_leakage() -> None:
+    row = next(row for row in runner.dry_run_records() if row["task_family"] == "common_factor_quadratic_root_ordering")
+    primitive = TASK_LOCAL_PRIMITIVES["common_factor_quadratic_root_ordering"]
+    assert primitive in row["final_prompt"]
+    assert all(token not in primitive for token in ("5", "-7", "-9"))
+    ab2g = assemble_ab2g_math_core_prompt(row["answer_contract"], row["task_parameters"])
+    assert primitive not in ab2g
+    assert "oracle_expected" not in row["final_prompt"]
 
 
 def test_dry_run_never_calls_provider_or_creates_artifacts(monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]) -> None:

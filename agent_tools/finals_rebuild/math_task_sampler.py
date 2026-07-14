@@ -26,12 +26,14 @@ def sample_task_parameters(task_spec, seed):
         else: raise ValueError("unable to sample polynomial parameters")
     elif skill=="rpm_circumference_to_kph":
         c=_pick(rng,r["circumference_cm"]); payload={"circumference_cm":c,"rpm_symbol":"rpm","requested_unit":"km/h"}
-    elif skill=="alternating_training_progression_threshold":
+    elif skill=="common_factor_quadratic_root_ordering":
         for _ in range(100):
-            t=_pick(rng,r["track_length_m"]); a=_pick(rng,r["initial_first_day_laps"]); inc=_pick(rng,r["same_week_increment_laps"]); threshold=_pick(rng,r["threshold_km"]); week=_pick(rng,r["specified_week"])
-            if next((i for i in range(30) if (a+inc*(i//2+i%2))*t>threshold*1000),None) is not None:
-                payload={"track_length_m":t,"initial_first_day_laps":a,"same_week_increment_laps":inc,"threshold_km":threshold,"specified_week":week,"specified_day":"Thursday","day_labels":["Monday","Thursday"]}; break
-        else: raise ValueError("unable to sample training parameters")
+            shift=_pick(rng,r["shared_shift"]); leading=_pick(rng,r["leading_factor"]); subtracted=_pick(rng,r["subtracted_factor"])
+            if leading and Fraction(subtracted,leading) != -shift:
+                payload={"shared_shift":shift,"leading_factor":leading,"subtracted_factor":subtracted,
+                         "root_order":_pick(rng,r["root_order"]),
+                         "linear_combination":{"a":_pick(rng,r["linear_combination_a"]),"b":_pick(rng,r["linear_combination_b"])}}; break
+        else: raise ValueError("unable to sample common-factor quadratic parameters")
     elif skill=="radical_simplification":
         for _ in range(100):
             k=_pick(rng,r["square_coefficient"]); m=_pick(rng,r["square_free_part"])

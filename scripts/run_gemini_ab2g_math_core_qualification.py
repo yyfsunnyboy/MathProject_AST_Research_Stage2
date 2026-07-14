@@ -27,7 +27,7 @@ FAMILIES = (
     "polynomial_division_quotient_remainder",
     "largest_proper_divisor_reasoning",
     "rpm_circumference_to_kph",
-    "alternating_training_progression_threshold",
+    "common_factor_quadratic_root_ordering",
 )
 SEED = 20260714
 MODEL_TAG = "gemini-3.5-flash"

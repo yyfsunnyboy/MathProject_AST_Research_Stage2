@@ -65,11 +65,11 @@ NEUTRAL_TASK_STATEMENTS = {
 - Calculation: `correct_answer` must return the two distinct exact roots in ascending numeric order.
 - Data Contract: `oracle_payload` must return exactly the input parameters.""",
 
-    "alternating_sequence_threshold": """# Task Specification: Alternating Sequence Threshold Crossing
-- Task Name: Alternating Sequence Threshold Crossing
-- Input Parameters: `track_length_m` (track length in meters), `initial_first_day_laps` (laps on first training day), `same_week_increment_laps` (lap increment), `threshold_km` (distance threshold in km), `specified_week` (specified week number), `specified_day` (specified day of week), and `day_labels` (list of training days in a week).
-- Output: `question_text` must ask to find the laps completed in the specified week/day, and the week and day when total cumulative distance first exceeds the threshold.
-- Calculation: `correct_answer` must compute the specified session laps, the first exceed week, and the first exceed day.
+    "common_factor_quadratic_root_ordering": """# Task Specification: Common-Factor Quadratic Root Ordering
+- Task Name: Common-Factor Quadratic Root Ordering
+- Input Parameters: `shared_shift`, `leading_factor`, `subtracted_factor`, `root_order`, and `linear_combination`.
+- Output: `question_text` must ask to solve (leading_factor*x - subtracted_factor) * (x + shared_shift) = 0, name the roots according to root_order, and evaluate the requested linear combination.
+- Calculation: factor the shared binomial, solve both linear factors, order the roots as stated, and return only the requested exact value.
 - Data Contract: `oracle_payload` must return exactly the input parameters."""
 }
 
@@ -119,6 +119,17 @@ ALTERNATING_SEQUENCE_CONTRACT = """Required return schema:
   "oracle_payload": dict
 }
 - Formatting rules: match day label strings exactly from the list provided.
+- Equality: Exact dictionary match. No tolerance."""
+
+COMMON_FACTOR_QUADRATIC_ROOT_ORDERING_CONTRACT = """Required return schema:
+{
+  "question_text": str,
+  "correct_answer": {
+      "value": int | str  # exact requested linear combination; use irreducible "p/q" if fractional
+  },
+  "oracle_payload": dict
+}
+- Formatting rules: exact arithmetic only; integers directly, irreducible "p/q" strings when fractional; no float values.
 - Equality: Exact dictionary match. No tolerance."""
 
 RADICAL_SIMPLIFICATION_CONTRACT = """Required return schema:
@@ -176,6 +187,7 @@ CONTRACTS: Mapping[str, str] = {
     "rpm_circumference_kph": RPM_CIRCUMFERENCE_CONTRACT,
     "largest_proper_divisor_logic": LARGEST_PROPER_DIVISOR_CONTRACT,
     "alternating_sequence_threshold": ALTERNATING_SEQUENCE_CONTRACT,
+    "common_factor_quadratic_root_ordering": COMMON_FACTOR_QUADRATIC_ROOT_ORDERING_CONTRACT,
 }
 
 

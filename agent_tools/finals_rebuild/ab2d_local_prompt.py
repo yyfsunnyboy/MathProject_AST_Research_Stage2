@@ -43,11 +43,10 @@ not replace the reasoning task with a request for divisor values.""",
 convert centimetres to kilometres by dividing by 100000.  The coefficient is
 circumference_cm * 60 / 100000.  Return a reduced p/q fraction string and
 the unit exactly as km/h; do not use float.""",
-    "alternating_training_progression_threshold": """Follow the frozen alternating training-day recurrence exactly.  Derive the
-odd/even session formula or iterate the recurrence without changing its day
-order.  Compute the requested session and search cumulative distance for the
-first day that strictly crosses the threshold; check the boundary exactly and
-return that first qualifying week and day.""",
+    "common_factor_quadratic_root_ordering": """Factor the shared binomial first.
+Solve each resulting linear factor.
+Order the roots using the stated relation.
+Evaluate the requested linear combination exactly.""",
 }
 
 

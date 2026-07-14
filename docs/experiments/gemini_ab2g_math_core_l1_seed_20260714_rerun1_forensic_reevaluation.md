@@ -23,7 +23,17 @@ the stored raw output locally produces `passed`; no candidate source was edited.
 - Taxonomy: `extraction_bug`
 - Ab3 eligible: no (pipeline correction already resolves it)
 
-## Alternating: `alternating_training_progression_threshold`
+## Excluded reconstruction mismatch: `alternating_training_progression_threshold`
+
+The alternating-training task is a reconstruction mismatch and is excluded from
+the CE115-aligned pilot.  The CE115 source item is the common-factor quadratic
+`2x(x+7)-10(x+7)=0`, which requires factoring, solving and ordering the roots,
+then evaluating a linear combination.  The former task's sequence/threshold
+complexity and mathematical structure do not match that source item.  Existing
+Ab2g/Ab2d artifacts are retained as historical records and are not counted in
+the corrected CE115-aligned pilot.  The replacement task status is **not run**.
+
+### Historical alternating output
 
 Raw and extracted source are byte-identical (550 characters).  The final 500
 characters end with:
