@@ -2,6 +2,14 @@
 import json
 from typing import Any, Mapping
 
+GENERATION_INSTRUCTIONS = """Write only complete Python source code.
+Do not use Markdown fences, prose, explanations, or prompt echoes.
+Implement exactly one function:
+
+def generate(level=1, **kwargs):
+
+`generate()` must return exactly the three-key dictionary specified below."""
+
 OVERRIDE_STATEMENT = """Return exactly these three top-level keys and no others:
 `question_text`, `correct_answer`, and `oracle_payload`.
 Do not return `answer`, `mode`, or any additional key.
@@ -109,10 +117,13 @@ def render_answer_contract(task_metadata: Mapping[str, Any], frozen_payload: Map
     if frozen_payload is not None:
         parts.append(f"Frozen sampled parameters:\n{json.dumps(frozen_payload, sort_keys=True)}\n\n`oracle_payload` must exactly equal the frozen sampled parameters above.")
 
-    # 3. Override statement (B1)
+    # 3. Generation output instructions (entry point + output format)
+    parts.append(GENERATION_INSTRUCTIONS)
+
+    # 4. Override statement (B1)
     parts.append(OVERRIDE_STATEMENT)
 
-    # 4. Task-specific contract
+    # 5. Task-specific contract
     parts.append(CONTRACTS[oracle_type])
 
     return "\n\n" + "\n\n".join(parts) + "\n"

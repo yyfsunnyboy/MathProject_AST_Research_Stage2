@@ -310,6 +310,14 @@ Frozen sampled parameters:
 
 `oracle_payload` must exactly equal the frozen sampled parameters above.
 
+Write only complete Python source code.
+Do not use Markdown fences, prose, explanations, or prompt echoes.
+Implement exactly one function:
+
+def generate(level=1, **kwargs):
+
+`generate()` must return exactly the three-key dictionary specified below.
+
 Return exactly these three top-level keys and no others:
 `question_text`, `correct_answer`, and `oracle_payload`.
 Do not return `answer`, `mode`, or any additional key.
@@ -333,8 +341,8 @@ Required return schema:
 - routing correct: YES
 - expected skill loaded: YES
 - expected APIs injected: NO
-- entry point explicit: NO
-- output schema explicit: NO
-- conflicting instructions: YES
+- entry point explicit: YES
+- output schema explicit: YES
+- conflicting instructions: NO
 - check() mismatch present: NO
-- blocking issue: YES
+- blocking issue: NONE

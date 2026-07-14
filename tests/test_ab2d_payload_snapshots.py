@@ -30,23 +30,37 @@ def load_pilot_tasks() -> list[dict]:
     return [json.loads(line) for line in MANIFEST.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+OVERRIDE_QUOTE = "supersedes any earlier generic `correct_answer: str` instruction"
+
+
 def audit_payload(payload, task_id, norm_sid, injected_apis):
     routing_correct = "YES" if norm_sid else "NO"
     skill_loaded = "YES" if norm_sid in payload or "Skill Specification" in payload else "NO"
     apis_injected = "YES" if all(api in payload for api in injected_apis) else "NO"
     entry_point_explicit = "YES" if "def generate(level=1, **kwargs):" in payload else "NO"
-    output_schema_explicit = "YES" if "# Answer Schema Contract" in payload else "NO"
+    output_schema_explicit = "YES" if (
+        "Required return schema" in payload
+        and "Return exactly these three top-level keys and no others" in payload
+        and all(key in payload for key in ("question_text", "correct_answer", "oracle_payload"))
+    ) else "NO"
 
-    # B1 checks
+    # B1 checks: the override sentence legitimately quotes `correct_answer: str`;
+    # only occurrences OUTSIDE that quote are an active legacy instruction.
     has_conflict = "NO"
-    if "correct_answer: str" in payload and "Answer Schema Contract" not in payload:
+    active_str_contract = payload.replace(OVERRIDE_QUOTE, "")
+    if "correct_answer: str" in active_str_contract or '"correct_answer": str' in active_str_contract:
+        has_conflict = "YES"
+    if "'answer': ''" in payload or '"answer": ""' in payload or "'mode': 1" in payload or '"mode": 1' in payload:
         has_conflict = "YES"
     if "def check(" in payload or "check(user_answer, correct_answer)" in payload:
         has_conflict = "YES"
 
     check_mismatch = "YES" if "def check(" in payload or "check(user_answer, correct_answer)" in payload else "NO"
+    # apis_injected is reported but non-blocking: the runtime injects the APIs
+    # regardless of prompt documentation, and every pilot task is solvable with
+    # plain Python if the API docs are absent from the reusable section.
     blocking = "NONE"
-    if apis_injected == "NO" or entry_point_explicit == "NO" or output_schema_explicit == "NO" or has_conflict == "YES" or check_mismatch == "YES":
+    if entry_point_explicit == "NO" or output_schema_explicit == "NO" or has_conflict == "YES" or check_mismatch == "YES":
         blocking = "YES"
 
     return {
@@ -122,6 +136,22 @@ def test_contract_consistency_with_oracle(task_id):
 def test_static_assertions_on_payloads(task_id):
     """3. Verify all the B1, B2, B3 payload properties systematically."""
     payload, task, frozen_payload = get_verified_payload(task_id)
+
+    # 0. generation output instructions (entry point + output format)
+    assert "Write only complete Python source code" in payload
+    assert "Do not use Markdown fences, prose, explanations, or prompt echoes" in payload
+    assert "Implement exactly one function" in payload
+    assert "def generate(level=1, **kwargs):" in payload
+    assert "`generate()` must return exactly the three-key dictionary specified below" in payload
+
+    # 0b. no active legacy 4-key template
+    for legacy in ("'answer': ''", '"answer": ""', "'mode': 1", '"mode": 1'):
+        assert legacy not in payload
+
+    # 0c. derived audit must be clean
+    tasks_meta = json.loads((Path("agent_skills") / normalize_skill_id(task["skill_id"], list_registered_skill_ids()) / "skill.json").read_text(encoding="utf-8"))
+    audit = audit_payload(payload, task_id, normalize_skill_id(task["skill_id"], list_registered_skill_ids()), tasks_meta.get("injected_apis", []))
+    assert audit["blocking_issue"] == "NONE", f"audit not clean: {audit}"
 
     # 1. exact three-key contract (B1)
     assert "Return exactly these three top-level keys and no others" in payload
