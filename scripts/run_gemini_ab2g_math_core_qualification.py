@@ -48,6 +48,19 @@ def _append(path: Path, row: dict[str, Any]) -> None:
         os.fsync(handle.fileno())
 
 
+def _output_paths(run_id: str | None) -> tuple[Path, Path]:
+    """Return the default artifacts or a safe, distinct run-id pair."""
+    if run_id is None:
+        return RESULT, SUMMARY
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+        raise ValueError("run-id must match [A-Za-z0-9_-]+")
+    stem = f"gemini_ab2g_math_core_l1_seed_{run_id}"
+    return (
+        ROOT / "docs/experiments/results" / f"{stem}.jsonl",
+        ROOT / "docs/experiments" / f"{stem}_summary.md",
+    )
+
+
 def _tasks() -> list[dict[str, Any]]:
     all_tasks = [json.loads(line) for line in MANIFEST.read_text(encoding="utf-8").splitlines() if line]
     selected = [next(task for task in all_tasks if task["skill_id"] == family and task["difficulty_level"] == 1) for family in FAMILIES]
@@ -183,7 +196,12 @@ def main(argv: list[str] | None = None) -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true", help="assemble and print the planned four rows without API calls")
     mode.add_argument("--execute-api", action="store_true", help="run the one-shot cloud qualification")
+    parser.add_argument("--run-id", help="safe suffix for a distinct JSONL/summary artifact pair")
     args = parser.parse_args(argv)
+    try:
+        result_path, summary_path = _output_paths(args.run_id)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.dry_run:
         print(json.dumps(dry_run_records(), ensure_ascii=False, sort_keys=True))
         return 0
@@ -194,8 +212,8 @@ def main(argv: list[str] | None = None) -> int:
         raise SystemExit("GEMINI_API_KEY is not set")
     global API_LOOP_ENTERED
     API_LOOP_ENTERED = True
-    rows = _run(RESULT, _client_call)
-    SUMMARY.write_text(_summary(rows), encoding="utf-8")
+    rows = _run(result_path, _client_call)
+    summary_path.write_text(_summary(rows), encoding="utf-8")
     return 0
 
 

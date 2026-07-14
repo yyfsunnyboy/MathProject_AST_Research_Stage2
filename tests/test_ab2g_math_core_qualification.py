@@ -6,6 +6,7 @@ import json
 import multiprocessing
 import os
 import tempfile
+import uuid
 from pathlib import Path
 
 import pytest
@@ -79,6 +80,7 @@ def test_cli_help_and_safe_default_never_enter_execution(capsys: pytest.CaptureF
     help_text = capsys.readouterr().out
     assert "--dry-run" in help_text
     assert "--execute-api" in help_text
+    assert "--run-id" in help_text
 
 
 def test_cli_dry_run_and_conflicting_flags_never_enter_execution(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
@@ -101,13 +103,46 @@ def test_execute_api_is_the_only_execution_path(monkeypatch: pytest.MonkeyPatch)
             summary.append(text)
 
     monkeypatch.setenv("GEMINI_API_KEY", "test-key")
-    monkeypatch.setattr(runner, "SUMMARY", SummarySink())
+    run_id = "20260714_rerun1"
+    result_path, summary_path = runner._output_paths(run_id)
+    monkeypatch.setattr(runner, "_output_paths", lambda value: (result_path, SummarySink()))
     monkeypatch.setattr(runner, "_run", lambda output, call: called.append((output, call)) or [])
     monkeypatch.setattr(runner, "API_LOOP_ENTERED", False)
-    assert runner.main(["--execute-api"]) == 0
-    assert called == [(runner.RESULT, runner._client_call)]
+    assert runner.main(["--execute-api", "--run-id", run_id]) == 0
+    assert called == [(result_path, runner._client_call)]
     assert runner.API_LOOP_ENTERED is True
     assert summary
+
+
+def test_safe_run_id_derives_distinct_artifact_pair() -> None:
+    result, summary = runner._output_paths("20260714_rerun1")
+    assert result == ROOT / "docs/experiments/results/gemini_ab2g_math_core_l1_seed_20260714_rerun1.jsonl"
+    assert summary == ROOT / "docs/experiments/gemini_ab2g_math_core_l1_seed_20260714_rerun1_summary.md"
+    assert runner._output_paths(None) == (runner.RESULT, runner.SUMMARY)
+
+
+@pytest.mark.parametrize("run_id", ("../escape", "two/parts", "two\\parts", "contains.dot", ""))
+def test_invalid_run_id_is_rejected(run_id: str) -> None:
+    with pytest.raises(ValueError, match="run-id"):
+        runner._output_paths(run_id)
+
+
+def test_dry_run_with_run_id_does_not_create_artifacts(capsys: pytest.CaptureFixture[str]) -> None:
+    run_id = f"pytest_dry_{uuid.uuid4().hex}"
+    result, summary = runner._output_paths(run_id)
+    assert not result.exists() and not summary.exists()
+    assert runner.main(["--dry-run", "--run-id", run_id]) == 0
+    assert len(json.loads(capsys.readouterr().out)) == 4
+    assert not result.exists() and not summary.exists()
+
+
+def test_existing_run_id_output_is_never_overwritten(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        output = Path(temp) / "existing.jsonl"
+        output.write_text("existing\n", encoding="utf-8")
+        with pytest.raises(FileExistsError, match="refusing to overwrite"):
+            runner._run(output, lambda *_: pytest.fail("provider must not be called"))
 
 
 def test_incremental_append_flushes_and_fsyncs(monkeypatch: pytest.MonkeyPatch) -> None:
