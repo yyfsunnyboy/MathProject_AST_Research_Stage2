@@ -27,7 +27,7 @@ def test_routing_direct_alias_table_resolution():
     without relying on fuzzy edit-distance or substring fallback.
     """
     reg.refresh_registry()
-    
+
     # Prove they exist in the direct lookup table
     assert "polynomial_division_quotient_remainder" in reg._ALIAS_TABLE
     assert reg._ALIAS_TABLE["polynomial_division_quotient_remainder"] == "jh_數學2上_FourArithmeticOperationsOfPolynomial"
@@ -69,7 +69,7 @@ def test_routing_exact_match_no_fuzzy_fallback(monkeypatch):
     import difflib
     def mock_get_close_matches(*args, **kwargs):
         raise RuntimeError("Fuzzy edit-distance fallback was triggered!")
-    
+
     monkeypatch.setattr(difflib, "get_close_matches", mock_get_close_matches)
 
     # These should resolve via alias table lookup directly
@@ -95,7 +95,7 @@ def compute_expected_coefficient(circumference_cm: int, rpm: int = 1) -> Fractio
 def generate_source_code(circumference_cm, coefficient_val, unit_val="km/h", omit_coefficient=False, omit_unit=False):
     """Generate raw Python response string containing the generate function."""
     payload_str = json.dumps({"circumference_cm": circumference_cm, "rpm_symbol": "rpm", "requested_unit": "km/h"})
-    
+
     if omit_coefficient:
         correct_answer_str = f'{{"unit": "{unit_val}"}}'
     elif omit_unit:
@@ -137,10 +137,10 @@ def test_rpm_spec_assertion_l1_and_l2():
     # 1. L1 exact canonical fraction
     frozen_l1 = sample_task_parameters(task_l1, 2026071301)
     circumference_cm = frozen_l1["oracle_payload"]["circumference_cm"]
-    
+
     expected_fraction = compute_expected_coefficient(circumference_cm, rpm=1)
     expected_coef_str = str(expected_fraction.numerator) if expected_fraction.denominator == 1 else f"{expected_fraction.numerator}/{expected_fraction.denominator}"
-    
+
     raw_response_l1 = generate_source_code(circumference_cm, expected_coef_str)
     outcome, source, details = classify_response(raw_response_l1, frozen_l1, task_l1)
     assert outcome == "passed", f"L1 failed with: {details}"
@@ -148,10 +148,10 @@ def test_rpm_spec_assertion_l1_and_l2():
     # 2. L2 exact canonical fraction
     frozen_l2 = sample_task_parameters(task_l2, 2026071302)
     circumference_cm_l2 = frozen_l2["oracle_payload"]["circumference_cm"]
-    
+
     expected_fraction_l2 = compute_expected_coefficient(circumference_cm_l2, rpm=1)
     expected_coef_str_l2 = str(expected_fraction_l2.numerator) if expected_fraction_l2.denominator == 1 else f"{expected_fraction_l2.numerator}/{expected_fraction_l2.denominator}"
-    
+
     raw_response_l2 = generate_source_code(circumference_cm_l2, expected_coef_str_l2)
     outcome, source, details = classify_response(raw_response_l2, frozen_l2, task_l2)
     assert outcome == "passed", f"L2 failed with: {details}"
@@ -161,12 +161,12 @@ def test_rpm_spec_assertion_reducible_fraction():
     """SPEC_ASSERTION_TEST: Verify fully simplified reducible fraction results."""
     tasks = load_pilot_tasks()
     task_l1 = next(t for t in tasks if t["task_id"] == "ce115_q24_rotation_speed_conversion_l1")
-    
+
     # 3. Reducible result must be fully simplified.
     # We choose a valid parameter within L1 schema constraints (e.g. circumference_cm = 100)
     # expected_fraction = 100 * 60 / 100000 = 3/50 (already simplified)
     frozen = {"task_id": task_l1["task_id"], "oracle_payload": {"circumference_cm": 100, "rpm_symbol": "rpm", "requested_unit": "km/h"}}
-    
+
     raw_response = generate_source_code(100, "3/50")
     outcome, _, details = classify_response(raw_response, frozen, task_l1)
     assert outcome == "passed", f"Reducible simplified fraction failed: {details}"
