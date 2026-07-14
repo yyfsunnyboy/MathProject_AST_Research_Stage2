@@ -123,7 +123,10 @@ def _write_summary(path: Path, records: list[dict[str, Any]]) -> None:
     lines = [
         "# Gemini Ab2d-local qualification summary", "",
         f"- condition: {PROMPT_CONDITION}", f"- model: {MODEL_TAG}",
-        f"- seed: {SEED}", f"- task_count: {len(records)}", f"- cloud_qualified: {cloud_qualified(records)}", "",
+        f"- seed: {SEED}", f"- task_count: {len(records)}",
+        f"- Evaluable: {sum(r['evaluable'] for r in records)} / {len(records)}",
+        f"- Oracle pass: {sum(r['oracle_pass'] for r in records)} / {len(records)}",
+        f"- cloud_qualified: {cloud_qualified(records)}", "",
         "| task_family | evaluable | oracle_pass | evaluation_status | failure_category |",
         "|---|---:|---:|---|---|",
     ]

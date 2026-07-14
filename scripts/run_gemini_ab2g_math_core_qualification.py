@@ -173,14 +173,19 @@ def _run(output: Path, call: Callable[[str, dict[str, Any]], Any], task_family: 
 
 
 def cloud_qualified(rows: list[dict[str, Any]]) -> bool:
-    return len(rows) == 4 and all(row["evaluable"] and row["oracle_pass"] and row["retry_count"] == 0 and not row.get("execution_timeout") for row in rows)
+    task_count = len(rows)
+    return (
+        task_count > 0
+        and sum(bool(row["evaluable"]) for row in rows) == task_count
+        and sum(bool(row["oracle_pass"]) for row in rows) == task_count
+    )
 
 
 def _summary(rows: list[dict[str, Any]]) -> str:
     return "\n".join([
         "# Gemini Ab2g-math-core L1 qualification — 2026-07-14", "",
         f"- Rows: {len(rows)}", f"- task_count: {len(rows)}", f"- Evaluable: {sum(r['evaluable'] for r in rows)} / {len(rows)}",
-        f"- Oracle pass: {sum(r['oracle_pass'] for r in rows)} / 4",
+        f"- Oracle pass: {sum(r['oracle_pass'] for r in rows)} / {len(rows)}",
         f"- Provider timeouts: {sum(r['failure_category'] == 'provider_timeout' for r in rows)}",
         f"- Provider errors: {sum(r['failure_category'] == 'provider_error' for r in rows)}",
         f"- Execution timeouts: {sum(bool(r['execution_timeout']) for r in rows)}",

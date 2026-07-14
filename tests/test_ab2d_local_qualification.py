@@ -105,6 +105,20 @@ def test_single_task_dry_run_and_mock_execute_write_one_row(monkeypatch: pytest.
     assert calls == len(rows) == len(persisted) == 1
 
 
+def test_summary_uses_actual_task_count_and_dynamic_qualification() -> None:
+    passed = [{**runner.dry_run_records("common_factor_quadratic_root_ordering")[0], "evaluable": True, "oracle_pass": True}]
+    failed = [{**passed[0], "oracle_pass": False}]
+    assert runner.cloud_qualified(passed) is True
+    assert runner.cloud_qualified(failed) is False
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        summary = Path(temp) / "summary.md"
+        runner._write_summary(summary, passed)
+        text = summary.read_text(encoding="utf-8")
+    assert "Evaluable: 1 / 1" in text
+    assert "Oracle pass: 1 / 1" in text
+    assert "cloud_qualified: True" in text
+
+
 @pytest.mark.parametrize("run_id", ("../escape", "two/parts", "two\\parts", "contains.dot", ""))
 def test_run_id_is_safe(run_id: str) -> None:
     with pytest.raises(ValueError, match="run-id"):

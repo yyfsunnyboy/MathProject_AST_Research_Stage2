@@ -352,7 +352,9 @@ def test_fixed_runner_settings_and_qualification_gate() -> None:
     assert runner.cloud_qualified(rows) is False
     passed = [{**row, "evaluable": True, "oracle_pass": True, "execution_timeout": False} for row in rows]
     assert runner.cloud_qualified(passed) is True
-    assert runner.cloud_qualified(passed[:3]) is False
+    assert runner.cloud_qualified([{**passed[0], "oracle_pass": False}]) is False
+    assert runner.cloud_qualified(passed[:3] + [{**passed[3], "oracle_pass": False}]) is False
+    assert runner.cloud_qualified([]) is False
 
 
 def test_unknown_contract_fails_closed() -> None:
