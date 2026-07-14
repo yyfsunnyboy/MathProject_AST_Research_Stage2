@@ -139,11 +139,116 @@ def evaluate_alternating_sequence_threshold(oracle_payload: dict[str, Any], subm
         return _result(oracle_type, None, submitted_answer, str(exc))
 
 
+def _canonical_number(value: Fraction) -> Any:
+    text = _fraction_text(value)
+    return int(text) if "/" not in text else text
+
+
+def evaluate_radical_simplification(oracle_payload: dict[str, Any], submitted_answer: Any) -> dict[str, Any]:
+    oracle_type = "radical_simplification"
+    try:
+        radicand = _integer(oracle_payload["radicand"], "radicand")
+        outer = _integer(oracle_payload.get("outer_coefficient", 1), "outer_coefficient")
+        if radicand <= 1 or outer <= 0:
+            raise ValueError("radicand must exceed one and outer_coefficient must be positive")
+        coefficient, square_free, factor = 1, radicand, 2
+        while factor * factor <= square_free:
+            while square_free % (factor * factor) == 0:
+                square_free //= factor * factor
+                coefficient *= factor
+            factor += 1
+        if square_free <= 1:
+            raise ValueError("radicand must not be a perfect square")
+        expected = {"coefficient": outer * coefficient, "radicand": square_free}
+        return _result(oracle_type, expected, submitted_answer)
+    except (KeyError, ValueError, TypeError) as exc:
+        return _result(oracle_type, None, submitted_answer, str(exc))
+
+
+def evaluate_exact_rational_expression(oracle_payload: dict[str, Any], submitted_answer: Any) -> dict[str, Any]:
+    oracle_type = "exact_rational_expression"
+    try:
+        products = oracle_payload["products"]
+        if not isinstance(products, list) or len(products) < 2:
+            raise ValueError("at least two products are required")
+        total = Fraction(0)
+        for product in products:
+            sign = _integer(product["sign"], "sign")
+            if sign not in (-1, 1):
+                raise ValueError("sign must be -1 or 1")
+            if not isinstance(product["left"], str) or not isinstance(product["right"], str):
+                raise ValueError("operands must be exact decimal strings")
+            total += sign * Fraction(product["left"]) * Fraction(product["right"])
+        if total == 0:
+            raise ValueError("expression must not evaluate to zero")
+        expected = {"value": _fraction_text(total)}
+        return _result(oracle_type, expected, submitted_answer)
+    except (KeyError, ValueError, TypeError) as exc:
+        return _result(oracle_type, None, submitted_answer, str(exc))
+
+
+def evaluate_polynomial_division_general(oracle_payload: dict[str, Any], submitted_answer: Any) -> dict[str, Any]:
+    oracle_type = "polynomial_division_general"
+    try:
+        dividend = oracle_payload["dividend_coefficients"]
+        divisor = oracle_payload["divisor_coefficients"]
+        if not isinstance(dividend, list) or len(dividend) < 3:
+            raise ValueError("dividend must have degree at least two")
+        if not isinstance(divisor, list) or len(divisor) != 2:
+            raise ValueError("divisor must be linear")
+        lead = Fraction(_integer(divisor[0], "divisor_leading"), 1)
+        constant = Fraction(_integer(divisor[1], "divisor_constant"), 1)
+        if lead == 0:
+            raise ValueError("divisor leading coefficient must be nonzero")
+        values = [Fraction(_integer(value, "coefficient"), 1) for value in dividend]
+        if values[0] == 0:
+            raise ValueError("dividend leading coefficient must be nonzero")
+        quotient: list[Fraction] = []
+        remainder = list(values)
+        while len(remainder) >= 2:
+            term = remainder[0] / lead
+            quotient.append(term)
+            remainder = [remainder[1] - term * constant] + remainder[2:]
+        expected = {
+            "quotient_coefficients": [_canonical_number(value) for value in quotient],
+            "remainder_coefficients": [_canonical_number(remainder[0])],
+        }
+        return _result(oracle_type, expected, submitted_answer)
+    except (KeyError, ValueError, TypeError) as exc:
+        return _result(oracle_type, None, submitted_answer, str(exc))
+
+
+def evaluate_polynomial_factor_roots(oracle_payload: dict[str, Any], submitted_answer: Any) -> dict[str, Any]:
+    oracle_type = "polynomial_factor_roots"
+    try:
+        coefficients = oracle_payload["quadratic_coefficients"]
+        if not isinstance(coefficients, list) or len(coefficients) != 3:
+            raise ValueError("quadratic_coefficients must contain three integers")
+        a = _integer(coefficients[0], "a"); b = _integer(coefficients[1], "b"); c = _integer(coefficients[2], "c")
+        if a == 0:
+            raise ValueError("leading coefficient must be nonzero")
+        discriminant = b * b - 4 * a * c
+        if discriminant <= 0:
+            raise ValueError("two distinct real roots are required")
+        square = isqrt(discriminant)
+        if square * square != discriminant:
+            raise ValueError("roots must be rational")
+        roots = sorted([Fraction(-b - square, 2 * a), Fraction(-b + square, 2 * a)])
+        expected = {"roots": [_canonical_number(value) for value in roots]}
+        return _result(oracle_type, expected, submitted_answer)
+    except (KeyError, ValueError, TypeError) as exc:
+        return _result(oracle_type, None, submitted_answer, str(exc))
+
+
 _DISPATCH: dict[str, Callable[[dict[str, Any], Any], dict[str, Any]]] = {
     "polynomial_division_exact": evaluate_polynomial_division,
     "largest_proper_divisor_logic": evaluate_largest_proper_divisor,
     "rpm_circumference_kph": evaluate_rpm_circumference_kph,
     "alternating_sequence_threshold": evaluate_alternating_sequence_threshold,
+    "radical_simplification": evaluate_radical_simplification,
+    "exact_rational_expression": evaluate_exact_rational_expression,
+    "polynomial_division_general": evaluate_polynomial_division_general,
+    "polynomial_factor_roots": evaluate_polynomial_factor_roots,
 }
 
 

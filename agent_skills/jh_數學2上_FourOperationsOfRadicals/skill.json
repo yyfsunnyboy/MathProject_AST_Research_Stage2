@@ -9,7 +9,8 @@
   "vision_input": false,
   "aliases": [
     "Radicals",
-    "jh_數學2上_根號運算"
+    "jh_數學2上_根號運算",
+    "radical_simplification"
   ],
   "schema_version": "1.0"
 }

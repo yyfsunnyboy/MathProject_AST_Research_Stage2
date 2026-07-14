@@ -11,7 +11,9 @@
     "Algebra",
     "Polynomial",
     "jh_數學2上_多項式的四則運算",
-    "polynomial_division_quotient_remainder"
+    "polynomial_division_quotient_remainder",
+    "polynomial_division_general",
+    "polynomial_factor_roots"
   ],
   "schema_version": "1.0"
 }
