@@ -590,10 +590,13 @@ def call_ai_with_retry(client, prompt, image_path=None, max_retries=3, retry_del
             # Unknown client type: conservative 300s
             timeout = 300
     
-    for attempt in range(max_retries):
+    if max_retries < 0:
+        raise ValueError("max_retries must be non-negative")
+    total_attempts = max_retries + 1
+    for attempt in range(total_attempts):
         try:
             if attempt > 0 and verbose:
-                 print(f"   🔄 AI 生成重試 (Attempt {attempt+1}/{max_retries})...")
+                 print(f"   🔄 AI 生成重試 (Attempt {attempt+1}/{total_attempts})...")
             
             # [執行請求 with Timeout Protection]
             # [FIX 2026-02-14] Manually manage Executor to avoid blocking on __exit__
@@ -621,10 +624,12 @@ def call_ai_with_retry(client, prompt, image_path=None, max_retries=3, retry_del
             if verbose:
                 logger.warning(f"⚠️ AI Call Failed (Attempt {attempt+1}): {e}")
             
-            if attempt < max_retries - 1:
+            if attempt < max_retries:
                 if verbose:
                     print(f"   ⚠️ 等待 {retry_delay} 秒後重試...")
                 time.sleep(retry_delay)
     
     # 所有重試均失敗
-    raise last_exception if last_exception else Exception("AI call failed after all retries")
+    if last_exception is not None:
+        raise last_exception
+    raise RuntimeError("unreachable retry state")

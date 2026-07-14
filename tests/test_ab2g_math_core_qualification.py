@@ -217,7 +217,63 @@ def test_client_call_preserves_model_and_passes_timeout_without_retry(monkeypatc
     assert result == "response"
     assert captured["model"] == "gemini-3.5-flash"
     assert captured["timeout"] == 120
-    assert captured["max_retries"] == 1  # one total attempt, zero retry attempts
+    assert captured["max_retries"] == 0  # one first attempt, zero retry attempts
+
+
+def test_retry_helper_zero_retries_makes_one_provider_call() -> None:
+    class Client:
+        def __init__(self): self.calls = 0
+        def generate_content(self, _prompt, image_path=None):
+            self.calls += 1
+            return "ok"
+
+    client = Client()
+    assert ai_wrapper.call_ai_with_retry(client, "prompt", max_retries=0, timeout=1) == "ok"
+    assert client.calls == 1
+
+
+def test_retry_helper_one_retry_stops_after_first_success() -> None:
+    class Client:
+        def __init__(self): self.calls = 0
+        def generate_content(self, _prompt, image_path=None):
+            self.calls += 1
+            return "ok"
+
+    client = Client()
+    assert ai_wrapper.call_ai_with_retry(client, "prompt", max_retries=1, retry_delay=0, timeout=1) == "ok"
+    assert client.calls == 1
+
+
+def test_retry_helper_one_retry_makes_second_attempt_after_failure() -> None:
+    class Client:
+        def __init__(self): self.calls = 0
+        def generate_content(self, _prompt, image_path=None):
+            self.calls += 1
+            if self.calls == 1:
+                raise ValueError("first")
+            return "ok"
+
+    client = Client()
+    assert ai_wrapper.call_ai_with_retry(client, "prompt", max_retries=1, retry_delay=0, timeout=1) == "ok"
+    assert client.calls == 2
+
+
+def test_retry_helper_preserves_last_exception_after_all_attempts() -> None:
+    second = RuntimeError("second failure")
+
+    class Client:
+        def __init__(self): self.calls = 0
+        def generate_content(self, _prompt, image_path=None):
+            self.calls += 1
+            if self.calls == 1:
+                raise ValueError("first failure")
+            raise second
+
+    client = Client()
+    with pytest.raises(RuntimeError) as error:
+        ai_wrapper.call_ai_with_retry(client, "prompt", max_retries=1, retry_delay=0, timeout=1)
+    assert error.value is second
+    assert client.calls == 2
 
 
 def test_fixed_runner_settings_and_qualification_gate() -> None:

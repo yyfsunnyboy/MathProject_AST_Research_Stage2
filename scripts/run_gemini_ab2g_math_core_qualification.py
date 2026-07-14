@@ -120,9 +120,8 @@ def _client_call(prompt: str, preset: dict[str, Any]) -> Any:
     from core.ai_wrapper import GoogleAIClient, call_ai_with_retry
 
     client = GoogleAIClient(preset["model"], preset["temperature"], max_tokens=preset["max_tokens"], safety_settings=preset.get("safety_settings"))
-    # This helper interprets max_retries as the total attempt budget.  One
-    # budgeted attempt means one provider request and zero retries.
-    return call_ai_with_retry(client, prompt, max_retries=1, retry_delay=0, timeout=REQUEST_TIMEOUT_SECONDS)
+    # One first attempt and zero retry attempts.
+    return call_ai_with_retry(client, prompt, max_retries=0, retry_delay=0, timeout=REQUEST_TIMEOUT_SECONDS)
 
 
 def _safe_provider_failure(exc: Exception) -> tuple[str, str]:
