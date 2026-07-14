@@ -5,6 +5,7 @@ import hashlib
 import json
 import multiprocessing
 import os
+import tempfile
 from pathlib import Path
 
 import pytest
@@ -122,6 +123,54 @@ def test_incremental_append_flushes_and_fsyncs(monkeypatch: pytest.MonkeyPatch) 
     monkeypatch.setattr(os, "fsync", lambda descriptor: events.append(f"fsync:{descriptor}"))
     runner._append(Path("unused.jsonl"), {"row": 1})
     assert events[1:] == ["flush", "fsync:17"]
+
+
+def test_mock_provider_runs_all_four_cells_and_persists_each_row(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeResponse:
+        text = "def generate(level=1, **kwargs):\n    return {}\n"
+
+    calls = 0
+    fsync_calls: list[int] = []
+
+    def fake_call(_prompt: str, _preset: dict) -> FakeResponse:
+        nonlocal calls
+        calls += 1
+        return FakeResponse()
+
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    monkeypatch.setattr(runner.os, "fsync", lambda descriptor: fsync_calls.append(descriptor))
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        output = Path(temp) / "rows.jsonl"
+        rows = runner._run(output, fake_call)
+        persisted = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
+    assert calls == 4
+    assert len(rows) == len(persisted) == 4
+    assert len(fsync_calls) == 4
+    assert all(row["request_count"] == 1 and row["retry_count"] == 0 and row["healer_used"] is False for row in persisted)
+
+
+def test_mock_provider_failure_preserves_prior_incremental_rows(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeResponse:
+        text = "def generate(level=1, **kwargs):\n    return {}\n"
+
+    calls = 0
+
+    def fake_call(_prompt: str, _preset: dict) -> FakeResponse:
+        nonlocal calls
+        calls += 1
+        if calls == 3:
+            raise RuntimeError("provider failure")
+        return FakeResponse()
+
+    monkeypatch.setattr(runner, "_preset", lambda: {"model": runner.MODEL_TAG})
+    with tempfile.TemporaryDirectory(dir=ROOT) as temp:
+        output = Path(temp) / "rows.jsonl"
+        rows = runner._run(output, fake_call)
+        persisted = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines()]
+    assert calls == 4
+    assert len(rows) == len(persisted) == 4
+    assert persisted[2]["failure_category"] == "infrastructure_failure"
+    assert all(row["task_family"] == runner.FAMILIES[index] for index, row in enumerate(persisted))
 
 
 def test_fixed_runner_settings_and_qualification_gate() -> None:
