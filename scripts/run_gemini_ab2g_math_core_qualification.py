@@ -163,14 +163,19 @@ def dry_run_records() -> list[dict[str, Any]]:
     return [_make_row(task) for task in _tasks()]
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     multiprocessing.freeze_support()
     parser = argparse.ArgumentParser()
-    parser.add_argument("--dry-run", action="store_true")
-    args = parser.parse_args()
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--dry-run", action="store_true", help="assemble and print the planned four rows without API calls")
+    mode.add_argument("--execute-api", action="store_true", help="run the one-shot cloud qualification")
+    args = parser.parse_args(argv)
     if args.dry_run:
         print(json.dumps(dry_run_records(), ensure_ascii=False, sort_keys=True))
         return 0
+    if not args.execute_api:
+        parser.print_usage()
+        return 2
     if not os.getenv("GEMINI_API_KEY"):
         raise SystemExit("GEMINI_API_KEY is not set")
     global API_LOOP_ENTERED

@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import multiprocessing
+import os
 from pathlib import Path
 
 import pytest
@@ -64,6 +65,63 @@ def test_dry_run_never_calls_provider_or_writes_artifacts(monkeypatch: pytest.Mo
     assert all(row["model_tag"] == "gemini-3.5-flash" and row["prompt_condition"] == "Ab2g-math-core" for row in rows)
     assert all(row["request_count"] == 1 and row["retry_count"] == 0 and row["healer_used"] is False for row in rows)
     assert all(row["prompt_size"]["character_count"] > 0 for row in rows)
+
+
+def test_cli_help_and_safe_default_never_enter_execution(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(runner, "_run", lambda *_: pytest.fail("execution must require --execute-api"))
+    assert runner.main([]) == 2
+    assert "usage:" in capsys.readouterr().out
+    with pytest.raises(SystemExit) as exit_info:
+        runner.main(["--help"])
+    assert exit_info.value.code == 0
+    help_text = capsys.readouterr().out
+    assert "--dry-run" in help_text
+    assert "--execute-api" in help_text
+
+
+def test_cli_dry_run_and_conflicting_flags_never_enter_execution(capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(runner, "_run", lambda *_: pytest.fail("dry run must not execute"))
+    assert runner.main(["--dry-run"]) == 0
+    rows = json.loads(capsys.readouterr().out)
+    assert len(rows) == 4
+    with pytest.raises(SystemExit) as exit_info:
+        runner.main(["--dry-run", "--execute-api"])
+    assert exit_info.value.code == 2
+
+
+def test_execute_api_is_the_only_execution_path(monkeypatch: pytest.MonkeyPatch) -> None:
+    called: list[tuple[Path, object]] = []
+    summary: list[str] = []
+
+    class SummarySink:
+        def write_text(self, text: str, *, encoding: str) -> None:
+            assert encoding == "utf-8"
+            summary.append(text)
+
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key")
+    monkeypatch.setattr(runner, "SUMMARY", SummarySink())
+    monkeypatch.setattr(runner, "_run", lambda output, call: called.append((output, call)) or [])
+    monkeypatch.setattr(runner, "API_LOOP_ENTERED", False)
+    assert runner.main(["--execute-api"]) == 0
+    assert called == [(runner.RESULT, runner._client_call)]
+    assert runner.API_LOOP_ENTERED is True
+    assert summary
+
+
+def test_incremental_append_flushes_and_fsyncs(monkeypatch: pytest.MonkeyPatch) -> None:
+    events: list[str] = []
+
+    class Handle:
+        def __enter__(self): return self
+        def __exit__(self, *_): return False
+        def write(self, value: str): events.append(f"write:{value}")
+        def flush(self): events.append("flush")
+        def fileno(self): return 17
+
+    monkeypatch.setattr(Path, "open", lambda *_args, **_kwargs: Handle())
+    monkeypatch.setattr(os, "fsync", lambda descriptor: events.append(f"fsync:{descriptor}"))
+    runner._append(Path("unused.jsonl"), {"row": 1})
+    assert events[1:] == ["flush", "fsync:17"]
 
 
 def test_fixed_runner_settings_and_qualification_gate() -> None:
