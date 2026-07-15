@@ -1,118 +1,222 @@
 {
-  "result_name": "Healer-vNext official EvalPlus single-task counterfactual replay",
-  "status": "blocked_preflight",
-  "executed_at": null,
-  "evalplus_version": "0.3.1",
+  "result_name": "Candidate Healer / Healer-vNext official EvalPlus single-task counterfactual replay",
+  "status": "completed_with_provenance_note",
+  "executed_at": "2026-07-15T20:30:38.3941238+08:00",
+  "official_replay_executed": true,
   "dataset": "mbpp",
   "dataset_version": "v0.2.0",
-  "dataset_version_source": "evalplus.data.mbpp.MBPP_PLUS_VERSION",
+  "dataset_version_source": "replay manifest: MBPP_PLUS_VERSION=v0.2.0",
   "dataset_hash": null,
-  "dataset_hash_status": "unresolved because the official dataset loader cannot import pyarrow in native Windows",
-  "requested_task_ids": ["Mbpp/279", "Mbpp/255", "Mbpp/410"],
-  "requested_conditions": ["Raw", "Original Ab3", "Candidate Healer-vNext"],
-  "official_replay_executed": false,
-  "blocker": {
-    "platform": "native Windows",
-    "reason": "EvalPlus check_correctness requires POSIX resource and SIGALRM/ITIMER_REAL semantics. No WSL distribution or Docker runtime is installed.",
-    "additional_import_failure": "evalplus.evaluate cannot import because the pyarrow DLL is blocked by application-control policy.",
-    "required_environment": "WSL/Linux with evalplus==0.3.1 and the official MBPP+ v0.2.0 dataset"
+  "dataset_hash_status": "not emitted by the official runner result schema",
+  "evalplus_version": "0.3.1",
+  "run_environment": {
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "python_version": "3.14.4",
+    "evalplus_version": "0.3.1"
   },
+  "result_workbook": {
+    "path": "artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_results/exp1_pass_at_1_mbpp.xlsx",
+    "sha256": "95ba84a6cd5ded07d85ed0fb445f35262ae7e5fc36a38eacf31c97906710e1da",
+    "last_write_utc": "2026-07-15T12:30:38.3941238Z"
+  },
+  "requested_task_ids": [
+    "Mbpp/255",
+    "Mbpp/279",
+    "Mbpp/410"
+  ],
+  "requested_conditions": [
+    "Raw",
+    "Original Ab3",
+    "Candidate Healer-vNext"
+  ],
+  "runner_aggregate_semantics": "aggregate pass requires base=pass and plus=pass; base=pass,plus=fail is aggregate fail",
+  "recorded_sha256_semantics": "SHA256 of UTF-8 eval_code after Python universal-newline normalization. Current CRLF byte hashes differ, but CRLF-to-LF normalized hashes match the manifest and workbook for all nine samples.",
   "results": [
     {
       "task_id": "Mbpp/255",
+      "sample_idx": 0,
       "condition": "Raw",
-      "base": "pass",
-      "plus": "fail",
-      "error": "fail: base=pass,plus=fail",
+      "base_status": "pass",
+      "plus_status": "pass",
+      "aggregate_status": "pass",
+      "error_type": "pass",
+      "error": null,
+      "worker_error": null,
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_255__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Raw/Mbpp_255__s0.py",
+      "sha256": "6fe16f25b1ad17653705af5fb2583e1b682a61b6f17f393b6af9141d3d708c5f",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/255",
+      "sample_idx": 0,
       "condition": "Original Ab3",
-      "base": "fail",
-      "plus": "fail",
-      "error": "fail: base=fail,plus=fail",
+      "base_status": "fail",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=fail,plus=fail",
+      "worker_error": null,
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab3\\Mbpp_255__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Original_Ab3/Mbpp_255__s0.py",
+      "sha256": "7df412ff3b6a37b5786051ef9b06dd23b99839d1682d6ecea6d5087f7b589d7b",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/255",
+      "sample_idx": 0,
       "condition": "Candidate Healer-vNext",
-      "base": null,
-      "plus": null,
-      "error": "environment_unsupported",
+      "base_status": "pass",
+      "plus_status": "pass",
+      "aggregate_status": "pass",
+      "error_type": "pass",
+      "error": null,
+      "worker_error": null,
       "timeout": false,
-      "classification": null,
-      "result_provenance": "official replay blocked before execution"
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_255__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Candidate_Healer_vNext/Mbpp_255__s0.py",
+      "sha256": "fc39f33436cecca7a9b31e5a7f7a22606a6ce0ebdc52e77b8cba17fa47da8852",
+      "classification": "official full rescue",
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/279",
+      "sample_idx": 0,
       "condition": "Raw",
-      "base": null,
-      "plus": null,
-      "error": "worker_error: entry point is_num_decagonal defined 2 times",
+      "base_status": null,
+      "plus_status": null,
+      "aggregate_status": "worker_error",
+      "error_type": "worker_error",
+      "error": "entry_point 'is_num_decagonal' must be defined exactly once; found 2",
+      "worker_error": "duplicate entry point rejected before EvalPlus base or plus tests",
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_279__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Raw/Mbpp_279__s0.py",
+      "sha256": "99cd93576f0d52ba046dc7d13edc8d00d002758fdd13701af5de1f556cadeff4",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/279",
+      "sample_idx": 0,
       "condition": "Original Ab3",
-      "base": "fail",
-      "plus": "fail",
-      "error": "fail: base=fail,plus=fail",
+      "base_status": "fail",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=fail,plus=fail",
+      "worker_error": null,
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab3\\Mbpp_279__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Original_Ab3/Mbpp_279__s0.py",
+      "sha256": "ee50da9fb9035bcd62f28e7578dba0a7fa8ec16ef548778743699bbfa7cbea49",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/279",
+      "sample_idx": 0,
       "condition": "Candidate Healer-vNext",
-      "base": null,
-      "plus": null,
-      "error": "environment_unsupported",
+      "base_status": "fail",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=fail,plus=fail; the retained last definition uses sqrt(1 + 24*n), while inverting its own nth_decagonal_number(n)=n*(3*n-1) requires discriminant 1 + 12*n",
+      "worker_error": null,
       "timeout": false,
-      "classification": null,
-      "result_provenance": "official replay blocked before execution"
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_279__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Candidate_Healer_vNext/Mbpp_279__s0.py",
+      "sha256": "c620f5a9a76b16303dd2090a1fcaa0a89e07ce054f021351a12c06bcea2fac08",
+      "classification": "structural/runtime-semantics recovery only",
+      "result_provenance": "official replay workbook plus source-local algebraic reconciliation; no reference solution used"
     },
     {
       "task_id": "Mbpp/410",
+      "sample_idx": 0,
       "condition": "Raw",
-      "base": "pass",
-      "plus": "fail",
-      "error": "fail: base=pass,plus=fail",
+      "base_status": "pass",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=pass,plus=fail",
+      "worker_error": null,
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_410__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Raw/Mbpp_410__s0.py",
+      "sha256": "65d5a9fcec96b2edb4dc1c7f0e9c280d025258e1b678df984deec3455a91d534",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/410",
+      "sample_idx": 0,
       "condition": "Original Ab3",
-      "base": "fail",
-      "plus": "fail",
-      "error": "fail: base=fail,plus=fail",
+      "base_status": "fail",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=fail,plus=fail",
+      "worker_error": null,
       "timeout": false,
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab3\\Mbpp_410__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Original_Ab3/Mbpp_410__s0.py",
+      "sha256": "3a446dfa1bfe8122ca7569d2a827a36d95d6545a5616d621205427cd8c74b4e4",
       "classification": null,
-      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+      "result_provenance": "official replay workbook"
     },
     {
       "task_id": "Mbpp/410",
+      "sample_idx": 0,
       "condition": "Candidate Healer-vNext",
-      "base": null,
-      "plus": null,
-      "error": "environment_unsupported",
+      "base_status": "pass",
+      "plus_status": "fail",
+      "aggregate_status": "fail",
+      "error_type": "fail",
+      "error": "base=pass,plus=fail",
+      "worker_error": null,
       "timeout": false,
-      "classification": null,
-      "result_provenance": "official replay blocked before execution"
+      "source_path": "G:\\我的雲端硬碟\\科展 AI\\AST_exp_result_official\\qwen8b_nothink_mbpp_378\\eval_ready_outputs\\mbpp\\qwen3-8b\\Ab2g\\Mbpp_410__s0.py",
+      "evaluated_source_path": "/mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs/eval_ready_outputs/mbpp/qwen3-8b/Candidate_Healer_vNext/Mbpp_410__s0.py",
+      "sha256": "dfc5304573e4a81a9235d93641df86ebc099cea9f1b1139fe89c8323ac3310a5",
+      "classification": "official base-regression recovery",
+      "result_provenance": "official replay workbook"
     }
   ],
   "task_classifications": {
-    "Mbpp/255": null,
-    "Mbpp/279": null,
-    "Mbpp/410": null
+    "Mbpp/255": "official full rescue",
+    "Mbpp/279": "structural/runtime-semantics recovery only",
+    "Mbpp/410": "official base-regression recovery"
   },
-  "classification_status": "Not classified: Candidate official base/plus outcomes do not exist."
+  "classification_definitions": {
+    "official full rescue": "Candidate passes official base and plus tests",
+    "official base-regression recovery": "Candidate restores official base pass but plus still fails",
+    "structural/runtime-semantics recovery only": "Candidate removes a structural blocker or restores Python runtime binding semantics, but official base still fails",
+    "no recovery": "Candidate does not improve the official result or structural execution state",
+    "unresolved provenance discrepancy": "Two provenance records disagree and available task, sample, source, runner, environment, or dataset evidence cannot uniquely explain the difference"
+  },
+  "reconciliation": {
+    "Mbpp/410": {
+      "status": "resolved",
+      "reason": "Replay Raw is base=pass,plus=fail, exactly matching the historical reviewed row. The displayed aggregate fail is produced because the runner requires both base and plus to pass.",
+      "checks": {
+        "task_id": "Mbpp/410 in both records",
+        "sample_idx": 0,
+        "source_sha256": "65d5a9fcec96b2edb4dc1c7f0e9c280d025258e1b678df984deec3455a91d534 in both records",
+        "evalplus_version": "0.3.1 in both records",
+        "replay_dataset_version": "MBPP+ v0.2.0",
+        "historical_dataset_version": "not recorded in historical workbook",
+        "aggregate_semantics": "base pass plus fail => aggregate fail"
+      }
+    },
+    "Mbpp/255 Raw": {
+      "status": "unresolved provenance discrepancy",
+      "reason": "Historical official Ab2g is base=pass,plus=fail, while replay Raw is base=pass,plus=pass. Task ID, sample index, normalized source SHA256, and EvalPlus 0.3.1 match. Historical dataset version/hash and per-test details are not recorded; the environments differ (Python 3.10.12 vs 3.14.4 and different WSL kernels/glibc), so the available evidence does not uniquely identify the cause.",
+      "impact": "This affects the Raw historical-baseline reconciliation only. Candidate versus Original Ab3 in the same replay remains an official full rescue."
+    }
+  },
+  "original_pass_at_1_inclusion": false
 }
