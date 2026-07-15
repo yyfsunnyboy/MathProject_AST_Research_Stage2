@@ -1,0 +1,11 @@
+--- qwen8b_mbpp_Mbpp_462__s0.raw
++++ qwen8b_mbpp_Mbpp_462__s0.healed
+@@ -1,7 +1,6 @@
+ def combinations_list(lst):
+-    from itertools import combinations
+     result = []
+-    for i in range(len(lst)+1):
++    for i in range(len(lst) + 1):
+         for combo in combinations(lst, i):
+             result.append(list(combo))
+     return result

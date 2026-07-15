@@ -1,0 +1,4 @@
+--- qwen8b_mbpp_Mbpp_255__s0.raw
++++ qwen8b_mbpp_Mbpp_255__s0.healed
+@@ -0,0 +1 @@
++Module(body=[FunctionDef(name='combinations_colors', args=arguments(posonlyargs=[], args=[arg(arg='lst'), arg(arg='n')], kwonlyargs=[], kw_defaults=[], defaults=[]), body=[Return(value=Call(func=Name(id='list', ctx=Load()), args=[Call(func=Name(id='combinations_with_replacement', ctx=Load()), args=[Name(id='lst', ctx=Load()), Name(id='n', ctx=Load())], keywords=[])], keywords=[]))], decorator_list=[], type_params=[])], type_ignores=[])

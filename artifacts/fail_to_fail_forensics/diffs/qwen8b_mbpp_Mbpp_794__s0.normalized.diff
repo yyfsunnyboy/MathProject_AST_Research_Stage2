@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_794__s0.raw
++++ qwen8b_mbpp_Mbpp_794__s0.healed
+@@ -1,2 +1,2 @@
+ def text_starta_endb(s):
+-    return s.startswith('a') and s.endswith('b') and len(s) > 1
++    return s.startswith('a') and s.endswith('b') and (len(s) > 1)

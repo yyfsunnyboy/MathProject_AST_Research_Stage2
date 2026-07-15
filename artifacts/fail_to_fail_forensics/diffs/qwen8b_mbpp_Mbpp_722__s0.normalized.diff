@@ -1,0 +1,17 @@
+--- qwen8b_mbpp_Mbpp_722__s0.raw
++++ qwen8b_mbpp_Mbpp_722__s0.healed
+@@ -1,2 +1,14 @@
++import re
++
+ def filter_data(data, min_height, min_weight):
++    _math_str_fb = locals().get('math_str', locals().get('last_math_str', ''))
++    if not _math_str_fb:
++        _t = [str(v) for k, v in locals().items() if re.match('^t\\\\d+$', k)]
++        _math_str_fb = ''.join(_t) if _t else '0'
++    question_text = locals().get('question_text', '')
++    if not question_text or '$' not in str(question_text):
++        question_text = f'化簡 ${_math_str_fb}$ 的值。'
++    correct_answer = locals().get('correct_answer', '')
++    if correct_answer:
++        correct_answer = str(correct_answer).replace('-', '-').replace('-', '-').replace('1\\sqrt', '\\sqrt')
+     return {k: v for k, v in data.items() if v[0] > min_height and v[1] > min_weight}

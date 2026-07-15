@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_290__s0.raw
++++ qwen8b_mbpp_Mbpp_290__s0.healed
+@@ -1,2 +1,2 @@
+ def max_length(lists):
+-    return max((len(lst), lst) for lst in lists)
++    return max(((len(lst), lst) for lst in lists))

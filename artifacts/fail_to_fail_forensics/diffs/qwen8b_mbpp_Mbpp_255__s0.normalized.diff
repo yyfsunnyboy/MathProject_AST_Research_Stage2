@@ -1,0 +1,9 @@
+--- qwen8b_mbpp_Mbpp_255__s0.raw
++++ qwen8b_mbpp_Mbpp_255__s0.healed
+@@ -1,6 +1,2 @@
+-```python
+-from itertools import combinations_with_replacement
+-
+ def combinations_colors(lst, n):
+     return list(combinations_with_replacement(lst, n))
+-```

@@ -1,0 +1,20 @@
+--- qwen8b_mbpp_Mbpp_123__s0.raw
++++ qwen8b_mbpp_Mbpp_123__s0.healed
+@@ -1,14 +1,14 @@
+ def amicable_numbers_sum(n):
++
+     def sum_divisors(x):
+         total = 1
+-        for i in range(2, int(x**0.5) + 1):
++        for i in range(2, int(x ** 0.5) + 1):
+             if x % i == 0:
+                 total += i + x // i
+         return total
+-
+     total = 0
+     for i in range(2, n + 1):
+         j = sum_divisors(i)
+-        if j > i and sum_divisors(j) == i and j <= n:
++        if j > i and sum_divisors(j) == i and (j <= n):
+             total += i
+     return total

@@ -1,0 +1,7 @@
+--- qwen8b_mbpp_Mbpp_787__s0.raw
++++ qwen8b_mbpp_Mbpp_787__s0.healed
+@@ -1,3 +1,3 @@
+ def text_match_three(s):
+     import re
+-    return bool(re.fullmatch(r'a(b){3}', s))
++    return bool(re.fullmatch('a(b){3}', s))

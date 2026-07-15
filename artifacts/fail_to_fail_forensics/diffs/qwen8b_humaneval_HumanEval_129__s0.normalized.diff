@@ -1,0 +1,17 @@
+--- qwen8b_humaneval_HumanEval_129__s0.raw
++++ qwen8b_humaneval_HumanEval_129__s0.healed
+@@ -1,5 +1,4 @@
+ def minPath(grid, k):
+-    from heapq import heappush, heappop
+     N = len(grid)
+     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+     heap = []
+@@ -14,7 +13,7 @@
+             return result
+         i, j = path[-1]
+         for dx, dy in directions:
+-            ni, nj = i + dx, j + dy
++            ni, nj = (i + dx, j + dy)
+             if 0 <= ni < N and 0 <= nj < N:
+                 new_path = path + [(ni, nj)]
+                 heappush(heap, (grid[ni][nj], new_path))

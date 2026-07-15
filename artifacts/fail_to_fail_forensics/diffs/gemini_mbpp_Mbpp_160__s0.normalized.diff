@@ -1,0 +1,35 @@
+--- gemini_mbpp_Mbpp_160__s0.raw
++++ gemini_mbpp_Mbpp_160__s0.healed
+@@ -1,24 +1,21 @@
+ def find_solution(a, b, n):
++
+     def extended_gcd(a, b):
+         if a == 0:
+-            return b, 0, 1
++            return (b, 0, 1)
+         gcd, x1, y1 = extended_gcd(b % a, a)
+-        x = y1 - (b // a) * x1
++        x = y1 - b // a * x1
+         y = x1
+-        return gcd, x, y
+-
++        return (gcd, x, y)
+     if a == 0 and b == 0:
+         return (0, 0) if n == 0 else None
+-
+     gcd, x0, y0 = extended_gcd(abs(a), abs(b))
+-
+     if n % gcd != 0:
+         return None
+-
+     x = x0 * (n // gcd)
+     y = y0 * (n // gcd)
+-
+-    if a < 0: x = -x
+-    if b < 0: y = -y
+-
++    if a < 0:
++        x = -x
++    if b < 0:
++        y = -y
+     return (x, y)

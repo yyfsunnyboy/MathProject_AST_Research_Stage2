@@ -1,0 +1,12 @@
+--- gemini_mbpp_Mbpp_92__s0.raw
++++ gemini_mbpp_Mbpp_92__s0.healed
+@@ -8,7 +8,6 @@
+         if i % 2 == 0:
+             if s[i] != s[0]:
+                 return False
+-        else:
+-            if s[i] != s[1]:
+-                return False
++        elif s[i] != s[1]:
++            return False
+     return True

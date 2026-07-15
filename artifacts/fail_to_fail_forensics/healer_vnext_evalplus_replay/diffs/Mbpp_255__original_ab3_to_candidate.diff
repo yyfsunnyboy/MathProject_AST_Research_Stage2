@@ -1,0 +1,7 @@
+--- Mbpp/255 original_ab3
++++ Mbpp/255 candidate_healer_vnext
+@@ -1,2 +1,4 @@
++from itertools import combinations_with_replacement
++
+ def combinations_colors(lst, n):
+     return list(combinations_with_replacement(lst, n))

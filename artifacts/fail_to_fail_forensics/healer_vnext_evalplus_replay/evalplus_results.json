@@ -1,0 +1,118 @@
+{
+  "result_name": "Healer-vNext official EvalPlus single-task counterfactual replay",
+  "status": "blocked_preflight",
+  "executed_at": null,
+  "evalplus_version": "0.3.1",
+  "dataset": "mbpp",
+  "dataset_version": "v0.2.0",
+  "dataset_version_source": "evalplus.data.mbpp.MBPP_PLUS_VERSION",
+  "dataset_hash": null,
+  "dataset_hash_status": "unresolved because the official dataset loader cannot import pyarrow in native Windows",
+  "requested_task_ids": ["Mbpp/279", "Mbpp/255", "Mbpp/410"],
+  "requested_conditions": ["Raw", "Original Ab3", "Candidate Healer-vNext"],
+  "official_replay_executed": false,
+  "blocker": {
+    "platform": "native Windows",
+    "reason": "EvalPlus check_correctness requires POSIX resource and SIGALRM/ITIMER_REAL semantics. No WSL distribution or Docker runtime is installed.",
+    "additional_import_failure": "evalplus.evaluate cannot import because the pyarrow DLL is blocked by application-control policy.",
+    "required_environment": "WSL/Linux with evalplus==0.3.1 and the official MBPP+ v0.2.0 dataset"
+  },
+  "results": [
+    {
+      "task_id": "Mbpp/255",
+      "condition": "Raw",
+      "base": "pass",
+      "plus": "fail",
+      "error": "fail: base=pass,plus=fail",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/255",
+      "condition": "Original Ab3",
+      "base": "fail",
+      "plus": "fail",
+      "error": "fail: base=fail,plus=fail",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/255",
+      "condition": "Candidate Healer-vNext",
+      "base": null,
+      "plus": null,
+      "error": "environment_unsupported",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "official replay blocked before execution"
+    },
+    {
+      "task_id": "Mbpp/279",
+      "condition": "Raw",
+      "base": null,
+      "plus": null,
+      "error": "worker_error: entry point is_num_decagonal defined 2 times",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/279",
+      "condition": "Original Ab3",
+      "base": "fail",
+      "plus": "fail",
+      "error": "fail: base=fail,plus=fail",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/279",
+      "condition": "Candidate Healer-vNext",
+      "base": null,
+      "plus": null,
+      "error": "environment_unsupported",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "official replay blocked before execution"
+    },
+    {
+      "task_id": "Mbpp/410",
+      "condition": "Raw",
+      "base": "pass",
+      "plus": "fail",
+      "error": "fail: base=pass,plus=fail",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/410",
+      "condition": "Original Ab3",
+      "base": "fail",
+      "plus": "fail",
+      "error": "fail: base=fail,plus=fail",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "historical official reviewed forensic baseline; not rerun in this replay"
+    },
+    {
+      "task_id": "Mbpp/410",
+      "condition": "Candidate Healer-vNext",
+      "base": null,
+      "plus": null,
+      "error": "environment_unsupported",
+      "timeout": false,
+      "classification": null,
+      "result_provenance": "official replay blocked before execution"
+    }
+  ],
+  "task_classifications": {
+    "Mbpp/255": null,
+    "Mbpp/279": null,
+    "Mbpp/410": null
+  },
+  "classification_status": "Not classified: Candidate official base/plus outcomes do not exist."
+}

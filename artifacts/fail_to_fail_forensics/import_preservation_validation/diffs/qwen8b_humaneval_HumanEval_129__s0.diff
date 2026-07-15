@@ -1,0 +1,8 @@
+--- HumanEval/129 Original Ab3
++++ HumanEval/129 Candidate Healer
+@@ -1,4 +1,5 @@
+ def minPath(grid, k):
++    from heapq import heappush, heappop
+     N = len(grid)
+     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+     heap = []

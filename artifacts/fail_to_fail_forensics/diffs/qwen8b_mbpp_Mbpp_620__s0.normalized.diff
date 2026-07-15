@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_620__s0.raw
++++ qwen8b_mbpp_Mbpp_620__s0.healed
+@@ -1,5 +1,4 @@
+ def largest_subset(nums):
+-    from collections import defaultdict
+     count = defaultdict(int)
+     for num in nums:
+         count[num] += 1

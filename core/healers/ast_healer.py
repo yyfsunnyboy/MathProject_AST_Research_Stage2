@@ -28,8 +28,121 @@
 import ast
 import re
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
+
+
+class _ScopeBindingVisitor(ast.NodeVisitor):
+    """Collect bindings in one lexical scope without entering child scopes."""
+
+    def __init__(self):
+        self.names = set()
+
+    def visit_Name(self, node):
+        if isinstance(node.ctx, (ast.Store, ast.Del)):
+            self.names.add(node.id)
+
+    def visit_arg(self, node):
+        self.names.add(node.arg)
+
+    def visit_Import(self, node):
+        for item in node.names:
+            self.names.add(item.asname or item.name.split('.')[0])
+
+    def visit_ImportFrom(self, node):
+        for item in node.names:
+            if item.name != '*':
+                self.names.add(item.asname or item.name)
+
+    def visit_FunctionDef(self, node):
+        self.names.add(node.name)
+
+    visit_AsyncFunctionDef = visit_FunctionDef
+
+    def visit_ClassDef(self, node):
+        self.names.add(node.name)
+
+    def visit_Lambda(self, node):
+        return None
+
+
+class _SameScopeImportUseVisitor(ast.NodeVisitor):
+    """Find a load that resolves to an import binding, ignoring shadowed scopes."""
+
+    def __init__(self, binding, require_attribute):
+        self.binding = binding
+        self.require_attribute = require_attribute
+        self.used = False
+
+    @staticmethod
+    def _local_bindings(node):
+        visitor = _ScopeBindingVisitor()
+        for argument in (
+            list(node.args.posonlyargs)
+            + list(node.args.args)
+            + list(node.args.kwonlyargs)
+        ):
+            visitor.visit(argument)
+        if node.args.vararg:
+            visitor.visit(node.args.vararg)
+        if node.args.kwarg:
+            visitor.visit(node.args.kwarg)
+        for statement in node.body:
+            visitor.visit(statement)
+        return visitor.names
+
+    def visit_Name(self, node):
+        if (
+            not self.require_attribute
+            and isinstance(node.ctx, ast.Load)
+            and node.id == self.binding
+        ):
+            self.used = True
+
+    def visit_Attribute(self, node):
+        if (
+            self.require_attribute
+            and isinstance(node.value, ast.Name)
+            and isinstance(node.value.ctx, ast.Load)
+            and node.value.id == self.binding
+        ):
+            self.used = True
+        if not self.used:
+            self.generic_visit(node)
+
+    def _visit_function(self, node):
+        for decorator in node.decorator_list:
+            self.visit(decorator)
+        for default in list(node.args.defaults) + [
+            item for item in node.args.kw_defaults if item is not None
+        ]:
+            self.visit(default)
+        if self.used or self.binding in self._local_bindings(node):
+            return
+        for statement in node.body:
+            self.visit(statement)
+            if self.used:
+                return
+
+    visit_FunctionDef = _visit_function
+    visit_AsyncFunctionDef = _visit_function
+
+    def visit_ClassDef(self, node):
+        bindings = _ScopeBindingVisitor()
+        for statement in node.body:
+            bindings.visit(statement)
+        if self.binding in bindings.names:
+            return
+        for statement in node.body:
+            self.visit(statement)
+            if self.used:
+                return
+
+    def visit_Lambda(self, node):
+        bindings = {item.arg for item in node.args.args}
+        if self.binding not in bindings:
+            self.visit(node.body)
 
 class ASTHealer(ast.NodeTransformer):
     """
@@ -43,6 +156,13 @@ class ASTHealer(ast.NodeTransformer):
     4. 清理非法 import
     5. 修復 fmt_num 參數問題
     """
+
+    BLOCKED_IMPORT_ROOTS = {
+        'builtins', 'ctypes', 'ensurepip', 'ftplib', 'http', 'importlib',
+        'marshal', 'multiprocessing', 'os', 'pathlib', 'pickle', 'resource',
+        'shelve', 'shutil', 'signal', 'smtplib', 'socket', 'sqlite3',
+        'subprocess', 'sys', 'tempfile', 'urllib', 'webbrowser', 'winreg',
+    }
     
     def __init__(self, ai_client=None, require_entry_point: bool = True,
                  entry_point: str = "generate"):
@@ -59,6 +179,64 @@ class ASTHealer(ast.NodeTransformer):
         self.logs = []
         self.require_entry_point = require_entry_point
         self.entry_point = entry_point
+        self._preserved_import_aliases = set()
+
+    @staticmethod
+    def _statement_binds_name(statement, name):
+        visitor = _ScopeBindingVisitor()
+        visitor.visit(statement)
+        return name in visitor.names
+
+    @staticmethod
+    def _statement_uses_import(statement, binding, require_attribute):
+        visitor = _SameScopeImportUseVisitor(binding, require_attribute)
+        visitor.visit(statement)
+        return visitor.used
+
+    def _binding_used_after(self, statements, import_index, binding, require_attribute):
+        for statement in statements[import_index + 1:]:
+            # Ambiguous evaluation order or a definite rebinding fails closed.
+            if self._statement_binds_name(statement, binding):
+                return False
+            if self._statement_uses_import(statement, binding, require_attribute):
+                return True
+        return False
+
+    def _is_preservable_stdlib(self, module):
+        if not module:
+            return False
+        root = module.split('.')[0]
+        stdlib_modules = getattr(sys, 'stdlib_module_names', frozenset())
+        return root in stdlib_modules and root not in self.BLOCKED_IMPORT_ROOTS
+
+    def _prepare_import_preservation(self, tree):
+        self._preserved_import_aliases = set()
+        scope_types = (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+        for scope in (node for node in ast.walk(tree) if isinstance(node, scope_types)):
+            statements = scope.body
+            for index, statement in enumerate(statements):
+                if isinstance(statement, ast.Import):
+                    for item in statement.names:
+                        if not self._is_preservable_stdlib(item.name):
+                            continue
+                        binding = item.asname or item.name.split('.')[0]
+                        if self._binding_used_after(
+                            statements, index, binding, require_attribute=True
+                        ):
+                            self._preserved_import_aliases.add(id(item))
+                elif (
+                    isinstance(statement, ast.ImportFrom)
+                    and statement.level == 0
+                    and self._is_preservable_stdlib(statement.module)
+                ):
+                    for item in statement.names:
+                        if item.name == '*':
+                            continue
+                        binding = item.asname or item.name
+                        if self._binding_used_after(
+                            statements, index, binding, require_attribute=False
+                        ):
+                            self._preserved_import_aliases.add(id(item))
 
     def visit_BinOp(self, node):
         """修復二元運算符"""
@@ -183,7 +361,11 @@ class ASTHealer(ast.NodeTransformer):
     def visit_Import(self, node):
         """移除非法 import，但保留安全的數學相關模組"""
         safe_modules = {'math', 'random', 'fractions', 'decimal', 're'}
-        new_names = [alias for alias in node.names if alias.name.split('.')[0] in safe_modules]
+        new_names = [
+            alias for alias in node.names
+            if alias.name.split('.')[0] in safe_modules
+            or id(alias) in self._preserved_import_aliases
+        ]
         
         if len(new_names) < len(node.names):
             self.fixes += 1
@@ -205,7 +387,26 @@ class ASTHealer(ast.NodeTransformer):
             # Stripping this import would silently break radical code execution.
             'core',
         }
-        if node.module and node.module.split('.')[0] in safe_modules:
+        if (
+            node.level == 0
+            and node.module
+            and node.module.split('.')[0] in safe_modules
+            and all(item.name != '*' for item in node.names)
+        ):
+            return node
+
+        preserved_names = [
+            item for item in node.names if id(item) in self._preserved_import_aliases
+        ]
+        if preserved_names:
+            if len(preserved_names) < len(node.names):
+                self.fixes += 1
+                removed = [item.name for item in node.names if item not in preserved_names]
+                self.logs.append(
+                    f"AST Healer: Removed unreferenced import(s) from {node.module}: "
+                    f"{', '.join(removed)}"
+                )
+            node.names = preserved_names
             return node
             
         self.fixes += 1
@@ -403,6 +604,7 @@ class ASTHealer(ast.NodeTransformer):
 
         try:
             tree = ast.parse(code_str) # Re-parse final version
+            self._prepare_import_preservation(tree)
             new_tree = self.visit(tree)
             ast.fix_missing_locations(new_tree)
             

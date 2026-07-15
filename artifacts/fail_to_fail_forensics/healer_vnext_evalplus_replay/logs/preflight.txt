@@ -1,0 +1,20 @@
+Status: BLOCKED_PREEXECUTION
+Date: 2026-07-15 Asia/Taipei
+
+Python runtime: native Windows (sys.platform=win32)
+EvalPlus package: 0.3.1
+MBPP+ package dataset version: v0.2.0
+
+Official runner requirements:
+- POSIX resource module
+- signal.SIGALRM
+- signal.ITIMER_REAL
+- Linux/WSL process sandbox semantics
+
+Observed blockers:
+1. No WSL distribution is installed. `wsl.exe --list --quiet` reports that no distribution is available.
+2. Docker is not installed.
+3. `python -m evalplus.evaluate --help` fails during import because the pyarrow DLL is blocked by application-control policy.
+4. The repository's official `AST_experiment/exp1_benchmark/run_eval.py` intentionally fails closed on native Windows and documents WSL/Linux as mandatory.
+
+No official check_correctness worker was started. No base or plus test was executed in this replay.

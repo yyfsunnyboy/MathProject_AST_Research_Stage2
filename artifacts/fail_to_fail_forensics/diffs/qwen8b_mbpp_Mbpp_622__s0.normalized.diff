@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_622__s0.raw
++++ qwen8b_mbpp_Mbpp_622__s0.healed
+@@ -10,4 +10,4 @@
+             j += 1
+     merged.extend(list1[i:])
+     merged.extend(list2[j:])
+-    return (merged[n-1] + merged[n]) / 2.0
++    return (merged[n - 1] + merged[n]) / 2.0

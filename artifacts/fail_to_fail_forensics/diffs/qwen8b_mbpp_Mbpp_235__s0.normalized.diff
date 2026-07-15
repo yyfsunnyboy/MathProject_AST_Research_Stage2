@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_235__s0.raw
++++ qwen8b_mbpp_Mbpp_235__s0.healed
+@@ -1,2 +1,2 @@
+ def even_bit_set_number(n):
+-    return n | (n >> 1) & 0x5555555555555555
++    return n | n >> 1 & 6148914691236517205

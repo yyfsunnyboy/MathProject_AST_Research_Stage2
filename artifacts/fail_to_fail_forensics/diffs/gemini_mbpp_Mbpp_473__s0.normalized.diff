@@ -1,0 +1,29 @@
+--- gemini_mbpp_Mbpp_473__s0.raw
++++ gemini_mbpp_Mbpp_473__s0.healed
+@@ -1,14 +1,22 @@
++import re
++
+ def tuple_intersection(list1, list2):
++
+     def normalize(lst):
+-        return {tuple(sorted(t)) for t in lst}
+-
++        _t = [str(v) for k, v in locals().items() if re.match('^t\\\\d+$', k)]
++        _math_str_fb = ''.join(_t) if _t else '0'
++    question_text = locals().get('question_text', '')
++    if not question_text or '$' not in str(question_text):
++        question_text = f'化簡 ${_math_str_fb}$ 的值。'
++    correct_answer = locals().get('correct_answer', '')
++    if correct_answer:
++        correct_answer = str(correct_answer).replace('-', '-').replace('-', '-').replace('1\\sqrt', '\\sqrt')
++    return {tuple(sorted(t)) for t in lst}
+     set1 = normalize(list1)
+     set2 = normalize(list2)
+     intersected_sorted = set1.intersection(set2)
+-
+     result = set()
+     for t in list1:
+         if tuple(sorted(t)) in intersected_sorted:
+             result.add(t)
+-
+     return result

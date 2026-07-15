@@ -1,0 +1,10 @@
+--- qwen8b_mbpp_Mbpp_113__s0.raw
++++ qwen8b_mbpp_Mbpp_113__s0.healed
+@@ -4,6 +4,6 @@
+     s = s.strip()
+     if not s:
+         return False
+-    if s[0] in '+-':
++    if s[0] in '-':
+         s = s[1:]
+     return s.isdigit() and s != ''

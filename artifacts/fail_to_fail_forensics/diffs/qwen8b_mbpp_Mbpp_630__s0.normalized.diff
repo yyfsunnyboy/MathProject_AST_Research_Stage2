@@ -1,0 +1,7 @@
+--- qwen8b_mbpp_Mbpp_630__s0.raw
++++ qwen8b_mbpp_Mbpp_630__s0.healed
+@@ -1,3 +1,3 @@
+ def get_coordinates(coord):
+     x, y = coord
+-    return [[x-1, y-1], [x-1, y], [x-1, y+1], [x, y-1], [x, y], [x, y+1], [x+1, y-1], [x+1, y], [x+1, y+1]]
++    return [[x - 1, y - 1], [x - 1, y], [x - 1, y + 1], [x, y - 1], [x, y], [x, y + 1], [x + 1, y - 1], [x + 1, y], [x + 1, y + 1]]

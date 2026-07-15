@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_11__s0.raw
++++ qwen8b_mbpp_Mbpp_11__s0.healed
+@@ -3,4 +3,4 @@
+     if first == -1:
+         return s
+     last = s.rfind(c)
+-    return s[:first] + s[last+1:]
++    return s[:first] + s[last + 1:]

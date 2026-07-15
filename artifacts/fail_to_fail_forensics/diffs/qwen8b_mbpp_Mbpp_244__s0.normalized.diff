@@ -1,0 +1,7 @@
+--- qwen8b_mbpp_Mbpp_244__s0.raw
++++ qwen8b_mbpp_Mbpp_244__s0.healed
+@@ -1,3 +1,3 @@
+ def next_Perfect_Square(n):
+     import math
+-    return ((math.isqrt(n) + 1) ** 2) if n != (math.isqrt(n) ** 2) else (math.isqrt(n) + 1) ** 2
++    return (math.isqrt(n) + 1) ** 2 if n != math.isqrt(n) ** 2 else (math.isqrt(n) + 1) ** 2

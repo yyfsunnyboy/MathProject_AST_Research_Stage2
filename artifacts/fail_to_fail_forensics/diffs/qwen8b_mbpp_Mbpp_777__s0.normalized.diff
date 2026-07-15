@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_777__s0.raw
++++ qwen8b_mbpp_Mbpp_777__s0.healed
+@@ -1,4 +1,3 @@
+ def find_sum(lst):
+-    from collections import Counter
+     counts = Counter(lst)
+-    return sum(num for num, cnt in counts.items() if cnt == 1)
++    return sum((num for num, cnt in counts.items() if cnt == 1))

@@ -1,0 +1,14 @@
+--- qwen8b_humaneval_HumanEval_108__s0.raw
++++ qwen8b_humaneval_HumanEval_108__s0.healed
+@@ -1,4 +1,5 @@
+ def count_nums(arr):
++
+     def sum_digits(x):
+         s = 0
+         sign = 1
+@@ -9,4 +10,4 @@
+             s += x % 10
+             x //= 10
+         return s * sign
+-    return sum(1 for num in arr if sum_digits(num) > 0)
++    return sum((1 for num in arr if sum_digits(num) > 0))

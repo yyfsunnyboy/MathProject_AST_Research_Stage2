@@ -1,0 +1,7 @@
+--- gemini_mbpp_Mbpp_427__s0.raw
++++ gemini_mbpp_Mbpp_427__s0.healed
+@@ -1,3 +1,3 @@
+ def change_date_format(dt: str) -> str:
+     parts = dt.split('-')
+-    return f"{parts[2]}-{parts[1]}-{parts[0]}"
++    return f'{parts[2]}-{parts[1]}-{parts[0]}'

@@ -1,0 +1,7 @@
+--- qwen8b_mbpp_Mbpp_742__s0.raw
++++ qwen8b_mbpp_Mbpp_742__s0.healed
+@@ -1,3 +1,3 @@
+ def area_tetrahedron(edge_length):
+     import math
+-    return 3 * math.sqrt(3) * (edge_length ** 2)
++    return 3 * math.sqrt(3) * edge_length ** 2

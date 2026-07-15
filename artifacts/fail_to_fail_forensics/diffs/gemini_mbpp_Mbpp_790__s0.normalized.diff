@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_790__s0.raw
++++ gemini_mbpp_Mbpp_790__s0.healed
+@@ -1,2 +1,2 @@
+ def even_position(nums):
+-    return all(nums[i] % 2 == 0 for i in range(0, len(nums), 2))
++    return all((nums[i] % 2 == 0 for i in range(0, len(nums), 2)))

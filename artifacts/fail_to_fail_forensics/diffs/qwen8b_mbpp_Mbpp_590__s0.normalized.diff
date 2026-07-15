@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_590__s0.raw
++++ qwen8b_mbpp_Mbpp_590__s0.healed
+@@ -2,4 +2,4 @@
+     import math
+     x = r * math.cos(theta)
+     y = r * math.sin(theta)
+-    return (float(x), float(y)), complex(x, y)
++    return ((float(x), float(y)), complex(x, y))

@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_237__s0.raw
++++ qwen8b_mbpp_Mbpp_237__s0.healed
+@@ -1,5 +1,4 @@
+ def check_occurences(lst):
+-    from collections import defaultdict
+     counts = defaultdict(int)
+     for item in lst:
+         counts[item] += 1

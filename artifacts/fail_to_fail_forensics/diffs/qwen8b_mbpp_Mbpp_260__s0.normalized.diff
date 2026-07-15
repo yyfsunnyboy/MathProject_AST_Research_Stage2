@@ -1,0 +1,51 @@
+--- qwen8b_mbpp_Mbpp_260__s0.raw
++++ qwen8b_mbpp_Mbpp_260__s0.healed
+@@ -1,43 +1,22 @@
+ def newman_prime(n):
++
+     def is_prime(x):
+         if x < 2:
+             return False
+-        for i in range(2, int(x**0.5) + 1):
++        for i in range(2, int(x ** 0.5) + 1):
+             if x % i == 0:
+                 return False
+         return True
+
+     def nswn_prime(k):
+-        return (2**((2**k) - 1) - 1) + (2**((2**k) - 1) + 1)
+-
++        return 2 ** (2 ** k - 1) - 1 + (2 ** (2 ** k - 1) + 1)
+     count = 0
+     k = 1
+-    while True:
++    for _safety_loop_var in range(1000):
+         p = nswn_prime(k)
+         if is_prime(p):
+             count += 1
+             if count == n:
+                 return p
+         k += 1
+-
+-def newman_prime(n):
+-    def is_prime(x):
+-        if x < 2:
+-            return False
+-        for i in range(2, int(x**0.5) + 1):
+-            if x % i == 0:
+-                return False
+-        return True
+-
+-    def nswn_prime(k):
+-        return (2**((2**k) - 1) - 1) + (2**((2**k) - 1) + 1)
+-
+-    count = 0
+-    k = 1
+-    while True:
+-        p = nswn_prime(k)
+-        if is_prime(p):
+-            count += 1
+-            if count == n:
+-                return p
+-        k += 1
++    return (0, 0)

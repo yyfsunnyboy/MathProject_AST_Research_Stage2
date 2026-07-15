@@ -1,0 +1,16 @@
+--- gemini_mbpp_Mbpp_564__s0.raw
++++ gemini_mbpp_Mbpp_564__s0.healed
+@@ -4,11 +4,9 @@
+     counts = {}
+     for x in arr:
+         counts[x] = counts.get(x, 0) + 1
+-
+-    total_pairs = (n * (n - 1)) // 2
++    total_pairs = n * (n - 1) // 2
+     equal_pairs = 0
+     for count in counts.values():
+         if count > 1:
+-            equal_pairs += (count * (count - 1)) // 2
+-
++            equal_pairs += count * (count - 1) // 2
+     return total_pairs - equal_pairs

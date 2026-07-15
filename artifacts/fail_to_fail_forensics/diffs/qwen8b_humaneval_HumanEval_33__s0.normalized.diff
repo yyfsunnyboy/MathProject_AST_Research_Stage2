@@ -1,0 +1,6 @@
+--- qwen8b_humaneval_HumanEval_33__s0.raw
++++ qwen8b_humaneval_HumanEval_33__s0.healed
+@@ -1,2 +1,2 @@
+ def sort_third(l: list):
+-    return [l[i] if i % 3 != 0 else sorted(l)[i//3] for i in range(len(l))]
++    return [l[i] if i % 3 != 0 else sorted(l)[i // 3] for i in range(len(l))]

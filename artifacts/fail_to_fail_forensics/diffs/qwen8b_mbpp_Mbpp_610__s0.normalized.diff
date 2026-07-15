@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_610__s0.raw
++++ qwen8b_mbpp_Mbpp_610__s0.healed
+@@ -1,2 +1,2 @@
+ def remove_kth_element(lst, k):
+-    return lst[:k] + lst[k+1:]
++    return lst[:k] + lst[k + 1:]

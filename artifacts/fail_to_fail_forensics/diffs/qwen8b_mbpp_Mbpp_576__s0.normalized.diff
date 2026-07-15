@@ -1,0 +1,10 @@
+--- qwen8b_mbpp_Mbpp_576__s0.raw
++++ qwen8b_mbpp_Mbpp_576__s0.healed
+@@ -2,6 +2,6 @@
+     if len(list2) > len(list1):
+         return False
+     for i in range(len(list1) - len(list2) + 1):
+-        if list1[i:i+len(list2)] == list2:
++        if list1[i:i + len(list2)] == list2:
+             return True
+     return False

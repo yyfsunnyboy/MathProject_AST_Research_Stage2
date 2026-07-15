@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_261__s0.raw
++++ gemini_mbpp_Mbpp_261__s0.healed
+@@ -1,2 +1,2 @@
+ def division_elements(tuple1, tuple2):
+-    return tuple(a // b for a, b in zip(tuple1, tuple2))
++    return tuple((a // b for a, b in zip(tuple1, tuple2)))

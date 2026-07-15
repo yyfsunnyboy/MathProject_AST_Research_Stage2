@@ -1,0 +1,8 @@
+--- qwen8b_humaneval_HumanEval_154__s0.raw
++++ qwen8b_humaneval_HumanEval_154__s0.healed
+@@ -1,4 +1,4 @@
+-def cycpattern_check(a , b):
++def cycpattern_check(a, b):
+     if len(b) > len(a):
+         return False
+     for i in range(len(b)):

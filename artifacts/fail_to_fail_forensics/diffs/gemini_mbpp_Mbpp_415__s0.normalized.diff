@@ -1,0 +1,15 @@
+--- gemini_mbpp_Mbpp_415__s0.raw
++++ gemini_mbpp_Mbpp_415__s0.healed
+@@ -1,12 +1,9 @@
+ def max_Product(arr):
+     if len(arr) < 2:
+         return None
+-
+     sorted_arr = sorted(arr)
+-
+     low_product = sorted_arr[0] * sorted_arr[1]
+     high_product = sorted_arr[-1] * sorted_arr[-2]
+-
+     if low_product > high_product:
+         return (sorted_arr[0], sorted_arr[1])
+     else:

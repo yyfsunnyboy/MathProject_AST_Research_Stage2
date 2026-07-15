@@ -1,0 +1,10 @@
+--- gemini_mbpp_Mbpp_771__s0.raw
++++ gemini_mbpp_Mbpp_771__s0.healed
+@@ -1,6 +1,6 @@
+ def check_expression(expression: str) -> bool:
+     stack = []
+-    mapping = {")": "(", "}": "{", "]": "["}
++    mapping = {')': '(', '}': '{', ']': '['}
+     for char in expression:
+         if char in mapping.values():
+             stack.append(char)

@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_597__s0.raw
++++ qwen8b_mbpp_Mbpp_597__s0.healed
+@@ -1,5 +1,4 @@
+ def find_kth(arr1, arr2, k):
+-    import bisect
+     i = bisect.bisect_left(arr1, arr2[0])
+     j = bisect.bisect_left(arr2, arr1[0])
+     return arr1[i] if i + j == k else arr2[j]

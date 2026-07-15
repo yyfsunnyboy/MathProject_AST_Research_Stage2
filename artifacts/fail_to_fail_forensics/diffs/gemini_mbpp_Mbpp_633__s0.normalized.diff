@@ -1,0 +1,13 @@
+--- gemini_mbpp_Mbpp_633__s0.raw
++++ gemini_mbpp_Mbpp_633__s0.healed
+@@ -3,8 +3,8 @@
+     for i in range(32):
+         count_set = 0
+         for num in arr:
+-            if (num >> i) & 1:
++            if num >> i & 1:
+                 count_set += 1
+         count_unset = n - count_set
+-        total_sum += (count_set * count_unset) * (1 << i)
++        total_sum += count_set * count_unset * (1 << i)
+     return total_sum

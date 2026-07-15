@@ -1,0 +1,9 @@
+--- gemini_mbpp_Mbpp_235__s0.raw
++++ gemini_mbpp_Mbpp_235__s0.healed
+@@ -6,5 +6,5 @@
+         return 1
+     mask = 0
+     for i in range(0, bit_length + 1, 2):
+-        mask |= (1 << i)
++        mask |= 1 << i
+     return n | mask

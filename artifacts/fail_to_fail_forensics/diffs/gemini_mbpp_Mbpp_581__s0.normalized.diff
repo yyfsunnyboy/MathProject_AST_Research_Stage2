@@ -1,0 +1,12 @@
+--- gemini_mbpp_Mbpp_581__s0.raw
++++ gemini_mbpp_Mbpp_581__s0.healed
+@@ -1,7 +1,7 @@
+ import math
+
+ def surface_Area(base_edge, height):
+-    slant_height = math.sqrt((base_edge / 2)**2 + height**2)
+-    base_area = base_edge**2
++    slant_height = math.sqrt((base_edge / 2) ** 2 + height ** 2)
++    base_area = base_edge ** 2
+     lateral_area = 2 * base_edge * slant_height
+     return base_area + lateral_area

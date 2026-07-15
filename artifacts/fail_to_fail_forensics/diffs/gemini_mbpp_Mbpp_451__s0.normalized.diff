@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_451__s0.raw
++++ gemini_mbpp_Mbpp_451__s0.healed
+@@ -1,2 +1,2 @@
+ def remove_whitespaces(s: str) -> str:
+-    return "".join(s.split())
++    return ''.join(s.split())

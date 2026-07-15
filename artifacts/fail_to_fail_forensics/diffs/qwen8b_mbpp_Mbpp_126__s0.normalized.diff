@@ -1,0 +1,12 @@
+--- qwen8b_mbpp_Mbpp_126__s0.raw
++++ qwen8b_mbpp_Mbpp_126__s0.healed
+@@ -1,7 +1,8 @@
+ def sum(a, b):
++
+     def gcd(x, y):
+         while y:
+-            x, y = y, x % y
++            x, y = (y, x % y)
+         return x
+     g = gcd(a, b)
+     total = 0

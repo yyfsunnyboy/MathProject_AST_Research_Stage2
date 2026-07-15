@@ -1,0 +1,74 @@
+{
+  "result_name": "Candidate Healer / Healer-vNext import-preservation counterfactual replay",
+  "scope": "reviewed Qwen8B eligible wrong_transformation cases caused by referenced-import stripping",
+  "official_ab3_overwritten": false,
+  "official_excel_modified": false,
+  "model_run": false,
+  "evalplus_run": false,
+  "full_benchmark_recomputed": false,
+  "case_counts": {
+    "import_stripping_cases": 9,
+    "eligible": 9,
+    "ineligible": 0,
+    "uncertain": 0
+  },
+  "candidate_gate": {
+    "stdlib_required": true,
+    "direct_lexical_scope_required": true,
+    "module_import_requires_attribute_load": true,
+    "from_import_requires_name_load": true,
+    "aliases_tracked": true,
+    "rebinding_before_use_rejected": true,
+    "strings_and_comments_ignored": true,
+    "dangerous_modules_rejected": true,
+    "star_import_rejected": true,
+    "relative_import_rejected": true,
+    "unknown_third_party_rejected": true,
+    "new_imports_synthesized": false,
+    "mixed_import_policy": "preserve only statically necessary safe aliases"
+  },
+  "counterfactual_results": {
+    "candidate_ast_parse_success": 9,
+    "entry_point_present": 9,
+    "import_load_validation_success": 9,
+    "diff_only_restores_original_import": 9,
+    "structural_rescue": 9,
+    "formal_case_runtime_rescue_confirmed": 0,
+    "formal_case_runtime_not_executed": 9,
+    "synthetic_runtime_controls_passed": 3,
+    "official_pass_at_1_claimed": 0,
+    "expected_full_case_rescue": 0
+  },
+  "residual_failure_groups": {
+    "raw_base_and_plus_already_failed": {
+      "count": 7,
+      "cases": [
+        "HumanEval/129",
+        "Mbpp/108",
+        "Mbpp/237",
+        "Mbpp/462",
+        "Mbpp/597",
+        "Mbpp/620",
+        "Mbpp/777"
+      ],
+      "reason": "Import preservation removes the Healer-introduced unresolved-name layer but does not repair the pre-existing solution failure."
+    },
+    "raw_base_pass_plus_fail": {
+      "count": 2,
+      "cases": ["Mbpp/255", "Mbpp/410"],
+      "reason": "The raw official baseline supports removal of the base regression, but the pre-existing plus failure remains."
+    }
+  },
+  "tests": {
+    "targeted_command": "python -m pytest tests/test_import_preservation_healer.py tests/test_ast_healer_entry_point.py tests/radical_auto_test.py::Suite6_ASTHealer::test_core_import_preserved tests/radical_auto_test.py::Suite6_ASTHealer::test_format_polynomial_not_removed -q",
+    "targeted_passed": 17,
+    "targeted_failed": 0,
+    "broader_radical_suite_attempt": {
+      "passed": 43,
+      "failed": 62,
+      "usable_as_regression_baseline": false,
+      "blocker": "The environment lacks Flask; additional existing fallback expectations are unrelated to the import-preservation gate."
+    }
+  },
+  "regression_detected_in_targeted_scope": false
+}

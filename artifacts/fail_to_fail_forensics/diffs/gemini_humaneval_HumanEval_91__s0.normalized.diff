@@ -1,0 +1,11 @@
+--- gemini_humaneval_HumanEval_91__s0.raw
++++ gemini_humaneval_HumanEval_91__s0.healed
+@@ -12,7 +12,7 @@
+     >>> is_bored("The sky is blue. The sun is shining. I love this weather")
+     1
+     """
+-    sentences = re.split(r'[.?!]', S)
++    sentences = re.split('[.?!]', S)
+     count = 0
+     for s in sentences:
+         if s.strip().startswith('I '):

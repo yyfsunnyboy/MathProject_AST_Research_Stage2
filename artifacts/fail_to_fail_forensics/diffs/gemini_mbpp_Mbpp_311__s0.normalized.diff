@@ -1,0 +1,16 @@
+--- gemini_mbpp_Mbpp_311__s0.raw
++++ gemini_mbpp_Mbpp_311__s0.healed
+@@ -1,11 +1,8 @@
+ def set_left_most_unset_bit(n: int) -> int:
+     if n == 0:
+         return 1
+-
+     binary_str = bin(n)[2:]
+     unset_index = binary_str.find('0')
+-
+     if unset_index == -1:
+-        return (n << 1) | 1
+-
+-    return n | (1 << (len(binary_str) - 1 - unset_index))
++        return n << 1 | 1
++    return n | 1 << len(binary_str) - 1 - unset_index

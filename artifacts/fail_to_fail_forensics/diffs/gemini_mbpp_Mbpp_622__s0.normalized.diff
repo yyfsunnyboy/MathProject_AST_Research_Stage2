@@ -1,0 +1,33 @@
+--- gemini_mbpp_Mbpp_622__s0.raw
++++ gemini_mbpp_Mbpp_622__s0.healed
+@@ -10,13 +10,10 @@
+             return (l1[start1] + l2[start2]) / 2.0
+         if length == 2:
+             return (max(l1[start1], l2[start2]) + min(l1[end1], l2[end2])) / 2.0
+-
+         m1 = (l1[start1 + (length - 1) // 2] + l1[start1 + length // 2]) / 2.0 if length % 2 == 0 else l1[start1 + length // 2]
+         m2 = (l2[start2 + (length - 1) // 2] + l2[start2 + length // 2]) / 2.0 if length % 2 == 0 else l2[start2 + length // 2]
+-
+         if m1 == m2:
+             return m1
+-
+         if m1 < m2:
+             if length % 2 == 0:
+                 return get_recursive(l1, start1 + length // 2 - 1, end1, l2, start2, start2 + length // 2)
+@@ -25,8 +22,7 @@
+             if length % 2 == 0:
+                 return get_recursive(l1, start1, start1 + length // 2, l2, start2 + length // 2 - 1, end2)
+             return get_recursive(l1, start1, start1 + length // 2, l2, start2 + length // 2, end2)
+-
+-    i, j = 0, 0
++    i, j = (0, 0)
+     merged = []
+     count = 0
+     while count < n + 1:
+@@ -37,5 +33,4 @@
+             merged.append(list2[j])
+             j += 1
+         count += 1
+-
+-    return (merged[n-1] + merged[n]) / 2.0
++    return (merged[n - 1] + merged[n]) / 2.0

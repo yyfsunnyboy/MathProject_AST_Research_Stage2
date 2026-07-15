@@ -1,0 +1,11 @@
+--- gemini_mbpp_Mbpp_448__s0.raw
++++ gemini_mbpp_Mbpp_448__s0.healed
+@@ -4,8 +4,6 @@
+     p = [3, 0, 2]
+     if n <= 2:
+         return sum(p[:n + 1])
+-
+     for i in range(3, n + 1):
+         p.append(p[i - 2] + p[i - 3])
+-
+     return sum(p)

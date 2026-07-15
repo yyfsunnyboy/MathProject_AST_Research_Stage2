@@ -1,0 +1,10 @@
+--- gemini_humaneval_HumanEval_76__s0.raw
++++ gemini_humaneval_HumanEval_76__s0.healed
+@@ -3,7 +3,6 @@
+         return True
+     if n <= 1:
+         return x == n
+-
+     p = 1
+     while p < x:
+         p *= n

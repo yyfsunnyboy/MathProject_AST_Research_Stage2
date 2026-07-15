@@ -1,0 +1,10 @@
+--- gemini_mbpp_Mbpp_735__s0.raw
++++ gemini_mbpp_Mbpp_735__s0.healed
+@@ -2,5 +2,5 @@
+     if n < 4:
+         return n
+     binary_len = n.bit_length()
+-    mask = ((1 << (binary_len - 2)) - 1) << 1
+-    return n ^ mask
++    mask = (1 << binary_len - 2) - 1 << 1
++    return n ** mask

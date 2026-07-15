@@ -154,4 +154,7 @@ Thumbs.db
 .claude/settings.local.json
 
 # Regenerable local pipeline / smoke / benchmark run outputs
-artifacts/
+artifacts/*
+# Keep Healer-vNext fail-to-fail forensic milestone artifacts tracked.
+!artifacts/fail_to_fail_forensics/
+!artifacts/fail_to_fail_forensics/**

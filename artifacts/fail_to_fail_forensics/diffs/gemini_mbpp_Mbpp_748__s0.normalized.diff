@@ -1,0 +1,15 @@
+--- gemini_mbpp_Mbpp_748__s0.raw
++++ gemini_mbpp_Mbpp_748__s0.healed
+@@ -1,9 +1,9 @@
+ def capital_words_spaces(s: str) -> str:
+     if not s:
+-        return ""
++        return ''
+     res = [s[0]]
+     for char in s[1:]:
+         if char.isupper():
+-            res.append(" ")
++            res.append(' ')
+         res.append(char)
+-    return "".join(res)
++    return ''.join(res)

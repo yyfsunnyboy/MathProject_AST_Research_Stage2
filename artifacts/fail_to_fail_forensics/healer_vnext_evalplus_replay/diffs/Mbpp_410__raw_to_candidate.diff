@@ -1,0 +1,7 @@
+--- Mbpp/410 raw
++++ Mbpp/410 candidate_healer_vnext
+@@ -1,3 +1,3 @@
+ def min_val(lst):
+     import numbers
+-    return min(x for x in lst if isinstance(x, numbers.Number))
++    return min((x for x in lst if isinstance(x, numbers.Number)))

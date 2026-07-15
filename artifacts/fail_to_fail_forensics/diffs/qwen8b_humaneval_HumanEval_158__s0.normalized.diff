@@ -1,0 +1,6 @@
+--- qwen8b_humaneval_HumanEval_158__s0.raw
++++ qwen8b_humaneval_HumanEval_158__s0.healed
+@@ -1,2 +1,2 @@
+ def find_max(words):
+-    return max(words, key=lambda word: (len(set(word)), -ord(word[0]))) if words else ""
++    return max(words, key=lambda word: (len(set(word)), -ord(word[0]))) if words else ''

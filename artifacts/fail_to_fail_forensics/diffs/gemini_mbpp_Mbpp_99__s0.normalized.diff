@@ -1,0 +1,8 @@
+--- gemini_mbpp_Mbpp_99__s0.raw
++++ gemini_mbpp_Mbpp_99__s0.healed
+@@ -1,4 +1,4 @@
+ def decimal_to_binary(n: int) -> str:
+     if n == 0:
+-        return "0"
++        return '0'
+     return bin(n)[2:]

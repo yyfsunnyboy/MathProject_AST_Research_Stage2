@@ -1,0 +1,10 @@
+--- qwen8b_mbpp_Mbpp_440__s0.raw
++++ qwen8b_mbpp_Mbpp_440__s0.healed
+@@ -1,6 +1,6 @@
+ def find_adverb_position(sentence):
+     import re
+-    match = re.search(r'\b\w+ly\b', sentence)
++    match = re.search('\\b\\w+ly\\b', sentence)
+     if match:
+         start = match.start()
+         end = match.end()

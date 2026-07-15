@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_639__s0.raw
++++ gemini_mbpp_Mbpp_639__s0.healed
+@@ -1,2 +1,2 @@
+ def sample_nam(names):
+-    return sum(len(name) for name in names if name and name[0].isupper())
++    return sum((len(name) for name in names if name and name[0].isupper()))

@@ -1,0 +1,8 @@
+--- gemini_mbpp_Mbpp_777__s0.raw
++++ gemini_mbpp_Mbpp_777__s0.healed
+@@ -2,4 +2,4 @@
+     counts = {}
+     for x in nums:
+         counts[x] = counts.get(x, 0) + 1
+-    return sum(x for x, count in counts.items() if count == 1)
++    return sum((x for x, count in counts.items() if count == 1))

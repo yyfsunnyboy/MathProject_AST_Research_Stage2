@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_589__s0.raw
++++ qwen8b_mbpp_Mbpp_589__s0.healed
+@@ -1,2 +1,2 @@
+ def perfect_squares(a, b):
+-    return [i*i for i in range(1, int(b**0.5)+1) if i*i >= a and i*i <= b]
++    return [i * i for i in range(1, int(b ** 0.5) + 1) if i * i >= a and i * i <= b]

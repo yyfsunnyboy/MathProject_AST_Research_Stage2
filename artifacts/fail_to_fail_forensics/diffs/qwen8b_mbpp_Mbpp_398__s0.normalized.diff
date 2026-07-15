@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_398__s0.raw
++++ qwen8b_mbpp_Mbpp_398__s0.healed
+@@ -1,2 +1,2 @@
+ def sum_of_digits(nums):
+-    return [sum(int(d) for d in str(num)) for num in nums]
++    return [sum((int(d) for d in str(num))) for num in nums]

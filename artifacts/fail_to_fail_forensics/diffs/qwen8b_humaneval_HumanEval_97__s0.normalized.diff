@@ -1,0 +1,6 @@
+--- qwen8b_humaneval_HumanEval_97__s0.raw
++++ qwen8b_humaneval_HumanEval_97__s0.healed
+@@ -1,2 +1,2 @@
+ def multiply(a, b):
+-    return (a % 10) * (b % 10)
++    return a % 10 * (b % 10)

@@ -1,0 +1,23 @@
+--- gemini_humaneval_HumanEval_39__s0.raw
++++ gemini_humaneval_HumanEval_39__s0.healed
+@@ -1,4 +1,5 @@
+ def prime_fib(n: int):
++
+     def is_prime(k):
+         if k < 2:
+             return False
+@@ -12,12 +13,11 @@
+                 return False
+             i += 6
+         return True
+-
+     count = 0
+-    a, b = 0, 1
++    a, b = (0, 1)
+     result = 0
+     while count < n:
+-        a, b = b, a + b
++        a, b = (b, a + b)
+         if is_prime(a):
+             count += 1
+             result = a

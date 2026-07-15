@@ -1,0 +1,12 @@
+--- qwen8b_humaneval_HumanEval_46__s0.raw
++++ qwen8b_humaneval_HumanEval_46__s0.healed
+@@ -3,7 +3,7 @@
+         return 0
+     elif n == 2:
+         return 2
+-    a, b, c, d = 0, 0, 2, 0
++    a, b, c, d = (0, 0, 2, 0)
+     for _ in range(3, n + 1):
+-        a, b, c, d = b, c, d, a + b + c + d
++        a, b, c, d = (b, c, d, a + b + c + d)
+     return d

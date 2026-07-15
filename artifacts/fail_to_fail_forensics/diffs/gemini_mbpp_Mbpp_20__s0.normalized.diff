@@ -1,0 +1,21 @@
+--- gemini_mbpp_Mbpp_20__s0.raw
++++ gemini_mbpp_Mbpp_20__s0.healed
+@@ -3,18 +3,11 @@
+         return False
+     if n == 1:
+         return True
+-
+-    # Woodall numbers are of the form W_n = n * 2^n - 1
+-    # We check for n * 2^n = n + 1
+     target = n + 1
+-
+-    # Since n * 2^n grows very fast, we only need to check up to
+-    # the bit length of target.
+     for k in range(1, target.bit_length()):
+         val = k * (1 << k)
+         if val == target:
+             return True
+         if val > target:
+             break
+-
+     return False

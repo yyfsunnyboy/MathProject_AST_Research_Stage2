@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_287__s0.raw
++++ gemini_mbpp_Mbpp_287__s0.healed
+@@ -1,2 +1,2 @@
+ def square_Sum(n):
+-    return sum((2 * i)**2 for i in range(1, n + 1))
++    return sum(((2 * i) ** 2 for i in range(1, n + 1)))

@@ -1,0 +1,17 @@
+# Materialized replay command for WSL/Linux (not executed in this environment)
+cd /mnt/c/Users/yehya/Documents/GitHub/AST_experiment
+source .venv-wsl/bin/activate
+python exp1_benchmark/run_eval.py --dataset mbpp --outputs /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_outputs --results /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/isolated_results --engine evalplus --task-ids Mbpp/255 Mbpp/279 Mbpp/410 --strategies Raw Original_Ab3 Candidate_Healer_vNext
+
+# Native-Windows preflight commands executed
+python -c "import evalplus, importlib.metadata as m, sys; print(evalplus.__version__); print(m.version('evalplus')); print(sys.platform)"
+python -m evalplus.evaluate --help
+wsl.exe --list --quiet
+docker version
+
+# Required repository validation
+python -m pytest tests/test_duplicate_keep_last_healer.py tests/test_import_preservation_healer.py tests/test_fail_to_fail_forensics.py tests/finals_rebuild/test_math_healer_runner.py -q
+git diff --check
+git status --short --untracked-files=all
+git diff --stat
+git diff --name-only

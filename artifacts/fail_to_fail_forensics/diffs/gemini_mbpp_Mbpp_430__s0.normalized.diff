@@ -1,0 +1,10 @@
+--- gemini_mbpp_Mbpp_430__s0.raw
++++ gemini_mbpp_Mbpp_430__s0.healed
+@@ -1,6 +1,6 @@
+ def parabola_directrix(a, b, c):
+     h = -b / (2 * a)
+-    k = c - (b**2 / (4 * a))
++    k = c - b ** 2 / (4 * a)
+     p = 1 / (4 * a)
+     directrix = k - p
+     return directrix

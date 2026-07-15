@@ -1,0 +1,7 @@
+--- qwen8b_mbpp_Mbpp_410__s0.raw
++++ qwen8b_mbpp_Mbpp_410__s0.healed
+@@ -1,3 +1,2 @@
+ def min_val(lst):
+-    import numbers
+-    return min(x for x in lst if isinstance(x, numbers.Number))
++    return min((x for x in lst if isinstance(x, numbers.Number)))

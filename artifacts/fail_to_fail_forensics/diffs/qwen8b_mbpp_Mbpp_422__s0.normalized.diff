@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_422__s0.raw
++++ qwen8b_mbpp_Mbpp_422__s0.healed
+@@ -1,2 +1,2 @@
+ def find_Average_Of_Cube(n):
+-    return (n ** 2 * (n + 1) ** 2) / 4.0
++    return n ** 2 * (n + 1) ** 2 / 4.0

@@ -1,0 +1,88 @@
+{
+  "result_name": "Candidate Healer / Healer-vNext counterfactual replay",
+  "case_id": "qwen8b_mbpp_Mbpp_279__s0",
+  "task_id": "Mbpp/279",
+  "scope": "isolated duplicate-function rule validation",
+  "official_ab3_overwritten": false,
+  "official_excel_modified": false,
+  "model_run": false,
+  "evalplus_run": false,
+  "original_trace": [
+    {"layer": "regex", "changed": false, "n_fixes": 0},
+    {"layer": "ast", "changed": false, "n_fixes": 12},
+    {"layer": "antidup", "changed": true, "n_fixes": 5},
+    {"layer": "cleanup", "changed": false, "n_fixes": 0},
+    {"layer": "post.entry_point", "changed": false, "entry_point": "is_num_decagonal", "entry_point_before": true, "entry_point_after": true}
+  ],
+  "confirmations": {
+    "raw_module_level_duplicate_groups": {
+      "is_num_decagonal": 2,
+      "nth_decagonal_number": 2
+    },
+    "python_runtime_binds_last_definition": true,
+    "runtime_binding_evidence": "Python executes module statements in order and later def statements rebind the same global name; the targeted equivalent fixture confirms is_num_decagonal(5) is True before dedupe.",
+    "original_healer_kept_first_definition": true,
+    "original_healer_removed_later_definition": true,
+    "original_healer_changed_raw_runtime_semantics": true,
+    "semantic_witness": "For n=5, the raw last definition's inverse formula returns True, while Original Ab3's retained first formula returns False."
+  },
+  "candidate": {
+    "rule": "For decorator-consistent duplicate module-level functions, remove every definition except the last.",
+    "fix_count": 2,
+    "remaining_module_level_functions": [
+      "is_num_decagonal",
+      "nth_decagonal_number"
+    ],
+    "single_entry_point_after": true,
+    "kept_is_num_decagonal_matches_raw_last_ast": true,
+    "kept_nth_decagonal_number_matches_raw_last_ast": true,
+    "nested_functions_processed": false,
+    "class_methods_processed": false,
+    "decorator_mismatch_processed": false
+  },
+  "hashes": {
+    "raw_file_sha256": "35fde6e1315f0fd15ed1723f912a82075a26fd96881aa8a8cc9c4ffeceff3c0a",
+    "original_ab3_file_sha256": "2461ea4fa6aed08b29ab72e95d1f2b987f92efc82c81deb611227e0201298fde",
+    "candidate_utf8_sha256": "c620f5a9a76b16303dd2090a1fcaa0a89e07ce054f021351a12c06bcea2fac08"
+  },
+  "rescue": {
+    "mbpp279_rescued": true,
+    "kind": "counterfactual structural and runtime-semantics rescue",
+    "official_pass_at_1_claimed": false,
+    "reason": "The duplicate entry point is reduced to one while preserving the function Python would bind at runtime."
+  },
+  "duplicate_case_scan": {
+    "reviewed_cases": 154,
+    "lexical_duplicate_function_cases": 3,
+    "ast_parseable_duplicate_function_cases": 2,
+    "case_ids": [
+      "qwen8b_mbpp_Mbpp_16__s0",
+      "qwen8b_mbpp_Mbpp_260__s0",
+      "qwen8b_mbpp_Mbpp_279__s0"
+    ],
+    "other_duplicate_function_cases": 1,
+    "other_case_disposition": "Mbpp/16 has two column-0 text_lowercase_underscore definitions but is not AST parseable; the existing parse gate returns it unchanged.",
+    "raw_ast_parse_failures": 3,
+    "missing_raw_files": 0
+  },
+  "cohort_replay": {
+    "Mbpp/16": {
+      "candidate_fix_count": 0,
+      "source_unchanged": true,
+      "reason": "AST parse gate"
+    },
+    "Mbpp/260": {
+      "candidate_fix_count": 1,
+      "remaining_newman_prime_definitions": 1,
+      "raw_duplicate_bodies_identical": true,
+      "kept_definition_matches_raw_last_ast": true,
+      "behavioral_regression": false
+    }
+  },
+  "targeted_tests": {
+    "command": "python -m pytest tests/test_duplicate_keep_last_healer.py tests/finals_rebuild/test_math_healer_runner.py -q",
+    "passed": 13,
+    "failed": 0
+  },
+  "regression_detected": false
+}

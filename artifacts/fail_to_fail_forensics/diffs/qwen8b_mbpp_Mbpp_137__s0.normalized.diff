@@ -1,0 +1,8 @@
+--- qwen8b_mbpp_Mbpp_137__s0.raw
++++ qwen8b_mbpp_Mbpp_137__s0.healed
+@@ -1,4 +1,4 @@
+ def zero_count(arr):
+-    zero = sum(1 for x in arr if x == 0)
++    zero = sum((1 for x in arr if x == 0))
+     total = len(arr)
+     return zero / total if total else 0.0

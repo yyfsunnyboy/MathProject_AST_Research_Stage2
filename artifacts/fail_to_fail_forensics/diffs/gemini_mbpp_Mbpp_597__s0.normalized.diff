@@ -1,0 +1,13 @@
+--- gemini_mbpp_Mbpp_597__s0.raw
++++ gemini_mbpp_Mbpp_597__s0.healed
+@@ -5,10 +5,8 @@
+         return arr1[k - 1]
+     if k == 1:
+         return min(arr1[0], arr2[0])
+-
+     i = min(len(arr1), k // 2)
+     j = min(len(arr2), k // 2)
+-
+     if arr1[i - 1] > arr2[j - 1]:
+         return find_kth(arr1, arr2[j:], k - j)
+     else:

@@ -1,0 +1,7 @@
+--- Mbpp/777 Original Ab3
++++ Mbpp/777 Candidate Healer
+@@ -1,3 +1,4 @@
+ def find_sum(lst):
++    from collections import Counter
+     counts = Counter(lst)
+     return sum((num for num, cnt in counts.items() if cnt == 1))

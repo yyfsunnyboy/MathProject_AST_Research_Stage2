@@ -1,0 +1,25 @@
+--- gemini_mbpp_Mbpp_759__s0.raw
++++ gemini_mbpp_Mbpp_759__s0.healed
+@@ -2,22 +2,17 @@
+     try:
+         if not isinstance(s, str) or '.' not in s:
+             return False
+-
+         parts = s.split('.')
+         if len(parts) != 2:
+             return False
+-
+         integer_part, fractional_part = parts
+-
+         if not fractional_part.isdigit() or len(fractional_part) != 2:
+             return False
+-
+         if integer_part.startswith('-') or integer_part.startswith('+'):
+             if not integer_part[1:].isdigit():
+                 return False
+         elif not integer_part.isdigit():
+             return False
+-
+         return True
+     except (ValueError, TypeError):
+         return False

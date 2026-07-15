@@ -45,9 +45,12 @@ def test_existing_unified_cleanup_shadowing_is_traced(tmp_path):
 def test_existing_unified_cleanup_duplicate_function_is_traced(tmp_path):
     source = FIXTURES / "duplicate_function.py"
     result = derive_ab3(source=source, output_dir=tmp_path / "out", run_id="r", paired_run_id="p", task_id="t", model="m", condition="Ab3")
+    namespace = {}
+    exec((tmp_path / "out" / "ab3_source.py").read_text(encoding="utf-8"), namespace)
     assert result["status"] == "derived"
     assert result["applied_rules"] == ["unified_cleanup_duplicate_definition"]
     assert result["after_ast_parse_success"] is True
+    assert namespace["helper"]() == 2
 
 
 def test_healer_exception_persists_failed_record(tmp_path):

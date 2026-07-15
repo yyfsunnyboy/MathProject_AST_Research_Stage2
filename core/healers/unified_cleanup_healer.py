@@ -162,6 +162,41 @@ class ProblemScanner(ast.NodeVisitor):
         self.variable_reorder_count = 0
         self.first_use = {}
         self.first_assign = {}
+        self.module_function_groups = {}
+        self.decorator_mismatch_names = set()
+        self.function_nesting = 0
+
+    @staticmethod
+    def _decorator_signature(node):
+        return tuple(ast.dump(item, include_attributes=False) for item in node.decorator_list)
+
+    def visit_Module(self, node):
+        function_groups = {}
+        for child in node.body:
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                function_groups.setdefault(child.name, []).append(child)
+
+        self.module_function_groups = {
+            name: definitions
+            for name, definitions in function_groups.items()
+            if len(definitions) > 1
+        }
+        for name, definitions in self.module_function_groups.items():
+            signatures = {self._decorator_signature(item) for item in definitions}
+            if len(signatures) != 1:
+                self.decorator_mismatch_names.add(name)
+                logger.warning(
+                    f"⚠️ 重複 module-level function 裝飾器不一致，不處理: {name}()"
+                )
+                continue
+
+            for duplicate in definitions[:-1]:
+                self.duplicate_nodes.add(id(duplicate))
+            logger.warning(
+                f"🔴 重複 module-level function 定義: {name}(); 保留最後一個"
+            )
+
+        self.generic_visit(node)
     
     def visit_ClassDef(self, node):
         name = node.name
@@ -171,17 +206,34 @@ class ProblemScanner(ast.NodeVisitor):
             self.duplicate_nodes.add(id(node))
         else:
             self.defined_names[name] = ('class', node.lineno, id(node))
+        self.function_nesting += 1
         self.generic_visit(node)
+        self.function_nesting -= 1
     
     def visit_FunctionDef(self, node):
         name = node.name
-        # ★★★ CRITICAL FIX: 檢查是否與預定義名稱衝突 ★★★
-        if name in self.defined_names or name in self.predefined_names:
-            logger.warning(f"🔴 重複 function 定義 (或覆蓋系統保留字): {name}()")
-            self.duplicate_nodes.add(id(node))
-        else:
-            self.defined_names[name] = ('function', node.lineno, id(node))
+        if self.function_nesting == 0:
+            definitions = self.module_function_groups.get(name)
+            if name in self.predefined_names:
+                logger.warning(f"🔴 function 覆蓋系統保留字: {name}()")
+                self.duplicate_nodes.add(id(node))
+            elif definitions and name not in self.decorator_mismatch_names:
+                if node is definitions[-1]:
+                    self.defined_names[name] = ('function', node.lineno, id(node))
+            elif definitions and name in self.decorator_mismatch_names:
+                # Fail closed: preserve Python's original decorated-definition sequence.
+                self.defined_names[name] = ('function', node.lineno, id(node))
+            elif name in self.defined_names:
+                logger.warning(f"🔴 重複 function/class 定義: {name}()")
+                self.duplicate_nodes.add(id(node))
+            else:
+                self.defined_names[name] = ('function', node.lineno, id(node))
+
+        self.function_nesting += 1
         self.generic_visit(node)
+        self.function_nesting -= 1
+
+    visit_AsyncFunctionDef = visit_FunctionDef
     
     def visit_Assign(self, node):
         for target in node.targets:
@@ -234,6 +286,8 @@ class CodeCleaner(ast.NodeTransformer):
             return None
         self.generic_visit(node)
         return node
+
+    visit_AsyncFunctionDef = visit_FunctionDef
     
     def visit_Assign(self, node):
         if id(node) in self.shadowing_nodes:

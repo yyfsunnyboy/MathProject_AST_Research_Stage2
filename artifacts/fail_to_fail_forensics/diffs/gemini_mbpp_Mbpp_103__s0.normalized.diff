@@ -1,0 +1,17 @@
+--- gemini_mbpp_Mbpp_103__s0.raw
++++ gemini_mbpp_Mbpp_103__s0.healed
+@@ -3,14 +3,10 @@
+         if n == 0 and m == 0:
+             return 1
+         return 0
+-
+     memo = [[0] * (n + 1) for _ in range(n + 1)]
+-
+     for i in range(n + 1):
+         memo[i][0] = 1
+-
+     for i in range(1, n + 1):
+         for j in range(1, i):
+             memo[i][j] = (i - j) * memo[i - 1][j - 1] + (j + 1) * memo[i - 1][j]
+-
+     return memo[n][m]

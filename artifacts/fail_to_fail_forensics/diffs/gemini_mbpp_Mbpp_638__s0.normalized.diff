@@ -1,0 +1,9 @@
+--- gemini_mbpp_Mbpp_638__s0.raw
++++ gemini_mbpp_Mbpp_638__s0.healed
+@@ -3,5 +3,5 @@
+ def wind_chill(v, t):
+     if v <= 4.8 or t > 10:
+         return math.ceil(t)
+-    index = 13.12 + 0.6215 * t - 11.37 * (v ** 0.16) + 0.3965 * t * (v ** 0.16)
++    index = 13.12 + 0.6215 * t - 11.37 * v ** 0.16 + 0.3965 * t * v ** 0.16
+     return math.ceil(index)

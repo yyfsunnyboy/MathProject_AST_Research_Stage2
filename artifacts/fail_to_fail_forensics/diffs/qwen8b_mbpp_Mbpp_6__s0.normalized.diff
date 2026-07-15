@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_6__s0.raw
++++ qwen8b_mbpp_Mbpp_6__s0.healed
+@@ -1,2 +1,2 @@
+ def differ_At_One_Bit_Pos(a, b):
+-    return bin(a ^ b).count('1') == 1
++    return bin(a ** b).count('1') == 1

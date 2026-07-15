@@ -1,0 +1,6 @@
+--- gemini_mbpp_Mbpp_102__s0.raw
++++ gemini_mbpp_Mbpp_102__s0.healed
+@@ -1,2 +1,2 @@
+ def snake_to_camel(snake_str: str) -> str:
+-    return ''.join(word.capitalize() for word in snake_str.split('_'))
++    return ''.join((word.capitalize() for word in snake_str.split('_')))

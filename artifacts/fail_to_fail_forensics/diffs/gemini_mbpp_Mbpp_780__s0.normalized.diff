@@ -1,0 +1,8 @@
+--- gemini_mbpp_Mbpp_780__s0.raw
++++ gemini_mbpp_Mbpp_780__s0.healed
+@@ -1,5 +1,4 @@
+ def find_combinations(test_tuples):
+-    from itertools import combinations
+     res = []
+     for sub in combinations(test_tuples, 2):
+         res.append((sub[0][0] + sub[1][0], sub[0][1] + sub[1][1]))

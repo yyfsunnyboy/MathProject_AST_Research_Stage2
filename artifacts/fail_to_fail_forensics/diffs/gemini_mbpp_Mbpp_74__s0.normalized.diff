@@ -1,0 +1,24 @@
+--- gemini_mbpp_Mbpp_74__s0.raw
++++ gemini_mbpp_Mbpp_74__s0.healed
+@@ -1,21 +1,17 @@
+ def is_samepatterns(patterns, words):
+     if len(patterns) != len(words):
+         return False
+-
+     p_to_w = {}
+     w_to_p = {}
+-
+     for p, w in zip(patterns, words):
+         if p in p_to_w:
+             if p_to_w[p] != w:
+                 return False
+         else:
+             p_to_w[p] = w
+-
+         if w in w_to_p:
+             if w_to_p[w] != p:
+                 return False
+         else:
+             w_to_p[w] = p
+-
+     return True

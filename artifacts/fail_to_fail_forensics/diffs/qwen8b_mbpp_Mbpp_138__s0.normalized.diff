@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_138__s0.raw
++++ qwen8b_mbpp_Mbpp_138__s0.healed
+@@ -1,2 +1,2 @@
+ def is_Sum_Of_Powers_Of_Two(n):
+-    return (n & (n - 1)) == 0 and n != 0
++    return n & n - 1 == 0 and n != 0

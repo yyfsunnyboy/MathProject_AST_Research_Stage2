@@ -1,0 +1,9 @@
+--- qwen8b_mbpp_Mbpp_633__s0.raw
++++ qwen8b_mbpp_Mbpp_633__s0.healed
+@@ -2,5 +2,5 @@
+     total = 0
+     for i in range(len(nums)):
+         for j in range(i + 1, len(nums)):
+-            total += nums[i] ^ nums[j]
++            total += nums[i] ** nums[j]
+     return total

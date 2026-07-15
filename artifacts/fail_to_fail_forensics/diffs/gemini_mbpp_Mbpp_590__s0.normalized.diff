@@ -1,0 +1,14 @@
+--- gemini_mbpp_Mbpp_590__s0.raw
++++ gemini_mbpp_Mbpp_590__s0.healed
+@@ -1,5 +1,4 @@
+ import math
+-import cmath
+
+ def polar_rect(r, theta):
+     rect = cmath.rect(r, theta)
+@@ -7,4 +6,4 @@
+     phase = cmath.phase(rect)
+     if phase < 0:
+         phase += 2 * math.pi
+-    return (mag, phase), rect
++    return ((mag, phase), rect)

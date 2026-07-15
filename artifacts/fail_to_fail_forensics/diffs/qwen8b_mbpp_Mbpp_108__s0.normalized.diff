@@ -1,0 +1,6 @@
+--- qwen8b_mbpp_Mbpp_108__s0.raw
++++ qwen8b_mbpp_Mbpp_108__s0.healed
+@@ -1,3 +1,2 @@
+ def merge_sorted_list(list1, list2, list3):
+-    import heapq
+     return list(heapq.merge(list1, list2, list3))

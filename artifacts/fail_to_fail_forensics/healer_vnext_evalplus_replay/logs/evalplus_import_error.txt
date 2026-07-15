@@ -1,0 +1,10 @@
+Command: python -m evalplus.evaluate --help
+Exit status: non-zero during import
+
+Import chain:
+evalplus.evaluate -> evalplus.codegen -> evalplus.data -> datasets -> pyarrow
+
+Error:
+ImportError: DLL load failed while importing lib: application-control policy blocked this file.
+
+This occurred before argument parsing and before any benchmark task was loaded or executed.

@@ -1,0 +1,25 @@
+--- gemini_mbpp_Mbpp_223__s0.raw
++++ gemini_mbpp_Mbpp_223__s0.healed
+@@ -3,7 +3,7 @@
+         return False
+
+     def find_first(target):
+-        low, high = 0, n - 1
++        low, high = (0, n - 1)
+         res = -1
+         while low <= high:
+             mid = (low + high) // 2
+@@ -14,12 +14,10 @@
+             else:
+                 low = mid + 1
+         return res
+-
+     first_idx = find_first(x)
+     if first_idx == -1:
+         return False
+-
+-    last_idx = first_idx + (n // 2)
++    last_idx = first_idx + n // 2
+     if last_idx < n and arr[last_idx] == x:
+         return True
+     return False

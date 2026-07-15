@@ -1,0 +1,38 @@
+--- gemini_humaneval_HumanEval_32__s0.raw
++++ gemini_humaneval_HumanEval_32__s0.healed
+@@ -1,5 +1,4 @@
+ import math
+-
+
+ def poly(xs: list, x: float):
+     """
+@@ -7,7 +6,6 @@
+     return xs[0] + xs[1] * x + xs[1] * x^2 + .... xs[n] * x^n
+     """
+     return sum([coeff * math.pow(x, i) for i, coeff in enumerate(xs)])
+-
+
+ def find_zero(xs: list):
+     """ xs are coefficients of a polynomial.
+@@ -19,21 +17,15 @@
+     """
+     low = -100.0
+     high = 100.0
+-
+-    # Expand range to ensure sign change for polynomials with even number of coefficients
+-    # (which implies odd degree, thus guaranteed to cross zero)
+     for _ in range(100):
+         if poly(xs, low) * poly(xs, high) <= 0:
+             break
+         low *= 2.0
+         high *= 2.0
+-
+-    # Bisection method
+     for _ in range(100):
+         mid = (low + high) / 2.0
+         if poly(xs, low) * poly(xs, mid) <= 0:
+             high = mid
+         else:
+             low = mid
+-
+     return (low + high) / 2.0

@@ -1,0 +1,7 @@
+--- gemini_mbpp_Mbpp_255__s0.raw
++++ gemini_mbpp_Mbpp_255__s0.healed
+@@ -1,4 +1,2 @@
+-import itertools
+-
+ def combinations_colors(elements, n):
+     return list(itertools.combinations_with_replacement(elements, n))
