@@ -1,0 +1,5 @@
+--- Mbpp/311 Original Ab3
++++ Mbpp/311 Candidate Healer-vNext
+@@ -1,2 +1,2 @@
+ def set_left_most_unset_bit(n):
+-    return n | n ** (n + 1) & -(n + 1) ** n+    return n | (n ^ n + 1) & -(n + 1 ^ n)

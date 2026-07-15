@@ -1,0 +1,5 @@
+--- Mbpp/735 Raw
++++ Mbpp/735 Original Ab3
+@@ -1,2 +1,2 @@
+ def toggle_middle_bits(n):
+-    return n ^ ( (1 << (n.bit_length() - 2)) - 1 )+    return n ** ((1 << n.bit_length() - 2) - 1)

@@ -1,0 +1,7 @@
+{
+  "case_count": 6,
+  "condition_count": 18,
+  "all_ast_parse": true,
+  "all_entry_points_unique": true,
+  "all_runtime_witnesses_pass": true
+}

@@ -1,0 +1,11 @@
+--- HumanEval/39 Original Ab3
++++ HumanEval/39 Candidate Healer-vNext
+@@ -10,7 +10,7 @@
+
+     def fib():
+         a, b = (0, 1)
+-        for _safety_loop_var in range(1000):
++        while True:
+             yield a
+             a, b = (b, a + b)
+         return (0, 0)

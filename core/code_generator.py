@@ -895,7 +895,7 @@ def _advanced_healer(clean_code, ablation_id, skill_id, ai_client=None):
         if ai_client is None:
              ai_client = get_ai_client() # Fallback to default
              
-        ast_healer = ASTHealer(ai_client=ai_client)
+        ast_healer = ASTHealer(ai_client=ai_client, domain_mode="math_generator")
         try:
             # 3.1 靜態 AST 修復
             code_after_ast, ast_fixes = ast_healer.heal(code_after_regex)

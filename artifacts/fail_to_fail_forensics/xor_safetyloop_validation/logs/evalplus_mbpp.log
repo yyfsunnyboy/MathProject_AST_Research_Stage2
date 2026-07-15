@@ -1,0 +1,26 @@
+requested_task_ids=['Mbpp/6', 'Mbpp/311', 'Mbpp/633', 'Mbpp/735', 'Mbpp/739']
+evaluated_task_count=5
+[evalplus] 載入 ground truth（首次可能較久）...
+Load from ground-truth from /home/yehya/.cache/evalplus/ee43ecabebf20deef4bb776a405ac5b1.pkl
+qwen3-8b/Raw/Mbpp/311: fail
+qwen3-8b/Original_Ab3/Mbpp/311: fail
+qwen3-8b/Candidate_Healer_vNext/Mbpp/311: fail
+qwen3-8b/Raw/Mbpp/6: fail
+qwen3-8b/Original_Ab3/Mbpp/6: fail
+qwen3-8b/Candidate_Healer_vNext/Mbpp/6: fail
+qwen3-8b/Raw/Mbpp/633: fail
+qwen3-8b/Original_Ab3/Mbpp/633: fail
+qwen3-8b/Candidate_Healer_vNext/Mbpp/633: fail
+qwen3-8b/Raw/Mbpp/735: fail
+qwen3-8b/Original_Ab3/Mbpp/735: fail
+qwen3-8b/Candidate_Healer_vNext/Mbpp/735: fail
+qwen3-8b/Raw/Mbpp/739: fail
+qwen3-8b/Original_Ab3/Mbpp/739: fail
+qwen3-8b/Candidate_Healer_vNext/Mbpp/739: fail
+
+完成 → /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/xor_safetyloop_validation/isolated_results/exp1_pass_at_1_mbpp.xlsx
+
+   model               strategy  n_tasks  pass@1                         requested_task_ids  evaluated_task_count
+qwen3-8b Candidate_Healer_vNext        5     0.0 Mbpp/6,Mbpp/311,Mbpp/633,Mbpp/735,Mbpp/739                     5
+qwen3-8b           Original_Ab3        5     0.0 Mbpp/6,Mbpp/311,Mbpp/633,Mbpp/735,Mbpp/739                     5
+qwen3-8b                    Raw        5     0.0 Mbpp/6,Mbpp/311,Mbpp/633,Mbpp/735,Mbpp/739                     5

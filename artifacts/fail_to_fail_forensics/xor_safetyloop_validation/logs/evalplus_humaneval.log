@@ -1,0 +1,14 @@
+requested_task_ids=['HumanEval/39']
+evaluated_task_count=1
+[evalplus] 載入 ground truth（首次可能較久）...
+Load from ground-truth from /home/yehya/.cache/evalplus/fe585eb4df8c88d844eeb463ea4d0302.pkl
+qwen3-8b/Raw/HumanEval/39: fail
+qwen3-8b/Original_Ab3/HumanEval/39: fail
+qwen3-8b/Candidate_Healer_vNext/HumanEval/39: fail
+
+完成 → /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/xor_safetyloop_validation/isolated_results/exp1_pass_at_1_humaneval.xlsx
+
+   model               strategy  n_tasks  pass@1 requested_task_ids  evaluated_task_count
+qwen3-8b Candidate_Healer_vNext        1     0.0       HumanEval/39                     1
+qwen3-8b           Original_Ab3        1     0.0       HumanEval/39                     1
+qwen3-8b                    Raw        1     0.0       HumanEval/39                     1

@@ -1,0 +1,11 @@
+--- Mbpp/739 Original Ab3
++++ Mbpp/739 Candidate Healer-vNext
+@@ -1,7 +1,7 @@
+ def find_Index(n):
+     import math
+     k = 1
+-    for _safety_loop_var in range(1000):
++    while True:
+         tri = k * (k + 1) // 2
+         if len(str(tri)) == n:
+             return k

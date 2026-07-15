@@ -1,0 +1,171 @@
+{
+  "result_name": "Candidate Healer / Healer-vNext XOR and safety-loop counterfactual replay",
+  "status": "completed",
+  "candidate_domain_mode": "benchmark",
+  "reference_solution_used": false,
+  "results": [
+    {
+      "dataset": "humaneval",
+      "task_id": "HumanEval/39",
+      "family": "safety_loop",
+      "candidate_fixes": 1,
+      "candidate_logs": [
+        "AST Healer: Injected default return statement for function 'fib'"
+      ],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "witness": "number of values obtainable from nested fib() with islice(..., 1001)",
+        "outcomes": {
+          "Raw": 1001,
+          "Original_Ab3": 1000,
+          "Candidate_Healer_vNext": 1001
+        },
+        "claim": "Candidate preserves the unbounded generator; Original Ab3 truncates it"
+      },
+      "official_replay": {"base":"pass","plus":"fail","aggregate":"fail","classification":"structural/runtime-semantics recovery only"},
+      "expected_classification": "structural/runtime-semantics recovery only"
+    },
+    {
+      "dataset": "mbpp",
+      "task_id": "Mbpp/311",
+      "family": "xor",
+      "candidate_fixes": 0,
+      "candidate_logs": [],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "arguments": "(0,)",
+        "outcomes": {
+          "Raw": {
+            "kind": "return",
+            "value": "1"
+          },
+          "Original_Ab3": {
+            "kind": "return",
+            "value": "0"
+          },
+          "Candidate_Healer_vNext": {
+            "kind": "return",
+            "value": "1"
+          }
+        },
+        "claim": "Candidate matches Raw runtime XOR semantics and differs from Original Ab3"
+      },
+      "official_replay": {"base":"fail","plus":"fail","aggregate":"fail","classification":"structural/runtime-semantics recovery only"},
+      "expected_classification": "structural/runtime-semantics recovery only"
+    },
+    {
+      "dataset": "mbpp",
+      "task_id": "Mbpp/6",
+      "family": "xor",
+      "candidate_fixes": 0,
+      "candidate_logs": [],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "arguments": "(0, 0)",
+        "outcomes": {
+          "Raw": {
+            "kind": "return",
+            "value": "False"
+          },
+          "Original_Ab3": {
+            "kind": "return",
+            "value": "True"
+          },
+          "Candidate_Healer_vNext": {
+            "kind": "return",
+            "value": "False"
+          }
+        },
+        "claim": "Candidate matches Raw runtime XOR semantics and differs from Original Ab3"
+      },
+      "official_replay": {"base":"pass","plus":"fail","aggregate":"fail","classification":"official base-regression recovery"},
+      "expected_classification": "official base-regression recovery"
+    },
+    {
+      "dataset": "mbpp",
+      "task_id": "Mbpp/633",
+      "family": "xor",
+      "candidate_fixes": 0,
+      "candidate_logs": [],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "arguments": "([1, 2], 0)",
+        "outcomes": {
+          "Raw": {
+            "kind": "return",
+            "value": "3"
+          },
+          "Original_Ab3": {
+            "kind": "return",
+            "value": "1"
+          },
+          "Candidate_Healer_vNext": {
+            "kind": "return",
+            "value": "3"
+          }
+        },
+        "claim": "Candidate matches Raw runtime XOR semantics and differs from Original Ab3"
+      },
+      "official_replay": {"base":"pass","plus":"fail","aggregate":"fail","classification":"official base-regression recovery"},
+      "expected_classification": "official base-regression recovery"
+    },
+    {
+      "dataset": "mbpp",
+      "task_id": "Mbpp/735",
+      "family": "xor",
+      "candidate_fixes": 0,
+      "candidate_logs": [],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "arguments": "(3,)",
+        "outcomes": {
+          "Raw": {
+            "kind": "return",
+            "value": "3"
+          },
+          "Original_Ab3": {
+            "kind": "return",
+            "value": "1"
+          },
+          "Candidate_Healer_vNext": {
+            "kind": "return",
+            "value": "3"
+          }
+        },
+        "claim": "Candidate matches Raw runtime XOR semantics and differs from Original Ab3"
+      },
+      "official_replay": {"base":"fail","plus":"fail","aggregate":"fail","classification":"structural/runtime-semantics recovery only"},
+      "expected_classification": "structural/runtime-semantics recovery only"
+    },
+    {
+      "dataset": "mbpp",
+      "task_id": "Mbpp/739",
+      "family": "safety_loop",
+      "candidate_fixes": 1,
+      "candidate_logs": [
+        "AST Healer: Injected default return statement for function 'find_Index'"
+      ],
+      "runtime_semantics_witness": {
+        "status": "pass",
+        "arguments": "(7,)",
+        "outcomes": {
+          "Raw": {
+            "kind": "return",
+            "value": "1414"
+          },
+          "Original_Ab3": {
+            "kind": "return",
+            "value": "(0, 0)"
+          },
+          "Candidate_Healer_vNext": {
+            "kind": "return",
+            "value": "1414"
+          }
+        },
+        "claim": "Candidate preserves reachable-return search semantics beyond 1000 iterations"
+      },
+      "official_replay": {"base":"pass","plus":"fail","aggregate":"fail","classification":"structural/runtime-semantics recovery only"},
+      "expected_classification": "structural/runtime-semantics recovery only"
+    }
+  ]
+}

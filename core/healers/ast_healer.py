@@ -163,9 +163,10 @@ class ASTHealer(ast.NodeTransformer):
         'shelve', 'shutil', 'signal', 'smtplib', 'socket', 'sqlite3',
         'subprocess', 'sys', 'tempfile', 'urllib', 'webbrowser', 'winreg',
     }
+    DOMAIN_MODES = frozenset({'benchmark', 'math_generator'})
     
     def __init__(self, ai_client=None, require_entry_point: bool = True,
-                 entry_point: str = "generate"):
+                 entry_point: str = "generate", domain_mode: str = "benchmark"):
         """
         初始化 AST Healer
         
@@ -173,12 +174,20 @@ class ASTHealer(ast.NodeTransformer):
             ai_client: (Optional) 用於執行 Semantic Healing 的 AI 客戶端
             require_entry_point: 是否在缺失進入點函式時注入備用函式（數學出題預設 True）
             entry_point: 進入點函式名稱（數學出題預設 generate）
+            domain_mode: benchmark preserves Python semantics; math_generator
+                enables legacy math-generator rewrites.
         """
+        if domain_mode not in self.DOMAIN_MODES:
+            raise ValueError(
+                f"unsupported AST healer domain_mode={domain_mode!r}; "
+                f"expected one of {sorted(self.DOMAIN_MODES)}"
+            )
         self.fixes = 0
         self.ai_client = ai_client
         self.logs = []
         self.require_entry_point = require_entry_point
         self.entry_point = entry_point
+        self.domain_mode = domain_mode
         self._preserved_import_aliases = set()
 
     @staticmethod
@@ -241,8 +250,8 @@ class ASTHealer(ast.NodeTransformer):
     def visit_BinOp(self, node):
         """修復二元運算符"""
         self.generic_visit(node)
-        # 1. 修復次方符號：將 XOR (^) 轉為 Pow (**)
-        if isinstance(node.op, ast.BitXor):
+        # This legacy rewrite is only valid inside the explicit math generator.
+        if self.domain_mode == 'math_generator' and isinstance(node.op, ast.BitXor):
             self.fixes += 1
             self.logs.append("AST Healer: Replaced BitXor (^) with Pow (**)")
             node.op = ast.Pow()
@@ -509,9 +518,15 @@ class ASTHealer(ast.NodeTransformer):
     
     def visit_While(self, node):
         """
-        [Circuit Breaker] 將 while True 轉換為 for _ in range(1000)
+        Apply the legacy circuit breaker only in explicit math-generator mode.
+
+        Benchmark evaluation owns timeout enforcement. Rewriting a Python loop
+        changes its semantics and is therefore refused in benchmark mode.
         """
         self.generic_visit(node)
+
+        if self.domain_mode != 'math_generator':
+            return node
         
         is_infinite = False
         

@@ -1,0 +1,70 @@
+{
+  "result_name": "Candidate Healer / Healer-vNext official EvalPlus XOR and safety-loop counterfactual replay",
+  "status": "completed",
+  "executed_at": "2026-07-15T21:06:38.7164737+08:00",
+  "official_replay_executed": true,
+  "environment": {
+    "evalplus_version": "0.3.1",
+    "python_version": "3.14.4",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+    "humaneval_plus_version": "v0.1.10",
+    "humaneval_plus_hash": "fe585eb4df8c88d844eeb463ea4d0302",
+    "mbpp_plus_version": "v0.2.0",
+    "mbpp_plus_hash": "ee43ecabebf20deef4bb776a405ac5b1"
+  },
+  "result_workbooks": [
+    {
+      "dataset": "humaneval",
+      "path": "isolated_results/exp1_pass_at_1_humaneval.xlsx",
+      "sha256": "7972afd19a3d85fadb870d7041f0482f1980e2f87d5355a22a1aae3da6b93c87"
+    },
+    {
+      "dataset": "mbpp",
+      "path": "isolated_results/exp1_pass_at_1_mbpp.xlsx",
+      "sha256": "adf0fcc2988c50b94c9cc0c01315b00453b7332c79ae119259406fda29dc7224"
+    }
+  ],
+  "runner_aggregate_semantics": "aggregate pass requires base=pass and plus=pass",
+  "results": [
+    {"task_id":"HumanEval/39","condition":"Raw","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"39e762bbfe316a452d8435affa0ba95f7053271097d54141019d79c0f2f368d3","classification":null},
+    {"task_id":"HumanEval/39","condition":"Original Ab3","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"2c0d9f948b64c70072a6ea883ae57cf9bdfb05131632c7ce04e82da432b5f24b","classification":null},
+    {"task_id":"HumanEval/39","condition":"Candidate Healer-vNext","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"85482568bc094386879b6d3598f8da6f55c34a4ae7e5ae3219dba1eb735088b1","classification":"structural/runtime-semantics recovery only"},
+
+    {"task_id":"Mbpp/311","condition":"Raw","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"e338b7fa305d327a9e78ea1028b337fe6682c36961cc6e073034dd6256b34a4c","classification":null},
+    {"task_id":"Mbpp/311","condition":"Original Ab3","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"63872504d9810e1d1b532545c38c8e376af527f1047a4b5b26f61fe197b51c3c","classification":null},
+    {"task_id":"Mbpp/311","condition":"Candidate Healer-vNext","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"01ea378e1d887574b7d3105f28cff95b63607b940bba4f5e51c39d12376adfac","classification":"structural/runtime-semantics recovery only"},
+
+    {"task_id":"Mbpp/6","condition":"Raw","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"4c8f3b4e7f68ace17462ed1489f6f1cac5ab8917d61096add1c04ee228cb6cb2","classification":null},
+    {"task_id":"Mbpp/6","condition":"Original Ab3","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"b1a5c065c688bd99053672347c872c799e1307a0a8165b2847e5249eed4f8d20","classification":null},
+    {"task_id":"Mbpp/6","condition":"Candidate Healer-vNext","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"4c8f3b4e7f68ace17462ed1489f6f1cac5ab8917d61096add1c04ee228cb6cb2","classification":"official base-regression recovery"},
+
+    {"task_id":"Mbpp/633","condition":"Raw","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"b32cf502f9e184d14e071583130d4b14e22f498660979688a01221669272c978","classification":null},
+    {"task_id":"Mbpp/633","condition":"Original Ab3","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"e026558e50988c252dccac7dbf174cfb19d67b920ec8c829cb5c70fa058bf7f9","classification":null},
+    {"task_id":"Mbpp/633","condition":"Candidate Healer-vNext","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"b32cf502f9e184d14e071583130d4b14e22f498660979688a01221669272c978","classification":"official base-regression recovery"},
+
+    {"task_id":"Mbpp/735","condition":"Raw","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"ac14d49dc07090d9aa62fa34d42e30f05091703a9b188095e2da39e6f11b8438","classification":null},
+    {"task_id":"Mbpp/735","condition":"Original Ab3","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"2289d290d340d634589f608ffcce1f23f2ff3061668e07b8fc591b20cc7cf0e8","classification":null},
+    {"task_id":"Mbpp/735","condition":"Candidate Healer-vNext","base":"fail","plus":"fail","aggregate":"fail","error":"base=fail,plus=fail","timeout":false,"sha256":"785a3b194581e409f2e41aec26e98a55f656bd76451aa12773c577930e281f4a","classification":"structural/runtime-semantics recovery only"},
+
+    {"task_id":"Mbpp/739","condition":"Raw","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"eebf1f57fa20d8942328a8d972d4c7a2ff28857e776a265073db8534b320582c","classification":null},
+    {"task_id":"Mbpp/739","condition":"Original Ab3","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"e53eb6ce38d69c0ff71207cd4b78cea6312ef3105fa9443ebe10a842e3123c7c","classification":null},
+    {"task_id":"Mbpp/739","condition":"Candidate Healer-vNext","base":"pass","plus":"fail","aggregate":"fail","error":"base=pass,plus=fail","timeout":false,"sha256":"32b4a52d8fc2768c13b0bee680bd2c02b583f6754ef8b3ada53c1eab1ab7c503","classification":"structural/runtime-semantics recovery only"}
+  ],
+  "task_classifications": {
+    "HumanEval/39": "structural/runtime-semantics recovery only",
+    "Mbpp/311": "structural/runtime-semantics recovery only",
+    "Mbpp/6": "official base-regression recovery",
+    "Mbpp/633": "official base-regression recovery",
+    "Mbpp/735": "structural/runtime-semantics recovery only",
+    "Mbpp/739": "structural/runtime-semantics recovery only"
+  },
+  "counts": {
+    "official_full_rescue": 0,
+    "official_base_regression_recovery": 2,
+    "structural_runtime_semantics_recovery_only": 4,
+    "no_recovery": 0,
+    "ineligible_correct_refusal": 0,
+    "candidate_regression_vs_raw": 0
+  },
+  "original_pass_at_1_inclusion": false
+}
