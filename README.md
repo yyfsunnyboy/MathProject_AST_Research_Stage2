@@ -7,8 +7,8 @@
 ## 📌 1. 專案目前定位與核心問題
 
 *   **研究主軸**：本專案仍以**「數學出題程式生成」**為主要研究對象。
-*   **核心問題**：領域特化、確定性的 **AST Active Healer**，能否在明確且安全的介入窗口（Intervention Window）中，有效提高邊緣模型（例如 Qwen-8B/14B）生成數學出題程式의 可靠度。
-*   **方法論主軸**：聚焦於**「失敗驅動（Failure-driven）、語意安全（Semantic Safety）、凍結後外部驗證（Post-frozen External Verification）」**的 Scaffold ＋ deterministic Healer 建構方法。本專案不以模型自主的 ad-hoc 生成或不受控的 retry 為手段，而是依靠嚴謹的後端單一真相（Source of Truth）進行 deterministic 出題與求解。
+*   **核心問題**：領域特化、確定性的 **AST Active Healer**，能否在明確且安全的介入窗口（Intervention Window）中，有效提高邊緣模型（例如 Qwen-8B/14B）生成數學出題程式的可靠度。
+*   **方法論主軸**：聚焦於**「失敗驅動（Failure-driven）、語意安全（Semantic Safety）、凍結後外部驗證（Post-frozen External Verification）」**的 Scaffold ＋ deterministic Healer 建構方法。本專案不以模型自主的 ad-hoc生成或不受控的 retry 為手段，而是依靠嚴謹的後端單一真相（Source of Truth）進行 deterministic 出題與求解。
 
 ---
 
@@ -38,7 +38,7 @@
 
 ## ⚠️ 4. 證據限制與邊界
 
-*   **Healer 版本區分**：必須嚴格區分 **Minimal Core／原先凍結的正式 Healer** 與探索性開發的 **Safe Historical Healer**。
+*   **Healer 版本區分**：必須嚴格區分 **Minimal Core／原先凍結 of 正式 Healer** 與探索性開發的 **Safe Historical Healer**。
 *   **避免循環論證**：同批校準/探索資料上所開發出的 Healer 規則與 replay 結果，**不得**包裝成凍結後驗證的 confirmatory evidence（確證性證據）。
 *   **Pilot 狀態標示**：目前規劃的 corrected four-task pilot 若僅有 design 與 manifest 結構、尚未完成大規模生成者，在文件中必須如實標示為「設計/探索階段」，不得宣稱已取得 confirmatory results。
 
@@ -46,17 +46,17 @@
 
 ## 🚀 5. 快速入口與結構導引
 
-本專案目前的決賽 rebuild 評估完全脫離了 Flask Web UI 機制，全面使用離線的專屬 runner 與測試集。以下為核心入口：
+本專案目前的決賽 rebuild 評估完全脫離了 Flask Web UI 機制，全面使用離線的專屬 runner 與測試集。以下為核心入口（皆為 Repository 相對連結）：
 
 *   **核心 Runner**：
-    *   決賽重建 Pipeline：[pipeline.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/pipeline.py)
-    *   數學生成執行器：[math_generation_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/math_generation_runner.py)
-    *   外部基準執行器：[public_benchmark_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/public_benchmark_runner.py)
+    *   決賽重建 Pipeline：[pipeline.py](agent_tools/finals_rebuild/pipeline.py)
+    *   數學生成執行器：[math_generation_runner.py](agent_tools/finals_rebuild/math_generation_runner.py)
+    *   外部基準執行器：[public_benchmark_runner.py](agent_tools/finals_rebuild/public_benchmark_runner.py)
 *   **研究設計與證據**：
-    *   CE115 任務設計：[CE115_Math_Pilot_Task_Design.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/研究設計/CE115_Math_Pilot_Task_Design.md)
-    *   Ab2d 技能合約與審計：[ab2d_skill_contract_and_capability.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/ab2d_skill_contract_and_capability.md)
-    *   Healer-vNext 法醫學驗證證據：[fail_to_fail_forensics/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/)
+    *   CE115 任務設計：[CE115_Math_Pilot_Task_Design.md](docs/研究設計/CE115_Math_Pilot_Task_Design.md)
+    *   Ab2d 技能合約與審計：[ab2d_skill_contract_and_capability.md](docs/experiments/ab2d_skill_contract_and_capability.md)
+    *   Healer-vNext 法醫學驗證證據：[fail_to_fail_forensics/](artifacts/fail_to_fail_forensics/)
 *   **一鍵驗證腳本**：
-    *   決賽 Rebuild 檢查：[verify_finals_rebuild.sh](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/verify_finals_rebuild.sh)
+    *   決賽 Rebuild 檢查：[verify_finals_rebuild.sh](scripts/verify_finals_rebuild.sh)
 *   **測試套件**：
-    *   決賽 Rebuild 測試集：[tests/finals_rebuild/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/tests/finals_rebuild/)
+    *   決賽 Rebuild 測試集：[tests/finals_rebuild/](tests/finals_rebuild/)
