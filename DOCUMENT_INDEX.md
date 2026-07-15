@@ -1,93 +1,87 @@
-# 📑 專案文檔總索引
+# 📑 MathProject_AST_Research_Stage2 專案文檔與檔案總索引
 
-**最後更新**: 2026-02-15  
-**涵蓋範圍**: 專案管理、科研報告、技術文檔、部署歸檔
-
----
-
-## 🆕 最新更新（2026-02-15）
-
-### 🚀 系統架構現代化 (Modernization)
-1.  **Thinking Models Integration**: 正式引入 Qwen 3 14B 模型，具備長鏈推理能力。
-2.  **Stub Injection Technology**: 創新的「Prompt 瘦身 + 執行期注入」架構。
-3.  **根目錄清理**: 完成大規模清理，專案結構達到競賽級標準。
-
-### 📋 關鍵報告歸檔
-所有歷史部署報告已移動至 `docs/reports/`，保持根目錄清爽：
-- **[docs/reports/](docs/reports/)**: 包含所有 V4.x, V2.x 的部署歷史與技術驗證報告。
+本索引依據 Repository 中實際存在、且由 Git 追蹤之最新檔案結構進行編排。
 
 ---
 
-## 📂 核心文檔清單
+## 🗂️ 1. CURRENT CORE (目前核心代碼)
 
-### 🎯 快速入門與核心文件
+決賽 Rebuild 評估、Healer 運作及出題 pipeline 的最小必要代碼集合。
 
-| 文檔 | 用途 | 推薦對象 | 閱讀時間 |
-|------|------|---------|---------|
-| **[README.md](README.md)** | 專案首頁 | 所有人 | 5 分鐘 |
-| **[DOCUMENT_INDEX.md](DOCUMENT_INDEX.md)** | 本索引 | 所有人 | 3 分鐘 |
-| **[docs/競賽文件/00_核心報告/MathProject_Final_Integration_Report.md](docs/競賽文件/00_核心報告/MathProject_Final_Integration_Report.md)** | **總結成果報告** (Executive Summary) | 評審/大眾 | 10 分鐘 |
-| **[docs/競賽文件/EXPERIMENT_JOURNAL.md](docs/競賽文件/EXPERIMENT_JOURNAL.md)** | **實驗流水日誌** (Development Log) | 研究員 | 15 分鐘 |
-
----
-
-### 🔬 實驗設計與科研成果
-
-#### 🧬 [MathProject_Experiment_Design_and_Analysis.md](docs/競賽文件/03_實驗過程/MathProject_Experiment_Design_and_Analysis.md)
-*   **整合報告**: 涵蓋 3x3 實驗設計、MCRI 評測標準、Ab1/2/3 比較。
-*   **關鍵發現**: 包含了 Prompt 層級衝突與 Healer 必要性的完整論證。
-*   *(原 `3x3實驗設計...md` 與 `evaluate_mcri...md` 已整合於此)*
+*   **決賽重建適配器與評估器**：[agent_tools/finals_rebuild/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/)
+    *   主重建消融 Pipeline：[pipeline.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/pipeline.py)
+    *   數學出題測試生成 Runner：[math_generation_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/math_generation_runner.py)
+    *   外部通用基準 Runner：[public_benchmark_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/public_benchmark_runner.py)
+    *   Core  punctuation 修正器：[core_adapter.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/core_adapter.py)
+    *   Spec 數學合約修正器：[spec_adapter.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/spec_adapter.py)
+*   **出題演算法與 Scaffold**：
+    *   JIT 出題 Scaler：[core/engine/scaler.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/engine/scaler.py)
+    *   出題分類器：[core/engine/classifier.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/engine/classifier.py)
+    *   Scaffold 數學基底庫：[core/scaffold/domain_libs.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/scaffold/domain_libs.py)
+    *   出題技能規則與 alias 對照：[core/skill_policies/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/skill_policies/)
+*   **技能特化 Prompt 定義**：[agent_skills/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_skills/)
+    *   包含四個核心技能資料夾的 `skill.json`、`SKILL.md`、`prompt_benchmark.md` 與 `prompt_liveshow.md`。
 
 ---
 
-### 💻 技術架構白皮書
+## 🔬 2. ACTIVE RESEARCH DESIGN (目前研究設計)
 
-#### 📚 [MathProject_Technical_Architecture.md](docs/競賽文件/02_技術細節/MathProject_Technical_Architecture.md)
-*   **整合報告**: 涵蓋系統架構、資料庫 Schema、CodeGen Pipeline、Healer 機制。
-*   **最新技術**: 包含 **Stub Injection** (V47.16) 詳細說明。
-*   *(原 `系統架構.md`, `Schema`, `code_generator...md` 已整合於此)*
+本研究的正式實驗與適配器合約設計白皮書。
 
----
-
-### 🗄️ 歷史歸檔 (docs/競賽文件/99_歷史歸檔/)
-
-所有原始的開發筆記與詳細技術文檔已歸檔至此，僅供查閱細節：
-*   `📚evaluate_mcri_MCRI評估系統進展報告.md`
-*   `系統架構.md`, `資料庫Table_Schema_20260117.md`
-*   `📚code_generator代碼生成與修復技術詳解.md`
-*   `專案速查.md`, `🧬3x3實驗設計詳解與過程.md`
-*   `📋ROOT_DIRECTORY_CLEANUP_REPORT.md`
+*   **數學出題軌任務設計**：
+    *   CE115 數學任務規格設計：[docs/研究設計/CE115_Math_Pilot_Task_Design.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/研究設計/CE115_Math_Pilot_Task_Design.md)
+    *   Ab2d 技能合約與能力審計：[docs/experiments/ab2d_skill_contract_and_capability.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/ab2d_skill_contract_and_capability.md)
+    *   Ab2d 本地 Prompt 設計 (2026-07-14)：[docs/experiments/ab2d_local_prompt_design_20260714.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/ab2d_local_prompt_design_20260714.md)
+    *   Ab2g 核心數學評量設計 (2026-07-14)：[docs/experiments/ab2g_math_core_qualification_design_20260714.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/ab2g_math_core_qualification_design_20260714.md)
+*   **外部效度對照軌設計**：
+    *   HumanEval+ / MBPP+ 跨域實驗啟動規格：[docs/HumanEval+／MBPP+ 跨域 Scaffold × Healer 實驗啟動規格.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/HumanEval+／MBPP+ 跨域 Scaffold × Healer 實驗啟動規格.md)
 
 ---
 
-### 🗄️ 歷史歸檔 (docs/reports/ & 99_歷史歸檔/)
+## 📊 3. CURRENT EVIDENCE (正式研究證據)
 
-以下文件已歸檔，僅供歷史參考：
-*   **[docs/競賽文件/99_歷史歸檔/📋ROOT_DIRECTORY_CLEANUP_REPORT.md](docs/競賽文件/99_歷史歸檔/📋ROOT_DIRECTORY_CLEANUP_REPORT.md)**
-*   `GOLD_MEDAL_QUICK_REFERENCE.md` (in docs/reports/)
-*   `QUICK_REFERENCE_TWO_LAYER_DEFENSE.md` (in docs/reports/)
+凍結後外部驗證的正式證據檔案，不可隨意移動或刪除。
 
----
-
-## ✅ 系統操作指南
-
-### 生成 Golden Prompt (Mode 4)
-```bash
-python scripts/sync_skills_files.py
-# 選擇 [4] Save Golden Prompt
-```
-
-### 生成技能代碼 (Mode 2)
-```bash
-python scripts/sync_skills_files.py
-# 選擇 [2] Golden Prompt -> 選擇 [2] Ab2 (Engineered)
-```
-
-### 執行 MCRI 評測
-```bash
-python scripts/evaluate_mcri.py --skill_id [SKILL_ID]
-```
+*   **Healer-vNext 法醫學分析（對照組對決證據）**：[artifacts/fail_to_fail_forensics/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/)
+    *   Qwen-8B 與 Gemini 在 HumanEval+/MBPP+ 上的 raw/healed 對比 manifest、分類 CSV 與 raw/healed 代碼的 AST/normalized diff。
+*   **實時評估證據與結果記錄 (2026-07)**：[docs/experiments/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/)
+    *   包含以 `20260714` 命名之 smoke/replay 驗證報告 md 檔，及 [docs/experiments/results/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/results/) 下的 `.jsonl` 輸出結果。
+*   **歷史對比之 Replay 輸入源**：
+    *   在 `experiments/results/` 下有 7 個特定 Ab2 歷史生成結果檔（被 `test_legacy_migration.py` 所依賴的 byte-identity 驗證源）。
 
 ---
 
-*Built for Science Fair 2026*
+## 🧪 4. TESTS AND VALIDATION (測試與驗證)
+
+*   **重建測試套件**：[tests/finals_rebuild/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/tests/finals_rebuild/)
+    *   包含 pipeline、adapters、evaluators 等 39 個離線測試。
+*   **法醫學過濾驗證測試**：[tests/test_fail_to_fail_forensics.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/tests/test_fail_to_fail_forensics.py)
+*   **法醫學數據產生器**：[exp1_benchmark/fail_to_fail_forensics.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/exp1_benchmark/fail_to_fail_forensics.py)
+*   **一鍵驗證環境與測試指令碼**：[scripts/verify_finals_rebuild.sh](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/verify_finals_rebuild.sh)
+
+---
+
+## 📚 5. LEGACY REFERENCE (歷史歸檔與舊系統)
+
+此處檔案僅表示**「目前非主研究入口，已脫離主開發線」**，但不等於可以直接刪除。
+
+*   **舊 Flask Web UI 系統**：[app.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/app.py), [models.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/models.py), [templates/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/templates/), 路由模組 [core/routes/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/routes/)。
+*   **過時大會報告與科展筆記**：
+    *   歷史競賽文檔：[docs/競賽文件/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/競賽文件/)
+    *   決賽空歸檔目錄：[docs/決賽文件/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/決賽文件/)
+    *   *註：早期大會報告 `Generator_Census_Validity_Executive_Verdict.md` 已在 commit `fd42f9f5` 被歸檔移出工作區，可由 Git 歷史檢索。*
+*   **舊歷史 Healers 實作**（新 pipeline 預設 disabled）：
+    *   [core/healers/ast_healer.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/healers/ast_healer.py)
+    *   [core/healers/regex_healer.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/healers/regex_healer.py)
+*   **過時實驗與資料庫維護腳本**：
+    *   未引用的舊腳本：[scripts/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/) 直接目錄下的大部分 Python 檔（例如 `sync_skills_files.py`、`run_experiment.py`）。
+    *   臨時研發腳本：[scripts/temp/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/temp/) 下的 50+ 個 python 腳本。
+
+---
+
+## ⚠️ 6. UNCERTAIN / DO NOT DELETE (有依賴之舊檔案)
+
+*   **具有隱性依賴之 legacy 腳本**：[scripts/evaluate_mcri.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/evaluate_mcri.py)
+    *   *說明*：雖然屬於舊評測腳本，但其內部的 `evaluate_math_hygiene` 與 `analyze_code_robustness` 仍被核心出題引擎 [core/engine/scaler.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/core/engine/scaler.py) 直接 import。**禁止刪除**，需待後續重構解耦。
+*   **未建立 provenance / manifest 之備份代碼**：[skills/backup/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/skills/) (包含 `skills/` 底下數個 `backup_` 目錄)
+    *   *說明*：這 900+ 個由舊模型生成的備份 `.py` 檔案目前無外部調用，但為防範數據遺失，必須在建立明確來源記錄後，於第二輪清理時再決定保留、封存或刪除。

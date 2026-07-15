@@ -1,139 +1,62 @@
-# 🏆 旺宏科學獎——AI 自動化教育軟體生成研究
+# 🏆 MathProject_AST_Research_Stage2: Small but Precise
 
-## 📌 專案名稱與定位
-
-**中文**: 《系統級 Healer 與 MCRI 評測系統在 AI 自動化題目生成中的應用——以高中數學為例》
-
-**英文**: *System-Level Healer and MCRI Evaluation Framework for AI-Automated Mathematics Problem Generation in Secondary Education*
-
-**核心創新**: 首次提出並驗證「教育場景專用的 AI 代碼評分系統」(MCRI V4.2.2)，並證明「自動化修復機制 (Healer)」是落地的唯一解。
-
-**最新突破 (2026-02-15)** 🚀:
-- **Thinking Models (Qwen 3)**: 整合 14B 思維模型，具備長鏈推理能力 (CoT)。
-- **Stub Injection Technology**: 創新的「Prompt 瘦身 + 執行期注入」技術，大幅降低 Token 消耗並消除幻覺。
-- **Auto-Healing Pipeline**: 9 層修復機制穩定運行，成功解決 AI 生成的語法與邏輯錯誤。
-
-[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
-[![Flask](https://img.shields.io/badge/framework-Flask-green)](https://flask.palletsprojects.com/)
-[![SQLite](https://img.shields.io/badge/database-SQLite-lightblue)](https://www.sqlite.org/)
-[![Qwen 2.5/3](https://img.shields.io/badge/AI-Qwen%2014B%20(Local)-purple)](https://huggingface.co/Qwen)
-[![Science Fair](https://img.shields.io/badge/Status-Gold%20Medal%20Research-gold.svg)](docs/reports/GOLD_MEDAL_QUICK_REFERENCE.md)
+本專案為旺宏科學獎決賽研究「小型在地化模型透過工程干預（Scaffold + Healer）在特定任務上超越雲端大模型」的第二階段研究 Repository。我們聚焦於系統級修復機制（Healer）在數學出題程式生成任務中的語意安全與可靠度驗證。
 
 ---
 
-## 🎯 研究目標與核心發現
+## 📌 1. 專案目前定位與核心問題
 
-**主要問題**: 
-> *AI 生成的教育軟體代碼能否穩定用於真實教室？*
-
-**研究假說**:
-- H1: 簡單的 Prompt 工程無法保證代碼質量 (Ab1 - Bare)
-- H2: 精心設計的 Prompt 提升品質但仍不夠 (Ab2 - Engineered)
-- H3: 系統級修復機制 (Healer) 才能實現工業級穩定 (Ab3 - Healer)
-
-**最新實驗數據 (FourArithmeticOperationsOfNumbers)** ⭐:
-```
-Ab1 (Bare):     Timeout / Logic Error (高失敗率)
-Ab2 (Engineered): 成功生成，邏輯正確，偶發格式問題
-Ab3 (Healer):   完美修復，具備 Stub Injection 與 Full Implementation，穩定運行 ✨
-```
-
-**科研貢獻**:
-1. ✅ 首創「外在強健性測試」(Robustness Test) - 評估學生輸入容錯
-2. ✅ 首創「教學適用性評分」(Pedagogy Score) - 評估數值友善度與視覺可讀性
-3. ✅ 證明「自動化修復」(Healer) 的必要性，並發展出 **Stub Injection** 技術架構
+*   **研究主軸**：本專案仍以**「數學出題程式生成」**為主要研究對象。
+*   **核心問題**：領域特化、確定性的 **AST Active Healer**，能否在明確且安全的介入窗口（Intervention Window）中，有效提高邊緣模型（例如 Qwen-8B/14B）生成數學出題程式의 可靠度。
+*   **方法論主軸**：聚焦於**「失敗驅動（Failure-driven）、語意安全（Semantic Safety）、凍結後外部驗證（Post-frozen External Verification）」**的 Scaffold ＋ deterministic Healer 建構方法。本專案不以模型自主的 ad-hoc 生成或不受控的 retry 為手段，而是依靠嚴謹的後端單一真相（Source of Truth）進行 deterministic 出題與求解。
 
 ---
 
-## 📖 專案背景與現況 (Project Overview)
+## 🔬 2. 兩條平行研究軌
 
-**現況**: 
-本研究在旺宏科學獎 2026 年度中，已完成以下工作:
-- ✅ 設計 MCRI V4.2.2 評測系統（4 層級 × 8 指標 = 100 分）
-- ✅ 實現 Healer 9 層修復管道（從 whitespace 到 loop breaker）
-- ✅ 整合 Qwen 3 (Thinking Model) 本地模型工作流
-- ✅ **關鍵突破**: 解決了 Google AI API 依賴問題，轉向本地強大模型 (14B)
+本研究透過以下兩條正式軌道進行雙重驗證：
 
-**下一步**: 擴展至更多高難度技能（如微積分、三角函數），驗證 Stub Injection 的普適性。
-
----
-
-## 💡 核心想法與實驗邏輯 (Core Concept)
-
-### 問題域分析
-
-傳統的 AI 代碼評測系統 (HumanEval, MBPP) 只看「功能是否正確」，但教育場景需要評估：
-
-| 維度 | 傳統系統 | 本研究 (MCRI) | 教育意義 |
-|------|---------|--------------|---------|
-| **功能正確性** | ✓ | ✓ (L1-L2) | 程式能否執行 |
-| **學生輸入容錯** | ✗ | ✓ (L3.2) | 學生答錯的格式能否被系統理解 |
-| **數值友善度** | ✗ | ✓ (L4.1) | 答案是否適合教學（如 3/4 而非 1039/4821） |
-| **視覺可讀性** | ✗ | ✓ (L4.2) | 學生能否看懂輸出（LaTeX vs Python 語法） |
-
-### 技術架構：Stub Injection (2026-02-15 New)
-
-為了解決 LLM Context Window 限制與幻覺問題，我們採用了分離式注入策略：
-
-1.  **Prompt 階段 (Stub Mode)**:
-    只將工具的 **介面 (Interface)** 與 **Docstring** 注入 Prompt。
-    *   *優點*: 節省 40-60% Token，讓 AI 專注於業務邏輯。
-    *   *形式*: `class FractionOps: ...`
-
-2.  **生成階段 (Full Injection)**:
-    在 AI 生成代碼後，由 `code_generator.py` 自動注入 **完整實作 (Implementation)**。
-    *   *優點*: 確保程式可執行，且邏輯統一由系統維護，不受 AI 隨機性影響。
+1.  **數學出題程式軌 (Math Track)**：
+    *   對象為 **CE115 數學出題任務**（含 G1–G6 評量、多項式四則、根式四則與 RPM 轉速換算等問題）。
+    *   以領域特化的 **Domain Scaffold** 為基礎，結合特製的 **Healer 邊界限制**，並導入獨立的 **Oracle 解題合約**。
+2.  **公開基準軌 (Public Benchmark Track)**：
+    *   對象為 **HumanEval+／MBPP+** 數據集（透過官方 EvalPlus 引擎評估）。
+    *   本軌道僅用作**外部效度（External Validity）**與 **Regression Safety** 驗證，用以觀察通用代碼修復的安全介入窗口，**不取代**數學主研究的主軸地位。
 
 ---
 
-## 🔬 實驗執行流程 (Experiment Workflow)
+## 📊 3. 評量與驗證原則
 
-### Step 1: Golden Prompt Generation (Mode 4)
-自動從資料庫讀取 MASTER_SPEC，經過 `PromptBuilder` 的 Stub 處理與 Safety Check，生成最佳化的 Prompt 檔案。
+為確保研究證據的學術嚴謹度，本專案執行以下評量原則：
 
-### Step 2: Code Generation (Mode 2)
-讀取 Golden Prompt，透過 Qwen 3 模型生成代碼邏輯。
-
-### Step 3: Healer Pipeline & Injection
-系統自動修復語法錯誤 (Healer)，並注入完整工具庫 (Full Injection)。
-
-### Step 4: MCRI Evaluation
-執行生成的代碼，進行 L1~L4 全方位評測。
+*   **ITT 原則 (Intent-to-Treat)**：第一射（first attempt）結果固定為 ITT 基準，不允許透過多次重試（retry）或篩選最佳輸出覆蓋第一次的 Observed 結果。
+*   **三帳分列**：所有生成結果依 **Observed（未修復）**、**Pipeline-corrected（Scaffold 修正）**、與 **Post-Healer（Healer 修復後）** 三帳平行分列，透明呈現每一階段的改進。
+*   **外部驗證（No Self-Grading）**：答案正確性、執行狀況、合約相符性與輸出格式均由外部 evaluator / oracle 進行獨立驗證，**不再以自建的 MCRI 100 分加權總分作為主要研究證據**。
+*   **Eligibility 與修復的區別**：Eligibility（適用性/符合介入資格）僅代表候選介入窗口，不等於 Healer 修復成功，兩者數據必須分離統計。
 
 ---
 
-## 📊 檔案結構 (File Structure)
+## ⚠️ 4. 證據限制與邊界
 
-```
-E:\Python\MathProject_AST_Research
-├── core/                   # 核心邏輯
-│   ├── code_generator.py   # [V10.2] 代碼生成與注入引擎
-│   ├── ai_wrapper.py       # 模型呼叫介面
-│   └── prompts/            # Prompt 工程模組
-│       ├── prompt_builder.py        # Prompt 建構器
-│       └── domain_function_library.py # 工具庫定義 (含 Stub 生成)
-├── scripts/                # 工具腳本
-│   ├── sync_skills_files.py # 主生成腳本
-│   └── evaluate_mcri.py    # 評測腳本
-├── experiments/            # 實驗數據
-│   └── golden_prompts/     # 保存的 Golden Prompts (.txt)
-├── skills/                 # 生成結果
-│   └── (AI 生成的 .py 檔案)
-├── docs/                   # 文件
-│   ├── reports/            # 歸檔的部署報告與實驗記錄
-│   └── 競賽文件/            # 科展相關文件
-├── README.md               # 本文件
-└── DOCUMENT_INDEX.md       # 文件索引
-```
+*   **Healer 版本區分**：必須嚴格區分 **Minimal Core／原先凍結的正式 Healer** 與探索性開發的 **Safe Historical Healer**。
+*   **避免循環論證**：同批校準/探索資料上所開發出的 Healer 規則與 replay 結果，**不得**包裝成凍結後驗證的 confirmatory evidence（確證性證據）。
+*   **Pilot 狀態標示**：目前規劃的 corrected four-task pilot 若僅有 design 與 manifest 結構、尚未完成大規模生成者，在文件中必須如實標示為「設計/探索階段」，不得宣稱已取得 confirmatory results。
 
 ---
 
-## 📄 授權與聯繫 (License & Contact)
+## 🚀 5. 快速入口與結構導引
 
-本專案採用 **MIT License** 開源授權，歡迎教育工作者與開發者共同參與貢獻。
+本專案目前的決賽 rebuild 評估完全脫離了 Flask Web UI 機制，全面使用離線的專屬 runner 與測試集。以下為核心入口：
 
-*   **專案負責人**: [Your Name/Team Name]
-*   **聯繫信箱**: contact@smart-edu.ai
-
----
-*Built with ❤️ for the future of education.*
+*   **核心 Runner**：
+    *   決賽重建 Pipeline：[pipeline.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/pipeline.py)
+    *   數學生成執行器：[math_generation_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/math_generation_runner.py)
+    *   外部基準執行器：[public_benchmark_runner.py](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/agent_tools/finals_rebuild/public_benchmark_runner.py)
+*   **研究設計與證據**：
+    *   CE115 任務設計：[CE115_Math_Pilot_Task_Design.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/研究設計/CE115_Math_Pilot_Task_Design.md)
+    *   Ab2d 技能合約與審計：[ab2d_skill_contract_and_capability.md](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/docs/experiments/ab2d_skill_contract_and_capability.md)
+    *   Healer-vNext 法醫學驗證證據：[fail_to_fail_forensics/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/artifacts/fail_to_fail_forensics/)
+*   **一鍵驗證腳本**：
+    *   決賽 Rebuild 檢查：[verify_finals_rebuild.sh](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/scripts/verify_finals_rebuild.sh)
+*   **測試套件**：
+    *   決賽 Rebuild 測試集：[tests/finals_rebuild/](file:///c:/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2/tests/finals_rebuild/)
