@@ -139,6 +139,9 @@ class OllamaGenerationSettings:
     top_p: float = TOP_P
     top_k: int = TOP_K
     num_predict: int = NUM_PREDICT
+    thinking: Optional[bool] = None
+    context_window: Optional[int] = None
+    stream: bool = False
     api_endpoint: str = API_ENDPOINT
     response_field: str = RESPONSE_FIELD
     expected_digest_prefix: Optional[str] = None
@@ -154,6 +157,100 @@ class OllamaGenerationSettings:
     @classmethod
     def smoke_default(cls) -> "OllamaGenerationSettings":
         return cls.for_model(DEFAULT_SMOKE_MODEL)
+
+
+def load_generation_protocol(path: Union[str, pathlib.Path]) -> Dict[str, Any]:
+    """Load generation_protocol_v1 and fail closed on any frozen-field drift."""
+    protocol_path = pathlib.Path(path)
+    try:
+        protocol = json.loads(protocol_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise OllamaGenerationError("tasks_load", f"invalid generation protocol: {exc}") from exc
+
+    if protocol.get("protocol_version") != "generation_protocol_v1":
+        raise OllamaGenerationError("tasks_load", "unsupported generation protocol version")
+    if protocol.get("samples_per_task") != 5 or protocol.get("seeds") != [11, 22, 33, 44, 55]:
+        raise OllamaGenerationError("tasks_load", "generation_protocol_v1 seed schedule drift")
+    if len(set(protocol["seeds"])) != 5:
+        raise OllamaGenerationError("tasks_load", "generation protocol seeds must be unique")
+
+    expected_ollama = {
+        "api_endpoint": "/api/chat",
+        "no_thinking_control": "structured_api_parameter",
+        "nothink_string_used": False,
+        "version": "0.32.0",
+    }
+    if protocol.get("ollama") != expected_ollama:
+        raise OllamaGenerationError("tasks_load", "generation_protocol_v1 Ollama drift")
+
+    expected_generation = {
+        "thinking": False,
+        "temperature": 0.2,
+        "top_p": 0.95,
+        "top_k": 20,
+        "num_ctx": 8192,
+        "num_predict": 2048,
+        "stream": False,
+    }
+    if protocol.get("generation") != expected_generation:
+        raise OllamaGenerationError("tasks_load", "generation_protocol_v1 parameter drift")
+
+    models = protocol.get("models") if isinstance(protocol.get("models"), dict) else {}
+    primary = models.get("primary_development_model", {})
+    transfer = models.get("frozen_transfer_model", {})
+    if primary.get("tag") != "qwen3.5:9b" or primary.get("role") != "primary_development_model":
+        raise OllamaGenerationError("tasks_load", "primary model must be qwen3.5:9b")
+    if primary.get("public_benchmark_execution_allowed") is not True:
+        raise OllamaGenerationError("tasks_load", "primary model must be public-benchmark enabled")
+    if transfer.get("tag") != "qwen3.5:4b" or transfer.get("role") != "transfer_only":
+        raise OllamaGenerationError("tasks_load", "transfer model must be transfer-only qwen3.5:4b")
+    if transfer.get("public_benchmark_execution_allowed") is not False:
+        raise OllamaGenerationError("tasks_load", "transfer model cannot run public benchmarks")
+    expected_digests = {
+        "qwen3.5:9b": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+        "qwen3.5:4b": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    }
+    for model in (primary, transfer):
+        digest = model.get("digest")
+        if digest != expected_digests[model["tag"]]:
+            raise OllamaGenerationError("tasks_load", "generation protocol model digest drift")
+
+    expected_policies = {
+        "automatic_retry": False,
+        "baseline_scaffold_same_task_and_seed": True,
+        "evaluator_feedback_to_model": False,
+        "healer_evaluator_blind": True,
+        "llm_post_rewrite": False,
+        "overwrite_existing_output": False,
+        "preserve_raw_response": True,
+        "raw_and_healed_share_original_output": True,
+    }
+    if protocol.get("policies") != expected_policies:
+        raise OllamaGenerationError("tasks_load", "generation_protocol_v1 policy drift")
+    return protocol
+
+
+def protocol_settings(
+    protocol: Dict[str, Any], *, model_role: str, seed: int
+) -> OllamaGenerationSettings:
+    """Create request settings for a frozen model role and seed."""
+    if model_role not in ("primary_development_model", "frozen_transfer_model"):
+        raise OllamaGenerationError("tasks_load", f"unknown model role {model_role!r}")
+    model = protocol["models"][model_role]
+    generation = protocol["generation"]
+    return OllamaGenerationSettings(
+        model=model["tag"],
+        seed=seed,
+        temperature=generation["temperature"],
+        top_p=generation["top_p"],
+        top_k=generation["top_k"],
+        num_predict=generation["num_predict"],
+        thinking=generation["thinking"],
+        context_window=generation["num_ctx"],
+        stream=generation["stream"],
+        api_endpoint=protocol["ollama"]["api_endpoint"],
+        expected_digest_prefix=model["digest"],
+    )
 
 # Fixed generation + write order: for every task, Ab1 is attempted before
 # Ab2g. Never reordered based on outcome.
@@ -383,13 +480,13 @@ def _post_chat(
     timeout_seconds: float,
     settings: OllamaGenerationSettings,
 ) -> Dict[str, Any]:
-    """POST /api/chat with fixed model/seed/temperature/top_p/top_k/num_predict.
+    """POST /api/chat with fixed model/seed/sampling/context parameters.
     Never shells out, never retries on timeout/non-200."""
     url = base_url.rstrip("/") + settings.api_endpoint
     payload = {
         "model": settings.model,
         "messages": [{"role": "user", "content": prompt}],
-        "stream": False,
+        "stream": settings.stream,
         "options": {
             "temperature": settings.temperature,
             "seed": settings.seed,
@@ -398,6 +495,10 @@ def _post_chat(
             "num_predict": settings.num_predict,
         },
     }
+    if settings.thinking is not None:
+        payload["think"] = settings.thinking
+    if settings.context_window is not None:
+        payload["options"]["num_ctx"] = settings.context_window
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
         url, data=data, method="POST", headers={"Content-Type": "application/json"}
@@ -440,6 +541,7 @@ def _post_chat(
         parsed["_ollama_response_metadata"] = {
             "http_status": status,
             "raw_body": body,
+            "request_payload": payload,
             "api_endpoint": settings.api_endpoint,
             "response_field": settings.response_field,
         }
@@ -641,13 +743,15 @@ def entry_point_preflight(
 
 def _attempt_resume_key(
     attempt: Dict[str, Any],
-) -> Tuple[str, str, str, str]:
+) -> Tuple[str, str, str, str, int, int]:
     meta = attempt.get("metadata") if isinstance(attempt.get("metadata"), dict) else {}
     return (
         str(attempt.get("task_id", "")),
         str(attempt.get("treatment", "")),
         str(meta.get("model_digest", "")),
         str(meta.get("prompt_sha256", "")),
+        int(attempt.get("sample_index", 0)),
+        int(meta.get("seed", SEED)),
     )
 
 
@@ -661,11 +765,13 @@ def is_resume_complete(attempt: Dict[str, Any]) -> bool:
     ) and bool(attempt.get("raw_response_sha256"))
 
 
-def load_completed_attempts(path: Union[str, pathlib.Path]) -> Dict[Tuple[str, str, str, str], Dict[str, Any]]:
+def load_completed_attempts(
+    path: Union[str, pathlib.Path],
+) -> Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]]:
     p = pathlib.Path(path)
     if not p.is_file():
         return {}
-    completed: Dict[Tuple[str, str, str, str], Dict[str, Any]] = {}
+    completed: Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]] = {}
     for line_no, line in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
         stripped = line.strip()
         if not stripped:
@@ -686,12 +792,12 @@ def load_completed_attempts(path: Union[str, pathlib.Path]) -> Dict[Tuple[str, s
 
 def load_all_saved_attempts(
     path: Union[str, pathlib.Path],
-) -> Dict[Tuple[str, str, str, str], Dict[str, Any]]:
+) -> Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]]:
     """Load every saved first-attempt row for confirmatory resume gating."""
     p = pathlib.Path(path)
     if not p.is_file():
         return {}
-    saved: Dict[Tuple[str, str, str, str], Dict[str, Any]] = {}
+    saved: Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]] = {}
     for line_no, line in enumerate(p.read_text(encoding="utf-8").splitlines(), start=1):
         stripped = line.strip()
         if not stripped:
@@ -734,8 +840,8 @@ def attempt_policy_manifest_fields(attempt_policy: str) -> Dict[str, Any]:
 
 
 def _should_skip_on_resume(
-    resume_key: Tuple[str, str, str, str],
-    completed_attempts: Dict[Tuple[str, str, str, str], Dict[str, Any]],
+    resume_key: Tuple[str, str, str, str, int, int],
+    completed_attempts: Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]],
     *,
     attempt_policy: str,
     rerun_incomplete: bool,
@@ -935,6 +1041,7 @@ def _build_attempt(
     had_surrounding_text: Optional[bool],
     elapsed_seconds: float,
     metadata: Dict[str, Any],
+    sample_index: int = 0,
     reasoning_leakage_detected: Optional[bool] = None,
     parse_status: Optional[str] = None,
     entry_point_definition_count: Optional[int] = None,
@@ -946,7 +1053,7 @@ def _build_attempt(
     return {
         "task_id": task_id,
         "entry_point": entry_point,
-        "sample_index": 0,
+        "sample_index": sample_index,
         "treatment": treatment,
         "status": status,
         "generation_status": status,
@@ -986,8 +1093,9 @@ def run_attempt(
     timeout_seconds: float,
     settings: OllamaGenerationSettings,
     model_digest: str,
+    sample_index: int = 0,
 ) -> Dict[str, Any]:
-    """Run exactly one (task, treatment, sample_index=0) attempt."""
+    """Run exactly one task/treatment/sample attempt."""
     prompt = build_prompt(task.prompt, treatment)
     metadata = {
         "benchmark": benchmark,
@@ -1000,6 +1108,9 @@ def run_attempt(
         "top_p": settings.top_p,
         "top_k": settings.top_k,
         "num_predict": settings.num_predict,
+        "thinking": settings.thinking,
+        "context_window": settings.context_window,
+        "stream": settings.stream,
         "api_endpoint": settings.api_endpoint,
         "response_field": settings.response_field,
         "prompt_sha256": sha256_text(prompt),
@@ -1030,6 +1141,7 @@ def run_attempt(
             total_fenced_blocks=None, python_fenced_blocks=None,
             had_markdown_fence=None, had_surrounding_text=None,
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            sample_index=sample_index,
             reasoning_leakage_detected=None,
             **_preflight_fields(None),
         )
@@ -1052,6 +1164,7 @@ def run_attempt(
             total_fenced_blocks=None, python_fenced_blocks=None,
             had_markdown_fence=None, had_surrounding_text=None,
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            sample_index=sample_index,
             reasoning_leakage_detected=leakage_detected or None,
             ollama_response_metadata=ollama_meta,
             **_preflight_fields(None),
@@ -1075,6 +1188,7 @@ def run_attempt(
             had_markdown_fence=analysis["had_markdown_fence"],
             had_surrounding_text=analysis["had_surrounding_text"],
             elapsed_seconds=time.monotonic() - start, metadata=metadata,
+            sample_index=sample_index,
             reasoning_leakage_detected=leakage_detected,
             ollama_response_metadata=ollama_meta,
             **preflight,
@@ -1091,6 +1205,7 @@ def run_attempt(
         had_markdown_fence=analysis["had_markdown_fence"],
         had_surrounding_text=analysis["had_surrounding_text"],
         elapsed_seconds=time.monotonic() - start, metadata=metadata,
+        sample_index=sample_index,
         reasoning_leakage_detected=leakage_detected,
         ollama_response_metadata=ollama_meta,
         **preflight,
@@ -1105,11 +1220,14 @@ def run_generation_attempts(
     timeout_seconds: float,
     settings: OllamaGenerationSettings,
     model_digest: str,
-    completed_attempts: Optional[Dict[Tuple[str, str, str, str], Dict[str, Any]]] = None,
+    sample_settings: Optional[Sequence[OllamaGenerationSettings]] = None,
+    completed_attempts: Optional[
+        Dict[Tuple[str, str, str, str, int, int], Dict[str, Any]]
+    ] = None,
     rerun_incomplete: bool = False,
     attempt_policy: str = ATTEMPT_POLICY_CONFIRMATORY,
 ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """Run every (task, treatment) attempt in fixed order, optionally
+    """Run every (task, treatment, sample) attempt in fixed order, optionally
     skipping attempts already present in *completed_attempts*."""
     completed_attempts = completed_attempts or {}
     attempts: List[Dict[str, Any]] = []
@@ -1119,35 +1237,40 @@ def run_generation_attempts(
         "attempt_policy": attempt_policy,
     }
 
+    effective_sample_settings = list(sample_settings or [settings])
     for task in tasks:
         for treatment in ALLOWED_TREATMENTS:
             prompt = build_prompt(task.prompt, treatment)
-            resume_key = (
-                task.task_id,
-                treatment,
-                model_digest,
-                sha256_text(prompt),
-            )
-            if _should_skip_on_resume(
-                resume_key,
-                completed_attempts,
-                attempt_policy=attempt_policy,
-                rerun_incomplete=rerun_incomplete,
-            ):
-                attempts.append(completed_attempts[resume_key])
-                resume_stats["skipped_complete"] += 1
-                continue
-
-            attempts.append(
-                run_attempt(
-                    task, treatment,
-                    benchmark=benchmark,
-                    base_url=base_url,
-                    timeout_seconds=timeout_seconds,
-                    settings=settings,
-                    model_digest=model_digest,
+            for sample_index, sample_setting in enumerate(effective_sample_settings):
+                resume_key = (
+                    task.task_id,
+                    treatment,
+                    model_digest,
+                    sha256_text(prompt),
+                    sample_index,
+                    sample_setting.seed,
                 )
-            )
+                if _should_skip_on_resume(
+                    resume_key,
+                    completed_attempts,
+                    attempt_policy=attempt_policy,
+                    rerun_incomplete=rerun_incomplete,
+                ):
+                    attempts.append(completed_attempts[resume_key])
+                    resume_stats["skipped_complete"] += 1
+                    continue
+
+                attempts.append(
+                    run_attempt(
+                        task, treatment,
+                        benchmark=benchmark,
+                        base_url=base_url,
+                        timeout_seconds=timeout_seconds,
+                        settings=sample_setting,
+                        model_digest=model_digest,
+                        sample_index=sample_index,
+                    )
+                )
     return attempts, resume_stats
 
 
@@ -1208,6 +1331,7 @@ def run_ollama_generation(
     dataset_manifest_path: Optional[Union[str, pathlib.Path]] = None,
     provenance_tasks_path: Optional[Union[str, pathlib.Path]] = None,
     repo_root: Optional[Union[str, pathlib.Path]] = None,
+    generation_protocol_path: Optional[Union[str, pathlib.Path]] = None,
 ) -> Dict[str, Any]:
     """Run every (task, treatment) attempt for *tasks_path* against Ollama
     /api/chat. Writes generation_attempts.jsonl, generation_summary.json,
@@ -1233,7 +1357,27 @@ def run_ollama_generation(
             "confirmatory runs forbid --rerun-incomplete; first attempt is ITT",
         )
 
-    if settings is None:
+    protocol: Optional[Dict[str, Any]] = None
+    sample_settings: Optional[List[OllamaGenerationSettings]] = None
+    if generation_protocol_path is not None:
+        if settings is not None or model is not None or smoke or resume or rerun_incomplete:
+            raise OllamaGenerationError(
+                "benchmark",
+                "protocol runs forbid model/settings/smoke/resume/retry overrides",
+            )
+        if output_dir.exists() and any(output_dir.iterdir()):
+            raise OllamaGenerationError(
+                "benchmark", f"protocol run refuses to overwrite non-empty output dir: {output_dir}"
+            )
+        protocol = load_generation_protocol(generation_protocol_path)
+        sample_settings = [
+            protocol_settings(
+                protocol, model_role="primary_development_model", seed=seed
+            )
+            for seed in protocol["seeds"]
+        ]
+        settings = sample_settings[0]
+    elif settings is None:
         effective_model = model or (DEFAULT_SMOKE_MODEL if smoke else DEFAULT_MODEL_8B)
         settings = OllamaGenerationSettings.for_model(effective_model)
     elif model is not None and model != settings.model:
@@ -1272,6 +1416,12 @@ def run_ollama_generation(
         expected_digest_prefix=settings.expected_digest_prefix,
     )
     model_digest = provenance["model_digest"]
+    if protocol is not None:
+        expected_digest = protocol["models"]["primary_development_model"]["digest"]
+        if model_digest != expected_digest:
+            raise OllamaGenerationError(
+                "tags_preflight", "installed primary model digest differs from protocol"
+            )
 
     if runner_git_commit is None:
         runner_git_commit = _resolve_runner_git_commit()
@@ -1292,6 +1442,7 @@ def run_ollama_generation(
         timeout_seconds=timeout_seconds,
         settings=settings,
         model_digest=model_digest,
+        sample_settings=sample_settings,
         completed_attempts=completed_attempts,
         rerun_incomplete=rerun_incomplete,
         attempt_policy=attempt_policy,
@@ -1353,6 +1504,22 @@ def run_ollama_generation(
         "rerun_incomplete": rerun_incomplete,
         **policy_fields,
     }
+    if protocol is not None:
+        manifest.update(
+            {
+                "generation_protocol_version": protocol["protocol_version"],
+                "generation_protocol_sha256": hashlib.sha256(
+                    pathlib.Path(generation_protocol_path).read_bytes()
+                ).hexdigest(),
+                "model_role": "primary_development_model",
+                "thinking": protocol["generation"]["thinking"],
+                "context_window": protocol["generation"]["num_ctx"],
+                "stream": protocol["generation"]["stream"],
+                "samples_per_task": protocol["samples_per_task"],
+                "seeds": protocol["seeds"],
+                "protocol_policies": protocol["policies"],
+            }
+        )
     if smoke:
         manifest.update(
             {
@@ -1561,6 +1728,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help="Recorded in generation_manifest.json; resolved via "
              "`git rev-parse HEAD` (fail-closed) when omitted.",
     )
+    parser.add_argument(
+        "--generation-protocol",
+        default=None,
+        help="Frozen protocol JSON; public benchmark runs always use its primary model.",
+    )
     return parser
 
 
@@ -1607,6 +1779,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             rerun_incomplete=args.rerun_incomplete,
             smoke=args.smoke,
             dataset_manifest_path=args.dataset_manifest_path,
+            generation_protocol_path=args.generation_protocol,
         )
         return 0
     except HumanevalPlusDatasetError as exc:

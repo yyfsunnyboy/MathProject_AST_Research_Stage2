@@ -1,0 +1,60 @@
+{
+  "generation": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "models": {
+    "frozen_transfer_model": {
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "modified_at": "2026-07-16T22:38:31.4275049+08:00",
+      "parameter_size": "4.7B",
+      "public_benchmark_execution_allowed": false,
+      "quantization": "Q4_K_M",
+      "role": "transfer_only",
+      "size_bytes": 3389983735,
+      "tag": "qwen3.5:4b",
+      "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+    },
+    "primary_development_model": {
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "modified_at": "2026-07-16T22:38:34.436418+08:00",
+      "parameter_size": "9.7B",
+      "public_benchmark_execution_allowed": true,
+      "quantization": "Q4_K_M",
+      "role": "primary_development_model",
+      "size_bytes": 6594474711,
+      "tag": "qwen3.5:9b",
+      "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+    }
+  },
+  "ollama": {
+    "api_endpoint": "/api/chat",
+    "no_thinking_control": "structured_api_parameter",
+    "nothink_string_used": false,
+    "version": "0.32.0"
+  },
+  "policies": {
+    "automatic_retry": false,
+    "baseline_scaffold_same_task_and_seed": true,
+    "evaluator_feedback_to_model": false,
+    "healer_evaluator_blind": true,
+    "llm_post_rewrite": false,
+    "overwrite_existing_output": false,
+    "preserve_raw_response": true,
+    "raw_and_healed_share_original_output": true
+  },
+  "protocol_version": "generation_protocol_v1",
+  "samples_per_task": 5,
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ]
+}
