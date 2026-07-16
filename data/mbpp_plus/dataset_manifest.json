@@ -1,0 +1,34 @@
+{
+  "created_at_utc": "2026-07-16T13:56:30.224244+00:00",
+  "creation_script": "scripts/prepare_mbpp_plus_tasks.py",
+  "dataset_name": "MBPP+",
+  "dataset_role": "official_task_prompts_and_evalplus_tests",
+  "environment_variable": "MBPP_PLUS_VERSION=v0.2.0",
+  "evalplus_dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "evalplus_package_version": "0.3.1",
+  "fallback_policy": "forbidden_original_mbpp",
+  "first_task_id": "Mbpp/2",
+  "last_task_id": "Mbpp/809",
+  "notes": [
+    "Exported through evalplus.data.get_mbpp_plus via the repository EvalPlus bridge",
+    "No fallback to original non-Plus MBPP is allowed",
+    "Official tests, canonical solutions, contracts, inputs, and expected outputs are not stored",
+    "Only task_id, prompt, and entry_point are model-visible in tasks.jsonl"
+  ],
+  "official_tests_and_canonical_solutions_included": false,
+  "release_tag_or_dataset_version": "v0.2.0",
+  "source_loader": "evalplus.data.get_mbpp_plus",
+  "source_prompt_field": "prompt",
+  "source_repository": "https://github.com/evalplus/evalplus",
+  "stored_fields": [
+    "task_id",
+    "prompt",
+    "entry_point"
+  ],
+  "task_count": 378,
+  "task_ids_sha256": "c3739802c5cb67fa06dd679b1777fcfafcec6c2479c173af5df99e3a0e394114",
+  "task_order_policy": "official_loader_order",
+  "tasks_file": "data/mbpp_plus/tasks.jsonl",
+  "tasks_sha256": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c",
+  "wsl_python_version": "3.14.4"
+}

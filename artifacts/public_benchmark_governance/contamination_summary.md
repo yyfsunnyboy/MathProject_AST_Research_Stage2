@@ -1,15 +1,15 @@
 # Public Benchmark Contamination Summary
 
 - Generated: 2026-07-16 (Asia/Taipei)
-- Starting Git commit: `14299c855286f6fcd39d3c662f524e0caa28acc3`
-- Milestone: 0A data-governance inventory only
+- Starting Git commit: `7efd2542261e8d5c3e3c0bac2dd3011b7b4002e7`
+- Milestone: 0B complete MBPP+ manifest and data-governance inventory
 
 ## Dataset versions
 
 | Dataset | Version evidence | Manifest status |
 |---|---|---|
 | HumanEval+ | release `v0.1.10`; EvalPlus `0.3.1` | complete, 164 tasks |
-| MBPP+ | targeted replay records reference `v0.2.0` | complete task manifest unavailable |
+| MBPP+ | release `v0.2.0`; EvalPlus `0.3.1` | complete, 378 tasks |
 
 ## Repository evidence and SHA-256
 
@@ -23,6 +23,8 @@
 | `artifacts/fail_to_fail_forensics/xor_safetyloop_validation/candidate_manifest.csv` | `042fdee9ef35395cf6fe7356d7313c0a3819ab9647a6f217b666ff98e96fc326` |
 | `artifacts/fail_to_fail_forensics/healer_vnext_evalplus_replay/replay_manifest.csv` | `5b80912ad587698beca35d6ea00cfb571342ec100a1df2e6a257f4765bdb7754` |
 | `artifacts/fail_to_fail_forensics/healer_vnext_public_benchmark_final_summary_zh.md` | `5c6ad7fe01534a8fc381c71514163b22ced13cd5590887d93d91f081d39bcc7f` |
+| `data/mbpp_plus/tasks.jsonl` | `b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c` |
+| `data/mbpp_plus/dataset_manifest.json` | `502e946fb273751805ec74472856a8d2e6cd732368547c9f45e2310495b831be` |
 
 ## HumanEval+ counts
 
@@ -44,9 +46,11 @@ The 108 remaining HumanEval+ tasks are `unreviewed_candidate` with `confirmatory
 | Measure | Count |
 |---|---:|
 | Forensic reviewed unique | 116 |
-| Total tasks | unavailable |
+| Total tasks | 378 |
+| Excluded union | 116 |
+| Unreviewed candidate | 262 |
 
-All 116 listed MBPP+ rows are individually reviewed failure-census sources and have `confirmatory_eligible=false`.
+The 116 reviewed MBPP+ rows are individually reviewed failure-census sources and have `confirmatory_eligible=false`. The remaining 262 rows are `unreviewed_candidate` with `confirmatory_eligible=pending`, not a formal confirmatory set.
 
 ## Contamination status counts
 
@@ -57,7 +61,7 @@ All 116 listed MBPP+ rows are individually reviewed failure-census sources and h
 | `excluded_individual_review` | 0 |
 | `excluded_engineering_smoke` | 18 |
 | `pending_generated_or_aggregate_only` | 0 |
-| `unreviewed_candidate` | 108 |
+| `unreviewed_candidate` | 370 |
 | `evidence_ambiguous` | 0 |
 
 ## Governance statements
@@ -70,7 +74,7 @@ All 116 listed MBPP+ rows are individually reviewed failure-census sources and h
 
 ## Limitations
 
-- The repository contains no reliable complete MBPP/MBPP+ task manifest, so MBPP+ total and remaining-task counts are unavailable and are not inferred.
+- The complete MBPP+ task list records only model-visible fields; official tests, canonical solutions, contracts, and expected outputs remain outside the repository export.
 - Repository evidence cannot prove that an apparently unreviewed task was never generated or viewed elsewhere; lower-level history is therefore `unknown` for unreviewed candidates.
 - Rule-development attribution is limited to task IDs directly present in the structured candidate/replay manifests listed above.
 - The inventory does not inspect new model outputs, task solutions, cloud-drive history, or formal EvalPlus results.

@@ -48,11 +48,13 @@ def test_humaneval_overlap_excluded_union_and_unreviewed_counts():
     assert len(build.humaneval_task_ids) - len(smoke | forensic) == 108
 
 
-def test_mbpp_reviewed_count_and_total_unavailable():
+def test_mbpp_complete_reviewed_and_unreviewed_counts():
     build = _build()
     assert len(build.mbpp_forensic_ids) == 116
-    assert build.mbpp_total is None
-    assert sum(row["dataset"] == "MBPP+" for row in build.rows) == 116
+    assert build.mbpp_total == 378
+    mbpp_rows = [row for row in build.rows if row["dataset"] == "MBPP+"]
+    assert len(mbpp_rows) == 378
+    assert sum(row["contamination_status"] == "unreviewed_candidate" for row in mbpp_rows) == 262
 
 
 def test_eligibility_and_unreviewed_statuses():
@@ -66,13 +68,18 @@ def test_eligibility_and_unreviewed_statuses():
     unreviewed = [
         row for row in build.rows if row["contamination_status"] == "unreviewed_candidate"
     ]
-    assert len(unreviewed) == 108
+    assert len(unreviewed) == 370
     assert all(row["confirmatory_eligible"] == "pending" for row in unreviewed)
     assert all(row["confirmatory_eligible"] != "true" for row in build.rows)
 
+    assert len(build.rows) == 542
+    assert sum(row["confirmatory_eligible"] == "false" for row in build.rows) == 172
+    assert sum(row["confirmatory_eligible"] == "pending" for row in build.rows) == 370
+
 
 def test_multiple_sources_are_preserved_in_fixed_order():
-    rows = _row_map(_build())
+    build = _build()
+    rows = _row_map(build)
     assert rows["HumanEval/10"]["contamination_sources"] == (
         "engineering_smoke;individual_review;failure_census"
     )
@@ -80,6 +87,9 @@ def test_multiple_sources_are_preserved_in_fixed_order():
         "individual_review;failure_census;rule_development"
     )
     assert rows["Mbpp/255"]["rule_development_source"] == "true"
+    rule_rows = [row for row in build.rows if row["rule_development_source"] == "true"]
+    assert len(rule_rows) == 16
+    assert sum(row["dataset"] == "MBPP+" for row in rule_rows) == 14
 
 
 def test_status_classifier_supports_pending_and_ambiguous_evidence():
@@ -127,7 +137,7 @@ def test_script_run_twice_produces_identical_csv_bytes(tmp_path):
     assert first_csv.read_bytes() == second_csv.read_bytes()
 
 
-def test_summary_uses_pending_language_and_does_not_guess_mbpp_total():
+def test_summary_uses_pending_language_for_both_datasets():
     build = _build()
     summary = builder.render_summary(
         build,
@@ -138,6 +148,7 @@ def test_summary_uses_pending_language_and_does_not_guess_mbpp_total():
 
     assert "The 108 remaining HumanEval+ tasks are `unreviewed_candidate`" in summary
     assert "they are not a formal confirmatory set" in summary
-    assert "| Total tasks | unavailable |" in summary
+    assert "| Total tasks | 378 |" in summary
+    assert "The remaining 262 rows are `unreviewed_candidate`" in summary
     assert "does not establish a formal development, validation, or confirmatory split" in summary
     assert "No row in this manifest has `confirmatory_eligible=true`" in summary

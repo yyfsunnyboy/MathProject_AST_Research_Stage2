@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Milestone 0A public-benchmark contamination manifest.
+"""Build the public-benchmark contamination manifest.
 
 This script inventories repository evidence only. It does not create a formal
 development/validation/confirmatory split and does not inspect model outputs.
@@ -53,7 +53,14 @@ EXPECTED_HUMANEVAL_FORENSIC = 38
 EXPECTED_SMOKE_FORENSIC_OVERLAP = {"HumanEval/10", "HumanEval/19"}
 EXPECTED_HUMANEVAL_EXCLUDED_UNION = 56
 EXPECTED_HUMANEVAL_UNREVIEWED = 108
+EXPECTED_MBPP_TOTAL = 378
 EXPECTED_MBPP_FORENSIC = 116
+EXPECTED_MBPP_UNREVIEWED = 262
+EXPECTED_TOTAL_ROWS = 542
+EXPECTED_ELIGIBILITY_FALSE = 172
+EXPECTED_ELIGIBILITY_PENDING = 370
+EXPECTED_RULE_DEVELOPMENT_MBPP = 14
+EXPECTED_RULE_DEVELOPMENT_ALL = 16
 
 CSV_FIELDS = (
     "dataset",
@@ -103,6 +110,7 @@ class GovernanceBuild:
     mbpp_forensic_ids: frozenset[str]
     rule_development_paths: dict[str, tuple[str, ...]]
     humaneval_metadata: dict[str, object]
+    mbpp_metadata: dict[str, object] | None
     mbpp_total: int | None
     mbpp_manifest_paths: tuple[str, ...]
 
@@ -164,7 +172,7 @@ def _read_rule_development_paths(repo_root: pathlib.Path) -> dict[str, tuple[str
 
 def _find_complete_mbpp_manifest(
     repo_root: pathlib.Path,
-) -> tuple[list[str] | None, tuple[str, ...]]:
+) -> tuple[list[str] | None, tuple[str, ...], dict[str, object] | None]:
     for tasks_rel, manifest_rel in MBPP_COMPLETE_MANIFEST_CANDIDATES:
         tasks_path = _repo_path(repo_root, tasks_rel)
         manifest_path = _repo_path(repo_root, manifest_rel)
@@ -179,8 +187,22 @@ def _find_complete_mbpp_manifest(
             )
         if not task_ids or any(not task_id.startswith("Mbpp/") for task_id in task_ids):
             raise ValueError("candidate MBPP manifest does not contain a complete Mbpp/* task list")
-        return task_ids, (tasks_rel, manifest_rel)
-    return None, ()
+        required_metadata = {
+            "dataset_name": "MBPP+",
+            "evalplus_package_version": "0.3.1",
+            "release_tag_or_dataset_version": "v0.2.0",
+            "fallback_policy": "forbidden_original_mbpp",
+            "task_order_policy": "official_loader_order",
+        }
+        for field, expected in required_metadata.items():
+            if metadata.get(field) != expected:
+                raise ValueError(
+                    f"MBPP manifest {field} must be {expected!r}, got {metadata.get(field)!r}"
+                )
+        if metadata.get("tasks_sha256") != sha256_file(tasks_path):
+            raise ValueError("MBPP manifest tasks_sha256 does not match tasks.jsonl")
+        return task_ids, (tasks_rel, manifest_rel), metadata
+    return None, (), None
 
 
 def _evidence_flag(value: bool) -> str:
@@ -292,7 +314,9 @@ def build_governance(repo_root: pathlib.Path = REPO_ROOT) -> GovernanceBuild:
     ]
     forensic = _read_forensic_ids(repo_root)
     rule_paths = _read_rule_development_paths(repo_root)
-    mbpp_task_ids, mbpp_manifest_paths = _find_complete_mbpp_manifest(repo_root)
+    mbpp_task_ids, mbpp_manifest_paths, mbpp_metadata = _find_complete_mbpp_manifest(
+        repo_root
+    )
 
     rows: list[dict[str, str]] = []
     smoke_set = set(smoke_task_ids)
@@ -340,6 +364,7 @@ def build_governance(repo_root: pathlib.Path = REPO_ROOT) -> GovernanceBuild:
         mbpp_forensic_ids=frozenset(forensic["mbpp"]),
         rule_development_paths=rule_paths,
         humaneval_metadata=he_manifest,
+        mbpp_metadata=mbpp_metadata,
         mbpp_total=len(mbpp_task_ids) if mbpp_task_ids is not None else None,
         mbpp_manifest_paths=mbpp_manifest_paths,
     )
@@ -368,8 +393,28 @@ def validate_known_facts(build: GovernanceBuild) -> None:
         raise ValueError("HumanEval unreviewed candidate count does not equal 108")
     if len(build.mbpp_forensic_ids) != EXPECTED_MBPP_FORENSIC:
         raise ValueError("MBPP forensic reviewed unique does not equal 116")
+    if build.mbpp_total != EXPECTED_MBPP_TOTAL:
+        raise ValueError("MBPP+ complete task manifest does not contain 378 tasks")
+    mbpp_rows = [row for row in build.rows if row["dataset"] == "MBPP+"]
+    mbpp_unreviewed = [
+        row for row in mbpp_rows if row["contamination_status"] == "unreviewed_candidate"
+    ]
+    if len(mbpp_unreviewed) != EXPECTED_MBPP_UNREVIEWED:
+        raise ValueError("MBPP+ unreviewed candidate count does not equal 262")
+    if len(build.rows) != EXPECTED_TOTAL_ROWS:
+        raise ValueError("combined contamination manifest does not contain 542 rows")
+    eligibility_counts = Counter(row["confirmatory_eligible"] for row in build.rows)
+    if eligibility_counts != Counter(
+        {"false": EXPECTED_ELIGIBILITY_FALSE, "pending": EXPECTED_ELIGIBILITY_PENDING}
+    ):
+        raise ValueError(f"unexpected eligibility counts: {dict(eligibility_counts)}")
+    rule_rows = [row for row in build.rows if row["rule_development_source"] == "true"]
+    if len(rule_rows) != EXPECTED_RULE_DEVELOPMENT_ALL:
+        raise ValueError("all-dataset rule-development source count does not equal 16")
+    if sum(row["dataset"] == "MBPP+" for row in rule_rows) != EXPECTED_RULE_DEVELOPMENT_MBPP:
+        raise ValueError("MBPP+ rule-development source count does not equal 14")
     if any(row["confirmatory_eligible"] == "true" for row in build.rows):
-        raise ValueError("Milestone 0A must not mark any row confirmatory_eligible=true")
+        raise ValueError("contamination inventory must not mark any row confirmatory_eligible=true")
     if any(row["contamination_status"] not in STATUS_ORDER for row in build.rows):
         raise ValueError("manifest contains an unsupported contamination status")
     known_reviewed = set(build.humaneval_forensic_ids) | set(build.mbpp_forensic_ids)
@@ -393,10 +438,12 @@ def sha256_file(path: pathlib.Path) -> str:
     return digest.hexdigest()
 
 
-def source_hashes(repo_root: pathlib.Path) -> tuple[tuple[str, str], ...]:
+def source_hashes(
+    repo_root: pathlib.Path, extra_paths: tuple[str, ...] = ()
+) -> tuple[tuple[str, str], ...]:
     return tuple(
         (relative_path, sha256_file(_repo_path(repo_root, relative_path)))
-        for relative_path in SOURCE_PATHS
+        for relative_path in (*SOURCE_PATHS, *extra_paths)
     )
 
 
@@ -419,7 +466,7 @@ def render_summary(
         "",
         f"- Generated: {generated_date} (Asia/Taipei)",
         f"- Starting Git commit: `{starting_commit}`",
-        "- Milestone: 0A data-governance inventory only",
+        "- Milestone: 0B complete MBPP+ manifest and data-governance inventory",
         "",
         "## Dataset versions",
         "",
@@ -430,8 +477,8 @@ def render_summary(
             f"EvalPlus `{build.humaneval_metadata.get('evalplus_package_version')}` | complete, 164 tasks |"
         ),
         (
-            "| MBPP+ | targeted replay records reference `v0.2.0` | "
-            + (f"complete, {build.mbpp_total} tasks |" if build.mbpp_total is not None else "complete task manifest unavailable |")
+            f"| MBPP+ | release `{build.mbpp_metadata.get('release_tag_or_dataset_version')}`; "
+            f"EvalPlus `{build.mbpp_metadata.get('evalplus_package_version')}` | complete, {build.mbpp_total} tasks |"
         ),
         "",
         "## Repository evidence and SHA-256",
@@ -439,7 +486,7 @@ def render_summary(
         "| Repository path | SHA-256 |",
         "|---|---|",
     ]
-    for relative_path, digest in source_hashes(repo_root):
+    for relative_path, digest in source_hashes(repo_root, build.mbpp_manifest_paths):
         lines.append(f"| `{relative_path}` | `{digest}` |")
 
     lines.extend(
@@ -467,9 +514,12 @@ def render_summary(
             "|---|---:|",
             f"| Forensic reviewed unique | {len(build.mbpp_forensic_ids)} |",
             f"| Total tasks | {build.mbpp_total if build.mbpp_total is not None else 'unavailable'} |",
+            f"| Excluded union | {len(build.mbpp_forensic_ids)} |",
+            f"| Unreviewed candidate | {build.mbpp_total - len(build.mbpp_forensic_ids)} |",
             "",
-            "All 116 listed MBPP+ rows are individually reviewed failure-census sources and "
-            "have `confirmatory_eligible=false`.",
+            "The 116 reviewed MBPP+ rows are individually reviewed failure-census sources and "
+            "have `confirmatory_eligible=false`. The remaining 262 rows are "
+            "`unreviewed_candidate` with `confirmatory_eligible=pending`, not a formal confirmatory set.",
             "",
             "## Contamination status counts",
             "",
@@ -493,7 +543,7 @@ def render_summary(
             "",
             "## Limitations",
             "",
-            "- The repository contains no reliable complete MBPP/MBPP+ task manifest, so MBPP+ total and remaining-task counts are unavailable and are not inferred.",
+            "- The complete MBPP+ task list records only model-visible fields; official tests, canonical solutions, contracts, and expected outputs remain outside the repository export.",
             "- Repository evidence cannot prove that an apparently unreviewed task was never generated or viewed elsewhere; lower-level history is therefore `unknown` for unreviewed candidates.",
             "- Rule-development attribution is limited to task IDs directly present in the structured candidate/replay manifests listed above.",
             "- The inventory does not inspect new model outputs, task solutions, cloud-drive history, or formal EvalPlus results.",
