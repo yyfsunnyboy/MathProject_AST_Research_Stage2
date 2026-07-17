@@ -29,6 +29,7 @@ from agent_tools.finals_rebuild.generation_persistence import (  # noqa: E402
 )
 from agent_tools.finals_rebuild.ollama_generation_runner import (  # noqa: E402
     DEFAULT_BASE_URL,
+    detect_reasoning_leakage,
     fetch_ollama_provenance,
     load_generation_protocol,
     protocol_settings,
@@ -159,6 +160,136 @@ def _persist_attempt_journal(
     durable_write_json_new(journal_dir / f"{cell['generation_id']}.json", record)
 
 
+def _complete_attempt_state(
+    *, cell: dict[str, Any], attempt: dict[str, Any]
+) -> dict[str, Any]:
+    """Separate transport/generation completeness from protocol compliance."""
+    raw_response = attempt.get("raw_response")
+    transport = attempt.get("ollama_response_metadata")
+    if not isinstance(transport, dict) or not isinstance(transport.get("raw_body"), str):
+        return {
+            "transport_complete": False,
+            "model_generation_complete": False,
+            "generation_complete": False,
+            "protocol_compliant": False,
+            "protocol_violations": [],
+        }
+    try:
+        body = json.loads(transport["raw_body"])
+    except json.JSONDecodeError:
+        return {
+            "transport_complete": False,
+            "model_generation_complete": False,
+            "generation_complete": False,
+            "protocol_compliant": False,
+            "protocol_violations": [],
+        }
+    message = body.get("message") if isinstance(body.get("message"), dict) else {}
+    body_content = message.get("content")
+    transport_complete = transport.get("http_status") == 200
+    generation_complete = (
+        transport_complete
+        and body.get("done") is True
+        and isinstance(body_content, str)
+        and bool(body_content.strip())
+        and isinstance(raw_response, str)
+        and raw_response == body_content
+    )
+    if not generation_complete:
+        return {
+            "transport_complete": transport_complete,
+            "model_generation_complete": False,
+            "generation_complete": False,
+            "protocol_compliant": False,
+            "protocol_violations": [],
+        }
+
+    response_sha256 = frozen.sha256_text(raw_response)
+    saved_sha256 = attempt.get("raw_response_sha256")
+    if saved_sha256 is not None:
+        _require(saved_sha256 == response_sha256, "saved raw response SHA-256 mismatch")
+    request = transport.get("request_payload")
+    _require(isinstance(request, dict), "complete response request payload missing")
+    _require(request.get("model") == frozen.MODEL, "complete response model mismatch")
+    _require(request.get("think") is False, "complete response request think flag drift")
+    messages = request.get("messages")
+    _require(
+        isinstance(messages, list)
+        and len(messages) == 1
+        and messages[0].get("role") == "user"
+        and isinstance(messages[0].get("content"), str),
+        "complete response request message missing",
+    )
+    _require(
+        frozen.sha256_text(messages[0]["content"]) == cell["composed_prompt_sha256"],
+        "complete response composed prompt SHA-256 mismatch",
+    )
+
+    violations: list[str] = []
+    if detect_reasoning_leakage(body, raw_response):
+        violations.append("reasoning_leakage_in_message_content")
+    elif attempt.get("status") != "success":
+        stage = str(attempt.get("failure_stage") or "unknown")
+        violations.append(f"response_processing_failure:{stage}")
+    return {
+        "transport_complete": True,
+        "model_generation_complete": True,
+        "generation_complete": True,
+        "protocol_compliant": not violations,
+        "protocol_violations": violations,
+    }
+
+
+def _raw_record_from_complete_attempt(
+    *,
+    cell: dict[str, Any],
+    attempt: dict[str, Any],
+    recovered_from_existing_response: bool,
+) -> dict[str, Any] | None:
+    state = _complete_attempt_state(cell=cell, attempt=attempt)
+    if not state["generation_complete"]:
+        return None
+    raw_response = attempt["raw_response"]
+    transport = attempt["ollama_response_metadata"]
+    metadata = p0_driver._generation_metadata(attempt)
+    return {
+        "generation_id": cell["generation_id"],
+        "run_id": frozen.RUN_ID,
+        "logical_run_id": frozen.RUN_ID,
+        "cell_index": cell["cell_index"],
+        "task_id": cell["task_id"],
+        "seed": cell["seed"],
+        "sample_index": cell["sample_index"],
+        "treatment": "P1_Generic_Code_Scaffold_v0",
+        "runner_treatment_adapter": "ab1_with_precomposed_frozen_prompt",
+        "model": frozen.MODEL,
+        "model_digest": frozen.MODEL_DIGEST,
+        "quantization": frozen.QUANTIZATION,
+        "official_prompt_sha256": cell["official_prompt_sha256"],
+        "composed_prompt_sha256": cell["composed_prompt_sha256"],
+        "scaffold_sha256": frozen.SCAFFOLD_SHA256,
+        "separator_sha256": frozen.PROMPT_SEPARATOR_SHA256,
+        "request": transport["request_payload"],
+        "raw_response": raw_response,
+        "raw_response_sha256": frozen.sha256_text(raw_response),
+        "raw_http_response_body": transport["raw_body"],
+        "generation_metadata": metadata,
+        "generation_latency_seconds": attempt["generation_latency"],
+        **state,
+        "first_attempt": True,
+        "source_attempt_status": attempt.get("status"),
+        "source_failure_stage": attempt.get("failure_stage"),
+        "recovered_from_existing_response": recovered_from_existing_response,
+        "regeneration": False,
+        "observed_account": True,
+        "pipeline_correction_applied_during_generation": False,
+        "retry_count": 0,
+        "selective_retry": False,
+        "resume": False,
+        "healer": False,
+    }
+
+
 def _complete_raw_record(
     *,
     cell: dict[str, Any],
@@ -167,51 +298,20 @@ def _complete_raw_record(
     composed_prompt: str,
     attempt: dict[str, Any],
 ) -> dict[str, Any] | None:
-    raw_response = attempt.get("raw_response")
-    transport = attempt.get("ollama_response_metadata")
-    request = transport.get("request_payload") if isinstance(transport, dict) else None
-    complete = (
-        attempt.get("status") == "success"
-        and isinstance(raw_response, str)
-        and bool(raw_response.strip())
-        and isinstance(request, dict)
-        and request.get("think") is False
-        and request.get("model") == frozen.MODEL
-        and request.get("messages") == [{"role": "user", "content": composed_prompt}]
+    _require(task.task_id == cell["task_id"], "task/cell identity mismatch")
+    _require(
+        frozen.sha256_text(official_prompt) == cell["official_prompt_sha256"],
+        "official prompt SHA-256 mismatch",
     )
-    if not complete:
-        return None
-    metadata = p0_driver._generation_metadata(attempt)
-    return {
-        "generation_id": cell["generation_id"],
-        "run_id": frozen.RUN_ID,
-        "logical_run_id": frozen.RUN_ID,
-        "cell_index": cell["cell_index"],
-        "task_id": task.task_id,
-        "seed": cell["seed"],
-        "sample_index": cell["sample_index"],
-        "treatment": "P1_Generic_Code_Scaffold_v0",
-        "runner_treatment_adapter": "ab1_with_precomposed_frozen_prompt",
-        "model": frozen.MODEL,
-        "model_digest": frozen.MODEL_DIGEST,
-        "quantization": frozen.QUANTIZATION,
-        "official_prompt_sha256": frozen.sha256_text(official_prompt),
-        "composed_prompt_sha256": frozen.sha256_text(composed_prompt),
-        "scaffold_sha256": frozen.SCAFFOLD_SHA256,
-        "separator_sha256": frozen.PROMPT_SEPARATOR_SHA256,
-        "request": request,
-        "raw_response": raw_response,
-        "raw_response_sha256": frozen.sha256_text(raw_response),
-        "raw_http_response_body": transport["raw_body"],
-        "generation_metadata": metadata,
-        "generation_latency_seconds": attempt["generation_latency"],
-        "observed_account": True,
-        "pipeline_correction_applied_during_generation": False,
-        "retry_count": 0,
-        "selective_retry": False,
-        "resume": False,
-        "healer": False,
-    }
+    _require(
+        frozen.sha256_text(composed_prompt) == cell["composed_prompt_sha256"],
+        "composed prompt SHA-256 mismatch",
+    )
+    return _raw_record_from_complete_attempt(
+        cell=cell,
+        attempt=attempt,
+        recovered_from_existing_response=False,
+    )
 
 
 def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
@@ -323,6 +423,9 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
                 "elapsed_seconds": round(time.monotonic() - started, 3),
                 "pipeline_extracted": sum(
                     record["extraction_status"] == "extracted" for record in pipeline_records
+                ),
+                "protocol_violation_count": sum(
+                    not record["protocol_compliant"] for record in raw_records
                 ),
                 "retry_count": 0,
                 "healer": False,

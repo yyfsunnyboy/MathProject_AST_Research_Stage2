@@ -15,3 +15,8 @@ artifacts/pbd/mbpp_sv0/incidents/run_001_windows_path_incident.json text eol=lf
 
 # Preserve the incident's original run_001 generation plan byte-for-byte.
 artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/generation_plan.json -text
+
+# Milestone 2A-Q deterministic ITT recovery outputs.
+artifacts/pbd/mbpp_sv0/r002/first_attempt_recovery_manifest.json text eol=lf
+artifacts/pbd/mbpp_sv0/r002/raw_generations.jsonl text eol=lf
+artifacts/pbd/mbpp_sv0/r002/pipeline_corrected.jsonl text eol=lf

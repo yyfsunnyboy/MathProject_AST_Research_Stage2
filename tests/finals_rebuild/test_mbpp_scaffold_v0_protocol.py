@@ -220,12 +220,18 @@ def test_synthetic_complete_record_preserves_composed_request_without_calling_mo
         "task_id": task.task_id,
         "seed": 11,
         "sample_index": 0,
+        "official_prompt_sha256": frozen.sha256_text(task.prompt),
+        "composed_prompt_sha256": frozen.sha256_text(composed),
     }
     attempt = {
         "status": "success",
         "raw_response": raw,
+        "raw_response_sha256": frozen.sha256_text(raw),
+        "reasoning_leakage_detected": False,
+        "failure_stage": None,
         "generation_latency": 0.0,
         "ollama_response_metadata": {
+            "http_status": 200,
             "request_payload": {
                 "model": frozen.MODEL,
                 "messages": [{"role": "user", "content": composed}],
@@ -245,6 +251,8 @@ def test_synthetic_complete_record_preserves_composed_request_without_calling_mo
     assert record is not None
     assert record["request"]["messages"][0]["content"] == composed
     assert record["retry_count"] == 0
+    assert record["generation_complete"] is True
+    assert record["protocol_compliant"] is True
     assert record["healer"] is False
     assert record["pipeline_correction_applied_during_generation"] is False
 
@@ -269,12 +277,19 @@ def test_operator_guide_has_one_generation_and_one_wsl_evaluation_command():
     assert ".venv\\Scripts\\python.exe" not in guide
     assert "python3 scripts/run_mbpp_scaffold_v0_development.py" not in guide
     assert guide.count(frozen.RUN_ID) >= 3
-    assert "本輪未執行" in guide
+    assert "First-attempt ITT recovery" in guide
+    assert "不得再次執行" in guide
+    assert "protocol_compliant=false" in guide
+    assert "不是 Healer" in guide or "Healer" in guide
     assert "Pipeline correction 不是 Healer" in guide
 
 
-def test_protocol_freeze_did_not_create_a_p1_run_directory():
-    assert not driver.resolve_run_dir(frozen.RUN_ID).exists()
+def test_run_002_original_journal_set_remains_present_and_complete():
+    run_dir = driver.resolve_run_dir(frozen.RUN_ID)
+
+    assert run_dir.is_dir()
+    assert (run_dir / "generation_plan.json").is_file()
+    assert len(list((run_dir / "j").glob("*.json"))) == 100
 
 
 def test_corrective_revision_preserves_all_research_identity_fields():

@@ -14,7 +14,16 @@
 - Retry、selective retry、resume、overwrite 與 Healer 全部禁止。
 - Observed 與 Pipeline-corrected 是分離評估帳；Pipeline correction 不是 Healer。
 
-本 Milestone 只凍結協定。以下命令本輪未執行，之後僅由使用者按順序手動執行。
+## First-attempt ITT recovery
+
+- run_002 已完成一次且僅一次的 100-cell generation；不得再次執行 generation command。
+- 一個 HTTP 200、`done=true` 的完整 first-attempt response 因 `message.content` 含 reasoning leakage 而被舊狀態模型誤列為 generation incomplete。
+- 該 response 逐字保留於 Observed 帳，另列 `protocol_compliant=false` 與 `reasoning_leakage_in_message_content`。
+- Recovery 只從既有 journal 聚合，沒有 retry、resume、regeneration、Healer 或 Pipeline rescue，也未使用 evaluator。
+- Pipeline 僅使用事故前凍結的通用 extraction；不得加入 think-tag stripping 或 case-specific 規則。
+- 違規輸出仍屬 ITT cell，不得從 100-cell denominator 排除。
+
+以下 generation command 是已執行的凍結歷史命令，僅供稽核，**不得再次執行**。
 
 ## 唯一 generation command（Windows PowerShell）
 
@@ -38,4 +47,4 @@ cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2
   --parallel 4
 ```
 
-Generation 成功且完整產生 100/100 cells 前，不得執行 evaluation。任何中斷或不完整 run 均不得 retry、resume、selective retry 或 overwrite；應停止並保留 journal 供稽核。
+只有 recovery manifest、Observed 與 Pipeline-corrected 三者均為 100/100 identities 時才可執行 evaluation。任何 retry、resume、selective retry、overwrite 或 regeneration 仍然禁止。
