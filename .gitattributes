@@ -4,3 +4,9 @@
 # Preserve verbatim saved-code excerpts in the Milestone 1D review attachments.
 artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/human_adjudication_zh.csv -whitespace
 artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/human_review_packet_zh.md -whitespace
+
+# Milestone 2A frozen protocol artifacts require byte-stable LF endings.
+configs/mbpp_scaffold_v0_development_plan.json text eol=lf
+configs/scaffolds/mbpp_generic_code_scaffold_v0.txt text eol=lf
+configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json text eol=lf
+docs/experiments/mbpp_scaffold_v0_operator_guide_zh.md text eol=lf

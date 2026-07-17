@@ -1,0 +1,7 @@
+Return exactly one complete Python source file.
+Do not use Markdown code fences.
+Do not include explanations, analysis, assertions, tests, print statements, example calls, or alternative implementations.
+Implement the exact function name and parameter list required by the task.
+Include every import required by the submitted program.
+Do not rename or redefine the requested public function.
+The response must begin with Python code and contain no text outside the source file.

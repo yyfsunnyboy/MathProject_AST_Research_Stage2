@@ -1,0 +1,50 @@
+{
+  "construction_evidence_sha256": {
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/evidence_manifest.json": "c764bb7b173cd853ba6164046a55e94bbcda0b15b1a8e4bbd21ec9e53b6852ab",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/scaffold_evidence_ledger.csv": "ea71e31175e72fc9146299dc2172ec85b8a6cb5c75bbbff55d5533305023f6ad",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "scripts/run_mbpp_development_baseline.py": "12f2447c3e7cc68cf3f5fac08f5ca41c4c1cf1c70ebf72fc823c0e638f3a6ee8"
+  },
+  "contains_dataset_specific_solution_guidance": false,
+  "contains_task_answers": false,
+  "contains_test_answers": false,
+  "encoding": "UTF-8",
+  "exact_bytes_hex": "52657475726e2065786163746c79206f6e6520636f6d706c65746520507974686f6e20736f757263652066696c652e0a446f206e6f7420757365204d61726b646f776e20636f64652066656e6365732e0a446f206e6f7420696e636c756465206578706c616e6174696f6e732c20616e616c797369732c20617373657274696f6e732c2074657374732c207072696e742073746174656d656e74732c206578616d706c652063616c6c732c206f7220616c7465726e617469766520696d706c656d656e746174696f6e732e0a496d706c656d656e74207468652065786163742066756e6374696f6e206e616d6520616e6420706172616d65746572206c69737420726571756972656420627920746865207461736b2e0a496e636c75646520657665727920696d706f727420726571756972656420627920746865207375626d69747465642070726f6772616d2e0a446f206e6f742072656e616d65206f72207265646566696e652074686520726571756573746564207075626c69632066756e6374696f6e2e0a54686520726573706f6e7365206d75737420626567696e207769746820507974686f6e20636f646520616e6420636f6e7461696e206e6f2074657874206f7574736964652074686520736f757263652066696c652e0a",
+  "exact_text_utf8": "Return exactly one complete Python source file.\nDo not use Markdown code fences.\nDo not include explanations, analysis, assertions, tests, print statements, example calls, or alternative implementations.\nImplement the exact function name and parameter list required by the task.\nInclude every import required by the submitted program.\nDo not rename or redefine the requested public function.\nThe response must begin with Python code and contain no text outside the source file.\n",
+  "final_newline": true,
+  "generation_parameters": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "line_endings": "LF",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "ollama_request_timeout_seconds": 300.0,
+  "ollama_request_timeout_source": "P0 driver scripts/run_mbpp_development_baseline.py generation CLI default",
+  "p0_run_id": "mbpp_qwen35_9b_ab1_dev_run_003",
+  "path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+  "prompt_composition_order": [
+    "official_task_prompt_verbatim",
+    "fixed_separator",
+    "mbpp_generic_code_scaffold_v0"
+  ],
+  "protocol_sha256": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+  "quantization": "Q4_K_M",
+  "scope_statement": "Task-agnostic code-output constraints only; contains no task answer, test answer, canonical solution, or dataset-specific solution hint.",
+  "separator": {
+    "exact_bytes_hex": "0a0a2d2d2d2047454e4552494320434f44452053434146464f4c44205630202d2d2d0a0a",
+    "exact_text_utf8": "\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\n",
+    "sha256": "dc61671dd31a04c2f638edd612b86cc339fa1c89f81df2e4fb73344312077c1e",
+    "size_bytes": 36
+  },
+  "sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+  "size_bytes": 478,
+  "status": "frozen_development_candidate",
+  "version": "mbpp_generic_code_scaffold_v0"
+}
