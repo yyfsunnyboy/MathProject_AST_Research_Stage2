@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve verbatim saved-code excerpts in the Milestone 1D review attachments.
+artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/human_adjudication_zh.csv -whitespace
+artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/human_review_packet_zh.md -whitespace

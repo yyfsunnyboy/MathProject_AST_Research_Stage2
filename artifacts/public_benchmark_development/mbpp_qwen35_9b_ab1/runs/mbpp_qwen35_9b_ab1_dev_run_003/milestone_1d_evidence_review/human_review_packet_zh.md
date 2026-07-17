@@ -1,0 +1,1835 @@
+# Milestone 1D 中文人工審查附件
+
+> **閱讀輔助，若有歧義以英文原文為準。** 中文內容僅協助研究人員閱讀；英文題目、程式碼、識別碼與 exception/diagnostic 原文均保留不變。
+
+## 簡要判定指南
+
+1. 先核對 `task_id`、`seed`、`cell_id` 與 SHA-256，確認正在審查正確 cell。
+2. 以英文題目為規格來源；中文翻譯只作閱讀輔助。
+3. Syntax error 不代表存在語意安全的自動修復。不得只因能通過 parser 就判為可修復。
+4. Entry-point repair 必須同時滿足唯一候選函式、呼叫 arity 相容，且不需要改寫 function body 或 control flow。
+5. Generic/unknown evaluator failure 不足以區分 functional、import/name 或 runtime 問題，預設應選 `insufficient_evidence` 或 `nonrepairable`，除非另有本附件範圍內的直接證據。
+6. 30 次 Pipeline rescue 不屬於本附件的 33 個人工案例，也不得記為 Healer 成效。
+7. 請只在 `human_adjudication_zh.csv` 的空白人工欄位填寫結論；本附件未預填任何裁決。
+
+允許的 `decision`：`scaffold_only`、`healer_candidate`、`nonrepairable`、`insufficient_evidence`。允許的 `semantic_risk`：`low`、`medium`、`high`。
+
+## 術語表
+
+| 術語 | 中文說明 |
+|---|---|
+| Observed | 模型原始輸出的評估帳 |
+| Pipeline correction | 既有 deterministic extraction 處理；不是 Healer |
+| Scaffold | 約束生成輸出格式或結構的候選機制 |
+| Healer candidate | 僅表示值得人工審查的修復候選，不是已驗證規則 |
+| entry point | 題目與 evaluator 預期呼叫的函式名稱 |
+| safety gate | 對候選修復施加的必要條件；未通過即不可自動修復 |
+| semantic risk | 修復改變程式原意或行為的風險 |
+| insufficient evidence | 現有保存證據不足以支持修復判定 |
+
+## 案例索引
+
+| # | Task | Seed | Category | Signature | Cell ID |
+|---:|---|---:|---|---|---|
+| 1 | `Mbpp/633` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `a6ef147b860e80780abd4ae35e75c5793a57a3c2a7f6d00261e2054b935a893a` |
+| 2 | `Mbpp/633` | 55 | `unknown` | `unknown_eval_failure_single_top_level_function` | `b7f13b1ba2c70c28e3ece359bcedf2468283e7151be4e3adb276df4f2f23ab74` |
+| 3 | `Mbpp/769` | 11 | `unknown` | `unknown_eval_failure_multiple_top_level_functions` | `0d84456a46e10c8225e58fad1b15ac72bba35b3e1bba016e773a879ace4b7de5` |
+| 4 | `Mbpp/769` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `3d7511e26f7c0c77d206c6412897c6145396f84c89b1854b07ebeed5292ede90` |
+| 5 | `Mbpp/259` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `23472b4f7ab05dae8f8130e30b59a477022c1c466566e4c26d7f5b38868bd19e` |
+| 6 | `Mbpp/259` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `cb2c730b6ed1604ceb8f1e76d7d317729c84252c6a525c5a3416b6e0969e3a78` |
+| 7 | `Mbpp/739` | 44 | `syntax_failure` | `syntax_fstring_parse_error` | `5ec420e9306fc9694f324eede18e3a4b8211d16547c96f4513bded0f831c6236` |
+| 8 | `Mbpp/739` | 55 | `unknown` | `unknown_eval_failure_single_top_level_function` | `b8853a36045875b0d6daec37b3dd92603aec4ee32d35436c128873c7c3571152` |
+| 9 | `Mbpp/124` | 22 | `unknown` | `unknown_eval_failure_single_top_level_function` | `9037321d62d0dfaffc5945a8ae4fbacd0d3a5ab35733eb65f40e20e168418898` |
+| 10 | `Mbpp/124` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `064892e834a16c41eb71016b7e802906cdaffc1a318edf0db19efdc83699cf1b` |
+| 11 | `Mbpp/124` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `3a4535ac4171efa927d173a4080b39e646ffca862de56dab557f28adccf5ebb8` |
+| 12 | `Mbpp/792` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `7188be2a942950860f8a68783868b4f288ad4e3a9434cf5e73652b5e456f2596` |
+| 13 | `Mbpp/597` | 11 | `unknown` | `unknown_eval_failure_single_top_level_function` | `295c1fd0c787dab2b3ab1f8a87971f9dd54450bbba1d7f2abf2341e8c34ac871` |
+| 14 | `Mbpp/597` | 22 | `unknown` | `unknown_eval_failure_single_top_level_function` | `e510f47da8c803d0e5fc6c02286f9b96d253f5eff21d11e3356a780b8ae2ef27` |
+| 15 | `Mbpp/597` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `ce1d0733323bd759467d23cd0ecc983ea34c205752dc097a904e045377cbc93e` |
+| 16 | `Mbpp/597` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `a57511948d206ed82ee21685525c04350946052925dae0231a895ba5968658e7` |
+| 17 | `Mbpp/597` | 55 | `unknown` | `unknown_eval_failure_single_top_level_function` | `11b43c01de5671319400742d332bc9c593690398837aee7f0d6164d899c56f03` |
+| 18 | `Mbpp/732` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `5daf796a664f78df0d63a6b4ee25853c4f892dcb7a927f6142bd610d28a4e155` |
+| 19 | `Mbpp/732` | 44 | `unknown` | `unknown_eval_failure_single_top_level_function` | `2fca77fe866d4d34bc80e48a2834a76cdace57f75b1a58af3cd9f445b3ff66b4` |
+| 20 | `Mbpp/721` | 55 | `unknown` | `unknown_eval_failure_single_top_level_function` | `279afad0c4983b1db8865c3e8522ce29a09a3c3b723bc2ac017ee26901ba87a8` |
+| 21 | `Mbpp/765` | 11 | `unknown` | `unknown_eval_failure_single_top_level_function` | `e247aa0251c3a0652463579434bcf07cd398a5043e77f0ef194230c45308fd15` |
+| 22 | `Mbpp/765` | 33 | `syntax_failure` | `syntax_invalid_plain_text` | `ca7cc722b6b61f61457b1916bef7cc96a152845e1b2d39e8e374e322746ddf6f` |
+| 23 | `Mbpp/765` | 44 | `syntax_failure` | `syntax_invalid_plain_text` | `d4e5f573460f264317b5f7ded27457d401f51bdb0b194d817e1405a71c316ef8` |
+| 24 | `Mbpp/765` | 55 | `syntax_failure` | `syntax_invalid_plain_text` | `f848ad22e32a56a34e3b335bbf63656f5eb19bcbd7a0295082749e4caaa31619` |
+| 25 | `Mbpp/777` | 11 | `unknown` | `unknown_eval_failure_single_top_level_function` | `47b90c5c48e30a7597b2bd83144322c6cf4b501bbfd72fafd497d32a34a40267` |
+| 26 | `Mbpp/777` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `b17899b6ddb910762312735f78084f6534ce228da7d8ee5fec29eaa182ff33d5` |
+| 27 | `Mbpp/777` | 55 | `unknown` | `unknown_eval_failure_multiple_top_level_functions` | `e8afb1f946e90ed24af7e5340816c48e8492bac5758c5db0e452ccfa75d48a1d` |
+| 28 | `Mbpp/420` | 11 | `unknown` | `unknown_eval_failure_single_top_level_function` | `3cb8cb13ca7d864a97f3e3a0b33b86fa87f0d49f48d01d02e0f42394646b72c2` |
+| 29 | `Mbpp/420` | 22 | `unknown` | `unknown_eval_failure_single_top_level_function` | `ba847426d28537a0fa3cc1ac9794029b95a99c0ae264adb1e277bde06c5c8444` |
+| 30 | `Mbpp/125` | 11 | `missing_or_wrong_entry_point` | `entrypoint_no_unique_candidate` | `5e1ddb942c589b3cd0704c1e70db1c93f0a175fb4c8d84e47ef350de174215d3` |
+| 31 | `Mbpp/125` | 33 | `unknown` | `unknown_eval_failure_single_top_level_function` | `bde29b0d03cd6569ba165a07d2075362beb61cd2e0cded9a7f18b1b4fed7208c` |
+| 32 | `Mbpp/603` | 11 | `syntax_failure` | `syntax_unterminated_string` | `2c6144ec8aa6c99e467627f1a2d76937d47e6ea9e340d1206d465997fd792de8` |
+| 33 | `Mbpp/603` | 44 | `syntax_failure` | `syntax_unterminated_string` | `c697f6a9d305bf1f36804d67fc7c58b1ee7298e5c09d874697e3d9b86123db16` |
+
+## 個案資料
+
+### 1. `Mbpp/633` / seed `44`
+
+- Cell ID：`a6ef147b860e80780abd4ae35e75c5793a57a3c2a7f6d00261e2054b935a893a`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`54593a4b2a2fdc1d40340af6a686b20635655c717fab8bf3cfe1c7b60637c81a`
+- Pipeline SHA-256：`9d36954bb613e52da1fe60f19add730388ac9c305cae0963132c653fb1f92623`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 list 中所有數字配對的 xor 總和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the sum of xor of all pairs of numbers in the given list.
+assert pair_xor_Sum([5,9,7,6],4) == 47
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–39）：**
+
+````python
+def pair_xor_Sum(nums, k):
+    """
+    Calculates the sum of XORs of all unique pairs in the given list.
+    
+    Note: The parameter 'k' appears to be unused based on standard interpretations 
+    of this specific algorithmic problem (LeetCode 1843). It is included here 
+    for signature compatibility with your assertion but does not affect logic.
+    
+    Args:
+        nums (List[int]): List of non-negative integers.
+        k (int): Unused parameter based on the mathematical solution required.
+        
+    Returns:
+        int: Sum of XORs of all pairs.
+    """
+    if len(nums) < 2:
+        return 0
+    
+    total_sum = 0
+    # Iterate through each bit position from 0 to 31 (standard for integers)
+    for i in range(32):
+        count_ones = 0
+        
+        # Count how many numbers have the i-th bit set
+        mask = 1 << i
+        for num in nums:
+            if num & mask:
+                count_ones += 1
+                
+        count_zeros = len(nums) - count_ones
+        
+        # Number of pairs with different bits at position i
+        pairs_with_diff_bit = count_ones * count_zeros
+        
+        # Add contribution to total sum (value is 2^i)
+        if pairs_with_diff_bit > 0:
+            total_sum += pairs_with_diff_bit << i
+            
+    return total_sum
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 2. `Mbpp/633` / seed `55`
+
+- Cell ID：`b7f13b1ba2c70c28e3ece359bcedf2468283e7151be4e3adb276df4f2f23ab74`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`f159cd8de396ce98e4f56edce84ef7af9d2d00e5acfbc56e32c6b08923ab532b`
+- Pipeline SHA-256：`2798414cbaafff9ab688f4c4c5a98b11f8069dd4c60d0ae6c4b2b256dd62dfe5`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 list 中所有數字配對的 xor 總和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the sum of xor of all pairs of numbers in the given list.
+assert pair_xor_Sum([5,9,7,6],4) == 47
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–30）：**
+
+````python
+def pair_xor_Sum(nums):
+    """
+    Calculates the sum of XOR for all unique pairs in the list.
+    
+    Args:
+        nums (List[int]): The list of integers.
+        
+    Returns:
+        int: The total sum of XORs.
+    """
+    if len(nums) < 2:
+        return 0
+    
+    n = len(nums)
+    max_bits = 32 # Standard integer size, can be adjusted based on input constraints
+    
+    total_xor_sum = 0
+    
+    for bit in range(max_bits):
+        mask = 1 << bit
+        
+        count_ones = sum(1 for num in nums if (num & mask))
+        
+        # If we have 'c' ones and '(n-c)' zeros, the number of pairs 
+        # with different bits at this position is c * (n - c).
+        pairs_with_diff_bit = count_ones * (n - count_ones)
+        
+        total_xor_sum += pairs_with_diff_bit << bit
+        
+    return total_xor_sum
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 3. `Mbpp/769` / seed `11`
+
+- Cell ID：`0d84456a46e10c8225e58fad1b15ac72bba35b3e1bba016e773a879ace4b7de5`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_multiple_top_level_functions`
+- Raw SHA-256：`75c083d892a67a01e9f9e6203729a44c135d8995ffcdbaa2d3c1e83adb6fcd96`
+- Pipeline SHA-256：`5c202a19249113e075d2cf664ab119a3a24bf2788b73b2eb538f300bb98d653b`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，取得兩個 lists 之間的差集。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to get the difference between two lists.
+assert (Diff([10, 15, 20, 25, 30, 35, 40], [25, 40, 35])) == [10, 20, 30, 15]
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但同時有多個 top-level functions，而 EvalPlus 只保存 generic failure。不得依 evaluator failure 選擇、刪除或合併函式。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–21）：**
+
+````python
+def Diff(list_a, list_b):
+    """
+    Returns a new list containing elements present in list_a 
+    but not in list_b, preserving the original order from list_a.
+    
+    Args:
+        list_a (list): The source list to filter.
+        list_b (list): The exclusion list.
+        
+    Returns:
+        list: Elements of list_a that are not in list_b.
+    """
+    # Convert list_b to a set for O(1) lookup time complexity
+    exclude_set = set(list_b)
+    
+    result = []
+    for item in list_a:
+        if item not in exclude_set:
+            result.append(item)
+            
+    return result
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 4. `Mbpp/769` / seed `44`
+
+- Cell ID：`3d7511e26f7c0c77d206c6412897c6145396f84c89b1854b07ebeed5292ede90`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`bc9d27664a1b411edfd76bfd0104d9802afb90026a286d4f1a941f3d82ebff14`
+- Pipeline SHA-256：`aacade88ab9090fec966b9ed4e8750c0ded0f47a98276757d86f137a182ae501`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，取得兩個 lists 之間的差集。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to get the difference between two lists.
+assert (Diff([10, 15, 20, 25, 30, 35, 40], [25, 40, 35])) == [10, 20, 30, 15]
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–8）：**
+
+````python
+def Diff(list_a, list_b):
+    # Convert list_b to a set for O(1) lookup time
+    excluded_set = set(list_b)
+    
+    # Filter elements in list_a that are not present in the exclusion set
+    result = [item for item in list_a if item not in excluded_set]
+    
+    return result
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 5. `Mbpp/259` / seed `33`
+
+- Cell ID：`23472b4f7ab05dae8f8130e30b59a477022c1c466566e4c26d7f5b38868bd19e`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`928c8739cbb7cba381d097ce61ee0c0bedcbe6796e4b7d810b9d0c6e9c0a0952`
+- Pipeline SHA-256：`858084585a4d07d5fcb50486e03d9c5d0931b95753e26a8769b0d6e20f71a4ed`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，對給定的兩個 tuple 進行逐位置最大化。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to maximize the given two tuples.
+assert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), ((6, 7), (3, 9), (1, 1), (7, 3))) == ((6, 7), (4, 9), (2, 9), (7, 10))
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–28）：**
+
+````python
+def maximize_elements(t1: List[Tuple[int, ...]], t2: List[Tuple[int, ...]]) -> List[Tuple[int, ...]]:
+    """
+    Given two tuples-of-tuples of equal length and same tuple sizes,
+    return a new list where each element is the max at that position
+    across all corresponding elements in both inputs.
+
+    Example:
+        t1 = ((1, 3), (4, 5), (2, 9), (1, 10))
+        t2 = ((6, 7), (3, 9), (1, 1), (7, 3))
+        => [(max(1,6), max(3,7)), ...] == ((6, 7), (4, 9), (2, 9), (7, 10))
+    """
+    if not t1 or not t2:
+        return []
+
+    # Ensure all inner tuples have the same length as expected by problem statement
+    n = len(t1[0])
+    
+    result = [None] * len(t1)
+    for i in range(len(t1)):
+        row_maxes = tuple(
+            max(val_from_t1, val_from_t2)
+            for (val_from_t1, val_from_t2) in zip(t1[i], t2[i])
+        )
+        result[i] = row_maxes
+
+    return result
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 6. `Mbpp/259` / seed `44`
+
+- Cell ID：`cb2c730b6ed1604ceb8f1e76d7d317729c84252c6a525c5a3416b6e0969e3a78`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`3cc225805fe5c75bd4b042c355c978004fa8d18b2b845c11ba273c94805e9d39`
+- Pipeline SHA-256：`311300d02768d51ef96b1b8f75554b88ad66a9d85975f90ce8678c26f5d1a2ee`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，對給定的兩個 tuple 進行逐位置最大化。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to maximize the given two tuples.
+assert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), ((6, 7), (3, 9), (1, 1), (7, 3))) == ((6, 7), (4, 9), (2, 9), (7, 10))
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–24）：**
+
+````python
+def maximize_elements(tup_list_1, tup_list_2):
+    """
+    Takes two lists of 2-tuples and returns a new list where each corresponding 
+    pair is maximized element-wise.
+    
+    Args:
+        tup_list_1 (list[tuple]): First list of tuples.
+        tup_list_2 (list[tuple]): Second list of tuples.
+        
+    Returns:
+        list[tuple]: List of maximized 2-tuples.
+    """
+    # Ensure both lists have the same length as per problem constraints implied by assertion
+    if len(tup_list_1) != len(tup_list_2):
+        raise ValueError("Both input lists must contain an equal number of tuples.")
+
+    result = []
+    
+    for t1, t2 in zip(tup_list_1, tup_list_2):
+        # Calculate max for the first element and second element separately
+        new_tuple = (max(t1[0], t2[0]), max(t1[1], t2[1]))
+        result.append(new_tuple)
+        
+    return result
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 7. `Mbpp/739` / seed `44`
+
+- Cell ID：`5ec420e9306fc9694f324eede18e3a4b8211d16547c96f4513bded0f831c6236`
+- Category：`syntax_failure`
+- Signature：`syntax_fstring_parse_error`
+- Raw SHA-256：`60cad06b232713b1db46cd98cf2b96144780e1d9ebb9c3d2305c8178e2b47992`
+- Pipeline SHA-256：`3cf66c7dfe2fa4fcb1e36cd37a3b50a1a0eed5b2a9215e267c702806f6d6e0e3`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，找出第一個具有 n 位數之 triangular number 的 index。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the index of smallest triangular number with n digits. 
+assert find_Index(2) == 4
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的 Pipeline 程式無法通過 Python AST 解析；parser 指向 f-string 語法錯誤。僅憑此訊號無法確定原本預期的插值或格式語意。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=f-string: expecting '!', or ':', or '}'; lineno=33; offset=35`
+
+**需要檢查的原始程式片段（lines 31–35）：**
+
+````python
+# Verification of the provided assertion
+assert find_index(2) == 4
+print(f"Test passed! Index for {n=2} is {find_index(2)}")
+
+# Additional tests to ensure robustness
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 8. `Mbpp/739` / seed `55`
+
+- Cell ID：`b8853a36045875b0d6daec37b3dd92603aec4ee32d35436c128873c7c3571152`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`3329426d4a26e4c0592e834632c3094c3e3ce558adcd51738396f62e0dffac08`
+- Pipeline SHA-256：`6d3ccb9d0883300d1b7ce50185912029590ec4b429c0666b71543c0ad0005bd5`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，找出第一個具有 n 位數之 triangular number 的 index。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the index of smallest triangular number with n digits. 
+assert find_Index(2) == 4
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–29）：**
+
+````python
+def find_Index(n):
+    """
+    Finds the smallest index k such that the k-th triangular number 
+    has exactly n digits.
+    
+    Args:
+        n (int): The target number of digits.
+        
+    Returns:
+        int: The index k.
+    """
+    if n <= 0:
+        raise ValueError("Number of digits must be positive.")
+
+    # Start checking from the first triangular number
+    k = 1
+    
+    while True:
+        # Calculate T_k = k * (k + 1) / 2 using integer arithmetic
+        t_k = (k * (k + 1)) // 2
+        
+        # Count digits. 
+        # For very large numbers, converting to string is O(digits), which is efficient enough here.
+        num_digits = len(str(t_k))
+        
+        if num_digits == n:
+            return k
+        
+        k += 1
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 9. `Mbpp/124` / seed `22`
+
+- Cell ID：`9037321d62d0dfaffc5945a8ae4fbacd0d3a5ab35733eb65f40e20e168418898`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`a7d471fdddfd18f5b7ca60746cea3e46f1934742e52bc48cd3e9c616e1f7267d`
+- Pipeline SHA-256：`1b83b17720edd6cefb5e00d72f57b559f0b29239f5ba2c4963ef2621add28646`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，取得複數的角度。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to get the angle of a complex number.
+assert math.isclose(angle_complex(0,1j), 1.5707963267948966, rel_tol=0.001)
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–14）：**
+
+````python
+def angle_complex(x, y):
+    """
+    Calculate the argument (angle) of a complex number x + yi.
+    
+    Args:
+        x (float): The real part.
+        y (float): The imaginary part.
+        
+    Returns:
+        float: The angle in radians between -π and π.
+    """
+    return math.atan2(y, x)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 10. `Mbpp/124` / seed `33`
+
+- Cell ID：`064892e834a16c41eb71016b7e802906cdaffc1a318edf0db19efdc83699cf1b`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`6b7fbc397a8e5c19c1b9e8e08814a22c99dc75af912a841afaae564ed1af0089`
+- Pipeline SHA-256：`210fefaac6d2575fa21178629909814555580abcd7c1c29e22acf681f8883aa0`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，取得複數的角度。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to get the angle of a complex number.
+assert math.isclose(angle_complex(0,1j), 1.5707963267948966, rel_tol=0.001)
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–14）：**
+
+````python
+def angle_complex(x, y):
+    """
+    Calculates the argument (angle in radians) of a complex number x + yi.
+    
+    Args:
+        x (float): The real part of the complex number.
+        y (float): The imaginary part of the complex number.
+        
+    Returns:
+        float: The angle in radians, typically between -pi and pi.
+    """
+    return math.atan2(y, x)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 11. `Mbpp/124` / seed `44`
+
+- Cell ID：`3a4535ac4171efa927d173a4080b39e646ffca862de56dab557f28adccf5ebb8`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`4949ca12b424649c7a058a641e2e5e254184f3da515595fdddc916f1f77303d8`
+- Pipeline SHA-256：`bfd5f3ced1fab80941c3b41b08da35ed35539b3aa8e77a6f77aaae793151898c`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，取得複數的角度。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to get the angle of a complex number.
+assert math.isclose(angle_complex(0,1j), 1.5707963267948966, rel_tol=0.001)
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–14）：**
+
+````python
+def angle_complex(x, y):
+    """
+    Calculates the argument (angle in radians) of a complex number x + yi.
+    
+    Args:
+        x (float): The real part.
+        y (float): The imaginary part.
+        
+    Returns:
+        float: The angle in radians between -pi and pi.
+    """
+    return math.atan2(y, x)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 12. `Mbpp/792` / seed `44`
+
+- Cell ID：`7188be2a942950860f8a68783868b4f288ad4e3a9434cf5e73652b5e456f2596`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`8dcde549b2a3083bc8829557f8e434df9c33247218a7eba236187fb4c0edbb99`
+- Pipeline SHA-256：`d2fa0d570b590795420f7748f3b8d8c91611459f3a5558a1c695be25d9b4fa99`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 lists 集合中 list 的數量。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to count the number of lists in a given number of lists.
+assert count_list([[1, 3], [5, 7], [9, 11], [13, 15, 17]]) == 4
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–8）：**
+
+````python
+def count_list(lists):
+    """
+    Count the number of lists (sublists) in a given list.
+    
+    :param lists: A list containing sublists as elements.
+    :return: The total number of sublist elements.
+    """
+    return len(lists)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 13. `Mbpp/597` / seed `11`
+
+- Cell ID：`295c1fd0c787dab2b3ab1f8a87971f9dd54450bbba1d7f2abf2341e8c34ac871`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`20e244669e3094546d1d8bd22021ff8cbada0d8ea6194f460fb0e2c1b1f9971f`
+- Pipeline SHA-256：`7fc74b8f2259c16db18dd7296a268c6e9c7755ce7aceb1dde964cdac7a8288ba`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，從給定的兩個已排序 array 中找出第 k 個元素。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find kth element from the given two sorted arrays.
+assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–40）：**
+
+````python
+def find_kth(nums1, nums2, k):
+    """
+    Find the k-th smallest element (1-based index) in two sorted arrays.
+    
+    :param nums1: First sorted list of integers
+    :param nums2: Second sorted list of integers
+    :param k: 1-based rank to find
+    :return: The k-th smallest integer
+    
+    Example:
+        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+    """
+
+    # Ensure nums1 is the shorter array for binary search efficiency
+    if len(nums1) > len(nums2):
+        return find_kth(nums2, nums1, k)
+
+    n1, n2 = len(nums1), len(nums2)
+    
+    low, high = 0, n1
+    
+    while low <= high:
+        partition1 = (low + high) // 2
+        partition2 = k - partition1
+        
+        # Handle edge cases where partitions are at ends of arrays
+        max_left_1 = nums1[partition1 - 1] if partition1 > 0 else float('-inf')
+        min_right_1 = nums1[partition1] if partition1 < n1 else float('inf')
+        
+        max_left_2 = nums2[partition2 - 1] if partition2 > 0 else float('-inf')
+        min_right_2 = nums2[partition2] if partition2 < n2 else float('inf')
+
+        # Check if we found the correct partition
+        if (max_left_1 <= min_right_2 and max_left_2 <= min_right_1):
+            return max(max_left_1, max_left_2)
+        
+        elif max_left_1 > min_right_2:
+            high = partition1 - 1
+        else:
+            low = partition1 + 1
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 14. `Mbpp/597` / seed `22`
+
+- Cell ID：`e510f47da8c803d0e5fc6c02286f9b96d253f5eff21d11e3356a780b8ae2ef27`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`7822c0a4c80168f754f796ab9a1749f6a7327b4291e064c306e85badb5ce36f9`
+- Pipeline SHA-256：`73af79c9c973f903e6343d2df76ec94b2a7aa562ec119aa095e53ef1e23218c7`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，從給定的兩個已排序 array 中找出第 k 個元素。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find kth element from the given two sorted arrays.
+assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–37）：**
+
+````python
+def find_kth(nums1, nums2, k):
+    """
+    Find the k-th smallest element (1-based index) in two sorted arrays.
+    
+    :param nums1: First sorted list of integers
+    :param nums2: Second sorted list of integers
+    :param k: 1-based rank to find
+    :return: The k-th smallest integer
+    
+    Example:
+        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+    """
+
+    if len(nums1) > len(nums2):
+        nums1, nums2 = nums2, nums1  # Ensure nums1 is the smaller array
+    
+    n1, n2 = len(nums1), len(nums2)
+    
+    left, right = 0, k - 1  # We'll search for a split point in nums1
+
+    while True:
+        i = (left + right) // 2   # Split index in nums1
+        j = k - i - 1             # Corresponding split index in nums2
+        
+        n1_val, n2_val = float('-inf'), float('inf') if j < 0 else nums2[j]
+        
+        m1_val, m2_val = (nums1[i + 1]) if i + 1 < n1 else float('inf'), \
+                          (nums2[j + 1]) if j + 1 < n2 else float('-inf')
+
+        # Check conditions for correct split
+        if nums1[i] <= m2_val and n1_val <= nums2[j]:
+            return max(n1_val, m1_val)
+        
+        elif n1_val > m2_val:
+            right = i - 1
+        else:
+            left = i + 1
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 15. `Mbpp/597` / seed `33`
+
+- Cell ID：`ce1d0733323bd759467d23cd0ecc983ea34c205752dc097a904e045377cbc93e`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`50855176e1929f25fa8796fd033ed0dc838e94e92487d51170a5d1de7bf4b9a9`
+- Pipeline SHA-256：`2d07a3f198def6ffbebdda3d0acca418b60e340f7009b4474a5d9452d32a7884`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，從給定的兩個已排序 array 中找出第 k 個元素。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find kth element from the given two sorted arrays.
+assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–40）：**
+
+````python
+def find_kth(nums1, nums2, k):
+    """
+    Find the k-th smallest element (1-based index) in two sorted arrays.
+    
+    :param nums1: First sorted list of integers
+    :param nums2: Second sorted list of integers
+    :param k: 1-based rank to find
+    :return: The k-th smallest integer
+    
+    Example:
+        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+    """
+    
+    # Ensure nums1 is the shorter array for binary search efficiency
+    if len(nums1) > len(nums2):
+        return find_kth(nums2, nums1, k)
+
+    n1, n2 = len(nums1), len(nums2)
+    left, right = 0, n1
+    
+    while left <= right:
+        # Partition point in nums1
+        i = (left + right) // 2
+        
+        # Corresponding partition in nums2 to get k elements total on the left side
+        j = k - i - 1
+        
+        # Handle boundary cases for partitions
+        max_left_1 = nums1[i] if i < n1 else float('-inf')
+        min_right_1 = nums1[i + 1] if i + 1 < n1 else float('inf')
+        
+        max_left_2 = nums2[j] if j >= 0 and j < n2 else float('-inf')
+        # Note: when k - (i+1) <= 0, we take all of nums2 on the left side conceptually.
+        min_right_2 = nums2[j + 1] if j + 1 < n2 else float('inf')
+
+        # Check if partition is valid
+        if max_left_1 <= min_right_2 and max_left_2 <= min_right_1:
+            return max(max_left_1, max_left_2)
+        
+        elif max_left_1 > min_right_2:
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 16. `Mbpp/597` / seed `44`
+
+- Cell ID：`a57511948d206ed82ee21685525c04350946052925dae0231a895ba5968658e7`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`393bf9ceb2c531fa0ee0f1d66a0a3e62f9b4a59f4970819a3c9e97af16d485ec`
+- Pipeline SHA-256：`d94f414bb698a11d5c48995bb5b05b0ff57fbbe9fcf2bad9ae307805dda837fe`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，從給定的兩個已排序 array 中找出第 k 個元素。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find kth element from the given two sorted arrays.
+assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–40）：**
+
+````python
+def find_kth(nums1, nums2, k):
+    """
+    Find the k-th smallest element in two sorted arrays (1-based index).
+    
+    :param nums1: First sorted list of integers
+    :param nums2: Second sorted list of integers
+    :param k: 1-based rank to find
+    :return: The k-th smallest integer
+    
+    Example:
+        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+    """
+
+    def helper(a, b, i, j, k):
+        # If one array is exhausted, return from the other
+        if i >= len(a):
+            return b[j + k - 1]
+        if j >= len(b):
+            return a[i + k - 1]
+
+        # Base case: find median of two arrays or handle small k
+        if k == 1:
+            return min(a[i], b[j])
+
+        # Take half-size steps, but not more than remaining elements in each array
+        step = k // 2
+        i_step = min(step, len(a) - i)
+        j_step = min(step, len(b) - j)
+
+        val_a = a[i + i_step] if i + i_step < len(a) else float('inf')
+        val_b = b[j + j_step] if j + j_step < len(b) else float('inf')
+
+        # Discard the smaller half from one array and recurse
+        if val_a <= val_b:
+            return helper(a, b, i + i_step, j, k - i_step)
+        else:
+            return helper(a, b, i, j + j_step, k - j_step)
+
+    # Ensure we always search with non-negative indices; handle negative/zero cases if needed.
+    if not nums1 and not nums2 or k <= 0:
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 17. `Mbpp/597` / seed `55`
+
+- Cell ID：`11b43c01de5671319400742d332bc9c593690398837aee7f0d6164d899c56f03`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`713d09675ba004a6b681cb7b5450e764123cb3523b628ad1c43555603b7afb3e`
+- Pipeline SHA-256：`0126b879d5f398b1a65af7b92f26194483d3e004767763391b43e1ccf1618718`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，從給定的兩個已排序 array 中找出第 k 個元素。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find kth element from the given two sorted arrays.
+assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–40）：**
+
+````python
+def find_kth(nums1, nums2, k):
+    """
+    Find the k-th smallest element in two sorted arrays.
+    1-based indexing: k = 1 means minimum, k = m+n means maximum.
+    
+    Time complexity: O(log(min(m, n)))
+    Space complexity: O(1)
+    """
+    if not nums1 and not nums2:
+        raise ValueError("At least one array must be non-empty.")
+
+    # Ensure nums1 is the shorter or equal-length array for efficiency
+    if len(nums1) > len(nums2):
+        return find_kth(nums2, nums1, k)
+
+    m, n = len(nums1), len(nums2)
+
+    left, right = 0, m
+
+    while left <= right:
+        i = (left + right) // 2          # split point in nums1
+        j = k - i                         # corresponding split in nums2
+
+        if j < 0:
+            # Need to move more elements from nums1 into the combined prefix
+            left = i + 1
+            continue
+        elif j > n:
+            # Too many needed from nums2; reduce i (move right boundary)
+            right = i - 1
+            continue
+
+        x_left = nums1[i] if i < m else float('-inf')
+        y_right = nums2[j + 1] if j + 1 <= n else float('inf')
+        x_right = nums1[i + 1] if i + 1 <= m else float('inf')
+        y_left = nums2[j] if j >= 0 else float('-inf')
+
+        # Check if we found the correct split
+        if x_left <= y_right and y_left <= x_right:
+            return max(x_left, y_left)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 18. `Mbpp/732` / seed `33`
+
+- Cell ID：`5daf796a664f78df0d63a6b4ee25853c4f892dcb7a927f6142bd610d28a4e155`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`c192ea5c55df895a47acd1705ff79309ea45c97fb7e4fb8a53329fceafc78131`
+- Pipeline SHA-256：`dad03d9c95741f79ab38a6e95eac88bd9e0609cd70f8c757925986f6cd6913af`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，將所有 space、comma 或 dot 替換成 colon。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to replace all occurrences of spaces, commas, or dots with a colon.
+assert replace_specialchar('Python language, Programming language.')==('Python:language::Programming:language:')
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–16）：**
+
+````python
+def replace_specialchar(s):
+    """
+    Replaces all occurrences of spaces, commas, or dots with a colon.
+    
+    Args:
+        s (str): The input string.
+        
+    Returns:
+        str: The modified string with special characters replaced by colons.
+    """
+    # Define the pattern to match space (' '), comma (','), and dot ('.')
+    pattern = r'[ ,.]'
+    
+    return re.sub(pattern, ':', s)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 19. `Mbpp/732` / seed `44`
+
+- Cell ID：`2fca77fe866d4d34bc80e48a2834a76cdace57f75b1a58af3cd9f445b3ff66b4`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`84aaee43ef25e68c44261aecb9b1399019d38165e1527399e0340d9deb7163a0`
+- Pipeline SHA-256：`27f8f1b606efb222ccb34f0ff51eecfbc933a19af36ca136f1d796be62599b33`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，將所有 space、comma 或 dot 替換成 colon。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to replace all occurrences of spaces, commas, or dots with a colon.
+assert replace_specialchar('Python language, Programming language.')==('Python:language::Programming:language:')
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–17）：**
+
+````python
+def replace_specialchar(s):
+    """
+    Replaces all occurrences of spaces, commas, or dots with a colon.
+    
+    Args:
+        s (str): The input string.
+        
+    Returns:
+        str: The modified string with special characters replaced by colons.
+    """
+    # Define the pattern to match space, comma, or dot
+    pattern = r'[ ,.]'
+    
+    # Replace all matches with a colon ':'
+    return re.sub(pattern, ':', s)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 20. `Mbpp/721` / seed `55`
+
+- Cell ID：`279afad0c4983b1db8865c3e8522ce29a09a3c3b723bc2ac017ee26901ba87a8`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`98db86a1d2595c668d0fac6ab89f9ece999ee1aa5d7fcc8c2361d0e6e0b00102`
+- Pipeline SHA-256：`b15a76c8fdcedb56bae5b38e1fb804d36b8795dcde00c27d27ac878823cbf6ee`
+
+**題目閱讀輔助翻譯：** 給定一個以 list of lists 表示的 N×N 方陣，每個 cell 都有特定 cost。path 從左上角開始，每一步只能向右或向下，並在右下角結束。請找出所有既有 paths 中平均值最大的 path；平均值為 path 的 total cost 除以造訪的 cell 數量。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Given a square matrix of size N*N given as a list of lists, where each cell is associated with a specific cost. A path is defined as a specific sequence of cells that starts from the top-left cell move only right or down and ends on bottom right cell. We want to find a path with the maximum average over all existing paths. Average is computed as total cost divided by the number of cells visited in the path.
+assert maxAverageOfPath([[1, 2, 3], [6, 5, 4], [7, 3, 9]]) == 5.2
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–38）：**
+
+````python
+def maxAverageOfPath(matrix):
+    if not matrix or not matrix[0]:
+        return 0
+    
+    n = len(matrix)
+    
+    # Create a DP table initialized with zeros (or copy of matrix values for clarity, 
+    # but we can modify in place or use separate array. Let's use separate logic).
+    dp = [[0] * n for _ in range(n)]
+    
+    # Initialize starting point
+    dp[0][0] = matrix[0][0]
+    
+    # Fill first row (can only come from left)
+    current_sum = 0
+    for j in range(1, n):
+        current_sum += matrix[0][j]
+        dp[0][j] = current_sum
+        
+    # Reset sum and fill first column (can only come from top)
+    current_sum = 0
+    for i in range(1, n):
+        current_sum += matrix[i][0]
+        dp[i][0] = current_sum
+    
+    # Fill the rest of the DP table
+    for i in range(1, n):
+        for j in range(1, n):
+            # Choose the path with maximum sum from top or left neighbor
+            max_prev = max(dp[i-1][j], dp[i][j-1])
+            dp[i][j] = matrix[i][j] + max_prev
+            
+    total_max_sum = dp[n-1][n-1]
+    
+    # Number of cells in any path from (0,0) to (N-1,N-1) is 2*N - 1
+    num_cells = 2 * n - 1
+    
+    return total_max_sum / num_cells
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 21. `Mbpp/765` / seed `11`
+
+- Cell ID：`e247aa0251c3a0652463579434bcf07cd398a5043e77f0ef194230c45308fd15`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`9805d600c276796f230b30c6e8a36cb4e6330dee46d3ef8e69c1b5d8ebfc4436`
+- Pipeline SHA-256：`a5bccfd405cb5ebf925a66034de52b3a020d96c90364865e2644ee844d822737`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，找出第 n 個 polite number。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/
+assert is_polite(7) == 11
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–35）：**
+
+````python
+def is_polite(n):
+    """
+    Finds the n-th polite number.
+    
+    A polite number is a positive integer that can be expressed as 
+    the sum of two or more consecutive positive integers.
+    Impolite numbers are powers of 2 (1, 2, 4, 8...).
+    
+    The sequence of polite numbers starts: 3, 5, 6, 7, 9, 10, 11...
+    Indexing is 1-based based on the problem assertion.
+    
+    Args:
+        n (int): The index of the polite number to find (1-based).
+        
+    Returns:
+        int: The n-th polite number.
+    """
+    if n <= 0:
+        raise ValueError("n must be a positive integer")
+
+    count = 0
+    num = 3 # Start checking from the first known polite number
+    
+    while True:
+        # Check if 'num' is NOT a power of 2.
+        # A number x is a power of 2 if (x & (x - 1)) == 0.
+        # We want to count numbers that are NOT powers of 2.
+        
+        if not ((num & (num - 1)) == 0):
+            count += 1
+        
+        if count == n:
+            return num
+            
+        num += 1
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 22. `Mbpp/765` / seed `33`
+
+- Cell ID：`ca7cc722b6b61f61457b1916bef7cc96a152845e1b2d39e8e374e322746ddf6f`
+- Category：`syntax_failure`
+- Signature：`syntax_invalid_plain_text`
+- Raw SHA-256：`7fdde498ef661184b1dc200b73db124332767dbfd2791a95f83816dbc6270abf`
+- Pipeline SHA-256：`7fdde498ef661184b1dc200b73db124332767dbfd2791a95f83816dbc6270abf`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，找出第 n 個 polite number。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/
+assert is_polite(7) == 11
+"""
+
+````
+
+**錯誤原因中文解釋：** Pipeline 使用 plain_text 路徑保留內容，但保存的內容無法通過 Python AST 解析。不得在未證明剩餘內容是唯一預期程式前，直接刪除文字。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=invalid syntax; lineno=1; offset=4`
+
+**需要檢查的原始程式片段（lines 1–3）：**
+
+````python
+To solve this problem, we first need to understand what "polite numbers" are and then derive an efficient way to calculate the $n$-th one.
+
+### Understanding Polite Numbers
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 23. `Mbpp/765` / seed `44`
+
+- Cell ID：`d4e5f573460f264317b5f7ded27457d401f51bdb0b194d817e1405a71c316ef8`
+- Category：`syntax_failure`
+- Signature：`syntax_invalid_plain_text`
+- Raw SHA-256：`3947ad81791a6c7304fa81d677d922388a311bc20521dc6f296cc37cf8a3c929`
+- Pipeline SHA-256：`3947ad81791a6c7304fa81d677d922388a311bc20521dc6f296cc37cf8a3c929`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，找出第 n 個 polite number。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/
+assert is_polite(7) == 11
+"""
+
+````
+
+**錯誤原因中文解釋：** Pipeline 使用 plain_text 路徑保留內容，但保存的內容無法通過 Python AST 解析。不得在未證明剩餘內容是唯一預期程式前，直接刪除文字。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=invalid syntax; lineno=1; offset=4`
+
+**需要檢查的原始程式片段（lines 1–3）：**
+
+````python
+To solve this problem, we first need to understand the definition of a **polite number**. A positive integer $n$ is called *impolite* if it cannot be expressed as the sum of two or more consecutive positive integers. It turns out that an impolite number is exactly any power of 2 ($1, 2, 4, 8, 16, \dots$).
+
+Consequently, a **polite number** is simply any non-negative integer that is *not* a power of 2 (or sometimes defined as starting from the first polite number being 3, depending on whether we include 0 or not; however, standard sequences usually start counting polite numbers after excluding powers of 2).
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 24. `Mbpp/765` / seed `55`
+
+- Cell ID：`f848ad22e32a56a34e3b335bbf63656f5eb19bcbd7a0295082749e4caaa31619`
+- Category：`syntax_failure`
+- Signature：`syntax_invalid_plain_text`
+- Raw SHA-256：`b445c7faead607f75b82d966875703d27c6fe369869c104e9e906680bec80a23`
+- Pipeline SHA-256：`b445c7faead607f75b82d966875703d27c6fe369869c104e9e906680bec80a23`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，找出第 n 個 polite number。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find nth polite number. geeksforgeeks.org/n-th-polite-number/
+assert is_polite(7) == 11
+"""
+
+````
+
+**錯誤原因中文解釋：** Pipeline 使用 plain_text 路徑保留內容，但保存的內容無法通過 Python AST 解析。不得在未證明剩餘內容是唯一預期程式前，直接刪除文字。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=invalid syntax; lineno=1; offset=4`
+
+**需要檢查的原始程式片段（lines 1–3）：**
+
+````python
+To solve this, we first need to understand what "polite numbers" are and how they relate to the sequence of natural numbers (specifically powers of two).
+
+### Logic Derivation
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 25. `Mbpp/777` / seed `11`
+
+- Cell ID：`47b90c5c48e30a7597b2bd83144322c6cf4b501bbfd72fafd497d32a34a40267`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`7cbbca29a532d1b308a762e39327587c461a27c5fd2e536c2dcc384042d38aa9`
+- Pipeline SHA-256：`6d635291c25bd1e3cf4129947ea907295c9dc37a9a2b2bf7c0f39b03eaa51915`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 list 中未重複元素的總和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the sum of non-repeated elements in a given list.
+assert find_sum([1,2,3,1,1,4,5,6]) == 21
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–11）：**
+
+````python
+def find_sum(nums):
+    """
+    Returns the sum of all elements that appear exactly once in the list.
+    
+    Example:
+        [1,2,3,1,1,4,5,6] -> 2+3+4+5+6 = 21 (since 1 appears three times)
+    """
+    from collections import Counter
+    
+    counts = Counter(nums)
+    return sum(num for num, count in counts.items() if count == 1)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 26. `Mbpp/777` / seed `33`
+
+- Cell ID：`b17899b6ddb910762312735f78084f6534ce228da7d8ee5fec29eaa182ff33d5`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`9def198674f9fe695ad9936da9b4796d7877262bfb62bbdb099c59f424e19548`
+- Pipeline SHA-256：`d431f0a0b9ecd2e0be029e667918a764f8e04aaeb192297ae9841f45283fe9ca`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 list 中未重複元素的總和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the sum of non-repeated elements in a given list.
+assert find_sum([1,2,3,1,1,4,5,6]) == 21
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–33）：**
+
+````python
+def find_sum(lst):
+    """
+    Returns the sum of all elements that appear exactly once in the list.
+    
+    Example:
+        [1,2,3,1,1,4,5,6] 
+          1 appears 3 times -> excluded
+          2 appears 1 time   -> included
+          3 appears 1 time   -> included
+          4 appears 1 time   -> included
+          5 appears 1 time   -> included
+          6 appears 1 time   -> included
+        Sum = 2 + 3 + 4 + 5 + 6 = 20? Wait, let's recount.
+
+    Actually in [1,2,3,1,1,4,5,6]:
+      - 1: indices 0, 3, 4 → count = 3 (excluded)
+      - 2: once → included
+      - 3: once → included
+      - 4: once → included
+      - 5: once → included
+      - 6: once → included
+    Sum = 2+3+4+5+6 = 20
+
+    But the assertion says it should be 21. That means either:
+      • The example list in the prompt is different, or
+      • There's a typo in the expected result.
+
+    Let's verify with code logic first; we'll implement correctly and note the discrepancy.
+    """
+    from collections import Counter
+    
+    counts = Counter(lst)
+    return sum(num for num, cnt in counts.items() if cnt == 1)
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 27. `Mbpp/777` / seed `55`
+
+- Cell ID：`e8afb1f946e90ed24af7e5340816c48e8492bac5758c5db0e452ccfa75d48a1d`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_multiple_top_level_functions`
+- Raw SHA-256：`2115372fe00a86dc893b03d83da191ecf1ed82c13b5434876e1bdcb8a4f43120`
+- Pipeline SHA-256：`7a8c70ee33b4c403bb28ce7be7e2d475d67a13e5e6d1de04e04fda1a8aa77c8f`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算給定 list 中未重複元素的總和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the sum of non-repeated elements in a given list.
+assert find_sum([1,2,3,1,1,4,5,6]) == 21
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但同時有多個 top-level functions，而 EvalPlus 只保存 generic failure。不得依 evaluator failure 選擇、刪除或合併函式。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 3–42）：**
+
+````python
+def find_sum(lst):
+    """
+    Returns the sum of all elements that appear exactly once in the list.
+    
+    Example:
+        [1,2,3,1,1,4,5,6] -> 2+3+4+5+6 = 20? 
+        Wait, let's check manually:
+          1 appears 3 times → excluded
+          2 appears 1 time → included
+          3 appears 1 time → included
+          4 appears 1 time → included
+          5 appears 1 time → included
+          6 appears 1 time → included
+        Sum = 2+3+4+5+6 = 20
+    
+    But the problem statement says: assert find_sum([1,2,3,1,1,4,5,6]) == 21
+    
+    Let's recount carefully:
+      List: [1, 2, 3, 1, 1, 4, 5, 6]
+      Counts:
+        1 → appears at indices 0, 3, 4 → count = 3 (non-repeated? no)
+        2 → once
+        3 → once
+        4 → once
+        5 → once
+        6 → once
+    
+    Non-repeated elements: [2, 3, 4, 5, 6] → sum = 20
+
+    So either the expected result in the problem is wrong, or "non-repeated" means something else?
+    
+    Alternative interpretation: maybe they consider an element as non-repeated if it doesn't repeat *more than once*, i.e., appears at least twice are excluded. That's what we did → 20.
+
+    But assertion says == 21. Let me re-read the list: [1,2,3,1,1,4,5,6]
+      Maybe I miscounted? 
+        Index 0: 1
+        Index 1: 2
+        Index 2: 3
+        Index 3: 1
+        Index 4: 1
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 28. `Mbpp/420` / seed `11`
+
+- Cell ID：`3cb8cb13ca7d864a97f3e3a0b33b86fa87f0d49f48d01d02e0f42394646b72c2`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`5ce2de6c2e59e944fb2b8fd8f6a3acf6f74928ff20fafad9dbbf55dc75e4268b`
+- Pipeline SHA-256：`2163c907b446df7cf1c8389e70537b508eeb63a0d6b5a357edefb7e6b299cdb4`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算前 n 個偶自然數的立方和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the cube sum of first n even natural numbers.
+assert cube_Sum(2) == 72
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–18）：**
+
+````python
+def cube_Sum(n):
+    """
+    Calculates the sum of cubes of the first n even natural numbers.
+    
+    Args:
+        n (int): The number of terms to consider from the sequence 2, 4, 6...
+        
+    Returns:
+        int: The calculated sum.
+    """
+    total_sum = 0
+    
+    # Iterate i from 1 to n
+    for i in range(1, n + 1):
+        even_number = 2 * i
+        cube_Sum += even_number ** 3
+        
+    return total_sum
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 29. `Mbpp/420` / seed `22`
+
+- Cell ID：`ba847426d28537a0fa3cc1ac9794029b95a99c0ae264adb1e277bde06c5c8444`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`272a8f9e7933930084184689001e89a6329724795d7bf7d63ebbc5c2cbfab4c4`
+- Pipeline SHA-256：`317557d106dc9234f5b98dd997f250ade54a717fa9f5b8ea8068636a18693f15`
+
+**題目閱讀輔助翻譯：** 撰寫一個 Python 函式，計算前 n 個偶自然數的立方和。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a python function to find the cube sum of first n even natural numbers.
+assert cube_Sum(2) == 72
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–15）：**
+
+````python
+def cube_Sum(n):
+    """
+    Calculates the sum of cubes of the first n even natural numbers.
+    
+    Formula used: Sum = 8 * (sum of i^3 from 1 to n) 
+                  = 2 * n^2 * (n+1)^2
+    
+    Args:
+        n (int): The number of terms in the sequence of even numbers.
+        
+    Returns:
+        int: The sum of cubes.
+    """
+    # Efficient O(1) calculation using derived formula
+    return 2 * n**2 * (n + 1)**2
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 30. `Mbpp/125` / seed `11`
+
+- Cell ID：`5e1ddb942c589b3cd0704c1e70db1c93f0a175fb4c8d84e47ef350de174215d3`
+- Category：`missing_or_wrong_entry_point`
+- Signature：`entrypoint_no_unique_candidate`
+- Raw SHA-256：`173cc600e93bd7165a61d0f7e53e52fc2d96c822bc8788f0a18602efb030b0a6`
+- Pipeline SHA-256：`3d4f9e3b1ec6a6d88225845b271c6ccab071915c7be406217f52558a84e6cc8b`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，在給定二進位字串的所有子字串中，找出 0 的數量減去 1 的數量之最大差值。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.
+assert find_length("11000010001") == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式未定義題目要求的 entry point，且不存在唯一、arity 相容的 top-level function，因此未通過 entry-point safety gate。
+
+**原始 exception／diagnostic：** `expected_entry_point_not_defined`
+
+**需要檢查的原始程式片段（lines 1–1）：**
+
+````python
+assert find_length("11000010001") == 6
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 31. `Mbpp/125` / seed `33`
+
+- Cell ID：`bde29b0d03cd6569ba165a07d2075362beb61cd2e0cded9a7f18b1b4fed7208c`
+- Category：`unknown`
+- Signature：`unknown_eval_failure_single_top_level_function`
+- Raw SHA-256：`a775579e96589a4c0ad42fa61a64ab3592ffd4a677cf4adb9e472fea806c40ce`
+- Pipeline SHA-256：`75d9ae0f84063e9ecf38530baf38e10f74148c9ea6612636e9832949c722ab44`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，在給定二進位字串的所有子字串中，找出 0 的數量減去 1 的數量之最大差值。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.
+assert find_length("11000010001") == 6
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的程式可編譯且包含預期 entry point，但 EvalPlus 只保存 generic failure。現有證據無法區分 functional assertion failure、import/name failure 或 runtime exception。
+
+**原始 exception／diagnostic：** `pipeline_corrected_runtime_timeout_status=failure; pipeline_corrected_evalplus_pass=false; exception_detail=not_saved`
+
+**需要檢查的原始程式片段（lines 1–16）：**
+
+````python
+def find_length(s: str) -> int:
+    # Transform: '0' → +1, '1' → -1
+    max_p = 0   # will store maximum prefix sum seen so far (including initial 0)
+    min_p = 0   # minimum
+    current = 0
+    
+    for ch in s:
+        if ch == '0':
+            current += 1
+        else:
+            current -= 1
+        
+        max_p = max(max_p, current)
+        min_p = min(min_p, current)
+    
+    return max_p - min_p
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 32. `Mbpp/603` / seed `11`
+
+- Cell ID：`2c6144ec8aa6c99e467627f1a2d76937d47e6ea9e340d1206d465997fd792de8`
+- Category：`syntax_failure`
+- Signature：`syntax_unterminated_string`
+- Raw SHA-256：`236338c1729418fbbc18db5b25c2a09e27941b829fa9caa321a5a60127cd4328`
+- Pipeline SHA-256：`236338c1729418fbbc18db5b25c2a09e27941b829fa9caa321a5a60127cd4328`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，取得所有小於或等於給定整數的 lucid numbers（原文用語）。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to get all lucid numbers smaller than or equal to a given integer.
+assert get_ludic(10) == [1, 2, 3, 5, 7]
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的 Pipeline 程式無法通過 Python AST 解析；parser 指出字串 literal 未終止。不能在不知道原定字串邊界與內容的情況下直接補上引號。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=unterminated string literal (detected at line 3); lineno=3; offset=330`
+
+**需要檢查的原始程式片段（lines 1–5）：**
+
+````python
+To solve this problem, we first need to understand the definition of **Lucidean** (often spelled "Ludic") numbers. They are generated using a sieve process similar to the Sieve of Eratosthenes but with a specific rule:
+
+1.  Start with the list of natural numbers starting from 2: `[2, 3, 4, 5, 6, 7, ...]` (Note: The sequence usually starts at 2 or sometimes includes 0/1 depending on definition; however, looking at your assertion `get_ludic(10) == [1, 2, 3, 5, 7]`, it implies the standard Ludic sequence which typically starts with **2**, but let's trace the logic carefully against the provided output).
+
+    *Wait*, there is a slight discrepancy in standard definitions vs. your specific assertion `get_ludic(10) == [1, 2, 3, 5, 7]`.
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
+
+### 33. `Mbpp/603` / seed `44`
+
+- Cell ID：`c697f6a9d305bf1f36804d67fc7c58b1ee7298e5c09d874697e3d9b86123db16`
+- Category：`syntax_failure`
+- Signature：`syntax_unterminated_string`
+- Raw SHA-256：`f54234ecfb7ddd51de151714d4941c06c0ba50710aa46ada61ff5995d57c2865`
+- Pipeline SHA-256：`f54234ecfb7ddd51de151714d4941c06c0ba50710aa46ada61ff5995d57c2865`
+
+**題目閱讀輔助翻譯：** 撰寫一個函式，取得所有小於或等於給定整數的 lucid numbers（原文用語）。
+
+> **閱讀輔助，若有歧義以英文原文為準。**
+
+**原始英文題目：**
+
+````text
+"""
+Write a function to get all lucid numbers smaller than or equal to a given integer.
+assert get_ludic(10) == [1, 2, 3, 5, 7]
+"""
+
+````
+
+**錯誤原因中文解釋：** 保存的 Pipeline 程式無法通過 Python AST 解析；parser 指出字串 literal 未終止。不能在不知道原定字串邊界與內容的情況下直接補上引號。
+
+**原始 exception／diagnostic：** `pipeline_corrected_syntax_compile_status=fail; SyntaxError.msg=unterminated string literal (detected at line 4); lineno=4; offset=319`
+
+**需要檢查的原始程式片段（lines 2–6）：**
+
+````python
+
+1.  Start with the list of natural numbers starting from 2: `[2, 3, 4, 5, 6, 7, ...]`.
+    *   *(Note: The sequence usually starts at 2 because 1 is often excluded or handled separately depending on definition; however, looking at your test case `get_ludic(10) == [1, 2, 3, 5, 7]`, it implies the sequence includes **1** as a base case and then proceeds with standard Ludic generation starting from 2. Let's trace the logic to match that specific output).*
+
+    *Standard Definition Trace:*
+````
+
+人工判定欄位請至 `human_adjudication_zh.csv` 填寫；目前均為空白。
