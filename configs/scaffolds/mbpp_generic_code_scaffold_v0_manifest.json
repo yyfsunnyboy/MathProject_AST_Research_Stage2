@@ -22,7 +22,11 @@
     "top_k": 20,
     "top_p": 0.95
   },
+  "incident_manifest_path": "artifacts/pbd/mbpp_sv0/incidents/run_001_windows_path_incident.json",
+  "incident_manifest_sha256": "c14d3a2c47e7f28a290876ab4024bdf26192604f8f070db41dee9c28659fe687",
+  "invalidated_predecessor_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_001",
   "line_endings": "LF",
+  "logical_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_002",
   "model": "qwen3.5:9b",
   "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
   "ollama_request_timeout_seconds": 600.0,
@@ -46,5 +50,7 @@
   "sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
   "size_bytes": 478,
   "status": "frozen_development_candidate",
+  "storage_mapping_path": "configs/mbpp_scaffold_v0_storage_mapping.json",
+  "storage_mapping_sha256": "05b8979bf3bf601ab6649b3e33c43884bcde06b27e7453dd4664d8ef7edf7012",
   "version": "mbpp_generic_code_scaffold_v0"
 }

@@ -254,7 +254,7 @@ def test_operator_guide_has_one_generation_and_one_wsl_evaluation_command():
 
     windows_command = (
         "py -3.12 -B .\\scripts\\run_mbpp_scaffold_v0_development.py generate "
-        "--run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 "
+        "--run-id mbpp_qwen35_9b_scaffold_v0_dev_run_002 "
         "--base-url http://127.0.0.1:11434 --timeout-seconds 600"
     )
     assert guide.count(windows_command) == 1
@@ -263,7 +263,7 @@ def test_operator_guide_has_one_generation_and_one_wsl_evaluation_command():
     assert guide.count(
         "/home/yehya/.venvs/ast_evalplus/bin/python "
         "scripts/run_mbpp_scaffold_v0_development.py evaluate \\\n"
-        "  --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 \\\n"
+        "  --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_002 \\\n"
         "  --parallel 4"
     ) == 1
     assert ".venv\\Scripts\\python.exe" not in guide
@@ -288,16 +288,142 @@ def test_corrective_revision_preserves_all_research_identity_fields():
         "generation_parameters",
         "scaffold_sha256",
         "separator_sha256",
-        "cells",
     )
     invariant = {key: plan[key] for key in invariant_keys}
+    invariant["cells"] = [
+        {
+            key: cell[key]
+            for key in (
+                "cell_index",
+                "task_id",
+                "seed",
+                "sample_index",
+                "official_prompt_sha256",
+                "composed_prompt_sha256",
+            )
+        }
+        for cell in plan["cells"]
+    ]
     material = (
         json.dumps(invariant, sort_keys=True, separators=(",", ":")) + "\n"
     ).encode("utf-8")
 
     assert hashlib.sha256(material).hexdigest() == (
-        "b3a00ead7295a455686aa157a847622ef99a6093e7c3f397ed112de59d1a5dd9"
+        "dde23bf56ef3731cdb66c90eab89eff67b4de75188f7f401222d1bde41aa150d"
     )
     assert frozen.SCAFFOLD_SHA256 == (
         "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
     )
+
+
+def test_run_001_incident_is_permanently_invalidated_and_hash_preserved():
+    incident = frozen.build_incident_manifest()
+    committed = json.loads(
+        (REPO_ROOT / frozen.INCIDENT_MANIFEST_RELATIVE).read_text(encoding="utf-8")
+    )
+
+    frozen.verify_invalidated_incident_artifacts(REPO_ROOT)
+    assert committed == incident
+    assert incident["status"] == "permanently_invalidated"
+    assert incident["valid_generation_cells"] == 0
+    assert incident["evalplus_executed"] is False
+    assert incident["model_request_may_have_succeeded"] is True
+    assert incident["recoverable_saved_response_count"] == 0
+    assert not any(incident["reuse_policy"].values())
+    plan_artifact = incident["existing_artifacts"][0]
+    assert plan_artifact["size_bytes"] == 42452
+    assert plan_artifact["sha256"] == (
+        "a7ea12662695deb0719b1696d95bd9706b73f1ae01be3382a75ea454b9862a33"
+    )
+    assert incident["existing_artifacts"][1]["type"] == "empty_directory"
+    assert incident["existing_artifacts"][1]["file_count"] == 0
+    assert incident["existing_artifacts"][1]["tree_content_sha256"] == hashlib.sha256(
+        b""
+    ).hexdigest()
+    assert len(incident["absent_artifacts"]) == 5
+
+
+def test_logical_to_physical_mapping_is_frozen_and_short():
+    mapping = frozen.build_storage_mapping()
+    committed = json.loads(
+        (REPO_ROOT / frozen.STORAGE_MAPPING_RELATIVE).read_text(encoding="utf-8")
+    )
+
+    assert committed == mapping
+    assert mapping["logical_run_id"] == "mbpp_qwen35_9b_scaffold_v0_dev_run_002"
+    assert mapping["physical_storage_directory"] == "artifacts/pbd/mbpp_sv0/r002"
+    assert mapping["journal_directory_name"] == "j"
+    assert mapping["research_identifiers_shortened"] is False
+    assert mapping["requires_windows_long_path_registry_change"] is False
+    assert mapping["windows_path_budget_chars"] == 240
+
+
+def test_exact_windows_prefix_rejects_old_262_character_journal_path():
+    plan = dict(frozen.build_plan(REPO_ROOT))
+    plan["journal_directory_name"] = "generation_journal"
+    old_root = Path(frozen.WINDOWS_REPO_PREFIX) / frozen.INVALIDATED_RUN_RELATIVE
+    entries = driver.planned_storage_paths(plan, old_root)
+    finals = [entry for entry in entries if entry["kind"] == "final"]
+
+    assert max(entry["length"] for entry in finals) == 262
+    assert frozen.build_incident_manifest()["observed_paths"][
+        "observed_temp_path_length"
+    ] == 210
+    with pytest.raises(driver.ScaffoldRunError, match="before model call"):
+        driver.preflight_storage_paths(plan, old_root)
+
+
+def test_run_002_worst_case_path_is_below_conservative_budget():
+    plan = frozen.build_plan(REPO_ROOT)
+    new_root = Path(frozen.WINDOWS_REPO_PREFIX) / frozen.PHYSICAL_RUN_RELATIVE
+    entries = driver.planned_storage_paths(plan, new_root)
+    report = driver.preflight_storage_paths(plan, new_root)
+
+    assert report["path_budget"] == 240
+    assert report["checked_path_count"] == len(entries) == 107
+    assert report["longest_path_length"] < report["path_budget"]
+    assert report["longest_path_length"] == max(
+        entry["length"] for entry in entries
+    )
+    final_names = {
+        Path(entry["path"]).name for entry in entries if entry["kind"] == "final"
+    }
+    assert {
+        "generation_plan.json",
+        "raw_generations.jsonl",
+        "pipeline_corrected.jsonl",
+        "evaluation_results.csv",
+        "evaluation_summary.md",
+    } <= final_names
+    assert sum(entry["kind"] == "final" for entry in entries) == 105
+    assert sum(entry["kind"] == "temporary" for entry in entries) == 2
+
+
+def test_over_budget_preflight_stops_before_any_ollama_request(monkeypatch, tmp_path):
+    called = False
+
+    def forbidden(*args, **kwargs):
+        nonlocal called
+        called = True
+        raise AssertionError("Ollama provenance must not be called")
+
+    overlong = tmp_path / ("x" * 180)
+    monkeypatch.setattr(driver, "resolve_run_dir", lambda run_id: overlong)
+    monkeypatch.setattr(driver, "fetch_ollama_provenance", forbidden)
+    with pytest.raises(driver.ScaffoldRunError, match="before model call"):
+        driver.generate(
+            run_id=frozen.RUN_ID,
+            base_url="http://127.0.0.1:1",
+            timeout_seconds=600.0,
+        )
+    assert called is False
+
+
+def test_run_002_generation_ids_are_fresh_and_full_length():
+    plan = frozen.build_plan(REPO_ROOT)
+
+    assert plan["invalidated_predecessor_run_id"] == frozen.INVALIDATED_RUN_ID
+    assert plan["expected_cells"] == 100
+    assert all(len(cell["generation_id"]) == 64 for cell in plan["cells"])
+    assert plan["cells"][0]["generation_id"] != frozen.INVALIDATED_FIRST_GENERATION_ID
+    assert len({cell["generation_id"] for cell in plan["cells"]}) == 100

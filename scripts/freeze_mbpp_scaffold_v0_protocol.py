@@ -6,7 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any
 
 
@@ -22,8 +22,18 @@ SCAFFOLD_RELATIVE = Path("configs/scaffolds/mbpp_generic_code_scaffold_v0.txt")
 MANIFEST_RELATIVE = Path("configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json")
 PLAN_RELATIVE = Path("configs/mbpp_scaffold_v0_development_plan.json")
 GUIDE_RELATIVE = Path("docs/experiments/mbpp_scaffold_v0_operator_guide_zh.md")
+STORAGE_MAPPING_RELATIVE = Path("configs/mbpp_scaffold_v0_storage_mapping.json")
+INCIDENT_MANIFEST_RELATIVE = Path(
+    "artifacts/pbd/mbpp_sv0/incidents/run_001_windows_path_incident.json"
+)
+PHYSICAL_RUN_RELATIVE = Path("artifacts/pbd/mbpp_sv0/r002")
+INVALIDATED_RUN_RELATIVE = Path(
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/"
+    "mbpp_qwen35_9b_scaffold_v0_dev_run_001"
+)
 
-RUN_ID = "mbpp_qwen35_9b_scaffold_v0_dev_run_001"
+RUN_ID = "mbpp_qwen35_9b_scaffold_v0_dev_run_002"
+INVALIDATED_RUN_ID = "mbpp_qwen35_9b_scaffold_v0_dev_run_001"
 P0_RUN_ID = "mbpp_qwen35_9b_ab1_dev_run_003"
 MODEL = "qwen3.5:9b"
 MODEL_DIGEST = "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
@@ -31,6 +41,13 @@ QUANTIZATION = "Q4_K_M"
 SEEDS = [11, 22, 33, 44, 55]
 GENERATION_TIMEOUT_SECONDS = 600.0
 SCAFFOLD_VERSION = "mbpp_generic_code_scaffold_v0"
+WINDOWS_PATH_BUDGET = 240
+WINDOWS_REPO_PREFIX = r"C:\Users\yehya\Documents\GitHub\MathProject_AST_Research_Stage2"
+INVALIDATED_PLAN_SHA256 = "a7ea12662695deb0719b1696d95bd9706b73f1ae01be3382a75ea454b9862a33"
+INVALIDATED_PLAN_SIZE_BYTES = 42452
+INVALIDATED_FIRST_GENERATION_ID = (
+    "5537b5e986263ee6fe7e8bc2c3f6b2cee1ecfe79da7c574916bc4ef0b62ecbb0"
+)
 
 SCAFFOLD_TEXT = (
     "Return exactly one complete Python source file.\n"
@@ -141,13 +158,120 @@ def generation_id(task_id: str, seed: int, prompt_sha256: str) -> str:
     return sha256_text(material)
 
 
+def build_incident_manifest() -> dict[str, Any]:
+    windows_root = PureWindowsPath(WINDOWS_REPO_PREFIX)
+    run_root = windows_root / PureWindowsPath(INVALIDATED_RUN_RELATIVE.as_posix())
+    journal_dir = run_root / "generation_journal"
+    failed_final = journal_dir / f"{INVALIDATED_FIRST_GENERATION_ID}.json"
+    observed_temp_example = journal_dir / ".tmp-xxxxxxxx.tmp"
+    return {
+        "incident_version": "mbpp_scaffold_v0_windows_path_incident_v1",
+        "logical_run_id": INVALIDATED_RUN_ID,
+        "status": "permanently_invalidated",
+        "invalidated_reason": "WinError 3 during temp-to-final rename after Windows MAX_PATH overflow",
+        "incident_error": "WinError 3 during temp-to-final rename",
+        "model_request_may_have_succeeded": True,
+        "recoverable_saved_response_count": 0,
+        "reuse_policy": {
+            "delete": False,
+            "modify": False,
+            "resume": False,
+            "overwrite": False,
+            "selective_retry": False,
+            "reuse_response": False,
+        },
+        "valid_generation_cells": 0,
+        "evalplus_executed": False,
+        "observed_windows_repo_prefix": WINDOWS_REPO_PREFIX,
+        "observed_paths": {
+            "run_directory": str(run_root),
+            "journal_directory": str(journal_dir),
+            "journal_directory_length": len(str(journal_dir)),
+            "failed_final_path_example": str(failed_final),
+            "failed_final_path_length": len(str(failed_final)),
+            "observed_temp_path_shape": str(observed_temp_example),
+            "observed_temp_path_length": len(str(observed_temp_example)),
+        },
+        "existing_artifacts": [
+            {
+                "path": (INVALIDATED_RUN_RELATIVE / "generation_plan.json").as_posix(),
+                "type": "file",
+                "size_bytes": INVALIDATED_PLAN_SIZE_BYTES,
+                "sha256": INVALIDATED_PLAN_SHA256,
+            },
+            {
+                "path": (INVALIDATED_RUN_RELATIVE / "generation_journal").as_posix(),
+                "type": "empty_directory",
+                "file_count": 0,
+                "tree_content_sha256": sha256_bytes(b""),
+                "repository_preservation": "metadata_only_git_does_not_track_empty_directories",
+            },
+        ],
+        "absent_artifacts": [
+            (INVALIDATED_RUN_RELATIVE / "raw_generations.jsonl").as_posix(),
+            (INVALIDATED_RUN_RELATIVE / "pipeline_corrected.jsonl").as_posix(),
+            (INVALIDATED_RUN_RELATIVE / "evaluation_results.csv").as_posix(),
+            (INVALIDATED_RUN_RELATIVE / "evaluation_summary.md").as_posix(),
+            (INVALIDATED_RUN_RELATIVE / "failure_census_summary.md").as_posix(),
+        ],
+        "successor_logical_run_id": RUN_ID,
+        "successor_must_generate_all_cells_fresh": 100,
+    }
+
+
+def verify_invalidated_incident_artifacts(repo_root: Path = REPO_ROOT) -> None:
+    """Fail closed if any preserved run_001 incident artifact has drifted."""
+    repo_root = repo_root.resolve()
+    run_root = repo_root / INVALIDATED_RUN_RELATIVE
+    plan_path = run_root / "generation_plan.json"
+    journal_dir = run_root / "generation_journal"
+    _require(plan_path.is_file(), "invalidated run_001 generation plan is missing")
+    _require(
+        plan_path.stat().st_size == INVALIDATED_PLAN_SIZE_BYTES,
+        "invalidated run_001 generation plan size drift",
+    )
+    _require(
+        sha256_bytes(plan_path.read_bytes()) == INVALIDATED_PLAN_SHA256,
+        "invalidated run_001 generation plan hash drift",
+    )
+    if journal_dir.exists():
+        _require(journal_dir.is_dir(), "invalidated run_001 journal path is not a directory")
+        _require(not any(journal_dir.iterdir()), "invalidated run_001 journal is no longer empty")
+    for relative_path in build_incident_manifest()["absent_artifacts"]:
+        _require(
+            not (repo_root / relative_path).exists(),
+            f"invalidated run_001 absent artifact unexpectedly exists: {relative_path}",
+        )
+
+
+def build_storage_mapping() -> dict[str, Any]:
+    incident = build_incident_manifest()
+    return {
+        "mapping_version": "mbpp_scaffold_v0_logical_physical_mapping_v1",
+        "windows_path_budget_chars": WINDOWS_PATH_BUDGET,
+        "logical_run_id": RUN_ID,
+        "physical_storage_directory": PHYSICAL_RUN_RELATIVE.as_posix(),
+        "journal_directory_name": "j",
+        "journal_filename_policy": "full_64_character_generation_id_plus_.json",
+        "research_identifiers_shortened": False,
+        "requires_windows_long_path_registry_change": False,
+        "invalidated_logical_run_id": INVALIDATED_RUN_ID,
+        "invalidated_physical_storage_directory": INVALIDATED_RUN_RELATIVE.as_posix(),
+        "incident_manifest_path": INCIDENT_MANIFEST_RELATIVE.as_posix(),
+        "incident_manifest_sha256": sha256_bytes(render_json(incident)),
+    }
+
+
 def build_manifest(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     repo_root = repo_root.resolve()
+    verify_invalidated_incident_artifacts(repo_root)
     p0, protocol, _ = _load_inputs(repo_root)
     evidence = {
         path.as_posix(): sha256_bytes((repo_root / path).read_bytes())
         for path in EVIDENCE_RELATIVES
     }
+    incident = build_incident_manifest()
+    mapping = build_storage_mapping()
     return {
         "version": SCAFFOLD_VERSION,
         "status": "frozen_development_candidate",
@@ -188,11 +312,18 @@ def build_manifest(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "ollama_request_timeout_source": (
             "P0 run_003 actual generation command (--timeout-seconds 600)"
         ),
+        "logical_run_id": RUN_ID,
+        "invalidated_predecessor_run_id": INVALIDATED_RUN_ID,
+        "storage_mapping_path": STORAGE_MAPPING_RELATIVE.as_posix(),
+        "storage_mapping_sha256": sha256_bytes(render_json(mapping)),
+        "incident_manifest_path": INCIDENT_MANIFEST_RELATIVE.as_posix(),
+        "incident_manifest_sha256": sha256_bytes(render_json(incident)),
     }
 
 
 def build_plan(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     repo_root = repo_root.resolve()
+    verify_invalidated_incident_artifacts(repo_root)
     p0, protocol, tasks = _load_inputs(repo_root)
     cells: list[dict[str, Any]] = []
     cell_index = 0
@@ -213,9 +344,17 @@ def build_plan(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
                 }
             )
     _require(len(cells) == 100, "P1 plan must contain exactly 100 cells")
+    mapping = build_storage_mapping()
     return {
-        "plan_version": "mbpp_scaffold_v0_development_plan_v1",
+        "plan_version": "mbpp_scaffold_v0_development_plan_v2_windows_path_recovery",
         "run_id": RUN_ID,
+        "logical_run_id": RUN_ID,
+        "invalidated_predecessor_run_id": INVALIDATED_RUN_ID,
+        "physical_storage_directory": PHYSICAL_RUN_RELATIVE.as_posix(),
+        "journal_directory_name": "j",
+        "storage_mapping_path": STORAGE_MAPPING_RELATIVE.as_posix(),
+        "storage_mapping_sha256": sha256_bytes(render_json(mapping)),
+        "windows_path_budget_chars": WINDOWS_PATH_BUDGET,
         "p0_run_id": P0_RUN_ID,
         "dataset": "MBPP+",
         "dataset_version": p0["dataset_version"],
@@ -272,6 +411,9 @@ def render_guide() -> bytes:
 
 - P0：`{P0_RUN_ID}`
 - P1：`{RUN_ID}`
+- Permanently invalidated incident：`{INVALIDATED_RUN_ID}`（有效 generation=0，不得 delete/modify/resume/overwrite/selective retry）
+- Physical storage：`{PHYSICAL_RUN_RELATIVE.as_posix()}`；journal directory：`j`
+- Windows path budget：≤ {WINDOWS_PATH_BUDGET} characters；不依賴 registry long-path 設定。
 - Cells：20 tasks × 5 seeds = 100
 - Model：`{MODEL}` / `{MODEL_DIGEST}` / `{QUANTIZATION}`
 - Scaffold SHA-256：`{SCAFFOLD_SHA256}`
@@ -309,10 +451,14 @@ Generation 成功且完整產生 100/100 cells 前，不得執行 evaluation。�
 
 
 def frozen_outputs(repo_root: Path = REPO_ROOT) -> dict[Path, bytes]:
+    incident = build_incident_manifest()
+    mapping = build_storage_mapping()
     return {
         SCAFFOLD_RELATIVE: SCAFFOLD_BYTES,
         MANIFEST_RELATIVE: render_json(build_manifest(repo_root)),
         PLAN_RELATIVE: render_json(build_plan(repo_root)),
+        STORAGE_MAPPING_RELATIVE: render_json(mapping),
+        INCIDENT_MANIFEST_RELATIVE: render_json(incident),
         GUIDE_RELATIVE: render_guide(),
     }
 

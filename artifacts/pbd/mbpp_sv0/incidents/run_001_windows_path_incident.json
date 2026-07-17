@@ -1,0 +1,53 @@
+{
+  "absent_artifacts": [
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/raw_generations.jsonl",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/pipeline_corrected.jsonl",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/evaluation_results.csv",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/evaluation_summary.md",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/failure_census_summary.md"
+  ],
+  "evalplus_executed": false,
+  "existing_artifacts": [
+    {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/generation_plan.json",
+      "sha256": "a7ea12662695deb0719b1696d95bd9706b73f1ae01be3382a75ea454b9862a33",
+      "size_bytes": 42452,
+      "type": "file"
+    },
+    {
+      "file_count": 0,
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/generation_journal",
+      "repository_preservation": "metadata_only_git_does_not_track_empty_directories",
+      "tree_content_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "type": "empty_directory"
+    }
+  ],
+  "incident_error": "WinError 3 during temp-to-final rename",
+  "incident_version": "mbpp_scaffold_v0_windows_path_incident_v1",
+  "invalidated_reason": "WinError 3 during temp-to-final rename after Windows MAX_PATH overflow",
+  "logical_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_001",
+  "model_request_may_have_succeeded": true,
+  "observed_paths": {
+    "failed_final_path_example": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\public_benchmark_development\\mbpp_qwen35_9b_scaffold_v0\\runs\\mbpp_qwen35_9b_scaffold_v0_dev_run_001\\generation_journal\\5537b5e986263ee6fe7e8bc2c3f6b2cee1ecfe79da7c574916bc4ef0b62ecbb0.json",
+    "failed_final_path_length": 262,
+    "journal_directory": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\public_benchmark_development\\mbpp_qwen35_9b_scaffold_v0\\runs\\mbpp_qwen35_9b_scaffold_v0_dev_run_001\\generation_journal",
+    "journal_directory_length": 192,
+    "observed_temp_path_length": 210,
+    "observed_temp_path_shape": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\public_benchmark_development\\mbpp_qwen35_9b_scaffold_v0\\runs\\mbpp_qwen35_9b_scaffold_v0_dev_run_001\\generation_journal\\.tmp-xxxxxxxx.tmp",
+    "run_directory": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\public_benchmark_development\\mbpp_qwen35_9b_scaffold_v0\\runs\\mbpp_qwen35_9b_scaffold_v0_dev_run_001"
+  },
+  "observed_windows_repo_prefix": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2",
+  "recoverable_saved_response_count": 0,
+  "reuse_policy": {
+    "delete": false,
+    "modify": false,
+    "overwrite": false,
+    "resume": false,
+    "reuse_response": false,
+    "selective_retry": false
+  },
+  "status": "permanently_invalidated",
+  "successor_logical_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_002",
+  "successor_must_generate_all_cells_fresh": 100,
+  "valid_generation_cells": 0
+}

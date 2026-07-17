@@ -38,8 +38,8 @@ from scripts import freeze_mbpp_scaffold_v0_protocol as frozen  # noqa: E402
 from scripts import run_mbpp_development_baseline as p0_driver  # noqa: E402
 
 
-OUTPUT_ROOT = REPO_ROOT / "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0"
 EVALUATOR_ENGINE = "evalplus_0.3.1_check_correctness_subset"
+TEMP_PATH_PLACEHOLDER = ".tmp-" + ("x" * 16) + ".tmp"
 
 
 class ScaffoldRunError(RuntimeError):
@@ -54,7 +54,62 @@ def _require(condition: bool, message: str) -> None:
 def resolve_run_dir(run_id: str) -> pathlib.Path:
     if run_id != frozen.RUN_ID:
         raise ScaffoldRunError(f"only frozen run_id {frozen.RUN_ID!r} is allowed")
-    return OUTPUT_ROOT / "runs" / run_id
+    return REPO_ROOT / frozen.PHYSICAL_RUN_RELATIVE
+
+
+def planned_storage_paths(
+    plan: dict[str, Any], run_dir: pathlib.Path
+) -> list[dict[str, Any]]:
+    """Enumerate every final path and conservative temp-path shape before I/O."""
+    journal_directory_name = plan.get("journal_directory_name", "generation_journal")
+    finals = [
+        run_dir / "generation_plan.json",
+        *(
+            run_dir / journal_directory_name / f"{cell['generation_id']}.json"
+            for cell in plan["cells"]
+        ),
+        run_dir / "raw_generations.jsonl",
+        run_dir / "pipeline_corrected.jsonl",
+        run_dir / "evaluation_results.csv",
+        run_dir / "evaluation_summary.md",
+    ]
+    entries: list[dict[str, Any]] = []
+    temp_paths: set[pathlib.Path] = set()
+    for path in finals:
+        absolute = path.resolve()
+        entries.append(
+            {"kind": "final", "path": str(absolute), "length": len(str(absolute))}
+        )
+        temp_paths.add(absolute.parent / TEMP_PATH_PLACEHOLDER)
+    for path in sorted(temp_paths, key=lambda value: str(value)):
+        entries.append(
+            {"kind": "temporary", "path": str(path), "length": len(str(path))}
+        )
+    return entries
+
+
+def preflight_storage_paths(
+    plan: dict[str, Any],
+    run_dir: pathlib.Path,
+    *,
+    path_budget: int = frozen.WINDOWS_PATH_BUDGET,
+) -> dict[str, Any]:
+    _require(path_budget <= 240, "Windows storage path budget must be at most 240")
+    entries = planned_storage_paths(plan, run_dir)
+    longest = max(entries, key=lambda entry: entry["length"])
+    over_budget = [entry for entry in entries if entry["length"] > path_budget]
+    if over_budget:
+        first = over_budget[0]
+        raise ScaffoldRunError(
+            f"storage path preflight rejected before model call: length={first['length']} "
+            f"budget={path_budget} kind={first['kind']} path={first['path']}"
+        )
+    return {
+        "path_budget": path_budget,
+        "checked_path_count": len(entries),
+        "longest_path": longest["path"],
+        "longest_path_length": longest["length"],
+    }
 
 
 def load_frozen_plan(repo_root: pathlib.Path = REPO_ROOT) -> dict[str, Any]:
@@ -71,6 +126,12 @@ def load_frozen_plan(repo_root: pathlib.Path = REPO_ROOT) -> dict[str, Any]:
     _require(not any(plan[key] for key in ("retry", "selective_retry", "resume", "overwrite", "healer")), "forbidden run policy enabled")
     _require(plan["accounts"] == ["observed", "pipeline_corrected"], "evaluation accounts drift")
     _require(plan["pipeline_correction_is_healer"] is False, "Pipeline correction cannot be Healer")
+    _require(plan["run_id"] == plan["logical_run_id"] == frozen.RUN_ID, "logical run ID drift")
+    _require(
+        plan["physical_storage_directory"] == frozen.PHYSICAL_RUN_RELATIVE.as_posix(),
+        "physical storage mapping drift",
+    )
+    _require(plan["journal_directory_name"] == "j", "journal directory mapping drift")
     return plan
 
 
@@ -123,6 +184,8 @@ def _complete_raw_record(
     metadata = p0_driver._generation_metadata(attempt)
     return {
         "generation_id": cell["generation_id"],
+        "run_id": frozen.RUN_ID,
+        "logical_run_id": frozen.RUN_ID,
         "cell_index": cell["cell_index"],
         "task_id": task.task_id,
         "seed": cell["seed"],
@@ -158,6 +221,8 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
     if output_dir.exists():
         raise ScaffoldRunError(f"refusing retry/resume/overwrite of existing run directory: {output_dir}")
 
+    path_preflight = preflight_storage_paths(plan, output_dir)
+
     protocol = load_generation_protocol(REPO_ROOT / frozen.PROTOCOL_RELATIVE)
     provenance = fetch_ollama_provenance(
         base_url,
@@ -171,7 +236,7 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
     tasks = _task_objects(plan)
     raw_records: list[dict[str, Any]] = []
     failed_cells: list[str] = []
-    journal_dir = output_dir / "generation_journal"
+    journal_dir = output_dir / "j"
     started = time.monotonic()
     for cell in plan["cells"]:
         task = tasks[cell["task_id"]]
@@ -214,6 +279,8 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
             failed_cells.append(cell["generation_id"])
             journal_record = {
                 "generation_id": cell["generation_id"],
+                "run_id": frozen.RUN_ID,
+                "logical_run_id": frozen.RUN_ID,
                 "cell_index": cell["cell_index"],
                 "task_id": cell["task_id"],
                 "seed": cell["seed"],
@@ -242,7 +309,12 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
         )
     _require(len({record["generation_id"] for record in raw_records}) == 100, "duplicate generation cell")
     durable_write_jsonl_new(output_dir / "raw_generations.jsonl", raw_records)
-    pipeline_records = [p0_driver.build_pipeline_record(record) for record in raw_records]
+    pipeline_records = []
+    for record in raw_records:
+        pipeline_record = p0_driver.build_pipeline_record(record)
+        pipeline_record["run_id"] = frozen.RUN_ID
+        pipeline_record["logical_run_id"] = frozen.RUN_ID
+        pipeline_records.append(pipeline_record)
     durable_write_jsonl_new(output_dir / "pipeline_corrected.jsonl", pipeline_records)
     print(
         json.dumps(
@@ -254,6 +326,7 @@ def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
                 ),
                 "retry_count": 0,
                 "healer": False,
+                "storage_path_preflight": path_preflight,
             },
             sort_keys=True,
         ),
@@ -346,6 +419,7 @@ def evaluate(*, run_id: str, parallel: int) -> None:
 
     evaluator_version = importlib.metadata.version("evalplus")
     fieldnames = [
+        "run_id",
         "task_id",
         "seed",
         "generation_id",
@@ -376,6 +450,7 @@ def evaluate(*, run_id: str, parallel: int) -> None:
         corrected = pipeline["pipeline_corrected_output"]
         csv_rows.append(
             {
+                "run_id": frozen.RUN_ID,
                 "task_id": raw["task_id"],
                 "seed": raw["seed"],
                 "generation_id": generation_id,
@@ -415,6 +490,7 @@ def evaluate(*, run_id: str, parallel: int) -> None:
     pipeline_pass_count = sum(row["pipeline_corrected_evalplus_pass"] == "true" for row in csv_rows)
     summary = (
         "# MBPP+ Qwen3.5 9B Generic Code Scaffold v0 development evaluation\n\n"
+        f"- Logical run ID: `{frozen.RUN_ID}`\n"
         f"- Generation cells: 100\n"
         f"- Observed: {observed_pass_count} pass / {100 - observed_pass_count} fail\n"
         f"- Pipeline-corrected: {pipeline_pass_count} pass / {100 - pipeline_pass_count} fail\n"

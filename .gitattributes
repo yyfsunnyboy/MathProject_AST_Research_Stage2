@@ -7,6 +7,11 @@ artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab
 
 # Milestone 2A frozen protocol artifacts require byte-stable LF endings.
 configs/mbpp_scaffold_v0_development_plan.json text eol=lf
+configs/mbpp_scaffold_v0_storage_mapping.json text eol=lf
 configs/scaffolds/mbpp_generic_code_scaffold_v0.txt text eol=lf
 configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json text eol=lf
 docs/experiments/mbpp_scaffold_v0_operator_guide_zh.md text eol=lf
+artifacts/pbd/mbpp_sv0/incidents/run_001_windows_path_incident.json text eol=lf
+
+# Preserve the incident's original run_001 generation plan byte-for-byte.
+artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001/generation_plan.json -text

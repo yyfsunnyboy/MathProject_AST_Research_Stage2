@@ -1,0 +1,14 @@
+{
+  "incident_manifest_path": "artifacts/pbd/mbpp_sv0/incidents/run_001_windows_path_incident.json",
+  "incident_manifest_sha256": "c14d3a2c47e7f28a290876ab4024bdf26192604f8f070db41dee9c28659fe687",
+  "invalidated_logical_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_001",
+  "invalidated_physical_storage_directory": "artifacts/public_benchmark_development/mbpp_qwen35_9b_scaffold_v0/runs/mbpp_qwen35_9b_scaffold_v0_dev_run_001",
+  "journal_directory_name": "j",
+  "journal_filename_policy": "full_64_character_generation_id_plus_.json",
+  "logical_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_002",
+  "mapping_version": "mbpp_scaffold_v0_logical_physical_mapping_v1",
+  "physical_storage_directory": "artifacts/pbd/mbpp_sv0/r002",
+  "requires_windows_long_path_registry_change": false,
+  "research_identifiers_shortened": false,
+  "windows_path_budget_chars": 240
+}
