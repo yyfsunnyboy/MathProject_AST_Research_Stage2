@@ -1,0 +1,235 @@
+{
+  "analysis_design": "paired by task_id + seed",
+  "analysis_version": "milestone_2b_p0_p1_paired_development_v1",
+  "duplicate_pairs": 0,
+  "evalplus_executions": 0,
+  "exploratory_development_analysis": true,
+  "external_generalization_claimed": false,
+  "failure_category_pair_counts": {
+    "extraction_or_format_failure -> pipeline_pass": 5,
+    "extraction_or_format_failure -> syntax_failure": 2,
+    "extraction_or_format_failure -> unknown": 14,
+    "missing_or_wrong_entry_point -> missing_or_wrong_entry_point": 1,
+    "missing_or_wrong_entry_point -> pipeline_pass": 7,
+    "missing_or_wrong_entry_point -> unknown": 9,
+    "pipeline_pass -> pipeline_pass": 13,
+    "pipeline_pass -> unknown": 17,
+    "syntax_failure -> missing_or_wrong_entry_point": 1,
+    "syntax_failure -> syntax_failure": 2,
+    "syntax_failure -> unknown": 3,
+    "unknown -> missing_or_wrong_entry_point": 1,
+    "unknown -> pipeline_pass": 5,
+    "unknown -> syntax_failure": 2,
+    "unknown -> unknown": 18
+  },
+  "format_summary": {
+    "p0": {
+      "cells": 100,
+      "code_fence": 96,
+      "extra_text_outside_fences": 79,
+      "extraction_actions": {
+        "extract:fenced_python": 74,
+        "pass_through:plain_text": 5,
+        "reject_ambiguous:fenced_other": 1,
+        "reject_ambiguous:fenced_python": 20
+      },
+      "generation_truncated": 13,
+      "multiple_program_segments": 25,
+      "pipeline_compile_status": {
+        "fail": 6,
+        "not_run_extraction_failed": 21,
+        "pass": 73
+      },
+      "pipeline_entry_point_status": {
+        "extraction_failed": 21,
+        "missing": 17,
+        "not_assessed_compile_fail": 6,
+        "present": 56
+      },
+      "raw_compile_fail": 100,
+      "raw_compile_pass": 0,
+      "raw_entry_point_status": {
+        "not_assessed_compile_fail": 100
+      },
+      "reasoning_leakage": 0,
+      "strict_python_only_compliant": 0
+    },
+    "p1": {
+      "cells": 100,
+      "code_fence": 0,
+      "extra_text_outside_fences": 0,
+      "extraction_actions": {
+        "pass_through:plain_text": 100
+      },
+      "generation_truncated": 8,
+      "multiple_program_segments": 0,
+      "pipeline_compile_status": {
+        "fail": 6,
+        "pass": 94
+      },
+      "pipeline_entry_point_status": {
+        "missing": 3,
+        "not_assessed_compile_fail": 6,
+        "present": 91
+      },
+      "raw_compile_fail": 6,
+      "raw_compile_pass": 94,
+      "raw_entry_point_status": {
+        "missing": 3,
+        "not_assessed_compile_fail": 6,
+        "present": 91
+      },
+      "reasoning_leakage": 1,
+      "strict_python_only_compliant": 91
+    }
+  },
+  "missing_pairs": 0,
+  "model_calls": 0,
+  "outputs": {
+    "p1_failure_census.csv": {
+      "sha256": "3eff473db4f886b0104826d13741f5b561bb09a5f938172df50cb33030486eb5",
+      "size_bytes": 35843
+    },
+    "paired_cell_comparison.csv": {
+      "sha256": "78bc6e7c67bb5010f45f65e6655b76778117f28c261a02470ef0bff2e5e18ea6",
+      "size_bytes": 53984
+    },
+    "paired_transition_summary.md": {
+      "sha256": "62b1724053beb227a65c607864a68fe072732d96c10b4513a9c888c8ffa50a24",
+      "size_bytes": 1745
+    },
+    "scaffold_v0_development_analysis_zh.md": {
+      "sha256": "cc97b700287c34641aced890cfc84f65913921faaafeab02e7a0f518d4fa6086",
+      "size_bytes": 5401
+    }
+  },
+  "p0_failure_category_counts": {
+    "extraction_or_format_failure": 21,
+    "functional_test_failure": 0,
+    "import_or_name_failure": 0,
+    "missing_or_wrong_entry_point": 17,
+    "runtime_exception": 0,
+    "syntax_failure": 6,
+    "timeout_or_resource_failure": 0,
+    "unknown": 26
+  },
+  "p0_run_id": "mbpp_qwen35_9b_ab1_dev_run_003",
+  "p1_failure_category_counts": {
+    "extraction_or_format_failure": 0,
+    "functional_test_failure": 0,
+    "import_or_name_failure": 0,
+    "missing_or_wrong_entry_point": 3,
+    "runtime_exception": 0,
+    "syntax_failure": 6,
+    "timeout_or_resource_failure": 0,
+    "unknown": 61
+  },
+  "p1_failure_census_rows": 70,
+  "p1_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_002",
+  "paired_cells": 100,
+  "pipeline_correction_is_healer": false,
+  "reasoning_leakage_protocol_violations": 1,
+  "scope": "MBPP+ frozen active development subset only",
+  "source_artifacts": {
+    "p0/evaluation_results.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/evaluation_results.csv",
+      "sha256": "86525489640c2076dfd4d35e7224a975ca0b5770fe8ad99019476b4d0c1ed54d"
+    },
+    "p0/failure_census.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census.csv",
+      "sha256": "d6df0132893927b36aa1bdb58fbee00fe660be7cd0745ba3c6fd5c4960b59c94"
+    },
+    "p0/generation_plan.json": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json",
+      "sha256": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5"
+    },
+    "p0/pipeline_corrected.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/pipeline_corrected.jsonl",
+      "sha256": "4a8015fec50b4dd1e0d432f66bb01d6972dc2ed73ec748a36773bed2b10531fa"
+    },
+    "p0/raw_generations.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/raw_generations.jsonl",
+      "sha256": "24cc22a57f252f46a633dba34d53652398f0b2cf213363af774b82f90bcc9964"
+    },
+    "p0/scaffold_evidence_ledger.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/scaffold_evidence_ledger.csv",
+      "sha256": "ea71e31175e72fc9146299dc2172ec85b8a6cb5c75bbbff55d5533305023f6ad"
+    },
+    "p1/evaluation_results.csv": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/evaluation_results.csv",
+      "sha256": "6c1a73cfba4b03db9b970b3411d1536b21dfd1333579cb75408176c34e69742a"
+    },
+    "p1/evaluation_summary.md": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/evaluation_summary.md",
+      "sha256": "66583a8d43f486a17df4e6a2f2621d7b58aba2aae5b0002a94bdef185375fb95"
+    },
+    "p1/first_attempt_recovery_manifest.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/first_attempt_recovery_manifest.json",
+      "sha256": "138290888eb714a8f9d9e524f71ab80d0e59d83df52d5f073636d5adac52809f"
+    },
+    "p1/generation_plan.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/generation_plan.json",
+      "sha256": "da9875857782711b46b3116bc5d21421bdfdd3dd71f5b2dc9bb5a37805ccec13"
+    },
+    "p1/pipeline_corrected.jsonl": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/pipeline_corrected.jsonl",
+      "sha256": "4bdf90e08e8060c81756d63334d0df4b976205159349ea81472c66c6cc15204d"
+    },
+    "p1/raw_generations.jsonl": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/raw_generations.jsonl",
+      "sha256": "42625c93bc68ed736cb865aa35dc02bda8dce1172c6f5ade1bde1c0525c455c7"
+    }
+  },
+  "statistics": {
+    "observed": {
+      "discordant_pairs": 30,
+      "discordant_superiority_exact_95ci": [
+        0.8842966917779722,
+        1.0
+      ],
+      "discordant_superiority_probability": 1.0,
+      "exact_mcnemar_two_sided_p": 1.862645149230957e-09,
+      "fail_to_pass": 30,
+      "matched_pairs_odds_ratio": "infinity",
+      "matched_pairs_odds_ratio_exact_95ci": [
+        7.642795226572599,
+        "infinity"
+      ],
+      "net_change_cells": 30,
+      "paired_risk_difference": 0.3,
+      "pass_to_fail": 0
+    },
+    "pipeline": {
+      "discordant_pairs": 34,
+      "discordant_superiority_exact_95ci": [
+        0.3242692700213208,
+        0.675730729978679
+      ],
+      "discordant_superiority_probability": 0.5,
+      "exact_mcnemar_two_sided_p": 1.0,
+      "fail_to_pass": 17,
+      "matched_pairs_odds_ratio": 1.0,
+      "matched_pairs_odds_ratio_exact_95ci": [
+        0.47987941887969515,
+        2.083856820395744
+      ],
+      "net_change_cells": 0,
+      "paired_risk_difference": 0.0,
+      "pass_to_fail": 17
+    }
+  },
+  "transition_counts": {
+    "observed": {
+      "fail_to_fail": 70,
+      "fail_to_pass": 30,
+      "pass_to_fail": 0,
+      "pass_to_pass": 0
+    },
+    "pipeline": {
+      "fail_to_fail": 53,
+      "fail_to_pass": 17,
+      "pass_to_fail": 17,
+      "pass_to_pass": 13
+    }
+  }
+}
