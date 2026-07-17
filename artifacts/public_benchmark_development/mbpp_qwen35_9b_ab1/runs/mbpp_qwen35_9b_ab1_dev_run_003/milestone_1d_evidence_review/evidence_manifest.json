@@ -1,0 +1,72 @@
+{
+  "candidate_labels_are_verified_rules": false,
+  "failure_category_counts": {
+    "extraction_or_format_failure": 21,
+    "missing_or_wrong_entry_point": 17,
+    "syntax_failure": 6,
+    "unknown": 26
+  },
+  "failure_signature_count": 9,
+  "frozen_split": {
+    "path": "artifacts/public_benchmark_governance/frozen_split.csv",
+    "sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4"
+  },
+  "healer_review_cells": 70,
+  "healer_review_unique_tasks": 19,
+  "m1c_sources": {
+    "failure_census.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census.csv",
+      "sha256": "d6df0132893927b36aa1bdb58fbee00fe660be7cd0745ba3c6fd5c4960b59c94"
+    },
+    "failure_census_manifest.json": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census_manifest.json",
+      "sha256": "c4fabfb3cc5640f323cc30610dcf3fa94caded5c870c1126a6255a40340212b7"
+    },
+    "failure_census_summary.md": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census_summary.md",
+      "sha256": "b6b7a0d935b7876c210d06c366e2bb5746424aefefa788f4a5ad4a5fd167452b"
+    }
+  },
+  "packet_version": "milestone_1d_v1",
+  "pipeline_rescues": 30,
+  "pipeline_rescues_are_healer_effect": false,
+  "proposed_action_cell_counts": {
+    "healer_candidate": 16,
+    "manual_review": 33,
+    "scaffold_only": 21
+  },
+  "protocol": {
+    "path": "configs/public_benchmark_generation_protocol_v1.json",
+    "sha256": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d"
+  },
+  "run_id": "mbpp_qwen35_9b_ab1_dev_run_003",
+  "run_sources": {
+    "evaluation_results.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/evaluation_results.csv",
+      "sha256": "86525489640c2076dfd4d35e7224a975ca0b5770fe8ad99019476b4d0c1ed54d"
+    },
+    "failure_census_summary.md": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/failure_census_summary.md",
+      "sha256": "d1731b037802610fbc9a43095c79b4f5d503916b74ef426400af33cacb7ed111"
+    },
+    "generation_plan.json": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json",
+      "sha256": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5"
+    },
+    "pipeline_corrected.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/pipeline_corrected.jsonl",
+      "sha256": "4a8015fec50b4dd1e0d432f66bb01d6972dc2ed73ec748a36773bed2b10531fa"
+    },
+    "raw_generations.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/raw_generations.jsonl",
+      "sha256": "24cc22a57f252f46a633dba34d53652398f0b2cf213363af774b82f90bcc9964"
+    }
+  },
+  "scaffold_ledger_cells": 100,
+  "scaffold_partition": {
+    "pipeline_extracted_evaluation_fail": 49,
+    "pipeline_extraction_failure": 21,
+    "verified_pipeline_rescue": 30
+  },
+  "scope": "MBPP+ frozen active development subset only"
+}
