@@ -44,7 +44,7 @@ def _atomic_write_new_bytes(
     try:
         with tempfile.NamedTemporaryFile(
             mode="wb",
-            prefix=f".{path.name}.",
+            prefix=".tmp-",
             suffix=".tmp",
             dir=path.parent,
             delete=False,

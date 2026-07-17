@@ -145,6 +145,30 @@ def test_synthetic_jsonl_persistence_flush_fsync_readback_and_sha256(monkeypatch
     assert rename_saw_closed_handle is True
 
 
+def test_windows_long_path_generation_journal_uses_short_temp_prefix():
+    record = {"generation_id": "a" * 64, "response": "synthetic only"}
+    with tempfile.TemporaryDirectory() as directory:
+        root = pathlib.Path(directory)
+        padding_length = 176 - len(str(root)) - 1
+        assert padding_length > 0
+        journal_dir = root / ("x" * padding_length)
+        journal_dir.mkdir()
+
+        path = journal_dir / (("a" * 64) + ".json")
+        legacy_temp_path = journal_dir / f".{path.name}.abcdefgh.tmp"
+
+        assert len(str(journal_dir)) == 176
+        assert len(str(path)) == 246
+        assert len(str(legacy_temp_path)) == 260
+
+        receipt = persistence.durable_write_json_new(path, record)
+
+        assert path.is_file()
+        assert receipt.sha256 == persistence.sha256_bytes(path.read_bytes())
+        assert json.loads(path.read_text(encoding="utf-8")) == record
+        assert not list(journal_dir.glob(".tmp-*.tmp"))
+
+
 def test_synthetic_immutable_journal_refuses_overwrite():
     record = {"generation_id": "synthetic-only", "response": "not a benchmark"}
     with tempfile.TemporaryDirectory() as directory:
