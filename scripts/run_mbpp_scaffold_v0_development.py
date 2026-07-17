@@ -153,7 +153,7 @@ def _complete_raw_record(
 
 def generate(*, run_id: str, base_url: str, timeout_seconds: float) -> None:
     plan = load_frozen_plan()
-    _require(timeout_seconds == frozen.GENERATION_TIMEOUT_SECONDS, "timeout must equal frozen P0 value 300 seconds")
+    _require(timeout_seconds == frozen.GENERATION_TIMEOUT_SECONDS, "timeout must equal actual P0 run_003 value 600 seconds")
     output_dir = resolve_run_dir(run_id)
     if output_dir.exists():
         raise ScaffoldRunError(f"refusing retry/resume/overwrite of existing run directory: {output_dir}")

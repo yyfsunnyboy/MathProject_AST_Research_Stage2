@@ -16,13 +16,23 @@
 ## 唯一 generation command（Windows PowerShell）
 
 ```powershell
-& '.\.venv\Scripts\python.exe' 'scripts\run_mbpp_scaffold_v0_development.py' generate --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 --timeout-seconds 300
+py -3.12 -B .\scripts\run_mbpp_scaffold_v0_development.py generate --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 --base-url http://127.0.0.1:11434 --timeout-seconds 600
 ```
 
-## 唯一 WSL evaluation command
+## WSL evaluation 正式環境
 
 ```powershell
-wsl.exe bash -lc 'cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2 && python3 scripts/run_mbpp_scaffold_v0_development.py evaluate --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 --parallel 4'
+wsl -d Ubuntu
+```
+
+進入後：
+
+```bash
+cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2
+
+/home/yehya/.venvs/ast_evalplus/bin/python scripts/run_mbpp_scaffold_v0_development.py evaluate \
+  --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 \
+  --parallel 4
 ```
 
 Generation 成功且完整產生 100/100 cells 前，不得執行 evaluation。任何中斷或不完整 run 均不得 retry、resume、selective retry 或 overwrite；應停止並保留 journal 供稽核。

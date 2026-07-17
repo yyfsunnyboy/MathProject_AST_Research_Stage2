@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from collections import Counter
 from pathlib import Path
 
@@ -105,7 +106,10 @@ def test_model_protocol_timeout_and_no_healer_are_frozen_to_p0():
     assert plan["quantization"] == protocol["models"]["primary_development_model"]["quantization"] == "Q4_K_M"
     assert plan["generation_parameters"] == protocol["generation"]
     assert plan["generation_parameters"]["thinking"] is False
-    assert plan["ollama_request_timeout_seconds"] == 300.0
+    assert plan["ollama_request_timeout_seconds"] == 600.0
+    assert plan["ollama_request_timeout_source"] == (
+        "P0 run_003 actual generation command (--timeout-seconds 600)"
+    )
     assert not any(plan[key] for key in ("retry", "selective_retry", "resume", "overwrite", "healer"))
     assert plan["accounts"] == ["observed", "pipeline_corrected"]
     assert plan["pipeline_correction_is_healer"] is False
@@ -146,7 +150,7 @@ def test_generation_rejects_wrong_timeout_before_any_model_call(monkeypatch):
         driver.generate(
             run_id=frozen.RUN_ID,
             base_url="http://127.0.0.1:1",
-            timeout_seconds=299.0,
+            timeout_seconds=300.0,
         )
     assert called is False
 
@@ -154,12 +158,12 @@ def test_generation_rejects_wrong_timeout_before_any_model_call(monkeypatch):
 def test_driver_has_no_retry_resume_or_overwrite_cli_flags():
     parser = driver.build_parser()
     generation = parser.parse_args(
-        ["generate", "--run-id", frozen.RUN_ID, "--timeout-seconds", "300"]
+        ["generate", "--run-id", frozen.RUN_ID, "--timeout-seconds", "600"]
     )
     evaluation = parser.parse_args(["evaluate", "--run-id", frozen.RUN_ID])
 
     assert generation.command == "generate"
-    assert generation.timeout_seconds == 300.0
+    assert generation.timeout_seconds == 600.0
     assert evaluation.command == "evaluate"
     for name in ("retry", "selective_retry", "resume", "overwrite", "healer"):
         assert not hasattr(generation, name)
@@ -248,8 +252,22 @@ def test_synthetic_complete_record_preserves_composed_request_without_calling_mo
 def test_operator_guide_has_one_generation_and_one_wsl_evaluation_command():
     guide = (REPO_ROOT / frozen.GUIDE_RELATIVE).read_text(encoding="utf-8")
 
-    assert guide.count("run_mbpp_scaffold_v0_development.py' generate") == 1
-    assert guide.count("run_mbpp_scaffold_v0_development.py evaluate") == 1
+    windows_command = (
+        "py -3.12 -B .\\scripts\\run_mbpp_scaffold_v0_development.py generate "
+        "--run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 "
+        "--base-url http://127.0.0.1:11434 --timeout-seconds 600"
+    )
+    assert guide.count(windows_command) == 1
+    assert guide.count("wsl -d Ubuntu") == 1
+    assert guide.count("cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2") == 1
+    assert guide.count(
+        "/home/yehya/.venvs/ast_evalplus/bin/python "
+        "scripts/run_mbpp_scaffold_v0_development.py evaluate \\\n"
+        "  --run-id mbpp_qwen35_9b_scaffold_v0_dev_run_001 \\\n"
+        "  --parallel 4"
+    ) == 1
+    assert ".venv\\Scripts\\python.exe" not in guide
+    assert "python3 scripts/run_mbpp_scaffold_v0_development.py" not in guide
     assert guide.count(frozen.RUN_ID) >= 3
     assert "本輪未執行" in guide
     assert "Pipeline correction 不是 Healer" in guide
@@ -257,3 +275,29 @@ def test_operator_guide_has_one_generation_and_one_wsl_evaluation_command():
 
 def test_protocol_freeze_did_not_create_a_p1_run_directory():
     assert not driver.resolve_run_dir(frozen.RUN_ID).exists()
+
+
+def test_corrective_revision_preserves_all_research_identity_fields():
+    plan = frozen.build_plan(REPO_ROOT)
+    invariant_keys = (
+        "task_ids",
+        "seeds",
+        "model",
+        "model_digest",
+        "quantization",
+        "generation_parameters",
+        "scaffold_sha256",
+        "separator_sha256",
+        "cells",
+    )
+    invariant = {key: plan[key] for key in invariant_keys}
+    material = (
+        json.dumps(invariant, sort_keys=True, separators=(",", ":")) + "\n"
+    ).encode("utf-8")
+
+    assert hashlib.sha256(material).hexdigest() == (
+        "b3a00ead7295a455686aa157a847622ef99a6093e7c3f397ed112de59d1a5dd9"
+    )
+    assert frozen.SCAFFOLD_SHA256 == (
+        "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
+    )

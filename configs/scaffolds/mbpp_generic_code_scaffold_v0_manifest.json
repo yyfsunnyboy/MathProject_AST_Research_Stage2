@@ -25,8 +25,8 @@
   "line_endings": "LF",
   "model": "qwen3.5:9b",
   "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
-  "ollama_request_timeout_seconds": 300.0,
-  "ollama_request_timeout_source": "P0 driver scripts/run_mbpp_development_baseline.py generation CLI default",
+  "ollama_request_timeout_seconds": 600.0,
+  "ollama_request_timeout_source": "P0 run_003 actual generation command (--timeout-seconds 600)",
   "p0_run_id": "mbpp_qwen35_9b_ab1_dev_run_003",
   "path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
   "prompt_composition_order": [

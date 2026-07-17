@@ -29,7 +29,7 @@ MODEL = "qwen3.5:9b"
 MODEL_DIGEST = "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
 QUANTIZATION = "Q4_K_M"
 SEEDS = [11, 22, 33, 44, 55]
-GENERATION_TIMEOUT_SECONDS = 300.0
+GENERATION_TIMEOUT_SECONDS = 600.0
 SCAFFOLD_VERSION = "mbpp_generic_code_scaffold_v0"
 
 SCAFFOLD_TEXT = (
@@ -186,7 +186,7 @@ def build_manifest(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "generation_parameters": protocol["generation"],
         "ollama_request_timeout_seconds": GENERATION_TIMEOUT_SECONDS,
         "ollama_request_timeout_source": (
-            "P0 driver scripts/run_mbpp_development_baseline.py generation CLI default"
+            "P0 run_003 actual generation command (--timeout-seconds 600)"
         ),
     }
 
@@ -242,7 +242,7 @@ def build_plan(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         "generation_parameters": protocol["generation"],
         "ollama_request_timeout_seconds": GENERATION_TIMEOUT_SECONDS,
         "ollama_request_timeout_source": (
-            "P0 driver scripts/run_mbpp_development_baseline.py generation CLI default"
+            "P0 run_003 actual generation command (--timeout-seconds 600)"
         ),
         "evaluation_engine": "evalplus_0.3.1_check_correctness_subset",
         "evaluation_timeout_policy": "same EvalPlus subset evaluator defaults as P0 run_003",
@@ -284,13 +284,23 @@ def render_guide() -> bytes:
 ## 唯一 generation command（Windows PowerShell）
 
 ```powershell
-& '.\\.venv\\Scripts\\python.exe' 'scripts\\run_mbpp_scaffold_v0_development.py' generate --run-id {RUN_ID} --timeout-seconds 300
+py -3.12 -B .\\scripts\\run_mbpp_scaffold_v0_development.py generate --run-id {RUN_ID} --base-url http://127.0.0.1:11434 --timeout-seconds 600
 ```
 
-## 唯一 WSL evaluation command
+## WSL evaluation 正式環境
 
 ```powershell
-wsl.exe bash -lc 'cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2 && python3 scripts/run_mbpp_scaffold_v0_development.py evaluate --run-id {RUN_ID} --parallel 4'
+wsl -d Ubuntu
+```
+
+進入後：
+
+```bash
+cd /mnt/c/Users/yehya/Documents/GitHub/MathProject_AST_Research_Stage2
+
+/home/yehya/.venvs/ast_evalplus/bin/python scripts/run_mbpp_scaffold_v0_development.py evaluate \\
+  --run-id {RUN_ID} \\
+  --parallel 4
 ```
 
 Generation 成功且完整產生 100/100 cells 前，不得執行 evaluation。任何中斷或不完整 run 均不得 retry、resume、selective retry 或 overwrite；應停止並保留 journal 供稽核。
