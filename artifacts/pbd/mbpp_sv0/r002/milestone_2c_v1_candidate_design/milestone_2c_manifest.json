@@ -1,0 +1,145 @@
+{
+  "analysis_version": "milestone_2c_scaffold_v1_candidate_design_v1",
+  "builder": "scripts/build_mbpp_scaffold_v1_candidate_design.py",
+  "development_expansion": {
+    "current_pilot_tasks": 20,
+    "future_historical_development_pool_additions": 40,
+    "future_preregistered_total_tasks": 60,
+    "split_created_this_milestone": false,
+    "tasks_selected_this_milestone": 0,
+    "validation_confirmatory_sealed_reserve_remain_sealed": true
+  },
+  "evidence_group_counts": {
+    "common_pass": 13,
+    "p1_paired_regression": 17,
+    "p1_paired_rescue": 17,
+    "persistent_failure": 53
+  },
+  "freeze_status": "尚不凍結，只保留候選",
+  "outputs": {
+    "milestone_2c_cell_evidence.csv": {
+      "sha256": "e548bda843cd283a992f9ec1de3a20605e6497259f85135cf1c375009b9c7a7d",
+      "size_bytes": 90363
+    },
+    "scaffold_v0_instruction_review.csv": {
+      "sha256": "de3353077f54b11fdbe37b1aaf68547698d8a6d9f3e0d93675130e5908d27bf3",
+      "size_bytes": 2618
+    },
+    "scaffold_v1_candidate_design_zh.md": {
+      "sha256": "e688da84c2ccb0e27ab6d26e11ef056685d5265c8c2d25715ef01856cf6044de",
+      "size_bytes": 4494
+    },
+    "scaffold_v1_candidates.json": {
+      "sha256": "6a19996316031697699f9ea9f3447d4a3df286e28e5c132a57cb8c6c65d6a54a",
+      "size_bytes": 3973
+    }
+  },
+  "p0_run_id": "mbpp_qwen35_9b_ab1_dev_run_003",
+  "p1_run_id": "mbpp_qwen35_9b_scaffold_v0_dev_run_002",
+  "paired_identity": {
+    "cells": 100,
+    "duplicates": 0,
+    "key": [
+      "task_id",
+      "seed"
+    ],
+    "missing": 0
+  },
+  "prohibited_actions_attestation": {
+    "evalplus_executions": 0,
+    "healer_built_or_executed": false,
+    "model_calls": 0,
+    "program_regenerations": 0,
+    "scaffold_v0_modified": false,
+    "scaffold_v1_frozen_or_executed": false,
+    "unknown_failures_guessed_as_functional": false,
+    "v1_run_directory_created": false
+  },
+  "recommended_candidate_id": "v1_candidate_a_conservative_compaction",
+  "regression_adjudication_counts": {
+    "model_sampling_variation": 3,
+    "scaffold_plausibly_related": 14
+  },
+  "remaining_problem_counts": {
+    "insufficient_evidence": 61,
+    "none_pipeline_pass": 30,
+    "possibly_evaluator_blind_healer": 6,
+    "suitable_for_scaffold": 3
+  },
+  "rescue_adjudication_counts": {
+    "compile_or_entry_improvement": 7,
+    "format_compliance_rescue": 5,
+    "insufficient_evidence": 5
+  },
+  "scope": "existing MBPP+ active development artifacts only",
+  "source_artifacts": {
+    "milestone_2b/paired_analysis_manifest.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_analysis_manifest.json",
+      "sha256": "28bbb8fabbd1cbcfafe7e49f4defd6dc62dc526081c4a2d39e4197478685cbc9"
+    },
+    "milestone_2b/paired_cell_comparison.csv": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_cell_comparison.csv",
+      "sha256": "78bc6e7c67bb5010f45f65e6655b76778117f28c261a02470ef0bff2e5e18ea6"
+    },
+    "paired_v0/p0/evaluation_results.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/evaluation_results.csv",
+      "sha256": "86525489640c2076dfd4d35e7224a975ca0b5770fe8ad99019476b4d0c1ed54d"
+    },
+    "paired_v0/p0/failure_census.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census.csv",
+      "sha256": "d6df0132893927b36aa1bdb58fbee00fe660be7cd0745ba3c6fd5c4960b59c94"
+    },
+    "paired_v0/p0/generation_plan.json": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json",
+      "sha256": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5"
+    },
+    "paired_v0/p0/pipeline_corrected.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/pipeline_corrected.jsonl",
+      "sha256": "4a8015fec50b4dd1e0d432f66bb01d6972dc2ed73ec748a36773bed2b10531fa"
+    },
+    "paired_v0/p0/raw_generations.jsonl": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/raw_generations.jsonl",
+      "sha256": "24cc22a57f252f46a633dba34d53652398f0b2cf213363af774b82f90bcc9964"
+    },
+    "paired_v0/p0/scaffold_evidence_ledger.csv": {
+      "path": "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/scaffold_evidence_ledger.csv",
+      "sha256": "ea71e31175e72fc9146299dc2172ec85b8a6cb5c75bbbff55d5533305023f6ad"
+    },
+    "paired_v0/p1/evaluation_results.csv": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/evaluation_results.csv",
+      "sha256": "6c1a73cfba4b03db9b970b3411d1536b21dfd1333579cb75408176c34e69742a"
+    },
+    "paired_v0/p1/evaluation_summary.md": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/evaluation_summary.md",
+      "sha256": "66583a8d43f486a17df4e6a2f2621d7b58aba2aae5b0002a94bdef185375fb95"
+    },
+    "paired_v0/p1/first_attempt_recovery_manifest.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/first_attempt_recovery_manifest.json",
+      "sha256": "138290888eb714a8f9d9e524f71ab80d0e59d83df52d5f073636d5adac52809f"
+    },
+    "paired_v0/p1/generation_plan.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/generation_plan.json",
+      "sha256": "da9875857782711b46b3116bc5d21421bdfdd3dd71f5b2dc9bb5a37805ccec13"
+    },
+    "paired_v0/p1/pipeline_corrected.jsonl": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/pipeline_corrected.jsonl",
+      "sha256": "4bdf90e08e8060c81756d63334d0df4b976205159349ea81472c66c6cc15204d"
+    },
+    "paired_v0/p1/raw_generations.jsonl": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/raw_generations.jsonl",
+      "sha256": "42625c93bc68ed736cb865aa35dc02bda8dce1172c6f5ade1bde1c0525c455c7"
+    },
+    "scaffold_v0.txt": {
+      "path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+      "sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
+    }
+  },
+  "starting_expected_head": "c5731174758e44afb3b2cfda3abc39bb7d13f4ef",
+  "targeted_tests": "tests/finals_rebuild/test_mbpp_scaffold_v1_candidate_design.py",
+  "transition_counts": {
+    "fail_to_fail": 53,
+    "fail_to_pass": 17,
+    "pass_to_fail": 17,
+    "pass_to_pass": 13
+  }
+}

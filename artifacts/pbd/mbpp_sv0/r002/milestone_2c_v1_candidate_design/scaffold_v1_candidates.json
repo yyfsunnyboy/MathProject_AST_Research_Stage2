@@ -1,0 +1,58 @@
+{
+  "analysis_version": "milestone_2c_scaffold_v1_candidates_v1",
+  "candidate_count": 3,
+  "candidates": [
+    {
+      "candidate_id": "v1_candidate_a_conservative_compaction",
+      "changes_from_v0": [
+        "Compacts seven lines to four.",
+        "Merges duplicate source-only and entry-point wording.",
+        "Removes explicit bans on assertions, tests, print statements, example calls, and alternatives."
+      ],
+      "changes_prompt_composition": false,
+      "design_rationale": "Preserve the directly supported format and entry-point constraints while removing redundant, potentially distracting prohibitions.",
+      "exact_text_utf8": "Return exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+      "expected_improvement": "Retain plain executable Python delivery while reducing prompt load and possible interference with semantic solution generation.",
+      "prompt_composition_note": "Keep official prompt + fixed separator + appended candidate scaffold.",
+      "recommended": true,
+      "regression_risk": "The shorter wording may allow test/example code or public-function redefinition to reappear.",
+      "supported_by_current_development_evidence": "partially; format retention is directly supported, semantic benefit is only an inference"
+    },
+    {
+      "candidate_id": "v1_candidate_b_minimal_output_contract",
+      "changes_from_v0": [
+        "Reduces seven lines to two.",
+        "Drops explicit parameter, import, test, print, and redefinition rules."
+      ],
+      "changes_prompt_composition": false,
+      "design_rationale": "Test whether the strongest format evidence can be retained with minimal instruction load.",
+      "exact_text_utf8": "Return one complete executable Python source file implementing the requested function.\nUse no Markdown fences or explanatory text; output only Python code.\n",
+      "expected_improvement": "Lowest instruction burden among candidates.",
+      "prompt_composition_note": "Keep official prompt + fixed separator + appended candidate scaffold.",
+      "recommended": false,
+      "regression_risk": "Higher risk of missing imports, wrong signature, or extra executable examples.",
+      "supported_by_current_development_evidence": "partially; format rules are supported but removal risks are not estimated"
+    },
+    {
+      "candidate_id": "v1_candidate_c_signature_emphasis",
+      "changes_from_v0": [
+        "Reduces seven lines to three.",
+        "Retains exact signature, single-definition, import, no-fence, and no-explanation intent.",
+        "Drops explicit bans on assertions, tests, prints, examples, and alternatives."
+      ],
+      "changes_prompt_composition": false,
+      "design_rationale": "Retain stronger signature protection while shortening the source-only contract.",
+      "exact_text_utf8": "Output only one complete executable Python source file, without Markdown fences or explanations.\nImplement the requested public function exactly once with the required name and parameter list.\nInclude all imports required by the implementation.\n",
+      "expected_improvement": "May preserve the observed entry-point improvement with less redundancy.",
+      "prompt_composition_note": "Keep official prompt + fixed separator + appended candidate scaffold.",
+      "recommended": false,
+      "regression_risk": "The phrase 'exactly once' may still overconstrain legitimate helper patterns or model attention.",
+      "supported_by_current_development_evidence": "partially; entry-point improvement is observed but line-level causality is not identified"
+    }
+  ],
+  "creates_v1_run_directory": false,
+  "evalplus_executions": 0,
+  "freeze_status": "尚不凍結，只保留候選",
+  "model_calls": 0,
+  "recommended_candidate_id": "v1_candidate_a_conservative_compaction"
+}
