@@ -1,0 +1,93 @@
+{
+  "evidence_only_statement": "The two complete saved journals are incident evidence only and contribute zero formal-generation cells.",
+  "existing_artifacts": [
+    {
+      "path": "artifacts/pbd/mbpp_e40/ca/r001/generation_plan.json",
+      "sha256": "883c9ad85725953e32a611a5cc6b6730d38c7b71c28c01206f67d3f9e859d12f",
+      "size_bytes": 62707
+    },
+    {
+      "path": "artifacts/pbd/mbpp_e40/ca/r001/j/151d77fae8ffac7c760a91767c4f6c67bd039776bd906879ffcd099a9015f8be.json",
+      "sha256": "30931786181bb62ba7f47e940a1ac478803d9df10feb2127fc6ccbef9b639545",
+      "size_bytes": 22154
+    },
+    {
+      "path": "artifacts/pbd/mbpp_e40/ca/r001/j/29fc8cf9ec16041ef35778656dbc6a7d531817363e19c04e856343a5d29796b6.json",
+      "sha256": "5e0c2dd5d7ff718437d102c0832ef1328eca615ecdfc57cb9bceb9c5d6e9486f",
+      "size_bytes": 3866
+    }
+  ],
+  "incident_type": "operator_ctrl_c_interrupt_during_sequential_generation",
+  "incident_version": "candidate_a_operator_interrupt_r001_v1",
+  "journal_count": 2,
+  "journal_records": [
+    {
+      "derived_status": "complete_saved_first_attempt_incident_evidence_only",
+      "formal_analysis_eligible": false,
+      "generation_complete": true,
+      "generation_id": "151d77fae8ffac7c760a91767c4f6c67bd039776bd906879ffcd099a9015f8be",
+      "journal_file_sha256": "30931786181bb62ba7f47e940a1ac478803d9df10feb2127fc6ccbef9b639545",
+      "journal_file_size_bytes": 22154,
+      "journal_path": "artifacts/pbd/mbpp_e40/ca/r001/j/151d77fae8ffac7c760a91767c4f6c67bd039776bd906879ffcd099a9015f8be.json",
+      "journal_status_field": null,
+      "length_terminated": true,
+      "model_done": true,
+      "model_done_reason": "length",
+      "model_generation_complete": true,
+      "planned_cell_id": "151d77fae8ffac7c760a91767c4f6c67bd039776bd906879ffcd099a9015f8be",
+      "protocol_compliant": true,
+      "protocol_violations": [],
+      "raw_response_sha256": "20e2451a476ccce4dd7ee9475a1b163807833908c828adf4aacea50e611075b3",
+      "raw_response_size_bytes": 9228,
+      "response_fully_saved": true,
+      "seed": 11,
+      "task_id": "Mbpp/748",
+      "transport_complete": true
+    },
+    {
+      "derived_status": "complete_saved_first_attempt_incident_evidence_only",
+      "formal_analysis_eligible": false,
+      "generation_complete": true,
+      "generation_id": "29fc8cf9ec16041ef35778656dbc6a7d531817363e19c04e856343a5d29796b6",
+      "journal_file_sha256": "5e0c2dd5d7ff718437d102c0832ef1328eca615ecdfc57cb9bceb9c5d6e9486f",
+      "journal_file_size_bytes": 3866,
+      "journal_path": "artifacts/pbd/mbpp_e40/ca/r001/j/29fc8cf9ec16041ef35778656dbc6a7d531817363e19c04e856343a5d29796b6.json",
+      "journal_status_field": null,
+      "length_terminated": false,
+      "model_done": true,
+      "model_done_reason": "stop",
+      "model_generation_complete": true,
+      "planned_cell_id": "29fc8cf9ec16041ef35778656dbc6a7d531817363e19c04e856343a5d29796b6",
+      "protocol_compliant": true,
+      "protocol_violations": [],
+      "raw_response_sha256": "f00328582f9cda58fd1c96df51c5c815603d85441517ef8f950d66248bd707d0",
+      "raw_response_size_bytes": 564,
+      "response_fully_saved": true,
+      "seed": 22,
+      "task_id": "Mbpp/748",
+      "transport_complete": true
+    }
+  ],
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r001",
+  "physical_storage_directory": "artifacts/pbd/mbpp_e40/ca/r001",
+  "planned_cells": 200,
+  "reuse_policy": {
+    "delete": false,
+    "merge_into_r002": false,
+    "modify": false,
+    "move": false,
+    "resume": false,
+    "retry": false,
+    "selective_retry": false,
+    "use_in_formal_analysis": false
+  },
+  "status": "permanently_invalidated_operator_interrupt",
+  "unpersisted_in_flight_request": {
+    "formal_cell_credit": 0,
+    "known_to_exist": false,
+    "possible": true,
+    "reason": "Ctrl+C may have occurred during a later run_attempt or after a response but before journal persistence; the disk evidence cannot prove or exclude such a request.",
+    "recoverable_from_disk": false
+  },
+  "valid_generation_for_formal_analysis": 0
+}

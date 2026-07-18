@@ -36,6 +36,7 @@ from agent_tools.finals_rebuild.ollama_generation_runner import (  # noqa: E402
     run_attempt,
 )
 from scripts import freeze_mbpp_candidate_a_expansion_protocol as frozen  # noqa: E402
+from scripts import freeze_mbpp_candidate_a_interruption_recovery as recovery  # noqa: E402
 from scripts import run_mbpp_development_baseline as baseline  # noqa: E402
 
 
@@ -47,12 +48,14 @@ TREATMENTS = {
         "run_id": frozen.P0_RUN_ID,
         "physical": frozen.P0_PHYSICAL,
         "plan_name": "p0_expansion_generation_plan.json",
+        "plan_directory": frozen.OUTPUT_RELATIVE,
     },
     "candidate_a": {
         "treatment_id": frozen.CA_TREATMENT_ID,
-        "run_id": frozen.CA_RUN_ID,
-        "physical": frozen.CA_PHYSICAL,
-        "plan_name": "candidate_a_expansion_generation_plan.json",
+        "run_id": recovery.CA_R002_RUN_ID,
+        "physical": recovery.CA_R002_RELATIVE,
+        "plan_name": "candidate_a_r002_generation_plan.json",
+        "plan_directory": recovery.OUTPUT_RELATIVE,
     },
 }
 
@@ -79,11 +82,15 @@ def resolve_run_dir(treatment: str, run_id: str) -> Path:
 
 def load_frozen_plan(treatment: str) -> dict[str, Any]:
     spec = _treatment(treatment)
-    outputs = frozen.frozen_outputs(REPO_ROOT)
     relative = Path(spec["plan_name"])
-    committed = REPO_ROOT / frozen.OUTPUT_RELATIVE / relative
+    committed = REPO_ROOT / spec["plan_directory"] / relative
     _require(committed.is_file(), "frozen generation plan missing")
-    _require(committed.read_bytes() == outputs[relative], "frozen generation plan drift")
+    expected = (
+        frozen.frozen_outputs(REPO_ROOT)[relative]
+        if treatment == "p0"
+        else recovery.render_json(recovery.build_r002_plan(REPO_ROOT))
+    )
+    _require(committed.read_bytes() == expected, "frozen generation plan drift")
     plan = json.loads(committed.read_text(encoding="utf-8"))
     _require(plan["run_id"] == spec["run_id"], "plan run ID mismatch")
     _require(plan["treatment_id"] == spec["treatment_id"], "plan treatment mismatch")
@@ -96,10 +103,14 @@ def load_frozen_plan(treatment: str) -> dict[str, Any]:
 
 
 def preflight() -> dict[str, Any]:
-    outputs = frozen.frozen_outputs(REPO_ROOT)
-    for relative, expected in outputs.items():
+    original_outputs = frozen.frozen_outputs(REPO_ROOT)
+    for relative, expected in original_outputs.items():
         path = REPO_ROOT / frozen.OUTPUT_RELATIVE / relative
         _require(path.is_file() and path.read_bytes() == expected, f"frozen output drift: {relative}")
+    recovery_outputs = recovery.frozen_outputs(REPO_ROOT)
+    for relative, expected in recovery_outputs.items():
+        path = REPO_ROOT / recovery.OUTPUT_RELATIVE / relative
+        _require(path.is_file() and path.read_bytes() == expected, f"recovery output drift: {relative}")
     p0 = load_frozen_plan("p0")
     candidate = load_frozen_plan("candidate_a")
     _require(
@@ -107,7 +118,7 @@ def preflight() -> dict[str, Any]:
         == [(cell["task_id"], cell["seed"]) for cell in candidate["cells"]],
         "paired schedule mismatch",
     )
-    storage = frozen.build_storage_mapping(p0, candidate)
+    storage = recovery.build_storage_mapping(REPO_ROOT)
     _require(all(run["within_budget"] for run in storage["runs"]), "path budget failure")
     return {
         "status": "preflight_ok_no_model_call",
@@ -213,6 +224,7 @@ def _attempt_record(
 def generate(*, treatment: str, run_id: str, base_url: str, timeout_seconds: float) -> None:
     plan = load_frozen_plan(treatment)
     _require(timeout_seconds == frozen.TIMEOUT_SECONDS, "timeout must be exactly 600 seconds")
+    _require(treatment != "p0", "P0 r001 is valid and generation rerun is permanently forbidden")
     run_dir = resolve_run_dir(treatment, run_id)
     _require(not run_dir.exists(), "run directory already exists; retry/resume/overwrite forbidden")
     preflight_result = preflight()

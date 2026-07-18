@@ -24,6 +24,7 @@ from agent_tools.finals_rebuild.generation_persistence import (  # noqa: E402
 from scripts import build_mbpp_scaffold_healer_evidence_packets as evidence  # noqa: E402
 from scripts import build_mbpp_scaffold_v0_paired_analysis as paired_math  # noqa: E402
 from scripts import freeze_mbpp_candidate_a_expansion_protocol as frozen  # noqa: E402
+from scripts import freeze_mbpp_candidate_a_interruption_recovery as recovery  # noqa: E402
 from scripts import run_mbpp_candidate_a_expansion as runner  # noqa: E402
 
 
@@ -61,7 +62,7 @@ def _status_transition(p0: str, candidate: str) -> str:
 
 def build_analysis(p0_run_id: str, candidate_run_id: str) -> dict[str, Any]:
     _require(p0_run_id == frozen.P0_RUN_ID, "P0 run ID differs from frozen plan")
-    _require(candidate_run_id == frozen.CA_RUN_ID, "Candidate run ID differs from frozen plan")
+    _require(candidate_run_id == recovery.CA_R002_RUN_ID, "Candidate run ID differs from recovery plan")
     p0_plan = runner.load_frozen_plan("p0")
     ca_plan = runner.load_frozen_plan("candidate_a")
     planned = [(cell["task_id"], cell["seed"]) for cell in p0_plan["cells"]]
@@ -196,7 +197,7 @@ def _csv_bytes(rows: list[dict[str, str]]) -> str:
 
 
 def write_analysis(p0_run_id: str, candidate_run_id: str) -> None:
-    output_dir = REPO_ROOT / frozen.PAIRED_PHYSICAL
+    output_dir = REPO_ROOT / recovery.PAIRED_R002_RELATIVE
     _require(not output_dir.exists(), "paired analysis directory exists; overwrite forbidden")
     result = build_analysis(p0_run_id, candidate_run_id)
     durable_write_text_new(output_dir / "paired_cell_results.csv", _csv_bytes(result["paired_rows"]))

@@ -1,0 +1,41 @@
+{
+  "invalidated_run": {
+    "logical_run_id": "mbpp_q35_9b_ca_exp40_r001",
+    "physical_storage_directory": "artifacts/pbd/mbpp_e40/ca/r001",
+    "reuse_allowed": false,
+    "status": "permanently_invalidated_operator_interrupt"
+  },
+  "mapping_version": "candidate_a_interruption_recovery_short_path_v1",
+  "paired_analysis": {
+    "analysis_id": "mbpp_q35_9b_ca_exp40_paired_r002",
+    "physical_output_directory": "artifacts/pbd/mbpp_e40/pa/r002",
+    "preflight_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\pa\\r002\\paired_analysis_manifest.json",
+    "preflight_path_length": 124,
+    "within_budget": true
+  },
+  "r002_directory_created_by_freezer": false,
+  "requires_windows_long_path_registry_change": false,
+  "runs": [
+    {
+      "checked_path_count": 207,
+      "journal_directory_name": "j",
+      "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+      "longest_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\p0\\r001\\j\\0eb9607223a484740924cfdae9d6b8a9d0b4de9628d7650ea5eac20e9d7623ed.json",
+      "longest_windows_path_length": 166,
+      "physical_storage_directory": "artifacts/pbd/mbpp_e40/p0/r001",
+      "status": "existing_valid_do_not_rerun",
+      "within_budget": true
+    },
+    {
+      "checked_path_count": 207,
+      "journal_directory_name": "j",
+      "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+      "longest_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\ca\\r002\\j\\cacf39e6340f334335acda2f859e294c687fec0bbe111237b3cb449ee702cc43.json",
+      "longest_windows_path_length": 166,
+      "physical_storage_directory": "artifacts/pbd/mbpp_e40/ca/r002",
+      "status": "planned_not_created",
+      "within_budget": true
+    }
+  ],
+  "windows_path_budget_chars": 240
+}
