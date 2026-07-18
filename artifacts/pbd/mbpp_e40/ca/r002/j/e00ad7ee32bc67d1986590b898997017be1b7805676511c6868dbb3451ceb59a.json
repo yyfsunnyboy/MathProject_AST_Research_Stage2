@@ -1,0 +1,62 @@
+{
+  "cell_index": 195,
+  "composed_prompt_sha256": "587f1b10d3e8b36c3e02df95aa7ea8645eaf7a8e9858be993b25fe290f9f64ca",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "e00ad7ee32bc67d1986590b898997017be1b7805676511c6868dbb3451ceb59a",
+  "generation_latency_seconds": 1.0310000000172295,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:53:40.1558425Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 22,
+    "eval_duration": 665931000,
+    "load_duration": 301159500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 185,
+    "prompt_eval_duration": 46209000,
+    "total_duration": 1016674600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "7ddb48a09e43d26d22915d43a75e52004bdbde9a6415d817f4ab0becde2ba221",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "e00ad7ee32bc67d1986590b898997017be1b7805676511c6868dbb3451ceb59a",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:53:40.1558425Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def average_tuple(data):\\n    return [sum(t) / len(t) for t in data]\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1016674600,\"load_duration\":301159500,\"prompt_eval_count\":185,\"prompt_eval_duration\":46209000,\"eval_count\":22,\"eval_duration\":665931000}",
+  "raw_response": "def average_tuple(data):\n    return [sum(t) / len(t) for t in data]",
+  "raw_response_sha256": "3f4d4e68d77afc383b671a50c33730f1475fa2d7c6ac12a4ae689949db8924df",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function which takes a tuple of tuples and returns the average value for each tuple as a list.\nassert average_tuple(((10, 10, 10, 12), (30, 45, 56, 45), (81, 80, 39, 32), (1, 2, 3, 4)))==[30.5, 34.25, 27.0, 23.25]\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/615",
+  "transport_complete": true
+}

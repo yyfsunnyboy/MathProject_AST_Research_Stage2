@@ -1,0 +1,62 @@
+{
+  "cell_index": 92,
+  "composed_prompt_sha256": "11362859216156b240214225aa6644d2d77e67716d9b5d073717639c15b09e40",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "378e9923389c34d435777f6ca8e1f988f78639587c522bd7e3b9abe3a09f5cbb",
+  "generation_latency_seconds": 4.7960000000020955,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:36:12.1875069Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 136,
+    "eval_duration": 4241859000,
+    "load_duration": 446603200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 111,
+    "prompt_eval_duration": 48364000,
+    "total_duration": 4768848400
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "517c446ea8d4931b92d67a93599a01fa424604f701ec3af3632dae61ae47c2f9",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "378e9923389c34d435777f6ca8e1f988f78639587c522bd7e3b9abe3a09f5cbb",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:36:12.1875069Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def min_val(lst):\\n    if not lst:\\n        raise ValueError(\\\"List cannot be empty\\\")\\n    \\n    # Initialize minimum with first element's type-appropriate value\\n    current_min = None\\n    \\n    for item in lst:\\n        try:\\n            numeric_value = float(item)  # Handles int, float, and string representations of numbers\\n        except (ValueError, TypeError):\\n            continue\\n        \\n        if current_min is None or numeric_value \\u003c current_min:\\n            current_min = numeric_value\\n            \\n    return current_min\\n\\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":4768848400,\"load_duration\":446603200,\"prompt_eval_count\":111,\"prompt_eval_duration\":48364000,\"eval_count\":136,\"eval_duration\":4241859000}",
+  "raw_response": "def min_val(lst):\n    if not lst:\n        raise ValueError(\"List cannot be empty\")\n    \n    # Initialize minimum with first element's type-appropriate value\n    current_min = None\n    \n    for item in lst:\n        try:\n            numeric_value = float(item)  # Handles int, float, and string representations of numbers\n        except (ValueError, TypeError):\n            continue\n        \n        if current_min is None or numeric_value < current_min:\n            current_min = numeric_value\n            \n    return current_min\n\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2",
+  "raw_response_sha256": "e9c856ba254ff809210f2de30b644cce6d357bd9bf23124b4e35deb344aa7bd6",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the minimum value in a given heterogeneous list.\nassert min_val(['Python', 3, 2, 4, 5, 'version'])==2\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/410",
+  "transport_complete": true
+}

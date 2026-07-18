@@ -1,0 +1,62 @@
+{
+  "cell_index": 56,
+  "composed_prompt_sha256": "9a3e9f551688da6b555114baa437514c7e59167b4cbabfff3ae4a5c2bfd502f0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "cd5e5158c62e674c16d1cb038b7aef17966b88ca3a7973a3459ccf77cf83de34",
+  "generation_latency_seconds": 9.76600000000326,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:30:46.2506098Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 293,
+    "eval_duration": 9211544000,
+    "load_duration": 344051400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 103,
+    "prompt_eval_duration": 147724000,
+    "total_duration": 9740048200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2032618777271c894a12bd18b4f749e0d55659817aa70ebc4a79fcec5c10d38f",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "cd5e5158c62e674c16d1cb038b7aef17966b88ca3a7973a3459ccf77cf83de34",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:30:46.2506098Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def toggle_middle_bits(n):\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be a non-negative integer\\\")\\n    \\n    # Handle edge cases where there are no middle bits (only first and last)\\n    if n == 1 or n == 2:\\n        return n\\n    \\n    # Find the position of the most significant bit (first bit from left in binary representation)\\n    msb_pos = n.bit_length() - 1\\n    \\n    # The mask should cover all bits except the first and last ones.\\n    # First bit is at index 'msb_pos'\\n    # Last bit is at index '0'\\n    # We want to toggle bits from (msb_pos - 1) down to 1 inclusive.\\n    \\n    if msb_pos \\u003c= 1:\\n        return n\\n    \\n    start_bit = msb_pos - 1\\n    end_bit = 1\\n    \\n    mask_length = start_bit - end_bit + 1\\n    \\n    # Create a mask with 'mask_length' ones starting from bit position 'end_bit' up to 'start_bit'\\n    if mask_length \\u003c= 0:\\n        return n\\n        \\n    lower_mask = (1 \\u003c\\u003c mask_length) - 1\\n    toggle_mask = lower_mask \\u003c\\u003c end_bit\\n    \\n    result = n ^ toggle_mask\\n    return result\\n\\nassert toggle_middle_bits(9) == 15\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9740048200,\"load_duration\":344051400,\"prompt_eval_count\":103,\"prompt_eval_duration\":147724000,\"eval_count\":293,\"eval_duration\":9211544000}",
+  "raw_response": "def toggle_middle_bits(n):\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    \n    # Handle edge cases where there are no middle bits (only first and last)\n    if n == 1 or n == 2:\n        return n\n    \n    # Find the position of the most significant bit (first bit from left in binary representation)\n    msb_pos = n.bit_length() - 1\n    \n    # The mask should cover all bits except the first and last ones.\n    # First bit is at index 'msb_pos'\n    # Last bit is at index '0'\n    # We want to toggle bits from (msb_pos - 1) down to 1 inclusive.\n    \n    if msb_pos <= 1:\n        return n\n    \n    start_bit = msb_pos - 1\n    end_bit = 1\n    \n    mask_length = start_bit - end_bit + 1\n    \n    # Create a mask with 'mask_length' ones starting from bit position 'end_bit' up to 'start_bit'\n    if mask_length <= 0:\n        return n\n        \n    lower_mask = (1 << mask_length) - 1\n    toggle_mask = lower_mask << end_bit\n    \n    result = n ^ toggle_mask\n    return result\n\nassert toggle_middle_bits(9) == 15",
+  "raw_response_sha256": "ca8edb30eccfa96feb21ef2a1e151e17ffe70e09a75361e4ad35ad6319b6cdda",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to toggle bits of the number except the first and the last bit. \nassert toggle_middle_bits(9) == 15\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/735",
+  "transport_complete": true
+}

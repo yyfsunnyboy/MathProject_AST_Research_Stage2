@@ -1,0 +1,62 @@
+{
+  "cell_index": 36,
+  "composed_prompt_sha256": "4d27e70d6b40f17d3cdf5b171feefae86508b0c438b2db5b96f5745872687ff8",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "ebc852cea523b3a31b1de11333a5ea9dff202cc6c24dd76d3c16253d11d5b01f",
+  "generation_latency_seconds": 2.125,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:29:12.2807236Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 49,
+    "eval_duration": 1545648000,
+    "load_duration": 374724600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 118,
+    "prompt_eval_duration": 157517000,
+    "total_duration": 2110684600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "ebc852cea523b3a31b1de11333a5ea9dff202cc6c24dd76d3c16253d11d5b01f",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:29:12.2807236Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def two_unique_nums(nums):\\n    seen = set()\\n    result = []\\n    for num in nums:\\n        if num not in seen:\\n            seen.add(num)\\n            result.append(num)\\n    return result\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2110684600,\"load_duration\":374724600,\"prompt_eval_count\":118,\"prompt_eval_duration\":157517000,\"eval_count\":49,\"eval_duration\":1545648000}",
+  "raw_response": "def two_unique_nums(nums):\n    seen = set()\n    result = []\n    for num in nums:\n        if num not in seen:\n            seen.add(num)\n            result.append(num)\n    return result",
+  "raw_response_sha256": "5e4f3547d664de916546e430068ff97295cdfb83fa156ec81f847f5bbe18a76a",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to remove duplicate numbers from a given number of lists.\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5]\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/572",
+  "transport_complete": true
+}

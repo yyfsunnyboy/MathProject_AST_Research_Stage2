@@ -1,0 +1,62 @@
+{
+  "cell_index": 144,
+  "composed_prompt_sha256": "e5493d809f01095704e8637fa3f9d46c3b2cb0a4e1b87e2d921d0aa1aeae6d87",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "22e095e40fc9ffa789244875ad80bbcdf5a39c1d8ff2575ba6b18d6bf7aaa978",
+  "generation_latency_seconds": 27.796999999991385,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:48:55.3254572Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 888,
+    "eval_duration": 27388939000,
+    "load_duration": 331364200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 125,
+    "prompt_eval_duration": 45978000,
+    "total_duration": 27799987800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "32196e35d26f434b65249c3802cd0ae9779255ef8d0794c64c322802a60b5021",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "22e095e40fc9ffa789244875ad80bbcdf5a39c1d8ff2575ba6b18d6bf7aaa978",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:48:55.3254572Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def largest_subset(nums):\\n    if not nums:\\n        return 0\\n    \\n    # Sort to ensure we process numbers in increasing order (though GCD logic doesn't strictly require it, \\n    # sorting helps with understanding divisibility chains)\\n    sorted_nums = sorted(nums)\\n    \\n    n = len(sorted_nums)\\n    dp = [1] * n  # dp[i] stores the size of largest subset ending at index i\\n    \\n    for i in range(n):\\n        current_num = sorted_nums[i]\\n        if current_num == 0:\\n            continue\\n        \\n        max_prev_size = 0\\n        prev_idx = -1\\n        \\n        for j in range(i):\\n            # Check divisibility condition: either nums[j] divides nums[i] or vice versa.\\n            # Since we want every pair to be divisible, if a subset ends at i and includes some previous element k,\\n            # then all elements must share common factors such that any two are divisible.\\n            # However, the problem statement implies \\\"every pair is divisible\\\" which usually means:\\n            # For any x, y in subset, x % y == 0 or y % x == 0.\\n            \\n            if current_num != 0 and sorted_nums[j] != 0:\\n                rem = current_num % sorted_nums[j]\\n                if rem == 0:\\n                    max_prev_size = max(max_prev_size, dp[j])\\n        \\n        # If we found a valid previous element that divides the current one (or vice versa)\\n        # Actually, for \\\"every pair divisible\\\", it's not enough to just check immediate predecessor.\\n        # But wait - if every pair must be divisible, then all numbers in the subset must share \\n        # a common divisor relationship such that they form a chain or star graph of divisibility.\\n        \\n        # Let's reconsider: The condition \\\"every pair is divisible\\\" means for any two distinct elements x,y:\\n        # either x % y == 0 or y % x == 0. This implies all numbers must be multiples of some base number,\\n        # and they form a divisibility chain (like k*a1, k*a2 where each ai divides the next).\\n        \\n        # Actually simpler approach: \\n        # If we sort the array, then for any subset where every pair is divisible, \\n        # it must be that each element divides the next one in sorted order.\\n        # So dp[i] = 1 + max(dp[j]) for all j \\u003c i such that nums[j] divides nums[i].\\n        \\n        if current_num != 0:\\n            best_j = -1\\n            for j in range(i):\\n                if sorted_nums[j] == 0 or sorted_nums[i] % sorted_nums[j] == 0:\\n                    if dp[j] \\u003e max_prev_size:\\n                        max_prev_size = dp[j]\\n            \\n        # But this logic is flawed because we need ALL pairs to be divisible, not just adjacent ones.\\n        # Example: [2,4,8] -\\u003e all pairs work (2|4, 2|8, 4|8)\\n        # Example: [3,6,12] -\\u003e works\\n        # But what about [2,4,5]? Pairs: (2,4) ok, (2,5) no, (4,5) no. So invalid.\\n        \\n        # Correct approach with DP: \\n        # dp[i] = max size of subset ending at i where all pairs are divisible.\\n        # For this to hold for ALL pairs in the subset ending at i, every element j \\u003c i in that subset\\n        # must divide nums[i]. So we can extend any valid chain from j if nums[j] divides nums[i].\\n        \\n        dp[i] = 1 + max([dp[j] for j in range(i) if sorted_nums[j] != 0 and sorted_nums[i] % sorted_nums[j] == 0], default=0)\\n    \\n    return max(dp, default=0)\\n\\n# Test case from problem statement\\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":27799987800,\"load_duration\":331364200,\"prompt_eval_count\":125,\"prompt_eval_duration\":45978000,\"eval_count\":888,\"eval_duration\":27388939000}",
+  "raw_response": "def largest_subset(nums):\n    if not nums:\n        return 0\n    \n    # Sort to ensure we process numbers in increasing order (though GCD logic doesn't strictly require it, \n    # sorting helps with understanding divisibility chains)\n    sorted_nums = sorted(nums)\n    \n    n = len(sorted_nums)\n    dp = [1] * n  # dp[i] stores the size of largest subset ending at index i\n    \n    for i in range(n):\n        current_num = sorted_nums[i]\n        if current_num == 0:\n            continue\n        \n        max_prev_size = 0\n        prev_idx = -1\n        \n        for j in range(i):\n            # Check divisibility condition: either nums[j] divides nums[i] or vice versa.\n            # Since we want every pair to be divisible, if a subset ends at i and includes some previous element k,\n            # then all elements must share common factors such that any two are divisible.\n            # However, the problem statement implies \"every pair is divisible\" which usually means:\n            # For any x, y in subset, x % y == 0 or y % x == 0.\n            \n            if current_num != 0 and sorted_nums[j] != 0:\n                rem = current_num % sorted_nums[j]\n                if rem == 0:\n                    max_prev_size = max(max_prev_size, dp[j])\n        \n        # If we found a valid previous element that divides the current one (or vice versa)\n        # Actually, for \"every pair divisible\", it's not enough to just check immediate predecessor.\n        # But wait - if every pair must be divisible, then all numbers in the subset must share \n        # a common divisor relationship such that they form a chain or star graph of divisibility.\n        \n        # Let's reconsider: The condition \"every pair is divisible\" means for any two distinct elements x,y:\n        # either x % y == 0 or y % x == 0. This implies all numbers must be multiples of some base number,\n        # and they form a divisibility chain (like k*a1, k*a2 where each ai divides the next).\n        \n        # Actually simpler approach: \n        # If we sort the array, then for any subset where every pair is divisible, \n        # it must be that each element divides the next one in sorted order.\n        # So dp[i] = 1 + max(dp[j]) for all j < i such that nums[j] divides nums[i].\n        \n        if current_num != 0:\n            best_j = -1\n            for j in range(i):\n                if sorted_nums[j] == 0 or sorted_nums[i] % sorted_nums[j] == 0:\n                    if dp[j] > max_prev_size:\n                        max_prev_size = dp[j]\n            \n        # But this logic is flawed because we need ALL pairs to be divisible, not just adjacent ones.\n        # Example: [2,4,8] -> all pairs work (2|4, 2|8, 4|8)\n        # Example: [3,6,12] -> works\n        # But what about [2,4,5]? Pairs: (2,4) ok, (2,5) no, (4,5) no. So invalid.\n        \n        # Correct approach with DP: \n        # dp[i] = max size of subset ending at i where all pairs are divisible.\n        # For this to hold for ALL pairs in the subset ending at i, every element j < i in that subset\n        # must divide nums[i]. So we can extend any valid chain from j if nums[j] divides nums[i].\n        \n        dp[i] = 1 + max([dp[j] for j in range(i) if sorted_nums[j] != 0 and sorted_nums[i] % sorted_nums[j] == 0], default=0)\n    \n    return max(dp, default=0)\n\n# Test case from problem statement\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4",
+  "raw_response_sha256": "2d7798a3f937d1395f77f55cf17032f2d928574635b91f189b764faf57d0cff5",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the size of the largest subset of a list of numbers so that every pair is divisible.\nassert largest_subset([ 1, 3, 6, 13, 17, 18 ]) == 4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 44,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 3,
+  "seed": 44,
+  "selective_retry": false,
+  "task_id": "Mbpp/620",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 5,
+  "composed_prompt_sha256": "a4ef65876fcc0cc5fc1c7e306ccef6f8e11eed373d476e8ead6a3c4322fa1c10",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "6a7a6edb50f56aee133fea27a4726c07a056c8503d2ddb38a00bdbc817ac7203",
+  "generation_latency_seconds": 4.125,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:16:33.2408812Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 108,
+    "eval_duration": 3568163000,
+    "load_duration": 464700500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 102,
+    "prompt_eval_duration": 49269000,
+    "total_duration": 4113472000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "165289ec3a2375804f496f7cb39bad86e019dbdf4023b9b718e82ae3aad24722",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "6a7a6edb50f56aee133fea27a4726c07a056c8503d2ddb38a00bdbc817ac7203",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:16:33.2408812Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def capital_words_spaces(text):\\n    if not text:\\n        return text\\n    \\n    result = []\\n    prev_char_is_space_or_punct = True  # Assume start is like a space for logic consistency\\n    \\n    for i, char in enumerate(text):\\n        if char.isupper():\\n            if i \\u003e 0 and (text[i-1].islower() or not text[i-1].isspace()):\\n                result.append(' ')\\n        \\n        result.append(char)\\n    \\n    return ''.join(result)\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":4113472000,\"load_duration\":464700500,\"prompt_eval_count\":102,\"prompt_eval_duration\":49269000,\"eval_count\":108,\"eval_duration\":3568163000}",
+  "raw_response": "def capital_words_spaces(text):\n    if not text:\n        return text\n    \n    result = []\n    prev_char_is_space_or_punct = True  # Assume start is like a space for logic consistency\n    \n    for i, char in enumerate(text):\n        if char.isupper():\n            if i > 0 and (text[i-1].islower() or not text[i-1].isspace()):\n                result.append(' ')\n        \n        result.append(char)\n    \n    return ''.join(result)",
+  "raw_response_sha256": "c497b831022b6dbae69762b8380cacc1ace3bbc1f4e475e50350617331ea2b42",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to put spaces between words starting with capital letters in a given string.\nassert capital_words_spaces(\"Python\") == 'Python'\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/748",
+  "transport_complete": true
+}

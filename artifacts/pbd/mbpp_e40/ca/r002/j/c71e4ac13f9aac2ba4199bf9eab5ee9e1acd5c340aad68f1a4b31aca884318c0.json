@@ -1,0 +1,62 @@
+{
+  "cell_index": 171,
+  "composed_prompt_sha256": "69ae7895baa28f6466aaa64f9243c13b68dd0d89d4843aa322004f192e81bcc3",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "c71e4ac13f9aac2ba4199bf9eab5ee9e1acd5c340aad68f1a4b31aca884318c0",
+  "generation_latency_seconds": 5.5939999999827705,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:52:28.9157313Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 166,
+    "eval_duration": 5080355000,
+    "load_duration": 314812100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 107,
+    "prompt_eval_duration": 148294000,
+    "total_duration": 5591754300
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "560bf5981aa1ecd44ec75ec6dc8071bcf5813eec497e2d2877b55069046a7ed4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "c71e4ac13f9aac2ba4199bf9eab5ee9e1acd5c340aad68f1a4b31aca884318c0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:52:28.9157313Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def right_insertion(nums: list[int], target: int) -\\u003e int:\\n    left = 0\\n    right = len(nums)\\n    \\n    while left \\u003c right:\\n        mid = (left + right) // 2\\n        \\n        if nums[mid] \\u003c target:\\n            # If the middle element is less than the target, \\n            # we need to look in the upper half. The insertion point must be at least mid + 1.\\n            left = mid + 1\\n        else:\\n            # If the middle element is greater or equal to the target,\\n            # the insertion point could be here (mid) or somewhere before it.\\n            right = mid\\n            \\n    return left\\n\\nassert right_insertion([1,2,4,5],6)==4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":5591754300,\"load_duration\":314812100,\"prompt_eval_count\":107,\"prompt_eval_duration\":148294000,\"eval_count\":166,\"eval_duration\":5080355000}",
+  "raw_response": "def right_insertion(nums: list[int], target: int) -> int:\n    left = 0\n    right = len(nums)\n    \n    while left < right:\n        mid = (left + right) // 2\n        \n        if nums[mid] < target:\n            # If the middle element is less than the target, \n            # we need to look in the upper half. The insertion point must be at least mid + 1.\n            left = mid + 1\n        else:\n            # If the middle element is greater or equal to the target,\n            # the insertion point could be here (mid) or somewhere before it.\n            right = mid\n            \n    return left\n\nassert right_insertion([1,2,4,5],6)==4",
+  "raw_response_sha256": "0dc7056bf1dc0bc8e26c7dc7c1ec3f596b4ffb0e5b797fbca592147a72b687d6",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to locate the right insertion point for a specified value in sorted order.\nassert right_insertion([1,2,4,5],6)==4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/786",
+  "transport_complete": true
+}

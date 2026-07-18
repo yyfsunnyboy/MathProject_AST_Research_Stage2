@@ -1,0 +1,62 @@
+{
+  "cell_index": 40,
+  "composed_prompt_sha256": "4d27e70d6b40f17d3cdf5b171feefae86508b0c438b2db5b96f5745872687ff8",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "ea244cfc20b33636c1f3b43d569e420b320193b442a4a498d50dce4bce4b6c2d",
+  "generation_latency_seconds": 1.25,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:29:19.5700198Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 25,
+    "eval_duration": 808110000,
+    "load_duration": 373879700,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 118,
+    "prompt_eval_duration": 48555000,
+    "total_duration": 1236561800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "ea244cfc20b33636c1f3b43d569e420b320193b442a4a498d50dce4bce4b6c2d",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:29:19.5700198Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def two_unique_nums(nums):\\n    return [num for num in nums if nums.count(num) == 1]\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1236561800,\"load_duration\":373879700,\"prompt_eval_count\":118,\"prompt_eval_duration\":48555000,\"eval_count\":25,\"eval_duration\":808110000}",
+  "raw_response": "def two_unique_nums(nums):\n    return [num for num in nums if nums.count(num) == 1]",
+  "raw_response_sha256": "8457d9416eb7d3ed0c6227adf2ab56c2b21782218bff8847a7aa61a7998268b3",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to remove duplicate numbers from a given number of lists.\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5]\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/572",
+  "transport_complete": true
+}

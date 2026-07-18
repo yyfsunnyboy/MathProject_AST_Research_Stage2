@@ -1,0 +1,62 @@
+{
+  "cell_index": 71,
+  "composed_prompt_sha256": "49f228ee54691749566f58bf8cc052a61b4ea04e2a734fdacfe88596c36650ba",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "97c20e4a4149a3efb2f11d10679f0dcfed9aeb79b444a05ba338d2f4f22e1130",
+  "generation_latency_seconds": 2.7339999999967404,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:32:47.0579561Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 65,
+    "eval_duration": 2050474000,
+    "load_duration": 369760000,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 209,
+    "prompt_eval_duration": 207981000,
+    "total_duration": 2702282000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "fbd28ebb10150a15ddfa513235f0bb6c12290a0336d30f2932eaad4cc54ffb9d",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "97c20e4a4149a3efb2f11d10679f0dcfed9aeb79b444a05ba338d2f4f22e1130",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:32:47.0579561Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def filter_data(students: dict[str, tuple[float, float]], min_height: float, min_weight: float) -\\u003e dict[str, tuple[float, float]]:\\n    return {name: stats for name, (height, weight) in students.items() if height \\u003e min_height and weight \\u003e min_weight}\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2702282000,\"load_duration\":369760000,\"prompt_eval_count\":209,\"prompt_eval_duration\":207981000,\"eval_count\":65,\"eval_duration\":2050474000}",
+  "raw_response": "def filter_data(students: dict[str, tuple[float, float]], min_height: float, min_weight: float) -> dict[str, tuple[float, float]]:\n    return {name: stats for name, (height, weight) in students.items() if height > min_height and weight > min_weight}",
+  "raw_response_sha256": "c0d3c3231ddafb575c0f7832334d0ee9fbeb493e6639f4a545d4ee26b913ef7d",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nThe input is given as - a dictionary with a student name as a key and a tuple of float (student_height, student_weight) as a value, - minimal height, - minimal weight. Write a function to filter students that have height and weight above the minimum.\nassert filter_data({'Cierra Vega': (6.2, 70), 'Alden Cantrell': (5.9, 65), 'Kierra Gentry': (6.0, 68), 'Pierre Cox': (5.8, 66)},6.0,70)=={'Cierra Vega': (6.2, 70)}\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/722",
+  "transport_complete": true
+}

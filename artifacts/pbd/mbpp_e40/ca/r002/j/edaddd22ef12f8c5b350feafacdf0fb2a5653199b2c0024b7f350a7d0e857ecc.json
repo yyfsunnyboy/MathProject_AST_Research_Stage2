@@ -1,0 +1,62 @@
+{
+  "cell_index": 35,
+  "composed_prompt_sha256": "3e3fc69a790ceddca663383896f3cc1fb6924acc547bf4309328c94404199c9a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "edaddd22ef12f8c5b350feafacdf0fb2a5653199b2c0024b7f350a7d0e857ecc",
+  "generation_latency_seconds": 9.280999999988126,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:29:10.1285542Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 270,
+    "eval_duration": 8815324000,
+    "load_duration": 366833300,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 107,
+    "prompt_eval_duration": 50542000,
+    "total_duration": 9266143100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "022089c791b10f9d8b0f0c075dca88f0fbba28d076fe4b71d6d1307742ebf77d",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "edaddd22ef12f8c5b350feafacdf0fb2a5653199b2c0024b7f350a7d0e857ecc",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:29:10.1285542Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def median_trapezium(a: float, b: float, c: float) -\\u003e float:\\n    \\\"\\\"\\\"\\n    Calculates the length of the median (midline) of a trapezium.\\n    \\n    The formula for the median is m = (a + b) / 2, where 'a' and 'b' are \\n    the lengths of the parallel sides. The third parameter 'c' represents \\n    one of the non-parallel sides or height depending on context but is not \\n    needed for calculating the median length itself given two bases.\\n    \\n    However, based on the test case: median_trapezium(15, 25, 35) == 20\\n    \\n    If we assume a=15 and b=25 are parallel sides: (15+25)/2 = 40/2 = 20.\\n    The value 35 is ignored for the calculation but accepted as part of input signature.\\n    \\n    Args:\\n        a: Length of first base.\\n        b: Length of second base.\\n        c: Unused parameter (e.g., leg length or height).\\n        \\n    Returns:\\n        Median length.\\n    \\\"\\\"\\\"\\n    return (a + b) / 2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9266143100,\"load_duration\":366833300,\"prompt_eval_count\":107,\"prompt_eval_duration\":50542000,\"eval_count\":270,\"eval_duration\":8815324000}",
+  "raw_response": "def median_trapezium(a: float, b: float, c: float) -> float:\n    \"\"\"\n    Calculates the length of the median (midline) of a trapezium.\n    \n    The formula for the median is m = (a + b) / 2, where 'a' and 'b' are \n    the lengths of the parallel sides. The third parameter 'c' represents \n    one of the non-parallel sides or height depending on context but is not \n    needed for calculating the median length itself given two bases.\n    \n    However, based on the test case: median_trapezium(15, 25, 35) == 20\n    \n    If we assume a=15 and b=25 are parallel sides: (15+25)/2 = 40/2 = 20.\n    The value 35 is ignored for the calculation but accepted as part of input signature.\n    \n    Args:\n        a: Length of first base.\n        b: Length of second base.\n        c: Unused parameter (e.g., leg length or height).\n        \n    Returns:\n        Median length.\n    \"\"\"\n    return (a + b) / 2",
+  "raw_response_sha256": "235dc548c94f41b37c8673be37aff55f9566ef7ebf0d4408247a6b46b2707cc8",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median length of a trapezium.\nassert median_trapezium(15,25,35)==20\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/432",
+  "transport_complete": true
+}

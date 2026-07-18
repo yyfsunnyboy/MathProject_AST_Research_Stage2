@@ -1,0 +1,62 @@
+{
+  "cell_index": 2,
+  "composed_prompt_sha256": "165289ec3a2375804f496f7cb39bad86e019dbdf4023b9b718e82ae3aad24722",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "3039b256417fa986c6543bc0ea8725b4764e7f061080ad6b6aa50820d2ed3c1e",
+  "generation_latency_seconds": 16.5,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:06:35.1615408Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 487,
+    "eval_duration": 15961526000,
+    "load_duration": 457562500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 45,
+    "prompt_eval_duration": 47368000,
+    "total_duration": 16497207500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "165289ec3a2375804f496f7cb39bad86e019dbdf4023b9b718e82ae3aad24722",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "3039b256417fa986c6543bc0ea8725b4764e7f061080ad6b6aa50820d2ed3c1e",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:06:35.1615408Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here’s one way to implement that behavior: insert a space before any word (sequence of non-space characters) whose first character is uppercase, but only if it follows another letter or digit and there isn’t already a space. This keeps single words unchanged while separating capitalized “words” like `PythonIsGreat` → `Python Is Great`.\\n\\n```python\\nimport re\\n\\ndef capital_words_spaces(s: str) -\\u003e str:\\n    # Pattern explanation:\\n    # (?\\u003c=[a-zA-Z0-9])  : positive lookbehind – must be preceded by a letter or digit\\n    # (?! )              : negative lookahead   – not already followed by a space\\n    # [A-Z]              : an uppercase letter to start the new \\\"word\\\"\\n    pattern = re.compile(r'(?\\u003c=[a-zA-Z0-9])(?!\\\\s)([A-Z])')\\n\\n    def replacer(match):\\n        return ' ' + match.group(1)\\n\\n    result = pattern.sub(replacer, s)\\n    # Normalize multiple spaces if any were introduced (e.g., at start/end or consecutive caps)\\n    import re as regex_module\\n    normalized = regex_module.sub(r'\\\\s+', ' ', result).strip()\\n    return normalized\\n\\n\\n# Examples:\\nassert capital_words_spaces(\\\"Python\\\") == \\\"Python\\\"\\nassert capital_words_spaces(\\\"pythonIsGreat\\\") == \\\"python Is Great\\\"\\nassert capital_words_spaces(\\\"HelloWorldTest\\\") == \\\"Hello World Test\\\"\\nassert capital_words_spaces(\\\"ABCDefgh\\\") == \\\"A B C D e f g h\\\"  # each cap gets a space after previous letter\\n```\\n\\nIf your intended rule is simpler—just “put a space before every uppercase-starting word that isn’t at the very start of the string”—you can use this shorter version:\\n\\n```python\\nimport re\\n\\ndef capital_words_spaces(s: str) -\\u003e str:\\n    # Insert space before any uppercase letter not at position 0 and not already preceded by whitespace\\n    return re.sub(r'(?\\u003c!^)(?!\\\\s)([A-Z])', r' \\\\1', s).strip()\\n\\n\\nassert capital_words_spaces(\\\"Python\\\") == \\\"Python\\\"\\n```\\n\\nChoose the version that matches your exact desired behavior; both satisfy `capital_words_spaces(\\\"Python\\\") == 'Python'`.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":16497207500,\"load_duration\":457562500,\"prompt_eval_count\":45,\"prompt_eval_duration\":47368000,\"eval_count\":487,\"eval_duration\":15961526000}",
+  "raw_response": "Here’s one way to implement that behavior: insert a space before any word (sequence of non-space characters) whose first character is uppercase, but only if it follows another letter or digit and there isn’t already a space. This keeps single words unchanged while separating capitalized “words” like `PythonIsGreat` → `Python Is Great`.\n\n```python\nimport re\n\ndef capital_words_spaces(s: str) -> str:\n    # Pattern explanation:\n    # (?<=[a-zA-Z0-9])  : positive lookbehind – must be preceded by a letter or digit\n    # (?! )              : negative lookahead   – not already followed by a space\n    # [A-Z]              : an uppercase letter to start the new \"word\"\n    pattern = re.compile(r'(?<=[a-zA-Z0-9])(?!\\s)([A-Z])')\n\n    def replacer(match):\n        return ' ' + match.group(1)\n\n    result = pattern.sub(replacer, s)\n    # Normalize multiple spaces if any were introduced (e.g., at start/end or consecutive caps)\n    import re as regex_module\n    normalized = regex_module.sub(r'\\s+', ' ', result).strip()\n    return normalized\n\n\n# Examples:\nassert capital_words_spaces(\"Python\") == \"Python\"\nassert capital_words_spaces(\"pythonIsGreat\") == \"python Is Great\"\nassert capital_words_spaces(\"HelloWorldTest\") == \"Hello World Test\"\nassert capital_words_spaces(\"ABCDefgh\") == \"A B C D e f g h\"  # each cap gets a space after previous letter\n```\n\nIf your intended rule is simpler—just “put a space before every uppercase-starting word that isn’t at the very start of the string”—you can use this shorter version:\n\n```python\nimport re\n\ndef capital_words_spaces(s: str) -> str:\n    # Insert space before any uppercase letter not at position 0 and not already preceded by whitespace\n    return re.sub(r'(?<!^)(?!\\s)([A-Z])', r' \\1', s).strip()\n\n\nassert capital_words_spaces(\"Python\") == \"Python\"\n```\n\nChoose the version that matches your exact desired behavior; both satisfy `capital_words_spaces(\"Python\") == 'Python'`.",
+  "raw_response_sha256": "a741e33c82f3beccf2d30722fa48c076eb37c3ff0418109330b1d1741f130020",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to put spaces between words starting with capital letters in a given string.\nassert capital_words_spaces(\"Python\") == 'Python'\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/748",
+  "transport_complete": true
+}

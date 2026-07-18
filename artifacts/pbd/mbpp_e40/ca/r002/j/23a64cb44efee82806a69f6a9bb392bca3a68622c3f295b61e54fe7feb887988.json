@@ -1,0 +1,62 @@
+{
+  "cell_index": 95,
+  "composed_prompt_sha256": "11362859216156b240214225aa6644d2d77e67716d9b5d073717639c15b09e40",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "23a64cb44efee82806a69f6a9bb392bca3a68622c3f295b61e54fe7feb887988",
+  "generation_latency_seconds": 8.78200000000652,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:36:30.0972119Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 264,
+    "eval_duration": 8205093000,
+    "load_duration": 486264200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 111,
+    "prompt_eval_duration": 49589000,
+    "total_duration": 8769573900
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "517c446ea8d4931b92d67a93599a01fa424604f701ec3af3632dae61ae47c2f9",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "23a64cb44efee82806a69f6a9bb392bca3a68622c3f295b61e54fe7feb887988",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:36:30.0972119Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def min_val(lst):\\n    if len(lst) == 0:\\n        raise ValueError(\\\"List cannot be empty\\\")\\n    \\n    # Initialize minimum with the first element's type and value\\n    current_min = lst[0]\\n    current_type = type(current_min).__name__\\n    \\n    for item in lst[1:]:\\n        if isinstance(item, (int, float)):\\n            if current_type not in ('int', 'float'):\\n                # If we encounter a number and haven't seen one yet, switch to numbers\\n                current_min = min(float(current_min) if isinstance(current_min, str) else 0.0, item)\\n                current_type = type(current_min).__name__\\n            elif float(item) \\u003c float(current_min):\\n                current_min = item\\n        \\n        # If we haven't found any number yet or the first element is a string/other non-numeric\\n        if not isinstance(item, (int, float)) and not isinstance(current_min, (int, float)):\\n            continue\\n            \\n    return int(current_min) if isinstance(current_min, float) else current_min\\n\\n# Test cases to verify functionality\\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":8769573900,\"load_duration\":486264200,\"prompt_eval_count\":111,\"prompt_eval_duration\":49589000,\"eval_count\":264,\"eval_duration\":8205093000}",
+  "raw_response": "def min_val(lst):\n    if len(lst) == 0:\n        raise ValueError(\"List cannot be empty\")\n    \n    # Initialize minimum with the first element's type and value\n    current_min = lst[0]\n    current_type = type(current_min).__name__\n    \n    for item in lst[1:]:\n        if isinstance(item, (int, float)):\n            if current_type not in ('int', 'float'):\n                # If we encounter a number and haven't seen one yet, switch to numbers\n                current_min = min(float(current_min) if isinstance(current_min, str) else 0.0, item)\n                current_type = type(current_min).__name__\n            elif float(item) < float(current_min):\n                current_min = item\n        \n        # If we haven't found any number yet or the first element is a string/other non-numeric\n        if not isinstance(item, (int, float)) and not isinstance(current_min, (int, float)):\n            continue\n            \n    return int(current_min) if isinstance(current_min, float) else current_min\n\n# Test cases to verify functionality\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2",
+  "raw_response_sha256": "3078130803bc3ac6ebdc11cc1c03ce1e5d62acf0e5f9b594621a275ed036d84e",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the minimum value in a given heterogeneous list.\nassert min_val(['Python', 3, 2, 4, 5, 'version'])==2\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/410",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 53,
+  "composed_prompt_sha256": "e299a58d0f2dc1bf99db0b0f90efc892b0524651971fbe97a40af531ba5ce2a0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "6a98b3ddbcef2f11364099b7aaab3eecfbdb56575cdd1cc3f2c2fb53c64ab8b1",
+  "generation_latency_seconds": 2.2660000000032596,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:30:32.4957346Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 58,
+    "eval_duration": 1815103000,
+    "load_duration": 396110600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 104,
+    "prompt_eval_duration": 47263000,
+    "total_duration": 2264801300
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "93fc7478169dc793d42035e9dfe0790992721ffded3d35c0d05f58ffbf1ab07a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "6a98b3ddbcef2f11364099b7aaab3eecfbdb56575cdd1cc3f2c2fb53c64ab8b1",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:30:32.4957346Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def next_Perfect_Square(n):\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be non-negative\\\")\\n    \\n    root = int(n ** 0.5)\\n    square = (root + 1) ** 2\\n    \\n    return square\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2264801300,\"load_duration\":396110600,\"prompt_eval_count\":104,\"prompt_eval_duration\":47263000,\"eval_count\":58,\"eval_duration\":1815103000}",
+  "raw_response": "def next_Perfect_Square(n):\n    if n < 0:\n        raise ValueError(\"Input must be non-negative\")\n    \n    root = int(n ** 0.5)\n    square = (root + 1) ** 2\n    \n    return square",
+  "raw_response_sha256": "aa78c5d6602afd53099dfe4495699ec58e158395cf525100c62b1d86ec5f58d8",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to find the next perfect square greater than a given number.\nassert next_Perfect_Square(35) == 36\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/244",
+  "transport_complete": true
+}

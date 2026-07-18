@@ -1,0 +1,62 @@
+{
+  "cell_index": 38,
+  "composed_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "acc05019db717fa0763bda3c4c80683d1edd1135089eee58ddf3ae9cb5630dd1",
+  "generation_latency_seconds": 15.577999999979511,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:28:30.2910126Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 498,
+    "eval_duration": 15140451000,
+    "load_duration": 328853400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 61,
+    "prompt_eval_duration": 43465000,
+    "total_duration": 15541008500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "acc05019db717fa0763bda3c4c80683d1edd1135089eee58ddf3ae9cb5630dd1",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:28:30.2910126Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here is the Python solution that satisfies your requirements. It filters out any number that appears more than once across all lists provided in a single call (or within a specific list if you prefer to pass one).\\n\\nBased on your `assert` statement (`[1,2,3,2,3,4,5]` -\\u003e `[1, 4, 5]`), the logic treats duplicates *within* that sequence as numbers to be removed.\\n\\n```python\\nfrom typing import List, Union\\n\\ndef two_unique_nums(numbers: Union[List[int], ...]) -\\u003e List[int]:\\n    \\\"\\\"\\\"\\n    Removes duplicate numbers from a list (or multiple lists).\\n    \\n    If passed a single list: removes any number appearing more than once in that list.\\n    If passed multiple lists: flattens them, then removes duplicates across all of them.\\n    \\n    Args:\\n        numbers: A single list or an iterable of lists containing integers.\\n        \\n    Returns:\\n        A new list with only unique numbers (appearing exactly once).\\n    \\\"\\\"\\\"\\n    # Handle the case where multiple arguments are passed directly \\n    if len(numbers) \\u003e 1 and all(isinstance(x, list) for x in numbers):\\n        flat_list = []\\n        for lst in numbers:\\n            flat_list.extend(lst)\\n        \\n        from collections import Counter\\n        counts = Counter(flat_list)\\n        return [num for num, count in counts.items() if count == 1]\\n\\n    # Handle the case where a single list is passed (e.g., your assert example)\\n    elif len(numbers) == 1 and isinstance(numbers[0], list):\\n        from collections import Counter\\n        flat_list = numbers[0]\\n        counts = Counter(flat_list)\\n        return [num for num, count in counts.items() if count == 1]\\n\\n    # Fallback or invalid input handling (though the assert implies valid lists)\\n    else:\\n        raise ValueError(\\\"Input must be a single list of numbers.\\\")\\n\\n\\n# Test with your specific assertion case\\nresult = two_unique_nums([1, 2, 3, 2, 3, 4, 5])\\n\\nprint(f\\\"Result: {result}\\\")\\nassert result == [1, 4, 5], f\\\"Expected [1, 4, 5] but got {result}\\\"\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":15541008500,\"load_duration\":328853400,\"prompt_eval_count\":61,\"prompt_eval_duration\":43465000,\"eval_count\":498,\"eval_duration\":15140451000}",
+  "raw_response": "Here is the Python solution that satisfies your requirements. It filters out any number that appears more than once across all lists provided in a single call (or within a specific list if you prefer to pass one).\n\nBased on your `assert` statement (`[1,2,3,2,3,4,5]` -> `[1, 4, 5]`), the logic treats duplicates *within* that sequence as numbers to be removed.\n\n```python\nfrom typing import List, Union\n\ndef two_unique_nums(numbers: Union[List[int], ...]) -> List[int]:\n    \"\"\"\n    Removes duplicate numbers from a list (or multiple lists).\n    \n    If passed a single list: removes any number appearing more than once in that list.\n    If passed multiple lists: flattens them, then removes duplicates across all of them.\n    \n    Args:\n        numbers: A single list or an iterable of lists containing integers.\n        \n    Returns:\n        A new list with only unique numbers (appearing exactly once).\n    \"\"\"\n    # Handle the case where multiple arguments are passed directly \n    if len(numbers) > 1 and all(isinstance(x, list) for x in numbers):\n        flat_list = []\n        for lst in numbers:\n            flat_list.extend(lst)\n        \n        from collections import Counter\n        counts = Counter(flat_list)\n        return [num for num, count in counts.items() if count == 1]\n\n    # Handle the case where a single list is passed (e.g., your assert example)\n    elif len(numbers) == 1 and isinstance(numbers[0], list):\n        from collections import Counter\n        flat_list = numbers[0]\n        counts = Counter(flat_list)\n        return [num for num, count in counts.items() if count == 1]\n\n    # Fallback or invalid input handling (though the assert implies valid lists)\n    else:\n        raise ValueError(\"Input must be a single list of numbers.\")\n\n\n# Test with your specific assertion case\nresult = two_unique_nums([1, 2, 3, 2, 3, 4, 5])\n\nprint(f\"Result: {result}\")\nassert result == [1, 4, 5], f\"Expected [1, 4, 5] but got {result}\"\n```",
+  "raw_response_sha256": "2d47681b3ee7f3098a1fbf40ddd87a8aa7e75711588812d2b6ce2ae46f1a083f",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to remove duplicate numbers from a given number of lists.\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5]\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/572",
+  "transport_complete": true
+}

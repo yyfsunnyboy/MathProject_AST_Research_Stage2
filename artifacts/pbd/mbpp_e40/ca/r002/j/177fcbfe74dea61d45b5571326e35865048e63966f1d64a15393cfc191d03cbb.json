@@ -1,0 +1,62 @@
+{
+  "cell_index": 59,
+  "composed_prompt_sha256": "9a3e9f551688da6b555114baa437514c7e59167b4cbabfff3ae4a5c2bfd502f0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "177fcbfe74dea61d45b5571326e35865048e63966f1d64a15393cfc191d03cbb",
+  "generation_latency_seconds": 46.296999999991385,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:32:06.1242324Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 1486,
+    "eval_duration": 45876403000,
+    "load_duration": 344196100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 103,
+    "prompt_eval_duration": 46324000,
+    "total_duration": 46289231700
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2032618777271c894a12bd18b4f749e0d55659817aa70ebc4a79fcec5c10d38f",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "177fcbfe74dea61d45b5571326e35865048e63966f1d64a15393cfc191d03cbb",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:32:06.1242324Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def toggle_middle_bits(n):\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be a non-negative integer.\\\")\\n    \\n    # Handle edge cases where there are no middle bits (only first and last)\\n    # For example, numbers like 1 (binary '1') or 2 (binary '10') have only 1 or 2 bits.\\n    # If the number is less than 3, it has fewer than 4 bits total? \\n    # Let's clarify: \\\"first and last bit\\\" implies at least a first and a last.\\n    # In binary representation without leading zeros (except for zero itself):\\n    # n=0 -\\u003e '0' : no middle? Or is the single bit both first and last? Usually, toggle_middle_bits(0) should be 0.\\n    # n=1 -\\u003e '1': First is index 0, Last is index 0. No bits in between to toggle. Result 1.\\n    # n=2 -\\u003e '10': First (MSB) at pos 1, last (LSB) at pos 0. Middle? None. Result 2.\\n    # n=3 -\\u003e '11': MSB pos 1, LSB pos 0. No middle bits to toggle. Result 3.\\n    # n=4 -\\u003e '100': MSB pos 2, LSB pos 0. Bit at pos 1 is the only one in between? \\n    # Wait, let's look at the example: assert toggle_middle_bits(9) == 15\\n    \\n    # Let's analyze 9 and 15.\\n    # 9 in binary is '1001'. Length = 4 bits. Indices (from right): 3,2,1,0.\\n    # First bit (MSB) is at index 3 ('1'). Last bit (LSB) is at index 0 ('1').\\n    # Middle bits are indices 2 and 1. \\n    # Current value of middle bits for 9: '0' at idx 2, '0' at idx 1 -\\u003e binary ...00...\\n    # Toggling them makes it '1' at idx 2, '1' at idx 1.\\n    # New number: MSB(3)=1, bit(2)=1, bit(1)=1, LSB(0)=1 -\\u003e '1111' which is 15.\\n    \\n    # So the logic holds for n=9 ('1001'). We toggle bits strictly between MSB and LSB positions.\\n    \\n    if n == 0:\\n        return 0\\n    \\n    # Determine bit length (position of MSB)\\n    msb_pos = n.bit_length() - 1\\n    \\n    # If there are no middle bits, just return n\\n    # Middle bits exist only if the distance between LSB and MSB is \\u003e 2? \\n    # Actually, we need to toggle bits strictly inside.\\n    # Range of indices to consider: from (msb_pos - 1) down to (lsb_pos + 1).\\n    \\n    lsb_pos = 0\\n    \\n    if msb_pos \\u003c= lsb_pos + 1:\\n        # No middle bits exist between MSB and LSB\\n        return n\\n        \\n    mask_length = msb_pos - lsb_pos - 1\\n    if mask_length \\u003c 0:\\n        return n\\n\\n    # Create a mask for the middle bits. \\n    # We want to toggle these, so we create a mask of all 1s in that range and XOR with n.\\n    \\n    # The positions are from (lsb_pos + 1) to (msb_pos - 1).\\n    start_bit = lsb_pos + 1\\n    end_bit = msb_pos - 1\\n    \\n    if start_bit \\u003e end_bit:\\n        return n\\n        \\n    mask_length_val = end_bit - start_bit + 1\\n    \\n    # Create a mask with 1s at positions [start_bit, ..., end_bit] and 0 elsewhere.\\n    # We can create this by shifting (2**mask_length_val) - 1 to the left by start_bit? \\n    # No: (2^k)-1 gives k ones starting from bit 0.\\n    # So we want bits at [start_bit, end_bit] set to 1.\\n    \\n    mask = ((1 \\u003c\\u003c mask_length_val) - 1) \\u003c\\u003c start_bit\\n    \\n    return n ^ mask\\n\\n# Verification with the provided example:\\n# toggle_middle_bits(9): \\n# 9 is '1001'. MSB pos=3, LSB pos=0. Middle range indices [1, 2].\\n# Mask for bits 1 and 2 set to 1 -\\u003e binary ...00110... wait.\\n# start_bit = 1, end_bit = 2. mask_length_val = 2. \\n# (1\\u003c\\u003c2)-1 = 3 ('11'). Shift left by 1 -\\u003e '110' (binary). Value is 6? No.\\n# Let's re-calculate carefully.\\n# Indices: 3(MSB), 2, 1, 0(LSB) for number 9 ('1001')\\n# Middle indices to toggle: 2 and 1.\\n# We want a mask that has bits at pos 2 and 1 set to 1. \\n# Value = (1\\u003c\\u003c2) + (1\\u003c\\u003c1) = 4+2=6? No, wait.\\n# Bit positions are powers of 2. Pos k corresponds to value 2^k.\\n# We want mask bits at pos 2 and 1 set. That is 2^2 | 2^1 = 4|2 = 6 ('0110').\\n# My previous logic: start_bit=1, end_bit=2. count=2. \\n# (1\\u003c\\u003c2)-1 = 3 ('11' at pos 0 and 1). Shift left by start_bit(1) -\\u003e '110' which is bits at pos 2 and 1?\\n# Wait: '11' shifted left by 1 becomes '110'. \\n# Original '11' has bit 0=1, bit 1=1.\\n# Shifted left by 1: new bit 0 = old -1 (was 0), new bit 1 = old 0 (was 1), new bit 2 = old 1 (was 1).\\n# So bits at pos 1 and 2 are set to 1. Correct. \\n# Mask value is 6 ('110').\\n# n=9 ('1001') ^ mask(6 '0110') = '1111' which is 15. Correct.\\n\\nprint(toggle_middle_bits(9))\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":46289231700,\"load_duration\":344196100,\"prompt_eval_count\":103,\"prompt_eval_duration\":46324000,\"eval_count\":1486,\"eval_duration\":45876403000}",
+  "raw_response": "def toggle_middle_bits(n):\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    # Handle edge cases where there are no middle bits (only first and last)\n    # For example, numbers like 1 (binary '1') or 2 (binary '10') have only 1 or 2 bits.\n    # If the number is less than 3, it has fewer than 4 bits total? \n    # Let's clarify: \"first and last bit\" implies at least a first and a last.\n    # In binary representation without leading zeros (except for zero itself):\n    # n=0 -> '0' : no middle? Or is the single bit both first and last? Usually, toggle_middle_bits(0) should be 0.\n    # n=1 -> '1': First is index 0, Last is index 0. No bits in between to toggle. Result 1.\n    # n=2 -> '10': First (MSB) at pos 1, last (LSB) at pos 0. Middle? None. Result 2.\n    # n=3 -> '11': MSB pos 1, LSB pos 0. No middle bits to toggle. Result 3.\n    # n=4 -> '100': MSB pos 2, LSB pos 0. Bit at pos 1 is the only one in between? \n    # Wait, let's look at the example: assert toggle_middle_bits(9) == 15\n    \n    # Let's analyze 9 and 15.\n    # 9 in binary is '1001'. Length = 4 bits. Indices (from right): 3,2,1,0.\n    # First bit (MSB) is at index 3 ('1'). Last bit (LSB) is at index 0 ('1').\n    # Middle bits are indices 2 and 1. \n    # Current value of middle bits for 9: '0' at idx 2, '0' at idx 1 -> binary ...00...\n    # Toggling them makes it '1' at idx 2, '1' at idx 1.\n    # New number: MSB(3)=1, bit(2)=1, bit(1)=1, LSB(0)=1 -> '1111' which is 15.\n    \n    # So the logic holds for n=9 ('1001'). We toggle bits strictly between MSB and LSB positions.\n    \n    if n == 0:\n        return 0\n    \n    # Determine bit length (position of MSB)\n    msb_pos = n.bit_length() - 1\n    \n    # If there are no middle bits, just return n\n    # Middle bits exist only if the distance between LSB and MSB is > 2? \n    # Actually, we need to toggle bits strictly inside.\n    # Range of indices to consider: from (msb_pos - 1) down to (lsb_pos + 1).\n    \n    lsb_pos = 0\n    \n    if msb_pos <= lsb_pos + 1:\n        # No middle bits exist between MSB and LSB\n        return n\n        \n    mask_length = msb_pos - lsb_pos - 1\n    if mask_length < 0:\n        return n\n\n    # Create a mask for the middle bits. \n    # We want to toggle these, so we create a mask of all 1s in that range and XOR with n.\n    \n    # The positions are from (lsb_pos + 1) to (msb_pos - 1).\n    start_bit = lsb_pos + 1\n    end_bit = msb_pos - 1\n    \n    if start_bit > end_bit:\n        return n\n        \n    mask_length_val = end_bit - start_bit + 1\n    \n    # Create a mask with 1s at positions [start_bit, ..., end_bit] and 0 elsewhere.\n    # We can create this by shifting (2**mask_length_val) - 1 to the left by start_bit? \n    # No: (2^k)-1 gives k ones starting from bit 0.\n    # So we want bits at [start_bit, end_bit] set to 1.\n    \n    mask = ((1 << mask_length_val) - 1) << start_bit\n    \n    return n ^ mask\n\n# Verification with the provided example:\n# toggle_middle_bits(9): \n# 9 is '1001'. MSB pos=3, LSB pos=0. Middle range indices [1, 2].\n# Mask for bits 1 and 2 set to 1 -> binary ...00110... wait.\n# start_bit = 1, end_bit = 2. mask_length_val = 2. \n# (1<<2)-1 = 3 ('11'). Shift left by 1 -> '110' (binary). Value is 6? No.\n# Let's re-calculate carefully.\n# Indices: 3(MSB), 2, 1, 0(LSB) for number 9 ('1001')\n# Middle indices to toggle: 2 and 1.\n# We want a mask that has bits at pos 2 and 1 set to 1. \n# Value = (1<<2) + (1<<1) = 4+2=6? No, wait.\n# Bit positions are powers of 2. Pos k corresponds to value 2^k.\n# We want mask bits at pos 2 and 1 set. That is 2^2 | 2^1 = 4|2 = 6 ('0110').\n# My previous logic: start_bit=1, end_bit=2. count=2. \n# (1<<2)-1 = 3 ('11' at pos 0 and 1). Shift left by start_bit(1) -> '110' which is bits at pos 2 and 1?\n# Wait: '11' shifted left by 1 becomes '110'. \n# Original '11' has bit 0=1, bit 1=1.\n# Shifted left by 1: new bit 0 = old -1 (was 0), new bit 1 = old 0 (was 1), new bit 2 = old 1 (was 1).\n# So bits at pos 1 and 2 are set to 1. Correct. \n# Mask value is 6 ('110').\n# n=9 ('1001') ^ mask(6 '0110') = '1111' which is 15. Correct.\n\nprint(toggle_middle_bits(9))",
+  "raw_response_sha256": "993f6230b3d853f72ba72e0a1430d85bfef63ba50f217650f2d64e39788ffa79",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to toggle bits of the number except the first and the last bit. \nassert toggle_middle_bits(9) == 15\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 44,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 3,
+  "seed": 44,
+  "selective_retry": false,
+  "task_id": "Mbpp/735",
+  "transport_complete": true
+}

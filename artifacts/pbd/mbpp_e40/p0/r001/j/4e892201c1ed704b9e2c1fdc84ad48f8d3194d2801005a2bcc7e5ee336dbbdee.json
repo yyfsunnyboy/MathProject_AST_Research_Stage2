@@ -1,0 +1,62 @@
+{
+  "cell_index": 53,
+  "composed_prompt_sha256": "93fc7478169dc793d42035e9dfe0790992721ffded3d35c0d05f58ffbf1ab07a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "4e892201c1ed704b9e2c1fdc84ad48f8d3194d2801005a2bcc7e5ee336dbbdee",
+  "generation_latency_seconds": 7.280999999988126,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:34:22.6229547Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 223,
+    "eval_duration": 6833997000,
+    "load_duration": 346708500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 47,
+    "prompt_eval_duration": 45868000,
+    "total_duration": 7256835000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "93fc7478169dc793d42035e9dfe0790992721ffded3d35c0d05f58ffbf1ab07a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "4e892201c1ed704b9e2c1fdc84ad48f8d3194d2801005a2bcc7e5ee336dbbdee",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:34:22.6229547Z\",\"message\":{\"role\":\"assistant\",\"content\":\"```python\\nimport math\\n\\ndef next_perfect_square(n: int) -\\u003e int:\\n    \\\"\\\"\\\"\\n    Returns the smallest perfect square strictly greater than n.\\n    \\n    Examples:\\n        next_perfect_square(35) -\\u003e 36   (because 6^2 = 36 \\u003e 35)\\n        next_perfect_square(0)   -\\u003e 1    (smallest positive perfect square)\\n        next_perfect_square(-4)  -\\u003e 0    (since 0 is the smallest non-negative perfect square \\u003e -4)\\n    \\\"\\\"\\\"\\n    if n \\u003c 0:\\n        # For negative numbers, 0 is the first perfect square greater than them.\\n        return 0\\n    \\n    root = int(math.isqrt(n)) + 1\\n    return root * root\\n\\n\\n# Example assertion from your request\\nassert next_perfect_square(35) == 36\\n\\nif __name__ == \\\"__main__\\\":\\n    print(next_perfect_square(35))   # Output: 36\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":7256835000,\"load_duration\":346708500,\"prompt_eval_count\":47,\"prompt_eval_duration\":45868000,\"eval_count\":223,\"eval_duration\":6833997000}",
+  "raw_response": "```python\nimport math\n\ndef next_perfect_square(n: int) -> int:\n    \"\"\"\n    Returns the smallest perfect square strictly greater than n.\n    \n    Examples:\n        next_perfect_square(35) -> 36   (because 6^2 = 36 > 35)\n        next_perfect_square(0)   -> 1    (smallest positive perfect square)\n        next_perfect_square(-4)  -> 0    (since 0 is the smallest non-negative perfect square > -4)\n    \"\"\"\n    if n < 0:\n        # For negative numbers, 0 is the first perfect square greater than them.\n        return 0\n    \n    root = int(math.isqrt(n)) + 1\n    return root * root\n\n\n# Example assertion from your request\nassert next_perfect_square(35) == 36\n\nif __name__ == \"__main__\":\n    print(next_perfect_square(35))   # Output: 36\n```",
+  "raw_response_sha256": "204eb61cb93e20f21f6191e273aa839cffef987682838d6262280975897f7d2a",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to find the next perfect square greater than a given number.\nassert next_Perfect_Square(35) == 36\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/244",
+  "transport_complete": true
+}

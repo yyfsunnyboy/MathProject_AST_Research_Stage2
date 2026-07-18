@@ -1,0 +1,62 @@
+{
+  "cell_index": 123,
+  "composed_prompt_sha256": "1480c893fb65ce86584c814c2f6299ac5efe437374b32d6867476872d498564b",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "2a75298496dc53db1938002da89f3bed13c0e666f89370980c48fc81d083111e",
+  "generation_latency_seconds": 2.702999999979511,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:39:00.7395199Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 68,
+    "eval_duration": 2161943000,
+    "load_duration": 493471200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 108,
+    "prompt_eval_duration": 49586000,
+    "total_duration": 2713561200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "fe0c92bc1e13d0fcc23385dbf95932c436ba3181c735c1ff0536a86413c3ccc5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "2a75298496dc53db1938002da89f3bed13c0e666f89370980c48fc81d083111e",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:39:00.7395199Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def differ_At_One_Bit_Pos(a: int, b: int) -\\u003e bool:\\n    xor_result = a ^ b\\n    return (xor_result \\u0026 (xor_result - 1)) == 0 if xor_result != 0 else False\\n\\nassert differ_At_One_Bit_Pos(13,9) == True\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2713561200,\"load_duration\":493471200,\"prompt_eval_count\":108,\"prompt_eval_duration\":49586000,\"eval_count\":68,\"eval_duration\":2161943000}",
+  "raw_response": "def differ_At_One_Bit_Pos(a: int, b: int) -> bool:\n    xor_result = a ^ b\n    return (xor_result & (xor_result - 1)) == 0 if xor_result != 0 else False\n\nassert differ_At_One_Bit_Pos(13,9) == True",
+  "raw_response_sha256": "a5cb949b4c20353d107a5501a3c9d41b93734096ea0e26a8e75cf1c6f6bb9344",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether the two numbers differ at one bit position only or not.\nassert differ_At_One_Bit_Pos(13,9) == True\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/6",
+  "transport_complete": true
+}

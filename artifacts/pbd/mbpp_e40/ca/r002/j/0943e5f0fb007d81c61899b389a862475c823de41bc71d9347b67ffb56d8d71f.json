@@ -1,0 +1,62 @@
+{
+  "cell_index": 141,
+  "composed_prompt_sha256": "e5493d809f01095704e8637fa3f9d46c3b2cb0a4e1b87e2d921d0aa1aeae6d87",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "0943e5f0fb007d81c61899b389a862475c823de41bc71d9347b67ffb56d8d71f",
+  "generation_latency_seconds": 9.625,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:47:07.7398789Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 292,
+    "eval_duration": 9046435000,
+    "load_duration": 345232600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 125,
+    "prompt_eval_duration": 159592000,
+    "total_duration": 9609252100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "32196e35d26f434b65249c3802cd0ae9779255ef8d0794c64c322802a60b5021",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "0943e5f0fb007d81c61899b389a862475c823de41bc71d9347b67ffb56d8d71f",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:47:07.7398789Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def largest_subset(nums):\\n    if not nums:\\n        return 0\\n    \\n    # Sort the list to process numbers in ascending order\\n    sorted_nums = sorted(nums)\\n    \\n    n = len(sorted_nums)\\n    dp = [1] * n  # dp[i] stores the size of the largest subset ending at index i\\n    \\n    for i in range(n):\\n        current_num = sorted_nums[i]\\n        \\n        if current_num == 0:\\n            continue\\n            \\n        count = 0\\n        for j in range(i + 1, n):\\n            next_num = sorted_nums[j]\\n            \\n            # Check divisibility condition: both numbers must divide each other\\n            # This means they must be equal or one is a multiple of the other AND vice versa\\n            if current_num != 0 and next_num != 0:\\n                if (next_num % current_num == 0) and (current_num % next_num == 0):\\n                    count += dp[j] + 1\\n        \\n        # Update maximum subset size found so far\\n        max_subset = max(max(dp), count - len(sorted_nums[i+1:]) if count \\u003e 0 else 0)\\n\\n    return max(dp)\\n\\n\\n# Test case from the problem statement\\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9609252100,\"load_duration\":345232600,\"prompt_eval_count\":125,\"prompt_eval_duration\":159592000,\"eval_count\":292,\"eval_duration\":9046435000}",
+  "raw_response": "def largest_subset(nums):\n    if not nums:\n        return 0\n    \n    # Sort the list to process numbers in ascending order\n    sorted_nums = sorted(nums)\n    \n    n = len(sorted_nums)\n    dp = [1] * n  # dp[i] stores the size of the largest subset ending at index i\n    \n    for i in range(n):\n        current_num = sorted_nums[i]\n        \n        if current_num == 0:\n            continue\n            \n        count = 0\n        for j in range(i + 1, n):\n            next_num = sorted_nums[j]\n            \n            # Check divisibility condition: both numbers must divide each other\n            # This means they must be equal or one is a multiple of the other AND vice versa\n            if current_num != 0 and next_num != 0:\n                if (next_num % current_num == 0) and (current_num % next_num == 0):\n                    count += dp[j] + 1\n        \n        # Update maximum subset size found so far\n        max_subset = max(max(dp), count - len(sorted_nums[i+1:]) if count > 0 else 0)\n\n    return max(dp)\n\n\n# Test case from the problem statement\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4",
+  "raw_response_sha256": "46889c31d520c54ea0aa9e66456030a6126c31966c37f007761ae12e867fbe36",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the size of the largest subset of a list of numbers so that every pair is divisible.\nassert largest_subset([ 1, 3, 6, 13, 17, 18 ]) == 4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/620",
+  "transport_complete": true
+}

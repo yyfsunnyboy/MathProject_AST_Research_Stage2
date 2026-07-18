@@ -1,0 +1,62 @@
+{
+  "cell_index": 48,
+  "composed_prompt_sha256": "2751e7ccac68f35510af3407ea7d3e5591bdbc3c4280265da360ad66422db426",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "cb09809d44070353618838436e963ecbf6c53e9d22d64cced2692a8fe301f600",
+  "generation_latency_seconds": 8.0,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:29:58.7645182Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 233,
+    "eval_duration": 7517833000,
+    "load_duration": 383462600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 114,
+    "prompt_eval_duration": 48593000,
+    "total_duration": 7978955300
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "9a1a576625ef73fc8dc1df80a42d688433a6348e35f0e6fb98574b69364d16ee",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "cb09809d44070353618838436e963ecbf6c53e9d22d64cced2692a8fe301f600",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:29:58.7645182Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def is_Sum_Of_Powers_Of_Two(n):\\n    if n \\u003c= 0:\\n        return False\\n    while n \\u003e 1:\\n        if (n \\u0026 1) == 1 and (n - 1) % 2 != 0:\\n            break\\n        n \\u003e\\u003e= 1\\n    else:\\n        pass\\n    \\n    # Check if the original number has exactly one bit set in binary representation\\n    return bin(n).count('1') \\u003c= 1\\n\\n# Actually, let's rewrite this more clearly based on mathematical property:\\ndef is_Sum_Of_Powers_Of_Two(n):\\n    \\\"\\\"\\\"Check if n can be represented as sum of non-zero powers of 2.\\\"\\\"\\\"\\n    # A number can be written as a sum of distinct non-zero powers of 2 \\n    # if and only if it has exactly one bit set in its binary representation.\\n    return bin(n).count('1') == 1\\n\\n# Test cases to verify correctness:\\nassert is_Sum_Of_Powers_Of_Two(10) == True, \\\"Test failed for input 10\\\"\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":7978955300,\"load_duration\":383462600,\"prompt_eval_count\":114,\"prompt_eval_duration\":48593000,\"eval_count\":233,\"eval_duration\":7517833000}",
+  "raw_response": "def is_Sum_Of_Powers_Of_Two(n):\n    if n <= 0:\n        return False\n    while n > 1:\n        if (n & 1) == 1 and (n - 1) % 2 != 0:\n            break\n        n >>= 1\n    else:\n        pass\n    \n    # Check if the original number has exactly one bit set in binary representation\n    return bin(n).count('1') <= 1\n\n# Actually, let's rewrite this more clearly based on mathematical property:\ndef is_Sum_Of_Powers_Of_Two(n):\n    \"\"\"Check if n can be represented as sum of non-zero powers of 2.\"\"\"\n    # A number can be written as a sum of distinct non-zero powers of 2 \n    # if and only if it has exactly one bit set in its binary representation.\n    return bin(n).count('1') == 1\n\n# Test cases to verify correctness:\nassert is_Sum_Of_Powers_Of_Two(10) == True, \"Test failed for input 10\"",
+  "raw_response_sha256": "7f24436f7dd278bcb2e7c735da06a5a11a09a466aab0abf1b0cb608baf6f0eff",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether the given number can be represented as sum of non-zero powers of 2 or not.\nassert is_Sum_Of_Powers_Of_Two(10) == True\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/138",
+  "transport_complete": true
+}

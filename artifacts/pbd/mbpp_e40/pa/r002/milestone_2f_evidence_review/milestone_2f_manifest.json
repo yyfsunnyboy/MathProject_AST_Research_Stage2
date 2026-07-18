@@ -1,0 +1,97 @@
+{
+  "analysis_version": "milestone_2f_candidate_a_expansion_evidence_review_v1",
+  "candidate_exact_text_sha256": "bffa1e7e3d1ff77b0de326083bf6c7fd441b2f3b050b45e205a5ba51be87f058",
+  "candidate_pipeline_pass": 53,
+  "candidate_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "cell_counts": {
+    "candidate_a": 200,
+    "p0": 200,
+    "paired": 200
+  },
+  "completion_marker": "CANDIDATE_A_EXPANSION_EVIDENCE_REVIEW_COMPLETED",
+  "development_only": true,
+  "evalplus_executions": 0,
+  "exact_mcnemar_two_sided_p": 0.035697803555194696,
+  "expected_starting_head": "dd38c939693921e30fd6588d02272c4bc7c34f51",
+  "external_generalization_claimed": false,
+  "failure_category_counts": {
+    "syntax_failure": 19,
+    "unknown": 128
+  },
+  "failure_protocol_violation_count": 0,
+  "failure_truncation_overlap_count": 18,
+  "formal_inputs_modified": false,
+  "format": {
+    "extra_text_rate": 0.0,
+    "fence_rate": 0.0,
+    "noncompliant": 22,
+    "pipeline_extraction_rate": 1.0,
+    "strict_python_only": {
+      "count": 178,
+      "rate": 0.89
+    }
+  },
+  "gates": {
+    "correctness_improvement_condition": true,
+    "format_gate": false,
+    "full_promotion": false,
+    "pipeline_correctness_safety_gate": true,
+    "protocol_gate": true
+  },
+  "invalidated_candidate_r001_formal_cells": 0,
+  "journal_inventories": {
+    "candidate_r002": {
+      "count": 200,
+      "inventory_sha256": "2e887c09666cc9766199d466c421c763a421d2258aea1fca1ae82c77fd5e5091"
+    },
+    "p0_r001": {
+      "count": 200,
+      "inventory_sha256": "c805bc3d693cb26802a4d5a6c84a77db297157cb84912430d05b7a459ae7d4f6"
+    }
+  },
+  "model_calls": 0,
+  "net_gain_cells": 15,
+  "net_gain_percentage_points": 7.5,
+  "output_sha256_excluding_manifest": {
+    "candidate_a_expansion_analysis_zh.md": "53155b2df0c081a5eadaf356a29ea29ce3f5da249c5c4a2ba129d56d43a0be94",
+    "candidate_a_failure_census.csv": "12c94f990f06107fd945e0955b3813827df25ba2f44f373420de6e444c9b81a8",
+    "candidate_a_format_noncompliance.csv": "76944976e6b39da0a65510c31d57aabcbc49044fd02dd6a4e80a0f65f785270b",
+    "expansion_cell_evidence.csv": "b25e5f9091956900441eb22c47a9690d62edb074b9f41066bb7f41db21e173a0",
+    "rescue_regression_task_summary.csv": "67c6c0dbdf413fb313b0bdf5356305af2266c2fb8ffcbfef392941b0824f19ab"
+  },
+  "p0_pipeline_pass": 38,
+  "p0_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "promotion_decision": "correctness significantly improved on development, but preregistered full promotion gates were not all satisfied; Candidate A remains not official v1",
+  "restrictions_observed": [
+    "development artifacts only",
+    "no model call",
+    "no regeneration retry or resume",
+    "no EvalPlus execution",
+    "no sealed-role access",
+    "no gate changes",
+    "no Candidate B Scaffold v1 or Healer implementation"
+  ],
+  "source_artifact_sha256": {
+    "artifacts/pbd/mbpp_e40/ca/r001/generation_plan.json": "883c9ad85725953e32a611a5cc6b6730d38c7b71c28c01206f67d3f9e859d12f",
+    "artifacts/pbd/mbpp_e40/ca/r002/evaluation_results.csv": "8a32e28ecaaac26d891cc1f096531977b5dd43c54ae6051409e81729d9b5847f",
+    "artifacts/pbd/mbpp_e40/ca/r002/evaluation_summary.md": "1d7febd4ea4b8cf0828d57382c740f87b6d5913a3e1ff0c3d33330acca3db7bc",
+    "artifacts/pbd/mbpp_e40/ca/r002/generation_plan.json": "8a0f4a494f893540241a5f6fe320c946a77cbafc1bb309f72f7b65b8f04edb9e",
+    "artifacts/pbd/mbpp_e40/ca/r002/pipeline_corrected.jsonl": "8f6daa70681b33f0b93d7337c1be6e8af32cace29f19eb6ff9c987cdde2d5c67",
+    "artifacts/pbd/mbpp_e40/ca/r002/raw_generations.jsonl": "5c675dc67ffefc78c09603d23fe0ee3e553f9aec0ff178181c0e051a67f1ceb8",
+    "artifacts/pbd/mbpp_e40/p0/r001/evaluation_results.csv": "a0e359f292774206343aa8ca7892dd6254433e7b4a105e9bfa83e1f788f592ed",
+    "artifacts/pbd/mbpp_e40/p0/r001/evaluation_summary.md": "a27827016c3499624beb9ad8f223e2e5bca416d54e13bf71e979a7e0fb132be4",
+    "artifacts/pbd/mbpp_e40/p0/r001/generation_plan.json": "cee8e9908bfb9759189b290e8b3f13a7609e3ec80395585f07b9c0425f255531",
+    "artifacts/pbd/mbpp_e40/p0/r001/pipeline_corrected.jsonl": "7cc419aaa8587e0648e9b198270c2efd388fccd67c8331e0629b0374a8fcf402",
+    "artifacts/pbd/mbpp_e40/p0/r001/raw_generations.jsonl": "2e89154a4723f9b3a95a7605250498079065e65708bfd1c6ede235a0f7e19596",
+    "artifacts/pbd/mbpp_e40/pa/r002/all_pipeline_regressions.csv": "6d8f697aa754f3c29807ead3fb661f84cd5f5861ae8392cfe2b0fc0a93bdf979",
+    "artifacts/pbd/mbpp_e40/pa/r002/paired_analysis_manifest.json": "f28e9d2fe2322739bd3977e2df6b4e681627e8e13cfb5237ab29776be0abe768",
+    "artifacts/pbd/mbpp_e40/pa/r002/paired_cell_results.csv": "8d9b1c471fabb79c688c3684b4002057363568143cc3f3b48a09f32598e639cc",
+    "artifacts/public_benchmark_governance/candidate_a_expansion_recovery_r002/candidate_a_r001_incident_manifest.json": "705e2e05419be207c509eebf701107fb5965078a02a6b83f5ba702f10520f20b"
+  },
+  "transition_counts": {
+    "fail_to_fail": 132,
+    "fail_to_pass": 30,
+    "pass_to_fail": 15,
+    "pass_to_pass": 23
+  }
+}

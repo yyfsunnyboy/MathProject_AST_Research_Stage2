@@ -1,0 +1,62 @@
+{
+  "cell_index": 7,
+  "composed_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "d86c570e1f899581eea3b7a6d833ae0e28a1b964c92201a31fe5c0359a1e7837",
+  "generation_latency_seconds": 17.296999999991385,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:08:52.3286242Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 526,
+    "eval_duration": 16861697000,
+    "load_duration": 350123900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 49,
+    "prompt_eval_duration": 44422000,
+    "total_duration": 17280746100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "d86c570e1f899581eea3b7a6d833ae0e28a1b964c92201a31fe5c0359a1e7837",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:08:52.3286242Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here’s one way to implement `is_decimal` that:\\n\\n- Accepts integers, floats formatted as decimals (e.g., `\\\"123\\\"`, `\\\"0.5\\\"`),  \\n- Allows an optional leading sign (`+`/`-`),  \\n- Requires at most two digits after the decimal point if a decimal point is present,  \\n- Rejects scientific notation and non‑numeric strings.\\n\\n```python\\nimport re\\n\\ndef is_decimal(s: str) -\\u003e bool:\\n    \\\"\\\"\\\"Check whether s represents a decimal number with up to 2 fractional digits.\\\"\\\"\\\"\\n    # Pattern explanation:\\n    # ^                    start of string\\n    # [+-]?                optional sign\\n    # \\\\d+                  one or more digits before the dot (or none if no dot)\\n    # (\\\\.\\\\d{1,2})?         optional decimal part with 1 or 2 digits after '.'\\n    # $                    end of string\\n    pattern = r'^[+-]?\\\\d+(\\\\.\\\\d{1,2})?$'\\n\\n    return bool(re.fullmatch(pattern, s))\\n\\n\\n# Examples:\\nassert is_decimal('123.11') == True\\nassert is_decimal('0.5')   == True\\nassert is_decimal('-4.99') == True\\nassert is_decimal('+7.')   == False  # no digits after dot -\\u003e not matched by \\\\d{1,2}\\n# If you want to allow \\\"7.\\\" as valid (integer with explicit decimal), adjust pattern:\\n```\\n\\nIf you also want to treat `\\\"7.\\\"` or `\\\"+3.\\\"` as valid decimals (i.e., integer value but explicitly written with a dot and no fractional digits), use this slightly adjusted version:\\n\\n```python\\nimport re\\n\\ndef is_decimal(s: str) -\\u003e bool:\\n    # Allow optional sign, then:\\n    # - an integer part (required if there's any digit before the dot or at all),\\n    #   OR just a decimal point with 1–2 digits after it.\\n    pattern = r'^[+-]?(\\\\d+(\\\\.\\\\d{0,2})?|\\\\.\\\\d{1,2})$'\\n\\n    return bool(re.fullmatch(pattern, s))\\n\\n\\n# Now:\\nassert is_decimal('123.11') == True\\nassert is_decimal('7.')     == True   # if you want this to be valid\\n```\\n\\nChoose the version that matches your exact definition of “decimal number with precision 2”.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":17280746100,\"load_duration\":350123900,\"prompt_eval_count\":49,\"prompt_eval_duration\":44422000,\"eval_count\":526,\"eval_duration\":16861697000}",
+  "raw_response": "Here’s one way to implement `is_decimal` that:\n\n- Accepts integers, floats formatted as decimals (e.g., `\"123\"`, `\"0.5\"`),  \n- Allows an optional leading sign (`+`/`-`),  \n- Requires at most two digits after the decimal point if a decimal point is present,  \n- Rejects scientific notation and non‑numeric strings.\n\n```python\nimport re\n\ndef is_decimal(s: str) -> bool:\n    \"\"\"Check whether s represents a decimal number with up to 2 fractional digits.\"\"\"\n    # Pattern explanation:\n    # ^                    start of string\n    # [+-]?                optional sign\n    # \\d+                  one or more digits before the dot (or none if no dot)\n    # (\\.\\d{1,2})?         optional decimal part with 1 or 2 digits after '.'\n    # $                    end of string\n    pattern = r'^[+-]?\\d+(\\.\\d{1,2})?$'\n\n    return bool(re.fullmatch(pattern, s))\n\n\n# Examples:\nassert is_decimal('123.11') == True\nassert is_decimal('0.5')   == True\nassert is_decimal('-4.99') == True\nassert is_decimal('+7.')   == False  # no digits after dot -> not matched by \\d{1,2}\n# If you want to allow \"7.\" as valid (integer with explicit decimal), adjust pattern:\n```\n\nIf you also want to treat `\"7.\"` or `\"+3.\"` as valid decimals (i.e., integer value but explicitly written with a dot and no fractional digits), use this slightly adjusted version:\n\n```python\nimport re\n\ndef is_decimal(s: str) -> bool:\n    # Allow optional sign, then:\n    # - an integer part (required if there's any digit before the dot or at all),\n    #   OR just a decimal point with 1–2 digits after it.\n    pattern = r'^[+-]?(\\d+(\\.\\d{0,2})?|\\.\\d{1,2})$'\n\n    return bool(re.fullmatch(pattern, s))\n\n\n# Now:\nassert is_decimal('123.11') == True\nassert is_decimal('7.')     == True   # if you want this to be valid\n```\n\nChoose the version that matches your exact definition of “decimal number with precision 2”.",
+  "raw_response_sha256": "92970e534bed59045c0a458ed705816772fea72e35b02ccfeaf8131e463fd8c0",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to check whether a given string is a decimal number with a precision of 2.\nassert is_decimal('123.11')==True\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/759",
+  "transport_complete": true
+}

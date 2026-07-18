@@ -1,0 +1,62 @@
+{
+  "cell_index": 32,
+  "composed_prompt_sha256": "3e3fc69a790ceddca663383896f3cc1fb6924acc547bf4309328c94404199c9a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "f7aebc9505953be26b8f25bfeb7002ba1d62d8eb2a080522945f4bd3f07921ba",
+  "generation_latency_seconds": 9.344000000011874,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:28:29.7142193Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 267,
+    "eval_duration": 8886771000,
+    "load_duration": 378879900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 107,
+    "prompt_eval_duration": 48341000,
+    "total_duration": 9342569500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "022089c791b10f9d8b0f0c075dca88f0fbba28d076fe4b71d6d1307742ebf77d",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "f7aebc9505953be26b8f25bfeb7002ba1d62d8eb2a080522945f4bd3f07921ba",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:28:29.7142193Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def median_trapezium(a: float, b: float, c: float) -\\u003e float:\\n    \\\"\\\"\\\"\\n    Calculate the length of the median (midline) of a trapezium.\\n    \\n    The median is parallel to the bases and its length is the average \\n    of the lengths of the two parallel sides (bases).\\n    \\n    Parameters:\\n        a, b, c : Lengths of three sides where one pair must be parallel.\\n                  For this implementation, we assume 'a' and 'b' are the \\n                  parallel bases, and 'c' is one of the non-parallel legs.\\n                  \\n    Returns:\\n        The length of the median = (a + b) / 2\\n    \\n    Note: In a general trapezium problem without specifying which sides are parallel,\\n          this function assumes the two smaller or given first inputs as bases if not specified otherwise.\\n          However, based on the test case assert median_trapezium(15,25,35)==20, \\n          it implies (15 + 25) / 2 = 20, so 'a' and 'b' are treated as bases.\\n    \\\"\\\"\\\"\\n    return (a + b) / 2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9342569500,\"load_duration\":378879900,\"prompt_eval_count\":107,\"prompt_eval_duration\":48341000,\"eval_count\":267,\"eval_duration\":8886771000}",
+  "raw_response": "def median_trapezium(a: float, b: float, c: float) -> float:\n    \"\"\"\n    Calculate the length of the median (midline) of a trapezium.\n    \n    The median is parallel to the bases and its length is the average \n    of the lengths of the two parallel sides (bases).\n    \n    Parameters:\n        a, b, c : Lengths of three sides where one pair must be parallel.\n                  For this implementation, we assume 'a' and 'b' are the \n                  parallel bases, and 'c' is one of the non-parallel legs.\n                  \n    Returns:\n        The length of the median = (a + b) / 2\n    \n    Note: In a general trapezium problem without specifying which sides are parallel,\n          this function assumes the two smaller or given first inputs as bases if not specified otherwise.\n          However, based on the test case assert median_trapezium(15,25,35)==20, \n          it implies (15 + 25) / 2 = 20, so 'a' and 'b' are treated as bases.\n    \"\"\"\n    return (a + b) / 2",
+  "raw_response_sha256": "0af2e411f0d8c5581be8b1dabb0583b3870e34337ce2c9d31f3c8ea64bd8dd6e",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median length of a trapezium.\nassert median_trapezium(15,25,35)==20\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/432",
+  "transport_complete": true
+}

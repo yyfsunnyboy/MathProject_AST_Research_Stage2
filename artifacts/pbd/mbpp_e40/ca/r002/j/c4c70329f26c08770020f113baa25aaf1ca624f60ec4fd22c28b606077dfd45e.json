@@ -1,0 +1,62 @@
+{
+  "cell_index": 87,
+  "composed_prompt_sha256": "62721ad571f46dacf20614905172d692a11ab4742b6f4d68f4ef2db31b9b1f0f",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "c4c70329f26c08770020f113baa25aaf1ca624f60ec4fd22c28b606077dfd45e",
+  "generation_latency_seconds": 4.312000000005355,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:35:45.0293969Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 123,
+    "eval_duration": 3823095000,
+    "load_duration": 384432100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 132,
+    "prompt_eval_duration": 48924000,
+    "total_duration": 4289046700
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "31c5e0cf716edf156a30de4040e83393b0532a97adabcf7c6d205a3bd567b5a2",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "c4c70329f26c08770020f113baa25aaf1ca624f60ec4fd22c28b606077dfd45e",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:35:45.0293969Z\",\"message\":{\"role\":\"assistant\",\"content\":\"import re\\n\\n\\ndef find_literals(text: str, pattern: str):\\n    match = re.search(re.escape(pattern), text)\\n    if match is None:\\n        return (None, -1, -1)\\n    start_index = match.start()\\n    end_index = match.end() - 1\\n    return (match.group(), start_index, end_index)\\n\\n\\nif __name__ == \\\"__main__\\\":\\n    assert find_literals('The quick brown fox jumps over the lazy dog.', 'fox') == ('fox', 16, 19), \\\"Test failed\\\"\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":4289046700,\"load_duration\":384432100,\"prompt_eval_count\":132,\"prompt_eval_duration\":48924000,\"eval_count\":123,\"eval_duration\":3823095000}",
+  "raw_response": "import re\n\n\ndef find_literals(text: str, pattern: str):\n    match = re.search(re.escape(pattern), text)\n    if match is None:\n        return (None, -1, -1)\n    start_index = match.start()\n    end_index = match.end() - 1\n    return (match.group(), start_index, end_index)\n\n\nif __name__ == \"__main__\":\n    assert find_literals('The quick brown fox jumps over the lazy dog.', 'fox') == ('fox', 16, 19), \"Test failed\"",
+  "raw_response_sha256": "692e9cc5f3b223f653c3e825b924a93f7c69c06c629c451fe9c7002939b9c9aa",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to search a string for a regex pattern. The function should return the matching subtring, a start index and an end index.\nassert find_literals('The quick brown fox jumps over the lazy dog.', 'fox') == ('fox', 16, 19)\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/607",
+  "transport_complete": true
+}

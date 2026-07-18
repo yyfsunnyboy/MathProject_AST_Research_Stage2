@@ -1,0 +1,62 @@
+{
+  "cell_index": 84,
+  "composed_prompt_sha256": "230884664f6d497d8cdd99b30c404b9e5bbde5b36cca0bf5d9161198278cf809",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "7b8e6fbb6a722c8b7d7e6ca7980e829ea5a010da1b3da012777e702354326c18",
+  "generation_latency_seconds": 22.219000000011874,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:35:13.59187Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 705,
+    "eval_duration": 21744491000,
+    "load_duration": 385602100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 139,
+    "prompt_eval_duration": 45972000,
+    "total_duration": 22216714900
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "7b8e6fbb6a722c8b7d7e6ca7980e829ea5a010da1b3da012777e702354326c18",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:35:13.59187Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def get_median(nums1: list[int], nums2: list[int], n: int) -\\u003e float:\\n    \\\"\\\"\\\"Find median of two sorted lists of same size.\\\"\\\"\\\"\\n    if len(nums1) != len(nums2):\\n        raise ValueError(\\\"Lists must be of the same size\\\")\\n    \\n    # Merge arrays virtually and find middle element(s)\\n    i, j = 0, 0\\n    total_len = n * 2\\n    \\n    mid_idx = (total_len - 1) // 2 if total_len % 2 == 1 else (n + 1) / 2.0\\n\\n    # For odd length: find the element at index mid_idx in merged array\\n    idx = 0\\n    while True:\\n        val_from_nums1 = nums1[i] if i \\u003c n else float('inf')\\n        val_from_nums2 = nums2[j] if j \\u003c n else float('inf')\\n\\n        if val_from_nums1 \\u003c= val_from_nums2:\\n            current_val = val_from_nums1\\n            i += 1\\n        else:\\n            current_val = val_from_nums2\\n            j += 1\\n        \\n        idx += 1\\n        if idx == mid_idx and total_len % 2 != 0:\\n            return float(current_val)\\n\\n    # For even length: find average of elements at indices n-1 and n in merged array (indices n-1 and n are middle two)\\n    left_mid = None\\n    right_mid = None\\n    \\n    idx_left, idx_right = n - 2, n - 1  # zero-based index for the last element is total_len - 1; so we want indices n-1 and n in merged array (which correspond to positions n-1 and n)\\n\\n    i_l, j_l = 0, 0\\n    count_left = 0\\n    \\n    while True:\\n        val_from_nums1 = nums1[i_l] if i_l \\u003c n else float('inf')\\n        val_from_nums2 = nums2[j_l] if j_l \\u003c n else float('inf')\\n\\n        if val_from_nums1 \\u003c= val_from_nums2:\\n            current_val = val_from_nums1\\n            i_l += 1\\n        else:\\n            current_val = val_from_nums2\\n            j_l += 1\\n        \\n        count_left += 1\\n        if count_left == n - 1 and left_mid is None:\\n            left_mid = current_val\\n\\n    # Now find the element at index n in merged array (which will be right_mid)\\n    i_r, j_r = 0, 0\\n    \\n    while True:\\n        val_from_nums1 = nums1[i_r] if i_r \\u003c n else float('inf')\\n        val_from_nums2 = nums2[j_r] if j_r \\u003c n else float('inf')\\n\\n        if val_from_nums1 \\u003c= val_from_nums2:\\n            current_val = val_from_nums1\\n            i_r += 1\\n        else:\\n            current_val = val_from_nums2\\n            j_r += 1\\n        \\n        count_right = (i_r + j_r) + 1\\n        if count_right == n and right_mid is None:\\n            right_mid = current_val\\n\\n    return float((left_mid + right_mid)) / 2.0\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":22216714900,\"load_duration\":385602100,\"prompt_eval_count\":139,\"prompt_eval_duration\":45972000,\"eval_count\":705,\"eval_duration\":21744491000}",
+  "raw_response": "def get_median(nums1: list[int], nums2: list[int], n: int) -> float:\n    \"\"\"Find median of two sorted lists of same size.\"\"\"\n    if len(nums1) != len(nums2):\n        raise ValueError(\"Lists must be of the same size\")\n    \n    # Merge arrays virtually and find middle element(s)\n    i, j = 0, 0\n    total_len = n * 2\n    \n    mid_idx = (total_len - 1) // 2 if total_len % 2 == 1 else (n + 1) / 2.0\n\n    # For odd length: find the element at index mid_idx in merged array\n    idx = 0\n    while True:\n        val_from_nums1 = nums1[i] if i < n else float('inf')\n        val_from_nums2 = nums2[j] if j < n else float('inf')\n\n        if val_from_nums1 <= val_from_nums2:\n            current_val = val_from_nums1\n            i += 1\n        else:\n            current_val = val_from_nums2\n            j += 1\n        \n        idx += 1\n        if idx == mid_idx and total_len % 2 != 0:\n            return float(current_val)\n\n    # For even length: find average of elements at indices n-1 and n in merged array (indices n-1 and n are middle two)\n    left_mid = None\n    right_mid = None\n    \n    idx_left, idx_right = n - 2, n - 1  # zero-based index for the last element is total_len - 1; so we want indices n-1 and n in merged array (which correspond to positions n-1 and n)\n\n    i_l, j_l = 0, 0\n    count_left = 0\n    \n    while True:\n        val_from_nums1 = nums1[i_l] if i_l < n else float('inf')\n        val_from_nums2 = nums2[j_l] if j_l < n else float('inf')\n\n        if val_from_nums1 <= val_from_nums2:\n            current_val = val_from_nums1\n            i_l += 1\n        else:\n            current_val = val_from_nums2\n            j_l += 1\n        \n        count_left += 1\n        if count_left == n - 1 and left_mid is None:\n            left_mid = current_val\n\n    # Now find the element at index n in merged array (which will be right_mid)\n    i_r, j_r = 0, 0\n    \n    while True:\n        val_from_nums1 = nums1[i_r] if i_r < n else float('inf')\n        val_from_nums2 = nums2[j_r] if j_r < n else float('inf')\n\n        if val_from_nums1 <= val_from_nums2:\n            current_val = val_from_nums1\n            i_r += 1\n        else:\n            current_val = val_from_nums2\n            j_r += 1\n        \n        count_right = (i_r + j_r) + 1\n        if count_right == n and right_mid is None:\n            right_mid = current_val\n\n    return float((left_mid + right_mid)) / 2.0",
+  "raw_response_sha256": "879abe98a974afeb5ac77e7c28489ce0ad7a001820aaf55f40809af191ae0c7b",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median of two sorted lists of same size.\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 44,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 3,
+  "seed": 44,
+  "selective_retry": false,
+  "task_id": "Mbpp/622",
+  "transport_complete": true
+}

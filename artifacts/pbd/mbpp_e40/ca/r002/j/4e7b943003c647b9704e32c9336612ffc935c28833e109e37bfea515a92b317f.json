@@ -1,0 +1,62 @@
+{
+  "cell_index": 152,
+  "composed_prompt_sha256": "aa05ededf798253f2e9edc4abc17b118aa1ff9d5739bb66d70882169ff4bf3d0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "4e7b943003c647b9704e32c9336612ffc935c28833e109e37bfea515a92b317f",
+  "generation_latency_seconds": 27.969000000011874,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:50:07.1510405Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 905,
+    "eval_duration": 27530092000,
+    "load_duration": 335670400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 116,
+    "prompt_eval_duration": 43803000,
+    "total_duration": 27947403200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b60824a12ec3265b3d3abf7c501b7b5713d5b14394d50cdf2e0859c5324fd12e",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "4e7b943003c647b9704e32c9336612ffc935c28833e109e37bfea515a92b317f",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:50:07.1510405Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def find_adverb_position(sentence: str):\\n    import re\\n    \\n    # Define a regex pattern to match adverbs (common suffixes like -ly)\\n    # This looks for words ending with 'ly' that are not part of other common patterns if needed, \\n    # but standard '-ly' matching is usually sufficient for basic tasks.\\n    # We also handle punctuation attached to the word by stripping it before checking.\\n    \\n    pattern = r'\\\\b\\\\w+ly\\\\b'\\n    \\n    match = re.search(pattern, sentence)\\n    \\n    if not match:\\n        return None\\n    \\n    start_pos = match.start()\\n    end_pos = match.end() - 1 # The position of the last character in the word (0-indexed inclusive logic for 'positions') \\n                             # However, looking at the assertion: \\\"clearly!!\\\" -\\u003e clearly is at index 0.\\n                             # Let's check indices manually.\\n    \\n    text = sentence\\n    \\n    # Find all matches to get the first one and its details\\n    match_obj = re.search(pattern, text)\\n    \\n    if not match_obj:\\n        return None\\n        \\n    word_start = match_obj.start()\\n    matched_word = match_obj.group(0).strip('.,!?;:')\\n    word_end_inclusive_index = match_obj.end() - 1\\n    \\n    # The assertion expects (start_index, end_index_of_last_char, 'word') \\n    # Let's verify with \\\"clearly!! we can see the sky\\\"\\n    # s[0] is c. clearly ends at index 6 ('y'). So indices are 0 to 6? Or length-1?\\n    # The tuple (0, 7) implies start=0 and end=7. \\n    # If word is \\\"clearly\\\", len(\\\"clearly\\\") = 8. Indices: c(0), l(1)... y(7). Wait.\\n    # Let's count: c-0, l-1, e-2, a-3, r-4, l-5, i-6, y-7. \\n    # Ah, \\\"clearly\\\" has 8 letters? No. c-l-e-a-r-l-y -\\u003e 1,2,3,4,5,6,7. Length is 7.\\n    # Indices: 0 to 6. Why does the assert say (0, 7)? \\n    # Maybe it means start index and end index where slicing [start:end] works? No, that would be 0-8 for length 8 word if space follows.\\n    # Let's re-read carefully: \\\"clearly!!\\\". The 'y' is at index 6 (if c=0). \\n    # Wait, let me count again. \\n    # clearly -\\u003e c(0), l(1), e(2), a(3), r(4), l(5), y(6). Length 7.\\n    # If the output is (0, 7), maybe it's start and end index for slicing? Or just length?\\n    # Actually, in Python string indexing: s[0] to s[6]. \\n    # Perhaps the question implies finding the position of the word itself as a tuple (start_index, end_index_of_word_including_punctuation_or_exclusive_end?).\\n    # Let's look at \\\"clearly!!\\\". The 'y' is followed by '!'. \\n    # If we strip punctuation: clearly.\\n    # Maybe the second value in the tuple is simply start + len(word)? i.e., exclusive end index?\\n    # 0 + 7 = 7. Yes, that matches standard Python slicing conventions (start, stop).\\n    \\n    return (word_start, word_end_inclusive_index + 1, matched_word)\\n\\n# Verification logic for the specific case provided in prompt:\\n# sentence = \\\"clearly!! we can see the sky\\\"\\n# match_obj finds 'clearly' at index 0. Length is 7. \\n# Return (0, 7, 'clearly'). This matches the assert exactly if return value uses exclusive end for position or just length offset.\\n\\nassert find_adverb_position(\\\"clearly!! we can see the sky\\\") == (0, 7, 'clearly')\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":27947403200,\"load_duration\":335670400,\"prompt_eval_count\":116,\"prompt_eval_duration\":43803000,\"eval_count\":905,\"eval_duration\":27530092000}",
+  "raw_response": "def find_adverb_position(sentence: str):\n    import re\n    \n    # Define a regex pattern to match adverbs (common suffixes like -ly)\n    # This looks for words ending with 'ly' that are not part of other common patterns if needed, \n    # but standard '-ly' matching is usually sufficient for basic tasks.\n    # We also handle punctuation attached to the word by stripping it before checking.\n    \n    pattern = r'\\b\\w+ly\\b'\n    \n    match = re.search(pattern, sentence)\n    \n    if not match:\n        return None\n    \n    start_pos = match.start()\n    end_pos = match.end() - 1 # The position of the last character in the word (0-indexed inclusive logic for 'positions') \n                             # However, looking at the assertion: \"clearly!!\" -> clearly is at index 0.\n                             # Let's check indices manually.\n    \n    text = sentence\n    \n    # Find all matches to get the first one and its details\n    match_obj = re.search(pattern, text)\n    \n    if not match_obj:\n        return None\n        \n    word_start = match_obj.start()\n    matched_word = match_obj.group(0).strip('.,!?;:')\n    word_end_inclusive_index = match_obj.end() - 1\n    \n    # The assertion expects (start_index, end_index_of_last_char, 'word') \n    # Let's verify with \"clearly!! we can see the sky\"\n    # s[0] is c. clearly ends at index 6 ('y'). So indices are 0 to 6? Or length-1?\n    # The tuple (0, 7) implies start=0 and end=7. \n    # If word is \"clearly\", len(\"clearly\") = 8. Indices: c(0), l(1)... y(7). Wait.\n    # Let's count: c-0, l-1, e-2, a-3, r-4, l-5, i-6, y-7. \n    # Ah, \"clearly\" has 8 letters? No. c-l-e-a-r-l-y -> 1,2,3,4,5,6,7. Length is 7.\n    # Indices: 0 to 6. Why does the assert say (0, 7)? \n    # Maybe it means start index and end index where slicing [start:end] works? No, that would be 0-8 for length 8 word if space follows.\n    # Let's re-read carefully: \"clearly!!\". The 'y' is at index 6 (if c=0). \n    # Wait, let me count again. \n    # clearly -> c(0), l(1), e(2), a(3), r(4), l(5), y(6). Length 7.\n    # If the output is (0, 7), maybe it's start and end index for slicing? Or just length?\n    # Actually, in Python string indexing: s[0] to s[6]. \n    # Perhaps the question implies finding the position of the word itself as a tuple (start_index, end_index_of_word_including_punctuation_or_exclusive_end?).\n    # Let's look at \"clearly!!\". The 'y' is followed by '!'. \n    # If we strip punctuation: clearly.\n    # Maybe the second value in the tuple is simply start + len(word)? i.e., exclusive end index?\n    # 0 + 7 = 7. Yes, that matches standard Python slicing conventions (start, stop).\n    \n    return (word_start, word_end_inclusive_index + 1, matched_word)\n\n# Verification logic for the specific case provided in prompt:\n# sentence = \"clearly!! we can see the sky\"\n# match_obj finds 'clearly' at index 0. Length is 7. \n# Return (0, 7, 'clearly'). This matches the assert exactly if return value uses exclusive end for position or just length offset.\n\nassert find_adverb_position(\"clearly!! we can see the sky\") == (0, 7, 'clearly')",
+  "raw_response_sha256": "50bf1ff30b029da8c3dd077fd6cbf9e4b90378a41b781712d6557f6f012b1368",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the first adverb and their positions in a given sentence.\nassert find_adverb_position(\"clearly!! we can see the sky\")==(0, 7, 'clearly')\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/440",
+  "transport_complete": true
+}

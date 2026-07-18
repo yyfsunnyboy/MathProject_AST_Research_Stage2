@@ -1,0 +1,62 @@
+{
+  "cell_index": 85,
+  "composed_prompt_sha256": "230884664f6d497d8cdd99b30c404b9e5bbde5b36cca0bf5d9161198278cf809",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "95acb909646839a2a918e714e30a067bc0adf6e786370e369fb143198c8a517b",
+  "generation_latency_seconds": 20.32799999997951,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:35:33.917977Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 644,
+    "eval_duration": 19858550000,
+    "load_duration": 369707100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 139,
+    "prompt_eval_duration": 46699000,
+    "total_duration": 20315495300
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "95acb909646839a2a918e714e30a067bc0adf6e786370e369fb143198c8a517b",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:35:33.917977Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def get_median(list1: list[int], list2: list[int], n: int) -\\u003e float:\\n    \\\"\\\"\\\"\\n    Find the median of two sorted lists of same size using binary search on answer space (or partition approach).\\n    \\n    Approach: We use a modified binary search to find the correct split point in both arrays such that \\n    left_max \\u003c= right_min. The total number of elements considered is 2*n, so we are looking for the median \\n    which will be at index n-1 or n (0-indexed) in the merged conceptual array.\\n    \\n    Since lists are sorted and same size:\\n        - Total length = 2 * n\\n        - Median position(s): if total_len is even -\\u003e average of elements at indices n-1 and n\\n    \\n    We can use a partition approach similar to finding median of two sorted arrays (LeetCode #4).\\n    \\n    Time Complexity: O(log(min(m, n))) but since m == n here, it's O(log(n))\\n    Space Complexity: O(1)\\n    \\\"\\\"\\\"\\n\\n    if len(list1) != len(list2):\\n        raise ValueError(\\\"Both lists must be of the same size.\\\")\\n        \\n    # Ensure list1 is the smaller one for optimization (not needed when sizes are equal, but good practice)\\n    if len(list1) \\u003e len(list2):\\n        list1, list2 = list2, list1\\n        \\n    n = len(list1)  # Both have same size\\n    \\n    low = 0\\n    high = n\\n    \\n    while low \\u003c= high:\\n        partition_a = (low + high) // 2\\n        partition_b = partition_a  # Since sizes are equal\\n        \\n        left_max_a = list1[partition_a - 1] if partition_a \\u003e 0 else float('-inf')\\n        right_min_a = list1[partition_a] if partition_a \\u003c n else float('inf')\\n        \\n        left_max_b = list2[partition_b - 1] if partition_b \\u003e 0 else float('-inf')\\n        right_min_b = list2[partition_b] if partition_b \\u003c n else float('inf')\\n        \\n        # Check if we found the correct partition\\n        if left_max_a \\u003c= right_min_b and left_max_b \\u003c= right_min_a:\\n            # Found valid split, compute median\\n            max_of_lefts = max(left_max_a, left_max_b)\\n            min_of_rights = min(right_min_a, right_min_b)\\n            \\n            total_elements = 2 * n\\n            \\n            if total_elements % 2 == 0:\\n                return (max_of_lefts + min_of_rights) / 2.0\\n            else:\\n                # This case won't happen with even split logic but for completeness:\\n                return float(max_of_lefts) \\n        elif left_max_a \\u003e right_min_b:\\n            high = partition_a - 1\\n        else:\\n            low = partition_a + 1\\n            \\n    raise ValueError(\\\"No median found (should not occur given valid inputs).\\\")\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":20315495300,\"load_duration\":369707100,\"prompt_eval_count\":139,\"prompt_eval_duration\":46699000,\"eval_count\":644,\"eval_duration\":19858550000}",
+  "raw_response": "def get_median(list1: list[int], list2: list[int], n: int) -> float:\n    \"\"\"\n    Find the median of two sorted lists of same size using binary search on answer space (or partition approach).\n    \n    Approach: We use a modified binary search to find the correct split point in both arrays such that \n    left_max <= right_min. The total number of elements considered is 2*n, so we are looking for the median \n    which will be at index n-1 or n (0-indexed) in the merged conceptual array.\n    \n    Since lists are sorted and same size:\n        - Total length = 2 * n\n        - Median position(s): if total_len is even -> average of elements at indices n-1 and n\n    \n    We can use a partition approach similar to finding median of two sorted arrays (LeetCode #4).\n    \n    Time Complexity: O(log(min(m, n))) but since m == n here, it's O(log(n))\n    Space Complexity: O(1)\n    \"\"\"\n\n    if len(list1) != len(list2):\n        raise ValueError(\"Both lists must be of the same size.\")\n        \n    # Ensure list1 is the smaller one for optimization (not needed when sizes are equal, but good practice)\n    if len(list1) > len(list2):\n        list1, list2 = list2, list1\n        \n    n = len(list1)  # Both have same size\n    \n    low = 0\n    high = n\n    \n    while low <= high:\n        partition_a = (low + high) // 2\n        partition_b = partition_a  # Since sizes are equal\n        \n        left_max_a = list1[partition_a - 1] if partition_a > 0 else float('-inf')\n        right_min_a = list1[partition_a] if partition_a < n else float('inf')\n        \n        left_max_b = list2[partition_b - 1] if partition_b > 0 else float('-inf')\n        right_min_b = list2[partition_b] if partition_b < n else float('inf')\n        \n        # Check if we found the correct partition\n        if left_max_a <= right_min_b and left_max_b <= right_min_a:\n            # Found valid split, compute median\n            max_of_lefts = max(left_max_a, left_max_b)\n            min_of_rights = min(right_min_a, right_min_b)\n            \n            total_elements = 2 * n\n            \n            if total_elements % 2 == 0:\n                return (max_of_lefts + min_of_rights) / 2.0\n            else:\n                # This case won't happen with even split logic but for completeness:\n                return float(max_of_lefts) \n        elif left_max_a > right_min_b:\n            high = partition_a - 1\n        else:\n            low = partition_a + 1\n            \n    raise ValueError(\"No median found (should not occur given valid inputs).\")",
+  "raw_response_sha256": "affc54cada2f4f2c8e4e48b9dc2b2ee0a40363d5a1ddf4f67fed1f1616b1c8a2",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median of two sorted lists of same size.\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/622",
+  "transport_complete": true
+}

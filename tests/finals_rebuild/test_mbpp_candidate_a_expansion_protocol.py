@@ -8,6 +8,7 @@ import pytest
 
 from scripts import analyze_mbpp_candidate_a_expansion as analyzer
 from scripts import freeze_mbpp_candidate_a_expansion_protocol as frozen
+from scripts import freeze_mbpp_candidate_a_interruption_recovery as recovery
 from scripts import run_mbpp_candidate_a_expansion as driver
 
 
@@ -158,7 +159,7 @@ def test_short_storage_mapping_passes_windows_budget_without_creating_runs():
     # originally planned locations without changing the mapping bytes.
 
 
-def test_driver_read_only_preflight_and_cli_have_no_retry_flags(monkeypatch):
+def test_driver_rejects_completed_run_without_model_call_and_cli_has_no_retry_flags(monkeypatch):
     called = False
 
     def forbidden(*args, **kwargs):
@@ -167,9 +168,8 @@ def test_driver_read_only_preflight_and_cli_have_no_retry_flags(monkeypatch):
         raise AssertionError("model call forbidden")
 
     monkeypatch.setattr(driver, "fetch_ollama_provenance", forbidden)
-    result = driver.preflight()
-    assert result["status"] == "preflight_ok_no_model_call"
-    assert result["p0_cells"] == result["candidate_a_cells"] == 200
+    with pytest.raises(recovery.InterruptionRecoveryError, match="r002 directory"):
+        driver.preflight()
     assert called is False
 
     parser = driver.build_parser()

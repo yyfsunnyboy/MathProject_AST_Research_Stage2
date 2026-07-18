@@ -1,0 +1,62 @@
+{
+  "cell_index": 101,
+  "composed_prompt_sha256": "0b0bd1ae1fb5d4729702fe4d1148e540ec1f2510ba8e27be936e1a34e73a2e67",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "25b0815c28cdb3c00bcc109d852b072efc70cfa6cd058c6a570d8f2f9ad1f577",
+  "generation_latency_seconds": 4.312000000005355,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:37:00.3259399Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 115,
+    "eval_duration": 3677819000,
+    "load_duration": 359542100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 137,
+    "prompt_eval_duration": 186995000,
+    "total_duration": 4310648000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "30252bccc82a1ca4a3694b78897dd7d3969b55488c4825b9e00a3acfcd15c49a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "25b0815c28cdb3c00bcc109d852b072efc70cfa6cd058c6a570d8f2f9ad1f577",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:37:00.3259399Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def combinations_colors(lst, n):\\n    result = []\\n    \\n    def backtrack(current_combination, start_index=None):\\n        if len(current_combination) == n:\\n            result.append(tuple(current_combination))\\n            return\\n        \\n        for element in lst:\\n            current_combination.append(element)\\n            # Since repetition is allowed and order doesn't matter (combinations), \\n            # we iterate through all elements every time, not just from start_index.\\n            backtrack(current_combination.copy())\\n    \\n    backtrack([])\\n    return result\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":4310648000,\"load_duration\":359542100,\"prompt_eval_count\":137,\"prompt_eval_duration\":186995000,\"eval_count\":115,\"eval_duration\":3677819000}",
+  "raw_response": "def combinations_colors(lst, n):\n    result = []\n    \n    def backtrack(current_combination, start_index=None):\n        if len(current_combination) == n:\n            result.append(tuple(current_combination))\n            return\n        \n        for element in lst:\n            current_combination.append(element)\n            # Since repetition is allowed and order doesn't matter (combinations), \n            # we iterate through all elements every time, not just from start_index.\n            backtrack(current_combination.copy())\n    \n    backtrack([])\n    return result",
+  "raw_response_sha256": "48b43a9a0cdccaaefdc5fb0b20cef144a18e229af5fb2939ce4618350e3557c7",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function that takes in a list and length n, and generates all combinations (with repetition) of the elements of the list and returns a list with a tuple for each combination.\nassert combinations_colors( [\"Red\",\"Green\",\"Blue\"],1)==[('Red',), ('Green',), ('Blue',)]\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/255",
+  "transport_complete": true
+}

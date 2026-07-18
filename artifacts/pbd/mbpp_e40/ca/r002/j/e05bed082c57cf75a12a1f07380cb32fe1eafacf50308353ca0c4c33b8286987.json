@@ -1,0 +1,62 @@
+{
+  "cell_index": 58,
+  "composed_prompt_sha256": "9a3e9f551688da6b555114baa437514c7e59167b4cbabfff3ae4a5c2bfd502f0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "e05bed082c57cf75a12a1f07380cb32fe1eafacf50308353ca0c4c33b8286987",
+  "generation_latency_seconds": 8.40600000001723,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:31:19.8268468Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 248,
+    "eval_duration": 7933654000,
+    "load_duration": 376062200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 103,
+    "prompt_eval_duration": 44887000,
+    "total_duration": 8389864000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2032618777271c894a12bd18b4f749e0d55659817aa70ebc4a79fcec5c10d38f",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "e05bed082c57cf75a12a1f07380cb32fe1eafacf50308353ca0c4c33b8286987",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:31:19.8268468Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def toggle_middle_bits(n):\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be a non-negative integer.\\\")\\n    \\n    # Handle edge cases where there are no middle bits (only first and last)\\n    # For example, numbers less than 2 have only one bit. \\n    # Numbers like 1 (binary '1') or 2 ('10') don't strictly fit the \\\"first and last\\\" distinction for toggling in between.\\n    if n \\u003c 3:\\n        return n\\n    \\n    # Find the position of the most significant bit (MSB) to determine total bits needed\\n    msb_pos = n.bit_length() - 1\\n    \\n    # The first bit is at index 'msb_pos' and the last bit is at index '0'.\\n    # We want to toggle all bits between them, i.e., from index 1 to msb_pos-1.\\n    \\n    mask = (1 \\u003c\\u003c (msb_pos - 1)) - 2\\n    \\n    if mask \\u003c 0: \\n        return n\\n        \\n    result = n ^ mask\\n    return result\\n\\nassert toggle_middle_bits(9) == 15\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":8389864000,\"load_duration\":376062200,\"prompt_eval_count\":103,\"prompt_eval_duration\":44887000,\"eval_count\":248,\"eval_duration\":7933654000}",
+  "raw_response": "def toggle_middle_bits(n):\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    # Handle edge cases where there are no middle bits (only first and last)\n    # For example, numbers less than 2 have only one bit. \n    # Numbers like 1 (binary '1') or 2 ('10') don't strictly fit the \"first and last\" distinction for toggling in between.\n    if n < 3:\n        return n\n    \n    # Find the position of the most significant bit (MSB) to determine total bits needed\n    msb_pos = n.bit_length() - 1\n    \n    # The first bit is at index 'msb_pos' and the last bit is at index '0'.\n    # We want to toggle all bits between them, i.e., from index 1 to msb_pos-1.\n    \n    mask = (1 << (msb_pos - 1)) - 2\n    \n    if mask < 0: \n        return n\n        \n    result = n ^ mask\n    return result\n\nassert toggle_middle_bits(9) == 15",
+  "raw_response_sha256": "33c23a697127f2e78dfe88417ea71c45d8e9d7954496615571530145a4f25940",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to toggle bits of the number except the first and the last bit. \nassert toggle_middle_bits(9) == 15\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/735",
+  "transport_complete": true
+}

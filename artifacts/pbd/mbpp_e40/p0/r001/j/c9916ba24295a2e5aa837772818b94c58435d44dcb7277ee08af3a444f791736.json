@@ -1,0 +1,62 @@
+{
+  "cell_index": 110,
+  "composed_prompt_sha256": "b6e5cd0146a3c23949dc0229fa5c32d36352d3d8d9eff6003978ee4b0e06a028",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "c9916ba24295a2e5aa837772818b94c58435d44dcb7277ee08af3a444f791736",
+  "generation_latency_seconds": 6.187999999994645,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:58:52.7541956Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 188,
+    "eval_duration": 5753600000,
+    "load_duration": 343226500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 54,
+    "prompt_eval_duration": 45639000,
+    "total_duration": 6197643900
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b6e5cd0146a3c23949dc0229fa5c32d36352d3d8d9eff6003978ee4b0e06a028",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "c9916ba24295a2e5aa837772818b94c58435d44dcb7277ee08af3a444f791736",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:58:52.7541956Z\",\"message\":{\"role\":\"assistant\",\"content\":\"```python\\ndef decimal_to_binary(n: int) -\\u003e str:\\n    \\\"\\\"\\\"Convert a non-negative integer to its binary representation (no leading zeros).\\\"\\\"\\\"\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be a non-negative integer.\\\")\\n    \\n    # Special case for zero\\n    if n == 0:\\n        return \\\"0\\\"\\n\\n    bits = []\\n    while n \\u003e 0:\\n        remainder = n % 2          # last bit (LSB)\\n        bits.append(str(remainder))\\n        n //= 2                    # shift right\\n    \\n    # Bits are collected from LSB to MSB, so reverse them\\n    return \\\"\\\".join(reversed(bits))\\n\\n\\n# Example usage and assertion:\\nassert decimal_to_binary(8) == '1000'\\nprint(decimal_to_binary(8))   # Output: 1000\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":6197643900,\"load_duration\":343226500,\"prompt_eval_count\":54,\"prompt_eval_duration\":45639000,\"eval_count\":188,\"eval_duration\":5753600000}",
+  "raw_response": "```python\ndef decimal_to_binary(n: int) -> str:\n    \"\"\"Convert a non-negative integer to its binary representation (no leading zeros).\"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    # Special case for zero\n    if n == 0:\n        return \"0\"\n\n    bits = []\n    while n > 0:\n        remainder = n % 2          # last bit (LSB)\n        bits.append(str(remainder))\n        n //= 2                    # shift right\n    \n    # Bits are collected from LSB to MSB, so reverse them\n    return \"\".join(reversed(bits))\n\n\n# Example usage and assertion:\nassert decimal_to_binary(8) == '1000'\nprint(decimal_to_binary(8))   # Output: 1000\n```",
+  "raw_response_sha256": "f63bc036d9857f38daa43ccba4eb40b7e3afd04ba54bface45f38e807fbd2f4d",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to convert the given decimal number to its binary equivalent, represented as a string with no leading zeros.\nassert decimal_to_binary(8) == '1000'\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/99",
+  "transport_complete": true
+}

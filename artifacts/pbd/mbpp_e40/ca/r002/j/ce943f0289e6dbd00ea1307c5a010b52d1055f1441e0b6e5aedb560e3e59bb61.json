@@ -1,0 +1,62 @@
+{
+  "cell_index": 114,
+  "composed_prompt_sha256": "40dd553dde43b62dadd01ab45bc2815aaab867cc219c4e252b1e94521a817ae1",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "ce943f0289e6dbd00ea1307c5a010b52d1055f1441e0b6e5aedb560e3e59bb61",
+  "generation_latency_seconds": 11.625,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:38:31.2241824Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 360,
+    "eval_duration": 11159049000,
+    "load_duration": 395966000,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 101,
+    "prompt_eval_duration": 48001000,
+    "total_duration": 11636838900
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "638b87643e69fe30b83a3dffa1062e57189b5621e60bd563be38109e28497d50",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "ce943f0289e6dbd00ea1307c5a010b52d1055f1441e0b6e5aedb560e3e59bb61",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:38:31.2241824Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def eulerian_num(n: int, m: int) -\\u003e int:\\n    \\\"\\\"\\\"Calculate Eulerian number A(n, m).\\\"\\\"\\\"\\n    if n \\u003c 0 or m \\u003c 0 or m \\u003e n:\\n        return 0\\n    \\n    # Use dynamic programming to compute Eulerian numbers\\n    # dp[i][j] = (i - j + 1) * dp[i-1][j-1] + (j + 1) * dp[i-1][j]\\n    \\n    prev_row = [0.0] * (n + 2)\\n    curr_row = [0.0] * (n + 2)\\n    \\n    # Base case: A(0, 0) = 1\\n    prev_row[0] = 1\\n    \\n    for i in range(1, n + 1):\\n        curr_row[i - m if False else min(i, n)] = 0.0\\n        \\n        for j in range(max(0, i - n), min(n, i) + 2):\\n            term1 = (i - j + 1) * prev_row[j] if j \\u003e 0 and j \\u003c= i else 0\\n            term2 = (j + 1) * prev_row[j - 1] if j \\u003e= 1 else 0\\n            \\n            curr_row[j] = int(term1 + term2)\\n        \\n        # Shift rows for next iteration\\n        prev_row[:] = curr_row\\n        \\n    return prev_row[m]\\n\\n# Test case from the prompt (commented out to avoid execution in some environments, but kept as verification logic if run directly):\\n# assert eulerian_num(3, 1) == 4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11636838900,\"load_duration\":395966000,\"prompt_eval_count\":101,\"prompt_eval_duration\":48001000,\"eval_count\":360,\"eval_duration\":11159049000}",
+  "raw_response": "def eulerian_num(n: int, m: int) -> int:\n    \"\"\"Calculate Eulerian number A(n, m).\"\"\"\n    if n < 0 or m < 0 or m > n:\n        return 0\n    \n    # Use dynamic programming to compute Eulerian numbers\n    # dp[i][j] = (i - j + 1) * dp[i-1][j-1] + (j + 1) * dp[i-1][j]\n    \n    prev_row = [0.0] * (n + 2)\n    curr_row = [0.0] * (n + 2)\n    \n    # Base case: A(0, 0) = 1\n    prev_row[0] = 1\n    \n    for i in range(1, n + 1):\n        curr_row[i - m if False else min(i, n)] = 0.0\n        \n        for j in range(max(0, i - n), min(n, i) + 2):\n            term1 = (i - j + 1) * prev_row[j] if j > 0 and j <= i else 0\n            term2 = (j + 1) * prev_row[j - 1] if j >= 1 else 0\n            \n            curr_row[j] = int(term1 + term2)\n        \n        # Shift rows for next iteration\n        prev_row[:] = curr_row\n        \n    return prev_row[m]\n\n# Test case from the prompt (commented out to avoid execution in some environments, but kept as verification logic if run directly):\n# assert eulerian_num(3, 1) == 4",
+  "raw_response_sha256": "f58c66bdd6e3133f0cf89c7f48fca596ad5091e1265d7486a081883c6c1adba5",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the Eulerian number a(n, m).\nassert eulerian_num(3, 1) == 4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 44,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 3,
+  "seed": 44,
+  "selective_retry": false,
+  "task_id": "Mbpp/103",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 142,
+  "composed_prompt_sha256": "e5493d809f01095704e8637fa3f9d46c3b2cb0a4e1b87e2d921d0aa1aeae6d87",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "f7c5f3eba3d2e703f9647645abe775d5b7a68fbc5dc8c8ce01a9db86d6e342c2",
+  "generation_latency_seconds": 16.39100000000326,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:47:24.131369Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 519,
+    "eval_duration": 15950036000,
+    "load_duration": 356369600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 125,
+    "prompt_eval_duration": 44684000,
+    "total_duration": 16382785000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "32196e35d26f434b65249c3802cd0ae9779255ef8d0794c64c322802a60b5021",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "f7c5f3eba3d2e703f9647645abe775d5b7a68fbc5dc8c8ce01a9db86d6e342c2",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:47:24.131369Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def largest_subset(nums):\\n    if not nums:\\n        return 0\\n    \\n    # Sort to ensure we process numbers in order (though GCD logic doesn't strictly require it, \\n    # the DP approach benefits from processing smaller divisors first implicitly)\\n    sorted_nums = sorted(nums)\\n    \\n    n = len(sorted_nums)\\n    if n == 1:\\n        return 1\\n    \\n    # dp[i] will store the size of the largest subset ending with index i (sorted_nums[i])\\n    # We want every pair in the subset to be divisible. This implies that for any two numbers a, b \\n    # in the subset, either a divides b or b divides a.\\n    \\n    # To maximize this, we can use dynamic programming where dp[i] is the max size of such a subset\\n    # ending at index i (where sorted_nums[i] is included).\\n    # For each j \\u003c i, if sorted_nums[j] divides sorted_nums[i], then we can extend the subset.\\n    \\n    # However, there's a catch: just because A|B and B|C doesn't mean A|C? Actually it does for integers.\\n    # But wait, the condition is \\\"every pair\\\". If we have {2, 4, 8}, pairs are (2,4), (2,8), (4,8). All divisible.\\n    # What if we have {3, 6}? Divisible. \\n    # The structure must be a chain where each element divides the next? Not necessarily strictly increasing by factor \\u003e1,\\n    # but divisibility is transitive for integers: if x|y and y|z then x|z.\\n    # So yes, we just need to find the longest chain of divisors.\\n    \\n    dp = [1] * n\\n    \\n    max_len = 0\\n    \\n    for i in range(n):\\n        current_val = sorted_nums[i]\\n        \\n        # Check all previous elements\\n        for j in range(i):\\n            prev_val = sorted_nums[j]\\n            \\n            if current_val % prev_val == 0:\\n                dp[i] = max(dp[i], dp[j] + 1)\\n                \\n        max_len = max(max_len, dp[i])\\n        \\n    return max_len\\n\\n# Test case from the prompt\\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":16382785000,\"load_duration\":356369600,\"prompt_eval_count\":125,\"prompt_eval_duration\":44684000,\"eval_count\":519,\"eval_duration\":15950036000}",
+  "raw_response": "def largest_subset(nums):\n    if not nums:\n        return 0\n    \n    # Sort to ensure we process numbers in order (though GCD logic doesn't strictly require it, \n    # the DP approach benefits from processing smaller divisors first implicitly)\n    sorted_nums = sorted(nums)\n    \n    n = len(sorted_nums)\n    if n == 1:\n        return 1\n    \n    # dp[i] will store the size of the largest subset ending with index i (sorted_nums[i])\n    # We want every pair in the subset to be divisible. This implies that for any two numbers a, b \n    # in the subset, either a divides b or b divides a.\n    \n    # To maximize this, we can use dynamic programming where dp[i] is the max size of such a subset\n    # ending at index i (where sorted_nums[i] is included).\n    # For each j < i, if sorted_nums[j] divides sorted_nums[i], then we can extend the subset.\n    \n    # However, there's a catch: just because A|B and B|C doesn't mean A|C? Actually it does for integers.\n    # But wait, the condition is \"every pair\". If we have {2, 4, 8}, pairs are (2,4), (2,8), (4,8). All divisible.\n    # What if we have {3, 6}? Divisible. \n    # The structure must be a chain where each element divides the next? Not necessarily strictly increasing by factor >1,\n    # but divisibility is transitive for integers: if x|y and y|z then x|z.\n    # So yes, we just need to find the longest chain of divisors.\n    \n    dp = [1] * n\n    \n    max_len = 0\n    \n    for i in range(n):\n        current_val = sorted_nums[i]\n        \n        # Check all previous elements\n        for j in range(i):\n            prev_val = sorted_nums[j]\n            \n            if current_val % prev_val == 0:\n                dp[i] = max(dp[i], dp[j] + 1)\n                \n        max_len = max(max_len, dp[i])\n        \n    return max_len\n\n# Test case from the prompt\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4",
+  "raw_response_sha256": "1c4ed6a94923d7702d4a328059a050bc322bad927cee6b214cd1fdf6059c123b",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the size of the largest subset of a list of numbers so that every pair is divisible.\nassert largest_subset([ 1, 3, 6, 13, 17, 18 ]) == 4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/620",
+  "transport_complete": true
+}

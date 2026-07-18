@@ -1,0 +1,62 @@
+{
+  "cell_index": 6,
+  "composed_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "1cb6b0eb832dca0a6762e84175a5642eb0bdecac7a173b48bd205683d869211a",
+  "generation_latency_seconds": 26.26500000001397,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:08:35.0222942Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 797,
+    "eval_duration": 25656416000,
+    "load_duration": 377073600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 49,
+    "prompt_eval_duration": 139106000,
+    "total_duration": 26260644200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "1cb6b0eb832dca0a6762e84175a5642eb0bdecac7a173b48bd205683d869211a",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:08:35.0222942Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here’s one way to implement it in Python:\\n\\n```python\\nimport re\\n\\ndef is_decimal(s: str) -\\u003e bool:\\n    \\\"\\\"\\\"\\n    Check whether s represents a decimal number with exactly 2 digits after the dot,\\n    if a dot is present. Examples of valid inputs: '123', '0', '-45.67'\\n    Invalid examples: '123.', '.12', '123.1', '123.123', 'abc'.\\n    \\\"\\\"\\\"\\n    # Pattern explanation:\\n    # ^                : start of string\\n    # [-+]?            : optional sign (+ or -)\\n    # \\\\d*              : zero or more digits before the dot (if any)\\n    # (\\\\.\\\\d{2})?       : an optional group consisting of a dot followed by exactly 2 digits\\n    # \\\\d*$             : if there is no dot, then only digits until end; \\n    #                   but our pattern above already covers that via (\\\\.\\\\d{2})? being absent.\\n    # To be precise and avoid ambiguity:\\n    \\n    pattern = r'^[-+]?\\\\d*(\\\\.\\\\d{2})?$'\\n\\n    return bool(re.fullmatch(pattern, s))\\n\\n\\n# Examples / tests\\nassert is_decimal('123') == True\\nassert is_decimal('-45.67') == True\\nassert is_decimal('+0.99') == True\\nassert is_decimal('.12') == False          # no digits before dot in this definition; adjust if you want it allowed\\nassert is_decimal('12.') == False\\nassert is_decimal('123.1') == False        # only 1 decimal digit\\nassert is_decimal('123.123') == False      # more than 2 decimal digits\\nassert is_decimal('abc') == False\\n\\n# If you also want to allow numbers like \\\".12\\\" (no leading zeros), use this pattern instead:\\ndef is_decimal_allow_leading_dot(s: str) -\\u003e bool:\\n    pattern = r'^[-+]?(?:\\\\d+|\\\\.\\\\d{2})(?:\\\\.\\\\d{0,2})?$'  # simplified; better to be explicit\\n    \\n    # More precise version allowing optional leading digits and requiring exactly two decimals if dot present:\\n    return bool(re.fullmatch(r'^[-+]?\\\\d*(?:\\\\.\\\\d{2})?$', s))\\n\\n# But note: this still rejects \\\".12\\\". To allow it, use:\\ndef is_decimal_with_optional_leading_digits(s: str) -\\u003e bool:\\n    pattern = r'^[-+]?(\\\\d*\\\\.?\\\\d*)$'  # too loose; we need exactly two decimals when dot exists\\n    \\n    # Final robust version that matches your original requirement (no leading dot unless digits before):\\n    return bool(re.fullmatch(r'^[-+]?(?:\\\\d+\\\\.\\\\d{2}|\\\\.\\\\d{2})?$', s))\\n\\n# If you want both forms: with or without leading zeros, and exactly two decimals when a dot is present:\\ndef is_decimal_final(s: str) -\\u003e bool:\\n    # Option 1: digits before dot (optional), then if dot exists, exactly 2 digits after it.\\n    pattern = r'^[-+]?(?:\\\\d+\\\\.\\\\d{2}|\\\\.\\\\d{2})?$'\\n    return bool(re.fullmatch(pattern, s))\\n\\n# Quick test with your original assertion\\nassert is_decimal_final('123.11') == True\\n```\\n\\nIf you tell me whether cases like `.12` should be considered valid decimal numbers in your context, I can adjust the regex accordingly and give a single clean function tailored to that rule set.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":26260644200,\"load_duration\":377073600,\"prompt_eval_count\":49,\"prompt_eval_duration\":139106000,\"eval_count\":797,\"eval_duration\":25656416000}",
+  "raw_response": "Here’s one way to implement it in Python:\n\n```python\nimport re\n\ndef is_decimal(s: str) -> bool:\n    \"\"\"\n    Check whether s represents a decimal number with exactly 2 digits after the dot,\n    if a dot is present. Examples of valid inputs: '123', '0', '-45.67'\n    Invalid examples: '123.', '.12', '123.1', '123.123', 'abc'.\n    \"\"\"\n    # Pattern explanation:\n    # ^                : start of string\n    # [-+]?            : optional sign (+ or -)\n    # \\d*              : zero or more digits before the dot (if any)\n    # (\\.\\d{2})?       : an optional group consisting of a dot followed by exactly 2 digits\n    # \\d*$             : if there is no dot, then only digits until end; \n    #                   but our pattern above already covers that via (\\.\\d{2})? being absent.\n    # To be precise and avoid ambiguity:\n    \n    pattern = r'^[-+]?\\d*(\\.\\d{2})?$'\n\n    return bool(re.fullmatch(pattern, s))\n\n\n# Examples / tests\nassert is_decimal('123') == True\nassert is_decimal('-45.67') == True\nassert is_decimal('+0.99') == True\nassert is_decimal('.12') == False          # no digits before dot in this definition; adjust if you want it allowed\nassert is_decimal('12.') == False\nassert is_decimal('123.1') == False        # only 1 decimal digit\nassert is_decimal('123.123') == False      # more than 2 decimal digits\nassert is_decimal('abc') == False\n\n# If you also want to allow numbers like \".12\" (no leading zeros), use this pattern instead:\ndef is_decimal_allow_leading_dot(s: str) -> bool:\n    pattern = r'^[-+]?(?:\\d+|\\.\\d{2})(?:\\.\\d{0,2})?$'  # simplified; better to be explicit\n    \n    # More precise version allowing optional leading digits and requiring exactly two decimals if dot present:\n    return bool(re.fullmatch(r'^[-+]?\\d*(?:\\.\\d{2})?$', s))\n\n# But note: this still rejects \".12\". To allow it, use:\ndef is_decimal_with_optional_leading_digits(s: str) -> bool:\n    pattern = r'^[-+]?(\\d*\\.?\\d*)$'  # too loose; we need exactly two decimals when dot exists\n    \n    # Final robust version that matches your original requirement (no leading dot unless digits before):\n    return bool(re.fullmatch(r'^[-+]?(?:\\d+\\.\\d{2}|\\.\\d{2})?$', s))\n\n# If you want both forms: with or without leading zeros, and exactly two decimals when a dot is present:\ndef is_decimal_final(s: str) -> bool:\n    # Option 1: digits before dot (optional), then if dot exists, exactly 2 digits after it.\n    pattern = r'^[-+]?(?:\\d+\\.\\d{2}|\\.\\d{2})?$'\n    return bool(re.fullmatch(pattern, s))\n\n# Quick test with your original assertion\nassert is_decimal_final('123.11') == True\n```\n\nIf you tell me whether cases like `.12` should be considered valid decimal numbers in your context, I can adjust the regex accordingly and give a single clean function tailored to that rule set.",
+  "raw_response_sha256": "0d36ba065af6db9ea8ef3507893f847369bd099fd857ecd79614d0473504f23c",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to check whether a given string is a decimal number with a precision of 2.\nassert is_decimal('123.11')==True\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/759",
+  "transport_complete": true
+}

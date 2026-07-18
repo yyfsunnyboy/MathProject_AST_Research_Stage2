@@ -1,0 +1,62 @@
+{
+  "cell_index": 33,
+  "composed_prompt_sha256": "3e3fc69a790ceddca663383896f3cc1fb6924acc547bf4309328c94404199c9a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "96b47b4e7676d8c0150302a46f9bb2f705b8c6718b5e9d182b535bf40adb369f",
+  "generation_latency_seconds": 7.530999999988126,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:28:37.248889Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 213,
+    "eval_duration": 7095986000,
+    "load_duration": 354578200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 107,
+    "prompt_eval_duration": 47003000,
+    "total_duration": 7526776600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "022089c791b10f9d8b0f0c075dca88f0fbba28d076fe4b71d6d1307742ebf77d",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "96b47b4e7676d8c0150302a46f9bb2f705b8c6718b5e9d182b535bf40adb369f",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:28:37.248889Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def median_trapezium(a, b, c):\\n    \\\"\\\"\\\"\\n    Calculates a value based on trapezoid dimensions that satisfies:\\n    median_trapezium(15, 25, 35) == 20\\n    \\n    Logic derived from the test case (a=15, b=25, c=35 -\\u003e result=20):\\n    The sum of a and b is 40. Half of that is 20. \\n    This suggests the function returns (a + b) / 2.\\n    \\n    Args:\\n        a (int or float): First dimension (e.g., top base).\\n        b (int or float): Second dimension (e.g., bottom base).\\n        c (int or float): Third dimension (irrelevant for this specific logic based on the test case, but included in signature).\\n    \\n    Returns:\\n        The calculated median value.\\n    \\\"\\\"\\\"\\n    return (a + b) / 2\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":7526776600,\"load_duration\":354578200,\"prompt_eval_count\":107,\"prompt_eval_duration\":47003000,\"eval_count\":213,\"eval_duration\":7095986000}",
+  "raw_response": "def median_trapezium(a, b, c):\n    \"\"\"\n    Calculates a value based on trapezoid dimensions that satisfies:\n    median_trapezium(15, 25, 35) == 20\n    \n    Logic derived from the test case (a=15, b=25, c=35 -> result=20):\n    The sum of a and b is 40. Half of that is 20. \n    This suggests the function returns (a + b) / 2.\n    \n    Args:\n        a (int or float): First dimension (e.g., top base).\n        b (int or float): Second dimension (e.g., bottom base).\n        c (int or float): Third dimension (irrelevant for this specific logic based on the test case, but included in signature).\n    \n    Returns:\n        The calculated median value.\n    \"\"\"\n    return (a + b) / 2",
+  "raw_response_sha256": "7681ba5bc7dd007968f79b36be5290fe3617d0ee6e4bbec05e868ea126c24b35",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median length of a trapezium.\nassert median_trapezium(15,25,35)==20\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/432",
+  "transport_complete": true
+}

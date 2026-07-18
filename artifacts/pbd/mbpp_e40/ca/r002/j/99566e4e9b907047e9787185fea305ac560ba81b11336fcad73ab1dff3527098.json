@@ -1,0 +1,62 @@
+{
+  "cell_index": 83,
+  "composed_prompt_sha256": "230884664f6d497d8cdd99b30c404b9e5bbde5b36cca0bf5d9161198278cf809",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "99566e4e9b907047e9787185fea305ac560ba81b11336fcad73ab1dff3527098",
+  "generation_latency_seconds": 18.73399999999674,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:34:51.3646973Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 593,
+    "eval_duration": 18289785000,
+    "load_duration": 339502100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 139,
+    "prompt_eval_duration": 45127000,
+    "total_duration": 18710737400
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "99566e4e9b907047e9787185fea305ac560ba81b11336fcad73ab1dff3527098",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:34:51.3646973Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def get_median(nums1: list[int], nums2: list[int], n: int) -\\u003e float:\\n    \\\"\\\"\\\"\\n    Find the median of two sorted lists of same size using binary search approach.\\n    \\n    Args:\\n        nums1 (list[int]): First sorted list\\n        nums2 (list[int]): Second sorted list  \\n        n (int): Size of each list\\n    \\n    Returns:\\n        float: The median value\\n        \\n    Example:\\n        \\u003e\\u003e\\u003e get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5)\\n        16.0\\n    \\\"\\\"\\\"\\n    \\n    def find_kth_element(k: int):\\n        # Find k-th smallest element in two sorted arrays (k is 1-indexed)\\n        idx1 = 0\\n        idx2 = 0\\n        \\n        while True:\\n            if idx1 \\u003e= n:\\n                return nums2[idx2 + k - 1]\\n            if idx2 \\u003e= n:\\n                return nums1[idx1 + k - 1]\\n            \\n            if k == 1:\\n                return min(nums1[idx1], nums2[idx2])\\n            \\n            # Compare elements at positions (k//2) steps ahead\\n            new_idx1 = min(idx1 + k // 2, n - 1)\\n            new_idx2 = min(idx2 + k // 2, n - 1)\\n            \\n            if nums1[new_idx1] \\u003c nums2[new_idx2]:\\n                # Discard first half of array1\\n                idx1 += k // 2\\n            else:\\n                # Discard first half of array2  \\n                idx2 += k // 2\\n            \\n            k -= (k // 2) if nums1[idx1] \\u003c nums2[idx2] else (k - k//2)\\n\\n    total_length = n + n\\n    \\n    if total_length % 2 == 0:\\n        # Even number of elements, need average of two middle elements\\n        left_median = find_kth_element(total_length // 2)\\n        right_median = find_kth_element((total_length // 2) + 1)\\n        return (left_median + right_median) / 2.0\\n    else:\\n        # Odd number of elements, just the middle element\\n        mid_index = total_length // 2 + 1\\n        return float(find_kth_element(mid_index))\\n\\n# Test case from problem statement\\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":18710737400,\"load_duration\":339502100,\"prompt_eval_count\":139,\"prompt_eval_duration\":45127000,\"eval_count\":593,\"eval_duration\":18289785000}",
+  "raw_response": "def get_median(nums1: list[int], nums2: list[int], n: int) -> float:\n    \"\"\"\n    Find the median of two sorted lists of same size using binary search approach.\n    \n    Args:\n        nums1 (list[int]): First sorted list\n        nums2 (list[int]): Second sorted list  \n        n (int): Size of each list\n    \n    Returns:\n        float: The median value\n        \n    Example:\n        >>> get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5)\n        16.0\n    \"\"\"\n    \n    def find_kth_element(k: int):\n        # Find k-th smallest element in two sorted arrays (k is 1-indexed)\n        idx1 = 0\n        idx2 = 0\n        \n        while True:\n            if idx1 >= n:\n                return nums2[idx2 + k - 1]\n            if idx2 >= n:\n                return nums1[idx1 + k - 1]\n            \n            if k == 1:\n                return min(nums1[idx1], nums2[idx2])\n            \n            # Compare elements at positions (k//2) steps ahead\n            new_idx1 = min(idx1 + k // 2, n - 1)\n            new_idx2 = min(idx2 + k // 2, n - 1)\n            \n            if nums1[new_idx1] < nums2[new_idx2]:\n                # Discard first half of array1\n                idx1 += k // 2\n            else:\n                # Discard first half of array2  \n                idx2 += k // 2\n            \n            k -= (k // 2) if nums1[idx1] < nums2[idx2] else (k - k//2)\n\n    total_length = n + n\n    \n    if total_length % 2 == 0:\n        # Even number of elements, need average of two middle elements\n        left_median = find_kth_element(total_length // 2)\n        right_median = find_kth_element((total_length // 2) + 1)\n        return (left_median + right_median) / 2.0\n    else:\n        # Odd number of elements, just the middle element\n        mid_index = total_length // 2 + 1\n        return float(find_kth_element(mid_index))\n\n# Test case from problem statement\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0",
+  "raw_response_sha256": "dcae1b3a0e0e0bc08467c8a00c8990f3da8047e323eb5529e73d15b6005152db",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median of two sorted lists of same size.\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/622",
+  "transport_complete": true
+}

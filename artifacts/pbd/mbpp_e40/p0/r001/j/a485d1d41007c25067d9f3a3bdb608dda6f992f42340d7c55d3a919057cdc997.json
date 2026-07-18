@@ -1,0 +1,62 @@
+{
+  "cell_index": 76,
+  "composed_prompt_sha256": "a6cc6a39164a4a9e4a6fb7b0405341c16c2075d2ed9a6ddd6f32bf14c8a3763a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "a485d1d41007c25067d9f3a3bdb608dda6f992f42340d7c55d3a919057cdc997",
+  "generation_latency_seconds": 19.437000000005355,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:44:52.5684033Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 605,
+    "eval_duration": 18794472000,
+    "load_duration": 468825300,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 40,
+    "prompt_eval_duration": 121683000,
+    "total_duration": 19444559800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "a6cc6a39164a4a9e4a6fb7b0405341c16c2075d2ed9a6ddd6f32bf14c8a3763a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "a485d1d41007c25067d9f3a3bdb608dda6f992f42340d7c55d3a919057cdc997",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:44:52.5684033Z\",\"message\":{\"role\":\"assistant\",\"content\":\"To solve this, we need to understand how many divisors a number has and when that count becomes odd or even:\\n\\n- A perfect square (e.g., 4, 9, 16) always has an **odd** number of divisors because one divisor is repeated ($\\\\sqrt{n}$).\\n- All non-perfect squares have an **even** number of divisors.\\n\\nSo the function should return `True` if $n$ is a perfect square (since its divisor count is odd), and `False` otherwise?  \\nWait—the problem asks: *\\\"check whether the count of divisors is even.\\\"* That means we want to return `True` when the number of divisors **is even**, i.e., when $n$ is **not** a perfect square.\\n\\nLet’s implement it clearly:\\n\\n```python\\nimport math\\n\\ndef count_divisors(n):\\n    \\\"\\\"\\\"Return True if n has an even number of divisors, False otherwise.\\\"\\\"\\\"\\n    # Count all positive divisors efficiently up to sqrt(n)\\n    divisor_count = 0\\n    i = 1\\n    while i * i \\u003c= n:\\n        if n % i == 0:\\n            if i * i == n:\\n                # Perfect square root counted once\\n                divisor_count += 1\\n            else:\\n                # Both i and n//i are distinct divisors\\n                divisor_count += 2\\n        i += 1\\n    \\n    return (divisor_count % 2) == 0\\n\\n# Test with the given assertion\\nassert count_divisors(10), \\\"Divisors of 10 should be even\\\"   # Divisors: 1,2,5,10 → count=4 → True ✓\\n```\\n\\nHowever, note that your original line was:  \\n`assert count_divisors(10)` — which expects `count_divisors(10)` to evaluate to a truthy value (i.e., `True`). Since 10 is not a perfect square, its divisor count is even → function returns `True`, so the assertion passes.\\n\\n✅ Final clean version:\\n\\n```python\\ndef count_divisors(n):\\n    if n \\u003c= 0:\\n        raise ValueError(\\\"n must be a positive integer\\\")\\n    \\n    count = 0\\n    i = 1\\n    while i * i \\u003c= n:\\n        if n % i == 0:\\n            if i * i != n:\\n                count += 2\\n            else:\\n                count += 1\\n        i += 1\\n    \\n    return (count % 2) == 0\\n\\n# Example usage and assertion\\nassert count_divisors(10), \\\"Divisor count of 10 is even\\\"\\nprint(count_divisors(4))   # False → divisors: 1,2,4 → count=3 (odd)\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":19444559800,\"load_duration\":468825300,\"prompt_eval_count\":40,\"prompt_eval_duration\":121683000,\"eval_count\":605,\"eval_duration\":18794472000}",
+  "raw_response": "To solve this, we need to understand how many divisors a number has and when that count becomes odd or even:\n\n- A perfect square (e.g., 4, 9, 16) always has an **odd** number of divisors because one divisor is repeated ($\\sqrt{n}$).\n- All non-perfect squares have an **even** number of divisors.\n\nSo the function should return `True` if $n$ is a perfect square (since its divisor count is odd), and `False` otherwise?  \nWait—the problem asks: *\"check whether the count of divisors is even.\"* That means we want to return `True` when the number of divisors **is even**, i.e., when $n$ is **not** a perfect square.\n\nLet’s implement it clearly:\n\n```python\nimport math\n\ndef count_divisors(n):\n    \"\"\"Return True if n has an even number of divisors, False otherwise.\"\"\"\n    # Count all positive divisors efficiently up to sqrt(n)\n    divisor_count = 0\n    i = 1\n    while i * i <= n:\n        if n % i == 0:\n            if i * i == n:\n                # Perfect square root counted once\n                divisor_count += 1\n            else:\n                # Both i and n//i are distinct divisors\n                divisor_count += 2\n        i += 1\n    \n    return (divisor_count % 2) == 0\n\n# Test with the given assertion\nassert count_divisors(10), \"Divisors of 10 should be even\"   # Divisors: 1,2,5,10 → count=4 → True ✓\n```\n\nHowever, note that your original line was:  \n`assert count_divisors(10)` — which expects `count_divisors(10)` to evaluate to a truthy value (i.e., `True`). Since 10 is not a perfect square, its divisor count is even → function returns `True`, so the assertion passes.\n\n✅ Final clean version:\n\n```python\ndef count_divisors(n):\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n    \n    count = 0\n    i = 1\n    while i * i <= n:\n        if n % i == 0:\n            if i * i != n:\n                count += 2\n            else:\n                count += 1\n        i += 1\n    \n    return (count % 2) == 0\n\n# Example usage and assertion\nassert count_divisors(10), \"Divisor count of 10 is even\"\nprint(count_divisors(4))   # False → divisors: 1,2,4 → count=3 (odd)\n```",
+  "raw_response_sha256": "e17cb7404e6bf73bdfd8326fe83c770bc360396667e341d814be8f8e1381a4c4",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether the count of divisors is even. \nassert count_divisors(10)\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/781",
+  "transport_complete": true
+}

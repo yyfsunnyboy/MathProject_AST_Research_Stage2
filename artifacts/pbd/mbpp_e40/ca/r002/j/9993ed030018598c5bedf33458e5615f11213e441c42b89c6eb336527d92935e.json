@@ -1,0 +1,62 @@
+{
+  "cell_index": 153,
+  "composed_prompt_sha256": "aa05ededf798253f2e9edc4abc17b118aa1ff9d5739bb66d70882169ff4bf3d0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "9993ed030018598c5bedf33458e5615f11213e441c42b89c6eb336527d92935e",
+  "generation_latency_seconds": 6.687999999994645,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:50:13.8436294Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 205,
+    "eval_duration": 6280678000,
+    "load_duration": 320524000,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 116,
+    "prompt_eval_duration": 44513000,
+    "total_duration": 6685057700
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b60824a12ec3265b3d3abf7c501b7b5713d5b14394d50cdf2e0859c5324fd12e",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "9993ed030018598c5bedf33458e5615f11213e441c42b89c6eb336527d92935e",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:50:13.8436294Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def find_adverb_position(sentence: str):\\n    import re\\n    \\n    # Pattern to match adverbs (typically ending in 'ly') followed by optional punctuation like !, ?, ., etc.\\n    pattern = r'\\\\b\\\\w+ly\\\\b'\\n    \\n    matches = list(re.finditer(pattern, sentence))\\n    \\n    if not matches:\\n        return None\\n    \\n    first_match = matches[0]\\n    start_pos = first_match.start()\\n    end_pos = first_match.end() - 1  # inclusive index of the last character in the word\\n    \\n    adverb_text = first_match.group().strip('!?.,;:')\\n    \\n    return (start_pos, end_pos, adverb_text)\\n\\n# Test case from prompt\\nresult = find_adverb_position(\\\"clearly!! we can see the sky\\\")\\nassert result == (0, 7, 'clearly'), f\\\"Expected (0, 7, 'clearly') but got {result}\\\"\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":6685057700,\"load_duration\":320524000,\"prompt_eval_count\":116,\"prompt_eval_duration\":44513000,\"eval_count\":205,\"eval_duration\":6280678000}",
+  "raw_response": "def find_adverb_position(sentence: str):\n    import re\n    \n    # Pattern to match adverbs (typically ending in 'ly') followed by optional punctuation like !, ?, ., etc.\n    pattern = r'\\b\\w+ly\\b'\n    \n    matches = list(re.finditer(pattern, sentence))\n    \n    if not matches:\n        return None\n    \n    first_match = matches[0]\n    start_pos = first_match.start()\n    end_pos = first_match.end() - 1  # inclusive index of the last character in the word\n    \n    adverb_text = first_match.group().strip('!?.,;:')\n    \n    return (start_pos, end_pos, adverb_text)\n\n# Test case from prompt\nresult = find_adverb_position(\"clearly!! we can see the sky\")\nassert result == (0, 7, 'clearly'), f\"Expected (0, 7, 'clearly') but got {result}\"",
+  "raw_response_sha256": "4f6db912fdc3796d44ea3cc2b6bac126e25b4481068caab023640a9564f9db7e",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the first adverb and their positions in a given sentence.\nassert find_adverb_position(\"clearly!! we can see the sky\")==(0, 7, 'clearly')\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/440",
+  "transport_complete": true
+}

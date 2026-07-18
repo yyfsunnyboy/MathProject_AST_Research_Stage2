@@ -1,0 +1,62 @@
+{
+  "cell_index": 40,
+  "composed_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "4c817366d17b7415fd0e910fe51078ddafc9fa62976068310e85118f5d7b9ca4",
+  "generation_latency_seconds": 9.75,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:28:50.2089456Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 304,
+    "eval_duration": 9306761000,
+    "load_duration": 332514800,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 61,
+    "prompt_eval_duration": 45507000,
+    "total_duration": 9736476200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "30dc2060ce5e8325b23c2cff728141f4ae3ed7df4b26b934afafacd95ae6745c",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "4c817366d17b7415fd0e910fe51078ddafc9fa62976068310e85118f5d7b9ca4",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:28:50.2089456Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here is the Python function that solves this problem. It filters out any number that appears more than once in the list and returns them while preserving their original order of first appearance (though for unique numbers, order doesn't strictly matter).\\n\\n```python\\ndef two_unique_nums(nums):\\n    \\\"\\\"\\\"\\n    Removes duplicate numbers from a given list, keeping only those \\n    that appear exactly once. Preserves the relative order of elements.\\n    \\n    Args:\\n        nums (list[int]): A list of integers which may contain duplicates.\\n        \\n    Returns:\\n        list[int]: A new list containing only the unique numbers found in 'nums'.\\n    \\\"\\\"\\\"\\n    # Count occurrences of each number\\n    counts = {}\\n    for num in nums:\\n        counts[num] = counts.get(num, 0) + 1\\n    \\n    # Filter to keep only those with a count of exactly 1\\n    result = [num for num in nums if counts[num] == 1]\\n    \\n    return result\\n\\n# Test cases based on your request and additional edge cases\\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5], \\\"Test case failed\\\"\\nprint(\\\"All assertions passed!\\\")\\n\\n# Additional verification for clarity\\nprint(two_unique_nums([1,2,3,2,3,4,5])) # Output: [1, 4, 5]\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":9736476200,\"load_duration\":332514800,\"prompt_eval_count\":61,\"prompt_eval_duration\":45507000,\"eval_count\":304,\"eval_duration\":9306761000}",
+  "raw_response": "Here is the Python function that solves this problem. It filters out any number that appears more than once in the list and returns them while preserving their original order of first appearance (though for unique numbers, order doesn't strictly matter).\n\n```python\ndef two_unique_nums(nums):\n    \"\"\"\n    Removes duplicate numbers from a given list, keeping only those \n    that appear exactly once. Preserves the relative order of elements.\n    \n    Args:\n        nums (list[int]): A list of integers which may contain duplicates.\n        \n    Returns:\n        list[int]: A new list containing only the unique numbers found in 'nums'.\n    \"\"\"\n    # Count occurrences of each number\n    counts = {}\n    for num in nums:\n        counts[num] = counts.get(num, 0) + 1\n    \n    # Filter to keep only those with a count of exactly 1\n    result = [num for num in nums if counts[num] == 1]\n    \n    return result\n\n# Test cases based on your request and additional edge cases\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5], \"Test case failed\"\nprint(\"All assertions passed!\")\n\n# Additional verification for clarity\nprint(two_unique_nums([1,2,3,2,3,4,5])) # Output: [1, 4, 5]\n```",
+  "raw_response_sha256": "f296a4c212821bc525fe9d031b87bd60644ba9d96b691519aa575319d340a35d",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to remove duplicate numbers from a given number of lists.\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5]\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/572",
+  "transport_complete": true
+}

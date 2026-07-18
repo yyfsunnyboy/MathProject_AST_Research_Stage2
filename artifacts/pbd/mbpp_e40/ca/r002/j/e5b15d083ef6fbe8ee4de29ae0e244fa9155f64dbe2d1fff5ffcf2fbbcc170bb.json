@@ -1,0 +1,62 @@
+{
+  "cell_index": 30,
+  "composed_prompt_sha256": "21ffd24e412a0e29ce7dfcbf5b35e181cc6b82a345f9b081ac23a8d3be834053",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "e5b15d083ef6fbe8ee4de29ae0e244fa9155f64dbe2d1fff5ffcf2fbbcc170bb",
+  "generation_latency_seconds": 2.3280000000086147,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:27:46.5970509Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 56,
+    "eval_duration": 1844885000,
+    "load_duration": 405329500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 132,
+    "prompt_eval_duration": 50571000,
+    "total_duration": 2308767000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b60fe66ed95982104eefd94531b3dbc57e05318a9cf20caf1931466bba93dbe5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "e5b15d083ef6fbe8ee4de29ae0e244fa9155f64dbe2d1fff5ffcf2fbbcc170bb",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:27:46.5970509Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def sum_series(n):\\n    total = 0\\n    i = 0\\n    while n - 2 * i \\u003e 0:\\n        term = n - 2 * i\\n        total += term\\n        i += 1\\n    return total\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2308767000,\"load_duration\":405329500,\"prompt_eval_count\":132,\"prompt_eval_duration\":50571000,\"eval_count\":56,\"eval_duration\":1844885000}",
+  "raw_response": "def sum_series(n):\n    total = 0\n    i = 0\n    while n - 2 * i > 0:\n        term = n - 2 * i\n        total += term\n        i += 1\n    return total",
+  "raw_response_sha256": "35bc652790629a5d4319af3df1f805424bfb5ef49348f45c1d132141bec7c360",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to calculate the sum (n - 2*i) from i=0 to n // 2, for instance n + (n-2) + (n-4)... (until n-x =< 0).\nassert sum_series(6) == 12\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/162",
+  "transport_complete": true
+}

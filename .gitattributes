@@ -30,3 +30,8 @@ artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_transition_summa
 artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/p1_failure_census.csv text eol=lf
 artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/scaffold_v0_development_analysis_zh.md text eol=lf
 artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_analysis_manifest.json text eol=lf
+
+# Milestone 2F formal expansion runs and deterministic evidence review.
+artifacts/pbd/mbpp_e40/p0/r001/** text eol=lf
+artifacts/pbd/mbpp_e40/ca/r002/** text eol=lf
+artifacts/pbd/mbpp_e40/pa/r002/** text eol=lf

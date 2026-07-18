@@ -1,0 +1,62 @@
+{
+  "cell_index": 3,
+  "composed_prompt_sha256": "a4ef65876fcc0cc5fc1c7e306ccef6f8e11eed373d476e8ead6a3c4322fa1c10",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "b634a6b07c6fc8596a4c291a9a06a055214d20c8a9b88175ec2b51f50dcbb0af",
+  "generation_latency_seconds": 11.5,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:16:23.8936793Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 338,
+    "eval_duration": 11035714000,
+    "load_duration": 387603400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 102,
+    "prompt_eval_duration": 46137000,
+    "total_duration": 11506646700
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "165289ec3a2375804f496f7cb39bad86e019dbdf4023b9b718e82ae3aad24722",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "b634a6b07c6fc8596a4c291a9a06a055214d20c8a9b88175ec2b51f50dcbb0af",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:16:23.8936793Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def capital_words_spaces(text):\\n    if not text:\\n        return text\\n    \\n    words = []\\n    current_word = \\\"\\\"\\n    \\n    for i in range(len(text)):\\n        char = text[i]\\n        \\n        # If we encounter a space, finish the current word and add it to list\\n        if char == ' ':\\n            if current_word.strip():  # Only add non-empty words\\n                words.append(current_word)\\n            current_word = \\\"\\\"\\n            continue\\n        \\n        # Check for capital letter followed by lowercase letters (start of new capitalized word)\\n        if i \\u003e 0 and text[i-1] != ' ' and char.isupper() and len(text[i:]) \\u003e 1:\\n            next_char = text[i+1] if i + 1 \\u003c len(text) else ''\\n            \\n            # If previous character was lowercase or space, this is a new word start\\n            prev_is_space_or_start = (i == 0) or (text[i-1].islower()) or (prev_word_ended := True and current_word.strip() != \\\"\\\")\\n            \\n            if prev_is_space_or_start:\\n                # Check if next char exists to avoid index error on last character\\n                words.append(current_word + ' ')\\n                current_word = \\\"\\\"\\n        \\n        current_word += char\\n    \\n    # Add the final word (if not empty)\\n    if current_word.strip():\\n        words.append(current_word)\\n    \\n    return ''.join(words).strip()\\n\\n# Test cases to verify functionality\\nassert capital_words_spaces(\\\"Python\\\") == 'Python'\\nprint(capital_words_spaces(\\\"Python\\\"))\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11506646700,\"load_duration\":387603400,\"prompt_eval_count\":102,\"prompt_eval_duration\":46137000,\"eval_count\":338,\"eval_duration\":11035714000}",
+  "raw_response": "def capital_words_spaces(text):\n    if not text:\n        return text\n    \n    words = []\n    current_word = \"\"\n    \n    for i in range(len(text)):\n        char = text[i]\n        \n        # If we encounter a space, finish the current word and add it to list\n        if char == ' ':\n            if current_word.strip():  # Only add non-empty words\n                words.append(current_word)\n            current_word = \"\"\n            continue\n        \n        # Check for capital letter followed by lowercase letters (start of new capitalized word)\n        if i > 0 and text[i-1] != ' ' and char.isupper() and len(text[i:]) > 1:\n            next_char = text[i+1] if i + 1 < len(text) else ''\n            \n            # If previous character was lowercase or space, this is a new word start\n            prev_is_space_or_start = (i == 0) or (text[i-1].islower()) or (prev_word_ended := True and current_word.strip() != \"\")\n            \n            if prev_is_space_or_start:\n                # Check if next char exists to avoid index error on last character\n                words.append(current_word + ' ')\n                current_word = \"\"\n        \n        current_word += char\n    \n    # Add the final word (if not empty)\n    if current_word.strip():\n        words.append(current_word)\n    \n    return ''.join(words).strip()\n\n# Test cases to verify functionality\nassert capital_words_spaces(\"Python\") == 'Python'\nprint(capital_words_spaces(\"Python\"))",
+  "raw_response_sha256": "2f41edc05002c088edc1d57c2db653b7216f85a2af157da3ca1ab8948b94f8a9",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to put spaces between words starting with capital letters in a given string.\nassert capital_words_spaces(\"Python\") == 'Python'\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/748",
+  "transport_complete": true
+}

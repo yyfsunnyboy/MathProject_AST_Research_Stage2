@@ -1,0 +1,62 @@
+{
+  "cell_index": 68,
+  "composed_prompt_sha256": "9eb5791eb8dcc8820c25d528ec612dd20861f2e4fb1a1098347af98c88c4a0c4",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "47881da91f5231fc9e8333c535ef0beafc975c425fa666812a13c355c650690d",
+  "generation_latency_seconds": 1.5789999999979045,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:32:40.6360358Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 38,
+    "eval_duration": 1159867000,
+    "load_duration": 361937200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 99,
+    "prompt_eval_duration": 45209000,
+    "total_duration": 1571816100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "f26ddf45074ca7a0b9bf990a2da2e778eb4e64570797acc038c31f0dd729ab71",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "47881da91f5231fc9e8333c535ef0beafc975c425fa666812a13c355c650690d",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:32:40.6360358Z\",\"message\":{\"role\":\"assistant\",\"content\":\"import re\\n\\n\\ndef text_match_three(text):\\n    pattern = r'a(bbb)'\\n    return bool(re.search(pattern, text))\\n\\n\\nassert not text_match_three(\\\"ac\\\")\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1571816100,\"load_duration\":361937200,\"prompt_eval_count\":99,\"prompt_eval_duration\":45209000,\"eval_count\":38,\"eval_duration\":1159867000}",
+  "raw_response": "import re\n\n\ndef text_match_three(text):\n    pattern = r'a(bbb)'\n    return bool(re.search(pattern, text))\n\n\nassert not text_match_three(\"ac\")",
+  "raw_response_sha256": "a46c98951636dea728949520058cb797f000a51824955ac5a8526b42b514fbe2",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function that matches a string that has an a followed by three 'b'.\nassert not text_match_three(\"ac\")\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/787",
+  "transport_complete": true
+}

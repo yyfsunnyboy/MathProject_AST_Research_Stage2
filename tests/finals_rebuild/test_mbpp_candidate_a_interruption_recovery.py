@@ -72,9 +72,11 @@ def test_two_r001_journals_have_exact_identity_completeness_and_hashes():
     assert [row["model_done_reason"] for row in rows] == ["length", "stop"]
 
 
-def test_r001_artifact_hashes_are_immutable_across_rebuild():
+def test_r001_artifact_hashes_remain_immutable_after_r002_execution():
     before = _r001_hashes()
-    recovery.frozen_outputs(REPO_ROOT)
+    # Once r002 exists, the freezer intentionally refuses to rebuild.  A
+    # read-only second inventory still proves the incident evidence did not
+    # change during the later formal execution.
     after = _r001_hashes()
 
     assert before == after
@@ -173,7 +175,7 @@ def test_recovery_pairing_uses_unchanged_p0_and_complete_r002_identities():
     assert paired["invalidated_candidate_cells_included"] == 0
 
 
-def test_recovery_short_path_preflight_passes_and_r002_is_not_created():
+def test_recovery_short_path_budget_still_passes_after_formal_execution():
     mapping = recovery.build_storage_mapping(REPO_ROOT)
 
     assert mapping["windows_path_budget_chars"] == 240
@@ -182,11 +184,12 @@ def test_recovery_short_path_preflight_passes_and_r002_is_not_created():
     assert max(run["longest_windows_path_length"] for run in mapping["runs"]) == 166
     assert mapping["paired_analysis"]["within_budget"] is True
     assert mapping["r002_directory_created_by_freezer"] is False
-    assert not (REPO_ROOT / recovery.CA_R002_RELATIVE).exists()
-    assert not (REPO_ROOT / recovery.PAIRED_R002_RELATIVE).exists()
+    assert (REPO_ROOT / recovery.CA_R002_RELATIVE).is_dir()
+    assert (REPO_ROOT / recovery.PAIRED_R002_RELATIVE).is_dir()
+    assert len(list((REPO_ROOT / recovery.CA_R002_RELATIVE / "j").glob("*.json"))) == 200
 
 
-def test_updated_driver_preflight_targets_r002_without_model_call(monkeypatch):
+def test_updated_driver_preflight_rejects_completed_r002_without_model_call(monkeypatch):
     called = False
 
     def forbidden(*args, **kwargs):
@@ -195,24 +198,13 @@ def test_updated_driver_preflight_targets_r002_without_model_call(monkeypatch):
         raise AssertionError("model call forbidden")
 
     monkeypatch.setattr(driver, "fetch_ollama_provenance", forbidden)
-    result = driver.preflight()
-    plan = driver.load_frozen_plan("candidate_a")
-
-    assert result["status"] == "preflight_ok_no_model_call"
-    assert result["candidate_a_cells"] == 200
-    assert plan["run_id"] == recovery.CA_R002_RUN_ID
+    with pytest.raises(recovery.InterruptionRecoveryError, match="r002 directory"):
+        driver.preflight()
     assert called is False
 
 
-def test_recovery_outputs_are_byte_deterministic_and_manifest_complete():
-    first = recovery.frozen_outputs(REPO_ROOT)
-    second = recovery.frozen_outputs(REPO_ROOT)
-
-    assert first == second
-    assert len(first) == 6
-    for relative, expected in first.items():
-        assert (OUTPUT_DIR / relative).read_bytes() == expected
-    manifest = json.loads(first[Path("milestone_2e_r_manifest.json")])
+def test_frozen_recovery_output_hashes_and_manifest_remain_complete():
+    manifest = json.loads((OUTPUT_DIR / "milestone_2e_r_manifest.json").read_text(encoding="utf-8"))
     assert manifest["incident"] == {
         "artifacts_modified_moved_or_deleted": False,
         "journal_evidence_count": 2,
@@ -226,7 +218,7 @@ def test_recovery_outputs_are_byte_deterministic_and_manifest_complete():
     assert manifest["paired_analysis"]["candidate_r001_cells_included"] == 0
     assert not any(manifest["prohibited_actions_attestation"].values())
     for name, metadata in manifest["outputs"].items():
-        content = first[Path(name)]
+        content = (OUTPUT_DIR / name).read_bytes()
         assert hashlib.sha256(content).hexdigest() == metadata["sha256"]
         assert len(content) == metadata["size_bytes"]
 

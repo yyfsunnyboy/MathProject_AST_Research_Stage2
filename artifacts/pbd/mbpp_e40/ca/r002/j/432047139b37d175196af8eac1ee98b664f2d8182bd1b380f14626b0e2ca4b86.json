@@ -1,0 +1,62 @@
+{
+  "cell_index": 118,
+  "composed_prompt_sha256": "4aebbb7482330b814c8215bf64ce3fe52c53d7f139950d7b400e9c328815b7a8",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "432047139b37d175196af8eac1ee98b664f2d8182bd1b380f14626b0e2ca4b86",
+  "generation_latency_seconds": 2.2969999999913853,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:38:48.5063273Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 54,
+    "eval_duration": 1726450000,
+    "load_duration": 475314200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 121,
+    "prompt_eval_duration": 50796000,
+    "total_duration": 2259470600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "5b6ce2bf3e4b9f113ff537673cedfba5a92d58d71d1bf3213bdb95b8ffc0b259",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "432047139b37d175196af8eac1ee98b664f2d8182bd1b380f14626b0e2ca4b86",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:38:48.5063273Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def change_date_format(date_str):\\n    year = date_str[0:4]\\n    month = date_str[5:7]\\n    day = date_str[8:10]\\n    \\n    return f\\\"{day}-{month}-{year}\\\"\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2259470600,\"load_duration\":475314200,\"prompt_eval_count\":121,\"prompt_eval_duration\":50796000,\"eval_count\":54,\"eval_duration\":1726450000}",
+  "raw_response": "def change_date_format(date_str):\n    year = date_str[0:4]\n    month = date_str[5:7]\n    day = date_str[8:10]\n    \n    return f\"{day}-{month}-{year}\"",
+  "raw_response_sha256": "80ede6ee082a21d35d5196f5499952784e83881d2750c3b2002ffc7ed7d75cec",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to convert a date of yyyy-mm-dd format to dd-mm-yyyy format.\nassert change_date_format(\"2026-01-02\") == '02-01-2026'\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/427",
+  "transport_complete": true
+}

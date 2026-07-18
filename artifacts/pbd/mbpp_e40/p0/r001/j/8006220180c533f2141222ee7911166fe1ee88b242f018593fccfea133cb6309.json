@@ -1,0 +1,62 @@
+{
+  "cell_index": 81,
+  "composed_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "8006220180c533f2141222ee7911166fe1ee88b242f018593fccfea133cb6309",
+  "generation_latency_seconds": 32.84399999998277,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:46:37.9948009Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 1059,
+    "eval_duration": 32331470000,
+    "load_duration": 295289100,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 82,
+    "prompt_eval_duration": 132192000,
+    "total_duration": 32822335500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "8006220180c533f2141222ee7911166fe1ee88b242f018593fccfea133cb6309",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:46:37.9948009Z\",\"message\":{\"role\":\"assistant\",\"content\":\"To find the median of two sorted lists of the same size efficiently (in $O(\\\\log n)$ time), we can use a binary search approach on one of the arrays to partition both arrays such that:\\n\\n- The left half contains exactly `n` elements.\\n- All elements in the left half are less than or equal to all elements in the right half.\\n- If total length is even, median = `(max(left) + min(right)) / 2`.  \\n  Since each list has size `k`, combined sorted array has length `2k`. Median index (0-based) would be at positions `k` and `k+1`? Actually for even total N=2k, we take average of elements at indices k-1 and k. But simpler: after partitioning left side with exactly n = len(lists[0]) + len(lists[1]), median is `(max(left) + min(right)) / 2`.\\n\\nBut note the example:  \\n`get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5)` → expected `16.0`  \\n\\nCombined sorted array would be `[1, 2, 12, 13, 15, 17, 26, 30, 38, 45]`.  \\nLength = 10 (even). Median = average of elements at indices 4 and 5 → `15` and `17` → `(15+17)/2 = 16.0`. ✅\\n\\nSo algorithm:\\n- Let `n = len(A)`, assume `len(B) == n`.\\n- Binary search on the smaller array (say A). We want to find a partition index `i` in A and corresponding `j` in B such that:\\n  - `i + j = n`  \\n  - `A[i-1] \\u003c= B[j]` and `B[j-1] \\u003c= A[i]`\\n\\nThen median is `(max(A[i-1], B[j-1]) + min(A[i], B[j])) / 2`. Handle edge cases where i=0, j=n etc.\\n\\nHere’s the implementation:\\n\\n```python\\ndef get_median(nums1, nums2):\\n    \\\"\\\"\\\"\\n    Find the median of two sorted lists of same size using O(log n) time.\\n    \\n    :param nums1: First sorted list (assumed len == len(nums2))\\n    :param nums2: Second sorted list\\n    :return: Median as float\\n    \\\"\\\"\\\"\\n    if not isinstance(nums1, list) or not isinstance(nums2, list):\\n        raise TypeError(\\\"Inputs must be lists.\\\")\\n    \\n    n = len(nums1)\\n    m = len(nums2)\\n    if n != m:\\n        raise ValueError(\\\"Both lists must have the same size.\\\")\\n    \\n    # Ensure nums1 is the smaller (or equal) for binary search optimization\\n    if len(nums1) \\u003e len(nums2):\\n        return get_median(nums2, nums1)\\n    \\n    low = 0\\n    high = n\\n    \\n    while low \\u003c= high:\\n        i = (low + high) // 2          # partition index in A\\n        j = n - i                      # corresponding partition index in B\\n        \\n        leftA = nums1[i-1] if i \\u003e 0 else float('-inf')\\n        rightA = nums1[i] if i \\u003c n else float('inf')\\n        \\n        leftB = nums2[j-1] if j \\u003e 0 else float('-inf')\\n        rightB = nums2[j] if j \\u003c m else float('inf')\\n        \\n        # Check partition condition\\n        if leftA \\u003c= rightB and leftB \\u003c= rightA:\\n            median_val = (max(leftA, leftB) + min(rightA, rightB)) / 2.0\\n            return median_val\\n        \\n        elif leftA \\u003e rightB:\\n            high = i - 1              # move partition in A to the left\\n        else:\\n            low = i + 1               # move partition in A to the right\\n    \\n    raise RuntimeError(\\\"No valid partition found (should not happen with sorted inputs).\\\")\\n\\n\\n# Example usage and assertion\\nif __name__ == \\\"__main__\\\":\\n    assert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\\n    print(\\\"Assertion passed!\\\")\\n```\\n\\nThis function:\\n- Validates input types and equal lengths.\\n- Uses binary search on the smaller array to find the correct partition.\\n- Handles edge cases where a list is exhausted at either side of the partition.\\n- Returns the median as a float, matching the expected output `16.0`.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":32822335500,\"load_duration\":295289100,\"prompt_eval_count\":82,\"prompt_eval_duration\":132192000,\"eval_count\":1059,\"eval_duration\":32331470000}",
+  "raw_response": "To find the median of two sorted lists of the same size efficiently (in $O(\\log n)$ time), we can use a binary search approach on one of the arrays to partition both arrays such that:\n\n- The left half contains exactly `n` elements.\n- All elements in the left half are less than or equal to all elements in the right half.\n- If total length is even, median = `(max(left) + min(right)) / 2`.  \n  Since each list has size `k`, combined sorted array has length `2k`. Median index (0-based) would be at positions `k` and `k+1`? Actually for even total N=2k, we take average of elements at indices k-1 and k. But simpler: after partitioning left side with exactly n = len(lists[0]) + len(lists[1]), median is `(max(left) + min(right)) / 2`.\n\nBut note the example:  \n`get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5)` → expected `16.0`  \n\nCombined sorted array would be `[1, 2, 12, 13, 15, 17, 26, 30, 38, 45]`.  \nLength = 10 (even). Median = average of elements at indices 4 and 5 → `15` and `17` → `(15+17)/2 = 16.0`. ✅\n\nSo algorithm:\n- Let `n = len(A)`, assume `len(B) == n`.\n- Binary search on the smaller array (say A). We want to find a partition index `i` in A and corresponding `j` in B such that:\n  - `i + j = n`  \n  - `A[i-1] <= B[j]` and `B[j-1] <= A[i]`\n\nThen median is `(max(A[i-1], B[j-1]) + min(A[i], B[j])) / 2`. Handle edge cases where i=0, j=n etc.\n\nHere’s the implementation:\n\n```python\ndef get_median(nums1, nums2):\n    \"\"\"\n    Find the median of two sorted lists of same size using O(log n) time.\n    \n    :param nums1: First sorted list (assumed len == len(nums2))\n    :param nums2: Second sorted list\n    :return: Median as float\n    \"\"\"\n    if not isinstance(nums1, list) or not isinstance(nums2, list):\n        raise TypeError(\"Inputs must be lists.\")\n    \n    n = len(nums1)\n    m = len(nums2)\n    if n != m:\n        raise ValueError(\"Both lists must have the same size.\")\n    \n    # Ensure nums1 is the smaller (or equal) for binary search optimization\n    if len(nums1) > len(nums2):\n        return get_median(nums2, nums1)\n    \n    low = 0\n    high = n\n    \n    while low <= high:\n        i = (low + high) // 2          # partition index in A\n        j = n - i                      # corresponding partition index in B\n        \n        leftA = nums1[i-1] if i > 0 else float('-inf')\n        rightA = nums1[i] if i < n else float('inf')\n        \n        leftB = nums2[j-1] if j > 0 else float('-inf')\n        rightB = nums2[j] if j < m else float('inf')\n        \n        # Check partition condition\n        if leftA <= rightB and leftB <= rightA:\n            median_val = (max(leftA, leftB) + min(rightA, rightB)) / 2.0\n            return median_val\n        \n        elif leftA > rightB:\n            high = i - 1              # move partition in A to the left\n        else:\n            low = i + 1               # move partition in A to the right\n    \n    raise RuntimeError(\"No valid partition found (should not happen with sorted inputs).\")\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n    print(\"Assertion passed!\")\n```\n\nThis function:\n- Validates input types and equal lengths.\n- Uses binary search on the smaller array to find the correct partition.\n- Handles edge cases where a list is exhausted at either side of the partition.\n- Returns the median as a float, matching the expected output `16.0`.",
+  "raw_response_sha256": "64ad515cfaf743d69d84cc55bb1c569155d561365c5e2ccdec79d1141c097085",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median of two sorted lists of same size.\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/622",
+  "transport_complete": true
+}

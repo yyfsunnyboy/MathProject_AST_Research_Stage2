@@ -1,0 +1,62 @@
+{
+  "cell_index": 180,
+  "composed_prompt_sha256": "f850898e388ad2375200cff0eac6a884cf8e77b44f7556b79007b1c041ef2afe",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "0269ac580ebe465b3e03786dcfd218b86525b0c076eedfd121cd2abac5870e96",
+  "generation_latency_seconds": 3.8280000000086147,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:53:06.4352825Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 113,
+    "eval_duration": 3437730000,
+    "load_duration": 334524500,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 112,
+    "prompt_eval_duration": 46862000,
+    "total_duration": 3826405700
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "cb7266d023c5bff18f76b260b7489a5000a12ac8dd819450a15deddea7bd6254",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "0269ac580ebe465b3e03786dcfd218b86525b0c076eedfd121cd2abac5870e96",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:53:06.4352825Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def text_lowercase_underscore(text):\\n    if not isinstance(text, str) or len(text) == 0:\\n        return False\\n    \\n    parts = text.split('_')\\n    \\n    for part in parts:\\n        if not part.isalpha():\\n            return False\\n        \\n        is_all_lower = True\\n        for char in part:\\n            if not (char \\u003e= 'a' and char \\u003c= 'z'):\\n                is_all_lower = False\\n                break\\n                \\n        if not is_all_lower:\\n            return False\\n            \\n    return True\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":3826405700,\"load_duration\":334524500,\"prompt_eval_count\":112,\"prompt_eval_duration\":46862000,\"eval_count\":113,\"eval_duration\":3437730000}",
+  "raw_response": "def text_lowercase_underscore(text):\n    if not isinstance(text, str) or len(text) == 0:\n        return False\n    \n    parts = text.split('_')\n    \n    for part in parts:\n        if not part.isalpha():\n            return False\n        \n        is_all_lower = True\n        for char in part:\n            if not (char >= 'a' and char <= 'z'):\n                is_all_lower = False\n                break\n                \n        if not is_all_lower:\n            return False\n            \n    return True",
+  "raw_response_sha256": "9e85952893891523f8681b31287e4bce1ba37a72aa64b92776ec59c5cadcf93f",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to that returns true if the input string contains sequences of lowercase letters joined with an underscore and false otherwise.\nassert text_lowercase_underscore(\"aab_cbbbc\")==(True)\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/16",
+  "transport_complete": true
+}

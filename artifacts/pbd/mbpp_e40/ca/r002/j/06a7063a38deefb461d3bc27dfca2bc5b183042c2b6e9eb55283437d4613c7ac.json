@@ -1,0 +1,62 @@
+{
+  "cell_index": 183,
+  "composed_prompt_sha256": "a081424651685dc70f6eb468a846a0f1cc3a8c9b9e1e9e12ff50a7ffd0ec0247",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "06a7063a38deefb461d3bc27dfca2bc5b183042c2b6e9eb55283437d4613c7ac",
+  "generation_latency_seconds": 3.2030000000086147,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:53:16.5960645Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 93,
+    "eval_duration": 2825570000,
+    "load_duration": 327824900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 109,
+    "prompt_eval_duration": 48412000,
+    "total_duration": 3205784300
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "62aa3b5b1e93675437933b5d728e2f99072917ce95313d1df444071767eaf20a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "06a7063a38deefb461d3bc27dfca2bc5b183042c2b6e9eb55283437d4613c7ac",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:53:16.5960645Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def is_Sub_Array(sub_list: list, main_list: list) -\\u003e bool:\\n    if len(sub_list) == 0:\\n        return True\\n    for i in range(len(main_list)):\\n        match = True\\n        for j in range(len(sub_list)):\\n            if sub_list[j] != main_list[i + j]:\\n                match = False\\n                break\\n        if match:\\n            return True\\n    return False\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":3205784300,\"load_duration\":327824900,\"prompt_eval_count\":109,\"prompt_eval_duration\":48412000,\"eval_count\":93,\"eval_duration\":2825570000}",
+  "raw_response": "def is_Sub_Array(sub_list: list, main_list: list) -> bool:\n    if len(sub_list) == 0:\n        return True\n    for i in range(len(main_list)):\n        match = True\n        for j in range(len(sub_list)):\n            if sub_list[j] != main_list[i + j]:\n                match = False\n                break\n        if match:\n            return True\n    return False",
+  "raw_response_sha256": "353e884380b45cd36d97f264736ea39c6dda6e804f2b9a5bc4cc396265aa45ec",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether a list is sublist of another or not.\nassert is_Sub_Array([1,4,3,5],[1,2]) == False\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/576",
+  "transport_complete": true
+}

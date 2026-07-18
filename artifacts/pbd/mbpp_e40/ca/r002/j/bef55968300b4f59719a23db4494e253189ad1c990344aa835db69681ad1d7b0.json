@@ -1,0 +1,62 @@
+{
+  "cell_index": 106,
+  "composed_prompt_sha256": "c0ca27906fdeb4dec3d9b185999bc5f72a5a2c68d3040a15797c9acec5aa12bf",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "bef55968300b4f59719a23db4494e253189ad1c990344aa835db69681ad1d7b0",
+  "generation_latency_seconds": 2.562000000005355,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:37:10.0225173Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 63,
+    "eval_duration": 1983575000,
+    "load_duration": 366877300,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 111,
+    "prompt_eval_duration": 148195000,
+    "total_duration": 2541424200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b6e5cd0146a3c23949dc0229fa5c32d36352d3d8d9eff6003978ee4b0e06a028",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "bef55968300b4f59719a23db4494e253189ad1c990344aa835db69681ad1d7b0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:37:10.0225173Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def decimal_to_binary(n):\\n    if n == 0:\\n        return '0'\\n    \\n    binary = ''\\n    while n \\u003e 0:\\n        remainder = n % 2\\n        binary = str(remainder) + binary\\n        n //= 2\\n    \\n    return binary\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":2541424200,\"load_duration\":366877300,\"prompt_eval_count\":111,\"prompt_eval_duration\":148195000,\"eval_count\":63,\"eval_duration\":1983575000}",
+  "raw_response": "def decimal_to_binary(n):\n    if n == 0:\n        return '0'\n    \n    binary = ''\n    while n > 0:\n        remainder = n % 2\n        binary = str(remainder) + binary\n        n //= 2\n    \n    return binary",
+  "raw_response_sha256": "e9b54ac7a7fc0ab3baef2f693b17ffbc2f9a477417b535a2a32dbccaa7c31b20",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to convert the given decimal number to its binary equivalent, represented as a string with no leading zeros.\nassert decimal_to_binary(8) == '1000'\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/99",
+  "transport_complete": true
+}

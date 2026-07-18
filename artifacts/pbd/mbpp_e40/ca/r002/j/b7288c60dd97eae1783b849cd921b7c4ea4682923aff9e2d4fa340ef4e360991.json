@@ -1,0 +1,62 @@
+{
+  "cell_index": 175,
+  "composed_prompt_sha256": "69ae7895baa28f6466aaa64f9243c13b68dd0d89d4843aa322004f192e81bcc3",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "b7288c60dd97eae1783b849cd921b7c4ea4682923aff9e2d4fa340ef4e360991",
+  "generation_latency_seconds": 4.375,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:52:49.8676157Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 130,
+    "eval_duration": 3959598000,
+    "load_duration": 332435900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 107,
+    "prompt_eval_duration": 46566000,
+    "total_duration": 4367225000
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "560bf5981aa1ecd44ec75ec6dc8071bcf5813eec497e2d2877b55069046a7ed4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "b7288c60dd97eae1783b849cd921b7c4ea4682923aff9e2d4fa340ef4e360991",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:52:49.8676157Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def right_insertion(arr: list[int], value: int) -\\u003e int:\\n    left = 0\\n    right = len(arr)\\n    \\n    while left \\u003c right:\\n        mid = (left + right) // 2\\n        \\n        if arr[mid] \\u003e= value:\\n            # The insertion point is at 'mid' or to the left of it.\\n            right = mid\\n        else:\\n            # The insertion point must be to the right of 'mid'.\\n            left = mid + 1\\n            \\n    return left\\n\\nassert right_insertion([1,2,4,5],6)==4\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":4367225000,\"load_duration\":332435900,\"prompt_eval_count\":107,\"prompt_eval_duration\":46566000,\"eval_count\":130,\"eval_duration\":3959598000}",
+  "raw_response": "def right_insertion(arr: list[int], value: int) -> int:\n    left = 0\n    right = len(arr)\n    \n    while left < right:\n        mid = (left + right) // 2\n        \n        if arr[mid] >= value:\n            # The insertion point is at 'mid' or to the left of it.\n            right = mid\n        else:\n            # The insertion point must be to the right of 'mid'.\n            left = mid + 1\n            \n    return left\n\nassert right_insertion([1,2,4,5],6)==4",
+  "raw_response_sha256": "c59f464158e9187bf4476ca231abf445301b767ad1a363e362c19dfe50c53b22",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to locate the right insertion point for a specified value in sorted order.\nassert right_insertion([1,2,4,5],6)==4\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 55,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 4,
+  "seed": 55,
+  "selective_retry": false,
+  "task_id": "Mbpp/786",
+  "transport_complete": true
+}

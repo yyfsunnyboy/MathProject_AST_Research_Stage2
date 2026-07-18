@@ -1,0 +1,62 @@
+{
+  "cell_index": 162,
+  "composed_prompt_sha256": "7ef23f3278f73d4f16b715783974cf4878ed9336479b025187dd9c33821f3fb8",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "85a659115e3a24b12e8783bb653c124bc675feeeeeb9f63f9a538688f677ced4",
+  "generation_latency_seconds": 1.2969999999913853,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:52:01.4928262Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 28,
+    "eval_duration": 856596000,
+    "load_duration": 383869600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 100,
+    "prompt_eval_duration": 45937000,
+    "total_duration": 1292054600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "d6e898815e991d7e385a268407540413dbbc2d94adba04df8c16a698f530e94f",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "85a659115e3a24b12e8783bb653c124bc675feeeeeb9f63f9a538688f677ced4",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:52:01.4928262Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def find_Parity(n):\\n    return n % 2 != 0\\n\\nassert find_Parity(12) == False\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1292054600,\"load_duration\":383869600,\"prompt_eval_count\":100,\"prompt_eval_duration\":45937000,\"eval_count\":28,\"eval_duration\":856596000}",
+  "raw_response": "def find_Parity(n):\n    return n % 2 != 0\n\nassert find_Parity(12) == False",
+  "raw_response_sha256": "77755c8b907a04b3dd46c6309bb2a9d5bab54ae6380996cf3507fda4a08327c3",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to find whether the parity of a given number is odd.\nassert find_Parity(12) == False\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/406",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 168,
+  "composed_prompt_sha256": "7e1925b50743de5e831eedc3d4800c527f3cd6a687439da08afef518c50efbcb",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "2b0a792a1f6c82f94096764912ee3c7b93c76d0ba712cd80d98b5d3a7ad52591",
+  "generation_latency_seconds": 1.2969999999913853,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:52:14.6675143Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 29,
+    "eval_duration": 883578000,
+    "load_duration": 357894900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 165,
+    "prompt_eval_duration": 47027000,
+    "total_duration": 1293893800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "1d30e66da941339af9a9936e865aa080995e337d5a94b2c5fe63e4b624a3ef8c",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "2b0a792a1f6c82f94096764912ee3c7b93c76d0ba712cd80d98b5d3a7ad52591",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:52:14.6675143Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def round_and_sum(numbers):\\n    total = sum(round(num) for num in numbers)\\n    return int(total * len(numbers))\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1293893800,\"load_duration\":357894900,\"prompt_eval_count\":165,\"prompt_eval_duration\":47027000,\"eval_count\":29,\"eval_duration\":883578000}",
+  "raw_response": "def round_and_sum(numbers):\n    total = sum(round(num) for num in numbers)\n    return int(total * len(numbers))",
+  "raw_response_sha256": "732894469a05ef91deca73d3e4cf70c0944ba95e46d649b5877649ccfd0824d0",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to round every number of a given list of numbers and print the total sum multiplied by the length of the list.\nassert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, -12.22, 14.20, -5.20, 17.50])==243\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/419",
+  "transport_complete": true
+}

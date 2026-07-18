@@ -1,0 +1,62 @@
+{
+  "cell_index": 186,
+  "composed_prompt_sha256": "97889fa5dbd595f88fcffe9052feb0a85734c56e432b8ed525ea195d31a703a9",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "512c609c8c3c32044adb823ba9295ed52b9a6e0be685382bb712a37e255adbe5",
+  "generation_latency_seconds": 1.4059999999881256,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:53:25.7934641Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 30,
+    "eval_duration": 905748000,
+    "load_duration": 303796300,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 105,
+    "prompt_eval_duration": 151744000,
+    "total_duration": 1403356200
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "04dcffd445f45333e87bdb335e6181812441be2cb007878f7913a6ff8a9ba65d",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "512c609c8c3c32044adb823ba9295ed52b9a6e0be685382bb712a37e255adbe5",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:53:25.7934641Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def string_to_list(s):\\n    return s.split(' ')\\n\\nassert string_to_list(\\\"python programming\\\") == ['python', 'programming']\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":1403356200,\"load_duration\":303796300,\"prompt_eval_count\":105,\"prompt_eval_duration\":151744000,\"eval_count\":30,\"eval_duration\":905748000}",
+  "raw_response": "def string_to_list(s):\n    return s.split(' ')\n\nassert string_to_list(\"python programming\") == ['python', 'programming']",
+  "raw_response_sha256": "a64c3006ab3a5c18687fe1ca571dfd45ab96177e33a6e358b2492cbb14458e53",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to convert a string to a list of strings split on the space character.\nassert string_to_list(\"python programming\")==['python','programming']\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/118",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 82,
+  "composed_prompt_sha256": "230884664f6d497d8cdd99b30c404b9e5bbde5b36cca0bf5d9161198278cf809",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "c4ef626b73f288435716926c61fcb362bb35984ad1244f2c6bb17c35acfd15a8",
+  "generation_latency_seconds": 11.96899999998277,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:34:32.6283572Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 358,
+    "eval_duration": 11343986000,
+    "load_duration": 510875800,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 139,
+    "prompt_eval_duration": 47554000,
+    "total_duration": 11963579800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "2edd792216a58cbdb6571e3a7209a6c6286b758788e470c3da410b892fd9b5d4",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "c4ef626b73f288435716926c61fcb362bb35984ad1244f2c6bb17c35acfd15a8",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:34:32.6283572Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def get_median(nums1: list[int], nums2: list[int], n: int) -\\u003e float:\\n    \\\"\\\"\\\"Find median of two sorted arrays of same size.\\\"\\\"\\\"\\n    \\n    def find_kth(k):\\n        i, j = 0, 0\\n        \\n        while True:\\n            if i \\u003e= len(nums1): return nums2[k - j]\\n            if j \\u003e= len(nums2): return nums1[k - i]\\n            \\n            if k == 1: \\n                return min(nums1[i], nums2[j])\\n                \\n            new_i = min(i + (k // 2), len(nums1) - 1)\\n            new_j = min(j + (k // 2), len(nums2) - 1)\\n            \\n            if nums1[new_i] \\u003c nums2[new_j]:\\n                k -= (new_i - i + 1)\\n                i = new_i\\n            else:\\n                k -= (new_j - j + 1)\\n                j = new_j\\n    \\n    total_len = len(nums1) + len(nums2)\\n    \\n    if total_len % 2 == 0:\\n        return (find_kth(total_len // 2) + find_kth(total_len // 2 + 1)) / 2.0\\n    else:\\n        return float(find_kth((total_len + 1) // 2))\\n\\nif __name__ == \\\"__main__\\\":\\n    assert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":11963579800,\"load_duration\":510875800,\"prompt_eval_count\":139,\"prompt_eval_duration\":47554000,\"eval_count\":358,\"eval_duration\":11343986000}",
+  "raw_response": "def get_median(nums1: list[int], nums2: list[int], n: int) -> float:\n    \"\"\"Find median of two sorted arrays of same size.\"\"\"\n    \n    def find_kth(k):\n        i, j = 0, 0\n        \n        while True:\n            if i >= len(nums1): return nums2[k - j]\n            if j >= len(nums2): return nums1[k - i]\n            \n            if k == 1: \n                return min(nums1[i], nums2[j])\n                \n            new_i = min(i + (k // 2), len(nums1) - 1)\n            new_j = min(j + (k // 2), len(nums2) - 1)\n            \n            if nums1[new_i] < nums2[new_j]:\n                k -= (new_i - i + 1)\n                i = new_i\n            else:\n                k -= (new_j - j + 1)\n                j = new_j\n    \n    total_len = len(nums1) + len(nums2)\n    \n    if total_len % 2 == 0:\n        return (find_kth(total_len // 2) + find_kth(total_len // 2 + 1)) / 2.0\n    else:\n        return float(find_kth((total_len + 1) // 2))\n\nif __name__ == \"__main__\":\n    assert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0",
+  "raw_response_sha256": "87fcaf5979d3ef1d8136fd4a06fbfa90d2718b44356d72f7daafb9c9cc3336c8",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the median of two sorted lists of same size.\nassert get_median([1, 12, 15, 26, 38], [2, 13, 17, 30, 45], 5) == 16.0\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/622",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 8,
+  "composed_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "2752ed7b08ac77720ec1a51787debd46948d80b7fc9829aa2c5d965977f9e0a0",
+  "generation_latency_seconds": 20.10899999999674,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:09:12.4361472Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 610,
+    "eval_duration": 19659568000,
+    "load_duration": 348426400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 49,
+    "prompt_eval_duration": 47071000,
+    "total_duration": 20099999100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "62ab9b02b90d8226726abbe2e288281547b74e1b5ab15c5dc1fb006f5a5e9dc5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "2752ed7b08ac77720ec1a51787debd46948d80b7fc9829aa2c5d965977f9e0a0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:09:12.4361472Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here’s one way to implement `is_decimal` in Python that checks for:\\n\\n- Optional leading sign (`+` or `-`)  \\n- Digits before the decimal point (at least one)  \\n- An optional single dot followed by exactly two digits after it  \\n\\n```python\\nimport re\\n\\ndef is_decimal(s: str) -\\u003e bool:\\n    # Pattern explanation:\\n    # ^                    : start of string\\n    # [+-]?                : optional sign\\n    # \\\\d+                  : one or more digits before the decimal point\\n    # (\\\\.\\\\d{2})?           : optionally, a dot followed by exactly 2 digits\\n    # $                    : end of string\\n    pattern = r'^[+-]?\\\\d+(\\\\.\\\\d{2})?$'\\n    return bool(re.fullmatch(pattern, s))\\n\\n# Examples:\\nassert is_decimal('123.11') == True\\nassert is_decimal('-45.67')  == True\\nassert is_decimal('+0.99')   == True\\nassert is_decimal('abc')     == False\\nassert is_decimal('1.')      == False          # no digits after dot\\nassert is_decimal('.123')    == False          # missing integer part and too many decimals\\nassert is_decimal('12.345')  == False          # more than 2 decimal places\\n```\\n\\nIf you prefer not to use `re`, here’s a pure-logic version:\\n\\n```python\\ndef is_decimal(s: str) -\\u003e bool:\\n    if len(s) \\u003c 3 or s[0] in '+-' and len(s) == 1:\\n        return False\\n    \\n    i = 0\\n    # optional sign\\n    if s[i] in '+-':\\n        i += 1\\n\\n    # must have at least one digit before the dot (if there is a dot)\\n    while i \\u003c len(s):\\n        c = s[i]\\n        if '0' \\u003c= c \\u003c= '9':\\n            i += 1\\n        elif c == '.':\\n            # exactly two digits after this point, then end of string\\n            remaining = s[i+1:]\\n            return (len(remaining) == 2 and all('0' \\u003c= ch \\u003c= '9' for ch in remaining))\\n        else:\\n            return False\\n\\n    # No dot found; valid integer is also a decimal with .00 implied? \\n    # Based on your examples, we require exactly two decimals if there's a dot.\\n    # If no dot at all, decide based on requirements. Here we treat it as invalid\\n    # unless you want integers to be accepted too. Uncomment next line if so:\\n    # return True\\n\\n    return False  # integer without decimal point not considered valid here\\n\\n# Adjust the last `return` depending on whether pure integers should pass or not.\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":20099999100,\"load_duration\":348426400,\"prompt_eval_count\":49,\"prompt_eval_duration\":47071000,\"eval_count\":610,\"eval_duration\":19659568000}",
+  "raw_response": "Here’s one way to implement `is_decimal` in Python that checks for:\n\n- Optional leading sign (`+` or `-`)  \n- Digits before the decimal point (at least one)  \n- An optional single dot followed by exactly two digits after it  \n\n```python\nimport re\n\ndef is_decimal(s: str) -> bool:\n    # Pattern explanation:\n    # ^                    : start of string\n    # [+-]?                : optional sign\n    # \\d+                  : one or more digits before the decimal point\n    # (\\.\\d{2})?           : optionally, a dot followed by exactly 2 digits\n    # $                    : end of string\n    pattern = r'^[+-]?\\d+(\\.\\d{2})?$'\n    return bool(re.fullmatch(pattern, s))\n\n# Examples:\nassert is_decimal('123.11') == True\nassert is_decimal('-45.67')  == True\nassert is_decimal('+0.99')   == True\nassert is_decimal('abc')     == False\nassert is_decimal('1.')      == False          # no digits after dot\nassert is_decimal('.123')    == False          # missing integer part and too many decimals\nassert is_decimal('12.345')  == False          # more than 2 decimal places\n```\n\nIf you prefer not to use `re`, here’s a pure-logic version:\n\n```python\ndef is_decimal(s: str) -> bool:\n    if len(s) < 3 or s[0] in '+-' and len(s) == 1:\n        return False\n    \n    i = 0\n    # optional sign\n    if s[i] in '+-':\n        i += 1\n\n    # must have at least one digit before the dot (if there is a dot)\n    while i < len(s):\n        c = s[i]\n        if '0' <= c <= '9':\n            i += 1\n        elif c == '.':\n            # exactly two digits after this point, then end of string\n            remaining = s[i+1:]\n            return (len(remaining) == 2 and all('0' <= ch <= '9' for ch in remaining))\n        else:\n            return False\n\n    # No dot found; valid integer is also a decimal with .00 implied? \n    # Based on your examples, we require exactly two decimals if there's a dot.\n    # If no dot at all, decide based on requirements. Here we treat it as invalid\n    # unless you want integers to be accepted too. Uncomment next line if so:\n    # return True\n\n    return False  # integer without decimal point not considered valid here\n\n# Adjust the last `return` depending on whether pure integers should pass or not.\n```",
+  "raw_response_sha256": "491f66a0aa7ade331994e0d178662446cac6938c0dbe968f90d5c693760d3fe9",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to check whether a given string is a decimal number with a precision of 2.\nassert is_decimal('123.11')==True\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/759",
+  "transport_complete": true
+}

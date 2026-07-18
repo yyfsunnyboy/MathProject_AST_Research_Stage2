@@ -1,0 +1,62 @@
+{
+  "cell_index": 151,
+  "composed_prompt_sha256": "aa05ededf798253f2e9edc4abc17b118aa1ff9d5739bb66d70882169ff4bf3d0",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "7f4689529c991f937ef0524b4491c7a82426bbf93184dfadcf0eb15c622027a0",
+  "generation_latency_seconds": 17.578000000008615,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:49:39.1840201Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 551,
+    "eval_duration": 17050041000,
+    "load_duration": 332959400,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 116,
+    "prompt_eval_duration": 151651000,
+    "total_duration": 17574290500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b60824a12ec3265b3d3abf7c501b7b5713d5b14394d50cdf2e0859c5324fd12e",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "7f4689529c991f937ef0524b4491c7a82426bbf93184dfadcf0eb15c622027a0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:49:39.1840201Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def find_adverb_position(sentence: str):\\n    \\\"\\\"\\\"Find the first adverb and their positions in a given sentence.\\\"\\\"\\\"\\n    import re\\n    \\n    # Define common English adverbs (a non-exhaustive list for demonstration)\\n    adverbs = {\\n        'clearly', 'quickly', 'slowly', 'happily', 'sadly', 'angrily', \\n        'loudly', 'softly', 'often', 'sometimes', 'never', 'always', \\n        'usually', 'rarely', 'frequently', 'recently', 'already',\\n        'just', 'barely', 'hardly', 'simply', 'merely', 'only'\\n    }\\n\\n    # Tokenize the sentence into words and keep track of positions (including punctuation)\\n    tokens = re.findall(r'\\\\w+|[^\\\\s\\\\w]', sentence, flags=re.UNICODE)\\n    \\n    for i, token in enumerate(tokens):\\n        word = token.lower()  # Check case-insensitively\\n        \\n        if word in adverbs:\\n            start_pos = sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i])\\n            end_pos = start_pos + len(token) - 1\\n            \\n            return (start_pos, end_pos, token)\\n\\n    # If no standard adverb is found, try to identify potential ones using suffixes like '-ly'\\n    if not any(word.lower() in adverbs for word in tokens):\\n        for i, token in enumerate(tokens):\\n            base_word = re.sub(r'[^\\\\w]', '', token).lower()  # Remove punctuation from the start of checking\\n            \\n            if len(base_word) \\u003e 3 and base_word.endswith('ly'):\\n                return (sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i]), \\n                        sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i]) + len(token) - 1, token)\\n\\n    # If no adverb is found\\n    return None\\n\\n\\n# Example usage and assertion check:\\nif __name__ == \\\"__main__\\\":\\n    result = find_adverb_position(\\\"clearly!! we can see the sky\\\")\\n    assert result == (0, 7, 'clearly'), f\\\"Expected (0, 7, 'clearly') but got {result}\\\"\\n    \\n    # Additional test cases for robustness:\\n    print(find_adverb_position(\\\"He runs quickly\\\"))  # Expected output based on logic\\n    \\n    print(result)\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":17574290500,\"load_duration\":332959400,\"prompt_eval_count\":116,\"prompt_eval_duration\":151651000,\"eval_count\":551,\"eval_duration\":17050041000}",
+  "raw_response": "def find_adverb_position(sentence: str):\n    \"\"\"Find the first adverb and their positions in a given sentence.\"\"\"\n    import re\n    \n    # Define common English adverbs (a non-exhaustive list for demonstration)\n    adverbs = {\n        'clearly', 'quickly', 'slowly', 'happily', 'sadly', 'angrily', \n        'loudly', 'softly', 'often', 'sometimes', 'never', 'always', \n        'usually', 'rarely', 'frequently', 'recently', 'already',\n        'just', 'barely', 'hardly', 'simply', 'merely', 'only'\n    }\n\n    # Tokenize the sentence into words and keep track of positions (including punctuation)\n    tokens = re.findall(r'\\w+|[^\\s\\w]', sentence, flags=re.UNICODE)\n    \n    for i, token in enumerate(tokens):\n        word = token.lower()  # Check case-insensitively\n        \n        if word in adverbs:\n            start_pos = sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i])\n            end_pos = start_pos + len(token) - 1\n            \n            return (start_pos, end_pos, token)\n\n    # If no standard adverb is found, try to identify potential ones using suffixes like '-ly'\n    if not any(word.lower() in adverbs for word in tokens):\n        for i, token in enumerate(tokens):\n            base_word = re.sub(r'[^\\w]', '', token).lower()  # Remove punctuation from the start of checking\n            \n            if len(base_word) > 3 and base_word.endswith('ly'):\n                return (sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i]), \n                        sum(len(t) + (1 if t != ' ' else 0) for t in tokens[:i]) + len(token) - 1, token)\n\n    # If no adverb is found\n    return None\n\n\n# Example usage and assertion check:\nif __name__ == \"__main__\":\n    result = find_adverb_position(\"clearly!! we can see the sky\")\n    assert result == (0, 7, 'clearly'), f\"Expected (0, 7, 'clearly') but got {result}\"\n    \n    # Additional test cases for robustness:\n    print(find_adverb_position(\"He runs quickly\"))  # Expected output based on logic\n    \n    print(result)",
+  "raw_response_sha256": "c9aceff2250b513bebabd3a978cb70e5eef97c1e8662f9174e24671c2c082958",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the first adverb and their positions in a given sentence.\nassert find_adverb_position(\"clearly!! we can see the sky\")==(0, 7, 'clearly')\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/440",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 78,
+  "composed_prompt_sha256": "a6cc6a39164a4a9e4a6fb7b0405341c16c2075d2ed9a6ddd6f32bf14c8a3763a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "5fcb21d3f4604ac9f9bd47d6b397649f898d45cefb19dfce91cf1935a7aee4e8",
+  "generation_latency_seconds": 17.969000000011874,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:45:27.4564744Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 577,
+    "eval_duration": 17542900000,
+    "load_duration": 331307800,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 40,
+    "prompt_eval_duration": 44800000,
+    "total_duration": 17978884500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "a6cc6a39164a4a9e4a6fb7b0405341c16c2075d2ed9a6ddd6f32bf14c8a3763a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "5fcb21d3f4604ac9f9bd47d6b397649f898d45cefb19dfce91cf1935a7aee4e8",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:45:27.4564744Z\",\"message\":{\"role\":\"assistant\",\"content\":\"To solve this, we need to understand how many divisors an integer $n$ has:\\n\\n- If $n = p_1^{e_1} \\\\cdot p_2^{e_2} \\\\cdots p_k^{e_k}$ is the prime factorization of $n$, then the total number of positive divisors is  \\n  $$d(n) = (e_1+1)(e_2+1)\\\\cdots(e_k+1).$$\\n- The count of divisors is **even** unless one of those factors $(e_i+1)$ makes the product odd. A product is odd only if *all* its factors are odd, which means every $e_i$ must be even. That happens exactly when $n$ is a perfect square (or 0/1 with special care).\\n- So:  \\n  - If $n$ is a perfect square → number of divisors is **odd**.  \\n  - Otherwise → number of divisors is **even**.\\n\\nWe can use this property directly instead of counting all divisors.\\n\\n### Implementation\\n\\n```python\\nimport math\\n\\ndef count_divisors_is_even(n: int) -\\u003e bool:\\n    \\\"\\\"\\\"Return True if the number of positive divisors of n is even.\\\"\\\"\\\"\\n    if n \\u003c= 0:\\n        # By convention, we consider only positive integers for divisor counts.\\n        return False\\n    \\n    root = int(math.isqrt(n))\\n    return (root * root != n)\\n\\n# Example assertions\\nassert count_divisors_is_even(10)   # divisors of 10: 1,2,5,10 → 4 (even) → True\\nassert not count_divisors_is_even(9)# divisors of 9 : 1,3,9    → 3 (odd)  → False\\n```\\n\\nIf you specifically want to compute the divisor count and then check parity:\\n\\n```python\\ndef is_even_number_of_divisors(n: int) -\\u003e bool:\\n    if n \\u003c= 0:\\n        return False\\n    \\n    def num_divisors(x):\\n        cnt = 1\\n        d = 2\\n        while d * d \\u003c= x:\\n            exponent = 0\\n            while x % d == 0:\\n                x //= d\\n                exponent += 1\\n            if exponent \\u003e 0:\\n                cnt *= (exponent + 1)\\n            d += 1\\n        if x \\u003e 1:\\n            cnt *= 2\\n        return cnt\\n\\n    return num_divisors(n) % 2 == 0\\n\\n# Test\\nassert is_even_number_of_divisors(10)   # True\\nassert not is_even_number_of_divisors(9)# False\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":17978884500,\"load_duration\":331307800,\"prompt_eval_count\":40,\"prompt_eval_duration\":44800000,\"eval_count\":577,\"eval_duration\":17542900000}",
+  "raw_response": "To solve this, we need to understand how many divisors an integer $n$ has:\n\n- If $n = p_1^{e_1} \\cdot p_2^{e_2} \\cdots p_k^{e_k}$ is the prime factorization of $n$, then the total number of positive divisors is  \n  $$d(n) = (e_1+1)(e_2+1)\\cdots(e_k+1).$$\n- The count of divisors is **even** unless one of those factors $(e_i+1)$ makes the product odd. A product is odd only if *all* its factors are odd, which means every $e_i$ must be even. That happens exactly when $n$ is a perfect square (or 0/1 with special care).\n- So:  \n  - If $n$ is a perfect square → number of divisors is **odd**.  \n  - Otherwise → number of divisors is **even**.\n\nWe can use this property directly instead of counting all divisors.\n\n### Implementation\n\n```python\nimport math\n\ndef count_divisors_is_even(n: int) -> bool:\n    \"\"\"Return True if the number of positive divisors of n is even.\"\"\"\n    if n <= 0:\n        # By convention, we consider only positive integers for divisor counts.\n        return False\n    \n    root = int(math.isqrt(n))\n    return (root * root != n)\n\n# Example assertions\nassert count_divisors_is_even(10)   # divisors of 10: 1,2,5,10 → 4 (even) → True\nassert not count_divisors_is_even(9)# divisors of 9 : 1,3,9    → 3 (odd)  → False\n```\n\nIf you specifically want to compute the divisor count and then check parity:\n\n```python\ndef is_even_number_of_divisors(n: int) -> bool:\n    if n <= 0:\n        return False\n    \n    def num_divisors(x):\n        cnt = 1\n        d = 2\n        while d * d <= x:\n            exponent = 0\n            while x % d == 0:\n                x //= d\n                exponent += 1\n            if exponent > 0:\n                cnt *= (exponent + 1)\n            d += 1\n        if x > 1:\n            cnt *= 2\n        return cnt\n\n    return num_divisors(n) % 2 == 0\n\n# Test\nassert is_even_number_of_divisors(10)   # True\nassert not is_even_number_of_divisors(9)# False\n```",
+  "raw_response_sha256": "849f0438b62e1087ecdd8edb75e2010e426376c807abca99fcfac80e01261b0e",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether the count of divisors is even. \nassert count_divisors(10)\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 33,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 2,
+  "seed": 33,
+  "selective_retry": false,
+  "task_id": "Mbpp/781",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 52,
+  "composed_prompt_sha256": "93fc7478169dc793d42035e9dfe0790992721ffded3d35c0d05f58ffbf1ab07a",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "b4aa83d4d22108675d6031d44bb7d5ed9ec04a153621e250f4b361acc07386f0",
+  "generation_latency_seconds": 7.375,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:34:15.3416088Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 228,
+    "eval_duration": 6958515000,
+    "load_duration": 313471900,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 47,
+    "prompt_eval_duration": 43784000,
+    "total_duration": 7363713600
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "93fc7478169dc793d42035e9dfe0790992721ffded3d35c0d05f58ffbf1ab07a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "b4aa83d4d22108675d6031d44bb7d5ed9ec04a153621e250f4b361acc07386f0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:34:15.3416088Z\",\"message\":{\"role\":\"assistant\",\"content\":\"```python\\nimport math\\n\\ndef next_perfect_square(n: int) -\\u003e int:\\n    \\\"\\\"\\\"\\n    Return the smallest perfect square strictly greater than n.\\n    \\n    Examples:\\n        next_perfect_square(35) -\\u003e 36   (because 6*6 = 36 \\u003e 35)\\n        next_perfect_square(49) -\\u003e 64   (next after 7*7=49 is 8*8=64)\\n    \\\"\\\"\\\"\\n    if n \\u003c 0:\\n        raise ValueError(\\\"Input must be non-negative.\\\")\\n\\n    # Find the integer square root of n\\n    k = int(math.isqrt(n))\\n\\n    # If k*k == n, we need (k+1)^2; otherwise use (k+1)^2 as well because\\n    # any perfect square \\u003e n will have a base at least k+1.\\n    return (k + 1) ** 2\\n\\n\\n# Example assertion from the prompt:\\nassert next_perfect_square(35) == 36\\n```\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":7363713600,\"load_duration\":313471900,\"prompt_eval_count\":47,\"prompt_eval_duration\":43784000,\"eval_count\":228,\"eval_duration\":6958515000}",
+  "raw_response": "```python\nimport math\n\ndef next_perfect_square(n: int) -> int:\n    \"\"\"\n    Return the smallest perfect square strictly greater than n.\n    \n    Examples:\n        next_perfect_square(35) -> 36   (because 6*6 = 36 > 35)\n        next_perfect_square(49) -> 64   (next after 7*7=49 is 8*8=64)\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be non-negative.\")\n\n    # Find the integer square root of n\n    k = int(math.isqrt(n))\n\n    # If k*k == n, we need (k+1)^2; otherwise use (k+1)^2 as well because\n    # any perfect square > n will have a base at least k+1.\n    return (k + 1) ** 2\n\n\n# Example assertion from the prompt:\nassert next_perfect_square(35) == 36\n```",
+  "raw_response_sha256": "cd5ae560b379a7fbc87975acbea74e2221344794f4793dcc0b6a75224cb9d3f5",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to find the next perfect square greater than a given number.\nassert next_Perfect_Square(35) == 36\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/244",
+  "transport_complete": true
+}

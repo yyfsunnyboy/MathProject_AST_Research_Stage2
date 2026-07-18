@@ -1,0 +1,62 @@
+{
+  "cell_index": 27,
+  "composed_prompt_sha256": "b60fe66ed95982104eefd94531b3dbc57e05318a9cf20caf1931466bba93dbe5",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "eff2218e594940f76def4115f5675a126c219bd6d38619e75c50904a502598f0",
+  "generation_latency_seconds": 6.35899999999674,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:23:54.7435721Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 193,
+    "eval_duration": 5956482000,
+    "load_duration": 323408600,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 75,
+    "prompt_eval_duration": 44137000,
+    "total_duration": 6351683800
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "b60fe66ed95982104eefd94531b3dbc57e05318a9cf20caf1931466bba93dbe5",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "eff2218e594940f76def4115f5675a126c219bd6d38619e75c50904a502598f0",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:23:54.7435721Z\",\"message\":{\"role\":\"assistant\",\"content\":\"Here’s a simple Python implementation that follows the description:\\n\\n```python\\ndef sum_series(n):\\n    total = 0\\n    i = 0\\n    while True:\\n        term = n - 2 * i\\n        if term \\u003c= 0:\\n            break\\n        total += term\\n        i += 1\\n    return total\\n\\n# Example check\\nassert sum_series(6) == 12\\n```\\n\\nExplanation of the logic for `n = 6`:\\n\\n- Terms generated:  \\n  - i=0 → 6 - 0 = 6  \\n  - i=1 → 6 - 2 = 4  \\n  - i=2 → 6 - 4 = 2  \\n  - i=3 → 6 - 6 = 0 (stop, since term ≤ 0)\\n\\nSum: 6 + 4 + 2 = 12.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":6351683800,\"load_duration\":323408600,\"prompt_eval_count\":75,\"prompt_eval_duration\":44137000,\"eval_count\":193,\"eval_duration\":5956482000}",
+  "raw_response": "Here’s a simple Python implementation that follows the description:\n\n```python\ndef sum_series(n):\n    total = 0\n    i = 0\n    while True:\n        term = n - 2 * i\n        if term <= 0:\n            break\n        total += term\n        i += 1\n    return total\n\n# Example check\nassert sum_series(6) == 12\n```\n\nExplanation of the logic for `n = 6`:\n\n- Terms generated:  \n  - i=0 → 6 - 0 = 6  \n  - i=1 → 6 - 2 = 4  \n  - i=2 → 6 - 4 = 2  \n  - i=3 → 6 - 6 = 0 (stop, since term ≤ 0)\n\nSum: 6 + 4 + 2 = 12.",
+  "raw_response_sha256": "a163cb037a5113051274290dd898438faf45539ddaf7b67cb8d9f198ada24599",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to calculate the sum (n - 2*i) from i=0 to n // 2, for instance n + (n-2) + (n-4)... (until n-x =< 0).\nassert sum_series(6) == 12\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 22,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 1,
+  "seed": 22,
+  "selective_retry": false,
+  "task_id": "Mbpp/162",
+  "transport_complete": true
+}

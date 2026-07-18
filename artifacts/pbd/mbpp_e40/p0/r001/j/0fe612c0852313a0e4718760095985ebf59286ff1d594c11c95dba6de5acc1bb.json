@@ -1,0 +1,62 @@
+{
+  "cell_index": 91,
+  "composed_prompt_sha256": "517c446ea8d4931b92d67a93599a01fa424604f701ec3af3632dae61ae47c2f9",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "0fe612c0852313a0e4718760095985ebf59286ff1d594c11c95dba6de5acc1bb",
+  "generation_latency_seconds": 19.89100000000326,
+  "generation_metadata": {
+    "created_at": "2026-07-18T05:51:34.126741Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 636,
+    "eval_duration": 19378884000,
+    "load_duration": 333877200,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 54,
+    "prompt_eval_duration": 124378000,
+    "total_duration": 19890612500
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "517c446ea8d4931b92d67a93599a01fa424604f701ec3af3632dae61ae47c2f9",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "0fe612c0852313a0e4718760095985ebf59286ff1d594c11c95dba6de5acc1bb",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T05:51:34.126741Z\",\"message\":{\"role\":\"assistant\",\"content\":\"To solve this problem, we need to handle a **heterogeneous list**, meaning it contains elements of different types (e.g., strings and integers). In Python, comparing values across these types directly using standard comparison operators (`\\u003c`, `\\u003e`) will raise a `TypeError` because the language does not define an ordering between unrelated types like `'Python'` and `3`.\\n\\nTo find the minimum value safely:\\n1.  We must filter out non-numeric elements (like strings) that cannot be meaningfully compared with numbers in this context, or we assume the \\\"minimum\\\" refers strictly to the numeric subset if mixed types are present. Given the test case expects `2` from a list containing both strings and integers, the logical approach is to **ignore non-comparable items** and find the minimum among only the comparable (numeric) values.\\n2.  We iterate through the list, checking each item's type or attempting comparison logic. A robust way in Python without external libraries like `numpy` is to use a generator expression that filters for numeric types (`int`, `float`) before applying `min()`.\\n\\nHere is the implementation:\\n\\n```python\\ndef min_val(lst):\\n    \\\"\\\"\\\"\\n    Finds the minimum value in a heterogeneous list, ignoring non-numeric items.\\n    \\n    Args:\\n        lst (list): A list containing mixed data types.\\n        \\n    Returns:\\n        The smallest numeric value found in the list.\\n        \\n    Raises:\\n        ValueError: If no numeric values are present in the list.\\n    \\\"\\\"\\\"\\n    # Filter for numeric types only to avoid TypeError during comparison\\n    numbers = [x for x in lst if isinstance(x, (int, float)) and not isinstance(x, bool)]\\n    \\n    if not numbers:\\n        raise ValueError(\\\"No numeric values found in the heterogeneous list.\\\")\\n        \\n    return min(numbers)\\n\\n# Test case provided in the prompt\\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\\nprint(\\\"Test passed!\\\")\\n```\\n\\n### Explanation of Logic:\\n- **Type Filtering**: The line `isinstance(x, (int, float))` ensures we only consider numbers. Note that `bool` is a subclass of `int` in Python (`True` equals `1`, `False` equals `0`). If the list contained booleans and you wanted to treat them as logical flags rather than numbers, adding `and not isinstance(x, bool)` prevents accidental inclusion (though for pure numeric minimization, usually including them is acceptable depending on requirements; here we exclude them to be safe against edge cases).\\n- **Error Handling**: If the list contains *only* strings or other non-numerics, calling `min()` would fail. We raise a `ValueError` in that scenario to provide clear feedback.\\n- **Result**: For the input `['Python', 3, 2, 4, 5, 'version']`, it extracts `[3, 2, 4, 5]` and returns `2`.\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":19890612500,\"load_duration\":333877200,\"prompt_eval_count\":54,\"prompt_eval_duration\":124378000,\"eval_count\":636,\"eval_duration\":19378884000}",
+  "raw_response": "To solve this problem, we need to handle a **heterogeneous list**, meaning it contains elements of different types (e.g., strings and integers). In Python, comparing values across these types directly using standard comparison operators (`<`, `>`) will raise a `TypeError` because the language does not define an ordering between unrelated types like `'Python'` and `3`.\n\nTo find the minimum value safely:\n1.  We must filter out non-numeric elements (like strings) that cannot be meaningfully compared with numbers in this context, or we assume the \"minimum\" refers strictly to the numeric subset if mixed types are present. Given the test case expects `2` from a list containing both strings and integers, the logical approach is to **ignore non-comparable items** and find the minimum among only the comparable (numeric) values.\n2.  We iterate through the list, checking each item's type or attempting comparison logic. A robust way in Python without external libraries like `numpy` is to use a generator expression that filters for numeric types (`int`, `float`) before applying `min()`.\n\nHere is the implementation:\n\n```python\ndef min_val(lst):\n    \"\"\"\n    Finds the minimum value in a heterogeneous list, ignoring non-numeric items.\n    \n    Args:\n        lst (list): A list containing mixed data types.\n        \n    Returns:\n        The smallest numeric value found in the list.\n        \n    Raises:\n        ValueError: If no numeric values are present in the list.\n    \"\"\"\n    # Filter for numeric types only to avoid TypeError during comparison\n    numbers = [x for x in lst if isinstance(x, (int, float)) and not isinstance(x, bool)]\n    \n    if not numbers:\n        raise ValueError(\"No numeric values found in the heterogeneous list.\")\n        \n    return min(numbers)\n\n# Test case provided in the prompt\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\nprint(\"Test passed!\")\n```\n\n### Explanation of Logic:\n- **Type Filtering**: The line `isinstance(x, (int, float))` ensures we only consider numbers. Note that `bool` is a subclass of `int` in Python (`True` equals `1`, `False` equals `0`). If the list contained booleans and you wanted to treat them as logical flags rather than numbers, adding `and not isinstance(x, bool)` prevents accidental inclusion (though for pure numeric minimization, usually including them is acceptable depending on requirements; here we exclude them to be safe against edge cases).\n- **Error Handling**: If the list contains *only* strings or other non-numerics, calling `min()` would fail. We raise a `ValueError` in that scenario to provide clear feedback.\n- **Result**: For the input `['Python', 3, 2, 4, 5, 'version']`, it extracts `[3, 2, 4, 5]` and returns `2`.",
+  "raw_response_sha256": "2a803b72569a3f310cc0337b1b4fe9466a98d6e425128dc0e6688a5f970a8b07",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a function to find the minimum value in a given heterogeneous list.\nassert min_val(['Python', 3, 2, 4, 5, 'version'])==2\n\"\"\"\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 11,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "sample_index": 0,
+  "seed": 11,
+  "selective_retry": false,
+  "task_id": "Mbpp/410",
+  "transport_complete": true
+}

@@ -1,0 +1,62 @@
+{
+  "cell_index": 79,
+  "composed_prompt_sha256": "fd20405c10ae0e4eabba0938fac414b2ecbc43f6422b3ca7c5d4f6aac029db1d",
+  "first_attempt": true,
+  "generation_complete": true,
+  "generation_id": "0b0823971c54691fbfbf3c339eb5ad233c40555164347b0281352df8b201cf56",
+  "generation_latency_seconds": 3.8280000000086147,
+  "generation_metadata": {
+    "created_at": "2026-07-18T12:33:12.8168126Z",
+    "done": true,
+    "done_reason": "stop",
+    "eval_count": 106,
+    "eval_duration": 3379460000,
+    "load_duration": 338716000,
+    "model": "qwen3.5:9b",
+    "prompt_eval_count": 97,
+    "prompt_eval_duration": 48768000,
+    "total_duration": 3813585100
+  },
+  "healer": false,
+  "logical_run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "model": "qwen3.5:9b",
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_generation_complete": true,
+  "observed_account": true,
+  "official_prompt_sha256": "a6cc6a39164a4a9e4a6fb7b0405341c16c2075d2ed9a6ddd6f32bf14c8a3763a",
+  "pipeline_correction_applied_during_generation": false,
+  "planned_cell_id": "0b0823971c54691fbfbf3c339eb5ad233c40555164347b0281352df8b201cf56",
+  "protocol_compliant": true,
+  "protocol_violations": [],
+  "raw_http_response_body": "{\"model\":\"qwen3.5:9b\",\"created_at\":\"2026-07-18T12:33:12.8168126Z\",\"message\":{\"role\":\"assistant\",\"content\":\"def count_divisors(n):\\n    if n \\u003c= 0:\\n        return False\\n    \\n    divisor_count = 0\\n    for i in range(1, int(n**0.5) + 1):\\n        if n % i == 0:\\n            if i * i == n:\\n                divisor_count += 1\\n            else:\\n                divisor_count += 2\\n                \\n    return (divisor_count % 2 == 0)\\n\\nassert count_divisors(10)\"},\"done\":true,\"done_reason\":\"stop\",\"total_duration\":3813585100,\"load_duration\":338716000,\"prompt_eval_count\":97,\"prompt_eval_duration\":48768000,\"eval_count\":106,\"eval_duration\":3379460000}",
+  "raw_response": "def count_divisors(n):\n    if n <= 0:\n        return False\n    \n    divisor_count = 0\n    for i in range(1, int(n**0.5) + 1):\n        if n % i == 0:\n            if i * i == n:\n                divisor_count += 1\n            else:\n                divisor_count += 2\n                \n    return (divisor_count % 2 == 0)\n\nassert count_divisors(10)",
+  "raw_response_sha256": "f3d0490b23cb5ee6b5d302784279f7f6977aed29d29453408dbd609cc7bf66d3",
+  "reasoning_leakage": false,
+  "request": {
+    "messages": [
+      {
+        "content": "\"\"\"\nWrite a python function to check whether the count of divisors is even. \nassert count_divisors(10)\n\"\"\"\n\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\nReturn exactly one complete, executable Python source file.\nUse the exact function name and parameters required by the task, and include required imports.\nDo not use Markdown code fences or explanatory text.\nOutput only Python code.\n",
+        "role": "user"
+      }
+    ],
+    "model": "qwen3.5:9b",
+    "options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "seed": 44,
+      "temperature": 0.2,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "stream": false,
+    "think": false
+  },
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_ca_exp40_r002",
+  "sample_index": 3,
+  "seed": 44,
+  "selective_retry": false,
+  "task_id": "Mbpp/781",
+  "transport_complete": true
+}
