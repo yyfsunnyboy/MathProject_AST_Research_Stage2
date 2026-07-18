@@ -1,0 +1,41 @@
+{
+  "all_regression_rows_required": true,
+  "analysis_id": "mbpp_q35_9b_ca_exp40_paired_r001",
+  "analysis_plan_version": "candidate_a_expansion_paired_prospective_v1",
+  "candidate_run_id": "mbpp_q35_9b_ca_exp40_r001",
+  "format_metrics": [
+    "strict_python_only_compliance_rate",
+    "code_fence_rate",
+    "extra_text_rate",
+    "pipeline_extraction_success_rate"
+  ],
+  "itt": true,
+  "p0_run_id": "mbpp_q35_9b_p0_exp40_r001",
+  "paired_identities": 200,
+  "paired_tasks": 40,
+  "paired_transitions": [
+    "fail_to_fail",
+    "fail_to_pass",
+    "pass_to_fail",
+    "pass_to_pass"
+  ],
+  "pairing_key": [
+    "task_id",
+    "seed"
+  ],
+  "physical_output_directory": "artifacts/pbd/mbpp_e40/pa/r001",
+  "planned_generation_cells_total": 400,
+  "primary_correctness_account": "pipeline_corrected",
+  "promotion_gate_manifest": "promotion_gate_manifest.json",
+  "reasoning_leakage_separate_metric": true,
+  "secondary_account": "observed",
+  "statistical_test": {
+    "alpha": 0.05,
+    "discordant_failures": "paired regressions (P0 pass, Candidate A fail)",
+    "discordant_successes": "paired rescues (P0 fail, Candidate A pass)",
+    "name": "exact two-sided McNemar conditional binomial test",
+    "zero_discordant_p_value": 1.0
+  },
+  "status": "prospectively_frozen_not_executed",
+  "unknown_evaluator_failure_must_not_be_guessed": true
+}

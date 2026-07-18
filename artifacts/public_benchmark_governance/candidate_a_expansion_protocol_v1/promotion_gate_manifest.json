@@ -1,0 +1,39 @@
+{
+  "analysis_population": "all 200 paired Candidate-A/P0 expansion identities under ITT",
+  "candidate_status": "frozen_experimental_candidate_not_official_v1",
+  "claim_rule": {
+    "format_and_safety_only_claim": "improved direct evaluability and Pipeline-corrected non-inferiority to paired P0 only",
+    "pipeline_correctness_improvement": {
+      "exact_mcnemar_two_sided_p_lt": 0.05,
+      "paired_rescues_gt_paired_regressions": true
+    },
+    "safety_gate_failure_consequence": "Candidate A must not be promoted to official Scaffold v1"
+  },
+  "failure_governance": {
+    "mix_candidate_b_into_this_result_forbidden": true,
+    "modify_candidate_a_and_rerun_same_40_forbidden": true,
+    "next_protocol_must_use_remaining_unactivated_historical_development_tasks": true
+  },
+  "format_gate": {
+    "all_required": true,
+    "code_fence_rate_max": 0.05,
+    "extra_text_rate_max": 0.05,
+    "pipeline_extraction_success_rate_min": 0.95,
+    "strict_python_only_compliance_rate_min": 0.9
+  },
+  "manifest_version": "candidate_a_expansion_promotion_gates_v1",
+  "pipeline_correctness_safety_gate": {
+    "all_regressions_fully_disclosed": true,
+    "all_required": true,
+    "candidate_pipeline_pass_count_gte_paired_p0": true,
+    "paired_rescues_gte_paired_regressions": true
+  },
+  "protocol_gate": {
+    "all_required": true,
+    "reasoning_leakage_reported_separately": true,
+    "regeneration_for_protocol_violation_forbidden": true,
+    "silent_thinking_content_deletion_forbidden": true,
+    "transport_complete_protocol_violations_in_itt": true
+  },
+  "status": "prospectively_frozen_before_generation"
+}

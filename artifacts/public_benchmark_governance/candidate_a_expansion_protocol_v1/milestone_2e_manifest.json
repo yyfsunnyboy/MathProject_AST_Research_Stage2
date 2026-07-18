@@ -1,0 +1,170 @@
+{
+  "candidate_a": {
+    "candidate_id": "v1_candidate_a_conservative_compaction",
+    "exact_text_sha256": "bffa1e7e3d1ff77b0de326083bf6c7fd441b2f3b050b45e205a5ba51be87f058",
+    "official_v1": false,
+    "separator_sha256": "dc61671dd31a04c2f638edd612b86cc339fa1c89f81df2e4fb73344312077c1e",
+    "status": "frozen_experimental_candidate_not_official_v1"
+  },
+  "counts": {
+    "candidate_a_cells": 200,
+    "expansion_tasks": 40,
+    "p0_cells": 200,
+    "paired_identities": 200,
+    "seeds_per_task": 5,
+    "total_planned_cells": 400
+  },
+  "execution_components": {
+    "freezer": "scripts/freeze_mbpp_candidate_a_expansion_protocol.py",
+    "generation_evaluation_driver": "scripts/run_mbpp_candidate_a_expansion.py",
+    "paired_analysis_driver": "scripts/analyze_mbpp_candidate_a_expansion.py",
+    "targeted_tests": "tests/finals_rebuild/test_mbpp_candidate_a_expansion_protocol.py"
+  },
+  "manifest_version": "milestone_2e_candidate_a_expansion_protocol_v1",
+  "model_protocol": {
+    "attempts_per_cell": 1,
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "generation_parameters": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "stream": false,
+      "temperature": 0.2,
+      "thinking": false,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "healer": false,
+    "model": "qwen3.5:9b",
+    "overwrite": false,
+    "pipeline_correction_is_healer": false,
+    "quantization": "Q4_K_M",
+    "resume": false,
+    "retry": false,
+    "selective_retry": false,
+    "timeout_seconds": 600.0
+  },
+  "outputs": {
+    "candidate_a_expansion_generation_plan.json": {
+      "sha256": "883c9ad85725953e32a611a5cc6b6730d38c7b71c28c01206f67d3f9e859d12f",
+      "size_bytes": 62707
+    },
+    "operator_guide_zh.md": {
+      "sha256": "b303e2052ffc81eb9ff9fba888436ecd46f0c1da2ccd6242aa21059f2874dce9",
+      "size_bytes": 2731
+    },
+    "p0_expansion_generation_plan.json": {
+      "sha256": "cee8e9908bfb9759189b290e8b3f13a7609e3ec80395585f07b9c0425f255531",
+      "size_bytes": 62150
+    },
+    "paired_prospective_analysis_plan.json": {
+      "sha256": "3ac7cb6a7b75503f98e48b3c88888c87d864f58f15f69a4ca934ac41d15221e5",
+      "size_bytes": 1351
+    },
+    "promotion_gate_manifest.json": {
+      "sha256": "07f6550c140c9063da0551909f979638d5306adbfb77ff7c4ffc372e94662d84",
+      "size_bytes": 1621
+    },
+    "storage_mapping.json": {
+      "sha256": "345d025de909e607330417e9fb790632301fbd1dc4f7090f11beac5707c5593e",
+      "size_bytes": 1669
+    }
+  },
+  "physical_paths": {
+    "candidate_a": "artifacts/pbd/mbpp_e40/ca/r001",
+    "p0": "artifacts/pbd/mbpp_e40/p0/r001",
+    "paired_analysis": "artifacts/pbd/mbpp_e40/pa/r001"
+  },
+  "prohibited_actions_attestation": {
+    "candidate_a_promoted_to_official_v1": false,
+    "evalplus_executions": 0,
+    "formal_commands_executed": false,
+    "healer_built": false,
+    "model_calls": 0,
+    "run_directories_created": false
+  },
+  "promotion_gates_sha256": "07f6550c140c9063da0551909f979638d5306adbfb77ff7c4ffc372e94662d84",
+  "run_ids": {
+    "candidate_a": "mbpp_q35_9b_ca_exp40_r001",
+    "p0": "mbpp_q35_9b_p0_exp40_r001"
+  },
+  "scope": "Milestone 2D expansion_development only",
+  "source_artifacts": {
+    "development_expansion_manifest.csv": {
+      "path": "artifacts/public_benchmark_governance/development_expansion_v1/development_expansion_manifest.csv",
+      "sha256": "daa12bf45ba78e4f83a40b3a1005079867417950da05e9ff9fca58bdf9777cce"
+    },
+    "development_expansion_manifest.json": {
+      "path": "artifacts/public_benchmark_governance/development_expansion_v1/development_expansion_manifest.json",
+      "sha256": "b6b97e4a1e189491184f5d1d5ae960d5171e07e6266c7c0429db74914803fb91"
+    },
+    "frozen_split.csv": {
+      "path": "artifacts/public_benchmark_governance/frozen_split.csv",
+      "sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4"
+    },
+    "generation_protocol_v1.json": {
+      "path": "configs/public_benchmark_generation_protocol_v1.json",
+      "sha256": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d"
+    },
+    "mbpp_generic_code_scaffold_v0_manifest.json": {
+      "path": "configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json",
+      "sha256": "b48576bf74c6b5aae1a3f4a4c4266da5ee78e1df8e77f877b67f903e9ada93da"
+    },
+    "milestone_2c_manifest.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/milestone_2c_manifest.json",
+      "sha256": "3a6acb130affb5414228594367fc9fc41a9229e510ea1da9198efd57ad9b8ef3"
+    },
+    "scaffold_v1_candidates.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/scaffold_v1_candidates.json",
+      "sha256": "6a19996316031697699f9ea9f3447d4a3df286e28e5c132a57cb8c6c65d6a54a"
+    }
+  },
+  "starting_head": "54a79833f393af1096d757fdf72c039536e9775a",
+  "status": "prospectively_frozen_not_executed",
+  "storage_preflight": {
+    "mapping_version": "candidate_a_expansion_short_path_mapping_v1",
+    "paired_analysis": {
+      "analysis_id": "mbpp_q35_9b_ca_exp40_paired_r001",
+      "physical_output_directory": "artifacts/pbd/mbpp_e40/pa/r001",
+      "preflight_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\pa\\r001\\paired_analysis_manifest.json",
+      "preflight_path_length": 124,
+      "within_budget": true
+    },
+    "requires_windows_long_path_registry_change": false,
+    "run_directories_created_by_freezer": false,
+    "runs": [
+      {
+        "checked_path_count": 207,
+        "journal_directory_name": "j",
+        "logical_run_id": "mbpp_q35_9b_p0_exp40_r001",
+        "longest_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\p0\\r001\\j\\0eb9607223a484740924cfdae9d6b8a9d0b4de9628d7650ea5eac20e9d7623ed.json",
+        "longest_windows_path_length": 166,
+        "physical_storage_directory": "artifacts/pbd/mbpp_e40/p0/r001",
+        "within_budget": true
+      },
+      {
+        "checked_path_count": 207,
+        "journal_directory_name": "j",
+        "logical_run_id": "mbpp_q35_9b_ca_exp40_r001",
+        "longest_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_e40\\ca\\r001\\j\\151d77fae8ffac7c760a91767c4f6c67bd039776bd906879ffcd099a9015f8be.json",
+        "longest_windows_path_length": 166,
+        "physical_storage_directory": "artifacts/pbd/mbpp_e40/ca/r001",
+        "within_budget": true
+      }
+    ],
+    "windows_path_budget_chars": 240,
+    "windows_repo_prefix": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2"
+  },
+  "treatment_execution_order": [
+    "mbpp_q35_9b_p0_exp40_r001",
+    "mbpp_q35_9b_ca_exp40_r001"
+  ],
+  "zero_overlap": {
+    "discovery_development": 0,
+    "excluded_historical": 0,
+    "external_confirmatory_candidate": 0,
+    "internal_confirmatory_candidate": 0,
+    "sealed_reserve": 0,
+    "validation": 0,
+    "verified_total_forbidden_overlap": 0
+  }
+}
