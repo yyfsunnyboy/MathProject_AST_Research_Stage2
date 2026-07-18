@@ -1,0 +1,37 @@
+{
+  "counts": {
+    "candidate_b_generation_cells": 140,
+    "future_factorial_accounts": 560,
+    "p0_generation_cells": 140,
+    "paired_identities": 140
+  },
+  "evalplus_executions": 0,
+  "evaluation_driver_enabled": false,
+  "manifest_version": "mbpp_factorial_qualification_operator_binding_v1",
+  "model_calls": 0,
+  "output_sha256_excluding_manifest": {
+    "candidate_b_generation_plan.json": "08c9bd5a84f6383acebed2b901eeffb0ce09ac14920d68b4b7a87ecfa2583110",
+    "operator_guide_zh.md": "aecf84c3b3f12b64bf76778d0c94a9630eda5965a5f8954bcc18b95b39862762",
+    "p0_generation_plan.json": "be9d3b031e33f9f71ace7e593b35f6d97fadc2654b199b95c8083b9e0d0b8bec",
+    "storage_mapping.json": "29115f6238c9272a31f8ba990e2f1bd3ae48a54f50e7e0a20b73e4d63673e674"
+  },
+  "physical_paths": {
+    "candidate_b": "artifacts/pbd/mbpp_b28/cb/r001",
+    "factorial": "artifacts/pbd/mbpp_b28/fa/r001",
+    "p0": "artifacts/pbd/mbpp_b28/p0/r001"
+  },
+  "run_directories_created": false,
+  "run_ids": {
+    "candidate_b": "mbpp_q35_9b_cb_b28_r001",
+    "p0": "mbpp_q35_9b_p0_b28_r001"
+  },
+  "source_qualification_manifest_sha256": "feaed4361cfd4ed52f005c1d3a3494d8f75a33c2322bedf7a33e5e9f77ec9af2",
+  "source_sha256": {
+    "artifacts/public_benchmark_governance/factorial_development_qualification_v1/candidate_b_2x2_account_plan.csv": "1ea1d77eff0e84aa75811eeced9ef0996b9811161c862d3b5baf2f02944dd6b4",
+    "artifacts/public_benchmark_governance/factorial_development_qualification_v1/candidate_b_2x2_development_plan.json": "2d096df4f2b85b36d9a4da466e4e4e07bc24fe8a90ddfa11625af4f164d7dba1",
+    "artifacts/public_benchmark_governance/factorial_development_qualification_v1/factorial_development_qualification_manifest.json": "feaed4361cfd4ed52f005c1d3a3494d8f75a33c2322bedf7a33e5e9f77ec9af2",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "scripts/run_mbpp_factorial_development_qualification.py": "eaf52e9f16534a201b8a969fb9b7a24d9b2039604d505649ac76ce4a1d890bee"
+  },
+  "status": "frozen_not_executed_development_only"
+}

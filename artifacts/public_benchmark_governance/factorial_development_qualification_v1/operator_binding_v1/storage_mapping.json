@@ -1,0 +1,25 @@
+{
+  "all_paths_within_budget": true,
+  "factorial_longest_windows_path_length": 118,
+  "factorial_materialization_path": "artifacts/pbd/mbpp_b28/fa/r001",
+  "run_directories_created": false,
+  "runs": [
+    {
+      "longest_planned_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_b28\\p0\\r001\\j\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.json",
+      "longest_planned_windows_path_length": 166,
+      "physical_path": "artifacts/pbd/mbpp_b28/p0/r001",
+      "run_id": "mbpp_q35_9b_p0_b28_r001",
+      "treatment": "p0",
+      "within_240_character_budget": true
+    },
+    {
+      "longest_planned_windows_path": "C:\\Users\\yehya\\Documents\\GitHub\\MathProject_AST_Research_Stage2\\artifacts\\pbd\\mbpp_b28\\cb\\r001\\j\\ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.json",
+      "longest_planned_windows_path_length": 166,
+      "physical_path": "artifacts/pbd/mbpp_b28/cb/r001",
+      "run_id": "mbpp_q35_9b_cb_b28_r001",
+      "treatment": "candidate_b",
+      "within_240_character_budget": true
+    }
+  ],
+  "windows_path_budget": 240
+}
