@@ -1,0 +1,52 @@
+{
+  "activation_gate": {
+    "analysis_code_and_claim_rules_frozen": false,
+    "final_healer_source_rule_order_guards_and_sha256_frozen": false,
+    "final_p1_exact_text_and_sha256_frozen": false,
+    "formal_execution_allowed_now": false,
+    "pipeline_source_and_sha256_refrozen": false,
+    "sampling_and_model_protocol_frozen": false,
+    "validation_identity_manifest_frozen_without_content_review": false
+  },
+  "development_evidence_policy": {
+    "all_current_trigger_counts_labeled_development_only": true,
+    "development_results_cannot_set_validation_acceptance_post_hoc": true,
+    "offline_build_and_tests_allowed": true
+  },
+  "evaluation_sequence": [
+    "persist P0 and P1 raw generations",
+    "apply identical frozen Pipeline normalization independently to each generation",
+    "fork each normalized output into H0 unchanged and H1 frozen-Healer accounts",
+    "persist rule triggers, guards, transformations or abstentions before evaluation",
+    "evaluate all four ITT accounts without retry or selective exclusion"
+  ],
+  "generation_design": {
+    "evaluation_accounts_per_identity": 4,
+    "generation_count_per_identity": 2,
+    "healer_causes_additional_generation": false,
+    "per_task_seed_identity": [
+      "one P0 generation",
+      "one P1 generation"
+    ],
+    "same_seeds_and_task_ids_across_p0_p1": true
+  },
+  "plan_version": "mbpp_validation_2x2_prospective_plan_draft_v1",
+  "planned_identity_count": null,
+  "primary_factorial_reporting": {
+    "all_regressions_disclosed": true,
+    "healer_effect_within_p0": "paired P0_H1 versus P0_H0",
+    "healer_effect_within_p1": "paired P1_H1 versus P1_H0",
+    "interaction": "difference between the two within-prompt Healer effects; exact method and claim threshold must be frozen before activation",
+    "scaffold_effect_with_h0": "P1_H0 versus P0_H0 by task_id+seed",
+    "scaffold_effect_with_h1": "P1_H1 versus P0_H1 by task_id+seed"
+  },
+  "rule_level_reporting": [
+    "P0 trigger cells and unique tasks",
+    "P1 trigger cells and unique tasks",
+    "signature and rule-order position",
+    "transformation, guard outcome, semantic-risk and abstention reason"
+  ],
+  "status": "draft_not_activated_pending_final_p1_and_healer_freeze",
+  "validation_task_content_read": false,
+  "validation_task_ids": []
+}

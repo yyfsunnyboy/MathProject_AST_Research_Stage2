@@ -38,3 +38,6 @@ artifacts/pbd/mbpp_e40/pa/r002/** text eol=lf
 
 # Milestone 2G deterministic integrated development evidence.
 artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/** text eol=lf
+
+# Development-only 2x2 factorial evaluation readiness assets.
+artifacts/public_benchmark_governance/factorial_evaluation_readiness_v1/** text eol=lf

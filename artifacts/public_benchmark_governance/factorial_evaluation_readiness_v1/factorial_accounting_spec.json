@@ -1,0 +1,55 @@
+{
+  "factorial_arms": [
+    "P0_H0",
+    "P0_H1",
+    "P1_H0",
+    "P1_H1"
+  ],
+  "generation_arms": {
+    "P0": "official prompt only",
+    "P1": "final frozen Scaffold; exact text and hash pending"
+  },
+  "healer_accounts": {
+    "H0": "evaluate frozen normalized output unchanged",
+    "H1": "apply the final frozen evaluator-blind Healer to the same normalized output, then evaluate",
+    "evaluator_used_for_trigger_selection_or_acceptance": false,
+    "model_regeneration_for_healer": false,
+    "same_guards_and_abstention_for_p0_and_p1": true,
+    "same_healer_version_for_p0_and_p1": true,
+    "same_rule_order_for_p0_and_p1": true
+  },
+  "identity_invariants": {
+    "exactly_one_model_attempt_per_prompt_arm_identity": true,
+    "generation_identity": [
+      "prompt_arm",
+      "task_id",
+      "seed",
+      "generation_id"
+    ],
+    "h0_h1_share_generation_id": true,
+    "h0_h1_share_pipeline_input_and_normalized_sha256": true,
+    "h0_h1_share_raw_sha256": true
+  },
+  "itt": {
+    "healer_abstention_retained": true,
+    "pipeline_extraction_failure_retained": true,
+    "protocol_violation_retained": true,
+    "selective_retry_or_exclusion": false
+  },
+  "normalization": {
+    "extraction_fence_stripping_plain_text_normalization_are_healer": false,
+    "normalization_result_identity_must_match_across_h0_h1": true,
+    "order": "generation -> frozen Pipeline normalization -> H0/H1 fork",
+    "same_version_for_p0_and_p1": true,
+    "spec": "agent_tools.finals_rebuild.extraction.extract_code",
+    "spec_commit": "c5094bb7"
+  },
+  "raw_deployment_packaging_ablation": {
+    "allowed_as_separate_optional_account": true,
+    "may_not_replace_pipeline_or_healer_accounts": true,
+    "part_of_formal_factorial": false,
+    "results_must_be_labeled": "raw_deployment_packaging_ablation_only"
+  },
+  "spec_version": "mbpp_factorial_accounting_v1_draft",
+  "status": "draft_not_activated_pending_final_p1_and_healer_freeze"
+}

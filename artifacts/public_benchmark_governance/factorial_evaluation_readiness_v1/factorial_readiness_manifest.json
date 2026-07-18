@@ -1,0 +1,32 @@
+{
+  "candidate_b_or_final_p1_frozen": false,
+  "development_counts": {
+    "programs": 600,
+    "task_seed_identities": 300,
+    "tasks": 60
+  },
+  "development_only": true,
+  "evalplus_executions": 0,
+  "formal_factorial_arms": [
+    "P0_H0",
+    "P0_H1",
+    "P1_H0",
+    "P1_H1"
+  ],
+  "healer_implemented_or_frozen": false,
+  "manifest_version": "mbpp_factorial_evaluation_readiness_v1",
+  "model_calls": 0,
+  "output_sha256_excluding_manifest": {
+    "factorial_accounting_spec.json": "5571ca6a5698527845035d1b08e4c02bdaa72d2b9e5583064bb45b7196856d4c",
+    "factorial_readiness_analysis_zh.md": "757a3464849c0b80c7965f885c811c3946e6f27877271125bbcd4ac5a68b41bf",
+    "healer_factorial_trigger_ledger.csv": "0def40875e435b3687e6a37fd5e59833d1375060e8c9a18c221d4e64b919e33b",
+    "prospective_2x2_validation_plan.json": "33f63684d244649db3b2054dd78819bf3460c366d5fb98899d478676d5dbb9b2"
+  },
+  "source_sha256": {
+    "artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/healer_candidate_rule_ledger.csv": "c6ad65d2cdd5b586fe027c33a1b760009238c2a70dba29619233b801c8f767a9",
+    "artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/integrated_development_cell_ledger.csv": "073a532e80cd724420d4eeb4309312eaa99fa0eccc72aefb82af7962be6e7d65",
+    "artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/milestone_2g_manifest.json": "d1663ddcb09d2f6cd41bb540896e5478d130a587e4b9936a2872d7f6819059fc"
+  },
+  "status": "draft_not_activated_pending_final_p1_and_healer_freeze",
+  "validation_tasks_read_or_selected": 0
+}
