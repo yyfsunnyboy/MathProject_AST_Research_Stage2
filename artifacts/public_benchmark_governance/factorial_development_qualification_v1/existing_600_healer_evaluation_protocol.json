@@ -1,0 +1,37 @@
+{
+  "accounting": "same persisted generation and Pipeline-normalized source forks to H0 unchanged and H1 candidate output",
+  "all_accounts_itt": true,
+  "analysis": {
+    "all_regressions_disclosed": true,
+    "claim_status": "retrospective_development_rule_construction_audit_only_no_confirmatory_claim",
+    "report": [
+      "triggers cells/tasks",
+      "transforms cells/tasks",
+      "abstentions",
+      "H0/H1 pass counts",
+      "rescues",
+      "regressions",
+      "common pass",
+      "common fail",
+      "exact McNemar"
+    ],
+    "report_by_prompt_condition": [
+      "P0",
+      "Scaffold-like"
+    ]
+  },
+  "candidate_source_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+  "evalplus_executions_this_freeze": 0,
+  "evaluator_used_to_accept_transformation": false,
+  "h0_accounts": 600,
+  "h1_accounts": 600,
+  "healer_abstention_retained": true,
+  "model_regeneration": false,
+  "per_cell_accept_revert_or_selective_rule_use": false,
+  "pipeline_extraction_failure_retained": true,
+  "pipeline_source_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "programs": 600,
+  "protocol_id": "mbpp_existing600_healer_h0_h1_development_eval_v1",
+  "status": "frozen_not_executed_development_only",
+  "total_evaluation_accounts": 1200
+}

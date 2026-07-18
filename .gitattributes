@@ -44,3 +44,6 @@ artifacts/public_benchmark_governance/factorial_evaluation_readiness_v1/** text 
 
 # Development-only evaluator-blind Healer candidate offline audit.
 artifacts/public_benchmark_governance/healer_candidate_v0_development_audit/** text eol=lf
+
+# Frozen, not-executed development-only 2x2 qualification protocol.
+artifacts/public_benchmark_governance/factorial_development_qualification_v1/** text eol=lf

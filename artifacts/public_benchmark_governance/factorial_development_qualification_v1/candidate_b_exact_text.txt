@@ -1,0 +1,3 @@
+Return exactly one concise, complete, executable Python source file.
+Use the exact required function name and parameters, include required imports, and finish the implementation within the output limit.
+Do not use Markdown fences or explanatory text; output only Python code.

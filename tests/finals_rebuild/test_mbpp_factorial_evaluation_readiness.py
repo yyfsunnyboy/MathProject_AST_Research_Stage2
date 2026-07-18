@@ -88,7 +88,8 @@ def test_manifest_is_development_only_and_has_no_calls() -> None:
     assert manifest["development_counts"] == {"programs": 600, "task_seed_identities": 300, "tasks": 60}
     assert manifest["model_calls"] == manifest["evalplus_executions"] == 0
     assert manifest["validation_tasks_read_or_selected"] == 0
-    assert manifest["candidate_b_or_final_p1_frozen"] is False
+    assert manifest["candidate_b_development_candidate_frozen"] is True
+    assert manifest["final_p1_frozen"] is False
 
 
 def test_deterministic_bytes_and_hashes() -> None:

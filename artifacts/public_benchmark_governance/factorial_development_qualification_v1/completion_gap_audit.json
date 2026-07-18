@@ -1,0 +1,48 @@
+{
+  "audit_version": "mbpp_final_factorial_completion_gap_v1",
+  "formal_validation_allowed": false,
+  "next_authorized_stage": "execute_only_the_frozen_development_qualification_after_separate_operator_authorization",
+  "overall_status": "incomplete_formal_validation_not_authorized",
+  "requirements": [
+    {
+      "evidence": "factorial_evaluation_readiness_v1/factorial_accounting_spec.json",
+      "requirement": "four formal accounts P0_H0 P0_H1 P1_H0 P1_H1",
+      "status": "specified_not_executed"
+    },
+    {
+      "evidence": "agent_tools/finals_rebuild/extraction.py",
+      "requirement": "same Pipeline before H0/H1 fork",
+      "status": "specified_source_hash_pinned_for_development_only"
+    },
+    {
+      "evidence": "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py",
+      "requirement": "same Healer version order guards for P0/P1",
+      "status": "implemented_development_candidate_not_final_frozen"
+    },
+    {
+      "evidence": "healer_candidate_v0_development_audit/healer_candidate_v0_rule_summary.csv",
+      "requirement": "rule trigger cells and unique tasks by condition",
+      "status": "achieved_development_only"
+    },
+    {
+      "evidence": "Candidate A failed preregistered format gate; Candidate B not yet executed",
+      "requirement": "final P1",
+      "status": "missing_independent_qualification"
+    },
+    {
+      "evidence": "validation_task_ids remains empty",
+      "requirement": "prospective validation identities",
+      "status": "missing_and_unread"
+    },
+    {
+      "evidence": "draft plan explicitly leaves method pending",
+      "requirement": "formal analysis and interaction claim rule",
+      "status": "missing_final_freeze"
+    },
+    {
+      "evidence": "factorial_accounting_spec.json",
+      "requirement": "raw packaging ablation separate",
+      "status": "specified"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "candidate_b_sha256": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+  "confirmatory_or_sealed_tasks_read": false,
+  "counts": {
+    "existing_programs": 600,
+    "new_task_seed_identities": 140,
+    "new_tasks": 28,
+    "planned_existing_h0_h1_accounts": 1200,
+    "planned_generations": 280,
+    "planned_new_factorial_accounts": 560,
+    "remaining_unused_development_tasks": 28
+  },
+  "evalplus_executions": 0,
+  "healer_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+  "manifest_version": "mbpp_factorial_development_qualification_v1",
+  "model_calls": 0,
+  "output_sha256_excluding_manifest": {
+    "candidate_b_2x2_account_plan.csv": "1ea1d77eff0e84aa75811eeced9ef0996b9811161c862d3b5baf2f02944dd6b4",
+    "candidate_b_2x2_development_plan.json": "2d096df4f2b85b36d9a4da466e4e4e07bc24fe8a90ddfa11625af4f164d7dba1",
+    "candidate_b_exact_text.txt": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+    "candidate_b_new28_selection.csv": "d9616ce5f6dcb78d9058f3d28455c3380ead9235a13c4c44e44975db9d5be651",
+    "completion_gap_audit.json": "1079eeb80b45ac4905a84a30b2b1e7920b60992781e74afe4c3461ff155ea5ee",
+    "existing_600_h0_h1_account_plan.csv": "a548f433ccd03456093be29b72580848e41b8ba0482f588bc853dfccbff8c222",
+    "existing_600_healer_evaluation_protocol.json": "da341c5ff02ab77bd812fabac718bc4b2408259517bea8ac7f1c852c98ec52fc",
+    "factorial_development_qualification_summary_zh.md": "40bf472ca64e224b182dc7a448ffbfbb3bcdd324705cf410b75fa12e279fdf32"
+  },
+  "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "run_directories_created": false,
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "artifacts/public_benchmark_governance/development_expansion_v1/development_expansion_manifest.json": "b6b97e4a1e189491184f5d1d5ae960d5171e07e6266c7c0429db74914803fb91",
+    "artifacts/public_benchmark_governance/healer_candidate_v0_development_audit/healer_candidate_v0_cell_ledger.csv": "724cdb54870e7912754966212440329765214ee4d4290428f18f7bcb664dd5a4",
+    "artifacts/public_benchmark_governance/healer_candidate_v0_development_audit/healer_candidate_v0_spec.json": "033875fcd4358f3b28911b22b27cb02718ab8a7c29d135136b69a6cbb64167af",
+    "artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/scaffold_candidate_evidence.csv": "3230282eb4353fc11b1c94f8e96e32980b3ec79af9539b13267522193b20027a"
+  },
+  "status": "frozen_not_executed_development_only",
+  "validation_tasks_read": false
+}

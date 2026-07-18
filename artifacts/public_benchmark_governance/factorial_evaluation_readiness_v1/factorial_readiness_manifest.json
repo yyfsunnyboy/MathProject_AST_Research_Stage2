@@ -1,5 +1,5 @@
 {
-  "candidate_b_or_final_p1_frozen": false,
+  "candidate_b_development_candidate_frozen": true,
   "development_counts": {
     "programs": 600,
     "task_seed_identities": 300,
@@ -7,6 +7,7 @@
   },
   "development_only": true,
   "evalplus_executions": 0,
+  "final_p1_frozen": false,
   "formal_factorial_arms": [
     "P0_H0",
     "P0_H1",
