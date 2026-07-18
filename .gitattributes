@@ -35,3 +35,6 @@ artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_analysis_manifes
 artifacts/pbd/mbpp_e40/p0/r001/** text eol=lf
 artifacts/pbd/mbpp_e40/ca/r002/** text eol=lf
 artifacts/pbd/mbpp_e40/pa/r002/** text eol=lf
+
+# Milestone 2G deterministic integrated development evidence.
+artifacts/public_benchmark_governance/milestone_2g_integrated_development_evidence/** text eol=lf

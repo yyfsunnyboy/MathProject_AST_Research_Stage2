@@ -1,0 +1,18 @@
+{
+  "activate_remaining_56_now": false,
+  "candidate_a_same_40_task_retest_allowed": false,
+  "decision": "PROCEED_TO_NARROW_HEALER_AND_SCAFFOLD_DESIGN",
+  "development_tasks": 60,
+  "eligible_rule_cell_support": 42,
+  "eligible_rule_id": "entrypoint_alias_unique_arity_compatible_v0",
+  "eligible_rule_unique_task_support": 16,
+  "evalplus_executions": 0,
+  "generated_programs": 600,
+  "model_calls": 0,
+  "next_step": "implement candidate assets and preregister a separate prospective protocol; do not freeze official v1 in this milestone",
+  "reason": "one narrow static rule has multi-task support, counterexamples, deterministic safety guards, and explicit abstention; additional tasks remain reserved for prospective testing rather than retrospective selection",
+  "remaining_historical_development_tasks": 56,
+  "same_task_different_seed_is_new_task": false,
+  "sufficient_for_at_least_one_narrow_evaluator_blind_rule_implementation": true,
+  "unique_task_seed_identities": 300
+}

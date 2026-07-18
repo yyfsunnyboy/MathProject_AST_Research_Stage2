@@ -1,0 +1,13 @@
+candidate_id,status,design_issue,evidence_cells,unique_task_support,direct_evidence,inference_limit,recommended_direction,exact_text_draft_utf8,same_40_task_retest_allowed,official_v1_frozen
+candidate_b_concise_complete_draft,candidate_not_frozen,concise_and_complete_within_output_limit,18 truncation; 19 syntax; 15 overlap,8 truncation tasks; 10 syntax tasks,Candidate A failures include 18 length terminations across 8 tasks and 19 compile failures across 10 tasks,wording benefit is a design hypothesis; truncation does not identify missing intended code and cannot be auto-repaired,request one concise complete implementation while retaining exact entry point and no-fence constraints,"Return exactly one concise, complete, executable Python source file.
+Use the exact required function name and parameters, include required imports, and finish the implementation within the output limit.
+Do not use Markdown fences or explanatory text; output only Python code.
+",false,false
+candidate_b_concise_complete_draft,candidate_not_frozen,format_and_packaging,68,36,discovery P0 shows repeated fence/packaging extraction failures while scaffolded outputs remove them,aggregate association does not isolate line-level causality,retain no Markdown and output-only source contract,"Return exactly one concise, complete, executable Python source file.
+Use the exact required function name and parameters, include required imports, and finish the implementation within the output limit.
+Do not use Markdown fences or explanatory text; output only Python code.
+",false,false
+candidate_b_concise_complete_draft,candidate_not_frozen,exact_entry_point,42,16,missing expected names recur in saved development programs; Candidate A expansion has zero entry-point failures,does not prove Scaffold wording caused the structural improvement,retain exact required function name and parameters,"Return exactly one concise, complete, executable Python source file.
+Use the exact required function name and parameters, include required imports, and finish the implementation within the output limit.
+Do not use Markdown fences or explanatory text; output only Python code.
+",false,false

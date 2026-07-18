@@ -1,0 +1,85 @@
+{
+  "analysis_version": "milestone_2g_integrated_development_evidence_v1",
+  "candidate_a_evidence": {
+    "syntax_cells": 19,
+    "syntax_tasks": 10,
+    "truncation_cells": 18,
+    "truncation_syntax_overlap_cells": 15,
+    "truncation_tasks": 8
+  },
+  "candidate_b": {
+    "exact_text_sha256": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+    "exact_text_utf8": "Return exactly one concise, complete, executable Python source file.\nUse the exact required function name and parameters, include required imports, and finish the implementation within the output limit.\nDo not use Markdown fences or explanatory text; output only Python code.\n",
+    "implemented": false,
+    "same_40_task_retest_allowed": false,
+    "status": "candidate_not_frozen"
+  },
+  "counts": {
+    "discovery_tasks": 20,
+    "expansion_tasks": 40,
+    "generated_programs": 600,
+    "ledger_rows": 300,
+    "unique_task_seed_identities": 300,
+    "unique_tasks": 60
+  },
+  "decision": "PROCEED_TO_NARROW_HEALER_AND_SCAFFOLD_DESIGN",
+  "evalplus_executions": 0,
+  "expected_starting_head": "af3ccfd7af7308d67264bcfe57ce4a0696349772",
+  "forbidden_roles_read": [],
+  "formal_inputs_modified": false,
+  "healer": {
+    "eligible_for_implementation_rule_count": 1,
+    "evaluator_result_used_to_accept_repair": false,
+    "implemented": false,
+    "verified_rules": 0
+  },
+  "model_calls": 0,
+  "output_sha256_excluding_manifest": {
+    "development_sufficiency_decision.json": "67cfa9687357396b7e43f584242b2a7943b6a710948185fe59b87716589a2787",
+    "healer_candidate_rule_ledger.csv": "c6ad65d2cdd5b586fe027c33a1b760009238c2a70dba29619233b801c8f767a9",
+    "integrated_development_analysis_zh.md": "3fd8b998f0d6ca0ace90c20b664cf858cecb204847d2084cfa46dae53145af08",
+    "integrated_development_cell_ledger.csv": "073a532e80cd724420d4eeb4309312eaa99fa0eccc72aefb82af7962be6e7d65",
+    "integrated_failure_signature_census.csv": "bc47b361331f670e97a7e203eb57d57af8f21666723c39c7b80d5f8261c28e96",
+    "scaffold_candidate_evidence.csv": "3230282eb4353fc11b1c94f8e96e32980b3ec79af9539b13267522193b20027a"
+  },
+  "pipeline_account_is_additional_program": false,
+  "pipeline_correction_is_healer": false,
+  "remaining_historical_development_tasks": 56,
+  "remaining_tasks_selected_or_read": 0,
+  "scope": "existing discovery and expansion development artifacts only",
+  "source_artifact_sha256": {
+    "artifacts/pbd/mbpp_e40/ca/r002/evaluation_results.csv": "8a32e28ecaaac26d891cc1f096531977b5dd43c54ae6051409e81729d9b5847f",
+    "artifacts/pbd/mbpp_e40/ca/r002/generation_plan.json": "8a0f4a494f893540241a5f6fe320c946a77cbafc1bb309f72f7b65b8f04edb9e",
+    "artifacts/pbd/mbpp_e40/ca/r002/pipeline_corrected.jsonl": "8f6daa70681b33f0b93d7337c1be6e8af32cace29f19eb6ff9c987cdde2d5c67",
+    "artifacts/pbd/mbpp_e40/ca/r002/raw_generations.jsonl": "5c675dc67ffefc78c09603d23fe0ee3e553f9aec0ff178181c0e051a67f1ceb8",
+    "artifacts/pbd/mbpp_e40/p0/r001/evaluation_results.csv": "a0e359f292774206343aa8ca7892dd6254433e7b4a105e9bfa83e1f788f592ed",
+    "artifacts/pbd/mbpp_e40/p0/r001/generation_plan.json": "cee8e9908bfb9759189b290e8b3f13a7609e3ec80395585f07b9c0425f255531",
+    "artifacts/pbd/mbpp_e40/p0/r001/pipeline_corrected.jsonl": "7cc419aaa8587e0648e9b198270c2efd388fccd67c8331e0629b0374a8fcf402",
+    "artifacts/pbd/mbpp_e40/p0/r001/raw_generations.jsonl": "2e89154a4723f9b3a95a7605250498079065e65708bfd1c6ede235a0f7e19596",
+    "artifacts/pbd/mbpp_e40/pa/r002/milestone_2f_evidence_review/candidate_a_failure_census.csv": "12c94f990f06107fd945e0955b3813827df25ba2f44f373420de6e444c9b81a8",
+    "artifacts/pbd/mbpp_e40/pa/r002/milestone_2f_evidence_review/expansion_cell_evidence.csv": "b25e5f9091956900441eb22c47a9690d62edb074b9f41066bb7f41db21e173a0",
+    "artifacts/pbd/mbpp_e40/pa/r002/milestone_2f_evidence_review/milestone_2f_manifest.json": "936c7e2eefa420033799338bf725d6ec3474b4b95ddaf035024f6a99e3bfe3b1",
+    "artifacts/pbd/mbpp_e40/pa/r002/milestone_2f_evidence_review/rescue_regression_task_summary.csv": "67c6c0dbdf413fb313b0bdf5356305af2266c2fb8ffcbfef392941b0824f19ab",
+    "artifacts/pbd/mbpp_sv0/r002/evaluation_results.csv": "6c1a73cfba4b03db9b970b3411d1536b21dfd1333579cb75408176c34e69742a",
+    "artifacts/pbd/mbpp_sv0/r002/generation_plan.json": "da9875857782711b46b3116bc5d21421bdfdd3dd71f5b2dc9bb5a37805ccec13",
+    "artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/p1_failure_census.csv": "3eff473db4f886b0104826d13741f5b561bb09a5f938172df50cb33030486eb5",
+    "artifacts/pbd/mbpp_sv0/r002/milestone_2b_paired_analysis/paired_analysis_manifest.json": "28bbb8fabbd1cbcfafe7e49f4defd6dc62dc526081c4a2d39e4197478685cbc9",
+    "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/milestone_2c_cell_evidence.csv": "e548bda843cd283a992f9ec1de3a20605e6497259f85135cf1c375009b9c7a7d",
+    "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/milestone_2c_manifest.json": "3a6acb130affb5414228594367fc9fc41a9229e510ea1da9198efd57ad9b8ef3",
+    "artifacts/pbd/mbpp_sv0/r002/pipeline_corrected.jsonl": "4bdf90e08e8060c81756d63334d0df4b976205159349ea81472c66c6cc15204d",
+    "artifacts/pbd/mbpp_sv0/r002/raw_generations.jsonl": "42625c93bc68ed736cb865aa35dc02bda8dce1172c6f5ade1bde1c0525c455c7",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/evaluation_results.csv": "86525489640c2076dfd4d35e7224a975ca0b5770fe8ad99019476b4d0c1ed54d",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1c_failure_census/failure_census.csv": "d6df0132893927b36aa1bdb58fbee00fe660be7cd0745ba3c6fd5c4960b59c94",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/evidence_manifest.json": "c764bb7b173cd853ba6164046a55e94bbcda0b15b1a8e4bbd21ec9e53b6852ab",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/milestone_1d_evidence_review/failure_signature_clusters.csv": "f4e1acdbb8bc5ad09c7af6a5de3afee7259f49f2aad987e57ee16d1b3b66b72c",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/pipeline_corrected.jsonl": "4a8015fec50b4dd1e0d432f66bb01d6972dc2ed73ec748a36773bed2b10531fa",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/raw_generations.jsonl": "24cc22a57f252f46a633dba34d53652398f0b2cf213363af774b82f90bcc9964",
+    "artifacts/public_benchmark_governance/development_expansion_v1/development_expansion_manifest.json": "b6b97e4a1e189491184f5d1d5ae960d5171e07e6266c7c0429db74914803fb91"
+  },
+  "treatment_program_counts": {
+    "candidate_a": 200,
+    "p0_official_prompt_only": 300,
+    "scaffold_v0": 100
+  }
+}
