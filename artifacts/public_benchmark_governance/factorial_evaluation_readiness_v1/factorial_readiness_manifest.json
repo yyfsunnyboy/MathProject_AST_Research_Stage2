@@ -13,7 +13,8 @@
     "P1_H0",
     "P1_H1"
   ],
-  "healer_implemented_or_frozen": false,
+  "healer_development_candidate_implemented": true,
+  "healer_frozen": false,
   "manifest_version": "mbpp_factorial_evaluation_readiness_v1",
   "model_calls": 0,
   "output_sha256_excluding_manifest": {

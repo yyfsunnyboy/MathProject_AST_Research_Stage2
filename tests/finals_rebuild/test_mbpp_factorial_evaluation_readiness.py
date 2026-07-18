@@ -49,7 +49,8 @@ def test_pipeline_and_healer_accounts_are_separate() -> None:
     assert packaging["recommended_status"] == "scaffold_or_pipeline_only"
     assert packaging["expected_repairable_signature"] == "none_currently"
     manifest = json.loads(outputs["factorial_readiness_manifest.json"])
-    assert manifest["healer_implemented_or_frozen"] is False
+    assert manifest["healer_development_candidate_implemented"] is True
+    assert manifest["healer_frozen"] is False
 
 
 def test_prospective_plan_is_not_activated_or_populated() -> None:

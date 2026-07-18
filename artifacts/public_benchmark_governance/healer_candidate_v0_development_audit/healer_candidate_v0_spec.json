@@ -1,0 +1,40 @@
+{
+  "body_control_flow_import_edits": false,
+  "candidate_id": "mbpp_evaluator_blind_healer_candidate_v0",
+  "development_only": true,
+  "diagnostic_counts": {
+    "p0": {
+      "expected_entry_point_present": 145,
+      "generation_truncated": 45,
+      "pipeline_output_unavailable": 68,
+      "syntax_parse_failure": 2,
+      "top_level_function_count_not_one": 1,
+      "unique_undecorated_sync_function_arity_compatible_alias_appended": 39
+    },
+    "scaffold": {
+      "expected_entry_point_present": 266,
+      "generation_truncated": 26,
+      "syntax_parse_failure": 5,
+      "top_level_function_count_not_one": 1,
+      "unique_undecorated_sync_function_arity_compatible_alias_appended": 2
+    }
+  },
+  "evalplus_executions": 0,
+  "evaluator_or_test_result_argument": false,
+  "frozen_or_validation_ready": false,
+  "functional_correctness_re_evaluated": false,
+  "input_account": "frozen Pipeline-normalized source",
+  "model_calls": 0,
+  "pipeline_operations_counted_as_healer": false,
+  "public_api": "apply_healer(normalized_source, expected_entry_point, expected_positional_arities, generation_truncated)",
+  "rule_order": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "static_signature_before_truncation_guard": {
+    "p0_cells": 40,
+    "scaffold_cells": 2
+  },
+  "status": "development_candidate_not_frozen",
+  "transformation": "append name-only alias: expected_entry_point = sole_existing_function",
+  "treatment_or_scaffold_argument": false
+}

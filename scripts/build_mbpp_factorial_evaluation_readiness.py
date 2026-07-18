@@ -316,7 +316,8 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "evalplus_executions": 0,
         "validation_tasks_read_or_selected": 0,
         "candidate_b_or_final_p1_frozen": False,
-        "healer_implemented_or_frozen": False,
+        "healer_development_candidate_implemented": True,
+        "healer_frozen": False,
         "source_sha256": result["source_hashes"],
         "output_sha256_excluding_manifest": {
             name: _sha256(content) for name, content in sorted(outputs.items())
