@@ -1,0 +1,3330 @@
+{
+  "builder": "scripts/freeze_mbpp_development_expansion_v1.py",
+  "candidate_a": {
+    "candidate_id": "v1_candidate_a_conservative_compaction",
+    "exact_text_sha256": "bffa1e7e3d1ff77b0de326083bf6c7fd441b2f3b050b45e205a5ba51be87f058",
+    "exact_text_size_bytes": 233,
+    "generation_plan_created": false,
+    "source_path": "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/scaffold_v1_candidates.json",
+    "status": "candidate_only_not_frozen"
+  },
+  "counts": {
+    "discovery_development": 20,
+    "expansion_development": 40,
+    "historical_development_pool": 116,
+    "remaining_historical_candidates": 96,
+    "total_development": 60,
+    "unique_task_seed_identities_per_future_treatment": 300
+  },
+  "dataset": "MBPP+",
+  "dataset_version": "v0.2.0",
+  "development_tasks": [
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "discovery_development",
+      "original_active_development_subset": "true",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "not_applicable_preserved_discovery",
+      "selection_hash": "",
+      "selection_rank_within_remaining_pool": "",
+      "selection_salt": "",
+      "selection_seed": "",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "02315c2ba9052d56e48077cc2228eb14d65cea43397037964854d8e839c43ac1",
+      "selection_rank_within_remaining_pool": "1",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "0240cfe3b8511005981e60d90c5449d5ffe39ad986c000b1284401ae638f1c0f",
+      "selection_rank_within_remaining_pool": "2",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "04b317e0c52de2aca97c891016cae83ecd7e239af8bf849b885caec4f96bf7ab",
+      "selection_rank_within_remaining_pool": "3",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "0783ac3b67efba0ec5f0319f854a1a10047e1761bdf125fa6aedabbdaa454bff",
+      "selection_rank_within_remaining_pool": "4",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "0e03a0cc03895ffa232e2cfc422c5d13fd440b2a649513e0f404b51161fa3d45",
+      "selection_rank_within_remaining_pool": "5",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "0fcdbcbfc4cf03f11e6df5b6de94c55889732f30267db557cff9cf4e1fae0eb1",
+      "selection_rank_within_remaining_pool": "6",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "141aa0d407393d603d6b3b28b0d2910d80a1bc00da08ef58ded86b118cbcdbf7",
+      "selection_rank_within_remaining_pool": "7",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "171ffcf62f88b32e016baccc10d0579abe78df85305b14e899cfe6691f760f4e",
+      "selection_rank_within_remaining_pool": "8",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "194e38ac79258cba687af40d40d2aca2eb5631f4a9d1d70c158cd8419a85f385",
+      "selection_rank_within_remaining_pool": "9",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "1b41d11a21257bb47d923ca5f38151022077270a6ff60f0e801c87468a30bb67",
+      "selection_rank_within_remaining_pool": "10",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "1bb470f126222701f9787a7e502a090a09e3bec338cc121849377f6f64cb530c",
+      "selection_rank_within_remaining_pool": "11",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "1e98853609201d93bcabf9976fb7794c7056c822ec11303217054a616634491a",
+      "selection_rank_within_remaining_pool": "12",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "1f7a557c8af7771681cc8c68972dc22a2198e0923708102105345515e0bcf684",
+      "selection_rank_within_remaining_pool": "13",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "21f10250ed6f886dec105aab9a590e27463adfeeb7eb8449da707531e651283e",
+      "selection_rank_within_remaining_pool": "14",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "23a67ab8dc16ad412577d04e3038354564ea1e4cab30b716b17d29827cca0cb3",
+      "selection_rank_within_remaining_pool": "15",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "3133004aa89b9a900eb1ca15793b60c5c17908d8b8ec0c5fc02ac70ac2bd808e",
+      "selection_rank_within_remaining_pool": "16",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "31a402722e9fc17e75e12a67b71daa15a794ac7b00fcd446390408da4865158b",
+      "selection_rank_within_remaining_pool": "17",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "344eb178d9f407362a4a521d568822210249171ebd040566e12697766a277348",
+      "selection_rank_within_remaining_pool": "18",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "34572e52f34a4929415573c1c37bec597877d33d3493bcfa2e126fb798d26830",
+      "selection_rank_within_remaining_pool": "19",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "368ef52349661eee45d7246c2712a92fd2371738f3382189f1f0a20b478ce0de",
+      "selection_rank_within_remaining_pool": "20",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "37d31b128d6f79d90748c675eca93c78778679694e010966f3134786df253cd9",
+      "selection_rank_within_remaining_pool": "21",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "389380d5bebb827eae8d0f8e998ecbc14394deab54217fe05aff55404796cabd",
+      "selection_rank_within_remaining_pool": "22",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "390826459331085aad4f5cbc16f1d611d85ef59a1dfd79f0363894e9f7e58ecc",
+      "selection_rank_within_remaining_pool": "23",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "3af5c0b3122814a13806bccce5ed06ca648bac16a26a76bde1c6840306b86dd6",
+      "selection_rank_within_remaining_pool": "24",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "3cf518d2382f744a01dbdd3486110a6324ebd20722235847431bf69030be08a2",
+      "selection_rank_within_remaining_pool": "25",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "411d4d64a083463d4245e273df75205957eeed4a7d992c09db2df75d50483ada",
+      "selection_rank_within_remaining_pool": "26",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "463633e2e189bd14e73a9e31665803c755a5f0bdddd068e4af15dd5208903b6d",
+      "selection_rank_within_remaining_pool": "27",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "48413b00ae0ac08b565eb07c3c1b9ebfe213545e50688322622fc4bb2f206c8e",
+      "selection_rank_within_remaining_pool": "28",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "4846832479e830a4a87fc99ec2b51962d5c990fb5196666fcb8e3b234ddfd61b",
+      "selection_rank_within_remaining_pool": "29",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "4a0770102cda199c7952c982b2cde6652665d7e8826e5892e7c7d6431ecc1959",
+      "selection_rank_within_remaining_pool": "30",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "4a912d6e5bda681a0de36f7fe637f8768000e9584087b1b6466298feba84dffc",
+      "selection_rank_within_remaining_pool": "31",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "4d212ab5344fdcfac8336073fab3c98a682660093e24c62484a33e47f2b19463",
+      "selection_rank_within_remaining_pool": "32",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "4e87308f80a665ddaf874592fa5fb624bfeaee0bf14ced01a9dd54e9803a369f",
+      "selection_rank_within_remaining_pool": "33",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "521f125df9e9eb2fb99bfb124baecabd3a534ba07abe6e3c956a295e5beac740",
+      "selection_rank_within_remaining_pool": "34",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "53467a70a52a62db16ad74e307dd08ca146193e8a4f3c51c2ebfe876b945f480",
+      "selection_rank_within_remaining_pool": "35",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "553a107a02a37f801965d6c8cc3532ac6dce87121599116daedb3b8c914bb809",
+      "selection_rank_within_remaining_pool": "36",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "57c0e967152ecbda1b375f6757539e04494f37fcc274031f6e3fa2178c943f97",
+      "selection_rank_within_remaining_pool": "37",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "5858719cd0a6789f3a135c2ffab6b118b86478ee85a0d5905382d4cc4180212e",
+      "selection_rank_within_remaining_pool": "38",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "593ce78585a82da2f4454200f22cfc7c34bb2b16311216058a2975c166713eee",
+      "selection_rank_within_remaining_pool": "39",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "dataset_version": "v0.2.0",
+      "development_layer": "expansion_development",
+      "original_active_development_subset": "false",
+      "overlay_assignment_status": "frozen",
+      "selection_eligible": "true",
+      "selection_hash": "5c8690b3d8ac015ab02b1c95398a0c8eb484b42d9e58b77f1ef1a2ecd8075cf2",
+      "selection_rank_within_remaining_pool": "40",
+      "selection_salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+      "selection_seed": "20260718",
+      "source_frozen_governance_role": "historical_development_pool",
+      "task_id": "Mbpp/287"
+    }
+  ],
+  "future_task_seed_identities": [
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/633|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/633|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/633|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/633|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/633|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/633"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/769|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/769|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/769|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/769|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/769|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/769"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/453|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/453|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/453|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/453|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/453|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/453"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/259|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/259|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/259|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/259|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/259|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/259"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/739|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/739|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/739|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/739|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/739|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/739"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/124|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/124|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/124|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/124|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/124|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/124"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/72|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/72|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/72|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/72|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/72|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/72"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/792|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/792|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/792|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/792|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/792|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/792"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/435|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/435|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/435|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/435|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/435|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/435"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/597|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/597|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/597|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/597|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/597|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/597"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/732|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/732|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/732|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/732|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/732|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/732"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/721|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/721|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/721|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/721|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/721|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/721"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/765|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/765|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/765|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/765|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/765|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/765"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/777|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/777|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/777|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/777|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/777|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/777"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/473|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/473|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/473|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/473|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/473|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/473"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/420|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/420|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/420|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/420|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/420|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/420"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/742|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/742|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/742|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/742|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/742|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/742"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/279|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/279|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/279|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/279|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/279|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/279"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/125|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/125|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/125|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/125|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/125|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/125"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/603|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/603|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/603|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/603|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/603|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/603"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/748|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/748|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/748|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/748|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/748|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/748"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/759|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/759|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/759|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/759|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/759|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/759"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/430|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/430|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/430|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/430|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/430|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/430"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/67|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/67|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/67|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/67|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/67|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/67"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/11|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/11|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/11|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/11|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/11|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/11"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/162|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/162|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/162|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/162|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/162|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/162"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/432|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/432|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/432|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/432|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/432|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/432"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/572|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/572|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/572|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/572|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/572|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/572"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/626|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/626|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/626|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/626|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/626|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/626"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/138|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/138|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/138|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/138|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/138|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/138"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/244|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/244|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/244|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/244|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/244|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/244"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/735|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/735|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/735|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/735|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/735|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/735"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/14|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/14|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/14|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/14|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/14|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/14"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/787|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/787|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/787|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/787|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/787|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/787"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/722|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/722|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/722|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/722|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/722|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/722"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/781|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/781|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/781|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/781|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/781|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/781"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/622|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/622|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/622|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/622|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/622|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/622"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/607|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/607|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/607|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/607|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/607|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/607"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/410|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/410|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/410|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/410|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/410|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/410"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/581|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/581|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/581|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/581|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/581|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/581"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/255|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/255|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/255|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/255|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/255|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/255"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/99|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/99|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/99|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/99|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/99|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/99"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/103|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/103|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/103|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/103|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/103|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/103"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/427|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/427|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/427|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/427|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/427|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/427"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/6|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/6|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/6|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/6|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/6|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/6"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/771|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/771|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/771|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/771|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/771|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/771"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/119|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/119|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/119|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/119|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/119|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/119"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/306|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/306|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/306|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/306|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/306|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/306"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/620|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/620|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/620|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/620|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/620|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/620"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/237|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/237|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/237|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/237|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/237|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/237"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/440|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/440|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/440|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/440|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/440|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/440"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/392|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/392|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/392|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/392|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/392|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/392"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/406|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/406|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/406|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/406|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/406|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/406"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/419|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/419|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/419|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/419|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/419|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/419"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/786|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/786|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/786|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/786|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/786|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/786"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/16|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/16|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/16|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/16|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/16|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/16"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/576|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/576|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/576|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/576|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/576|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/576"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/118|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/118|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/118|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/118|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/118|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/118"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/615|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/615|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/615|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/615|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/615|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/615"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/287|seed=11",
+      "seed": 11,
+      "task_id": "Mbpp/287"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/287|seed=22",
+      "seed": 22,
+      "task_id": "Mbpp/287"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/287|seed=33",
+      "seed": 33,
+      "task_id": "Mbpp/287"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/287|seed=44",
+      "seed": 44,
+      "task_id": "Mbpp/287"
+    },
+    {
+      "dataset": "MBPP+",
+      "identity": "Mbpp/287|seed=55",
+      "seed": 55,
+      "task_id": "Mbpp/287"
+    }
+  ],
+  "manifest_version": "mbpp_development_expansion_v1",
+  "milestone": "2D",
+  "outputs": {
+    "development_expansion_manifest.csv": {
+      "sha256": "daa12bf45ba78e4f83a40b3a1005079867417950da05e9ff9fca58bdf9777cce",
+      "size_bytes": 11885
+    },
+    "development_expansion_summary_zh.md": {
+      "sha256": "58dd0e698e2743ea112c9639ab56cbf2d204b23a383950d5db4833d59efaa788",
+      "size_bytes": 5803
+    }
+  },
+  "prohibited_actions_attestation": {
+    "evalplus_executions": 0,
+    "healer_built": false,
+    "model_calls": 0,
+    "model_outputs_or_evaluation_results_read_for_selection": false,
+    "prompt_answer_tests_or_solution_fields_read_for_selection": false,
+    "run_directory_created": false,
+    "scaffold_v1_built_or_frozen": false,
+    "scaffold_v1_generation_plan_created": false
+  },
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "selection": {
+    "algorithm": "sha256(utf8(salt + LF + seed + LF + dataset + LF + dataset_version + LF + frozen_role + LF + task_id + LF)); sort by (selection_hash, task_id) ascending; select first 40 of the 96 non-active historical-development candidates",
+    "candidate_pool_size": 96,
+    "encoding": "UTF-8",
+    "final_lf": true,
+    "manual_override_allowed": false,
+    "preimage_fields": [
+      "salt",
+      "seed",
+      "dataset",
+      "dataset_version",
+      "frozen_role",
+      "task_id"
+    ],
+    "records": [
+      {
+        "selected": true,
+        "selection_hash": "02315c2ba9052d56e48077cc2228eb14d65cea43397037964854d8e839c43ac1",
+        "selection_rank_within_remaining_pool": 1,
+        "task_id": "Mbpp/748"
+      },
+      {
+        "selected": true,
+        "selection_hash": "0240cfe3b8511005981e60d90c5449d5ffe39ad986c000b1284401ae638f1c0f",
+        "selection_rank_within_remaining_pool": 2,
+        "task_id": "Mbpp/759"
+      },
+      {
+        "selected": true,
+        "selection_hash": "04b317e0c52de2aca97c891016cae83ecd7e239af8bf849b885caec4f96bf7ab",
+        "selection_rank_within_remaining_pool": 3,
+        "task_id": "Mbpp/430"
+      },
+      {
+        "selected": true,
+        "selection_hash": "0783ac3b67efba0ec5f0319f854a1a10047e1761bdf125fa6aedabbdaa454bff",
+        "selection_rank_within_remaining_pool": 4,
+        "task_id": "Mbpp/67"
+      },
+      {
+        "selected": true,
+        "selection_hash": "0e03a0cc03895ffa232e2cfc422c5d13fd440b2a649513e0f404b51161fa3d45",
+        "selection_rank_within_remaining_pool": 5,
+        "task_id": "Mbpp/11"
+      },
+      {
+        "selected": true,
+        "selection_hash": "0fcdbcbfc4cf03f11e6df5b6de94c55889732f30267db557cff9cf4e1fae0eb1",
+        "selection_rank_within_remaining_pool": 6,
+        "task_id": "Mbpp/162"
+      },
+      {
+        "selected": true,
+        "selection_hash": "141aa0d407393d603d6b3b28b0d2910d80a1bc00da08ef58ded86b118cbcdbf7",
+        "selection_rank_within_remaining_pool": 7,
+        "task_id": "Mbpp/432"
+      },
+      {
+        "selected": true,
+        "selection_hash": "171ffcf62f88b32e016baccc10d0579abe78df85305b14e899cfe6691f760f4e",
+        "selection_rank_within_remaining_pool": 8,
+        "task_id": "Mbpp/572"
+      },
+      {
+        "selected": true,
+        "selection_hash": "194e38ac79258cba687af40d40d2aca2eb5631f4a9d1d70c158cd8419a85f385",
+        "selection_rank_within_remaining_pool": 9,
+        "task_id": "Mbpp/626"
+      },
+      {
+        "selected": true,
+        "selection_hash": "1b41d11a21257bb47d923ca5f38151022077270a6ff60f0e801c87468a30bb67",
+        "selection_rank_within_remaining_pool": 10,
+        "task_id": "Mbpp/138"
+      },
+      {
+        "selected": true,
+        "selection_hash": "1bb470f126222701f9787a7e502a090a09e3bec338cc121849377f6f64cb530c",
+        "selection_rank_within_remaining_pool": 11,
+        "task_id": "Mbpp/244"
+      },
+      {
+        "selected": true,
+        "selection_hash": "1e98853609201d93bcabf9976fb7794c7056c822ec11303217054a616634491a",
+        "selection_rank_within_remaining_pool": 12,
+        "task_id": "Mbpp/735"
+      },
+      {
+        "selected": true,
+        "selection_hash": "1f7a557c8af7771681cc8c68972dc22a2198e0923708102105345515e0bcf684",
+        "selection_rank_within_remaining_pool": 13,
+        "task_id": "Mbpp/14"
+      },
+      {
+        "selected": true,
+        "selection_hash": "21f10250ed6f886dec105aab9a590e27463adfeeb7eb8449da707531e651283e",
+        "selection_rank_within_remaining_pool": 14,
+        "task_id": "Mbpp/787"
+      },
+      {
+        "selected": true,
+        "selection_hash": "23a67ab8dc16ad412577d04e3038354564ea1e4cab30b716b17d29827cca0cb3",
+        "selection_rank_within_remaining_pool": 15,
+        "task_id": "Mbpp/722"
+      },
+      {
+        "selected": true,
+        "selection_hash": "3133004aa89b9a900eb1ca15793b60c5c17908d8b8ec0c5fc02ac70ac2bd808e",
+        "selection_rank_within_remaining_pool": 16,
+        "task_id": "Mbpp/781"
+      },
+      {
+        "selected": true,
+        "selection_hash": "31a402722e9fc17e75e12a67b71daa15a794ac7b00fcd446390408da4865158b",
+        "selection_rank_within_remaining_pool": 17,
+        "task_id": "Mbpp/622"
+      },
+      {
+        "selected": true,
+        "selection_hash": "344eb178d9f407362a4a521d568822210249171ebd040566e12697766a277348",
+        "selection_rank_within_remaining_pool": 18,
+        "task_id": "Mbpp/607"
+      },
+      {
+        "selected": true,
+        "selection_hash": "34572e52f34a4929415573c1c37bec597877d33d3493bcfa2e126fb798d26830",
+        "selection_rank_within_remaining_pool": 19,
+        "task_id": "Mbpp/410"
+      },
+      {
+        "selected": true,
+        "selection_hash": "368ef52349661eee45d7246c2712a92fd2371738f3382189f1f0a20b478ce0de",
+        "selection_rank_within_remaining_pool": 20,
+        "task_id": "Mbpp/581"
+      },
+      {
+        "selected": true,
+        "selection_hash": "37d31b128d6f79d90748c675eca93c78778679694e010966f3134786df253cd9",
+        "selection_rank_within_remaining_pool": 21,
+        "task_id": "Mbpp/255"
+      },
+      {
+        "selected": true,
+        "selection_hash": "389380d5bebb827eae8d0f8e998ecbc14394deab54217fe05aff55404796cabd",
+        "selection_rank_within_remaining_pool": 22,
+        "task_id": "Mbpp/99"
+      },
+      {
+        "selected": true,
+        "selection_hash": "390826459331085aad4f5cbc16f1d611d85ef59a1dfd79f0363894e9f7e58ecc",
+        "selection_rank_within_remaining_pool": 23,
+        "task_id": "Mbpp/103"
+      },
+      {
+        "selected": true,
+        "selection_hash": "3af5c0b3122814a13806bccce5ed06ca648bac16a26a76bde1c6840306b86dd6",
+        "selection_rank_within_remaining_pool": 24,
+        "task_id": "Mbpp/427"
+      },
+      {
+        "selected": true,
+        "selection_hash": "3cf518d2382f744a01dbdd3486110a6324ebd20722235847431bf69030be08a2",
+        "selection_rank_within_remaining_pool": 25,
+        "task_id": "Mbpp/6"
+      },
+      {
+        "selected": true,
+        "selection_hash": "411d4d64a083463d4245e273df75205957eeed4a7d992c09db2df75d50483ada",
+        "selection_rank_within_remaining_pool": 26,
+        "task_id": "Mbpp/771"
+      },
+      {
+        "selected": true,
+        "selection_hash": "463633e2e189bd14e73a9e31665803c755a5f0bdddd068e4af15dd5208903b6d",
+        "selection_rank_within_remaining_pool": 27,
+        "task_id": "Mbpp/119"
+      },
+      {
+        "selected": true,
+        "selection_hash": "48413b00ae0ac08b565eb07c3c1b9ebfe213545e50688322622fc4bb2f206c8e",
+        "selection_rank_within_remaining_pool": 28,
+        "task_id": "Mbpp/306"
+      },
+      {
+        "selected": true,
+        "selection_hash": "4846832479e830a4a87fc99ec2b51962d5c990fb5196666fcb8e3b234ddfd61b",
+        "selection_rank_within_remaining_pool": 29,
+        "task_id": "Mbpp/620"
+      },
+      {
+        "selected": true,
+        "selection_hash": "4a0770102cda199c7952c982b2cde6652665d7e8826e5892e7c7d6431ecc1959",
+        "selection_rank_within_remaining_pool": 30,
+        "task_id": "Mbpp/237"
+      },
+      {
+        "selected": true,
+        "selection_hash": "4a912d6e5bda681a0de36f7fe637f8768000e9584087b1b6466298feba84dffc",
+        "selection_rank_within_remaining_pool": 31,
+        "task_id": "Mbpp/440"
+      },
+      {
+        "selected": true,
+        "selection_hash": "4d212ab5344fdcfac8336073fab3c98a682660093e24c62484a33e47f2b19463",
+        "selection_rank_within_remaining_pool": 32,
+        "task_id": "Mbpp/392"
+      },
+      {
+        "selected": true,
+        "selection_hash": "4e87308f80a665ddaf874592fa5fb624bfeaee0bf14ced01a9dd54e9803a369f",
+        "selection_rank_within_remaining_pool": 33,
+        "task_id": "Mbpp/406"
+      },
+      {
+        "selected": true,
+        "selection_hash": "521f125df9e9eb2fb99bfb124baecabd3a534ba07abe6e3c956a295e5beac740",
+        "selection_rank_within_remaining_pool": 34,
+        "task_id": "Mbpp/419"
+      },
+      {
+        "selected": true,
+        "selection_hash": "53467a70a52a62db16ad74e307dd08ca146193e8a4f3c51c2ebfe876b945f480",
+        "selection_rank_within_remaining_pool": 35,
+        "task_id": "Mbpp/786"
+      },
+      {
+        "selected": true,
+        "selection_hash": "553a107a02a37f801965d6c8cc3532ac6dce87121599116daedb3b8c914bb809",
+        "selection_rank_within_remaining_pool": 36,
+        "task_id": "Mbpp/16"
+      },
+      {
+        "selected": true,
+        "selection_hash": "57c0e967152ecbda1b375f6757539e04494f37fcc274031f6e3fa2178c943f97",
+        "selection_rank_within_remaining_pool": 37,
+        "task_id": "Mbpp/576"
+      },
+      {
+        "selected": true,
+        "selection_hash": "5858719cd0a6789f3a135c2ffab6b118b86478ee85a0d5905382d4cc4180212e",
+        "selection_rank_within_remaining_pool": 38,
+        "task_id": "Mbpp/118"
+      },
+      {
+        "selected": true,
+        "selection_hash": "593ce78585a82da2f4454200f22cfc7c34bb2b16311216058a2975c166713eee",
+        "selection_rank_within_remaining_pool": 39,
+        "task_id": "Mbpp/615"
+      },
+      {
+        "selected": true,
+        "selection_hash": "5c8690b3d8ac015ab02b1c95398a0c8eb484b42d9e58b77f1ef1a2ecd8075cf2",
+        "selection_rank_within_remaining_pool": 40,
+        "task_id": "Mbpp/287"
+      },
+      {
+        "selected": false,
+        "selection_hash": "5cf08e7de256f3b35e42157c12e4841a5035159bf6705fcc3af22aa3247f1fa3",
+        "selection_rank_within_remaining_pool": 41,
+        "task_id": "Mbpp/639"
+      },
+      {
+        "selected": false,
+        "selection_hash": "5eae7c0fc8395e0840d0dc1e1f02ff15a0eb9f129a0afb16016900ca26dda3b1",
+        "selection_rank_within_remaining_pool": 42,
+        "task_id": "Mbpp/278"
+      },
+      {
+        "selected": false,
+        "selection_hash": "636d2e7e47d2dfa81c871b662eb71e89e668791915a3c9fc19933b1deb4f7492",
+        "selection_rank_within_remaining_pool": 43,
+        "task_id": "Mbpp/602"
+      },
+      {
+        "selected": false,
+        "selection_hash": "64850883f83c086458bb3aa3669e798e1ae39ef65c4b88568ab8adf066067575",
+        "selection_rank_within_remaining_pool": 44,
+        "task_id": "Mbpp/610"
+      },
+      {
+        "selected": false,
+        "selection_hash": "682a4f515fb6ad2058fc18e710e525f1dcdc82db2249f024b262c4fc06014675",
+        "selection_rank_within_remaining_pool": 45,
+        "task_id": "Mbpp/743"
+      },
+      {
+        "selected": false,
+        "selection_hash": "68c076a23f1ac2c975dd626e4fd4e02dedda82fa36355c3f220bdf6484109144",
+        "selection_rank_within_remaining_pool": 46,
+        "task_id": "Mbpp/794"
+      },
+      {
+        "selected": false,
+        "selection_hash": "697c67a4ad43286baef8052c9dcadcc43333d24194a0fe5ff798f0db648bcc6e",
+        "selection_rank_within_remaining_pool": 47,
+        "task_id": "Mbpp/267"
+      },
+      {
+        "selected": false,
+        "selection_hash": "6d7aa21ae5ec95067b1b9b51f153a38aba4be51413a66a4f3b5bbfa9fe6c48eb",
+        "selection_rank_within_remaining_pool": 48,
+        "task_id": "Mbpp/137"
+      },
+      {
+        "selected": false,
+        "selection_hash": "70052e5e7ed1840ad405d24aacf874ec5850bd6c2b765716ac2d28f045ca8da8",
+        "selection_rank_within_remaining_pool": 49,
+        "task_id": "Mbpp/126"
+      },
+      {
+        "selected": false,
+        "selection_hash": "7dfd699031034988a3e030015bf950abb1abc493ebd8f38c8f60a45281598cc6",
+        "selection_rank_within_remaining_pool": 50,
+        "task_id": "Mbpp/311"
+      },
+      {
+        "selected": false,
+        "selection_hash": "7eca4a73c558aecbac9e0eecd5f9bf3a023d313e9be492e03fba53e33783f91e",
+        "selection_rank_within_remaining_pool": 51,
+        "task_id": "Mbpp/239"
+      },
+      {
+        "selected": false,
+        "selection_hash": "806eb1ff210aa0d7785b163596359f1173510a09747ae6496a1045677a462c99",
+        "selection_rank_within_remaining_pool": 52,
+        "task_id": "Mbpp/123"
+      },
+      {
+        "selected": false,
+        "selection_hash": "82b03c791a97e0040cedaa422e99e6e0a4c5ef9f089fbf338f6448190cbf47a9",
+        "selection_rank_within_remaining_pool": 53,
+        "task_id": "Mbpp/286"
+      },
+      {
+        "selected": false,
+        "selection_hash": "82eb2ee2c5f0fcb19679135f50922214a84e3036546b33d6f6e0f5297889bdb9",
+        "selection_rank_within_remaining_pool": 54,
+        "task_id": "Mbpp/630"
+      },
+      {
+        "selected": false,
+        "selection_hash": "8560c71df5429e9c6521d4deb15f666d31f03d4554a871c1de0fa64ff050f8dc",
+        "selection_rank_within_remaining_pool": 55,
+        "task_id": "Mbpp/301"
+      },
+      {
+        "selected": false,
+        "selection_hash": "8bce8a47197c74279b39b395f8a3615f7ebbb486d7161475833f2a04c6109e40",
+        "selection_rank_within_remaining_pool": 56,
+        "task_id": "Mbpp/260"
+      },
+      {
+        "selected": false,
+        "selection_hash": "8c550ecde97a8a30db0289a4fa24c21b85d073608740e977c3ce2c008176117f",
+        "selection_rank_within_remaining_pool": 57,
+        "task_id": "Mbpp/462"
+      },
+      {
+        "selected": false,
+        "selection_hash": "8c7ad3a149c3a562070bf21f41fadf4cf217e11985bed88d41f6373a3998996f",
+        "selection_rank_within_remaining_pool": 58,
+        "task_id": "Mbpp/388"
+      },
+      {
+        "selected": false,
+        "selection_hash": "9313dbd07bea6a55b2e0a1f94e19f082b4be35408838d1facfbebd1e49442a38",
+        "selection_rank_within_remaining_pool": 59,
+        "task_id": "Mbpp/806"
+      },
+      {
+        "selected": false,
+        "selection_hash": "a64f8c6e79cc855bc4ba1394d08e6824ea958e67b14e4727a619e372266fb839",
+        "selection_rank_within_remaining_pool": 60,
+        "task_id": "Mbpp/391"
+      },
+      {
+        "selected": false,
+        "selection_hash": "a76c93534cf00ec92683c98cecb390a291eeae512dc1d72373a250b0ce0bcab2",
+        "selection_rank_within_remaining_pool": 61,
+        "task_id": "Mbpp/233"
+      },
+      {
+        "selected": false,
+        "selection_hash": "aac73641650406bf2743d6f102b7318d1a47de42398df9024ee078916a7bf5c9",
+        "selection_rank_within_remaining_pool": 62,
+        "task_id": "Mbpp/305"
+      },
+      {
+        "selected": false,
+        "selection_hash": "ac46a774431077b6482ab0029b94aea608de33c46c082b2adcb27b6f8c4d5637",
+        "selection_rank_within_remaining_pool": 63,
+        "task_id": "Mbpp/398"
+      },
+      {
+        "selected": false,
+        "selection_hash": "ac7d2b7241467d04c5743a2f207ec39abee8c337ad9159f23d667118cc2812cf",
+        "selection_rank_within_remaining_pool": 64,
+        "task_id": "Mbpp/737"
+      },
+      {
+        "selected": false,
+        "selection_hash": "ad8a0d426de02caa03d674295fa41f2d7c5a5a32ddae046635ec48376aee7a49",
+        "selection_rank_within_remaining_pool": 65,
+        "task_id": "Mbpp/593"
+      },
+      {
+        "selected": false,
+        "selection_hash": "ad9e36b2f4f588ae3c55deb4a75b22a155dfe35a9858ce47d0993cbd523de163",
+        "selection_rank_within_remaining_pool": 66,
+        "task_id": "Mbpp/251"
+      },
+      {
+        "selected": false,
+        "selection_hash": "add1825ff2f8da7ddd7a2a9019897d5896d011eee623344f73e31f4ee8d7cc0f",
+        "selection_rank_within_remaining_pool": 67,
+        "task_id": "Mbpp/590"
+      },
+      {
+        "selected": false,
+        "selection_hash": "adfe73de3cda4d18903f2741cd27f45389207f26496b3496f7196e42d3a7f67e",
+        "selection_rank_within_remaining_pool": 68,
+        "task_id": "Mbpp/468"
+      },
+      {
+        "selected": false,
+        "selection_hash": "af6db23e37367cb449dfec3ad10ea5cb99cb03a893add20b79bef777a20384db",
+        "selection_rank_within_remaining_pool": 69,
+        "task_id": "Mbpp/577"
+      },
+      {
+        "selected": false,
+        "selection_hash": "b4033f26794f78f18bee2ea374d2327acd4b99d846c78ce56ec66afcc3f0fdc5",
+        "selection_rank_within_remaining_pool": 70,
+        "task_id": "Mbpp/415"
+      },
+      {
+        "selected": false,
+        "selection_hash": "b685dea257024e1c15a4f55d9e250d37aff710a8f6b534b8889a0011e7944ef2",
+        "selection_rank_within_remaining_pool": 71,
+        "task_id": "Mbpp/790"
+      },
+      {
+        "selected": false,
+        "selection_hash": "b6fdc4bcde3140d323c591d4fa53b92332753aceb24659be03cddf17af8c176c",
+        "selection_rank_within_remaining_pool": 72,
+        "task_id": "Mbpp/63"
+      },
+      {
+        "selected": false,
+        "selection_hash": "b7e1c09de275a31835e8a374d76069e4dcb496a619e28202bc8fa93a6996c0b1",
+        "selection_rank_within_remaining_pool": 73,
+        "task_id": "Mbpp/290"
+      },
+      {
+        "selected": false,
+        "selection_hash": "c3b9ef3728db6ffdb3bf8021a0576a697434294611aa8b00f833692e650fc6e9",
+        "selection_rank_within_remaining_pool": 74,
+        "task_id": "Mbpp/780"
+      },
+      {
+        "selected": false,
+        "selection_hash": "c8f66571c3f7d44ec286f316fdab71fb0479c718819cd55579a6946255e847f3",
+        "selection_rank_within_remaining_pool": 75,
+        "task_id": "Mbpp/108"
+      },
+      {
+        "selected": false,
+        "selection_hash": "cc8eace8c8c1a1d4a6f37562beb3538f12be60e20ab76c797f281dec6d533c58",
+        "selection_rank_within_remaining_pool": 76,
+        "task_id": "Mbpp/300"
+      },
+      {
+        "selected": false,
+        "selection_hash": "d1a3c7883ecf9aedf0734a42d1bddda6ea60e4720ee7f7072edef3a71acf49c3",
+        "selection_rank_within_remaining_pool": 77,
+        "task_id": "Mbpp/389"
+      },
+      {
+        "selected": false,
+        "selection_hash": "d3e792efda86473d7698ac701684c22adf53488b5391b9c2a81e716efa7c25c7",
+        "selection_rank_within_remaining_pool": 78,
+        "task_id": "Mbpp/235"
+      },
+      {
+        "selected": false,
+        "selection_hash": "d60ef75b8a1a96ad56870904f387eed8b2c7c7f2ea8b274243ce589f06f421ce",
+        "selection_rank_within_remaining_pool": 79,
+        "task_id": "Mbpp/20"
+      },
+      {
+        "selected": false,
+        "selection_hash": "da2e008c4f69cba29d30803a9a76a2e41fadb22c6186390ce476b649ba62f01b",
+        "selection_rank_within_remaining_pool": 80,
+        "task_id": "Mbpp/422"
+      },
+      {
+        "selected": false,
+        "selection_hash": "da314205fd31e023b78d4c4b88b47773f86d3ae5c8f554010a462b464c9fa9bd",
+        "selection_rank_within_remaining_pool": 81,
+        "task_id": "Mbpp/79"
+      },
+      {
+        "selected": false,
+        "selection_hash": "dbb53fa7df7499b39e0e0a94bc45fc2e45749edfdf1f871099ddfe9a7ca8fd61",
+        "selection_rank_within_remaining_pool": 82,
+        "task_id": "Mbpp/92"
+      },
+      {
+        "selected": false,
+        "selection_hash": "e08262b757b1350aab32dee4efab80ebb8bf6ce128b88da8a9101167bb7836a0",
+        "selection_rank_within_remaining_pool": 83,
+        "task_id": "Mbpp/451"
+      },
+      {
+        "selected": false,
+        "selection_hash": "e68b9eb4532453a091cd80830e96354fed540d4aedafee25752adf3766252f76",
+        "selection_rank_within_remaining_pool": 84,
+        "task_id": "Mbpp/752"
+      },
+      {
+        "selected": false,
+        "selection_hash": "e7064647a45ba21af0dbce9a306f67878b107a1a725c1d9405aeb49ba4f2a433",
+        "selection_rank_within_remaining_pool": 85,
+        "task_id": "Mbpp/631"
+      },
+      {
+        "selected": false,
+        "selection_hash": "e89aba964382e8a1434b7b20342aae41963bf51b5b7c5b4fd83836db9c111bb0",
+        "selection_rank_within_remaining_pool": 86,
+        "task_id": "Mbpp/223"
+      },
+      {
+        "selected": false,
+        "selection_hash": "ec2b48aa544dd41d92670830c8f9723fc673f9b562adfce77cab773a42566253",
+        "selection_rank_within_remaining_pool": 87,
+        "task_id": "Mbpp/84"
+      },
+      {
+        "selected": false,
+        "selection_hash": "eddd57f5953d1cc320c836051e86cc17b5a4f3904c53801e7114908b3d9cde76",
+        "selection_rank_within_remaining_pool": 88,
+        "task_id": "Mbpp/232"
+      },
+      {
+        "selected": false,
+        "selection_hash": "eeb63264959f873eeb582ef12f57b69cc2a40b58e69c88ee901d34ebd0fdd9ed",
+        "selection_rank_within_remaining_pool": 89,
+        "task_id": "Mbpp/102"
+      },
+      {
+        "selected": false,
+        "selection_hash": "f09a112ee30a8c8bbc443411f3ac71a8ef1dac35caf74320d05d5545a36bebc2",
+        "selection_rank_within_remaining_pool": 90,
+        "task_id": "Mbpp/801"
+      },
+      {
+        "selected": false,
+        "selection_hash": "f7c5235cd5f9feb8d65d116ff19945f645bbe49f3a94edf024d523cef38141a8",
+        "selection_rank_within_remaining_pool": 91,
+        "task_id": "Mbpp/608"
+      },
+      {
+        "selected": false,
+        "selection_hash": "fcdce9a96fd61cb698c3426842e3d64b585e45da50de832e4cb60f6c9705da38",
+        "selection_rank_within_remaining_pool": 92,
+        "task_id": "Mbpp/448"
+      },
+      {
+        "selected": false,
+        "selection_hash": "fd7ddcfcf5ef92d89b6cfe0dda17f02b421abeb2b81af22c031278e231746844",
+        "selection_rank_within_remaining_pool": 93,
+        "task_id": "Mbpp/559"
+      },
+      {
+        "selected": false,
+        "selection_hash": "fd9e4ae64c5e53b475da3c26eb501756d3638797468c5f7bd5b880b05b186bff",
+        "selection_rank_within_remaining_pool": 94,
+        "task_id": "Mbpp/589"
+      },
+      {
+        "selected": false,
+        "selection_hash": "fe44d317650791d0e1a901ffffafdf82d89cfae37638dc6eaa571df0950ddd6e",
+        "selection_rank_within_remaining_pool": 95,
+        "task_id": "Mbpp/113"
+      },
+      {
+        "selected": false,
+        "selection_hash": "fedf18d0f8950d39b999da27032a5f3fd732d178c17df38ea6fafdbe15caf643",
+        "selection_rank_within_remaining_pool": 96,
+        "task_id": "Mbpp/310"
+      }
+    ],
+    "salt": "MathProject_AST_Research_Stage2|MBPP+|development_expansion_v1",
+    "seed": "20260718",
+    "selected_count": 40,
+    "separator": "LF"
+  },
+  "source_artifacts": {
+    "contamination_manifest.csv": {
+      "path": "artifacts/public_benchmark_governance/contamination_manifest.csv",
+      "sha256": "d19a136ab6c58c5f52e803b6351290cc628db73ff202e1546e7eea931bf18857"
+    },
+    "frozen_split.csv": {
+      "path": "artifacts/public_benchmark_governance/frozen_split.csv",
+      "sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4"
+    },
+    "frozen_split_summary.md": {
+      "path": "artifacts/public_benchmark_governance/frozen_split_summary.md",
+      "sha256": "b3aa7f56726d2d001903e54a9899e02ee51db8a1d3b4a999e3d3b308a2790786"
+    },
+    "milestone_2c_manifest.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/milestone_2c_manifest.json",
+      "sha256": "3a6acb130affb5414228594367fc9fc41a9229e510ea1da9198efd57ad9b8ef3"
+    },
+    "scaffold_v1_candidates.json": {
+      "path": "artifacts/pbd/mbpp_sv0/r002/milestone_2c_v1_candidate_design/scaffold_v1_candidates.json",
+      "sha256": "6a19996316031697699f9ea9f3447d4a3df286e28e5c132a57cb8c6c65d6a54a"
+    }
+  },
+  "source_frozen_split": {
+    "modified": false,
+    "original_freeze_head": "23a430538f44fbe8e57a025a19ca0f49778e1ab1",
+    "path": "artifacts/public_benchmark_governance/frozen_split.csv",
+    "sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4"
+  },
+  "starting_head": "08764eb643947bbe23009bf4867e284f6500c0b7",
+  "status": "frozen_development_expansion_overlay",
+  "targeted_tests": "tests/finals_rebuild/test_mbpp_development_expansion_v1.py",
+  "zero_overlap": {
+    "excluded_historical": 0,
+    "external_confirmatory_candidate": 0,
+    "internal_confirmatory_candidate": 0,
+    "sealed_reserve": 0,
+    "validation": 0,
+    "verified_total_forbidden_overlap": 0
+  }
+}
