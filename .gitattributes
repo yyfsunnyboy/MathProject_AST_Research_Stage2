@@ -59,3 +59,9 @@ artifacts/public_benchmark_governance/healer_v0_validation_p0_v1/** text eol=lf
 artifacts/public_benchmark_validation/mbpp_healer_v0_p0/** text eol=lf
 scripts/freeze_mbpp_healer_v0_validation_p0.py text eol=lf
 scripts/run_mbpp_healer_v0_validation_p0.py text eol=lf
+
+# Milestone 2L-A deterministic Candidate B development replay assets.
+artifacts/public_benchmark_governance/candidate_b_development60_replay_v1/** text eol=lf
+artifacts/public_benchmark_development/mbpp_candidate_b_development60/** text eol=lf
+scripts/freeze_mbpp_candidate_b_development60_replay.py text eol=lf
+scripts/run_mbpp_candidate_b_development60_replay.py text eol=lf

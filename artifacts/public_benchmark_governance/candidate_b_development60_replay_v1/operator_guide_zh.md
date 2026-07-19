@@ -1,0 +1,15 @@
+# Candidate B：既有60題 development 統一 replay 操作指南
+
+此規格是development replay，不是validation或confirmatory evidence。P0的300份raw及600個H0/H1結果只按identity與SHA-256沿用；不得重新生成或重跑EvalPlus。Candidate B只生成300份raw，H0/H1共享同一raw與Pipeline輸入。
+
+Candidate B文字SHA-256：`bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719`。Healer固定為`entrypoint_alias_unique_arity_compatible_v0`。Pipeline correction不屬於Healer。
+
+Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、atomic rename及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
+
+唯一人工生成指令（請由repository根目錄的PowerShell手動執行）：
+
+```powershell
+.venv\Scripts\python.exe scripts\run_mbpp_candidate_b_development60_replay.py generate --manifest artifacts\public_benchmark_governance\candidate_b_development60_replay_v1\manifest.json --manifest-sha256 10ae2a84e285fe70247fd2a56566341bf8bd67c4d50b17b5b0ab1b29c1567419
+```
+
+完成生成與evaluator-blind H0/H1 materialization後仍不得直接宣告功能結果；須由後續另行授權的EvalPlus與paired analysis依已凍結gate判定。

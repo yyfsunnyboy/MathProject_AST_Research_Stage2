@@ -1,0 +1,12 @@
+{
+  "candidate_b_accounts": 600,
+  "candidate_b_generation_cells": 300,
+  "evalplus_executions": 0,
+  "existing_p0_programs": 300,
+  "factorial_accounts": 1200,
+  "factorial_programs": 600,
+  "model_calls": 0,
+  "status": "zero_model_preflight_frozen",
+  "tasks": 60,
+  "validation_run_absent": true
+}
