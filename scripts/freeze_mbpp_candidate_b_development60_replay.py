@@ -37,6 +37,7 @@ RUN_OUTPUT_RELATIVE = Path(
 PROTOCOL_RELATIVE = Path("configs/public_benchmark_generation_protocol_v1.json")
 HEALER_RELATIVE = Path("agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py")
 PIPELINE_RELATIVE = Path("agent_tools/finals_rebuild/extraction.py")
+OLLAMA_RUNNER_RELATIVE = Path("agent_tools/finals_rebuild/ollama_generation_runner.py")
 PAIRED_CELLS_RELATIVE = Path(
     "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/"
     "paired_analysis_run_001/paired_cell_results.csv"
@@ -62,6 +63,7 @@ INTERRUPTED_B28_RELATIVE = Path("artifacts/pbd/mbpp_b28")
 
 EXPECTED_HEALER_SHA256 = "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44"
 EXPECTED_PIPELINE_SHA256 = "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf"
+EXPECTED_OLLAMA_RUNNER_SHA256 = "9ccaa465c38030a3786a4423fed984b4624f44573ed6b1321e4b4fcbd5071d81"
 EXPECTED_PROTOCOL_SHA256 = "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d"
 EXPECTED_PAIRED_CELLS_SHA256 = "cb2e12432c1c24abe18e446aaf1eee33b4ebf81f4c4166d083dfeb1540960bee"
 EXPECTED_EXISTING_ACCOUNTS_SHA256 = "e6f26c7bfb1418080f3df80a78202808aa2ba9f5992ba397b24d8914df979438"
@@ -261,6 +263,7 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     sources = {
         HEALER_RELATIVE: EXPECTED_HEALER_SHA256,
         PIPELINE_RELATIVE: EXPECTED_PIPELINE_SHA256,
+        OLLAMA_RUNNER_RELATIVE: EXPECTED_OLLAMA_RUNNER_SHA256,
         PROTOCOL_RELATIVE: EXPECTED_PROTOCOL_SHA256,
         PAIRED_CELLS_RELATIVE: EXPECTED_PAIRED_CELLS_SHA256,
         EXISTING_ACCOUNTS_RELATIVE: EXPECTED_EXISTING_ACCOUNTS_SHA256,
@@ -384,6 +387,8 @@ Candidate B文字SHA-256：`{EXPECTED_CANDIDATE_TEXT_SHA256}`。Healer固定為`
 
 Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、atomic rename及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
 
+首次人工啟動在建立run directory與任何generation cell之前，因舊版provenance helper未讀取`/api/tags models[].details.quantization_level`而fail-closed。實際API值為字串`Q4_K_M`；舊helper回傳Python `None`。該次為0-cell preflight失敗，沒有模型generation、沒有EvalPlus，也不構成generation retry或resume。本版會讀取該API欄位、以`strip().upper()`正規化後只接受`Q4_K_M`，並繼續要求digest逐字一致。
+
 唯一人工生成指令（請由repository根目錄的PowerShell手動執行）：
 
 ```powershell
@@ -408,6 +413,20 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "sequence": ["immutable zero-model preflight", "verify model provenance", "300 single attempts with durable journals", "require all raw complete", "Pipeline all raw", "evaluator-blind H0/H1 fork", "wait for separately authorized EvalPlus"],
         "persistence": {"per_cell_journal": True, "flush_and_fsync": True, "same_directory_temp_file": True, "atomic_rename": True, "read_back_sha256": True},
         "forbidden": {"resume": True, "retry": True, "selective_rerun": True, "overwrite": True, "evalplus": True, "p0_reexecution": True, "validation_access": True},
+        "model_identity_preflight": {
+            "digest_api": "/api/tags models[].digest",
+            "digest_comparison": "exact_string_equality",
+            "quantization_api": "/api/tags models[].details.quantization_level",
+            "quantization_expected": EXPECTED_QUANTIZATION,
+            "quantization_normalization": "require_string_then_strip_then_upper",
+            "missing_quantization": "fail_closed",
+        },
+        "pre_generation_incident": {
+            "cause": "legacy_provenance_helper_used_missing_model_profile_instead_of_api_details_quantization_level",
+            "cells_generated": 0, "run_directory_created": False,
+            "model_generation_calls": 0, "evalplus_executions": 0,
+            "retry_or_resume": False,
+        },
     }
     analysis_spec = {
         "analysis_version": "candidate_b_development60_2x2_analysis_v1",
@@ -439,6 +458,18 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "dataset_hash": EXPECTED_DATASET_HASH,
         "pipeline_sha256": EXPECTED_PIPELINE_SHA256,
         "healer_sha256": EXPECTED_HEALER_SHA256, "healer_rule_order": [EXPECTED_HEALER_RULE],
+        "model_identity_preflight": {
+            "digest_json_path": "models[].digest", "digest_match": "exact",
+            "quantization_json_path": "models[].details.quantization_level",
+            "quantization_expected": EXPECTED_QUANTIZATION,
+            "quantization_normalization": "strip_then_upper",
+            "missing_or_non_string": "fail_closed",
+        },
+        "pre_generation_incident": {
+            "cells_generated": 0, "run_directory_created": False,
+            "model_generation_calls": 0, "evalplus_executions": 0,
+            "generation_retry_or_resume": False,
+        },
         "model_calls_during_freeze": 0, "evalplus_executions_during_freeze": 0,
         "validation_run_directory_created": False,
         "interrupted_mbpp_b28_used": False,

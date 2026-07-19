@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+from agent_tools.finals_rebuild import ollama_generation_runner as ollama
 from scripts import freeze_mbpp_candidate_b_development60_replay as freeze
 from scripts import run_mbpp_candidate_b_development60_replay as runner
 
@@ -80,6 +81,90 @@ def test_zero_model_preflight_accepts_only_exact_manifest() -> None:
         )
 
 
+def test_quantization_extraction_accepts_api_show_shape() -> None:
+    payload = {
+        "format": "gguf",
+        "details": {
+            "family": "qwen35", "parameter_size": "9.7B",
+            "quantization_level": "Q4_K_M",
+        },
+    }
+    assert ollama.extract_ollama_quantization(payload) == "Q4_K_M"
+
+
+def test_quantization_extraction_accepts_api_tags_shape() -> None:
+    payload = {
+        "models": [{
+            "name": freeze.EXPECTED_MODEL,
+            "digest": freeze.EXPECTED_MODEL_DIGEST,
+            "details": {"quantization_level": "Q4_K_M"},
+        }]
+    }
+    assert ollama.extract_ollama_quantization(
+        payload, model=freeze.EXPECTED_MODEL,
+    ) == "Q4_K_M"
+
+
+def test_provenance_fetch_reads_api_tags_details_quantization(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    tags = {
+        "models": [{
+            "name": freeze.EXPECTED_MODEL,
+            "digest": freeze.EXPECTED_MODEL_DIGEST,
+            "details": {"quantization_level": "Q4_K_M"},
+        }]
+    }
+
+    def fake_get(url: str, timeout_seconds: float, *, stage: str) -> dict[str, object]:
+        return {"version": "0.32.0"} if url.endswith("/api/version") else tags
+
+    monkeypatch.setattr(ollama, "_http_get_json", fake_get)
+    provenance = ollama.fetch_ollama_provenance(
+        "http://127.0.0.1:11434", 300.0,
+        model=freeze.EXPECTED_MODEL,
+        expected_digest_prefix=freeze.EXPECTED_MODEL_DIGEST,
+    )
+    assert provenance["quantization_api_value"] == "Q4_K_M"
+    assert provenance["quantization"] == "Q4_K_M"
+    assert provenance["quantization_api_source"] == (
+        "/api/tags models[].details.quantization_level"
+    )
+
+
+def test_installed_model_identity_accepts_only_exact_normalized_quantization() -> None:
+    receipt = runner.validate_installed_model_provenance({
+        "model_digest": freeze.EXPECTED_MODEL_DIGEST,
+        "quantization_api_value": " q4_k_m ",
+    })
+    assert receipt["digest_type"] == "str"
+    assert receipt["quantization_raw_type"] == "str"
+    assert receipt["quantization_normalized_value"] == "Q4_K_M"
+
+
+def test_installed_model_identity_rejects_different_quantization() -> None:
+    with pytest.raises(runner.CandidateBRunError, match="quantization drift"):
+        runner.validate_installed_model_provenance({
+            "model_digest": freeze.EXPECTED_MODEL_DIGEST,
+            "quantization_api_value": "Q8_0",
+        })
+
+
+def test_installed_model_identity_rejects_missing_quantization() -> None:
+    with pytest.raises(runner.CandidateBRunError, match="quantization missing"):
+        runner.validate_installed_model_provenance({
+            "model_digest": freeze.EXPECTED_MODEL_DIGEST,
+        })
+
+
+def test_installed_model_identity_rejects_digest_drift() -> None:
+    with pytest.raises(runner.CandidateBRunError, match="digest drift"):
+        runner.validate_installed_model_provenance({
+            "model_digest": "0" * 64,
+            "quantization_api_value": "Q4_K_M",
+        })
+
+
 def test_existing_p0_duplicate_or_missing_identity_fails_closed(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -147,6 +232,7 @@ def _patch_generation(
     monkeypatch.setattr(runner, "fetch_ollama_provenance", lambda *args, **kwargs: {
         "model_digest": freeze.EXPECTED_MODEL_DIGEST,
         "quantization": freeze.EXPECTED_QUANTIZATION,
+        "quantization_api_value": freeze.EXPECTED_QUANTIZATION,
     })
     monkeypatch.setattr(runner, "run_attempt", attempt)
     monkeypatch.setattr(freeze, "RUN_OUTPUT_RELATIVE", run_dir)

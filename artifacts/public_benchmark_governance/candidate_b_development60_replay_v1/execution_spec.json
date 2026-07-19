@@ -9,12 +9,28 @@
     "selective_rerun": true,
     "validation_access": true
   },
+  "model_identity_preflight": {
+    "digest_api": "/api/tags models[].digest",
+    "digest_comparison": "exact_string_equality",
+    "missing_quantization": "fail_closed",
+    "quantization_api": "/api/tags models[].details.quantization_level",
+    "quantization_expected": "Q4_K_M",
+    "quantization_normalization": "require_string_then_strip_then_upper"
+  },
   "persistence": {
     "atomic_rename": true,
     "flush_and_fsync": true,
     "per_cell_journal": true,
     "read_back_sha256": true,
     "same_directory_temp_file": true
+  },
+  "pre_generation_incident": {
+    "cause": "legacy_provenance_helper_used_missing_model_profile_instead_of_api_details_quantization_level",
+    "cells_generated": 0,
+    "evalplus_executions": 0,
+    "model_generation_calls": 0,
+    "retry_or_resume": false,
+    "run_directory_created": false
   },
   "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r001",
   "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r001",

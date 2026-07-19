@@ -35,6 +35,7 @@ from agent_tools.finals_rebuild.ollama_generation_runner import (  # noqa: E402
     detect_reasoning_leakage,
     fetch_ollama_provenance,
     load_generation_protocol,
+    normalize_ollama_quantization,
     protocol_settings,
     run_attempt,
 )
@@ -42,7 +43,7 @@ from scripts import freeze_mbpp_candidate_b_development60_replay as frozen  # no
 
 
 FROZEN_MANIFEST_RELATIVE = frozen.OUTPUT_RELATIVE / "manifest.json"
-FROZEN_MANIFEST_SHA256 = "10ae2a84e285fe70247fd2a56566341bf8bd67c4d50b17b5b0ab1b29c1567419"
+FROZEN_MANIFEST_SHA256 = "cb6c36d5342da1096371946e58c5481291628ac28859a568ded95b11eada49e7"
 TIMEOUT_SECONDS = 300.0
 
 
@@ -66,6 +67,32 @@ def _sha256_text(value: str) -> str:
 def _read_csv(path: Path) -> list[dict[str, str]]:
     with path.open(encoding="utf-8", newline="") as handle:
         return list(csv.DictReader(handle))
+
+
+def validate_installed_model_provenance(provenance: dict[str, Any]) -> dict[str, Any]:
+    """Require exact digest and normalized API-reported quantization identity."""
+    digest = provenance.get("model_digest")
+    _require(isinstance(digest, str), "installed model digest missing or non-string")
+    _require(digest == frozen.EXPECTED_MODEL_DIGEST, "installed model digest drift")
+    raw_quantization = provenance.get("quantization_api_value")
+    normalized_quantization = normalize_ollama_quantization(raw_quantization)
+    _require(
+        normalized_quantization is not None,
+        "installed quantization missing at /api/tags models[].details.quantization_level",
+    )
+    _require(
+        normalized_quantization == frozen.EXPECTED_QUANTIZATION,
+        "installed quantization drift",
+    )
+    return {
+        "digest_value": digest,
+        "digest_type": type(digest).__name__,
+        "quantization_json_path": "models[].details.quantization_level",
+        "quantization_raw_value": raw_quantization,
+        "quantization_raw_type": type(raw_quantization).__name__,
+        "quantization_normalized_value": normalized_quantization,
+        "quantization_expected_value": frozen.EXPECTED_QUANTIZATION,
+    }
 
 
 def zero_model_preflight(
@@ -273,8 +300,7 @@ def generate(
         base_url, timeout_seconds, model=frozen.EXPECTED_MODEL,
         expected_digest_prefix=frozen.EXPECTED_MODEL_DIGEST,
     )
-    _require(provenance["model_digest"] == frozen.EXPECTED_MODEL_DIGEST, "installed model digest drift")
-    _require(provenance.get("quantization") == frozen.EXPECTED_QUANTIZATION, "installed quantization drift")
+    provenance["candidate_b_identity_validation"] = validate_installed_model_provenance(provenance)
     run_dir = REPO_ROOT / frozen.RUN_OUTPUT_RELATIVE
     _require(not run_dir.exists(), "run directory appeared; overwrite forbidden")
     durable_write_text_new(run_dir / "frozen_manifest.json", manifest_path.read_text(encoding="utf-8"))

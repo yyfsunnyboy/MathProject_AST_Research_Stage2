@@ -372,6 +372,40 @@ def check_model_available(
         )
 
 
+def normalize_ollama_quantization(value: Any) -> Optional[str]:
+    """Return the exact comparison form for an Ollama quantization value."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return value.strip().upper()
+
+
+def extract_ollama_quantization(
+    payload: Dict[str, Any], *, model: Optional[str] = None
+) -> Optional[str]:
+    """Read ``details.quantization_level`` from /api/show or /api/tags.
+
+    ``/api/show`` places ``details`` at the response root.  ``/api/tags``
+    places the same object inside the selected ``models[]`` entry.
+    """
+    entry: Any = payload
+    if model is not None:
+        models = payload.get("models") if isinstance(payload, dict) else None
+        entry = next(
+            (
+                item for item in models or []
+                if isinstance(item, dict)
+                and (item.get("name") or item.get("model")) == model
+            ),
+            None,
+        )
+    if not isinstance(entry, dict):
+        return None
+    details = entry.get("details")
+    if not isinstance(details, dict):
+        return None
+    return normalize_ollama_quantization(details.get("quantization_level"))
+
+
 def fetch_ollama_provenance(
     base_url: str,
     timeout_seconds: float,
@@ -428,6 +462,7 @@ def fetch_ollama_provenance(
         )
 
     profile = _MODEL_PROFILES.get(model, {})
+    api_quantization = extract_ollama_quantization(tags_data, model=model)
     model_size_gb = None
     if isinstance(entry.get("size"), (int, float)) and entry["size"] > 0:
         model_size_gb = round(entry["size"] / (1024 ** 3), 1)
@@ -441,7 +476,9 @@ def fetch_ollama_provenance(
         "model_modified_at": entry.get("modified_at"),
         "architecture": profile.get("architecture"),
         "parameters": profile.get("parameters"),
-        "quantization": profile.get("quantization"),
+        "quantization": api_quantization or profile.get("quantization"),
+        "quantization_api_value": api_quantization,
+        "quantization_api_source": "/api/tags models[].details.quantization_level",
         "runtime": "Ollama",
         "runtime_version": version,
         "ollama_version": version,

@@ -42,16 +42,31 @@
   "model": "qwen3.5:9b",
   "model_calls_during_freeze": 0,
   "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_identity_preflight": {
+    "digest_json_path": "models[].digest",
+    "digest_match": "exact",
+    "missing_or_non_string": "fail_closed",
+    "quantization_expected": "Q4_K_M",
+    "quantization_json_path": "models[].details.quantization_level",
+    "quantization_normalization": "strip_then_upper"
+  },
   "output_sha256_excluding_manifest_and_operator_guide": {
     "candidate_b_exact_text.txt": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
     "candidate_b_generation_cells.csv": "80eba3e9110e7afe4b00700316956635b5a7cf89f2ec9cedf2d84d0e1926c3f2",
     "development_2x2_accounts.csv": "6814d614c7a295b3292747747d1e469dd0a7f872fa922cca9f3037fa13ffd937",
-    "execution_spec.json": "034ea4c5e42c3f82f7ee978fc3e57863ca84f5304f8bb7b48c3d335bf9060d47",
+    "execution_spec.json": "8e111da74ee86fb3c4300d2fb414652f73e849554bc8f508cf2faf71501e0e4d",
     "p0_identity_hash_reuse_ledger.csv": "18153ef7d618996518b154e694245b5ce303a8dee62afca0da11761e3cafe90e",
     "paired_analysis_spec.json": "b32a8eb995090dc6f639546c0633ffdb4884ca483f9b0e4bd38f49deafb32ad7",
     "zero_model_preflight.json": "1fa78d9e3a32cce1a5ae091141b11e8a5d64992430f4fd930207f1a763e8aa43"
   },
   "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "pre_generation_incident": {
+    "cells_generated": 0,
+    "evalplus_executions": 0,
+    "generation_retry_or_resume": false,
+    "model_generation_calls": 0,
+    "run_directory_created": false
+  },
   "quantization": "Q4_K_M",
   "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r001",
   "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r001",
@@ -65,6 +80,7 @@
   "source_sha256": {
     "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
     "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "agent_tools/finals_rebuild/ollama_generation_runner.py": "9ccaa465c38030a3786a4423fed984b4624f44573ed6b1321e4b4fcbd5071d81",
     "artifacts/pbd/mbpp_e40/p0/r001/evaluation_results.csv": "a0e359f292774206343aa8ca7892dd6254433e7b4a105e9bfa83e1f788f592ed",
     "artifacts/pbd/mbpp_e40/p0/r001/generation_plan.json": "cee8e9908bfb9759189b290e8b3f13a7609e3ec80395585f07b9c0425f255531",
     "artifacts/pbd/mbpp_e40/p0/r001/pipeline_corrected.jsonl": "7cc419aaa8587e0648e9b198270c2efd388fccd67c8331e0629b0374a8fcf402",
