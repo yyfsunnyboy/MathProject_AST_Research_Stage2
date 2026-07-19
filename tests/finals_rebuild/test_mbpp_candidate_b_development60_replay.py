@@ -93,20 +93,32 @@ def test_zero_model_preflight_accepts_only_exact_manifest() -> None:
     receipt = runner.zero_model_preflight(
         manifest_path=GOV_DIR / "manifest.json",
         manifest_sha256=runner.FROZEN_MANIFEST_SHA256,
+        require_output_absent=False,
     )
     assert receipt["status"] == "zero_model_preflight_passed"
     assert receipt["model_calls"] == receipt["evalplus_executions"] == 0
     assert receipt["candidate_b_generation_cells"] == 300
     assert receipt["factorial_accounts"] == 1200
     assert receipt["validation_run_absent"] is True
-    assert receipt["candidate_b_run_absent"] is True
+    assert receipt["candidate_b_run_absent"] is False
     assert receipt["r001_incident"]["generation_journals"] == 0
     assert receipt["r002_incident"]["classification"] == "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE"
     assert receipt["r002_incident"]["model_call_status"] == "model_call_confirmed_1"
     assert receipt["r002_incident"]["generation_journals"] == 0
     with pytest.raises(runner.CandidateBRunError, match="SHA-256"):
         runner.zero_model_preflight(
-            manifest_path=GOV_DIR / "manifest.json", manifest_sha256="0" * 64,
+            manifest_path=GOV_DIR / "manifest.json",
+            manifest_sha256="0" * 64,
+            require_output_absent=False,
+        )
+
+
+def test_generate_preflight_fails_closed_when_r003_exists() -> None:
+    with pytest.raises(runner.CandidateBRunError, match="r003 run directory exists"):
+        runner.zero_model_preflight(
+            manifest_path=GOV_DIR / "manifest.json",
+            manifest_sha256=runner.FROZEN_MANIFEST_SHA256,
+            require_output_absent=True,
         )
 
 
@@ -407,6 +419,14 @@ def test_runner_has_no_evalplus_resume_retry_or_overwrite_path() -> None:
     assert "commands.add_parser(\"overwrite\")" not in source
 
 
-def test_r003_run_and_validation_directories_remain_absent() -> None:
-    assert not (REPO_ROOT / freeze.RUN_OUTPUT_RELATIVE).exists()
+def test_r003_run_exists_and_validation_directory_remains_absent() -> None:
+    assert (REPO_ROOT / freeze.RUN_OUTPUT_RELATIVE).is_dir()
     assert not (REPO_ROOT / freeze.VALIDATION_RUN_RELATIVE).exists()
+
+
+def test_zero_model_preflight_is_generation_era_and_does_not_create_evalplus_output() -> None:
+    # Generation-era preflight historically required r003 absent; after r003 completed,
+    # EvalPlus preparation owns the next freeze package and must keep EvalPlus output absent.
+    from scripts import prepare_mbpp_candidate_b_r003_h0_h1_evalplus as prep
+
+    assert not (REPO_ROOT / prep.OUTPUT_RELATIVE / "manual_evalplus_run_001").exists()

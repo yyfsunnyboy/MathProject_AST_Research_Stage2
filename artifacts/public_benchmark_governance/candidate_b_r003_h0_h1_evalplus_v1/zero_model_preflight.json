@@ -1,0 +1,10 @@
+{
+  "candidate_b_accounts": 600,
+  "evalplus_cells_prepared": 302,
+  "evalplus_executions": 0,
+  "evalplus_output_directory_absent": true,
+  "model_calls": 0,
+  "r003_journals": 300,
+  "status": "zero_model_preflight_frozen",
+  "validation_run_absent": true
+}

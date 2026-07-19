@@ -1,0 +1,17 @@
+{
+  "accounts": 1200,
+  "arms": [
+    "P0_H0",
+    "P0_H1",
+    "Candidate_B_H0",
+    "Candidate_B_H1"
+  ],
+  "excluded_incident_runs": [
+    "mbpp_q35_9b_candidate_b_development60_replay_r001",
+    "mbpp_q35_9b_candidate_b_development60_replay_r002"
+  ],
+  "gate_decision_this_round": false,
+  "plan_id": "candidate_b_r003_2x2_paired_analysis_pending_evalplus_v1",
+  "programs": 600,
+  "status": "blocked_until_evalplus_complete"
+}

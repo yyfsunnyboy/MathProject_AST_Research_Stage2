@@ -1,0 +1,79 @@
+{
+  "candidate_b_text_sha256": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+  "candidate_id": "mbpp_evaluator_blind_healer_candidate_v0",
+  "counts": {
+    "candidate_b_accounts": 600,
+    "candidate_b_h0": 300,
+    "candidate_b_h1": 300,
+    "candidate_b_programs": 300,
+    "evalplus_cells": 302,
+    "factorial_accounts": 1200,
+    "factorial_programs": 600,
+    "h1_changed": 2,
+    "h1_unchanged": 298,
+    "task_seed_identities": 300,
+    "tasks": 60
+  },
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "development_replay_only": true,
+  "evalplus_executions": 0,
+  "evalplus_output_directory_created": false,
+  "evaluator_engine": "evalplus_0.3.1_check_correctness_subset",
+  "evaluator_version": "0.3.1",
+  "generation_manifest_sha256": "e8d0f8e9198848e8708d910f6c859622c272de850a2b1045d62993c114c98fbd",
+  "generation_parameters": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "h1_status_counts": {
+    "abstained": 21,
+    "no_trigger": 277,
+    "transformed": 2
+  },
+  "healer_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+  "manifest_version": "candidate_b_r003_h0_h1_evalplus_v1",
+  "model_calls": 0,
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "new_generation_runs": 0,
+  "output_sha256_excluding_manifest_and_operator_guide": {
+    "candidate_b_h0_h1_accounts.csv": "54e05091ef35af7f99a32a5409c74f688d00c2564d31b8a52301af8d65ce360e",
+    "candidate_b_h1_unchanged_h0_reuse_ledger.csv": "a78259113380956da2c595f20d87ae0175548f8e43087bbcb98328abcf257a8d",
+    "candidate_b_raw_generation_ledger.csv": "c667fdefaea5767a1e110bac7e04b6957b645d650299c6b38994958dfd5cbf7e",
+    "evalplus_input.jsonl": "dc78e6cf1e2b1f5d7d531507e450c7c7f3399d09d0603aa5b9fbfb3d44b8115b",
+    "evaluation_plan.json": "b7a8b16fc22357bb88cd04bf50a5a833922cf1ce8e32b24aa6821f17ac6ff6b6",
+    "paired_analysis_plan.json": "240f09c2d3b20d356128ec0fe678009e684f518c02cc97a4937dd4409a2798d7",
+    "zero_model_preflight.json": "a1f0772f700a5a87137402de01eb60517144c1ba1795e0c3bccc862874726f0b"
+  },
+  "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "quantization": "Q4_K_M",
+  "r001_r002_used_as_result_source": false,
+  "rule_order": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r003",
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/materialization_manifest.json": "d78ba6b371dbbe8e69e3f83d29fcbfc0c126d1239912970f7ecdefab7a092b92",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/pipeline_normalized.jsonl": "70de0164f85b231f2cbd6ab0505bb391fa422c3064ac1ebef38977a4028aef8b",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/raw_generations.jsonl": "3d8295ff5e7260d733d8f68736a792afa79501d70ca8bde8d4dd88c1b2b002b3",
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r003_v1/candidate_b_generation_cells.csv": "1e7ab332d441f0fff207f8ec80ac24379184b39387f569e2e6985c232c0effc5",
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r003_v1/manifest.json": "e8d0f8e9198848e8708d910f6c859622c272de850a2b1045d62993c114c98fbd"
+  },
+  "status": "prepared_not_executed",
+  "validation_run_directory_touched": false
+}
