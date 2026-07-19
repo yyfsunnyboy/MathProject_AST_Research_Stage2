@@ -1,0 +1,46 @@
+{
+  "analysis_version": "candidate_b_development60_2x2_analysis_v1",
+  "candidate_b_format_gates": {
+    "code_fence_count_max": 0,
+    "reasoning_leakage_count_max": 0,
+    "strict_python_only_min": 0.9,
+    "undisclosed_prompt_contamination_count_max": 0
+  },
+  "candidate_b_functional_gate": {
+    "candidate_b_h0_pass_gt_p0_h0": true,
+    "exact_mcnemar": "descriptive_only_no_unseen_data_inference",
+    "paired_net_change_gt_0": true
+  },
+  "comparisons": [
+    "P0_H0_vs_Candidate_B_H0",
+    "P0_H1_vs_Candidate_B_H1",
+    "P0_H0_to_H1",
+    "Candidate_B_H0_to_H1"
+  ],
+  "evidence_role": "development_replay_not_validation_or_confirmatory",
+  "excluded_incident_runs": [
+    "mbpp_q35_9b_candidate_b_development60_replay_r001",
+    "mbpp_q35_9b_candidate_b_development60_replay_r002"
+  ],
+  "healer_results_separate_from_candidate_b_prompt_gate": [
+    "H0_to_H1_rescue",
+    "regression",
+    "changed",
+    "abstain",
+    "no_trigger"
+  ],
+  "metrics": [
+    "strict_python_only",
+    "code_fence",
+    "extra_text",
+    "reasoning_leakage",
+    "compile",
+    "pass_rate",
+    "paired_rescue",
+    "paired_regression",
+    "task_level",
+    "cell_level",
+    "exact_mcnemar_descriptive"
+  ],
+  "post_result_rule_change_or_cell_exclusion": false
+}

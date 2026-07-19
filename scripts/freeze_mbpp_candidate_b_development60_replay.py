@@ -14,6 +14,7 @@ import csv
 import hashlib
 import io
 import json
+import os
 import sys
 from collections import Counter
 from pathlib import Path
@@ -27,17 +28,25 @@ from scripts import prepare_mbpp_existing600_healer_h0_h1 as existing  # noqa: E
 
 
 OUTPUT_RELATIVE = Path(
-    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r002_v1"
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r003_v1"
 )
 R001_RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r001"
 R001_RUN_OUTPUT_RELATIVE = Path(
     "artifacts/public_benchmark_development/mbpp_candidate_b_development60/"
     "runs/mbpp_q35_9b_candidate_b_development60_replay_r001"
 )
-RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r002"
-RUN_OUTPUT_RELATIVE = Path(
+R002_RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r002"
+R002_RUN_OUTPUT_RELATIVE = Path(
     "artifacts/public_benchmark_development/mbpp_candidate_b_development60/"
     "runs/mbpp_q35_9b_candidate_b_development60_replay_r002"
+)
+R002_GOVERNANCE_RELATIVE = Path(
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r002_v1"
+)
+RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r003"
+RUN_OUTPUT_RELATIVE = Path(
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/"
+    "runs/mbpp_q35_9b_candidate_b_development60_replay_r003"
 )
 PROTOCOL_RELATIVE = Path("configs/public_benchmark_generation_protocol_v1.json")
 HEALER_RELATIVE = Path("agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py")
@@ -132,8 +141,10 @@ REUSE_FIELDS = (
 IDENTITY_MAPPING_FIELDS = (
     "mapping_index", "development_layer", "task_id", "seed",
     "task_seed_research_identity", "r001_generation_id", "r001_program_id",
-    "r002_generation_id", "r002_program_id", "same_task_seed_identity",
+    "r002_generation_id", "r002_program_id", "r003_generation_id", "r003_program_id",
+    "same_task_seed_identity",
     "r001_result_reused", "r001_response_available",
+    "r002_result_reused", "r002_response_available",
 )
 
 
@@ -318,6 +329,7 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
         composed = row["prompt"] + SEPARATOR + CANDIDATE_B_TEXT
         generation_id, program_id = _candidate_generation_identity(RUN_ID, row)
         r001_generation_id, r001_program_id = _candidate_generation_identity(R001_RUN_ID, row)
+        r002_generation_id, r002_program_id = _candidate_generation_identity(R002_RUN_ID, row)
         b_programs[(row["task_id"], row["seed"])] = {
             "generation_id": generation_id, "program_id": program_id,
         }
@@ -339,13 +351,18 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "task_seed_research_identity": f"{row['task_id']}|seed={row['seed']}",
             "r001_generation_id": r001_generation_id,
             "r001_program_id": r001_program_id,
-            "r002_generation_id": generation_id, "r002_program_id": program_id,
-            "same_task_seed_identity": "true", "r001_result_reused": "false",
-            "r001_response_available": "false",
+            "r002_generation_id": r002_generation_id,
+            "r002_program_id": r002_program_id,
+            "r003_generation_id": generation_id, "r003_program_id": program_id,
+            "same_task_seed_identity": "true",
+            "r001_result_reused": "false", "r001_response_available": "false",
+            "r002_result_reused": "false", "r002_response_available": "false",
         })
     _require(len(cells) == len({row["generation_id"] for row in cells}) == 300, "Candidate B generation identity drift")
-    _require(len(mappings) == 300, "r001/r002 identity mapping count drift")
-    _require(all(row["r001_generation_id"] != row["r002_generation_id"] for row in mappings), "r002 generation IDs must be new")
+    _require(len(mappings) == 300, "r001/r002/r003 identity mapping count drift")
+    _require(all(row["r001_generation_id"] != row["r002_generation_id"] for row in mappings), "r002 generation IDs must differ from r001")
+    _require(all(row["r002_generation_id"] != row["r003_generation_id"] for row in mappings), "r003 generation IDs must differ from r002")
+    _require(all(row["r001_generation_id"] != row["r003_generation_id"] for row in mappings), "r003 generation IDs must differ from r001")
     _require(all(row["same_task_seed_identity"] == "true" for row in mappings), "task-seed research identity drift")
 
     accounts: list[dict[str, Any]] = []
@@ -403,10 +420,20 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     return {"p0": p0, "cells": cells, "accounts": accounts, "reuse": reuse, "mappings": mappings, "source_hashes": source_hashes}
 
 
+def _file_sha256(path: Path) -> str:
+    return _sha256_bytes(path.read_bytes())
+
+
+def _journal_file_count(journal_dir: Path) -> int:
+    if not journal_dir.is_dir():
+        return -1
+    return len(os.listdir(journal_dir))
+
+
 def _operator_guide(manifest_sha: str = "<MANIFEST_SHA256>") -> bytes:
     command = (
         ".venv\\Scripts\\python.exe scripts\\run_mbpp_candidate_b_development60_replay.py generate "
-        "--manifest artifacts\\public_benchmark_governance\\candidate_b_development60_replay_r002_v1\\manifest.json "
+        "--manifest artifacts\\public_benchmark_governance\\candidate_b_development60_replay_r003_v1\\manifest.json "
         f"--manifest-sha256 {manifest_sha}"
     )
     return f"""# Candidate B：既有60題 development 統一 replay 操作指南
@@ -415,9 +442,9 @@ def _operator_guide(manifest_sha: str = "<MANIFEST_SHA256>") -> bytes:
 
 Candidate B文字SHA-256：`{EXPECTED_CANDIDATE_TEXT_SHA256}`。Healer固定為`{EXPECTED_HEALER_RULE}`。Pipeline correction不屬於Healer。
 
-Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、atomic rename及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
+Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、closed-handle publish、Windows extended-length path及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
 
-r001已永久登記為`ZERO_CELL_PREFLIGHT_INCIDENT`並保持原樣。只讀鑑識顯示其provenance含修復後runner專屬的identity-validation receipt，故可確定目錄由修復後`generate`路徑在模型身份驗證後建立；不是舊quantization-drift路徑，也不是不寫入run directory的zero-model preflight。r001只有frozen manifest、model provenance與空`j`目錄：model calls、generation journals、evaluator executions均登記為0，沒有response可供selective acceptance，不構成generation retry或resume。r002不讀取、沿用或比較r001內容；preflight只確認r001存在且journal仍為0。若r001出現任何journal，r002立即fail-closed並要求人工審查。
+r001已永久登記為`ZERO_CELL_PREFLIGHT_INCIDENT`並保持原樣。r002已永久登記為`FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE`並保持原樣：model_call_status=`model_call_confirmed_1`，generation journals／persisted responses／selectable responses／evaluator executions均為0；不得納入分析或重用，不得resume。r003不讀取、沿用或比較r001／r002內容；preflight只確認兩次incident仍為空journal，且r003 run directory不存在。若r001或r002出現任何journal，r003立即fail-closed並要求人工審查。
 
 唯一人工生成指令（請由repository根目錄的PowerShell手動執行）：
 
@@ -435,16 +462,18 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "candidate_b_generation_cells.csv": _csv_bytes(analysis["cells"], CELL_FIELDS),
         "development_2x2_accounts.csv": _csv_bytes(analysis["accounts"], ACCOUNT_FIELDS),
         "p0_identity_hash_reuse_ledger.csv": _csv_bytes(analysis["reuse"], REUSE_FIELDS),
-        "r001_to_r002_identity_mapping.csv": _csv_bytes(analysis["mappings"], IDENTITY_MAPPING_FIELDS),
+        "r001_r002_r003_identity_mapping.csv": _csv_bytes(analysis["mappings"], IDENTITY_MAPPING_FIELDS),
     }
-    incident = {
+    r001_incident = {
         "incident_id": "candidate_b_development60_r001_zero_cell_preflight_incident",
         "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
         "run_id": R001_RUN_ID,
         "run_output_relative": R001_RUN_OUTPUT_RELATIVE.as_posix(),
         "preservation_policy": "do_not_delete_move_rename_overwrite_reuse_or_read_as_results",
         "observed_directory_entries": ["frozen_manifest.json", "j/", "model_provenance.json"],
+        "model_call_status": "model_call_confirmed_0",
         "model_calls": 0, "generation_journals": 0,
+        "persisted_responses": 0, "selectable_responses": 0,
         "evaluator_executions": 0, "candidate_b_responses": 0,
         "selective_acceptance_available": False,
         "generation_retry_or_resume": False,
@@ -459,15 +488,75 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
             "old_quantization_drift_path_excluded": True,
             "zero_model_preflight_path_excluded": True,
         },
-        "r001_content_used_by_r002": False,
+        "r001_content_used_by_r003": False,
     }
-    outputs["r001_incident_ledger.json"] = _canonical_bytes(incident)
+    outputs["r001_incident_ledger.json"] = _canonical_bytes(r001_incident)
+
+    r002_run = repo_root / R002_RUN_OUTPUT_RELATIVE
+    _require(r002_run.is_dir(), "registered r002 incident directory missing during freeze")
+    r002_journals = _journal_file_count(r002_run / "j")
+    _require(r002_journals == 0, "registered r002 incident unexpectedly contains journals")
+    r002_frozen = r002_run / "frozen_manifest.json"
+    r002_provenance = r002_run / "model_provenance.json"
+    _require(r002_frozen.is_file() and r002_provenance.is_file(), "r002 incident artifacts missing")
+    first_cell = analysis["mappings"][0]
+    r002_incident = {
+        "incident_id": "candidate_b_development60_r002_first_cell_journal_persistence_failure",
+        "classification": "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE",
+        "run_id": R002_RUN_ID,
+        "run_output_relative": R002_RUN_OUTPUT_RELATIVE.as_posix(),
+        "governance_relative": R002_GOVERNANCE_RELATIVE.as_posix(),
+        "preservation_policy": "do_not_delete_move_rename_overwrite_reuse_resume_analyze_or_read_as_results",
+        "observed_directory_entries": ["frozen_manifest.json", "j/", "model_provenance.json"],
+        "model_call_status": "model_call_confirmed_1",
+        "model_calls": 1,
+        "generation_journals": 0,
+        "persisted_responses": 0,
+        "selectable_responses": 0,
+        "evaluator_executions": 0,
+        "candidate_b_responses": 0,
+        "selective_acceptance_available": False,
+        "generation_retry_or_resume": False,
+        "eligible_for_analysis_or_reuse": False,
+        "cause_status": "resolved_in_persistence_layer_pending_r003_execution",
+        "cause": "windows_max_path_rename_of_first_cell_journal_after_run_attempt",
+        "cause_evidence": {
+            "frozen_manifest_sha256": _file_sha256(r002_frozen),
+            "model_provenance_sha256": _file_sha256(r002_provenance),
+            "journals_present": 0,
+            "temporary_files_present": 0,
+            "first_cell_index": 1,
+            "first_cell_generation_id": first_cell["r002_generation_id"],
+            "first_cell_task_seed": f"{first_cell['task_id']}|seed={first_cell['seed']}",
+            "observed_error": (
+                "OS error while persisting .../j/<first_generation_id>.json: "
+                "[WinError 3] path not found while renaming same-directory "
+                ".tmp-*.tmp -> 64-hex journal when absolute target path length is 260"
+            ),
+            "root_cause": "windows_MAX_PATH_plain_rename_destination_length_260",
+            "control_flow": (
+                "generate writes frozen_manifest+model_provenance, then for each cell "
+                "calls run_attempt (Ollama generation) before durable_write_json_new(journal); "
+                "failure occurred on first-cell journal publish, so one model call is confirmed"
+            ),
+            "fetch_ollama_provenance_is_not_counted_as_generation_call": True,
+        },
+        "r002_content_used_by_r003": False,
+    }
+    outputs["r002_incident_ledger.json"] = _canonical_bytes(r002_incident)
+
     execution_spec = {
-        "spec_version": "candidate_b_development60_replay_r002_execution_v1",
+        "spec_version": "candidate_b_development60_replay_r003_execution_v1",
         "status": "prepared_not_executed", "evidence_role": "development_replay_only",
         "run_id": RUN_ID, "run_output_relative": RUN_OUTPUT_RELATIVE.as_posix(),
         "sequence": ["immutable zero-model preflight", "verify model provenance", "300 single attempts with durable journals", "require all raw complete", "Pipeline all raw", "evaluator-blind H0/H1 fork", "wait for separately authorized EvalPlus"],
-        "persistence": {"per_cell_journal": True, "flush_and_fsync": True, "same_directory_temp_file": True, "atomic_rename": True, "read_back_sha256": True},
+        "persistence": {
+            "per_cell_journal": True, "flush_and_fsync": True,
+            "same_directory_temp_file": True, "exclusive_temp_create": True,
+            "close_handle_before_publish": True, "atomic_new_file_publish": True,
+            "windows_extended_length_paths": True, "parent_directory_fsync": "best_effort",
+            "read_back_sha256": True, "refuse_overwrite": True,
+        },
         "forbidden": {"resume": True, "retry": True, "selective_rerun": True, "overwrite": True, "evalplus": True, "p0_reexecution": True, "validation_access": True},
         "model_identity_preflight": {
             "digest_api": "/api/tags models[].digest",
@@ -482,7 +571,12 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
             "r001_must_exist": True, "r001_expected_generation_journals": 0,
             "r001_any_journal": "fail_closed_require_manual_review",
             "r001_result_source": False, "r001_content_comparison": False,
-            "r002_existing": "fail_closed_no_resume_retry_or_overwrite",
+            "r002_classification": "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE",
+            "r002_must_exist": True, "r002_expected_generation_journals": 0,
+            "r002_any_journal": "fail_closed_require_manual_review",
+            "r002_result_source": False, "r002_content_comparison": False,
+            "r002_model_call_status": "model_call_confirmed_1",
+            "r003_existing": "fail_closed_no_resume_retry_or_overwrite",
         },
     }
     analysis_spec = {
@@ -494,15 +588,25 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "candidate_b_functional_gate": {"candidate_b_h0_pass_gt_p0_h0": True, "paired_net_change_gt_0": True, "exact_mcnemar": "descriptive_only_no_unseen_data_inference"},
         "healer_results_separate_from_candidate_b_prompt_gate": ["H0_to_H1_rescue", "regression", "changed", "abstain", "no_trigger"],
         "post_result_rule_change_or_cell_exclusion": False,
+        "excluded_incident_runs": [R001_RUN_ID, R002_RUN_ID],
     }
-    zero = {"status": "zero_model_preflight_frozen", "tasks": 60, "existing_p0_programs": 300, "candidate_b_generation_cells": 300, "candidate_b_accounts": 600, "factorial_programs": 600, "factorial_accounts": 1200, "r001_incident_registered": True, "r001_expected_journals": 0, "r001_result_source": False, "r002_run_absent": True, "model_calls": 0, "evalplus_executions": 0, "validation_run_absent": True}
+    zero = {
+        "status": "zero_model_preflight_frozen", "tasks": 60, "existing_p0_programs": 300,
+        "candidate_b_generation_cells": 300, "candidate_b_accounts": 600,
+        "factorial_programs": 600, "factorial_accounts": 1200,
+        "r001_incident_registered": True, "r001_expected_journals": 0, "r001_result_source": False,
+        "r002_incident_registered": True, "r002_expected_journals": 0, "r002_result_source": False,
+        "r002_model_call_status": "model_call_confirmed_1",
+        "r003_run_absent": True, "model_calls": 0, "evalplus_executions": 0,
+        "validation_run_absent": True,
+    }
     outputs["execution_spec.json"] = _canonical_bytes(execution_spec)
     outputs["paired_analysis_spec.json"] = _canonical_bytes(analysis_spec)
     outputs["zero_model_preflight.json"] = _canonical_bytes(zero)
     outputs["candidate_b_exact_text.txt"] = CANDIDATE_B_TEXT.encode("utf-8")
     outputs["operator_guide_zh.md"] = _operator_guide()
     manifest = {
-        "manifest_version": "candidate_b_development60_replay_r002_v1",
+        "manifest_version": "candidate_b_development60_replay_r003_v1",
         "status": "prepared_not_executed", "development_replay_only": True,
         "validation_or_confirmatory_evidence": False,
         "counts": {"tasks": 60, "task_seed_identities": 300, "existing_p0_programs": 300, "candidate_b_new_generation_cells": 300, "candidate_b_new_accounts": 600, "factorial_programs": 600, "factorial_accounts": 1200},
@@ -522,15 +626,31 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
             "quantization_normalization": "strip_then_upper",
             "missing_or_non_string": "fail_closed",
         },
-        "predecessor_incident": {
-            "run_id": R001_RUN_ID,
-            "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
-            "model_calls": 0, "generation_journals": 0,
-            "evaluator_executions": 0, "candidate_b_responses": 0,
-            "selective_acceptance_available": False,
-            "generation_retry_or_resume": False,
-            "result_source": False,
-        },
+        "predecessor_incidents": [
+            {
+                "run_id": R001_RUN_ID,
+                "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+                "model_call_status": "model_call_confirmed_0",
+                "model_calls": 0, "generation_journals": 0,
+                "persisted_responses": 0, "selectable_responses": 0,
+                "evaluator_executions": 0, "candidate_b_responses": 0,
+                "selective_acceptance_available": False,
+                "generation_retry_or_resume": False,
+                "result_source": False,
+            },
+            {
+                "run_id": R002_RUN_ID,
+                "classification": "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE",
+                "model_call_status": "model_call_confirmed_1",
+                "model_calls": 1, "generation_journals": 0,
+                "persisted_responses": 0, "selectable_responses": 0,
+                "evaluator_executions": 0, "candidate_b_responses": 0,
+                "selective_acceptance_available": False,
+                "generation_retry_or_resume": False,
+                "result_source": False,
+                "eligible_for_analysis_or_reuse": False,
+            },
+        ],
         "model_calls_during_freeze": 0, "evalplus_executions_during_freeze": 0,
         "validation_run_directory_created": False,
         "interrupted_mbpp_b28_used": False,

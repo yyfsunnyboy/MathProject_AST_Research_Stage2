@@ -1,0 +1,61 @@
+{
+  "evidence_role": "development_replay_only",
+  "forbidden": {
+    "evalplus": true,
+    "overwrite": true,
+    "p0_reexecution": true,
+    "resume": true,
+    "retry": true,
+    "selective_rerun": true,
+    "validation_access": true
+  },
+  "model_identity_preflight": {
+    "digest_api": "/api/tags models[].digest",
+    "digest_comparison": "exact_string_equality",
+    "missing_quantization": "fail_closed",
+    "quantization_api": "/api/tags models[].details.quantization_level",
+    "quantization_expected": "Q4_K_M",
+    "quantization_normalization": "require_string_then_strip_then_upper"
+  },
+  "persistence": {
+    "atomic_new_file_publish": true,
+    "close_handle_before_publish": true,
+    "exclusive_temp_create": true,
+    "flush_and_fsync": true,
+    "parent_directory_fsync": "best_effort",
+    "per_cell_journal": true,
+    "read_back_sha256": true,
+    "refuse_overwrite": true,
+    "same_directory_temp_file": true,
+    "windows_extended_length_paths": true
+  },
+  "predecessor_incident_policy": {
+    "r001_any_journal": "fail_closed_require_manual_review",
+    "r001_classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+    "r001_content_comparison": false,
+    "r001_expected_generation_journals": 0,
+    "r001_must_exist": true,
+    "r001_result_source": false,
+    "r002_any_journal": "fail_closed_require_manual_review",
+    "r002_classification": "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE",
+    "r002_content_comparison": false,
+    "r002_expected_generation_journals": 0,
+    "r002_model_call_status": "model_call_confirmed_1",
+    "r002_must_exist": true,
+    "r002_result_source": false,
+    "r003_existing": "fail_closed_no_resume_retry_or_overwrite"
+  },
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r003",
+  "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003",
+  "sequence": [
+    "immutable zero-model preflight",
+    "verify model provenance",
+    "300 single attempts with durable journals",
+    "require all raw complete",
+    "Pipeline all raw",
+    "evaluator-blind H0/H1 fork",
+    "wait for separately authorized EvalPlus"
+  ],
+  "spec_version": "candidate_b_development60_replay_r003_execution_v1",
+  "status": "prepared_not_executed"
+}

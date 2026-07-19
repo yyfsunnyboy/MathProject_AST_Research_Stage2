@@ -1,0 +1,20 @@
+{
+  "candidate_b_accounts": 600,
+  "candidate_b_generation_cells": 300,
+  "evalplus_executions": 0,
+  "existing_p0_programs": 300,
+  "factorial_accounts": 1200,
+  "factorial_programs": 600,
+  "model_calls": 0,
+  "r001_expected_journals": 0,
+  "r001_incident_registered": true,
+  "r001_result_source": false,
+  "r002_expected_journals": 0,
+  "r002_incident_registered": true,
+  "r002_model_call_status": "model_call_confirmed_1",
+  "r002_result_source": false,
+  "r003_run_absent": true,
+  "status": "zero_model_preflight_frozen",
+  "tasks": 60,
+  "validation_run_absent": true
+}

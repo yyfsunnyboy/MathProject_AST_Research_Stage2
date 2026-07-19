@@ -1,0 +1,39 @@
+{
+  "candidate_b_responses": 0,
+  "cause": "windows_max_path_rename_of_first_cell_journal_after_run_attempt",
+  "cause_evidence": {
+    "control_flow": "generate writes frozen_manifest+model_provenance, then for each cell calls run_attempt (Ollama generation) before durable_write_json_new(journal); failure occurred on first-cell journal publish, so one model call is confirmed",
+    "fetch_ollama_provenance_is_not_counted_as_generation_call": true,
+    "first_cell_generation_id": "aae785c8bed2f625429e621f79b06bbdd9da879042526d1341065c5c95a6941e",
+    "first_cell_index": 1,
+    "first_cell_task_seed": "Mbpp/633|seed=11",
+    "frozen_manifest_sha256": "6574f3ad41bc928f6b85d2a2fd421564ad61920ac12e66767f298d1e2a5a22dd",
+    "journals_present": 0,
+    "model_provenance_sha256": "ddc1eb489e48de69af9ad6404a51c5dfd9b1b54e36beb715b2fd12cda347c777",
+    "observed_error": "OS error while persisting .../j/<first_generation_id>.json: [WinError 3] path not found while renaming same-directory .tmp-*.tmp -> 64-hex journal when absolute target path length is 260",
+    "root_cause": "windows_MAX_PATH_plain_rename_destination_length_260",
+    "temporary_files_present": 0
+  },
+  "cause_status": "resolved_in_persistence_layer_pending_r003_execution",
+  "classification": "FIRST_CELL_JOURNAL_PERSISTENCE_FAILURE",
+  "eligible_for_analysis_or_reuse": false,
+  "evaluator_executions": 0,
+  "generation_journals": 0,
+  "generation_retry_or_resume": false,
+  "governance_relative": "artifacts/public_benchmark_governance/candidate_b_development60_replay_r002_v1",
+  "incident_id": "candidate_b_development60_r002_first_cell_journal_persistence_failure",
+  "model_call_status": "model_call_confirmed_1",
+  "model_calls": 1,
+  "observed_directory_entries": [
+    "frozen_manifest.json",
+    "j/",
+    "model_provenance.json"
+  ],
+  "persisted_responses": 0,
+  "preservation_policy": "do_not_delete_move_rename_overwrite_reuse_resume_analyze_or_read_as_results",
+  "r002_content_used_by_r003": false,
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "selectable_responses": 0,
+  "selective_acceptance_available": false
+}
