@@ -1,0 +1,15 @@
+{
+  "development_tasks_checked": 60,
+  "evalplus_executions": 0,
+  "evaluation_accounts": 200,
+  "failure_census_sources": 0,
+  "generation_cells": 100,
+  "individually_reviewed": 0,
+  "manual_replacement_or_resampling": false,
+  "model_calls": 0,
+  "rule_development_sources": 0,
+  "status": "passed_without_model_or_evalplus",
+  "validation_content_displayed_or_manually_reviewed": false,
+  "validation_development_intersection": 0,
+  "validation_tasks": 20
+}

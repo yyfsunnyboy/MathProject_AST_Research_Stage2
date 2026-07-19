@@ -1,0 +1,38 @@
+{
+  "decision_rules_frozen_before_results": {
+    "regression_eq_0_and_verified_rescue_eq_0": "safe_but_functional_benefit_not_reproduced",
+    "regression_eq_0_and_verified_rescue_gte_1": "prospective_qualification_passed",
+    "regression_gt_0": "safety_qualification_not_passed",
+    "task_level_rescue_distribution_modification_rate_mcnemar": "secondary_descriptive_only"
+  },
+  "forbidden": {
+    "evalplus_in_this_runner": true,
+    "h1_regeneration": true,
+    "overwrite": true,
+    "resume": true,
+    "retry": true,
+    "scaffold": true,
+    "selective_rerun": true
+  },
+  "persistence": {
+    "atomic_rename": true,
+    "flush_and_fsync": true,
+    "per_cell_journal": true,
+    "read_back_and_sha256_verify": true,
+    "same_directory_temp_file": true
+  },
+  "run_id": "mbpp_q35_9b_healer_v0_validation_p0_r001",
+  "run_output_relative": "artifacts/public_benchmark_validation/mbpp_healer_v0_p0/runs/mbpp_q35_9b_healer_v0_validation_p0_r001",
+  "sequence": [
+    "zero-model immutable manifest and source-hash preflight",
+    "verify installed model provenance without creating run directory",
+    "exactly one generation attempt per frozen cell with durable per-cell journal",
+    "require all 100 raw generations complete",
+    "publish combined raw JSONL",
+    "apply frozen Pipeline to all 100 raw generations",
+    "fork every normalized program to H0 unchanged and H1 frozen Healer without regeneration",
+    "publish 200 evaluation accounts pending a later separately authorized EvalPlus milestone"
+  ],
+  "spec_version": "mbpp_healer_v0_validation_p0_execution_v1",
+  "status": "prepared_not_executed"
+}

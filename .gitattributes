@@ -53,3 +53,9 @@ artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/** t
 scripts/prepare_mbpp_existing600_healer_h0_h1.py text eol=lf
 scripts/run_mbpp_existing600_healer_eval.py text eol=lf
 scripts/analyze_mbpp_existing600_healer_eval.py text eol=lf
+
+# Milestone 2K-A frozen MBPP+ validation P0 x Healer-v0 preparation.
+artifacts/public_benchmark_governance/healer_v0_validation_p0_v1/** text eol=lf
+artifacts/public_benchmark_validation/mbpp_healer_v0_p0/** text eol=lf
+scripts/freeze_mbpp_healer_v0_validation_p0.py text eol=lf
+scripts/run_mbpp_healer_v0_validation_p0.py text eol=lf
