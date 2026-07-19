@@ -1,0 +1,22 @@
+{
+  "categories": [
+    "fail_to_fail",
+    "fail_to_pass_rescue",
+    "pass_to_fail_regression",
+    "pass_to_pass"
+  ],
+  "decision_rules": {
+    "regression_eq_0_and_rescue_eq_0": "statically_safe_no_observed_functional_benefit",
+    "regression_eq_0_and_rescue_gte_1": "eligible_for_independent_prospective_qualification",
+    "regression_gt_0": "healer_candidate_not_qualified"
+  },
+  "final_conclusion_before_all_41_changed_results": false,
+  "input_cells": 600,
+  "per_cell_accept_revert_or_selective_use": false,
+  "plan_id": "mbpp_existing600_healer_paired_analysis_v1",
+  "strata": [
+    "all",
+    "p0",
+    "scaffold_like"
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "candidate_id": "mbpp_evaluator_blind_healer_candidate_v0",
+  "changed_by_prompt_condition": {
+    "p0": 39,
+    "scaffold_like": 2
+  },
+  "changed_h1_evalplus_cells": 41,
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "evalplus_executed_during_preparation": false,
+  "evaluator_engine": "evalplus_0.3.1_check_correctness_subset",
+  "evaluator_version": "0.3.1",
+  "h0_re_evaluation_or_overwrite": false,
+  "healer_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+  "interpreter": "/home/yehya/.venvs/ast_evalplus/bin/python",
+  "model_calls": 0,
+  "parallel": 1,
+  "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "plan_id": "mbpp_existing600_healer_h0_h1_functional_evaluation_v1",
+  "reuse_gate": "exact normalized source-state SHA-256 identity plus complete verified H0 identity/result",
+  "rule_order": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "scope": {
+    "development_tasks": 60,
+    "h0_accounts": 600,
+    "h1_accounts": 600,
+    "programs": 600,
+    "task_seed_identities": 300
+  },
+  "status": "frozen_waiting_for_manual_evalplus",
+  "unchanged_h1_reuse_cells": 559
+}

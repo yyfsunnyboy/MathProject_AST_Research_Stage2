@@ -47,3 +47,6 @@ artifacts/public_benchmark_governance/healer_candidate_v0_development_audit/** t
 
 # Frozen, not-executed development-only 2x2 qualification protocol.
 artifacts/public_benchmark_governance/factorial_development_qualification_v1/** text eol=lf
+
+# Milestone 2J-A frozen existing-600 H0/H1 evaluation preparation assets.
+artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/** text eol=lf
