@@ -1,0 +1,17 @@
+{
+  "all_600_accounts_included": true,
+  "changed_results_sha256": "4a4b98727e7ae08fb0eabbf74735ce720414b73862fa37c6d9b305b6be683094",
+  "exact_mcnemar_two_sided_p": "0.003906250000",
+  "h0_pass": 151,
+  "h1_pass": 160,
+  "individual_transformation_withdrawal_or_acceptance": false,
+  "net_pass_change": 9,
+  "regression": 0,
+  "rescue": 9,
+  "rules_frozen_before_evaluation": true,
+  "source_manifest_sha256": "420eb05267f11f4f9f157f63167398e86fbc68322f33b33b9bf5656fb6f24913",
+  "source_manifest_status": "prepared_not_executed",
+  "status": "eligible_for_independent_prospective_qualification",
+  "tasks_with_regression": 0,
+  "tasks_with_verified_rescue": 4
+}

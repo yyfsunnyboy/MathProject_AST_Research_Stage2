@@ -172,6 +172,7 @@ def test_paired_analyzer_requires_and_accounts_for_all_41_results(tmp_path: Path
         manifest_path=FROZEN_DIR / "manifest.json",
         manifest_sha256=evaluator.FROZEN_MANIFEST_SHA256,
         changed_results_path=results_path,
+        enforce_frozen_result_path=False,
     )
     assert len(analysis["pairs"]) == 600
     assert analysis["summaries"][0]["changed"] == "41"

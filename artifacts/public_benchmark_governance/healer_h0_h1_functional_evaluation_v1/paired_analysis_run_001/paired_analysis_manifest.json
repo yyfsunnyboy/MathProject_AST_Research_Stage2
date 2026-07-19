@@ -1,0 +1,32 @@
+{
+  "accounts": 1200,
+  "changed": 41,
+  "evalplus_reexecuted": false,
+  "manifest_version": "mbpp_existing600_healer_h0_h1_paired_analysis_v1",
+  "model_calls": 0,
+  "output_sha256_excluding_manifest": {
+    "paired_account_results.csv": "52e56c94e11d9b9a36b737b5157e468de85678c4ef26825b5edc935230029976",
+    "paired_analysis_report_zh.md": "129682f0a4ff6e693a696abaf8e7efb674673217d6cab3bfade5b1eb90d7f061",
+    "paired_cell_results.csv": "cb2e12432c1c24abe18e446aaf1eee33b4ebf81f4c4166d083dfeb1540960bee",
+    "qualification_decision.json": "851dee12576175734480392fa64ce7c700f995fb4a090d40444d811fc6ea80d9",
+    "stratified_transition_summary.csv": "424c2f23ed30f63956aff6b4cea4084fe5affc75ca792959629f0bff7e27bb7c",
+    "task_transition_summary.csv": "fd1eef17267042a672d585500e92b8b844aa7500d38dc69f3613899661853396"
+  },
+  "programs": 600,
+  "regression": 0,
+  "rules_or_cells_changed_after_results": false,
+  "source_sha256": {
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/changed_h1_eval_input.jsonl": "d34e39e8883c71964547b70f9d712944e8328305b919051f5293abeedbc1cd11",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/h0_h1_accounts.csv": "e6f26c7bfb1418080f3df80a78202808aa2ba9f5992ba397b24d8914df979438",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/manifest.json": "420eb05267f11f4f9f157f63167398e86fbc68322f33b33b9bf5656fb6f24913",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/manual_evalplus_run_001/changed_h1_evalplus_results.csv": "4a4b98727e7ae08fb0eabbf74735ce720414b73862fa37c6d9b305b6be683094",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/manual_evalplus_run_001/execution_manifest.json": "799a6512afa2bd9579c7e7ba2812de3eaf7f053ddaa00210f2c2d62d476dfa0a",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/unchanged_h0_reuse_ledger.csv": "ea967a67ec420152ba37118ff06727a390b5378b5b7c84aeb088c3e63d389a5c",
+    "scripts/analyze_mbpp_existing600_healer_eval.py": "2316fa1a1f63e5458d4495b17c64bbaf7f33a867ee98b1922db152bcb977fbc5",
+    "scripts/run_mbpp_existing600_healer_eval.py": "438632ae8fd6b09a6ea27d1a79f74e3d670efec91bc22444698499ffd3ccd5da"
+  },
+  "status": "paired_analysis_complete_development_only",
+  "tasks": 60,
+  "unchanged": 559,
+  "verified_rescue": 9
+}

@@ -1,0 +1,12 @@
+stratum,stratum_type,programs,unique_tasks,changed,unchanged,rule_triggered,healer_abstained,healer_no_trigger,modification_rate,h0_pass,h1_pass,h0_pass_rate,h1_pass_rate,net_pass_change,net_pass_rate_change,fail_to_fail,fail_to_pass_rescue,pass_to_fail_regression,pass_to_pass,discordant_pairs,exact_mcnemar_applicable,exact_mcnemar_two_sided_p
+all,all,600,60,41,559,41,148,411,0.068333,151,160,0.251667,0.266667,9,0.015000,440,9,0,151,9,true,0.003906250000
+p0,prompt_condition,300,60,39,261,39,116,145,0.130000,68,77,0.226667,0.256667,9,0.030000,223,9,0,68,9,true,0.003906250000
+scaffold_like,prompt_condition,300,60,2,298,2,32,266,0.006667,83,83,0.276667,0.276667,0,0.000000,217,0,0,83,0,false,1.000000000000
+discovery_development,development_layer,200,20,17,183,17,42,141,0.085000,60,68,0.300000,0.340000,8,0.040000,132,8,0,60,8,true,0.007812500000
+expansion_development,development_layer,400,40,24,376,24,106,270,0.060000,91,92,0.227500,0.230000,1,0.002500,308,1,0,91,1,true,1.000000000000
+changed,source_change,41,16,41,0,41,0,0,1.000000,0,9,0.000000,0.219512,9,0.219512,32,9,0,0,9,true,0.003906250000
+unchanged,source_change,559,60,0,559,0,148,411,0.000000,151,151,0.270125,0.270125,0,0.000000,408,0,0,151,0,false,1.000000000000
+p0__discovery_development,prompt_condition_x_development_layer,100,20,15,85,15,32,53,0.150000,30,38,0.300000,0.380000,8,0.080000,62,8,0,30,8,true,0.007812500000
+p0__expansion_development,prompt_condition_x_development_layer,200,40,24,176,24,84,92,0.120000,38,39,0.190000,0.195000,1,0.005000,161,1,0,38,1,true,1.000000000000
+scaffold_like__discovery_development,prompt_condition_x_development_layer,100,20,2,98,2,10,88,0.020000,30,30,0.300000,0.300000,0,0.000000,70,0,0,30,0,false,1.000000000000
+scaffold_like__expansion_development,prompt_condition_x_development_layer,200,40,0,200,0,22,178,0.000000,53,53,0.265000,0.265000,0,0.000000,147,0,0,53,0,false,1.000000000000

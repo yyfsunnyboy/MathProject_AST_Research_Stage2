@@ -50,3 +50,6 @@ artifacts/public_benchmark_governance/factorial_development_qualification_v1/** 
 
 # Milestone 2J-A frozen existing-600 H0/H1 evaluation preparation assets.
 artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/** text eol=lf
+scripts/prepare_mbpp_existing600_healer_h0_h1.py text eol=lf
+scripts/run_mbpp_existing600_healer_eval.py text eol=lf
+scripts/analyze_mbpp_existing600_healer_eval.py text eol=lf
