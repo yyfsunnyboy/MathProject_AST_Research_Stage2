@@ -29,13 +29,19 @@ def test_freeze_is_deterministic_and_complete_2x2() -> None:
     cells = _csv_rows(first["candidate_b_generation_cells.csv"])
     accounts = _csv_rows(first["development_2x2_accounts.csv"])
     reuse = _csv_rows(first["p0_identity_hash_reuse_ledger.csv"])
+    mapping = _csv_rows(first["r001_to_r002_identity_mapping.csv"])
     manifest = json.loads(first["manifest.json"])
+    incident = json.loads(first["r001_incident_ledger.json"])
 
     assert len(cells) == len({row["generation_id"] for row in cells}) == 300
     assert len({(row["task_id"], row["seed"]) for row in cells}) == 300
     assert len({row["task_id"] for row in cells}) == 60
     assert len(accounts) == len({row["evaluation_account_id"] for row in accounts}) == 1200
     assert len(reuse) == len({row["program_id"] for row in reuse}) == 300
+    assert len(mapping) == 300
+    assert all(row["same_task_seed_identity"] == "true" for row in mapping)
+    assert all(row["r001_generation_id"] != row["r002_generation_id"] for row in mapping)
+    assert all(row["r001_result_reused"] == "false" for row in mapping)
     assert sum(row["factorial_arm"] == "P0_H0" for row in accounts) == 300
     assert sum(row["factorial_arm"] == "P0_H1" for row in accounts) == 300
     assert sum(row["factorial_arm"] == "Candidate_B_H0" for row in accounts) == 300
@@ -47,6 +53,14 @@ def test_freeze_is_deterministic_and_complete_2x2() -> None:
     assert manifest["model_calls_during_freeze"] == 0
     assert manifest["evalplus_executions_during_freeze"] == 0
     assert manifest["validation_run_directory_created"] is False
+    assert manifest["run_id"] == freeze.RUN_ID
+    assert manifest["predecessor_incident"]["classification"] == "ZERO_CELL_PREFLIGHT_INCIDENT"
+    assert incident["classification"] == "ZERO_CELL_PREFLIGHT_INCIDENT"
+    assert incident["model_calls"] == incident["generation_journals"] == 0
+    assert incident["evaluator_executions"] == incident["candidate_b_responses"] == 0
+    assert incident["selective_acceptance_available"] is False
+    assert incident["generation_retry_or_resume"] is False
+    assert incident["r001_content_used_by_r002"] is False
 
 
 def test_candidate_b_exact_text_and_frozen_gates() -> None:
@@ -75,10 +89,69 @@ def test_zero_model_preflight_accepts_only_exact_manifest() -> None:
     assert receipt["candidate_b_generation_cells"] == 300
     assert receipt["factorial_accounts"] == 1200
     assert receipt["validation_run_absent"] is True
+    assert receipt["candidate_b_run_absent"] is True
+    assert receipt["r001_incident"]["generation_journals"] == 0
+    assert receipt["r001_incident"]["content_read_or_compared"] is False
     with pytest.raises(runner.CandidateBRunError, match="SHA-256"):
         runner.zero_model_preflight(
             manifest_path=GOV_DIR / "manifest.json", manifest_sha256="0" * 64,
         )
+
+
+def test_r001_empty_journal_incident_allows_r002_without_creating_it(
+    tmp_path: Path,
+) -> None:
+    r001 = tmp_path / "r001"
+    (r001 / "j").mkdir(parents=True)
+    r002 = tmp_path / "r002"
+    receipt = runner.validate_r001_zero_cell_incident(r001)
+    runner.require_r002_absent(r002)
+    assert receipt["classification"] == "ZERO_CELL_PREFLIGHT_INCIDENT"
+    assert receipt["generation_journals"] == 0
+    assert receipt["result_source"] is False
+    assert not r002.exists()
+
+
+def test_r002_existing_fails_closed(tmp_path: Path) -> None:
+    r002 = tmp_path / "r002"
+    r002.mkdir()
+    with pytest.raises(runner.CandidateBRunError, match="r002 run directory exists"):
+        runner.require_r002_absent(r002)
+
+
+def test_r001_any_journal_requires_manual_review(tmp_path: Path) -> None:
+    r001 = tmp_path / "r001"
+    journal = r001 / "j" / "unexpected.json"
+    journal.parent.mkdir(parents=True)
+    journal.write_text("{}", encoding="utf-8")
+    with pytest.raises(runner.CandidateBRunError, match="manual review required"):
+        runner.validate_r001_zero_cell_incident(r001)
+
+
+def test_r001_is_never_candidate_b_result_source() -> None:
+    outputs = freeze.build_outputs(REPO_ROOT)
+    accounts = _csv_rows(outputs["development_2x2_accounts.csv"])
+    candidate = [row for row in accounts if row["prompt_condition"] == "Candidate_B"]
+    mapping = _csv_rows(outputs["r001_to_r002_identity_mapping.csv"])
+    assert len(candidate) == 600
+    assert all(row["run_id"] == freeze.RUN_ID for row in candidate)
+    assert all(row["run_id"] != freeze.R001_RUN_ID for row in candidate)
+    assert all(row["r001_result_reused"] == "false" for row in mapping)
+    assert all(row["r001_response_available"] == "false" for row in mapping)
+
+
+def test_r002_preserves_prompt_healer_pipeline_model_and_research_identities() -> None:
+    outputs = freeze.build_outputs(REPO_ROOT)
+    manifest = json.loads(outputs["manifest.json"])
+    cells = _csv_rows(outputs["candidate_b_generation_cells.csv"])
+    assert manifest["candidate_b"]["exact_text_sha256"] == freeze.EXPECTED_CANDIDATE_TEXT_SHA256
+    assert manifest["healer_sha256"] == freeze.EXPECTED_HEALER_SHA256
+    assert manifest["pipeline_sha256"] == freeze.EXPECTED_PIPELINE_SHA256
+    assert manifest["model_digest"] == freeze.EXPECTED_MODEL_DIGEST
+    assert manifest["quantization"] == "Q4_K_M"
+    assert manifest["generation_parameters"]["thinking"] is False
+    assert manifest["seeds"] == [11, 22, 33, 44, 55]
+    assert len(cells) == len({(row["task_id"], row["seed"]) for row in cells}) == 300
 
 
 def test_quantization_extraction_accepts_api_show_shape() -> None:

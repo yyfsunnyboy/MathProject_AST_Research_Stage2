@@ -1,0 +1,49 @@
+{
+  "evidence_role": "development_replay_only",
+  "forbidden": {
+    "evalplus": true,
+    "overwrite": true,
+    "p0_reexecution": true,
+    "resume": true,
+    "retry": true,
+    "selective_rerun": true,
+    "validation_access": true
+  },
+  "model_identity_preflight": {
+    "digest_api": "/api/tags models[].digest",
+    "digest_comparison": "exact_string_equality",
+    "missing_quantization": "fail_closed",
+    "quantization_api": "/api/tags models[].details.quantization_level",
+    "quantization_expected": "Q4_K_M",
+    "quantization_normalization": "require_string_then_strip_then_upper"
+  },
+  "persistence": {
+    "atomic_rename": true,
+    "flush_and_fsync": true,
+    "per_cell_journal": true,
+    "read_back_sha256": true,
+    "same_directory_temp_file": true
+  },
+  "predecessor_incident_policy": {
+    "r001_any_journal": "fail_closed_require_manual_review",
+    "r001_classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+    "r001_content_comparison": false,
+    "r001_expected_generation_journals": 0,
+    "r001_must_exist": true,
+    "r001_result_source": false,
+    "r002_existing": "fail_closed_no_resume_retry_or_overwrite"
+  },
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "sequence": [
+    "immutable zero-model preflight",
+    "verify model provenance",
+    "300 single attempts with durable journals",
+    "require all raw complete",
+    "Pipeline all raw",
+    "evaluator-blind H0/H1 fork",
+    "wait for separately authorized EvalPlus"
+  ],
+  "spec_version": "candidate_b_development60_replay_r002_execution_v1",
+  "status": "prepared_not_executed"
+}

@@ -1,0 +1,108 @@
+{
+  "candidate_b": {
+    "exact_text_sha256": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+    "generated_once": true,
+    "separator_sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070",
+    "separator_utf8": "\n\n"
+  },
+  "counts": {
+    "candidate_b_new_accounts": 600,
+    "candidate_b_new_generation_cells": 300,
+    "existing_p0_programs": 300,
+    "factorial_accounts": 1200,
+    "factorial_programs": 600,
+    "task_seed_identities": 300,
+    "tasks": 60
+  },
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "development_replay_only": true,
+  "evalplus_executions_during_freeze": 0,
+  "existing_p0_results": {
+    "h0_pass": 68,
+    "h1_pass": 77,
+    "programs": 300,
+    "reexecuted": false
+  },
+  "generation_parameters": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "healer_rule_order": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "healer_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+  "interrupted_mbpp_b28_used": false,
+  "manifest_version": "candidate_b_development60_replay_r002_v1",
+  "model": "qwen3.5:9b",
+  "model_calls_during_freeze": 0,
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_identity_preflight": {
+    "digest_json_path": "models[].digest",
+    "digest_match": "exact",
+    "missing_or_non_string": "fail_closed",
+    "quantization_expected": "Q4_K_M",
+    "quantization_json_path": "models[].details.quantization_level",
+    "quantization_normalization": "strip_then_upper"
+  },
+  "output_sha256_excluding_manifest_and_operator_guide": {
+    "candidate_b_exact_text.txt": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+    "candidate_b_generation_cells.csv": "0c86ea649032bca693d65d0d0422d4cb3c318edae256c9146944ea3d355d86f9",
+    "development_2x2_accounts.csv": "b0de9bc3c1100759e9cd9518352f4df6398970e557eee88daf0ecb649bebeef7",
+    "execution_spec.json": "7908ce76f7df705f975140f6f179f8a0d3852974807d829efd480c32010ad79f",
+    "p0_identity_hash_reuse_ledger.csv": "18153ef7d618996518b154e694245b5ce303a8dee62afca0da11761e3cafe90e",
+    "paired_analysis_spec.json": "b32a8eb995090dc6f639546c0633ffdb4884ca483f9b0e4bd38f49deafb32ad7",
+    "r001_incident_ledger.json": "e22247083c484fbcf2cbc68ad5fc3f358bbac9a32d2141796c3eebaf02bc3faa",
+    "r001_to_r002_identity_mapping.csv": "a36951e8225f4ff25ff34469ee995856cf0dc869a748d8fee9795a55dc58275d",
+    "zero_model_preflight.json": "b0fa86f0c9ee30e8b627401c9781f544380cf1bf1e5f21c7c15038611ba37c26"
+  },
+  "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "predecessor_incident": {
+    "candidate_b_responses": 0,
+    "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+    "evaluator_executions": 0,
+    "generation_journals": 0,
+    "generation_retry_or_resume": false,
+    "model_calls": 0,
+    "result_source": false,
+    "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r001",
+    "selective_acceptance_available": false
+  },
+  "quantization": "Q4_K_M",
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r002",
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "agent_tools/finals_rebuild/ollama_generation_runner.py": "9ccaa465c38030a3786a4423fed984b4624f44573ed6b1321e4b4fcbd5071d81",
+    "artifacts/pbd/mbpp_e40/p0/r001/evaluation_results.csv": "a0e359f292774206343aa8ca7892dd6254433e7b4a105e9bfa83e1f788f592ed",
+    "artifacts/pbd/mbpp_e40/p0/r001/generation_plan.json": "cee8e9908bfb9759189b290e8b3f13a7609e3ec80395585f07b9c0425f255531",
+    "artifacts/pbd/mbpp_e40/p0/r001/pipeline_corrected.jsonl": "7cc419aaa8587e0648e9b198270c2efd388fccd67c8331e0629b0374a8fcf402",
+    "artifacts/pbd/mbpp_e40/p0/r001/raw_generations.jsonl": "2e89154a4723f9b3a95a7605250498079065e65708bfd1c6ede235a0f7e19596",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/evaluation_results.csv": "86525489640c2076dfd4d35e7224a975ca0b5770fe8ad99019476b4d0c1ed54d",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/generation_plan.json": "3c4e61db0588bd237e415f7cb0b8fde05d3db67c19a012968a4d676e37a56be5",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/pipeline_corrected.jsonl": "4a8015fec50b4dd1e0d432f66bb01d6972dc2ed73ec748a36773bed2b10531fa",
+    "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003/raw_generations.jsonl": "24cc22a57f252f46a633dba34d53652398f0b2cf213363af774b82f90bcc9964",
+    "artifacts/public_benchmark_governance/factorial_development_qualification_v1/candidate_b_exact_text.txt": "bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/h0_h1_accounts.csv": "e6f26c7bfb1418080f3df80a78202808aa2ba9f5992ba397b24d8914df979438",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/paired_analysis_run_001/paired_analysis_manifest.json": "f277e775186ac43086081849aa3563f65892a79e870b7ab77f7e63fc13fcbda5",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/paired_analysis_run_001/paired_cell_results.csv": "cb2e12432c1c24abe18e446aaf1eee33b4ebf81f4c4166d083dfeb1540960bee",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "scripts/prepare_mbpp_existing600_healer_h0_h1.py": "c6e26629dc0f2c0c91d864502bd3c600d4b4856fd0b68de8cc9ceb94479eaa55"
+  },
+  "status": "prepared_not_executed",
+  "validation_or_confirmatory_evidence": false,
+  "validation_run_directory_created": false
+}

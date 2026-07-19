@@ -27,12 +27,17 @@ from scripts import prepare_mbpp_existing600_healer_h0_h1 as existing  # noqa: E
 
 
 OUTPUT_RELATIVE = Path(
-    "artifacts/public_benchmark_governance/candidate_b_development60_replay_v1"
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r002_v1"
 )
-RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r001"
-RUN_OUTPUT_RELATIVE = Path(
+R001_RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r001"
+R001_RUN_OUTPUT_RELATIVE = Path(
     "artifacts/public_benchmark_development/mbpp_candidate_b_development60/"
     "runs/mbpp_q35_9b_candidate_b_development60_replay_r001"
+)
+RUN_ID = "mbpp_q35_9b_candidate_b_development60_replay_r002"
+RUN_OUTPUT_RELATIVE = Path(
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/"
+    "runs/mbpp_q35_9b_candidate_b_development60_replay_r002"
 )
 PROTOCOL_RELATIVE = Path("configs/public_benchmark_generation_protocol_v1.json")
 HEALER_RELATIVE = Path("agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py")
@@ -123,6 +128,12 @@ REUSE_FIELDS = (
     "raw_sha256", "pipeline_normalized_sha256", "h0_account_id",
     "h1_account_id", "h0_status", "h1_status", "identity_verified",
     "raw_hash_verified", "normalized_hash_verified", "result_reexecution",
+)
+IDENTITY_MAPPING_FIELDS = (
+    "mapping_index", "development_layer", "task_id", "seed",
+    "task_seed_research_identity", "r001_generation_id", "r001_program_id",
+    "r002_generation_id", "r002_program_id", "same_task_seed_identity",
+    "r001_result_reused", "r001_response_available",
 )
 
 
@@ -258,6 +269,17 @@ def load_existing_p0(repo_root: Path = REPO_ROOT) -> list[dict[str, Any]]:
     return result
 
 
+def _candidate_generation_identity(run_id: str, row: dict[str, Any]) -> tuple[str, str]:
+    generation_id = _identity_hash({
+        "run_id": run_id, "task_id": row["task_id"], "seed": row["seed"],
+        "model_digest": EXPECTED_MODEL_DIGEST,
+        "official_prompt_sha256": row["prompt_sha256"],
+        "candidate_b_text_sha256": EXPECTED_CANDIDATE_TEXT_SHA256,
+        "protocol_sha256": EXPECTED_PROTOCOL_SHA256,
+    })
+    return generation_id, _identity_hash({"run_id": run_id, "generation_id": generation_id})
+
+
 def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     repo_root = repo_root.resolve()
     sources = {
@@ -289,18 +311,13 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
 
     p0 = load_existing_p0(repo_root)
     cells: list[dict[str, Any]] = []
+    mappings: list[dict[str, Any]] = []
     b_programs: dict[tuple[str, int], dict[str, str]] = {}
     for index, row in enumerate(p0, 1):
         entry, arities = row["prompt_contract"]
         composed = row["prompt"] + SEPARATOR + CANDIDATE_B_TEXT
-        generation_id = _identity_hash({
-            "run_id": RUN_ID, "task_id": row["task_id"], "seed": row["seed"],
-            "model_digest": EXPECTED_MODEL_DIGEST,
-            "official_prompt_sha256": row["prompt_sha256"],
-            "candidate_b_text_sha256": EXPECTED_CANDIDATE_TEXT_SHA256,
-            "protocol_sha256": EXPECTED_PROTOCOL_SHA256,
-        })
-        program_id = _identity_hash({"run_id": RUN_ID, "generation_id": generation_id})
+        generation_id, program_id = _candidate_generation_identity(RUN_ID, row)
+        r001_generation_id, r001_program_id = _candidate_generation_identity(R001_RUN_ID, row)
         b_programs[(row["task_id"], row["seed"])] = {
             "generation_id": generation_id, "program_id": program_id,
         }
@@ -316,7 +333,20 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
             "prompt_contract_sha256": _identity_hash({"entry_point": entry, "positional_arities": arities}),
             "attempt_count": 1,
         })
+        mappings.append({
+            "mapping_index": index, "development_layer": row["development_layer"],
+            "task_id": row["task_id"], "seed": row["seed"],
+            "task_seed_research_identity": f"{row['task_id']}|seed={row['seed']}",
+            "r001_generation_id": r001_generation_id,
+            "r001_program_id": r001_program_id,
+            "r002_generation_id": generation_id, "r002_program_id": program_id,
+            "same_task_seed_identity": "true", "r001_result_reused": "false",
+            "r001_response_available": "false",
+        })
     _require(len(cells) == len({row["generation_id"] for row in cells}) == 300, "Candidate B generation identity drift")
+    _require(len(mappings) == 300, "r001/r002 identity mapping count drift")
+    _require(all(row["r001_generation_id"] != row["r002_generation_id"] for row in mappings), "r002 generation IDs must be new")
+    _require(all(row["same_task_seed_identity"] == "true" for row in mappings), "task-seed research identity drift")
 
     accounts: list[dict[str, Any]] = []
     reuse: list[dict[str, Any]] = []
@@ -370,13 +400,13 @@ def build_analysis(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     _require(Counter(row["factorial_arm"] for row in accounts) == {
         "P0_H0": 300, "P0_H1": 300, "Candidate_B_H0": 300, "Candidate_B_H1": 300,
     }, "2x2 arm count drift")
-    return {"p0": p0, "cells": cells, "accounts": accounts, "reuse": reuse, "source_hashes": source_hashes}
+    return {"p0": p0, "cells": cells, "accounts": accounts, "reuse": reuse, "mappings": mappings, "source_hashes": source_hashes}
 
 
 def _operator_guide(manifest_sha: str = "<MANIFEST_SHA256>") -> bytes:
     command = (
         ".venv\\Scripts\\python.exe scripts\\run_mbpp_candidate_b_development60_replay.py generate "
-        "--manifest artifacts\\public_benchmark_governance\\candidate_b_development60_replay_v1\\manifest.json "
+        "--manifest artifacts\\public_benchmark_governance\\candidate_b_development60_replay_r002_v1\\manifest.json "
         f"--manifest-sha256 {manifest_sha}"
     )
     return f"""# Candidate B：既有60題 development 統一 replay 操作指南
@@ -387,7 +417,7 @@ Candidate B文字SHA-256：`{EXPECTED_CANDIDATE_TEXT_SHA256}`。Healer固定為`
 
 Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、atomic rename及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
 
-首次人工啟動在建立run directory與任何generation cell之前，因舊版provenance helper未讀取`/api/tags models[].details.quantization_level`而fail-closed。實際API值為字串`Q4_K_M`；舊helper回傳Python `None`。該次為0-cell preflight失敗，沒有模型generation、沒有EvalPlus，也不構成generation retry或resume。本版會讀取該API欄位、以`strip().upper()`正規化後只接受`Q4_K_M`，並繼續要求digest逐字一致。
+r001已永久登記為`ZERO_CELL_PREFLIGHT_INCIDENT`並保持原樣。只讀鑑識顯示其provenance含修復後runner專屬的identity-validation receipt，故可確定目錄由修復後`generate`路徑在模型身份驗證後建立；不是舊quantization-drift路徑，也不是不寫入run directory的zero-model preflight。r001只有frozen manifest、model provenance與空`j`目錄：model calls、generation journals、evaluator executions均登記為0，沒有response可供selective acceptance，不構成generation retry或resume。r002不讀取、沿用或比較r001內容；preflight只確認r001存在且journal仍為0。若r001出現任何journal，r002立即fail-closed並要求人工審查。
 
 唯一人工生成指令（請由repository根目錄的PowerShell手動執行）：
 
@@ -405,9 +435,35 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "candidate_b_generation_cells.csv": _csv_bytes(analysis["cells"], CELL_FIELDS),
         "development_2x2_accounts.csv": _csv_bytes(analysis["accounts"], ACCOUNT_FIELDS),
         "p0_identity_hash_reuse_ledger.csv": _csv_bytes(analysis["reuse"], REUSE_FIELDS),
+        "r001_to_r002_identity_mapping.csv": _csv_bytes(analysis["mappings"], IDENTITY_MAPPING_FIELDS),
     }
+    incident = {
+        "incident_id": "candidate_b_development60_r001_zero_cell_preflight_incident",
+        "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+        "run_id": R001_RUN_ID,
+        "run_output_relative": R001_RUN_OUTPUT_RELATIVE.as_posix(),
+        "preservation_policy": "do_not_delete_move_rename_overwrite_reuse_or_read_as_results",
+        "observed_directory_entries": ["frozen_manifest.json", "j/", "model_provenance.json"],
+        "model_calls": 0, "generation_journals": 0,
+        "evaluator_executions": 0, "candidate_b_responses": 0,
+        "selective_acceptance_available": False,
+        "generation_retry_or_resume": False,
+        "cause_status": "resolved",
+        "cause": "fixed_runner_generate_path_after_model_identity_validation_before_first_persisted_generation_journal",
+        "cause_evidence": {
+            "frozen_manifest_sha256": "cb6c36d5342da1096371946e58c5481291628ac28859a568ded95b11eada49e7",
+            "model_provenance_sha256": "ddc1eb489e48de69af9ad6404a51c5dfd9b1b54e36beb715b2fd12cda347c777",
+            "fixed_only_receipt_present": "candidate_b_identity_validation",
+            "quantization_api_value_type": "str",
+            "quantization_api_value": EXPECTED_QUANTIZATION,
+            "old_quantization_drift_path_excluded": True,
+            "zero_model_preflight_path_excluded": True,
+        },
+        "r001_content_used_by_r002": False,
+    }
+    outputs["r001_incident_ledger.json"] = _canonical_bytes(incident)
     execution_spec = {
-        "spec_version": "candidate_b_development60_replay_execution_v1",
+        "spec_version": "candidate_b_development60_replay_r002_execution_v1",
         "status": "prepared_not_executed", "evidence_role": "development_replay_only",
         "run_id": RUN_ID, "run_output_relative": RUN_OUTPUT_RELATIVE.as_posix(),
         "sequence": ["immutable zero-model preflight", "verify model provenance", "300 single attempts with durable journals", "require all raw complete", "Pipeline all raw", "evaluator-blind H0/H1 fork", "wait for separately authorized EvalPlus"],
@@ -421,11 +477,12 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
             "quantization_normalization": "require_string_then_strip_then_upper",
             "missing_quantization": "fail_closed",
         },
-        "pre_generation_incident": {
-            "cause": "legacy_provenance_helper_used_missing_model_profile_instead_of_api_details_quantization_level",
-            "cells_generated": 0, "run_directory_created": False,
-            "model_generation_calls": 0, "evalplus_executions": 0,
-            "retry_or_resume": False,
+        "predecessor_incident_policy": {
+            "r001_classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+            "r001_must_exist": True, "r001_expected_generation_journals": 0,
+            "r001_any_journal": "fail_closed_require_manual_review",
+            "r001_result_source": False, "r001_content_comparison": False,
+            "r002_existing": "fail_closed_no_resume_retry_or_overwrite",
         },
     }
     analysis_spec = {
@@ -438,14 +495,14 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
         "healer_results_separate_from_candidate_b_prompt_gate": ["H0_to_H1_rescue", "regression", "changed", "abstain", "no_trigger"],
         "post_result_rule_change_or_cell_exclusion": False,
     }
-    zero = {"status": "zero_model_preflight_frozen", "tasks": 60, "existing_p0_programs": 300, "candidate_b_generation_cells": 300, "candidate_b_accounts": 600, "factorial_programs": 600, "factorial_accounts": 1200, "model_calls": 0, "evalplus_executions": 0, "validation_run_absent": True}
+    zero = {"status": "zero_model_preflight_frozen", "tasks": 60, "existing_p0_programs": 300, "candidate_b_generation_cells": 300, "candidate_b_accounts": 600, "factorial_programs": 600, "factorial_accounts": 1200, "r001_incident_registered": True, "r001_expected_journals": 0, "r001_result_source": False, "r002_run_absent": True, "model_calls": 0, "evalplus_executions": 0, "validation_run_absent": True}
     outputs["execution_spec.json"] = _canonical_bytes(execution_spec)
     outputs["paired_analysis_spec.json"] = _canonical_bytes(analysis_spec)
     outputs["zero_model_preflight.json"] = _canonical_bytes(zero)
     outputs["candidate_b_exact_text.txt"] = CANDIDATE_B_TEXT.encode("utf-8")
     outputs["operator_guide_zh.md"] = _operator_guide()
     manifest = {
-        "manifest_version": "candidate_b_development60_replay_v1",
+        "manifest_version": "candidate_b_development60_replay_r002_v1",
         "status": "prepared_not_executed", "development_replay_only": True,
         "validation_or_confirmatory_evidence": False,
         "counts": {"tasks": 60, "task_seed_identities": 300, "existing_p0_programs": 300, "candidate_b_new_generation_cells": 300, "candidate_b_new_accounts": 600, "factorial_programs": 600, "factorial_accounts": 1200},
@@ -465,10 +522,14 @@ def build_outputs(repo_root: Path = REPO_ROOT) -> dict[str, bytes]:
             "quantization_normalization": "strip_then_upper",
             "missing_or_non_string": "fail_closed",
         },
-        "pre_generation_incident": {
-            "cells_generated": 0, "run_directory_created": False,
-            "model_generation_calls": 0, "evalplus_executions": 0,
+        "predecessor_incident": {
+            "run_id": R001_RUN_ID,
+            "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+            "model_calls": 0, "generation_journals": 0,
+            "evaluator_executions": 0, "candidate_b_responses": 0,
+            "selective_acceptance_available": False,
             "generation_retry_or_resume": False,
+            "result_source": False,
         },
         "model_calls_during_freeze": 0, "evalplus_executions_during_freeze": 0,
         "validation_run_directory_created": False,

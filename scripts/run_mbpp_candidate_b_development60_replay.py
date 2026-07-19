@@ -43,7 +43,7 @@ from scripts import freeze_mbpp_candidate_b_development60_replay as frozen  # no
 
 
 FROZEN_MANIFEST_RELATIVE = frozen.OUTPUT_RELATIVE / "manifest.json"
-FROZEN_MANIFEST_SHA256 = "cb6c36d5342da1096371946e58c5481291628ac28859a568ded95b11eada49e7"
+FROZEN_MANIFEST_SHA256 = "6574f3ad41bc928f6b85d2a2fd421564ad61920ac12e66767f298d1e2a5a22dd"
 TIMEOUT_SECONDS = 300.0
 
 
@@ -95,6 +95,30 @@ def validate_installed_model_provenance(provenance: dict[str, Any]) -> dict[str,
     }
 
 
+def validate_r001_zero_cell_incident(path: Path) -> dict[str, Any]:
+    """Inspect only r001 directory existence and journal filenames, never contents."""
+    _require(path.is_dir(), "registered r001 incident directory is missing; manual review required")
+    journal_dir = path / "j"
+    _require(journal_dir.is_dir(), "registered r001 incident journal directory is missing; manual review required")
+    journals = [item for item in journal_dir.iterdir() if item.is_file()]
+    _require(
+        not journals,
+        "registered r001 incident unexpectedly contains generation journal(s); manual review required",
+    )
+    return {
+        "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+        "run_id": frozen.R001_RUN_ID,
+        "directory_exists": True,
+        "generation_journals": 0,
+        "result_source": False,
+        "content_read_or_compared": False,
+    }
+
+
+def require_r002_absent(path: Path) -> None:
+    _require(not path.exists(), "r002 run directory exists; resume/retry/overwrite forbidden")
+
+
 def zero_model_preflight(
     *, manifest_path: Path, manifest_sha256: str, require_output_absent: bool = True,
 ) -> dict[str, Any]:
@@ -105,6 +129,7 @@ def zero_model_preflight(
     _require(_sha256_bytes(manifest_bytes) == FROZEN_MANIFEST_SHA256, "frozen manifest bytes drift")
     manifest = json.loads(manifest_bytes)
     _require(manifest["status"] == "prepared_not_executed", "manifest status drift")
+    _require(manifest["manifest_version"] == "candidate_b_development60_replay_r002_v1", "manifest version drift")
     _require(manifest["development_replay_only"] is True, "evidence role drift")
     _require(manifest["validation_or_confirmatory_evidence"] is False, "evidence claim drift")
     _require(manifest["run_id"] == frozen.RUN_ID, "run ID drift")
@@ -145,18 +170,25 @@ def zero_model_preflight(
     cells = _read_csv(manifest_path.parent / "candidate_b_generation_cells.csv")
     accounts = _read_csv(manifest_path.parent / "development_2x2_accounts.csv")
     reuse = _read_csv(manifest_path.parent / "p0_identity_hash_reuse_ledger.csv")
+    mapping = _read_csv(manifest_path.parent / "r001_to_r002_identity_mapping.csv")
     _require(len(cells) == len({row["generation_id"] for row in cells}) == 300, "300 Candidate B generation identities incomplete or duplicate")
     _require(len({(row["task_id"], row["seed"]) for row in cells}) == 300, "Candidate B task-seed identity drift")
     _require(len({row["task_id"] for row in cells}) == 60, "development task identity count drift")
     _require(len(accounts) == len({row["evaluation_account_id"] for row in accounts}) == 1200, "1200 factorial accounts incomplete or duplicate")
     _require(len(reuse) == len({row["program_id"] for row in reuse}) == 300, "P0 reuse ledger drift")
+    _require(len(mapping) == 300, "r001/r002 identity mapping count drift")
+    _require(all(row["same_task_seed_identity"] == "true" for row in mapping), "r001/r002 task-seed identity drift")
+    _require(all(row["r001_result_reused"] == "false" and row["r001_response_available"] == "false" for row in mapping), "r001 improperly marked as result source")
     _require(sum(row["prompt_condition"] == "Candidate_B" for row in accounts) == 600, "Candidate B account count drift")
     _require(sum(row["prompt_condition"] == "P0" for row in accounts) == 600, "P0 account count drift")
     _require(all(row["result_reexecution"] == "false" for row in reuse), "P0 reexecution flag drift")
+    candidate_accounts = [row for row in accounts if row["prompt_condition"] == "Candidate_B"]
+    _require(all(row["run_id"] == frozen.RUN_ID for row in candidate_accounts), "Candidate B account references non-r002 run")
     _require(not (REPO_ROOT / frozen.VALIDATION_RUN_RELATIVE).exists(), "2K-A validation run must remain absent")
+    r001 = validate_r001_zero_cell_incident(REPO_ROOT / frozen.R001_RUN_OUTPUT_RELATIVE)
     run_dir = REPO_ROOT / frozen.RUN_OUTPUT_RELATIVE
     if require_output_absent:
-        _require(not run_dir.exists(), "Candidate B run directory exists; resume/retry/overwrite forbidden")
+        require_r002_absent(run_dir)
     return {
         "status": "zero_model_preflight_passed",
         "manifest_sha256": FROZEN_MANIFEST_SHA256,
@@ -171,6 +203,7 @@ def zero_model_preflight(
         "evalplus_executions": 0,
         "candidate_b_run_absent": not run_dir.exists(),
         "validation_run_absent": True,
+        "r001_incident": r001,
     }
 
 
@@ -302,7 +335,7 @@ def generate(
     )
     provenance["candidate_b_identity_validation"] = validate_installed_model_provenance(provenance)
     run_dir = REPO_ROOT / frozen.RUN_OUTPUT_RELATIVE
-    _require(not run_dir.exists(), "run directory appeared; overwrite forbidden")
+    require_r002_absent(run_dir)
     durable_write_text_new(run_dir / "frozen_manifest.json", manifest_path.read_text(encoding="utf-8"))
     durable_write_json_new(run_dir / "model_provenance.json", provenance)
 

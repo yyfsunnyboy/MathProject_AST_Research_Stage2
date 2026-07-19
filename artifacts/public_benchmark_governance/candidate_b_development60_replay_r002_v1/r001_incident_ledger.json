@@ -1,0 +1,30 @@
+{
+  "candidate_b_responses": 0,
+  "cause": "fixed_runner_generate_path_after_model_identity_validation_before_first_persisted_generation_journal",
+  "cause_evidence": {
+    "fixed_only_receipt_present": "candidate_b_identity_validation",
+    "frozen_manifest_sha256": "cb6c36d5342da1096371946e58c5481291628ac28859a568ded95b11eada49e7",
+    "model_provenance_sha256": "ddc1eb489e48de69af9ad6404a51c5dfd9b1b54e36beb715b2fd12cda347c777",
+    "old_quantization_drift_path_excluded": true,
+    "quantization_api_value": "Q4_K_M",
+    "quantization_api_value_type": "str",
+    "zero_model_preflight_path_excluded": true
+  },
+  "cause_status": "resolved",
+  "classification": "ZERO_CELL_PREFLIGHT_INCIDENT",
+  "evaluator_executions": 0,
+  "generation_journals": 0,
+  "generation_retry_or_resume": false,
+  "incident_id": "candidate_b_development60_r001_zero_cell_preflight_incident",
+  "model_calls": 0,
+  "observed_directory_entries": [
+    "frozen_manifest.json",
+    "j/",
+    "model_provenance.json"
+  ],
+  "preservation_policy": "do_not_delete_move_rename_overwrite_reuse_or_read_as_results",
+  "r001_content_used_by_r002": false,
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r001",
+  "run_output_relative": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r001",
+  "selective_acceptance_available": false
+}

@@ -1,0 +1,17 @@
+# Candidate B：既有60題 development 統一 replay 操作指南
+
+此規格是development replay，不是validation或confirmatory evidence。P0的300份raw及600個H0/H1結果只按identity與SHA-256沿用；不得重新生成或重跑EvalPlus。Candidate B只生成300份raw，H0/H1共享同一raw與Pipeline輸入。
+
+Candidate B文字SHA-256：`bd91435816a1aa89afa23f1a1c0f3dc60f5890abfae9acaea6496db4441fb719`。Healer固定為`entrypoint_alias_unique_arity_compatible_v0`。Pipeline correction不屬於Healer。
+
+Runner禁止resume、retry、選擇性補跑與overwrite；每格只嘗試一次並以同目錄temporary file、flush、fsync、atomic rename及read-back hash保存journal。300格未全部完成時，不建立aggregate raw、Pipeline或H0/H1帳。Runner不含EvalPlus功能。
+
+r001已永久登記為`ZERO_CELL_PREFLIGHT_INCIDENT`並保持原樣。只讀鑑識顯示其provenance含修復後runner專屬的identity-validation receipt，故可確定目錄由修復後`generate`路徑在模型身份驗證後建立；不是舊quantization-drift路徑，也不是不寫入run directory的zero-model preflight。r001只有frozen manifest、model provenance與空`j`目錄：model calls、generation journals、evaluator executions均登記為0，沒有response可供selective acceptance，不構成generation retry或resume。r002不讀取、沿用或比較r001內容；preflight只確認r001存在且journal仍為0。若r001出現任何journal，r002立即fail-closed並要求人工審查。
+
+唯一人工生成指令（請由repository根目錄的PowerShell手動執行）：
+
+```powershell
+.venv\Scripts\python.exe scripts\run_mbpp_candidate_b_development60_replay.py generate --manifest artifacts\public_benchmark_governance\candidate_b_development60_replay_r002_v1\manifest.json --manifest-sha256 6574f3ad41bc928f6b85d2a2fd421564ad61920ac12e66767f298d1e2a5a22dd
+```
+
+完成生成與evaluator-blind H0/H1 materialization後仍不得直接宣告功能結果；須由後續另行授權的EvalPlus與paired analysis依已凍結gate判定。
