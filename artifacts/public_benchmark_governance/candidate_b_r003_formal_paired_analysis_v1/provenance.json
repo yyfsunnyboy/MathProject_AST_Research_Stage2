@@ -1,0 +1,15 @@
+{
+  "analysis_version": "candidate_b_r003_formal_paired_analysis_v1",
+  "candidate_b_result_source": "r003_only",
+  "cell_or_account_exclusions": 0,
+  "development_replay_only": true,
+  "evalplus_executions": 0,
+  "evalplus_reexecuted": false,
+  "model_calls": 0,
+  "p0_reexecuted": false,
+  "post_result_rule_changes": false,
+  "r001_r002_responses_used": false,
+  "start_head": "24e691fea5b7a0280ea9b7a860f0ad1b106ae677",
+  "validation_executed": false,
+  "validation_results_read": false
+}

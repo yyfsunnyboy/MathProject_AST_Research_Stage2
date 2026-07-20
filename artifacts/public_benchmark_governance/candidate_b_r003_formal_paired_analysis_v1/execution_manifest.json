@@ -1,0 +1,13 @@
+{
+  "accounts": 1200,
+  "analyzer": "scripts/analyze_candidate_b_r003_formal_paired.py",
+  "deterministic_bytes": true,
+  "evalplus_executions": 0,
+  "inputs_hash_verified": true,
+  "model_calls": 0,
+  "programs": 600,
+  "seeds_per_task": 5,
+  "status": "formal_paired_analysis_complete_development_only",
+  "tasks": 60,
+  "validation_not_executed": true
+}

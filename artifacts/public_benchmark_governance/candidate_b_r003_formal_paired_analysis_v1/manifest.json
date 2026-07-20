@@ -1,0 +1,93 @@
+{
+  "accounts": 1200,
+  "evalplus_executions": 0,
+  "four_arm_counts": {
+    "CandidateB_H0": 300,
+    "CandidateB_H1": 300,
+    "P0_H0": 300,
+    "P0_H1": 300
+  },
+  "frozen_gate_result": {
+    "all_qualification_gates_passed": false,
+    "decision": "PAUSE_VALIDATION_HANDLE_PRE_REGISTERED_GATE_FAILURE",
+    "development_evidence_retained": true,
+    "failed_gates": [
+      "candidate_b_h0_to_h1_paired_net_change_gt_0"
+    ],
+    "gate_definition_source": "candidate_b_development60_replay_r003_v1/paired_analysis_spec.json",
+    "gates": [
+      {
+        "gate": "strict_python_only_rate_gte_0.90",
+        "observed": 0.9433333333333334,
+        "passed": true,
+        "threshold": ">= 0.90"
+      },
+      {
+        "gate": "code_fence_count_eq_0",
+        "observed": 0,
+        "passed": true,
+        "threshold": "== 0"
+      },
+      {
+        "gate": "reasoning_leakage_count_eq_0",
+        "observed": 0,
+        "passed": true,
+        "threshold": "== 0"
+      },
+      {
+        "gate": "candidate_b_h0_pass_gt_p0_h0",
+        "observed": 8,
+        "passed": true,
+        "threshold": "> 0"
+      },
+      {
+        "gate": "candidate_b_h0_to_h1_paired_net_change_gt_0",
+        "observed": 0,
+        "passed": false,
+        "threshold": "> 0"
+      },
+      {
+        "gate": "post_result_rule_change_or_cell_exclusion_eq_false",
+        "observed": false,
+        "passed": true,
+        "threshold": "== false"
+      }
+    ],
+    "scaffold_itself_better_than_p0": true,
+    "untouched20_validation_authorized": false
+  },
+  "manifest_version": "candidate_b_r003_formal_paired_analysis_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "execution_manifest.json": "2aba965e4e6452ee8f53cb221932d040dfca151c9d34fa5d8831016b5aafa563",
+    "frozen_gate_results.json": "daedaa5d5c2076a31da5a1ce3077a2abc33c30cd205db9c9f84f06a1bb129f19",
+    "healer_transition_summary.csv": "6a4e938908522add76b4ca0e1b247d7a0d00f86fc0d4f604bbe3b042bfda5304",
+    "paired_account_results.csv": "6475e48ccdd37d4346e5fbe46cb4b1468649de8e42389c9296b3df161145d558",
+    "paired_analysis_report_zh.md": "3eece9e8815d760a8d7c53e8455e15b9da99d30d6a44df38a1d543a6ff640a9e",
+    "paired_cell_results.csv": "425efbf8351cc2d1fbe2a0f22e5c6ae5e2bc29b57ee8da6a7a9adfe88752ae43",
+    "prompt_condition_summary.csv": "49689cd55f4cb84a4e93bdbfc6e39cf15f884c705ed774ef90367d28e24fe54a",
+    "provenance.json": "5b12ff4401d792117e19b7d8984d43d5d8ce8eab4e17de24d306e77b25ae0991",
+    "source_hash_ledger.csv": "261e1a1e38a4d4662a24a05abd8662d10139ce387c9bcd956792314d9e5da2e1",
+    "task_transition_summary.csv": "f9770fef648943fd613a13418c13462e795738942c1596745649547f7885e662"
+  },
+  "programs": 600,
+  "scaffold": {
+    "absolute_pass_difference": 8,
+    "candidate_b_h0_pass": 76,
+    "candidate_b_h0_pass_rate": 0.25333333333333335,
+    "exact_mcnemar_two_sided_p": 0.4452046690465762,
+    "p0_h0_pass": 68,
+    "p0_h0_pass_rate": 0.22666666666666666,
+    "percentage_point_difference": 2.666666666666667,
+    "relative_change": 0.11764705882352941,
+    "transitions": {
+      "fail_to_fail": 186,
+      "fail_to_pass": 46,
+      "pass_to_fail": 38,
+      "pass_to_pass": 30
+    }
+  },
+  "status": "complete_development_only_gate_failed",
+  "tasks": 60,
+  "validation_not_executed": true
+}

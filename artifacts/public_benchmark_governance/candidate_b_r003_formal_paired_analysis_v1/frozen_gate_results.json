@@ -1,0 +1,49 @@
+{
+  "all_qualification_gates_passed": false,
+  "decision": "PAUSE_VALIDATION_HANDLE_PRE_REGISTERED_GATE_FAILURE",
+  "development_evidence_retained": true,
+  "failed_gates": [
+    "candidate_b_h0_to_h1_paired_net_change_gt_0"
+  ],
+  "gate_definition_source": "candidate_b_development60_replay_r003_v1/paired_analysis_spec.json",
+  "gates": [
+    {
+      "gate": "strict_python_only_rate_gte_0.90",
+      "observed": 0.9433333333333334,
+      "passed": true,
+      "threshold": ">= 0.90"
+    },
+    {
+      "gate": "code_fence_count_eq_0",
+      "observed": 0,
+      "passed": true,
+      "threshold": "== 0"
+    },
+    {
+      "gate": "reasoning_leakage_count_eq_0",
+      "observed": 0,
+      "passed": true,
+      "threshold": "== 0"
+    },
+    {
+      "gate": "candidate_b_h0_pass_gt_p0_h0",
+      "observed": 8,
+      "passed": true,
+      "threshold": "> 0"
+    },
+    {
+      "gate": "candidate_b_h0_to_h1_paired_net_change_gt_0",
+      "observed": 0,
+      "passed": false,
+      "threshold": "> 0"
+    },
+    {
+      "gate": "post_result_rule_change_or_cell_exclusion_eq_false",
+      "observed": false,
+      "passed": true,
+      "threshold": "== false"
+    }
+  ],
+  "scaffold_itself_better_than_p0": true,
+  "untouched20_validation_authorized": false
+}
