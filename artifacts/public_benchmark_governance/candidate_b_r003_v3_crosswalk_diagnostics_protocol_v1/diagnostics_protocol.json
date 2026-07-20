@@ -1,0 +1,66 @@
+{
+  "allowed_result_fields": [
+    "cell_identity_sha256",
+    "program_id",
+    "task_identity_sha256",
+    "evaluation_source_sha256",
+    "evaluator_hash",
+    "protocol_sha256",
+    "phase",
+    "exception_class",
+    "model_source_line",
+    "model_source_ast_node",
+    "entry_point_bound",
+    "entry_point_callable",
+    "signature_binding",
+    "termination",
+    "return_type_bucket",
+    "return_shape_bucket"
+  ],
+  "classification_order": [
+    "infrastructure",
+    "G1",
+    "G3e",
+    "G2",
+    "G3s",
+    "G3a",
+    "G4"
+  ],
+  "diagnostic_results_may_define_or_trigger_healer_rules": false,
+  "execution_environment": {
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "evalplus_package_version_for_frozen_dataset_loader_only": "0.3.1",
+    "os": "WSL/Linux only",
+    "parallel": 1,
+    "per_cell_timeout_seconds": 10,
+    "python": "/home/yehya/.venvs/ast_evalplus/bin/python"
+  },
+  "forbidden_result_fields_or_content": [
+    "hidden_input",
+    "test_input",
+    "expected_value",
+    "actual_value",
+    "exception_message",
+    "assertion_message",
+    "traceback",
+    "stdout",
+    "stderr",
+    "source",
+    "completion",
+    "reference_solution"
+  ],
+  "g3a_policy": "NOT_APPLICABLE for this ordinary MBPP+ split; no required Domain API was frozen",
+  "g3s_policy": "NOT_APPLICABLE unless a separately frozen public MBPP+ output-schema contract exists; type/shape buckets are diagnostic observations only",
+  "g4_policy": "not re-executed or re-scored by this diagnostic runner",
+  "healer_runtime_input": false,
+  "output_directory": "artifacts/public_benchmark_governance/candidate_b_r003_v3_crosswalk_diagnostics_protocol_v1/manual_diagnostics_run_001",
+  "population": {
+    "cells": 198,
+    "legacy_layer": "UNRESOLVED",
+    "outcome_validity": "PENDING_REVIEW"
+  },
+  "protocol_version": "candidate_b_r003_unresolved198_coarse_diagnostics_v1",
+  "retry_resume_overwrite": false,
+  "status": "prepared_not_executed"
+}

@@ -1,0 +1,10 @@
+{
+  "analysis_version": "candidate_b_r003_v3_crosswalk_diagnostics_protocol_v1",
+  "diagnostic_results_allowed_as_healer_runtime_input": false,
+  "diagnostics_executed": false,
+  "evidence_role": "development",
+  "legacy_artifacts_overwritten": false,
+  "legacy_fields_preserved": true,
+  "start_head": "a104ceacfe6d4c371ce4d50ad938ae39fd4578ea",
+  "v3_attachment_sha256": "7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304"
+}

@@ -1,0 +1,38 @@
+{
+  "counts": {
+    "L1": 20,
+    "L2": 6,
+    "diagnostic_input_cells": 198,
+    "passed": 76,
+    "pending_review_layer_null": 198,
+    "programs": 300
+  },
+  "diagnostic_executions": 0,
+  "diagnostics_output_directory_created": false,
+  "diagnostics_protocol_sha256": "12c62d53d3f88075d861344d491168426b36c71e289d4dd2de327d83480ff4f6",
+  "evalplus_executions": 0,
+  "healer_rules_modified": false,
+  "manifest_version": "candidate_b_r003_v3_crosswalk_diagnostics_protocol_v1",
+  "model_calls": 0,
+  "new_rule_families_frozen": 0,
+  "outputs_sha256_excluding_manifest_and_operator_guide": {
+    "candidate_b_r003_v3_derived_crosswalk.csv": "6a083a06b2cbbb5f937b6f1ae343466ae3bc97e35f93323c8902adec4f5658f7",
+    "diagnostics_output_schema.json": "2e28eb6bef38b54102fda8f6daf0d81699411391f7b668085ea471f4fe09d956",
+    "diagnostics_privacy_policy_zh.md": "91f1b478eb9ea30ad3a9cd5a245b484aaf953ded714df22f629c89aa8bfa162f",
+    "diagnostics_protocol.json": "12c62d53d3f88075d861344d491168426b36c71e289d4dd2de327d83480ff4f6",
+    "execution_manifest.json": "4aa9c8c72a494fef2e2eb624b55250d456c7e7adf3cffd6f87643e51a0abd6f6",
+    "provenance.json": "1c4d79f8c36d1807f4cfd3abb8108936170a350902ee309b365a94b6911ee245",
+    "source_hash_ledger.csv": "ca18f090af136301a5db25dcb8557f75450909f88292456f0c0ec1ed4294c09e",
+    "unresolved198_diagnostics_input_ledger.csv": "d2d62a33b4f51118d0a51b41aadc9445bd64d680c3b1ef5c54117ae180272640",
+    "v3_crosswalk_report_zh.md": "42d2fa9728bf17263c002f129d972b99a25cd75dfde2854b94b3f296ab558433",
+    "v3_crosswalk_summary.csv": "a48f22182a8b0e1f7cafd0382069632bd6fcbf0df9965a3e0526e49c9a372210"
+  },
+  "source_sha256": {
+    "scripts/build_candidate_b_r003_v3_crosswalk.py": "f3c08753b0f061f41eddf4562e9f66fadd0a8b202796a7d1cf7b20a7873d56e7",
+    "scripts/run_candidate_b_r003_unresolved_diagnostics.py": "259fa51919d5db7655128ba2c8fd0611d73afbf0eb111f3162541133a3643653",
+    "tests/finals_rebuild/test_candidate_b_r003_v3_crosswalk_diagnostics.py": "1208f7efe842d5429da2d37dde3ecd8de0bb44c7deadfbcc65f1a1233a14ce77"
+  },
+  "status": "complete_crosswalk_diagnostics_prepared_not_executed",
+  "v3_classification_revision": "candidate_b_r003_v3_crosswalk_001",
+  "validation_not_executed": true
+}

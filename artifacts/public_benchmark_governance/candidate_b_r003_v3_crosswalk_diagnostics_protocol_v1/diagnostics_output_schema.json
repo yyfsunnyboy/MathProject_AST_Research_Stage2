@@ -1,0 +1,24 @@
+{
+  "additional_fields": false,
+  "fields": [
+    "cell_identity_sha256",
+    "program_id",
+    "task_identity_sha256",
+    "evaluation_source_sha256",
+    "evaluator_hash",
+    "protocol_sha256",
+    "phase",
+    "exception_class",
+    "model_source_line",
+    "model_source_ast_node",
+    "entry_point_bound",
+    "entry_point_callable",
+    "signature_binding",
+    "termination",
+    "return_type_bucket",
+    "return_shape_bucket"
+  ],
+  "null_representation": "empty CSV field",
+  "row_count": 198,
+  "schema_version": "candidate_b_r003_unresolved198_diagnostics_output_v1"
+}
