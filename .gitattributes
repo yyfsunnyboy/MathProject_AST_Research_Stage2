@@ -66,3 +66,8 @@ artifacts/public_benchmark_governance/candidate_b_development60_replay_r002_v1/*
 artifacts/public_benchmark_development/mbpp_candidate_b_development60/** text eol=lf
 scripts/freeze_mbpp_candidate_b_development60_replay.py text eol=lf
 scripts/run_mbpp_candidate_b_development60_replay.py text eol=lf
+
+# Candidate B r003 failure-census human-review adjudication.
+artifacts/public_benchmark_governance/candidate_b_r003_failure_census_human_review_adjudication_v1/** text eol=lf
+scripts/adjudicate_candidate_b_r003_human_review.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_human_review_adjudication.py text eol=lf

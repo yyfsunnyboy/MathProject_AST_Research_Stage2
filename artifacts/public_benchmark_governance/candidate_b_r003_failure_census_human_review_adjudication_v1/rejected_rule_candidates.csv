@@ -1,0 +1,9 @@
+rejected_family,candidate_transformation,reviewed_cells,unique_tasks,rejection_reason,required_abstention_guard
+TRUNCATION_ALGORITHM_COMPLETION_REJECTED,補寫截斷算法/回傳,3,3,需要生成缺失算法，非唯一機械修復,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+TEXT_POLLUTION_REMOVAL_REJECTED,移除斜線或文字污染,1,1,污染與截斷推理交織，清理後程式仍不完整,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+DOCSTRING_CLOSURE_REJECTED,閉合推理 docstring,2,1,閉合位置及缺失函式體不唯一,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+DUPLICATE_OVERRIDE_DELETION_REJECTED,刪除最後重複定義或加 pass,2,1,選擇候選版本需要算法判斷,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+AMBIGUOUS_ENTRYPOINT_ALIAS_REJECTED,多候選 entrypoint alias,1,1,候選不唯一,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+SIGNATURE_WRAPPER_REJECTED,三參數到兩參數 wrapper,3,1,需要領域公式與參數語義,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+SELF_RECURSION_REWRITE_REJECTED,改寫無進展 self recursion,1,1,L4 可定位但修法不唯一,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain
+EXECUTION_DIAGNOSTICS_REQUIRED,從聚合 fail 推導語義修補,5,5,無 failure phase/exception，禁止猜測 L5 或答案,不得使用 task_id、答案或 hidden tests；非唯一或需算法理解即 abstain

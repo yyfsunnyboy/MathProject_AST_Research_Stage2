@@ -1,0 +1,10 @@
+{
+  "analysis_mode": "deterministic_source_ast_human_adjudication",
+  "candidate_programs_executed": 0,
+  "evalplus_executions": 0,
+  "healer_rules_modified": false,
+  "model_calls": 0,
+  "outputs_contain_full_source": false,
+  "reviewed_cells": 21,
+  "validation_not_executed": true
+}

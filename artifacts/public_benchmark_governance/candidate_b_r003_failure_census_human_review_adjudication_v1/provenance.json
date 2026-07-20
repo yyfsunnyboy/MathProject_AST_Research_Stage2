@@ -1,0 +1,14 @@
+{
+  "analysis_version": "candidate_b_r003_failure_census_human_review_adjudication_v1",
+  "candidate_response_source": "r003_only",
+  "development_replay_only": true,
+  "full_source_emitted": false,
+  "hidden_tests_used_for_rule_design": false,
+  "public_contract_and_source_ast_only": true,
+  "reviewed_queue_cells": 21,
+  "source_census_version": "candidate_b_r003_failure_census_v1",
+  "source_extraction": "stream_scan_then_json_decode_queued_program_ids_only_h0",
+  "source_modified": false,
+  "start_head": "1eb3dcb119ed387d0023ee8b9d5d3f87446fad27",
+  "task_id_or_answer_based_rules": false
+}

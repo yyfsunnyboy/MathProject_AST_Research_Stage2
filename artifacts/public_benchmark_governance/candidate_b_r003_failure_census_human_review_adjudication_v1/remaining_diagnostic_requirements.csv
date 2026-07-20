@@ -1,0 +1,8 @@
+diagnostic_id,field,minimum_content,purpose,non_leak_guard
+D01,failure_phase,module_import|entrypoint_lookup|signature_bind|call|base_assert|plus_assert|timeout,區分 L2/L4/可能 L5,不得記錄測試輸入、expected 或實際答案
+D02,exception_class,Python exception 類別或 NONE,辨識 runtime/data-flow 類型,不保存 exception message 中的 hidden 值
+D03,model_source_frame,最後一個 model-source line number 與 AST node kind,定位 source 可觀察機制,不保存 evaluator/hidden-test frame 或 source 全文
+D04,entrypoint_binding,required name found、callable、signature bind success 三個布林值,確認 packaging/contract failure,只使用公開 contract
+D05,termination_and_return_shape,returned|raised|timeout 與 return type/shape 類別,區分 timeout、runtime、contract shape,不得記錄 return value 或 hidden assertion
+D06,bounded_io_metadata,stdout/stderr 是否存在及 byte length,辨識污染或非預期 side effect,不保存 stdout/stderr 內容
+D07,identity_hashes,program/source/evaluator/revision hash,將診斷綁定 frozen cell,hash drift 必須 fail-closed

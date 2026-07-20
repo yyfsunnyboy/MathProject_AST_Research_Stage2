@@ -1,0 +1,26 @@
+{
+  "abstain_cells": 19,
+  "candidate_review": 1,
+  "eligible_exact": 2,
+  "evalplus_executions": 0,
+  "healer_rules_modified": false,
+  "ineligible": 13,
+  "manifest_version": "candidate_b_r003_failure_census_human_review_adjudication_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_results.csv": "b244f6c7ca6d291906dadd36992371cf9b5a57bd56a1e59c227b0efbd5468256",
+    "candidate_rule_family_review.csv": "4a9fd5b3d30e512d380311c7949707e201dfa29a01a487941346a55749af4534",
+    "execution_manifest.json": "d748c70a5cb62b9808f13fa9f01a13e286c7c9d90a09335e55ebcfe1975284ad",
+    "human_review_report_zh.md": "1aef67951442ccbe9c83cae2dbdacf3569fcb3f71c4506df412c8416da41787b",
+    "provenance.json": "3167a9e01bcef18b3481584137167124c3719d21580a1e590de4defe09770111",
+    "rejected_rule_candidates.csv": "625df7b13beaa98ffe9eca4de03f28ad8c033a1ddf8cbc17e484d23220eab76b",
+    "remaining_diagnostic_requirements.csv": "eb990b80694a24d8bb3cc0782bd9fe1e7477291850e4d676593d03426e5894ac",
+    "source_hash_ledger.csv": "e8ef100b57998da1c51d437c90c668a77380b4cbe35109c349ca1296c64216a8"
+  },
+  "reviewed_cells": 21,
+  "safe_new_rule_families_crossing_two_tasks": 0,
+  "status": "complete_development_only_no_healer_v1_authorization",
+  "unresolved": 5,
+  "unresolved_population_requiring_minimal_diagnostics": 198,
+  "validation_not_executed": true
+}

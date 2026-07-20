@@ -1,0 +1,3 @@
+rule_family,new_or_existing,mechanism,supported_cells,unique_tasks,repairability_tier,safe_cross_task_family,guard_requirements,ambiguity_conditions,regression_risk,formal_observation,decision
+EXISTING_UNIQUE_ENTRYPOINT_ALIAS_V0,existing_v0,唯一 entrypoint alias,2,1,ELIGIBLE_EXACT,false,required name 缺失；唯一 arity-compatible callable；純 alias；多候選即 abstain,只有一個 task，且正式 H1 為 2 個 fail→fail,低 packaging 風險；不保證功能正確,2 fail_to_fail; 0 rescue,保留既有 v0；非新規則
+EMPTY_SUITE_PASS_INSERTION_REVIEW,new_candidate,空 suite 插入 pass,1,1,CANDIDATE_REVIEW,false,只插入 pass；不得刪改其他 token；後續須為獨立完整程式,前段仍可能執行且只有一個 task/cell,解除 parse 後可能暴露 runtime/side effect,not executed,不實作；收集跨題公開證據
