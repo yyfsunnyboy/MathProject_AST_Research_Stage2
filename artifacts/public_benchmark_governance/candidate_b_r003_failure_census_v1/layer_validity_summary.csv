@@ -1,0 +1,9 @@
+primary_failure_layer,cells,valid_model_outcome,invalid_evaluator,invalid_contract,invalid_infrastructure,pending_review,pass_cells,fail_cells
+PASSED,76,76,0,0,0,0,76,0
+L0,0,0,0,0,0,0,0,0
+L1,20,20,0,0,0,0,0,20
+L2,6,6,0,0,0,0,0,6
+L3,0,0,0,0,0,0,0,0
+L4,0,0,0,0,0,0,0,0
+L5,0,0,0,0,0,0,0,0
+UNRESOLVED,198,0,0,0,0,198,0,198

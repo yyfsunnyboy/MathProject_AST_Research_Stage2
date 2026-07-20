@@ -1,0 +1,5 @@
+repairability_tier,healer_eligible,cells,unique_tasks,fail_cells
+CANDIDATE_REVIEW,false,24,12,24
+ELIGIBLE_EXACT,true,2,1,2
+INELIGIBLE,false,76,22,0
+UNRESOLVED,false,198,50,198

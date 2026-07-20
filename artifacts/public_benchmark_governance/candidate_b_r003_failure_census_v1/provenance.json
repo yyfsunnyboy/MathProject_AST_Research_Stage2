@@ -1,0 +1,13 @@
+{
+  "analysis_version": "candidate_b_r003_failure_census_v1",
+  "candidate_response_source": "r003_only",
+  "cell_exclusions": 0,
+  "development_replay_only": true,
+  "evaluation_source": "frozen_manual_evalplus_run_001",
+  "manual_representative_ast_evidence_reviewed": true,
+  "manual_source_review_in_agent_context": false,
+  "post_result_rule_changes": false,
+  "review_queue_contains_source": false,
+  "start_head": "9af07367fc3ff08b9ebe30eff1000533c4724228",
+  "taxonomy_source_sha256": "7a28fcbc19cee92592639ed828c502ef79644ff6b1d71eabe2060076c81abeef"
+}

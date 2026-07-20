@@ -1,0 +1,53 @@
+{
+  "evalplus_executions": 0,
+  "fail_census_cells": 224,
+  "healer_rules_modified": false,
+  "human_review_queue_cells": 21,
+  "layer_counts": {
+    "L0": 0,
+    "L1": 20,
+    "L2": 6,
+    "L3": 0,
+    "L4": 0,
+    "L5": 0,
+    "PASSED": 76,
+    "UNRESOLVED": 198
+  },
+  "manifest_version": "candidate_b_r003_failure_census_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "candidate_b_r003_failure_census.csv": "289b2d1e562453bb944032254cc02b47d738a504720aca6dc85da6c252c10740",
+    "candidate_rule_families.csv": "1c534ba527277a125eb390540a3cbb60c94f5813a4e17b62ade21d8bc238d024",
+    "execution_manifest.json": "d5c01f270708e8749e45a8993a2661e28cb15f7946a1ba872fdb7a33ae11b18c",
+    "failure_census_report_zh.md": "5fe5fb3a5914124b864f5b37314c077b54ec989b52852154889a74f7f7cc0c96",
+    "failure_subtype_summary.csv": "07ef8b1204f29c441538e658b4d5da7594aca561c051351e69484f57038e4209",
+    "healer_eligibility_summary.csv": "41288db07787d8806a2e1ebf6c1bf39da0d1f61dfed5b9b83c77cf59619b04a0",
+    "human_review_queue.csv": "d94dc730cc828062db8522229798045b69d13d79209b108cbcdc6ad87c5baffe",
+    "layer_validity_summary.csv": "342c536f8d11c8a01a49c95dd339ac288700c2533496a52dbf261302322415de",
+    "mbpp_plus_taxonomy_adapter_zh.md": "56bd6e55b044adcccb707a21809c51ef5d806325fa823f6463b928d3f2bc30b3",
+    "provenance.json": "71b317846d5c67ba539356bda31783c44bb33e79f8200165ad864af079e3ed17",
+    "source_hash_ledger.csv": "c44cc87bc6bdbd14112f99ed317b1807cf59118108abd98bf4a5c0e511784e2a"
+  },
+  "pass_negative_controls": 76,
+  "programs": 300,
+  "repairability_counts": {
+    "CANDIDATE_REVIEW": 24,
+    "ELIGIBLE_EXACT": 2,
+    "INELIGIBLE": 76,
+    "UNRESOLVED": 198
+  },
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "status": "complete_development_only",
+  "tasks": 60,
+  "validation_not_executed": true,
+  "validity_counts": {
+    "PENDING_REVIEW": 198,
+    "VALID_MODEL_OUTCOME": 102
+  }
+}

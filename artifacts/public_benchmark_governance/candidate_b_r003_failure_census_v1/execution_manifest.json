@@ -1,0 +1,19 @@
+{
+  "analyzer": "scripts/analyze_candidate_b_r003_failure_census.py",
+  "batch_ast_analysis": true,
+  "evalplus_executions": 0,
+  "fail_census_cells": 224,
+  "full_sources_emitted": false,
+  "healer_rules_modified": false,
+  "manual_representative_ast_evidence_reviewed": true,
+  "model_calls": 0,
+  "pass_negative_controls": 76,
+  "programs": 300,
+  "r001_r002_responses_read": false,
+  "seeds_per_task": 5,
+  "status": "candidate_b_r003_failure_census_complete_development_only",
+  "task_id_answer_or_hidden_tests_used_for_rule_design": false,
+  "tasks": 60,
+  "taxonomy_attachment_sha256": "7a28fcbc19cee92592639ed828c502ef79644ff6b1d71eabe2060076c81abeef",
+  "validation_not_executed": true
+}
