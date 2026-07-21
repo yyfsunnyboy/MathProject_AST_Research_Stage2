@@ -1,0 +1,15 @@
+{
+  "cells": 27,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_adjudications_completed": 0,
+  "formal_diagnostics_executions": 0,
+  "healer_executions": 0,
+  "healer_runtime_input": false,
+  "model_calls": 0,
+  "partial_diagnostics_executions": 0,
+  "reviewer_a_completed": false,
+  "reviewer_b_completed": false,
+  "status": "independent_reviewer_worksheets_prepared_not_reviewed",
+  "validation_executions": 0
+}

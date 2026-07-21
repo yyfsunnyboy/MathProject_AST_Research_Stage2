@@ -102,3 +102,8 @@ tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_v3.py text eol=lf
 artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/** text eol=lf
 scripts/prepare_candidate_b_r003_taxonomy_v3_formal_classification.py text eol=lf
 tests/finals_rebuild/test_candidate_b_r003_taxonomy_v3_formal_classification_preparation.py text eol=lf
+
+# Candidate B r003 taxonomy v3 G2_module independent reviewer preparation.
+artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_independent_review_v1/** text eol=lf
+scripts/prepare_candidate_b_r003_g2_module_independent_review.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_g2_module_independent_review.py text eol=lf

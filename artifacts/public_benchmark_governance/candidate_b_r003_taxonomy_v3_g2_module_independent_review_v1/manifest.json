@@ -1,0 +1,32 @@
+{
+  "adjudication_timestamps_present": 0,
+  "cells": 27,
+  "diagnostics_executions": 0,
+  "double_independent_review_required": true,
+  "evalplus_correctness_executions": 0,
+  "formal_adjudications_completed": 0,
+  "healer_executions": 0,
+  "manifest_version": "candidate_b_r003_taxonomy_v3_g2_module_independent_review_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "disagreement_adjudication_blank.csv": "1afe6060148da45cf37855c6b0fe5c02a75ff57414d365443c11eb3ffe650a8f",
+    "evidence_completeness_audit.json": "d03496ed60e34e7aa165fac92f9ed31fe0b898b9033a7940a09037bc5f08440f",
+    "execution_manifest.json": "6af5387e21645d33d9ace265d2f51f1a9e8cf35440a38fe1b4a29efc12455b03",
+    "independent_review_protocol_zh.md": "5780852dbcf525ef9427ffca4ffd7f196b5c373441d0b67d393124ca24ebca55",
+    "provenance.json": "daf4188158902377b213d74676febcb954fc1ccc11beaf52065c058290b547e7",
+    "provisional_recommendations.csv": "f94a8cf5e7424a8a08ea68d5c19121a68edfa42f859c1c8e2ea926e6985b01af",
+    "review_packets.csv": "fa8063f0e0ea3d92b284ec9cecfaa1ffe116d3d8f469ab901b1b3a89ad0e51a9",
+    "reviewer_A_blank.csv": "3c4cfdd0dfbfa6d56019ba936c10e9e10a7db0752fd118e56c6381c73a983f15",
+    "reviewer_B_blank.csv": "e7127d3502bf28c75876b71e3f7f2ab125b151058e7b7802ec8c3130e2d68daa",
+    "source_hash_ledger.csv": "5bdfe5fde39607ca840c148678c324c7ab6afee35a457ad4dcccd7f0122fc4b9"
+  },
+  "provisional_status": "AI_ASSISTED_PROVISIONAL_NOT_FORMAL_ADJUDICATION",
+  "reviewer_id_values_present": 0,
+  "reviewer_worksheets": 2,
+  "source_sha256": {
+    "scripts/prepare_candidate_b_r003_g2_module_independent_review.py": "397dfcae0aa1848c1f7609bd942b79ff8150ca9804e75d053ac544ed4a576c2a",
+    "tests/finals_rebuild/test_candidate_b_r003_g2_module_independent_review.py": "333dd11e422945248d99bbd470cd81836259fca8b8add89e01e2395fab0f8a5d"
+  },
+  "status": "reviewer_worksheets_prepared_formal_adjudication_not_started",
+  "validation_executions": 0
+}

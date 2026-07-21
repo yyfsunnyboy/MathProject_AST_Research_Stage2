@@ -1,0 +1,36 @@
+{
+  "all_required_entry_points_present": true,
+  "all_static_signatures_compatible": true,
+  "candidate_execution_performed": false,
+  "cells": 27,
+  "disagreement_blank_rows": 27,
+  "domain_api_import_cells": 0,
+  "fixed_order": "program_id_ascending",
+  "formal_adjudications_completed": 0,
+  "hidden_expected_actual_message_traceback_used": false,
+  "import_classification_counts": {
+    "NONE": 18,
+    "collections:STDLIB": 2,
+    "math:STDLIB": 4,
+    "re:STDLIB": 3
+  },
+  "location_counts": {
+    "FUNCTION_RAISE_EXPOSED_BY_MODULE_ASSERT": 1,
+    "FUNCTION_REGEX_PATTERN_ERROR_EXPOSED_BY_MODULE_ASSERT": 1,
+    "TOP_LEVEL_ASSERT_EXECUTION": 25
+  },
+  "provisional_rows": 27,
+  "public_assert_relation_counts": {
+    "PUBLIC_CONTRACT_ASSERT_AST_EXACT": 25,
+    "REQUIRED_ENTRY_ASSERT_VARIANT_NOT_CONTRACT_EXACT": 2
+  },
+  "reviewer_a_blank_rows": 27,
+  "reviewer_b_blank_rows": 27,
+  "reviewer_b_blinded_from_reviewer_a_decisions": true,
+  "reviewer_decision_values_present": 0,
+  "reviewer_identity_values_present": 0,
+  "source_hashes_verified": 17,
+  "status": "g2_module_independent_review_materials_complete",
+  "third_party_import_cells": 0,
+  "truncation_cells": 0
+}

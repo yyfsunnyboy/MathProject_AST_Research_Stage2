@@ -1,0 +1,12 @@
+{
+  "adjudication_timestamps_written": false,
+  "analysis_version": "candidate_b_r003_taxonomy_v3_g2_module_independent_review_v1",
+  "diagnostics_runner_revision": "r002_v3",
+  "formal_diagnostics_modified": false,
+  "formal_human_adjudication_completed": false,
+  "machine_preparation_manifest_sha256": "6c6aa8482348b5aa30d9809d3ba1e4c31e3d16a00a8e2e5b9c8ab723d2d7a142",
+  "machine_preparation_modified": false,
+  "reviewer_id_values_written": false,
+  "start_head": "3a9ab182f52f00677b7816068d422e592fe1e6da",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3"
+}
