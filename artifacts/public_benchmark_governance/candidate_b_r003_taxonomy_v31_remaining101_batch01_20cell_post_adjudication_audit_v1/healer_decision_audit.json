@@ -1,0 +1,9 @@
+{
+  "abstain": 20,
+  "conditional": 0,
+  "eligible": 0,
+  "note": "No unique contract-local safe repair across batch; Mbpp/103 challenge keeps abstain.",
+  "reverse_scan_found_safe_conditional": false,
+  "reverse_scan_found_safe_eligible": false,
+  "verdict": "ABSTAIN_20_AFFIRMED"
+}

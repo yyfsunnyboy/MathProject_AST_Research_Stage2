@@ -1,0 +1,50 @@
+{
+  "analyzer": "scripts/audit_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_v1.py",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "cells_requiring_provisional_v2": [
+    "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b"
+  ],
+  "correction_materiality_distribution": {
+    "MATERIAL": 1,
+    "NONE": 19
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "frozen_marker_written": false,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "next20_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "outputs_sha256_excluding_manifest": {
+    "audit_findings.csv": "ab33751e000136da4713b24292b388979e9ed641f492cac366dad3c32c30fb92",
+    "audit_roster.csv": "ebfa81dee693a42e67ec5ca25e71fbb31f0394bced6c0639297efacfbc296c9c",
+    "audit_summary.json": "96df5df91f27e211715995d4005d65490999b955f1bfca2828fce4967eac17eb",
+    "citation_audit.csv": "3fc254f7b7dceebe259fd0b107a940c46a355f7d1e3bc5051034253a931d8de7",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "healer_decision_audit.json": "9f5208a15b9da18b13ff8ecf8867d266fb60adf123cfe89b888b738cf96dd765",
+    "layer_transition_matrix.json": "b711351c52e09f00414f6ca76d392807783f524fe0b967e62f414bb5d3b5a716",
+    "mechanism_strength_audit.json": "f09faeb19c5428c7dd5804bbe93bd409cc038ce68d0595d2fdba7794940ea239",
+    "per_cell_audit_records.csv": "997b7ff0bbf588c000a794f4b2f96dafbcb643cbafb12eb88eb1500dd3802ebe",
+    "post_adjudication_audit_report_zh.md": "6b975d93a0fb6f587db1be9a1aa6d13859773e75e98be0bd99aacb4775a48d47",
+    "provenance.json": "7aeb58b8c0a417e779efbec4ea9b207a30882ba4378e72ea03bc802d77a55a8b"
+  },
+  "overall_verdict": "POST_ADJUDICATION_REVISION_REQUIRED",
+  "primary_layer_verdict_distribution": {
+    "AFFIRMED": 19,
+    "CHALLENGED": 1
+  },
+  "programs_executed": 0,
+  "provisional_manifest_sha256": "710ef4fd707291db650e5b14d5594ed7920f1a9c2370ee3d5cde2f09a24a627e",
+  "provisional_records_sha256": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+  "provisional_v1_modified": false,
+  "public_test_executions": 0,
+  "ready_to_plan_freeze": false,
+  "remaining101_roster_sha256": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1",
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "POST_ADJUDICATION_ADVERSARIAL_AUDIT_NOT_FREEZE",
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_v1.py",
+  "validation_executions": 0
+}

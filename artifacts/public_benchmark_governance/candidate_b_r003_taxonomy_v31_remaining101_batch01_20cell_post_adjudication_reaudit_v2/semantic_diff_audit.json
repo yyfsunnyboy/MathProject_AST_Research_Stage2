@@ -1,0 +1,60 @@
+{
+  "changed_cells": [
+    {
+      "diffs": {
+        "abstain_reason": {
+          "from": "Unresolved DP; no unique safe repair.",
+          "to": "L5 DP algorithm reconstruction is not a unique contract-local safe edit; deterministic Healer abstain."
+        },
+        "confidence": {
+          "from": "LOW",
+          "to": "HIGH"
+        },
+        "evidence_citations": {
+          "from": "[{\"kind\":\"public_task\",\"locator\":\"task_id=Mbpp/103\",\"path\":\"data/mbpp_plus/tasks.jsonl\"},{\"kind\":\"raw_generation\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;healer_account=H0\",\"path\":\"artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl\"},{\"kind\":\"planning_signal\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/static_signal_inventory.csv\"},{\"kind\":\"batch_roster\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/next_adjudication_batch_roster.csv\"},{\"kind\":\"evaluator_outcome\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;evalplus_base=fail;evalplus_plus=fail\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv\"}]",
+          "to": "[{\"kind\":\"public_task\",\"locator\":\"task_id=Mbpp/103\",\"path\":\"data/mbpp_plus/tasks.jsonl\"},{\"kind\":\"raw_generation\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;healer_account=H0\",\"path\":\"artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl\"},{\"kind\":\"planning_signal\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/static_signal_inventory.csv\"},{\"kind\":\"batch_roster\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/next_adjudication_batch_roster.csv\"},{\"kind\":\"evaluator_outcome\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;evalplus_base=fail;evalplus_plus=fail\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv\"},{\"kind\":\"post_adjudication_audit\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;primary_layer_verdict=CHALLENGED\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/per_cell_audit_records.csv\"},{\"kind\":\"post_adjudication_finding\",\"locator\":\"program_id=bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b;materiality=MATERIAL\",\"path\":\"artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/audit_findings.csv\"}]"
+        },
+        "evidence_missing": {
+          "from": "observed return for (3,1) and intermediate recurrence validity",
+          "to": ""
+        },
+        "evidence_present": {
+          "from": "source DP body; public single assert",
+          "to": "public assert eulerian_num(3,1)==4; static DP write-path expansion showing A[3][1] never updated"
+        },
+        "evidence_summary": {
+          "from": "Cannot confirm L5 from public evidence alone; FAIL≠L5.",
+          "to": "Post-adjudication audit MATERIAL correction: static expansion of the written DP loops shows A[3][1] is never assigned, so eulerian_num(3,1) structurally returns initializer 0 ≠ public assert 4. This is structural static reasoning, not a newly executed candidate run. HIGH L5 closed; healer remains abstain."
+        },
+        "failure_chain": {
+          "from": "parseable eulerian_num with unusual DP → public assert eulerian_num(3,1)==4 not statically closed → cannot choose L4 vs L5 from allowed evidence → primary=UNRESOLVED → healer=abstain",
+          "to": "STATIC DP table/loop-boundary expansion (not a new candidate execution) → A[3][1] is never written by any i/j update path → return A[n][m] reads that uninitialized slot as 0 for public input (3,1) → contradicts public assert requiring 4 → root cause is DP state-transition/boundary design → repair requires reconstructing algorithmic semantics → primary=L5 → deterministic Healer abstain"
+        },
+        "mechanism_tags_json": {
+          "from": "[{\"note\":\"DP recurrence looks malformed but not hand-closed to ≠4 without execution\",\"status\":\"SUSPECTED\",\"tag\":\"algorithm_reconstruction_required\"},{\"note\":\"A[i][j] uses n,m oddly\",\"status\":\"SUSPECTED\",\"tag\":\"incorrect_formula\"},{\"note\":\"single assert insufficient to close\",\"status\":\"SUPPORTED\",\"tag\":\"public_examples_non_discriminating\"},{\"note\":\"need safe evaluation of eulerian_num(3,1)\",\"status\":\"CONFIRMED\",\"tag\":\"diagnostic_execution_required\"},{\"note\":\"L4 vs L5 unknown\",\"status\":\"SUPPORTED\",\"tag\":\"runtime_vs_semantic_not_closed\"},{\"note\":\"planning only\",\"status\":\"SUSPECTED\",\"tag\":\"return_shape_mismatch\"},{\"note\":\"not an error\",\"status\":\"REJECTED\",\"tag\":\"entry_point_unique_candidate\"}]",
+          "to": "[{\"note\":\"STATIC structural expansion (not a new execution): nested loops never write A[3][1]; return A[n][m] remains initializer 0, contradicting public assert ==4\",\"status\":\"CONFIRMED\",\"tag\":\"incorrect_formula\"},{\"note\":\"DP write-set/boundary design wrong; repair requires reconstructing recurrence\",\"status\":\"CONFIRMED\",\"tag\":\"algorithm_reconstruction_required\"},{\"note\":\"public assert eulerian_num(3,1)==4 uniquely closes L5 via static expansion\",\"status\":\"REJECTED\",\"tag\":\"public_examples_non_discriminating\"},{\"note\":\"no longer required after static A[3][1]=0 proof\",\"status\":\"REJECTED\",\"tag\":\"diagnostic_execution_required\"},{\"note\":\"semantic/algorithm layer closed; not an L4/L5 ambiguity\",\"status\":\"REJECTED\",\"tag\":\"runtime_vs_semantic_not_closed\"},{\"note\":\"int scalar return family matches; planning signal is not root cause\",\"status\":\"REJECTED\",\"tag\":\"return_shape_mismatch\"},{\"note\":\"expected entry point present; not an error\",\"status\":\"REJECTED\",\"tag\":\"entry_point_unique_candidate\"}]"
+        },
+        "minimal_future_diagnostic": {
+          "from": "sandboxed eval of eulerian_num(3,1) return only (no healer)",
+          "to": ""
+        },
+        "planning_signal_note": {
+          "from": "signal≠layer",
+          "to": "audit_v1_material_correction; return_shape planning signal remains rejected as root cause"
+        },
+        "primary_layer": {
+          "from": "UNRESOLVED",
+          "to": "L5"
+        },
+        "unresolved_reason_code": {
+          "from": "complex_algorithm_without_public_trace",
+          "to": ""
+        }
+      },
+      "program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+      "task_id": "Mbpp/103"
+    }
+  ],
+  "only_mbpp103_changed": true,
+  "unchanged_cells": 19
+}

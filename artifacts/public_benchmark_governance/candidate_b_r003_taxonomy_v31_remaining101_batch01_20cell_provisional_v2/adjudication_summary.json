@@ -1,0 +1,37 @@
+{
+  "based_on_audit_v1_manifest_sha256": "37438e79a8aa5ac68edafa5291c5c0601085dbdf96b3a92015e2b4de20905adf",
+  "based_on_provisional_v1_records_sha256": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+  "cells": 20,
+  "cells_needing_future_diagnostics": 11,
+  "confidence_distribution": {
+    "HIGH": 9,
+    "LOW": 11
+  },
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "material_correction_cells": 1,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L5": 9,
+    "UNRESOLVED": 11
+  },
+  "secondary_layer_distribution": {
+    "(empty)": 20
+  },
+  "single_material_correction": {
+    "healer": "abstain (unchanged decision)",
+    "program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+    "source_sha256": "ee91cbd1e4e843a20ad5e517135995220881374956c3be0191c2a442ddafbd77",
+    "task_id": "Mbpp/103",
+    "transition": "UNRESOLVED/LOW → L5/HIGH"
+  },
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "true_adjudicated_L2_count": 0,
+  "unchanged_cells": 19,
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 16
+}

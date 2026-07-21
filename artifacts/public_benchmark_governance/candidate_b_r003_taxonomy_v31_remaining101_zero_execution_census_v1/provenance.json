@@ -1,0 +1,91 @@
+{
+  "analyzer": "scripts/prepare_candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1.py",
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "forbidden_formal_fields_left_blank": [
+    "primary_layer",
+    "secondary_layer",
+    "healer_eligibility",
+    "abstain_reason",
+    "formal_confidence",
+    "final_failure_chain",
+    "frozen_status"
+  ],
+  "formal_population": 198,
+  "freeze20_manifest_sha256": "a9bc5d19e4a4aa4d3fde4db23a296cb1b2d32b9e51c6ebe9ace5c548691f8eab",
+  "frozen_sets": {
+    "G2_module": {
+      "cells": 27,
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1/ai_assisted_provisional_adjudication.csv",
+      "sha256": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119"
+    },
+    "module_exception": {
+      "cells": 37,
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv",
+      "sha256": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7"
+    },
+    "multiple_signal_chain": {
+      "cells": 13,
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv",
+      "sha256": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70"
+    },
+    "output_contract_shape20": {
+      "cells": 20,
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv",
+      "sha256": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f"
+    }
+  },
+  "frozen_total": 97,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "next_adjudication_batch_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "next_adjudication_batch_size": 20,
+  "next_batch_selection_rule": {
+    "deduplicate_by_source": true,
+    "healer_eligibility_not_used": true,
+    "round_robin_by_return_type": true,
+    "target_primary_batch": "B_entry_signature_return_shape_import_candidates",
+    "target_size": 20
+  },
+  "planning_annotation": "NON_ADJUDICATIVE_PLANNING_ONLY",
+  "programs_executed": 0,
+  "progress_census_manifest_sha256": "7eee4c9e94ae8ea3b42bfb8921e546533e12ac618b18703edf7d18993f254e1a",
+  "proposed_batch_priority": [
+    "A_parse_tokenize_failure_candidates",
+    "B_entry_signature_return_shape_import_candidates",
+    "C_existing_runtime_evidence_candidates",
+    "D_strong_semantic_indicator_candidates",
+    "E_multiple_signal_or_evidence_gap_cases"
+  ],
+  "remaining101_roster_sha256": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+  "remaining_total": 101,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1",
+  "source_hashes": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/manifest.json": "6c6aa8482348b5aa30d9809d3ba1e4c31e3d16a00a8e2e5b9c8ab723d2d7a142",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_frozen_progress_census_v1/manifest.json": "7eee4c9e94ae8ea3b42bfb8921e546533e12ac618b18703edf7d18993f254e1a",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1/ai_assisted_provisional_adjudication.csv": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/manifest.json": "a9bc5d19e4a4aa4d3fde4db23a296cb1b2d32b9e51c6ebe9ace5c548691f8eab",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/manifest.json": "fd26fdbd103ad216e2a38c8e16b839c9e2b72a242e360713edee8d7762f59336",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1/fixed_roster.csv": "6e2c6e243fc6ff01c0b0fc2c6939e99cf7f87ef5f17bdf97206adc62ab9af1a5",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1/machine_census.csv": "284802c8f1aeff92ad70f65b42c4aa7dabc252da592f8ad62011be71537f8a32",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1/manifest.json": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/manifest.json": "72b02ab7da59e65db2d5e09cee9344c3d52940a717ea3dfea05310e0529d76c1",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "ZERO_EXECUTION_CENSUS_PLANNING_NOT_TAXONOMY_ADJUDICATION",
+  "taxonomy_v31_planning_reference": {
+    "bytes": 26950,
+    "filename": "AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+    "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "status": "EXTERNAL_PLANNING_REFERENCE_NOT_INGESTED_INTO_REPO_GOVERNANCE"
+  },
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1.py",
+  "validation_executions": 0
+}

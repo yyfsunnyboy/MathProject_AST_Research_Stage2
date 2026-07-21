@@ -1,0 +1,30 @@
+{
+  "mbpp103_mechanism_policy": {
+    "algorithm_reconstruction_required": "SUSPECTED→CONFIRMED",
+    "diagnostic_execution_required": "CONFIRMED→REJECTED",
+    "entry_point_unique_candidate": "REJECTED→REJECTED",
+    "incorrect_formula": "SUSPECTED→CONFIRMED",
+    "public_examples_non_discriminating": "SUPPORTED→REJECTED",
+    "return_shape_mismatch": "SUSPECTED→REJECTED",
+    "runtime_vs_semantic_not_closed": "SUPPORTED→REJECTED"
+  },
+  "note": "Expected naive +2 CONFIRMED/-2 SUSPECTED only if unresolved-binding tags were left untouched; audit requires rejecting those tags, so status totals differ from that naive forecast.",
+  "status_delta": {
+    "CONFIRMED": 1,
+    "REJECTED": 4,
+    "SUPPORTED": -2,
+    "SUSPECTED": -3
+  },
+  "v1_by_status": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "v2_by_status": {
+    "CONFIRMED": 33,
+    "REJECTED": 33,
+    "SUPPORTED": 13,
+    "SUSPECTED": 13
+  }
+}

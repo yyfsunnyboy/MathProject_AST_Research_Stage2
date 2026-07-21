@@ -1,0 +1,21 @@
+{
+  "by_status": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "by_tag": {
+    "algorithm_reconstruction_required": 7,
+    "diagnostic_execution_required": 12,
+    "entry_point_unique_candidate": 20,
+    "extra_wrapper_or_output": 5,
+    "incorrect_formula": 9,
+    "multiple_plausible_root_causes": 2,
+    "public_examples_non_discriminating": 13,
+    "return_shape_mismatch": 20,
+    "runtime_vs_semantic_not_closed": 3,
+    "wrong_boundary_condition": 1
+  },
+  "note": "mechanism status is CONFIRMED/SUPPORTED/SUSPECTED/REJECTED; not a layer"
+}

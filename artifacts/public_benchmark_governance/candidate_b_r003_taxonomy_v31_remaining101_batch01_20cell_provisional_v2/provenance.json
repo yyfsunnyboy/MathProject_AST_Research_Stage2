@@ -1,0 +1,78 @@
+{
+  "adjudication_records_sha256": "4f4d7479050b4a7bab8b0384169f5407331d720a33a3af47d2f45477a4ef6596",
+  "adjudication_roster_sha256": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+  "analyzer": "scripts/adjudicate_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2.py",
+  "audit_v1_modified": false,
+  "based_on_post_adjudication_audit_v1": {
+    "manifest_sha256": "37438e79a8aa5ac68edafa5291c5c0601085dbdf96b3a92015e2b4de20905adf",
+    "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1",
+    "summary_sha256": "96df5df91f27e211715995d4005d65490999b955f1bfca2828fce4967eac17eb",
+    "verdict": "POST_ADJUDICATION_REVISION_REQUIRED"
+  },
+  "based_on_provisional_v1": {
+    "manifest_sha256": "710ef4fd707291db650e5b14d5594ed7920f1a9c2370ee3d5cde2f09a24a627e",
+    "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1",
+    "records_sha256": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+    "roster_sha256": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533"
+  },
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "frozen_marker_written": false,
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "next20_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "no_model_calls": true,
+  "no_new_candidate_execution": true,
+  "primary_layer_distribution": {
+    "L5": 9,
+    "UNRESOLVED": 11
+  },
+  "programs_executed": 0,
+  "provisional_v1_modified": false,
+  "public_test_executions": 0,
+  "remaining101_roster_sha256": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2",
+  "single_material_correction_program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+  "source_hashes": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/audit_findings.csv": "ab33751e000136da4713b24292b388979e9ed641f492cac366dad3c32c30fb92",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/audit_summary.json": "96df5df91f27e211715995d4005d65490999b955f1bfca2828fce4967eac17eb",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/manifest.json": "37438e79a8aa5ac68edafa5291c5c0601085dbdf96b3a92015e2b4de20905adf",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_audit_v1/per_cell_audit_records.csv": "997b7ff0bbf588c000a794f4b2f96dafbcb643cbafb12eb88eb1500dd3802ebe",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/adjudication_records.csv": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/adjudication_report_zh.md": "301b354a18fbcd3e93661b7106102d41d9a8f26408f7a2f67b9f81d1439c5ea2",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/adjudication_roster.csv": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/adjudication_summary.json": "82b92391e56b92fead7237c29121b74526d77042e0df1d595897383f8f6bb5bb",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/healer_eligibility_summary.json": "2c1cc13e6742b52c599ce6d88fe642f5c7a35753f015e596698a538d6a9eb78a",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/manifest.json": "710ef4fd707291db650e5b14d5594ed7920f1a9c2370ee3d5cde2f09a24a627e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/mechanism_counts.json": "992c179dc80b5732649354908905184ac3034ceb270d7dea4ef19a456373f1e8",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/provenance.json": "45bdf1a8b32258365a85643e4ce2b8d3828f6b7e82072a6c31af5e6203b3a74c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1/unresolved_evidence_gaps.csv": "93e359567abbb1572cfa980d7a2a7995d5ca7bbc1c3b7d7e52035cde1db4257e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/manifest.json": "d2a7478da6852ba1a6592d2d1701b8ad3aee3bc018824a365aab9670fa0438bd",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/next_adjudication_batch_roster.csv": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/remaining101_roster.csv": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1/ai_assisted_provisional_adjudication.csv": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c",
+    "scripts/adjudicate_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1.py": "f13d14593c08b6455911c6195024327136d83abd05f9b35dc995c1fcf2c183d3",
+    "scripts/audit_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_post_adjudication_v1.py": "27190416b88eaf3a7777337a98b34b5da5b6f7643888c9b55f9be03483994863"
+  },
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "taxonomy_v31_planning_reference": {
+    "filename": "AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+    "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "status": "EXTERNAL_PLANNING_REFERENCE_NOT_INGESTED_INTO_REPO_GOVERNANCE"
+  },
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2.py",
+  "validation_executions": 0
+}

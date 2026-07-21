@@ -1,0 +1,100 @@
+{
+  "explanation": "From Mbpp/103 only: SUSPECTED→CONFIRMED ×2 (+2 C, -2 Su); CONFIRMED→REJECTED ×1 (-1 C, +1 R); SUPPORTED→REJECTED ×2 (-2 S, +2 R); SUSPECTED→REJECTED ×1 (-1 Su, +1 R). Net: C+1, S-2, Su-3, R+4 → 32/15/16/29 → 33/13/13/33.",
+  "global_totals_rebuild_from_mbpp103_delta": {
+    "CONFIRMED": 33,
+    "REJECTED": 33,
+    "SUPPORTED": 13,
+    "SUSPECTED": 13
+  },
+  "mbpp103_local_status_delta": {
+    "CONFIRMED": 1,
+    "REJECTED": 4,
+    "SUPPORTED": -2,
+    "SUSPECTED": -3
+  },
+  "mbpp103_tag_transitions": [
+    {
+      "reason": "STATIC A[3][1]=0 proof closes L5; audit required CONFIRMED",
+      "tag": "algorithm_reconstruction_required",
+      "transition": "SUSPECTED→CONFIRMED",
+      "v1_note": "DP recurrence looks malformed but not hand-closed to ≠4 without execution",
+      "v1_status": "SUSPECTED",
+      "v2_note": "DP write-set/boundary design wrong; repair requires reconstructing recurrence",
+      "v2_status": "CONFIRMED"
+    },
+    {
+      "reason": "diagnostics no longer required after static closure",
+      "tag": "diagnostic_execution_required",
+      "transition": "CONFIRMED→REJECTED",
+      "v1_note": "need safe evaluation of eulerian_num(3,1)",
+      "v1_status": "CONFIRMED",
+      "v2_note": "no longer required after static A[3][1]=0 proof",
+      "v2_status": "REJECTED"
+    },
+    {
+      "reason": "unchanged; entry point is not an error",
+      "tag": "entry_point_unique_candidate",
+      "transition": "REJECTED→REJECTED",
+      "v1_note": "not an error",
+      "v1_status": "REJECTED",
+      "v2_note": "expected entry point present; not an error",
+      "v2_status": "REJECTED"
+    },
+    {
+      "reason": "STATIC A[3][1]=0 proof closes L5; audit required CONFIRMED",
+      "tag": "incorrect_formula",
+      "transition": "SUSPECTED→CONFIRMED",
+      "v1_note": "A[i][j] uses n,m oddly",
+      "v1_status": "SUSPECTED",
+      "v2_note": "STATIC structural expansion (not a new execution): nested loops never write A[3][1]; return A[n][m] remains initializer 0, contradicting public assert ==4",
+      "v2_status": "CONFIRMED"
+    },
+    {
+      "reason": "UNRESOLVED-binding tag contradicted by closed HIGH L5",
+      "tag": "public_examples_non_discriminating",
+      "transition": "SUPPORTED→REJECTED",
+      "v1_note": "single assert insufficient to close",
+      "v1_status": "SUPPORTED",
+      "v2_note": "public assert eulerian_num(3,1)==4 uniquely closes L5 via static expansion",
+      "v2_status": "REJECTED"
+    },
+    {
+      "reason": "planning signal not root cause after L5 closure",
+      "tag": "return_shape_mismatch",
+      "transition": "SUSPECTED→REJECTED",
+      "v1_note": "planning only",
+      "v1_status": "SUSPECTED",
+      "v2_note": "int scalar return family matches; planning signal is not root cause",
+      "v2_status": "REJECTED"
+    },
+    {
+      "reason": "UNRESOLVED-binding tag contradicted by closed HIGH L5",
+      "tag": "runtime_vs_semantic_not_closed",
+      "transition": "SUPPORTED→REJECTED",
+      "v1_note": "L4 vs L5 unknown",
+      "v1_status": "SUPPORTED",
+      "v2_note": "semantic/algorithm layer closed; not an L4/L5 ambiguity",
+      "v2_status": "REJECTED"
+    }
+  ],
+  "reported_expected_totals": {
+    "CONFIRMED": 33,
+    "REJECTED": 33,
+    "SUPPORTED": 13,
+    "SUSPECTED": 13
+  },
+  "totals_match_reported_v2": true,
+  "totals_rebuild_ok": true,
+  "v1_global_status": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "v2_global_status": {
+    "CONFIRMED": 33,
+    "REJECTED": 33,
+    "SUPPORTED": 13,
+    "SUSPECTED": 13
+  }
+}

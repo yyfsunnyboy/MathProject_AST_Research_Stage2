@@ -1,0 +1,43 @@
+{
+  "adjudication_records_sha256": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+  "adjudication_roster_sha256": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+  "analyzer": "scripts/adjudicate_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1.py",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "fixed_next_batch_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "frozen_marker_written": false,
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_records.csv": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+    "adjudication_report_zh.md": "301b354a18fbcd3e93661b7106102d41d9a8f26408f7a2f67b9f81d1439c5ea2",
+    "adjudication_roster.csv": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+    "adjudication_summary.json": "82b92391e56b92fead7237c29121b74526d77042e0df1d595897383f8f6bb5bb",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "healer_eligibility_summary.json": "2c1cc13e6742b52c599ce6d88fe642f5c7a35753f015e596698a538d6a9eb78a",
+    "mechanism_counts.json": "992c179dc80b5732649354908905184ac3034ceb270d7dea4ef19a456373f1e8",
+    "provenance.json": "45bdf1a8b32258365a85643e4ce2b8d3828f6b7e82072a6c31af5e6203b3a74c",
+    "unresolved_evidence_gaps.csv": "93e359567abbb1572cfa980d7a2a7995d5ca7bbc1c3b7d7e52035cde1db4257e"
+  },
+  "primary_layer_distribution": {
+    "L5": 8,
+    "UNRESOLVED": 12
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "remaining101_roster_sha256": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1",
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "taxonomy_v31_reference_sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v1.py",
+  "true_adjudicated_L2_count": 0,
+  "validation_executions": 0
+}

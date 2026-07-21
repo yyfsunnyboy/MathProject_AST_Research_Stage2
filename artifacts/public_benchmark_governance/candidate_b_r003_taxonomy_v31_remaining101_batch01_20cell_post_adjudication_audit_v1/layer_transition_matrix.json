@@ -1,0 +1,8 @@
+{
+  "counts": {
+    "L5→L5": 8,
+    "UNRESOLVED→L5": 1,
+    "UNRESOLVED→UNRESOLVED": 11
+  },
+  "note": "audited_primary is audit judgment only; provisional v1 not rewritten"
+}

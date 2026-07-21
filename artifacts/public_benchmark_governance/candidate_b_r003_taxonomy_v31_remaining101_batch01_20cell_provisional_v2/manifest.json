@@ -1,0 +1,53 @@
+{
+  "adjudication_records_sha256": "4f4d7479050b4a7bab8b0384169f5407331d720a33a3af47d2f45477a4ef6596",
+  "adjudication_roster_sha256": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+  "analyzer": "scripts/adjudicate_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2.py",
+  "audit_v1_manifest_sha256": "37438e79a8aa5ac68edafa5291c5c0601085dbdf96b3a92015e2b4de20905adf",
+  "audit_v1_modified": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 9,
+    "LOW": 11
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "frozen_marker_written": false,
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "material_correction_program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+  "model_calls": 0,
+  "next20_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_records.csv": "4f4d7479050b4a7bab8b0384169f5407331d720a33a3af47d2f45477a4ef6596",
+    "adjudication_report_zh.md": "f9563936e8dd54c86d1cbb40e3848f1e1abd06fee6b2ff2391ab80b19b418050",
+    "adjudication_roster.csv": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+    "adjudication_summary.json": "8e2d1893cd7df3d1c29093aed15b12b5a9222d2e9e8296c654af572f9102e809",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "healer_eligibility_summary.json": "5fd1b3483b7be86ec81b629ceba9337ba72cc59c610003a0d5291699549d7cc8",
+    "mechanism_counts.json": "8b956f69eeae34572f45201973d5639cf5b39f4f169fd54dc8006cf99ab7d06e",
+    "mechanism_transition.json": "63f1cc216e4473b956474fafdadb27a61dabf66567ef3bc85b3e67c32ff9b983",
+    "provenance.json": "3fa91d39eb7a270239a1abfe9356762e8a4ba6bac2c9b0f54637abef6983aef7",
+    "revision_transition.json": "a79505f5cc0f69616ddf6e2fe04a21df67d9ce2158b47728da427f20aad799d9",
+    "unresolved_evidence_gaps.csv": "4c1d7a72db70444e4fe032f33f65dc42795c17565543c5c420c15eec99221c93"
+  },
+  "primary_layer_distribution": {
+    "L5": 9,
+    "UNRESOLVED": 11
+  },
+  "programs_executed": 0,
+  "provisional_v1_modified": false,
+  "provisional_v1_records_sha256": "e08f1eab72275d7c37884883b1a439438daee6a2be0d8df408ba758b2364990b",
+  "provisional_v1_roster_sha256": "9f475868806c9a73bd25f96cb2c731f6357cafe0e6e08b53aa1fd0a374f13533",
+  "public_test_executions": 0,
+  "remaining101_roster_sha256": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2",
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_provisional_v2.py",
+  "validation_executions": 0
+}

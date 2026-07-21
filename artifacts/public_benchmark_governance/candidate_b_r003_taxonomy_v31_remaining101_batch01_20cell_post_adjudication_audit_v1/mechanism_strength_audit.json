@@ -1,0 +1,28 @@
+{
+  "expected_provisional_by_status": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "material_mechanism_challenges": [
+    {
+      "issue": "incorrect_formula/algorithm tags under-strength as SUSPECTED; should be CONFIRMED under L5",
+      "program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+      "task_id": "Mbpp/103"
+    }
+  ],
+  "provisional_by_status": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "rejected_fallacies_affirmed": [
+    "unique entry signal → entry-point error",
+    "return_shape planning signal → L2",
+    "evaluator FAIL → L5",
+    "plus_fail → L5"
+  ],
+  "status_total_match": true
+}

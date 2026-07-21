@@ -1,0 +1,9 @@
+{
+  "abstain_count": 20,
+  "conditional_count": 0,
+  "distribution": {
+    "abstain": 20
+  },
+  "eligible_count": 0,
+  "rule": "eligible only for unique contract-local safe repairs; this batch has none. UNRESOLVED always abstain."
+}

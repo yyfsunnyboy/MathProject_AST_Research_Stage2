@@ -1,0 +1,36 @@
+{
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 9,
+    "LOW": 11
+  },
+  "freeze_basis_verdict": "READY_TO_FREEZE_BATCH01_20CELL_V2",
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "newly_frozen": 20,
+  "next20_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "no_model_or_candidate_execution": true,
+  "no_new_adjudication": true,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "previously_frozen": 97,
+  "primary_layer_distribution": {
+    "L5": 9,
+    "UNRESOLVED": 11
+  },
+  "provisional_v2_manifest_sha256": "30af6d5deaacfc0400e71936b532b5b52987f28f2ce2a04ea2da478a55e88d47",
+  "provisional_v2_records_sha256": "4f4d7479050b4a7bab8b0384169f5407331d720a33a3af47d2f45477a4ef6596",
+  "reaudit_v2_manifest_sha256": "23dbbc7f1c0939b9ece5fa4175d3b91fa0e3b1cbd49d230b3b8b55519c89a525",
+  "remaining": 81,
+  "revision": "candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1",
+  "secondary_nonempty_cells": 0,
+  "status": "FORMALLY_FROZEN_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "total_frozen": 117,
+  "true_adjudicated_L2_count": 0,
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 16,
+  "unresolved_gaps": 11
+}

@@ -1,0 +1,41 @@
+{
+  "analyzer": "scripts/freeze_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_v1.py",
+  "batch01_freeze_basis_verdict": "READY_TO_FREEZE_BATCH01_20CELL_V2",
+  "batch01_freeze_revision": "candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1",
+  "batch01_frozen_cells": 20,
+  "batch01_healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "batch01_primary_layer_distribution": {
+    "L5": 9,
+    "UNRESOLVED": 11
+  },
+  "batch01_roster_sha256": "a22f086ba7d61995de98dafd57edcbdcb01fe46e780bd595163a6eabf813eb91",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "immutable_new_revision": true,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "next_batch_started": false,
+  "overwrites_prior_census": false,
+  "previously_frozen": 97,
+  "prior_progress_census_manifest_sha256": "7eee4c9e94ae8ea3b42bfb8921e546533e12ac618b18703edf7d18993f254e1a",
+  "programs_executed": 0,
+  "provisional_v2_records_sha256": "4f4d7479050b4a7bab8b0384169f5407331d720a33a3af47d2f45477a4ef6596",
+  "public_test_executions": 0,
+  "reaudit_v2_manifest_sha256": "23dbbc7f1c0939b9ece5fa4175d3b91fa0e3b1cbd49d230b3b8b55519c89a525",
+  "reconciliation": "198=117+81",
+  "remaining": 81,
+  "research_statement_zh": "已凍結117格，剩餘81格；batch01 20格全部Healer abstain。不得外推至其餘81格，不得宣稱remaining101已全部完成。",
+  "revision": "candidate_b_r003_taxonomy_v31_frozen_progress_census_v2",
+  "start_head": "b5a425bd9fb3b698fd83a66e25b01b979feba96b",
+  "status": "TAXONOMY_V31_FROZEN_PROGRESS_CENSUS",
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1.py",
+  "total_frozen": 117,
+  "validation_executions": 0
+}

@@ -1,0 +1,51 @@
+{
+  "cells": 20,
+  "cells_needing_future_diagnostics": 12,
+  "confidence_distribution": {
+    "HIGH": 8,
+    "LOW": 12
+  },
+  "contract_planning_signal_cells_in_parent99_note": "Parent remaining101 had 99 B-batch contract-related planning signals; this batch is 20 of those. Adjudicated L2 count is independent and is 0/20 in this provisional revision.",
+  "evaluator_outcome_x_primary_layer": {
+    "evalplus_base=fail;evalplus_plus=fail×L5": 8,
+    "evalplus_base=fail;evalplus_plus=fail×UNRESOLVED": 2,
+    "evalplus_base=pass;evalplus_plus=fail×UNRESOLVED": 10
+  },
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L5": 8,
+    "UNRESOLVED": 12
+  },
+  "return_type_bucket_x_primary_layer": {
+    "bool×UNRESOLVED": 4,
+    "dict×L5": 1,
+    "float×L5": 3,
+    "int×L5": 1,
+    "int×UNRESOLVED": 2,
+    "list×L5": 2,
+    "list×UNRESOLVED": 1,
+    "mixed×UNRESOLVED": 3,
+    "str×L5": 1,
+    "str×UNRESOLVED": 2
+  },
+  "secondary_layer_distribution": {
+    "(empty)": 20
+  },
+  "separation_note": "planning static signals ≠ adjudicated primary_layer ≠ healer_eligibility",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "true_adjudicated_L2_count": 0,
+  "true_adjudicated_L2_ratio_of_batch": 0.0,
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 16,
+  "unresolved_reason_code_distribution": {
+    "complex_algorithm_without_public_trace": 1,
+    "public_examples_non_discriminating_need_diagnostics": 1,
+    "public_examples_non_discriminating_plus_fail": 10
+  }
+}

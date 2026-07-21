@@ -1,0 +1,6 @@
+proposed_primary_batch,cells,unique_program_id,unique_task_id,unique_source_sha256,planning_annotation
+A_parse_tokenize_failure_candidates,0,0,0,0,NON_ADJUDICATIVE_PLANNING_ONLY
+B_entry_signature_return_shape_import_candidates,99,99,35,76,NON_ADJUDICATIVE_PLANNING_ONLY
+C_existing_runtime_evidence_candidates,0,0,0,0,NON_ADJUDICATIVE_PLANNING_ONLY
+D_strong_semantic_indicator_candidates,0,0,0,0,NON_ADJUDICATIVE_PLANNING_ONLY
+E_multiple_signal_or_evidence_gap_cases,2,2,1,2,NON_ADJUDICATIVE_PLANNING_ONLY

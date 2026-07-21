@@ -1,0 +1,62 @@
+{
+  "cells": 20,
+  "cells_requiring_provisional_v2": [
+    "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b"
+  ],
+  "citation_audit": {
+    "citations_checked": 100,
+    "resolvable": 100,
+    "unresolvable": 0
+  },
+  "correction_materiality_distribution": {
+    "MATERIAL": 1,
+    "NONE": 19
+  },
+  "editorial_finding_count": 0,
+  "healer_audit": {
+    "abstain_affirmed": 20,
+    "abstain_challenged": 0,
+    "conditional_candidates_found": 0,
+    "eligible_candidates_found": 0,
+    "provisional_abstain": 20
+  },
+  "l2_reverse_audit": {
+    "audited_true_L2": 0,
+    "provisional_L2": 0,
+    "rationale": "Planning contract signals ≠ adjudicated L2. All expected entry points present and unique; no generator-vs-list or public shape breach explaining failure.",
+    "verdict": "AFFIRMED_L2_EQUALS_ZERO"
+  },
+  "l5_affirmed": 8,
+  "l5_cells_audited": 8,
+  "l5_challenged": 0,
+  "layer_transition_counts": {
+    "L5→L5": 8,
+    "UNRESOLVED→L5": 1,
+    "UNRESOLVED→UNRESOLVED": 11
+  },
+  "material_finding_count": 1,
+  "mechanism_strength_observed_in_provisional": {
+    "CONFIRMED": 32,
+    "REJECTED": 29,
+    "SUPPORTED": 15,
+    "SUSPECTED": 16
+  },
+  "none_materiality_cells": 19,
+  "overall_verdict": "POST_ADJUDICATION_REVISION_REQUIRED",
+  "primary_layer_verdict_distribution": {
+    "AFFIRMED": 19,
+    "CHALLENGED": 1
+  },
+  "provisional_primary_distribution": {
+    "L5": 8,
+    "UNRESOLVED": 12
+  },
+  "ready_to_plan_freeze": false,
+  "status": "POST_ADJUDICATION_ADVERSARIAL_AUDIT_NOT_FREEZE",
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 16,
+  "unresolved_affirmed": 11,
+  "unresolved_cells_audited": 12,
+  "unresolved_challenged": 1
+}
