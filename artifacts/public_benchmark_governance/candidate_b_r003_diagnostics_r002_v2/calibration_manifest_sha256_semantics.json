@@ -1,0 +1,7 @@
+{
+  "flag_value": "SHA-256 of calibration output execution_manifest.json file bytes",
+  "formal198_executed_this_freeze": false,
+  "formal_cli_flag": "--calibration-execution-manifest-sha256",
+  "receipt_source_manifest_sha256": "SHA-256 of frozen r002 v2 source manifest bytes",
+  "relationship": "distinct values with independent checks"
+}

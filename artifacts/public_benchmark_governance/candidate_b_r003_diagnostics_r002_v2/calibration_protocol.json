@@ -1,0 +1,32 @@
+{
+  "candidate_execution_timeout_seconds": 30,
+  "candidate_timer_starts": "after_ready_received_immediately_before_go_signal",
+  "cells": 8,
+  "dataset_initialization": "once_in_parent_before_cell_workers",
+  "duration_storage": "coarse_buckets_only",
+  "evalplus_correctness_executions": 0,
+  "expected_outputs_loaded": false,
+  "formal_gate": "calibration only; no formal 198 execution",
+  "ipc": "two_one_way_Pipes; receive_result_before_join; EOF/invalid-event/signal fail_closed",
+  "multiprocessing_start_method": "explicit_fork",
+  "output_path": "artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v1/manual_calibration_run_001",
+  "preflight_source_manifest_required_field": {
+    "diagnostic_executions": 0
+  },
+  "preflight_type_contract": "exact integer zero; bool rejected",
+  "privacy": {
+    "healer_runtime_input": false,
+    "save_exception_or_assertion_message": false,
+    "save_input_expected_actual": false,
+    "save_stdout_stderr": false,
+    "save_traceback": false
+  },
+  "protocol_version": "candidate_b_r003_diagnostics_r002_calibration_v2",
+  "python": "3.14.x",
+  "retry_resume_overwrite": false,
+  "single_threaded_parent_precondition": true,
+  "startup_timeout_seconds": 30,
+  "status": "prepared_not_executed",
+  "worker_ready_handshake": true,
+  "wsl_linux_only": true
+}

@@ -1,0 +1,47 @@
+{
+  "additional_fields": false,
+  "duration_values": [
+    "lt_0_1s",
+    "0_1_to_0_5s",
+    "0_5_to_1s",
+    "1_to_2s",
+    "2_to_5s",
+    "5_to_10s",
+    "10_to_30s",
+    "gte_30s"
+  ],
+  "fields": [
+    "cell_identity_sha256",
+    "program_id",
+    "task_identity_sha256",
+    "evaluation_source_sha256",
+    "evaluator_hash",
+    "protocol_sha256",
+    "phase",
+    "exception_class",
+    "model_source_line",
+    "model_source_ast_node",
+    "entry_point_bound",
+    "entry_point_callable",
+    "signature_binding",
+    "termination",
+    "return_type_bucket",
+    "return_shape_bucket",
+    "worker_ready",
+    "startup_duration_bucket",
+    "execution_duration_bucket",
+    "ipc_status",
+    "child_exit_bucket"
+  ],
+  "forbidden": [
+    "input",
+    "expected",
+    "actual",
+    "exception_message",
+    "assertion_message",
+    "traceback",
+    "stdout",
+    "stderr",
+    "source"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "accepted_python_type": "int excluding bool",
+  "accepted_value": 0,
+  "bool_rejected": true,
+  "hash_drift_rejected": true,
+  "missing_rejected": true,
+  "nonzero_rejected": true,
+  "other_non_integer_rejected": true,
+  "required_manifest_field": "diagnostic_executions",
+  "revision": "candidate_b_r003_diagnostics_r002_v2",
+  "validation_occurs_before_dataset_initialization_or_worker_start": true
+}

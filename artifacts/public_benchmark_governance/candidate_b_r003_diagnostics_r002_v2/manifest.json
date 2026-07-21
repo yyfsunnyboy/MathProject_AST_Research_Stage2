@@ -1,0 +1,38 @@
+{
+  "calibration_cells": 8,
+  "calibration_output_directory_created": false,
+  "calibration_protocol_sha256": "d9c20ffba5ace67b00dda625ad67ca3da1a6f8db7ce882dd0c549ab11575f8ce",
+  "diagnostic_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_cells_locked": 198,
+  "formal_output_directory_created": false,
+  "formal_protocol_sha256": "d4d0bdb8ae470d10e0746241f24efa806c66e4d089e235b25893a315765e30d9",
+  "healer_rules_modified": false,
+  "incident_type": "ZERO_EXECUTION_PREFLIGHT_SCHEMA_INCIDENT",
+  "manifest_version": "candidate_b_r003_diagnostics_r002_v2",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest_and_operator_guide": {
+    "calibration_cohort.csv": "6a688058d6f39b27baff8f045249ce62975ea213f951b7517e084da18794ef6b",
+    "calibration_manifest_sha256_semantics.json": "2d211a90266187a1b723e477527dd2f72477034c84bc030afb4cdbb2d31e05e7",
+    "calibration_protocol.json": "d9c20ffba5ace67b00dda625ad67ca3da1a6f8db7ce882dd0c549ab11575f8ce",
+    "diagnostics_output_schema.json": "535faf4ac77b90af2f5d2a5b2c6567c84858844640e5e1dc8b2ce20a581e66a2",
+    "execution_manifest.json": "671046efb5f594fd9f41bc4657d79978c892d7dc758342c67c60019b6676b86f",
+    "formal198_input_ledger.csv": "d2d62a33b4f51118d0a51b41aadc9445bd64d680c3b1ef5c54117ae180272640",
+    "formal_diagnostics_protocol.json": "d4d0bdb8ae470d10e0746241f24efa806c66e4d089e235b25893a315765e30d9",
+    "incident_ledger.json": "ff28fc45eab7c1ab882802412d9b4a9b5f8459c1c99ea8e3966e9530a284f197",
+    "incident_report_zh.md": "e1da91e10663ca4172ef46669665cee5485117bb276805162f838ece75e1885c",
+    "preflight_schema_contract.json": "1a18f0d4bed3e4696af7bf7da5f75a4fcf7a68a9e763856dfc18d9c05faffca2",
+    "privacy_policy_zh.md": "b7858989eef38b306e3eb3788728130ae09b757c608ca161e141ac39f242d6ae",
+    "provenance.json": "5f48e1957f6863e9323613f5e484e7337d3065a1dff7dc4883d41de1473e23ca",
+    "source_hash_ledger.csv": "26e7df80ddc530445535a7aae040d493a1f0d6229144464bf2294085c792cbcf"
+  },
+  "preserved_v1_manifest_sha256": "701b8117b45389cad827011eee26ce34b2b861aa509b1e6754a9985234027e5e",
+  "source_sha256": {
+    "scripts/build_candidate_b_r003_diagnostics_r002_v2.py": "f0b821ca7303a50c22491d1d4833cf2b2bc50008f1d09add0eba025b1e60feba",
+    "scripts/run_candidate_b_r003_diagnostics_r002.py": "4e075c2d35ee2f06d86cc54624312294bdc79c3b119241eeeb193db44e4e15af",
+    "scripts/run_candidate_b_r003_diagnostics_r002_v2.py": "47966c12d00d4041aa4d9f9749755bc816704c94ca6e66e1029a69efe3298d30",
+    "tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_v2.py": "411313db805f506334c04474608d9ea4f73133852472c2addfbf72aa9a01ebd3"
+  },
+  "status": "r002_v2_calibration_prepared_formal_locked",
+  "validation_not_executed": true
+}

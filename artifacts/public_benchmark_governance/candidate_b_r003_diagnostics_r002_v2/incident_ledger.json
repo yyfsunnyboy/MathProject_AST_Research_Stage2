@@ -1,0 +1,17 @@
+{
+  "actual_calibration_run_incident": false,
+  "affected_manifest_sha256": "701b8117b45389cad827011eee26ce34b2b861aa509b1e6754a9985234027e5e",
+  "affected_revision": "candidate_b_r003_diagnostics_r002_v1",
+  "calibration_cells_executed": 0,
+  "calibration_output_directory_created": false,
+  "diagnostic_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "exception_field": "diagnostic_executions",
+  "exception_type": "KeyError",
+  "incident_type": "ZERO_EXECUTION_PREFLIGHT_SCHEMA_INCIDENT",
+  "model_calls": 0,
+  "root_cause": "v1 runner required manifest['diagnostic_executions'] while the frozen v1 materializer emitted only diagnostic_executions_this_freeze",
+  "status": "preserved_as_preflight_schema_incident_not_calibration_run_incident",
+  "v1_assets_modified": false,
+  "worker_processes_started": 0
+}

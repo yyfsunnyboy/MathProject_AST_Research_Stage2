@@ -84,3 +84,9 @@ artifacts/public_benchmark_governance/candidate_b_r003_v3_crosswalk_diagnostics_
 scripts/build_candidate_b_r003_diagnostics_r002_incident.py text eol=lf
 scripts/run_candidate_b_r003_diagnostics_r002.py text eol=lf
 tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_incident.py text eol=lf
+
+# Candidate B r003 diagnostics r002 zero-execution preflight schema repair.
+artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v2/** text eol=lf
+scripts/build_candidate_b_r003_diagnostics_r002_v2.py text eol=lf
+scripts/run_candidate_b_r003_diagnostics_r002_v2.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_v2.py text eol=lf

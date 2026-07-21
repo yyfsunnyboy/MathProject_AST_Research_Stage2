@@ -1,0 +1,10 @@
+{
+  "calibration_executed": false,
+  "formal198_executed": false,
+  "materialized_revision": "candidate_b_r003_diagnostics_r002_v2",
+  "start_head": "1f62eeaa8de013c713f5652495be22ca3e3db31a",
+  "v1_manifest_sha256": "701b8117b45389cad827011eee26ce34b2b861aa509b1e6754a9985234027e5e",
+  "v1_preserved_in_place": true,
+  "validation_touched": false,
+  "zero_execution_preflight_only": true
+}
