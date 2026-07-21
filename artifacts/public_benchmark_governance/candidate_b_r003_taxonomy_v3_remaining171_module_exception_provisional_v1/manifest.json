@@ -1,0 +1,43 @@
+{
+  "adjudication_status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "ai_assisted_adjudication_cells": 37,
+  "cells": 37,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_eligibility_counts": {
+    "abstain": 37
+  },
+  "healer_executions": 0,
+  "machine_census_manifest_sha256": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+  "model_calls": 0,
+  "operational_cluster": "module_execution_exception_signal",
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_protocol_zh.md": "e3f26bcc5defc8833d83b8206248b39c12614bb8b040d4f944dc2b0875e54210",
+    "ai_provisional_adjudication.csv": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7",
+    "confidence_summary.csv": "ab3b6385d858521faace74be05c7bcd2e1668605fa319acdeab339f42968b6b4",
+    "evidence_coverage_summary.csv": "fd00801d7a114fec7685762924fe76a7e8eb814c711c5727f472cb687844042d",
+    "execution_manifest.json": "0c212269d04fa7a3ad113804761dc507b62a64b7f7eddcda6450c02d184853c4",
+    "failure_chain_summary.csv": "285d4230d8a352810a531b9d6f7ce8e4ac78658b0337b0182c9db52a1a01fcc4",
+    "fixed_cluster_roster.csv": "64292ff98e56acc8fec2127a8305ae811390bb91d9cc0884e33a272d45731f52",
+    "healer_eligibility_summary.csv": "ac43f76db9d6a58262e4ed87dfd97948abe80ad3cf68c43081208d674c8fc00b",
+    "machine_signal_taxonomy_crosstab.csv": "60c618fd3f8fe06717925535751a8ef6a93a9aae7c920c4d775abe7291d50209",
+    "mechanism_tag_summary.csv": "3e5ba45fd2bb7bd8c102359d5409b8fa158eb8267707543249a753f8cb5b4d44",
+    "methodology_report_zh.md": "edd69d93a206b3ec1d515cd0c00c7e0646f51c7e64d321201065cbace2459949",
+    "outcome_validity_summary.csv": "a55f0f6b085a8ae44c9894520fdaab6b02dbd527ac98f7e85dc7acbba08007af",
+    "pre_freeze_adversarial_audit.csv": "d5e116dd73ab3dbf4bcf04a29a5e6b759b70681118f6ecf734c4286f2316ea85",
+    "pre_freeze_adversarial_audit_zh.md": "cc362415a402781dd08f192e0a0d901dc148ecf1421f160f3236727c3bd98542",
+    "primary_layer_summary.csv": "9dd0f5d7cb35186662aac116ac2e55b6b3be89e12fc64bf2b2e156b6189f2ed7",
+    "provenance.json": "ac46f9fd8d0d4d43ee7aeb5fd878342ec49db9aaa4970a6db26dcdb9dffff7eb",
+    "secondary_layer_summary.csv": "c9055eba9e3e4754cfc9a726283f85ca2a749974824c1861dc5a8c3d61fe8210",
+    "unresolved_detail.csv": "aca8a66d07d82320375ce35b6b23984b819a41099597f75d860e23e5355b841f"
+  },
+  "primary_layer_counts": {
+    "L4": 32,
+    "UNRESOLVED": 5
+  },
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1",
+  "source_hashes_verified": 8,
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "validation_executions": 0
+}

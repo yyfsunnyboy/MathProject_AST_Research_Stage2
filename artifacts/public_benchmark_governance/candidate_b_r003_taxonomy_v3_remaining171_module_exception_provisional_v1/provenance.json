@@ -1,0 +1,19 @@
+{
+  "adjudication_status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "cohens_kappa_computed": false,
+  "diagnostics_runner_revision": "r002_v3",
+  "evalplus_correctness_loaded": false,
+  "formal_human_adjudication": false,
+  "h1_results_loaded": false,
+  "healer_runtime_input": false,
+  "hidden_expected_actual_loaded": false,
+  "machine_census_manifest_sha256": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+  "programs_executed": false,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1",
+  "start_head": "d3124cc2fa49c13b649a50e2892084a149eb24bd",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "target_cells": 37,
+  "target_operational_cluster": "module_execution_exception_signal",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "two_human_blind_review_claimed": false
+}

@@ -1,0 +1,15 @@
+chain_layer,chain_mechanism,cells
+L4,broken_zip_set_construction,1
+L4,combinatorial_product_explosion,5
+L4,directrix_formula_mismatch,3
+L4,dual_delete_index_invalidation,3
+L4,explicit_value_error_guard,2
+L4,int_on_complex_from_negative_sqrt,2
+L4,merge_median_indexerror,3
+L4,merge_median_valueerror,1
+L4,partition_index_error,1
+L4,partition_type_error,1
+L4,row_vs_column_aggregation_mismatch,5
+L4,stdlib_atan2_complex_type_error,5
+UNRESOLVED,value_error_despite_visible_literal_match,2
+UNRESOLVED,value_error_without_visible_source_guard,3
