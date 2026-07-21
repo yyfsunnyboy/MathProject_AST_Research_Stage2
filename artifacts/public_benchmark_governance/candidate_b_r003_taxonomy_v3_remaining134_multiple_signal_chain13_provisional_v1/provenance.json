@@ -1,0 +1,20 @@
+{
+  "adjudication_status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "cohens_kappa_computed": false,
+  "diagnostics_runner_revision": "r002_v3",
+  "evalplus_correctness_loaded": false,
+  "formal_human_adjudication": false,
+  "h1_results_loaded": false,
+  "healer_runtime_input": false,
+  "hidden_expected_actual_loaded": false,
+  "machine_census_manifest_sha256": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+  "module_exception_manifest_sha256": "72b02ab7da59e65db2d5e09cee9344c3d52940a717ea3dfea05310e0529d76c1",
+  "programs_executed": false,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1",
+  "start_head": "c0afac21159c1066e8e2daac10bccaf7fe207569",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "target_cells": 13,
+  "target_operational_cluster": "multiple_signal_chain",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "two_human_blind_review_claimed": false
+}

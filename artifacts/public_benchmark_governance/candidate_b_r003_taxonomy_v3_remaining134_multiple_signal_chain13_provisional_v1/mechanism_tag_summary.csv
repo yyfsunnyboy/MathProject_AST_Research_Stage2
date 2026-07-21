@@ -1,0 +1,16 @@
+mechanism_tag,cells
+algorithmic_logic_error,1
+broken_collection_construction,1
+duplicate_definition_override,6
+index_error,1
+memory_error,1
+module_execution_exception,11
+packaging_or_scaffold_residue,3
+partition_index_error,1
+runtime_type_error,1
+self_recursive_override,1
+strict_inequality_boundary,5
+test_execution_failure_signal,1
+unbound_name,7
+unbound_name_stats,5
+xor_accumulate_instead_of_sum,1

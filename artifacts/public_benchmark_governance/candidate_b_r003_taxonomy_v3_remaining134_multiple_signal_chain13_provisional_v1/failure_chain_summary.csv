@@ -1,0 +1,10 @@
+chain_layer,chain_mechanism,cells
+L4,broken_zip_sorted_construction,1
+L4,empty_word_index_error,1
+L4,partition_index_error,1
+L4,self_recursive_override,1
+L4,unbound_name_result,1
+L4,unbound_name_stats,5
+L4,unbound_name_t2,1
+L5,xor_accumulate_instead_of_sum,1
+UNRESOLVED,duplicate_definition_public_pass_unresolved,1
