@@ -1,0 +1,49 @@
+{
+  "adjudication_identity": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "audits_modified": false,
+  "candidate_executions": 0,
+  "cells": 20,
+  "condition": "Candidate_B/H0",
+  "confidence_distribution": {
+    "HIGH": 8,
+    "LOW": 12
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "final_freeze_audit_manifest_sha256": "701dc681cad277e51bf984843358fe04c8cd0beb9d3e66db11f14d70dd5fbdd6",
+  "final_freeze_audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_executions": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "note": "20 source-level evidence units across 13 tasks; not 20 independent tasks.",
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "previously_frozen": 77,
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "processed77_intersection": 0,
+  "programs_executed": 0,
+  "provisional_v2_csv_sha256": "7f89e457e5a3e19a8c13a0651feed0b71d27e3877653927c2360f37c5c119a78",
+  "provisional_v2_manifest_sha256": "11f59ee2b9296db4a13a055354dd9e554bd287839e9a6cc1f1c1a5604d8f18e6",
+  "remaining": 101,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1",
+  "secondary_nonempty_cells": 0,
+  "source_hashes_verified": 12,
+  "start_head": "a18cf32f27c781daa3e9c3f493a4527f31a6f481",
+  "status": "FORMALLY_FROZEN_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "total_frozen": 97,
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 13,
+  "v1_modified": false,
+  "v2_modified": false,
+  "validation_executions": 0
+}

@@ -1,0 +1,28 @@
+{
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "next_batch_size": 20,
+  "outputs_sha256_excluding_manifest": {
+    "duplicate_source_summary.csv": "53851cd53f263d28af3ba0832eb5dd21221dce4c28e52d1f154f4ec79b8450c9",
+    "execution_counts.json": "968c4c4ed0c2e8d5282cae5ca6ecb161393e7e9c5ea254c0459b0a133309d550",
+    "mutually_exclusive_cluster_summary.csv": "d09cca6c8c1a4ae8fa5b0308c7d32c07ea586b94b5c43a1b6038f3285f09de05",
+    "next_batch_roster.csv": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+    "next_batch_selection_report_zh.md": "a0336a550583d510b123ebb840f8b941d620b7c746c4d44d41d107803f261847",
+    "processed77_exclusion_audit.csv": "74c2b575dcd4e544d7e90261007b8feed7a884366f1d71fd29fa9b83d993c59c",
+    "provenance.json": "0554114e4b4eec6cc67f4627d40d200cc26a31bf9cee6d97c67a29bc87bbef85",
+    "remaining121_roster.csv": "ef14b8f4953af495f3dccf7192200ce1250aee7a1d98f481f205333413d8ebf1",
+    "signal_inventory.csv": "0e23f6be819ce6149632ac6358f0fb6ed4db8db52255b979918de2ba2fb434f4"
+  },
+  "processed77_total": 77,
+  "processed_in_remaining171": 50,
+  "programs_executed": 0,
+  "remaining121_roster": 121,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_census_planning_v1",
+  "source_hashes_verified": 10,
+  "status": "CENSUS_PLANNING_NOT_TAXONOMY_ADJUDICATION",
+  "validation_executions": 0
+}

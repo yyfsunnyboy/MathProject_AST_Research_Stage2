@@ -1,0 +1,32 @@
+{
+  "adjudication_identity": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "candidate_executions": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "final_freeze_audit_manifest_sha256": "701dc681cad277e51bf984843358fe04c8cd0beb9d3e66db11f14d70dd5fbdd6",
+  "final_freeze_audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+  "healer_executions": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "outputs_sha256_excluding_manifest": {
+    "execution_counts.json": "968c4c4ed0c2e8d5282cae5ca6ecb161393e7e9c5ea254c0459b0a133309d550",
+    "frozen_adjudication.csv": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f",
+    "frozen_batch_report_zh.md": "4f3470a3d0459cd5f18ddec68c877e81a0e536f52a95808f2768c9f5df7d024c",
+    "frozen_batch_summary.json": "2a1181ed6a1c070bc18654076c52a0dc6aa3d7a8cb07fe43b64f60fcff7e095f",
+    "provenance.json": "a1726e05914e0c10a101f9c070b209bc462c5d9feed5efbe4ffb020e6f9be194"
+  },
+  "previously_frozen": 77,
+  "programs_executed": 0,
+  "provisional_v2_csv_sha256": "7f89e457e5a3e19a8c13a0651feed0b71d27e3877653927c2360f37c5c119a78",
+  "provisional_v2_manifest_sha256": "11f59ee2b9296db4a13a055354dd9e554bd287839e9a6cc1f1c1a5604d8f18e6",
+  "remaining": 101,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1",
+  "source_hashes_verified": 12,
+  "status": "FORMALLY_FROZEN_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "total_frozen": 97,
+  "v1_modified": false,
+  "v2_modified": false,
+  "validation_executions": 0
+}

@@ -1,0 +1,21 @@
+{
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "final_freeze_audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+  "formal_population": 198,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "output_contract_shape20_freeze_from_v2_manifest_sha256": "11f59ee2b9296db4a13a055354dd9e554bd287839e9a6cc1f1c1a5604d8f18e6",
+  "output_contract_shape20_freeze_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1",
+  "previously_frozen": 77,
+  "programs_executed": 0,
+  "reconciliation": "198=97+101",
+  "remaining": 101,
+  "research_statement_zh": "已分析並凍結97格，剩餘101格；本批20格全部為Healer abstain，沒有eligible或conditional候選。",
+  "revision": "candidate_b_r003_taxonomy_v3_frozen_progress_census_v1",
+  "status": "TAXONOMY_V3_FROZEN_PROGRESS_CENSUS",
+  "total_frozen": 97,
+  "validation_executions": 0
+}

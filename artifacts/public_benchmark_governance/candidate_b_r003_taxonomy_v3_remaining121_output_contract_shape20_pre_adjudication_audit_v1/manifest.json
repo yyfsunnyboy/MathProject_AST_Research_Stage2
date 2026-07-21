@@ -1,0 +1,23 @@
+{
+  "audit_verdict": "READY_FOR_20_CELL_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_adjudication_emitted": false,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "outputs_sha256_excluding_manifest": {
+    "execution_counts.json": "968c4c4ed0c2e8d5282cae5ca6ecb161393e7e9c5ea254c0459b0a133309d550",
+    "pre_adjudication_adversarial_audit.csv": "a7aa7a09e12158ab8698fbf421cffe94db4b69c6809369324b5c35b48546a2eb",
+    "pre_adjudication_adversarial_audit_zh.md": "05745d2ec4d4971c745be87c153c250c89eee0af2cde2457b4f1906af4e7daad",
+    "proposed_adjudication_protocol_zh.md": "c78861942ebf6b8501cb94ec3d708bdf3e9cb5d5b19cab73d00dc66473928f20",
+    "provenance.json": "a73e2f3ed8453b7d274315dc77ff97091408623e9a97670b7c28436c7f0fa6f6"
+  },
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_pre_adjudication_audit_v1",
+  "source_hashes_verified": 11,
+  "status": "PRE_ADJUDICATION_ADVERSARIAL_AUDIT_NOT_FORMAL_ADJUDICATION",
+  "target_cells": 20,
+  "validation_executions": 0
+}

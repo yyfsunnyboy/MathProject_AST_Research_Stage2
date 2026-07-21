@@ -1,0 +1,32 @@
+{
+  "ai_assisted_adjudication_cells": 20,
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_human_review": false,
+  "frozen": false,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_summary.json": "ecb9d6d934ef047f9362fa498c07842928f18c17c7e0d37593aa1566d0afbbdb",
+    "adjudication_summary_zh.md": "8307289e00c5c701eabf83761d9dab27464c99bb389d41d3b7690dd3b93e62ff",
+    "ai_provisional_adjudication.csv": "87bf9dd0715cac8581028c98ffff0c1d0c6a91154bbfffe9470f244fe741f4f7",
+    "evidence_citation_audit.csv": "41c0bf5dbb7f909e9be0e59f254dd80df7aa38ccda022d61503773f97f2a6824",
+    "execution_counts.json": "88c78805d447e3a2e2c44d775437be83107006c510f66032faf074d5e8ef65d2",
+    "provenance.json": "86afc3657d6cf5396199d38fed129ed3247b944c90186ee2d5483f781418611d",
+    "roster_closure_audit.csv": "1d1c1836846cb0a574f73af0ab0fe8d47d6c8d2051b4c782c06939719f1e9cb2"
+  },
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v1",
+  "source_hashes_verified": 12,
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "target_cells": 20,
+  "unresolved_cells": 12,
+  "validation_executions": 0
+}

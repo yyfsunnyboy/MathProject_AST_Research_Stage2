@@ -1,0 +1,41 @@
+{
+  "ai_assisted_adjudication_cells": 20,
+  "candidate_executions": 0,
+  "cell_field_changes_from_v1": 4,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_human_review": false,
+  "frozen": false,
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_executions": 0,
+  "model_calls": 0,
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_summary.json": "a1e0e36927415469c7a569ae37b969294ebdcb8b0dcfaff25beb2e880fb63815",
+    "adjudication_summary_zh.md": "885e27011828d258ac8c25673ce8fd38327dbc582a5ead74fcf3182165f465ed",
+    "ai_provisional_adjudication.csv": "7f89e457e5a3e19a8c13a0651feed0b71d27e3877653927c2360f37c5c119a78",
+    "evidence_citation_audit.csv": "41c0bf5dbb7f909e9be0e59f254dd80df7aa38ccda022d61503773f97f2a6824",
+    "execution_counts.json": "88c78805d447e3a2e2c44d775437be83107006c510f66032faf074d5e8ef65d2",
+    "pre_audit_sufficiency_clarification_zh.md": "0eda165904a86e30803947c99b1fc6f2e6c1c7d696992d59c4bcea1edecdbd7a",
+    "provenance.json": "a2bc343d2c19a650e811bc61111f14367fb479490fbb6f6eaaa4fd28fcb41cdf",
+    "revision_delta_v1_to_v2.csv": "3601b0d54cc025bf9ddbef5827b31ad051f851f093ac5ce1e3ed45abc73df421",
+    "roster_closure_audit.csv": "1d1c1836846cb0a574f73af0ab0fe8d47d6c8d2051b4c782c06939719f1e9cb2"
+  },
+  "parent_manifest_sha256": "548486f59c5a42ef03375ace981bbd7219c5f94ae0b374ac3be1c305805fbf8d",
+  "parent_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v1",
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v2",
+  "source_hashes_verified": 11,
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "target_cells": 20,
+  "unresolved_cells": 12,
+  "v1_overwritten": false,
+  "validation_executions": 0
+}

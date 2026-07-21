@@ -1,0 +1,37 @@
+{
+  "affected_cells": 2,
+  "approved_cell_field_changes": 4,
+  "audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+  "cell_audits_accept": 20,
+  "cells": 20,
+  "clarification_ok": true,
+  "confidence_distribution": {
+    "HIGH": 8,
+    "LOW": 12
+  },
+  "freeze_authorized_by_this_audit": true,
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "healer_eligible_or_conditional": 0,
+  "l5_all_abstain": true,
+  "l5_cells": 7,
+  "note": "20 source-level evidence units across 13 tasks; not 20 independent tasks.",
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "secondary_nonempty_cells": 0,
+  "unapproved_diffs": 0,
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 13,
+  "unresolved_all_abstain": true,
+  "unresolved_cells": 12,
+  "v1_byte_identical": true,
+  "v2_independent_revision": true
+}

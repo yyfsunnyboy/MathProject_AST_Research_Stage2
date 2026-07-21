@@ -1,0 +1,13 @@
+work_cluster,cells,unique_program_id,unique_task_id,unique_source_sha256
+parse_or_compile_signal,0,0,0,0
+truncation_mechanism_signal,0,0,0,0
+missing_or_ambiguous_entry_point_signal,0,0,0,0
+import_or_name_resolution_signal,0,0,0,0
+module_execution_exception_signal,0,0,0,0
+timeout_or_nontermination_signal,0,0,0,0
+duplicate_definition_signal,0,0,0,0
+output_or_contract_shape_signal,119,119,39,92
+test_execution_failure_signal,0,0,0,0
+static_unbound_name_signal,0,0,0,0
+packaging_or_scaffold_residue_signal,0,0,0,0
+no_decisive_machine_signal,2,2,1,2

@@ -1,0 +1,40 @@
+{
+  "ai_assisted_adjudication_cells": 20,
+  "cell_field_changes_from_v1": 4,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 8,
+    "LOW": 12
+  },
+  "healer_eligibility_distribution": {
+    "abstain": 20
+  },
+  "mechanism_tag_distribution": {
+    "binary_search_missing_final_return": 1,
+    "complex_dp_without_public_trace": 3,
+    "dedupe_instead_of_unique_occurrence": 1,
+    "generator_instead_of_list": 1,
+    "incorrect_surface_area_formula": 2,
+    "incorrect_trapezium_median_formula": 1,
+    "order_sensitive_counter": 2,
+    "packaging_or_scaffold_residue": 6,
+    "return_shape_observed": 20
+  },
+  "note": "20 cells are 20 source-level evidence units across 13 tasks; do not describe as 20 independent tasks.",
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "parent_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v1",
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v2",
+  "secondary_layer_distribution": {},
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "unique_program_id": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 13,
+  "unresolved_cells": 12
+}

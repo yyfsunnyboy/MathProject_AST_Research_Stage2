@@ -1,0 +1,13 @@
+program_id,task_id,seed,pre_audit_sufficiency,why_sufficient_did_not_close_layer,unresolved_reason_accepted,audit_verdict
+0490b9359595e547cd1f19b993b279e4771e6b010b486895ef005aa327ec6ba5,Mbpp/440,33,sufficient,Public assert embedded; static return shape observed; adverb-position arithmetic not uniquely shown to fail public example; L2 vs L5 not closable.,true,accept
+29badcaa34166c620978b4f621aa3856859d296e210f7c7a38561b39849fe9cc,Mbpp/103,33,sufficient,"Eulerian DP cannot be certified against only eulerian_num(3,1)==4 without hidden cases; sufficient means adjudicable, not layer-closed.",true,accept
+40c33be662bdff3a810ff1d30fdbb10b665c7d1d00a58e010245fba1f4ae091d,Mbpp/138,11,sufficient,Public assert True for n=10 is consistent with bit-loop static trace; hidden failure not inspectable.,true,accept
+4646a249b7fe3dcaeb8cbcfc0ce9f76bcbcdda03f74c6dd983397d8a5f0f3ec7,Mbpp/11,33,sufficient,"Public remove_Occ('hello','l')=='heo' matches first/last removal; no closable L2/L5 mismatch on public example.",true,accept
+4e8e311abbfa06697db20b02b810ed3b5556d46c5c19274bd64ba2b9a2766f73,Mbpp/16,55,sufficient,Public underscore/lowercase assert matches split/islower logic; layer not closable from public evidence.,true,accept
+5c195ebd425a3dd8b06b2403e00a815ad2538d6c9f54119448a585dac8c88715,Mbpp/103,22,sufficient,Distinct Mbpp/103 source; DP still not publicly closable to L4/L5.,true,accept
+794b418dfbb6d97af9e2062fff770e1a4c2f85140a9b42ec6cc6b6fa589eb937,Mbpp/118,33,sufficient,Public string_to_list example matches s.split(); packaging assert consistent; hidden failure not inspectable.,true,accept
+a4fb31fb0a9e1c4080e4c75cc53a842c29cfd030ea1cd5ba7d6f29a34bd605ee,Mbpp/138,55,sufficient,Distinct Mbpp/138 source; public True example does not close layer.,true,accept
+ad4c43603b9f8b7f5b6a3a777940c6c799881fc2fb043e193e3237bcaf3af7f9,Mbpp/103,55,conditional,was_conditional_not_sufficient,true,accept
+df59c7d238b574cc10029a2d5c026996fa8af2e08ecc1c9af6c527261d8dc344,Mbpp/473,11,sufficient,"Order-insensitive intersection public example not shown to fail under static normalize(min,max) logic.",true,accept
+e46a657fce3ecde2ac8078af376204deab08196894a3a0db8c3029e317c0a95c,Mbpp/473,33,sufficient,Distinct Mbpp/473 source; packaging assert aligns with public set; no closable L2/L5 mismatch.,true,accept
+f14d52366f2dcbb7a33abeeac05c19a43cb0fccd515244e688d7a3ee885a8b34,Mbpp/11,44,sufficient,Distinct Mbpp/11 source; public example matches first/last removal.,true,accept

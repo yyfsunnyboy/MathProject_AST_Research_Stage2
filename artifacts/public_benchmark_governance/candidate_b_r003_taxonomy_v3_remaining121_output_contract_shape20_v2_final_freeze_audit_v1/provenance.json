@@ -1,0 +1,64 @@
+{
+  "audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+  "audited_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v2",
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "freeze_written": false,
+  "healer_executions": 0,
+  "machine_census_manifest_sha256": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+  "model_calls": 0,
+  "multiple_signal_manifest_sha256": "fd26fdbd103ad216e2a38c8e16b839c9e2b72a242e360713edee8d7762f59336",
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "parent_v1_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v1",
+  "post_audit_manifest_sha256": "73fc418fe9c15bc35ade4ebe208d436eea516ac89860a962e78bea173bc1b508",
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_v2_final_freeze_audit_v1",
+  "source_hashes_verified": 19,
+  "start_head": "a18cf32f27c781daa3e9c3f493a4527f31a6f481",
+  "statistics": {
+    "affected_cells": 2,
+    "approved_cell_field_changes": 4,
+    "audit_verdict": "READY_TO_FREEZE_COMMIT_AND_PUSH_20_CELL_V2",
+    "cell_audits_accept": 20,
+    "cells": 20,
+    "clarification_ok": true,
+    "confidence_distribution": {
+      "HIGH": 8,
+      "LOW": 12
+    },
+    "freeze_authorized_by_this_audit": true,
+    "healer_eligibility_distribution": {
+      "abstain": 20
+    },
+    "healer_eligible_or_conditional": 0,
+    "l5_all_abstain": true,
+    "l5_cells": 7,
+    "note": "20 source-level evidence units across 13 tasks; not 20 independent tasks.",
+    "outcome_validity_distribution": {
+      "VALID_MODEL_OUTCOME": 20
+    },
+    "primary_layer_distribution": {
+      "L2": 1,
+      "L5": 7,
+      "UNRESOLVED": 12
+    },
+    "secondary_nonempty_cells": 0,
+    "unapproved_diffs": 0,
+    "unique_program_id": 20,
+    "unique_source_sha256": 20,
+    "unique_task_id": 13,
+    "unresolved_all_abstain": true,
+    "unresolved_cells": 12,
+    "v1_byte_identical": true,
+    "v2_independent_revision": true
+  },
+  "status": "FINAL_FREEZE_AUDIT_NOT_FREEZE_COMMIT",
+  "v1_csv_sha256": "87bf9dd0715cac8581028c98ffff0c1d0c6a91154bbfffe9470f244fe741f4f7",
+  "v1_manifest_sha256": "548486f59c5a42ef03375ace981bbd7219c5f94ae0b374ac3be1c305805fbf8d",
+  "v1_modified": false,
+  "v2_csv_sha256": "7f89e457e5a3e19a8c13a0651feed0b71d27e3877653927c2360f37c5c119a78",
+  "v2_manifest_sha256": "11f59ee2b9296db4a13a055354dd9e554bd287839e9a6cc1f1c1a5604d8f18e6",
+  "v2_modified": false,
+  "validation_executions": 0
+}

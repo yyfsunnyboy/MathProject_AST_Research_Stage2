@@ -1,0 +1,25 @@
+{
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "freeze_revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1",
+  "healer_executions": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "outputs_sha256_excluding_manifest": {
+    "batch_registry.csv": "be21e963297ce27b6b83eb70834b9d965a5fa77bba97a9a284caaa1541c9a38d",
+    "execution_counts.json": "968c4c4ed0c2e8d5282cae5ca6ecb161393e7e9c5ea254c0459b0a133309d550",
+    "frozen_progress_report_zh.md": "b70e1f938fd0dd0b09a95796f40587b03e17f22661874bfff93a6a9d1477e9c4",
+    "frozen_progress_summary.json": "0ead1a5a3c328dc668a630ed95a07f3a2cdfbd0dd888c3ae0f314963feeb0e25",
+    "provenance.json": "3a3253cb8118c99da6f628577c1d884856485b13557af16ce1f2eaba6b8b59e9"
+  },
+  "overwrites_prior_census": false,
+  "previously_frozen": 77,
+  "programs_executed": 0,
+  "remaining": 101,
+  "revision": "candidate_b_r003_taxonomy_v3_frozen_progress_census_v1",
+  "status": "TAXONOMY_V3_FROZEN_PROGRESS_CENSUS",
+  "total_frozen": 97,
+  "validation_executions": 0
+}

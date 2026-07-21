@@ -1,0 +1,36 @@
+{
+  "ai_assisted_adjudication_cells": 20,
+  "candidate_executions": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_human_review": false,
+  "frozen": false,
+  "ground_truth": false,
+  "healer_eligibility_distribution": {
+    "abstain": 18,
+    "conditional": 2
+  },
+  "healer_executed": false,
+  "healer_executions": 0,
+  "hidden_expected_actual_used": false,
+  "machine_census_manifest_sha256": "3def8a5806b20200ade0b5d4a652d3fb6998ecc889bf7277485cd6045831ef07",
+  "model_calls": 0,
+  "multiple_signal_manifest_sha256": "fd26fdbd103ad216e2a38c8e16b839c9e2b72a242e360713edee8d7762f59336",
+  "next_batch_roster_sha256": "b020499fdff42b94bcfc9efa1af0ad7011a59ad5c20184c7fc5468bcc3d1f804",
+  "planning_manifest_sha256": "66cb8f366d3820b31715753513ed6b038bd471b85b536c3b6779217b041387ab",
+  "primary_layer_distribution": {
+    "L2": 1,
+    "L5": 7,
+    "UNRESOLVED": 12
+  },
+  "programs_executed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_provisional_v1",
+  "source_hashes_verified": 12,
+  "start_head": "a18cf32f27c781daa3e9c3f493a4527f31a6f481",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_FORMAL_HUMAN_REVIEW",
+  "target_cells": 20,
+  "unique_source_sha256": 20,
+  "unique_task_id": 13,
+  "unresolved_cells": 12,
+  "validation_executions": 0
+}
