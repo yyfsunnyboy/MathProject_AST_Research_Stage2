@@ -1,0 +1,8 @@
+machine_signal,cells
+import_or_name_resolution_signal,7
+missing_or_ambiguous_entry_point_signal,6
+module_execution_exception_signal,48
+no_decisive_machine_signal,2
+output_or_contract_shape_signal,119
+packaging_or_scaffold_residue_signal,38
+test_execution_failure_signal,2

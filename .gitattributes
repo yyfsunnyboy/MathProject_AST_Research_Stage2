@@ -115,3 +115,8 @@ tests/finals_rebuild/test_candidate_b_r003_g2_module_ai_assisted_v1.py text eol=
 
 # Candidate B r003 taxonomy v3 G2_module researcher review (blank worksheet + later fills).
 artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/** text eol=lf
+
+# Candidate B r003 taxonomy v3 remaining171 machine census.
+artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1/** text eol=lf
+scripts/prepare_candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1.py text eol=lf

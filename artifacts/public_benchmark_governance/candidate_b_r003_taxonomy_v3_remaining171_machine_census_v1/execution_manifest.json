@@ -1,0 +1,12 @@
+{
+  "cells_censused": 171,
+  "cells_rostered": 171,
+  "correctness_tests_executed": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1",
+  "status": "MACHINE_CENSUS_NOT_TAXONOMY_ADJUDICATION",
+  "validation_executions": 0
+}

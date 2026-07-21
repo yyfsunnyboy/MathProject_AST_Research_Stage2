@@ -1,0 +1,23 @@
+{
+  "cluster_is_taxonomy_layer": false,
+  "correctness_reevaluated": false,
+  "diagnostics_executions": 0,
+  "diagnostics_runner_revision": "r002_v3",
+  "evalplus_correctness_executions": 0,
+  "excluded_g2_module": 27,
+  "formal_population": 198,
+  "h1_used_for_sampling": false,
+  "healer_eligibility_decided": false,
+  "healer_executions": 0,
+  "hidden_expected_actual_used": false,
+  "model_calls": 0,
+  "p0_included": false,
+  "reconciliation": "198=27+171",
+  "remaining_roster": 171,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1",
+  "start_head": "047bf3735c7cd34f3f1826c7a9b49a42603ddb5d",
+  "status": "MACHINE_CENSUS_NOT_TAXONOMY_ADJUDICATION",
+  "taxonomy_adjudication_completed": false,
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "validation_executions": 0
+}

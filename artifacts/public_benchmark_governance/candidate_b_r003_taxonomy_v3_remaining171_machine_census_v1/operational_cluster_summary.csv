@@ -1,0 +1,10 @@
+operational_cluster,cells
+parse_or_compile_signal,0
+missing_or_ambiguous_entry_point_signal,0
+import_or_name_resolution_signal,0
+module_execution_exception_signal,37
+timeout_or_nontermination_signal,0
+test_execution_failure_signal,0
+output_or_contract_shape_signal,119
+no_decisive_machine_signal,2
+multiple_signal_chain,13

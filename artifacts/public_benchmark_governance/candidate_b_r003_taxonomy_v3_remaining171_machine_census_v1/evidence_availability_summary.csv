@@ -1,0 +1,11 @@
+flag,value
+cells,171
+entry_point_present,171
+h1_result_used_for_sampling,0
+hidden_expected_actual_used,0
+invalid_infrastructure_cells,2
+parse_success,171
+source_bytes_verified,171
+stdout_stderr_present_in_frozen_diagnostics,0
+third_party_or_local_import_cells,0
+traceback_present_in_frozen_diagnostics,0

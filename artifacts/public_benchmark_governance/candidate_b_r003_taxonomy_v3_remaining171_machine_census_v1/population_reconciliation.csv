@@ -1,0 +1,7 @@
+metric,value,definition
+formal_unresolved_population,198,classification_preparation.csv rows == coarse_diagnostics.csv rows
+excluded_g2_module,27,"diagnostic_phase == ""G2_module"""
+remaining_fixed_roster,171,198 - 27
+reconciliation_identity,198=27+171,excluded ∪ remaining = unresolved198; intersection empty
+p0_included,0,Candidate_B taxonomy scope only
+h1_used_for_sampling,0,H0 frozen sources only for source-feature extraction

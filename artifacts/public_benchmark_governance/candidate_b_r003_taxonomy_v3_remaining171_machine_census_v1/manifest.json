@@ -1,0 +1,31 @@
+{
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "excluded_g2_module": 27,
+  "formal_population": 198,
+  "healer_eligibility_decided": false,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "evidence_availability_summary.csv": "de68ec4864dd1f739048cd744b62999b9aa61df42d001f090f8199ba8fed3de2",
+    "excluded_g2_27_identity_ledger.csv": "91b43cd4db002d9e7273e834e6d7521250b1151914b1a145584275ca9fba8912",
+    "execution_manifest.json": "62293ee9290f3ec5d4186cbbbb29df26f092beb5fe05be727e6a02a327459cb5",
+    "fixed_roster.csv": "6e2c6e243fc6ff01c0b0fc2c6939e99cf7f87ef5f17bdf97206adc62ab9af1a5",
+    "machine_census.csv": "284802c8f1aeff92ad70f65b42c4aa7dabc252da592f8ad62011be71537f8a32",
+    "machine_signal_summary.csv": "1c0bdebf941b28cf9adf603a2bb1e4cdb3ae5d64c788250507c85250899cb887",
+    "methodology_report_zh.md": "b0534a67fbaea5d5283f629ea250f2e5eaa5cca28104ad9ccd8490b16c7e0fd5",
+    "operational_cluster_detail.csv": "b378573b581ff9f567e3ecf4ee7a949b532bac86b48dbd473d7c047ab726716d",
+    "operational_cluster_summary.csv": "cf95e4f40edffc7e77419ea2bb0bec5aa7906e05e8f01ceacf5a2adf027e7364",
+    "population_reconciliation.csv": "1671f80bdcdd91fcb7b09aeb48bfb32471fb65af5c34e06e475e3d9fd26792c6",
+    "provenance.json": "efb614b2b6f741bc079874ee78ee6d9ea25c021289ac6b081562b0f4547d4295",
+    "source_hash_ledger.csv": "3d8e304b685611d27410e696422eab6d7cba6946a19f59ad2748f94b703d8fe9",
+    "unresolved_source_or_identity_issues.csv": "9bfba8f44762ccf1dfa7a89a3352beb5e699ddd345e3d73af731693849d15ca0"
+  },
+  "reconciliation": "198=27+171",
+  "remaining_roster": 171,
+  "revision": "candidate_b_r003_taxonomy_v3_remaining171_machine_census_v1",
+  "source_hashes_verified": 7,
+  "status": "MACHINE_CENSUS_NOT_TAXONOMY_ADJUDICATION",
+  "taxonomy_adjudication_completed": false,
+  "validation_executions": 0
+}
