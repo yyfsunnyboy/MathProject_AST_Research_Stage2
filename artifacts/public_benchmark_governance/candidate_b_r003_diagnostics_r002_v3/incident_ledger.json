@@ -1,0 +1,18 @@
+{
+  "actual_formal_run_incident": false,
+  "affected_revision": "candidate_b_r003_diagnostics_r002_v2",
+  "evalplus_correctness_executions": 0,
+  "formal_cells_executed": 0,
+  "formal_output_created": false,
+  "incident_type": "ZERO_EXECUTION_FORMAL_PREFLIGHT_LOGIC_INCIDENT",
+  "model_calls": 0,
+  "observed_safe_error": {
+    "exception_type": "R002V2RunnerError",
+    "message": "calibration output path already exists",
+    "stage": "output_preflight"
+  },
+  "root_cause": "v2 manifest validation unconditionally required both calibration and formal output directories to be absent, while formal mode subsequently required the calibration directory to exist",
+  "status": "preserved_as_zero_execution_formal_preflight_incident",
+  "v2_manifest_runner_calibration_modified": false,
+  "worker_processes_started": 0
+}

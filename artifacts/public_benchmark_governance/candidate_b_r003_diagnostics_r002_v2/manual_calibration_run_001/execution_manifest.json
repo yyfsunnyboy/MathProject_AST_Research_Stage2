@@ -1,0 +1,16 @@
+{
+  "cells": 8,
+  "dataset_initialized_once_in_parent": true,
+  "evalplus_correctness_executions": 0,
+  "formal_198_authorized": true,
+  "healer_runtime_input": false,
+  "hidden_input_expected_actual_message_traceback_saved": false,
+  "mode": "calibration",
+  "model_calls": 0,
+  "results_sha256": "01242c67b26509a76d852d9dc934cf15239ef9ea73a83678c639c85b486cb038",
+  "retry_resume_overwrite": false,
+  "source_manifest_sha256": "1e69e02b0a434cbcaa88f899896805d803bd8dfa3b21c0d7134e1033dc89acf2",
+  "startup_and_execution_timeouts_separate": true,
+  "status": "r002_v2_calibration_complete",
+  "worker_ready_handshake": true
+}

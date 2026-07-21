@@ -1,0 +1,12 @@
+{
+  "diagnostic_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_cells_executed": 0,
+  "formal_output_created": false,
+  "healer_executed": false,
+  "incident_type": "ZERO_EXECUTION_FORMAL_PREFLIGHT_LOGIC_INCIDENT",
+  "model_calls": 0,
+  "status": "r002_v3_formal_prepared_not_executed",
+  "validation_not_executed": true,
+  "worker_processes_started": 0
+}

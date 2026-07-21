@@ -1,0 +1,22 @@
+{
+  "data_identity_ledgers_unchanged": true,
+  "result_schema_unchanged": true,
+  "source_section_sha256": {
+    "EXECUTION_TIMEOUT_SECONDS": "b6af22866824eeac88da93126080e182a3be002e0a02f3fe4ebe9396060e76eb",
+    "RESULT_FIELDS": "dd4714badf90fbe56563ee5bc44173a11543810da77977d68ffb55fa94905d51",
+    "STARTUP_TIMEOUT_SECONDS": "7dc93b022b6e9b7b65e63f7fc4a8db93abc35f61de58245de4f88378bdd61d5c",
+    "_run_cell": "6f2075474ef07badb478af6c853c9df31b5d427b7f11a8d79abc126e3eebc3c4",
+    "_validate_result_rows": "dc305d6123d1d0f6f2bb3c5f04558099908ff19b83b858a701b30a99b979ab8f",
+    "_worker": "3785a4b16fec981d74ebcebc1a929cd29b45e24eb72a2b283dc648bdbcfd439d"
+  },
+  "timeouts_unchanged": {
+    "candidate_execution_seconds": 30,
+    "startup_seconds": 30
+  },
+  "v2_runner_sha256": "47966c12d00d4041aa4d9f9749755bc816704c94ca6e66e1029a69efe3298d30",
+  "v3_binding": "v2_runner.execution_core._run_cell",
+  "v3_defines_worker_or_run_cell": false,
+  "worker_cell_diagnostic_modifications": 0,
+  "worker_core_file": "scripts/run_candidate_b_r003_diagnostics_r002.py",
+  "worker_core_file_sha256": "4e075c2d35ee2f06d86cc54624312294bdc79c3b119241eeeb193db44e4e15af"
+}

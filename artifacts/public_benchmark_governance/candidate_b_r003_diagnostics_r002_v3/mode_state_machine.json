@@ -1,0 +1,12 @@
+{
+  "calibration": {
+    "calibration_output": "must_not_exist",
+    "formal_output": "must_not_exist"
+  },
+  "formal": {
+    "calibration_output": "must_exist_and_pass_frozen_evidence_gate",
+    "formal_output": "must_not_exist"
+  },
+  "formal_never_requires_calibration_absence": true,
+  "transition_fixed": "validated_calibration -> formal_worker_loop_boundary"
+}

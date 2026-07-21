@@ -1,0 +1,13 @@
+{
+  "calibration_reexecuted": false,
+  "formal198_executed": false,
+  "start_head": "fddf8bf85cfa34b11d46df5375dd9c436c1f89fc",
+  "v2_calibration_observed_mtime_utc": {
+    "calibration_results.csv": "2026-07-21T02:28:56.8522360Z",
+    "execution_manifest.json": "2026-07-21T02:28:56.8578777Z"
+  },
+  "v2_calibration_preserved_in_place": true,
+  "v2_manifest_sha256": "1e69e02b0a434cbcaa88f899896805d803bd8dfa3b21c0d7134e1033dc89acf2",
+  "v2_runner_sha256": "47966c12d00d4041aa4d9f9749755bc816704c94ca6e66e1029a69efe3298d30",
+  "validation_touched": false
+}

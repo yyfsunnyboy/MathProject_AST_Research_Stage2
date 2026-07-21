@@ -1,0 +1,16 @@
+{
+  "cells": 8,
+  "cohort_sha256": "6a688058d6f39b27baff8f045249ce62975ea213f951b7517e084da18794ef6b",
+  "completed": 8,
+  "directory": "artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v2/manual_calibration_run_001",
+  "execution_manifest_sha256": "5be126a2c0465691db3a2be690dbb8c6054f86b7154b34e6ca06de32e01dcf37",
+  "exit_0": 8,
+  "formal_198_authorized": true,
+  "protocol_sha256": "d9c20ffba5ace67b00dda625ad67ca3da1a6f8db7ce882dd0c549ab11575f8ce",
+  "recalibration_required": false,
+  "result_received": 8,
+  "results_sha256": "01242c67b26509a76d852d9dc934cf15239ef9ea73a83678c639c85b486cb038",
+  "returned": 8,
+  "source_manifest_sha256": "1e69e02b0a434cbcaa88f899896805d803bd8dfa3b21c0d7134e1033dc89acf2",
+  "worker_ready": 8
+}
