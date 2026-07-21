@@ -1,0 +1,37 @@
+{
+  "ai_provisional_csv_sha256": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119",
+  "ai_provisional_directory_modified": false,
+  "ai_provisional_revision": "candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1",
+  "cells_01_03_preserved": true,
+  "cells_in_scope": 27,
+  "cohens_kappa_computed": false,
+  "diagnostics_executions": 0,
+  "diagnostics_runner_revision": "r002_v3",
+  "effective_healer_counts": {
+    "abstain": 4,
+    "conditional": 23
+  },
+  "effective_primary_counts": {
+    "L2": 2,
+    "L4": 25
+  },
+  "evalplus_correctness_executions": 0,
+  "formal_human_adjudication": false,
+  "freeze_baseline_commit": "ba2244f3804232a2ea2dd52f9c3d60f9e35b46b6",
+  "h1_results_used": false,
+  "healer_executions": 0,
+  "hidden_expected_actual_used": false,
+  "model_calls": 0,
+  "phase_filter": "G2_module",
+  "remaining_cells_analyzed": false,
+  "researcher_reviews_completed": 27,
+  "review_type": "AI_ASSISTED_SECOND_PASS_NOT_FORMAL_HUMAN_ADJUDICATION",
+  "reviewer_id": "OPENAI_CODEX_AI_ASSISTED_REVIEW_20260721",
+  "revision": "candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1",
+  "status_counts": {
+    "ACCEPT": 27
+  },
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "two_human_blind_review_claimed": false,
+  "validation_executions": 0
+}

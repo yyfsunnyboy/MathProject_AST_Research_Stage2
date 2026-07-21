@@ -1,0 +1,47 @@
+{
+  "ai_provisional_csv_sha256_verified": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119",
+  "ai_provisional_unchanged": true,
+  "cells": 27,
+  "cells_01_03_preserved": true,
+  "cohens_kappa_computed": false,
+  "diagnostics_executions": 0,
+  "effective_healer_counts": {
+    "abstain": 4,
+    "conditional": 23
+  },
+  "effective_primary_counts": {
+    "L2": 2,
+    "L4": 25
+  },
+  "evalplus_correctness_executions": 0,
+  "formal_human_adjudication": false,
+  "freeze_baseline_commit": "ba2244f3804232a2ea2dd52f9c3d60f9e35b46b6",
+  "healer_executions": 0,
+  "model_calls": 0,
+  "modify_count": 0,
+  "outputs_sha256_excluding_manifest": {
+    "ai_assisted_second_pass_report_zh.md": "1fd57a505eb6d3192ae9e507756acdbc6d8da2f1dad002c3973e0b38c400ebae",
+    "effective_healer_eligibility_summary.csv": "2b07241ac51419a20a01d84e053ac53378b46c22e4e84d00d0c3ca506ef57b93",
+    "effective_primary_layer_summary.csv": "458e0c0f0259a867e72a4131415bb56b5442e0ad945571621c765f1bc16cbca0",
+    "effective_secondary_layer_summary.csv": "f46ffb563ead9379fa0c34403e790518b9a9b452614297b281a0eace753e0470",
+    "execution_manifest.json": "aef8305c8c208446edffa37e8f72ea70df1651392d855c6b5870d295c74f50d7",
+    "modify_and_unresolved_detail.csv": "886b9f6a512814a0f7a32a0c7f96cea1ebeb285cc847464a8df236fd5a030815",
+    "provenance.json": "2af20815d346e7b74e97fe01e13693b80659e01cb1ee90530eb083444d5adef0",
+    "researcher_review_protocol_zh.md": "d36697bed116fb76cb3a9f2a5d941cbd8520df89e2a37e631d861afb96192b83",
+    "researcher_review_worksheet.csv": "38694d644d7916aa14a716bfbfdbdb1eaed4b1c2557865bde3aee1d215d2b820",
+    "researcher_review_worksheet_blank.csv": "935e50d9c0aac1d1c7c824ec9389ec106c807c68801515af8c998d988f35619b",
+    "researcher_session.json": "793db6094ceb4fdce4a5e15027eb6d879e4f038e6efb2b6f294d3c67c0d2bca2",
+    "second_pass_status_summary.csv": "4a6e99d3e6bf65f386df15114353a0d46a07450d180cd51b0cbc035bf8a6d096",
+    "second_pass_vs_provisional_diff.csv": "56d1e26cb751c70d042ebdbbab7fad6cbb2738fa4b220d878e3e70809f0d6ae9"
+  },
+  "researcher_reviews_completed": 27,
+  "review_type": "AI_ASSISTED_SECOND_PASS_NOT_FORMAL_HUMAN_ADJUDICATION",
+  "revision": "candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1",
+  "status": "AI_ASSISTED_SECOND_PASS_COMPLETE_AWAITING_COMMIT_APPROVAL",
+  "status_counts": {
+    "ACCEPT": 27
+  },
+  "two_human_blind_review_claimed": false,
+  "unresolved_count": 0,
+  "validation_executions": 0
+}
