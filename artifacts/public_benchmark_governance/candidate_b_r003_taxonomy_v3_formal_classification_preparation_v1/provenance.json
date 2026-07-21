@@ -1,0 +1,12 @@
+{
+  "analysis_version": "candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1",
+  "diagnostics_runner_revision": "r002_v3",
+  "evidence_role": "development",
+  "formal_diagnostics_outputs_modified": false,
+  "formal_human_adjudication_completed": false,
+  "legacy_artifacts_overwritten": false,
+  "machine_preparation_completed": true,
+  "start_head": "2c832b8be5b92d755317ada808d86c1c9fabc5dc",
+  "taxonomy_codebook_sha256": "7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3"
+}

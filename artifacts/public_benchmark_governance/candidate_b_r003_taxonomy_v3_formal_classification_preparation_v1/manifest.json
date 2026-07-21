@@ -1,0 +1,37 @@
+{
+  "diagnostics_allowed_as_healer_runtime_input": false,
+  "diagnostics_runner_revision": "r002_v3",
+  "evalplus_correctness_executions": 0,
+  "formal_adjudications_completed": 0,
+  "formal_diagnostics_execution_manifest_sha256": "e536827a69a7d782406cefa42068c9e1dcb6453385bdd943be8f6516962cdf34",
+  "formal_diagnostics_executions": 0,
+  "formal_diagnostics_results_sha256": "dafba357a47341856de32d6766aa27cf37fc4a326c9427b5df6fadef659d8f4c",
+  "formal_diagnostics_source_manifest_sha256": "f37c0daa9fb4f3a18d7a2d7fed983f57f2ee0057ef202220643cf7919e362234",
+  "healer_executions": 0,
+  "human_review_queue": 196,
+  "infrastructure_invalid_unclassified": 2,
+  "manifest_version": "candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+    "execution_manifest.json": "c4bbb923829c5c90b18224b6e5e170239b47ff53a9c2e4f5349af70ab8a402ee",
+    "identity_join_audit.json": "112996d0271b4f90b79f927820f6ff9c712af64dcd4fe8170ddf149a8be39c07",
+    "infrastructure_evidence_review.csv": "26f9bf4765757b9eae85bcfdb6d295d9ec17c275b52f3216f1721d8eb83b754c",
+    "machine_proposal_summary.csv": "a4e756cb68debde6cb35b8b070f842275df76b6b230d764cb0c5a5755d140d3d",
+    "proposed_classification_schema.json": "5718fe28142b25eb362d0e3c4c344928b04fc8aaf6838bb151cded1f9fe27352",
+    "provenance.json": "e1eb89095ff9d4354df70c55a4e5123820c9ec443198355dc200615b1b512dfc",
+    "reviewer_adjudication_guide_zh.md": "8a92e6ca933599b51f4fbc04e9d2b4257236ffc50bc5f7d9ab9a643ac34895e3",
+    "source_hash_ledger.csv": "f04a07e4e0987d44f4514b77128ffca23a02fd83182c3d2e4c331d1b7d908db4",
+    "unresolved_evidence_ledger.csv": "79bef4bcf70539aa554e1b5fb6349c1681fa9fc169c8353ebb55f9b274354a17"
+  },
+  "partial_diagnostics_executions": 0,
+  "programs": 198,
+  "source_sha256": {
+    "scripts/prepare_candidate_b_r003_taxonomy_v3_formal_classification.py": "0772addf2794afdac0c432b1d6ed9ae80e3d5d7fd10d9761ff69b61703239b5c",
+    "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v3_formal_classification_preparation.py": "6c7fd511f976cb9594897b700ed175fb623f3bf51dc96f39f9cd0d5c1123870d"
+  },
+  "status": "machine_preparation_complete_formal_adjudication_not_completed",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "usable_diagnostics": 196,
+  "validation_executions": 0
+}

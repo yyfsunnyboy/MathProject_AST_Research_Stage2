@@ -1,0 +1,39 @@
+{
+  "all_source_hashes_verified": true,
+  "diagnostics_rows": 198,
+  "formal_adjudications_completed": 0,
+  "human_review_queue": 196,
+  "infrastructure_invalid": 2,
+  "join_counts": {
+    "census": 198,
+    "crosswalk": 198,
+    "evalplus_h0": 198,
+    "formal_ledger": 198,
+    "journal_h0": 198,
+    "paired_candidate_b": 198,
+    "public_task_contract": 198
+  },
+  "join_keys": [
+    "program_id",
+    "cell_identity_sha256",
+    "task_identity_sha256",
+    "generation_id",
+    "evaluation_source_sha256",
+    "evaluator_hash",
+    "diagnostics_protocol_sha256"
+  ],
+  "phase_counts": {
+    "G2_base": 19,
+    "G2_module": 27,
+    "G2_plus": 29,
+    "completed": 121,
+    "infrastructure": 2
+  },
+  "row_order_used_for_join": false,
+  "seed_only_used_for_join": false,
+  "status": "identity_hash_safe_join_complete",
+  "task_name_only_used_for_join": false,
+  "unique_cell_identities": 198,
+  "unique_program_ids": 198,
+  "usable_diagnostics": 196
+}

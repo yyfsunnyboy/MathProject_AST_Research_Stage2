@@ -97,3 +97,8 @@ artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v2/manua
 scripts/build_candidate_b_r003_diagnostics_r002_v3.py text eol=lf
 scripts/run_candidate_b_r003_diagnostics_r002_v3.py text eol=lf
 tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_v3.py text eol=lf
+
+# Candidate B r003 taxonomy v3 formal classification machine preparation.
+artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/** text eol=lf
+scripts/prepare_candidate_b_r003_taxonomy_v3_formal_classification.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_taxonomy_v3_formal_classification_preparation.py text eol=lf

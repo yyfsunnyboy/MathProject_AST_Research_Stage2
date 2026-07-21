@@ -1,0 +1,14 @@
+{
+  "diagnostics_allowed_as_healer_runtime_input": false,
+  "evalplus_correctness_executions": 0,
+  "formal_adjudications_completed": 0,
+  "formal_diagnostics_executions": 0,
+  "healer_executions": 0,
+  "human_review_queue": 196,
+  "infrastructure_unclassified": 2,
+  "model_calls": 0,
+  "partial_diagnostics_executions": 0,
+  "programs_prepared": 198,
+  "status": "machine_classification_preparation_complete_human_adjudication_pending",
+  "validation_executions": 0
+}

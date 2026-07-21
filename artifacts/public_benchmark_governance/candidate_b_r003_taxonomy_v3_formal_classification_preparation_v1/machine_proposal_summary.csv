@@ -1,0 +1,6 @@
+machine_proposal,diagnostic_phase,cells,formal_adjudication_completed,primary_layer_assigned
+ABSTAIN_DIAGNOSTIC_INFRASTRUCTURE,infrastructure,2,false,false
+REVIEW_OUTPUT_CONTRACT_OR_SEMANTIC,completed,121,false,false
+REVIEW_RUNTIME_ROOT_CAUSE_AND_EARLIEST_GATE,G2_base,19,false,false
+REVIEW_RUNTIME_ROOT_CAUSE_AND_EARLIEST_GATE,G2_module,27,false,false
+REVIEW_RUNTIME_ROOT_CAUSE_AND_EARLIEST_GATE,G2_plus,29,false,false
