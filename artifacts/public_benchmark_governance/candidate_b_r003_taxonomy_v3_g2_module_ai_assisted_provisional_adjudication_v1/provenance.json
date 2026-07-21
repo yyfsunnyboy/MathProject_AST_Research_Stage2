@@ -1,0 +1,14 @@
+{
+  "adjudication_status": "AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION",
+  "cohens_kappa_computed": false,
+  "correctness_results_loaded_or_used": false,
+  "diagnostics_runner_revision": "r002_v3",
+  "evidence_role": "development",
+  "existing_provisional_recommendations_read": false,
+  "formal_human_adjudication": false,
+  "original_reviewer_worksheets_modified": false,
+  "revision": "candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1",
+  "start_head": "ae8b65c4049899ec211254695024b86988042fa3",
+  "taxonomy_version": "AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3",
+  "two_human_blind_review_claimed": false
+}

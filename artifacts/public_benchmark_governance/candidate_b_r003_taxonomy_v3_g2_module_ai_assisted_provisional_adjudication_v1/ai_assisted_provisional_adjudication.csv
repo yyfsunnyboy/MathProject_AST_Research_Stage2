@@ -1,0 +1,414 @@
+review_rank,program_id,cell_identity_sha256,task_identity_sha256,task_id,seed,generation_id,evaluation_source_sha256,task_contract_sha256,taxonomy_version,diagnostics_runner_revision,adjudication_status,evidence_role,public_task_contract,required_entry_point,required_signature,required_function_source,required_function_start_line,required_function_end_line,module_level_executable_statements,diagnostic_source_context_numbered,diagnostic_phase,diagnostic_exception_class,diagnostic_candidate_line,diagnostic_statement_ast,diagnostic_ast_node,imports,api_calls,g1_observation,g2_observation,g3e_observation,g3a_observation,g3s_observation,g3c_observation,g4_observation,proposed_primary_failure_layer,proposed_secondary_failure_layers,outcome_validity,failure_chain,mechanism_tags,confidence,uncertainty_notes,proposed_healer_eligibility,proposed_healer_decision,rationale,evidence_references,researcher_review_status,researcher_notes,researcher_id,reviewed_at_utc
+1,000357b8ea9e8c7519556e3a8c85625c29516c022be9ed61c9a8fdd3d229c169,640c7544c87c0f5b40cf6113d1342ee47207bff3568a4fff235e49d7f5a518b6,d205dee40d6dcc401e0d5ea0101580268e94626a441d6a7816a4dc1dfa7c1a11,Mbpp/742,33,071c3e562dfcba86d88012b0dbc46f661501c344900ed7ed11b58cee3c1be7a2,4fede0a287e44bb06a7a3ff79c9ac643959414e3c14a812a5cf23b8ab72152fc,ff2a337a16eb8738db44e3a294911283b837a50f0926ad408c2af8cc70a0cee5,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to caluclate the area of a tetrahedron.
+assert area_tetrahedron(3)==15.588457268119894
+""""""",area_tetrahedron,a,"def area_tetrahedron(a):
+    return a**2 * (1 + 5**0.5) / 4",3,4,"lines 6-6:
+assert abs(area_tetrahedron(3) - 15.588457268119894) < 1e-10","4:     return a**2 * (1 + 5**0.5) / 4
+5:
+6: assert abs(area_tetrahedron(3) - 15.588457268119894) < 1e-10",G2_module,AssertionError,6,Assert,Constant,"[""math""]","[""abs"",""area_tetrahedron""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""mathematical_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""model_assembly_failure""]",HIGH,The tolerance assertion is a model-added variant rather than an AST-exact public assertion; it is nevertheless consistent with the public numeric example.,conditional,not_run,"The required function uses a formula inconsistent with the public tetrahedron example, and the model-added executable assertion turns that public mismatch into the observed module-stage failure. Assert removal is only a candidate packaging rule and is not declared safe or sufficient.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/742"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=000357b8ea9e8c7519556e3a8c85625c29516c022be9ed61c9a8fdd3d229c169;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=640c7544c87c0f5b40cf6113d1342ee47207bff3568a4fff235e49d7f5a518b6"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+2,01b6bac38cef8f198113a5cd475e8be41beccd60d7c559172443b76df714e34c,49fbbe8f8a8ca4e49bd79707da38c3cf1246450da8809ec8d4f7ce38f3977253,ffcb60f9253d34d5ea7ad53b1f6d2f0e49ee79e843f459c93126e69052c5804b,Mbpp/138,33,a0dc8701761767b46b70f91382661c680de87b7c311eee34fcb2729d9a2458ca,5ac277bdc6b75e21aa18043943c5f72d3c2ebdb67c21a4b75b6f5a1d405433fc,2bd2c9b4c24f3d6006a2a3d82688f5089bc461e68167a8eead5534ab28274645,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to check whether the given number can be represented as sum of non-zero powers of 2 or not.
+assert is_Sum_Of_Powers_Of_Two(10) == True
+""""""",is_Sum_Of_Powers_Of_Two,n,"def is_Sum_Of_Powers_Of_Two(n):
+    return n > 0 and (n & (n - 1)) == 0",1,2,"lines 4-4:
+assert is_Sum_Of_Powers_Of_Two(10) == True
+
+lines 5-5:
+print(is_Sum_Of_Powers_Of_Two(10))","2:     return n > 0 and (n & (n - 1)) == 0
+3:
+4: assert is_Sum_Of_Powers_Of_Two(10) == True
+5: print(is_Sum_Of_Powers_Of_Two(10))",G2_module,AssertionError,4,Assert,Constant,[],"[""is_Sum_Of_Powers_Of_Two"",""print""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""semantic_goal_drift"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""semantic_goal_drift"",""model_assembly_failure""]",HIGH,"The natural-language phrase 'sum of non-zero powers of 2' can be read broadly, but the public example unambiguously requires 10 to be accepted.",conditional,not_run,"The function implements a single-power-of-two predicate, contradicting the public example; the copied executable assertion exposes that semantic mismatch during module execution. Assert removal remains an unvalidated candidate only.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/138"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=01b6bac38cef8f198113a5cd475e8be41beccd60d7c559172443b76df714e34c;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=49fbbe8f8a8ca4e49bd79707da38c3cf1246450da8809ec8d4f7ce38f3977253"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+3,0460f62eee335e54ae79d20dba3f1c72d36982ade60d364ec6b3f5aa8c80feed,986356145523dd664151d8e0b78ce04d5fdfcdbb39014eb82a9194d7eb1cb050,b5e76d2a97232b6dd75543ec97efb947e2984c1df89be6e37f0944194295d6d2,Mbpp/739,22,4a355a16d1adb470a1aac546ef23fe17ea157932df08961f6d5ec31bd137dccb,3ac5dea5d962739b77659788cf92f5740fe893ccded276aa2fa4d5194faa6028,d82fbaf54251c6d11e42db921be3f05a047ff2cc0abddec7c8db01af47e85fac,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the index of smallest triangular number with n digits.
+assert find_Index(2) == 4
+""""""",find_Index,n,"def find_Index(n):
+    k = 1
+    while True:
+        t = (k * (k + 1)) // 2
+        if len(str(t)) == n:
+            return k - 1
+        k += 1",1,7,"lines 9-9:
+assert find_Index(2) == 4","7:         k += 1
+8:
+9: assert find_Index(2) == 4",G2_module,AssertionError,9,Assert,Constant,[],"[""find_Index"",""len"",""str""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public example directly fixes the required index convention.,conditional,not_run,"The loop identifies the first n-digit triangular number but returns k-1, conflicting with the public index 4; the public assertion then blocks module execution. Assert removal is not presumed to repair the algorithm.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/739"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=0460f62eee335e54ae79d20dba3f1c72d36982ade60d364ec6b3f5aa8c80feed;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=986356145523dd664151d8e0b78ce04d5fdfcdbb39014eb82a9194d7eb1cb050"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+4,0833737e006fd2c6b58fc71e5f03d64bd4b088689b09734f808c776659507990,64187ed15da3a753654af4583d63c98578716b198ba919db3ddb1b1fb6855fbc,ffcb60f9253d34d5ea7ad53b1f6d2f0e49ee79e843f459c93126e69052c5804b,Mbpp/138,22,88aceec913ea47f93157c393ec2c2a93113e0d24b2fa5965f3369c3b95d4ead4,ee72830ddb15201a06ca1ec50d7c657eb85f021f0e84770e19c253119a388905,2bd2c9b4c24f3d6006a2a3d82688f5089bc461e68167a8eead5534ab28274645,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to check whether the given number can be represented as sum of non-zero powers of 2 or not.
+assert is_Sum_Of_Powers_Of_Two(10) == True
+""""""",is_Sum_Of_Powers_Of_Two,n,"def is_Sum_Of_Powers_Of_Two(n):
+    if n <= 0:
+        return False
+    while n > 1:
+        if (n & 1) == 1 and n != 3:
+            break
+        n >>= 1
+    else:
+        return True
+    return n == 2",1,10,"lines 12-12:
+assert is_Sum_Of_Powers_Of_Two(10) == True","10:     return n == 2
+11:
+12: assert is_Sum_Of_Powers_Of_Two(10) == True",G2_module,AssertionError,12,Assert,Constant,[],"[""is_Sum_Of_Powers_Of_Two""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""control_flow_failure"",""model_assembly_failure""]",MEDIUM,"The exact intended characterization beyond the public example is not fully stated, although the public case is decisive for this observation.",conditional,not_run,"The bit-shift control flow returns false for the public input 10, and the copied assertion exposes that semantic/control-flow error at module load. Assert deletion is only a candidate packaging transformation.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/138"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=0833737e006fd2c6b58fc71e5f03d64bd4b088689b09734f808c776659507990;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=64187ed15da3a753654af4583d63c98578716b198ba919db3ddb1b1fb6855fbc"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+5,111a968cb6674525f58b26a0484603b9765056f5566cec9589d61af3733bc4c1,2eb6ecf61e5ca5d4b075519d27307b0b939afaefe5939cd35fb7cc8ceb140a4b,1dd9b489197fb8dc6dad6a62c34d3715eb86133468091fd186a5e8192abb54ba,Mbpp/440,11,8a1fee2d61b7e060276c8d61f776574469064b3a406aa68f14e8c18bf366e1c9,dc943ef95d04a59e3682e93a8c2ede79a765139112fbf9357e0c9a35291578da,2eaa7786d831b2e34ac9ff615ef047da9e92ca9cf141e73d966abe3d577f56a6,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the first adverb and their positions in a given sentence.
+assert find_adverb_position(""clearly!! we can see the sky"")==(0, 7, 'clearly')
+""""""",find_adverb_position,sentence: str,"def find_adverb_position(sentence: str):
+    import re
+    words = sentence.split()
+    for i, word in enumerate(words):
+        if re.match(r'^\w+ly$', word.lower()):
+            return (i * 7 + len(word), i * 7 + len(word) - 1, word)
+    raise ValueError(""No adverb found"")",1,7,"lines 9-9:
+assert find_adverb_position(""clearly!! we can see the sky"")==(0, 7, 'clearly')","5:         if re.match(r'^\w+ly$', word.lower()):
+6:             return (i * 7 + len(word), i * 7 + len(word) - 1, word)
+7:     raise ValueError(""No adverb found"")
+8:
+9: assert find_adverb_position(""clearly!! we can see the sky"")==(0, 7, 'clearly')",G2_module,ValueError,7,Raise,Name,"[""re""]","[""ValueError"",""enumerate"",""find_adverb_position"",""len"",""re.match"",""sentence.split"",""word.lower""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,[],VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""text_parsing_control_flow_failure"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""}]","[""text_parsing_control_flow_failure"",""control_flow_failure"",""model_assembly_failure""]",HIGH,The contract specifies the public punctuation-bearing example but does not define behavior when no adverb exists.,abstain,not_run,"The anchored regex rejects the public token containing trailing punctuation, so the required function reaches its explicit raise while the module assertion calls it. Repair would require choosing tokenization and position semantics, so no unique mechanical root repair is established.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/440"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=111a968cb6674525f58b26a0484603b9765056f5566cec9589d61af3733bc4c1;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=2eb6ecf61e5ca5d4b075519d27307b0b939afaefe5939cd35fb7cc8ceb140a4b"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+6,147d093943f1f9676c4d779f88a7478b62c2a71021f831900f136291bee3f2eb,7ce98a367f29080d205ac02e5b76248df7a4c714c1b70af8f871c1f3459bc3e7,734ae7863fcbbd9a53a322c212b354015b36a3f592c870ef2b488af2404055a2,Mbpp/430,44,09e281c4de0c8a9264039c943efe6e2375578839dac2b0b9dc5319642aaddfee,e2bd2be70a2dbf52221fe9909ad342dbaa6103851523458d822f572e49f6da91,9a38ee172b0ba495e3232c685ac27d68307cef76bd85656fb0c30a624537c514,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the directrix of a parabola.
+assert parabola_directrix(5,3,2)==-198
+""""""",parabola_directrix,"a, b, c","def parabola_directrix(a,b,c):
+    # Given quadratic equation y = ax^2 + bx + c in vertex form: x = (y - k)/a where a is coefficient of x^2?
+    # Actually, standard parabola opening sideways or up/down. The problem likely refers to vertical axis parabola y=ax^2+bx+c
+    # For y = a(x-h)^2 + k -> directrix is y = k - p where 4p = 1/a => p = 1/(4a)
+    # Vertex (h,k): h = -b/(2a), k = c - b^2/(4a)
+    # Directrix: y = k - 1/(4a) = c - b^2/(4a) - 1/(4a) = c - (b^2+1)/(4a)
+
+    if a == 0:
+        raise ValueError(""Coefficient 'a' cannot be zero for a parabola"")
+
+    return c - ((b**2 + 1) / (4 * a))",1,11,"lines 14-14:
+assert parabola_directrix(5,3,2)==-198","12:
+13: # Verification with given test case
+14: assert parabola_directrix(5,3,2)==-198",G2_module,AssertionError,14,Assert,Constant,[],"[""ValueError"",""parabola_directrix""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""mathematical_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""semantic_goal_drift"",""model_assembly_failure""]",HIGH,"The terse natural-language contract omits the intended formula, but the public numeric example is explicit.",conditional,not_run,The implemented standard vertical-parabola formula does not satisfy the public contract value; the copied assertion exposes the mathematical goal mismatch during module execution. No formula rewrite is Healer-eligible.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/430"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=147d093943f1f9676c4d779f88a7478b62c2a71021f831900f136291bee3f2eb;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=7ce98a367f29080d205ac02e5b76248df7a4c714c1b70af8f871c1f3459bc3e7"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+7,1ed09edb92c4da77d9ccb4eac0e420c2cbd4319a9d8a55e3340ea9f1a20544d8,291e1df791e7d75a35f7b6232af3516fd74ea360fcd7609f1dd38f4b05a859b9,9cb2da04760eed9c8ea5b002156e94800166c040020223955520fb86ce9c552f,Mbpp/787,33,f0d53bdf86a13512e163fa74e9f6a030d033451760d822632e2d0ea15545f8c0,93e763a6916038e0e019b7d602e32aa1daccaa75365b3a053b1dc89ad7425b1b,3047171294e3537d44faa114887a567a34b63698e905701c5f0a148d83216c9a,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function that matches a string that has an a followed by three 'b'.
+assert not text_match_three(""ac"")
+""""""",text_match_three,text,"def text_match_three(text):
+    return bool(re.search(r'a\b{3}', text))",3,4,"lines 6-6:
+assert not text_match_three(""ac"")
+
+lines 7-7:
+print(""All tests passed."")","2:
+3: def text_match_three(text):
+4:     return bool(re.search(r'a\b{3}', text))
+5:
+6: assert not text_match_three(""ac"")",G2_module,PatternError,4,Return,Name,"[""re""]","[""bool"",""print"",""re.search"",""text_match_three""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,[],VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""stdlib_regex_pattern_construction"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""}]","[""stdlib_regex_pattern_construction"",""model_assembly_failure""]",HIGH,A valid regex could be written in multiple ways; source evidence does not establish a unique invariant-preserving token replacement.,abstain,not_run,"The required function constructs a malformed stdlib regular expression before returning, producing the observed G2 failure when called by the module assertion. This is general runtime/API assembly, not Domain API or infrastructure.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/787"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=1ed09edb92c4da77d9ccb4eac0e420c2cbd4319a9d8a55e3340ea9f1a20544d8;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=291e1df791e7d75a35f7b6232af3516fd74ea360fcd7609f1dd38f4b05a859b9"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+8,200edc3e0eec7ea9c2f029ace4027b019b020d97c66d503db848f9ff332ffc06,f30e88e1c07b06c6fdc11213bea99ef203e929783f8b5137d71e67969550c021,b5e76d2a97232b6dd75543ec97efb947e2984c1df89be6e37f0944194295d6d2,Mbpp/739,55,b54c9324346068b4e73001825336840319a15348ab87aa0f6e5f03f15992fe22,fa1491b3a3a251438a25263d0ce1c9e572cf6b6c724a2df3eb8c9bdf816d7695,d82fbaf54251c6d11e42db921be3f05a047ff2cc0abddec7c8db01af47e85fac,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the index of smallest triangular number with n digits.
+assert find_Index(2) == 4
+""""""",find_Index,n,"def find_Index(n):
+    k = 1
+    while True:
+        t = k * (k + 1) // 2
+        if len(str(t)) == n:
+            return k - 1
+        k += 1",1,7,"lines 9-9:
+assert find_Index(2) == 4","7:         k += 1
+8:
+9: assert find_Index(2) == 4",G2_module,AssertionError,9,Assert,Constant,[],"[""find_Index"",""len"",""str""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public example directly fixes the required index convention.,conditional,not_run,The function returns k-1 after finding the first n-digit triangular number and conflicts with the public value; its copied assertion then interrupts module execution.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/739"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=200edc3e0eec7ea9c2f029ace4027b019b020d97c66d503db848f9ff332ffc06;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=f30e88e1c07b06c6fdc11213bea99ef203e929783f8b5137d71e67969550c021"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+9,20eb64bfb9e51b94a4d68b6dc2bbbc981199b59d0671e34d0df1695b0d261879,d7db6cb73b9f5f7c5693a194dcc4d3738bade6d02d719e50008a12429c1b0d7c,734ae7863fcbbd9a53a322c212b354015b36a3f592c870ef2b488af2404055a2,Mbpp/430,11,24b540f1525ccc23d288672351c59eef6025a21405357562f6fe21e5f956cdd2,594c4ab0c53c5b4e32e28019fe410db51ecf913d47db0e3565409c01e3227a2a,9a38ee172b0ba495e3232c685ac27d68307cef76bd85656fb0c30a624537c514,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the directrix of a parabola.
+assert parabola_directrix(5,3,2)==-198
+""""""",parabola_directrix,"a, b, c","def parabola_directrix(a,b,c):
+    if a == 0: raise ValueError(""Coefficient 'a' cannot be zero for a parabola."")
+    discriminant = b**2 - 4*a*c
+    if discriminant < 0: return None
+    x_vertex = -b / (2 * a)
+    y_vertex = c + (discriminant) / (4 * a)
+    p = 1.0 / (4 * abs(a))
+    directrix_y = y_vertex - p if a > 0 else y_vertex + p
+    return int(directrix_y)",1,9,"lines 11-11:
+assert parabola_directrix(5,3,2)==-198","9:     return int(directrix_y)
+10:
+11: assert parabola_directrix(5,3,2)==-198",G2_module,AssertionError,11,Assert,Constant,[],"[""ValueError"",""abs"",""int"",""parabola_directrix""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""control_flow_failure"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""control_flow_failure"",""model_assembly_failure""]",HIGH,"The public contract is terse, but the negative-discriminant early return visibly conflicts with the supplied example.",conditional,not_run,"The function returns None for the public parameters before computing a directrix, so the copied assertion exposes a semantic/control-flow failure at module load.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/430"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=20eb64bfb9e51b94a4d68b6dc2bbbc981199b59d0671e34d0df1695b0d261879;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=d7db6cb73b9f5f7c5693a194dcc4d3738bade6d02d719e50008a12429c1b0d7c"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+10,225def7e7fc2e4f0bdbede03a1813db354a4eff641e2de7b042c07a5608f106e,2c8a29019eddb8bc7e24251236af213d7f100c8bcb4513e7f17aa8c9b6fa5c84,aff7897b4057e987932cc8baa5bc0cb44288f0d9ed782184ffabd99c1380dd91,Mbpp/581,44,1a31583614ef8c9cbb2bc43e084fec577a6cb996722f24c0baff0ae28ebde5e6,aacf55bd121e7e6d9321ce41bb5b121081f4f331367f6b0082d5e0b29252a468,f8f5852c739e145f768ff68b64ce05d7514a559e8469fbf3a172edf76d7a161d,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the surface area of a square pyramid with a given base edge and height.
+assert surface_Area(3,4) == 33
+""""""",surface_Area,"base_edge, height","def surface_Area(base_edge, height):
+    import math
+    slant_height = math.sqrt(height**2 + (base_edge / 2)**2)
+    base_area = base_edge ** 2
+    lateral_area = 4 * (0.5 * base_edge * slant_height)
+    return round(base_area + lateral_area, -int(math.log10(lateral_area))) if lateral_area > 0 else base_area",1,6,"lines 8-8:
+assert surface_Area(3, 4) == 33","6:     return round(base_area + lateral_area, -int(math.log10(lateral_area))) if lateral_area > 0 else base_area
+7:
+8: assert surface_Area(3, 4) == 33",G2_module,AssertionError,8,Assert,Constant,"[""math""]","[""int"",""math.log10"",""math.sqrt"",""round"",""surface_Area""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""mathematical_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""model_assembly_failure""]",HIGH,"The benchmark's integer-valued public example constrains the requested result, while general rounding policy is not described.",conditional,not_run,The function applies a magnitude-dependent rounding operation that does not satisfy the public surface-area example; the module assertion exposes the numerical error.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/581"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=225def7e7fc2e4f0bdbede03a1813db354a4eff641e2de7b042c07a5608f106e;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=2c8a29019eddb8bc7e24251236af213d7f100c8bcb4513e7f17aa8c9b6fa5c84"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+11,29c5dc38a71e4bf24dadf515e157b833b8a0d1b304c47bf98d36a325fbbe4342,d9af9e684995ae0fd31339af9a56a8984950683d6a2d1f208414807da68a7e69,b5e76d2a97232b6dd75543ec97efb947e2984c1df89be6e37f0944194295d6d2,Mbpp/739,44,224728136121a33dfa978c9655a936615e72a7ed32a2d4a2494e141c2876c106,fa1491b3a3a251438a25263d0ce1c9e572cf6b6c724a2df3eb8c9bdf816d7695,d82fbaf54251c6d11e42db921be3f05a047ff2cc0abddec7c8db01af47e85fac,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the index of smallest triangular number with n digits.
+assert find_Index(2) == 4
+""""""",find_Index,n,"def find_Index(n):
+    k = 1
+    while True:
+        t = k * (k + 1) // 2
+        if len(str(t)) == n:
+            return k - 1
+        k += 1",1,7,"lines 9-9:
+assert find_Index(2) == 4","7:         k += 1
+8:
+9: assert find_Index(2) == 4",G2_module,AssertionError,9,Assert,Constant,[],"[""find_Index"",""len"",""str""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public example directly fixes the required index convention.,conditional,not_run,The function returns k-1 for the first n-digit triangular number and conflicts with the public example; the assertion exposes this during module execution.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/739"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=29c5dc38a71e4bf24dadf515e157b833b8a0d1b304c47bf98d36a325fbbe4342;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=d9af9e684995ae0fd31339af9a56a8984950683d6a2d1f208414807da68a7e69"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+12,34f117accef513aaccebfa5edabc725dbc78ef1301e0ac16b4fb794b619a477b,81b1b9916304cfbcfd7cf807cbc1ee2f749ea3ca71ed1310e7db39569bccbcbf,7220d4b08e4e3b264e23e870bab5ad2bb564856e885a99c589fa1f6b8cc757c2,Mbpp/125,33,d18960bfbc98385f3e5acf48add355ec1055c96e3775e07504279d50b04ff18d,bb14c214444d2046af3968bde8964bb29c21f59b1431f00a1d717bf412d4fb68,5b89898d50f7dca3afc73c959d21e7995a7259d340d8ffdaa437bf76135a3e53,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.
+assert find_length(""11000010001"") == 6
+""""""",find_length,s: str,"def find_length(s: str) -> int:
+    max_diff = 0
+    current_sum = 0
+
+    for char in s:
+        if char == '1':
+            current_sum -= 1
+        else:
+            current_sum += 1
+
+        # Track maximum difference seen so far (absolute value of sum)
+        diff = abs(current_sum)
+        max_diff = max(max_diff, diff)
+
+    return max_diff",1,15,"lines 18-18:
+assert find_length(""11000010001"") == 6","16:
+17: # Test case from the prompt
+18: assert find_length(""11000010001"") == 6",G2_module,AssertionError,18,Assert,Constant,[],"[""abs"",""find_length"",""max""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""edge_case_omission"",""model_assembly_failure""]",HIGH,Only the public example is used; no hidden cases are consulted.,conditional,not_run,"The implementation tracks absolute prefix imbalance rather than the maximum imbalance over every substring, and its public assertion exposes the algorithmic mismatch.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/125"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=34f117accef513aaccebfa5edabc725dbc78ef1301e0ac16b4fb794b619a477b;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=81b1b9916304cfbcfd7cf807cbc1ee2f749ea3ca71ed1310e7db39569bccbcbf"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+13,375d13b5bd61ef0ee7c0e92979f8c002d2ac3e98adb41426e8b9d6e27b176399,8125ee6ba4083e73589b37f3bfd5b38b4b0f8dba482e530d889dad5b93078b36,ad4ebc1c78cdf7331cb6493a96ea7c686586239927440759db33797cf355959a,Mbpp/410,33,ee3a24bb00d4fb612793ce70f850ff0f09ca50bc0488e1e4276ff861c0daaffb,6c557f46b5db490955e32255cc5ab37b2fff52bd5cdc5714eca026b54937ae04,15beb9074d3dc5ec58711a7ef1f3d78a5797363c498ef6d9732d004dd87ed2e9,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the minimum value in a given heterogeneous list.
+assert min_val(['Python', 3, 2, 4, 5, 'version'])==2
+""""""",min_val,lst,"def min_val(lst):
+    if not lst:
+        raise ValueError(""List cannot be empty"")
+
+    # Initialize minimum with first element converted to float for comparison
+    try:
+        current_min = float(lst[0])
+    except (TypeError, ValueError):
+        return None
+
+    for item in lst[1:]:
+        try:
+            val = float(item)
+        except (TypeError, ValueError):
+            continue
+
+        if val < current_min:
+            # If we find a numeric value smaller than current min,
+            # check if original list has non-numeric items.
+            # Since the problem implies finding minimum in mixed types where numbers are comparable,
+            # and strings can't be numerically compared directly without conversion logic that might fail,
+            # we assume only numeric values participate or return None for invalid comparisons.
+
+            # However, looking at the test case: ['Python', 3, 2, 4, 5, 'version'] -> returns 2
+            # This implies non-numeric items are ignored in comparison logic if they can't be converted to float.
+            current_min = val
+
+    return int(current_min) if isinstance(lst[0], (int, float)) and not lst[-1] == current_min else current_min",1,28,"lines 43-43:
+assert min_val(['Python', 3, 2, 4, 5, 'version'])==2","41:     return int(min(nums))
+42:
+43: assert min_val(['Python', 3, 2, 4, 5, 'version'])==2",G2_module,AssertionError,43,Assert,Constant,[],"[""ValueError"",""float"",""int"",""isinstance"",""min"",""min_val"",""nums.append""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""control_flow_failure"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""control_flow_failure"",""semantic_goal_drift"",""model_assembly_failure""]",HIGH,"An alternate helper appears later, but the contract names only min_val; no alias inference is needed.",conditional,not_run,"The required function returns None immediately when the first heterogeneous item is nonnumeric, so it never considers later numeric values required by the public example. The unused min_val_v2 does not change the required entry-point result.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/410"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=375d13b5bd61ef0ee7c0e92979f8c002d2ac3e98adb41426e8b9d6e27b176399;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=8125ee6ba4083e73589b37f3bfd5b38b4b0f8dba482e530d889dad5b93078b36"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+14,3ad5d1b48a0b82e99b69138c0bbead12450913eb8b7b049c8c101fb9acc5a34b,814ae99fa94821a1c45cba8ccc28c1265070d5d60c28cb6ab46dd8e21e82fd84,c25d1fe3b2e4f6d9c3505001aad034ed972eda83d2307f5df5f3302beb594319,Mbpp/777,55,5fd86b68377c534bc3b8558512e84c0c7d37dd337d014f2048cecdbe76da2b8c,c085d65dc17cf98fa9a2be1b35d790f0529306e8196df1a4f837e8c8b9ea0181,441182caf08024f0ea1ea38a77f2c92d05b2f18bddf1624d14ccb2c157f22384,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the sum of non-repeated elements in a given list.
+assert find_sum([1,2,3,1,1,4,5,6]) == 21
+""""""",find_sum,lst,"def find_sum(lst):
+    from collections import Counter
+    counts = Counter(lst)
+    return sum(num for num in lst if counts[num] == 1)",1,4,"lines 6-6:
+assert find_sum([1,2,3,1,1,4,5,6]) == 21","4:     return sum(num for num in lst if counts[num] == 1)
+5:
+6: assert find_sum([1,2,3,1,1,4,5,6]) == 21",G2_module,AssertionError,6,Assert,Constant,"[""collections:Counter""]","[""Counter"",""find_sum"",""sum""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""semantic_goal_drift"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""semantic_goal_drift"",""algorithmic_error"",""model_assembly_failure""]",HIGH,"The phrase 'non-repeated elements' is potentially ambiguous in isolation, but the public expected sum resolves duplicate-value treatment for this contract.",conditional,not_run,"The function sums only values occurring once, whereas the public example requires each distinct value once; the copied assertion exposes the semantic interpretation error.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/777"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=3ad5d1b48a0b82e99b69138c0bbead12450913eb8b7b049c8c101fb9acc5a34b;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=814ae99fa94821a1c45cba8ccc28c1265070d5d60c28cb6ab46dd8e21e82fd84"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+15,4583ad1011027d81314ddfb74bc8ec4cf1ae4feb9a37bac42da76177416c62c7,a1e491b6023eff1ff01bce581fcb87e45ab99377ee7e4ff34a09184291c24ade,b5e76d2a97232b6dd75543ec97efb947e2984c1df89be6e37f0944194295d6d2,Mbpp/739,11,2f110c6783a41b44079ad2423801f4abd7dc9e37c9560de763859178d9d68bb2,cb9f8e5b8db6af52b7a54528085d23a831f2fe2d213b2df16fdb9adcfe254034,d82fbaf54251c6d11e42db921be3f05a047ff2cc0abddec7c8db01af47e85fac,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the index of smallest triangular number with n digits.
+assert find_Index(2) == 4
+""""""",find_Index,n,"def find_Index(n):
+    k = 1
+    while True:
+        t = (k * (k + 1)) // 2
+        if len(str(t)) == n:
+            return k - 1
+        elif len(str(t)) > n and len(str((k-1) * k // 2)) < n:
+            return k - 1
+        else:
+            k += 1",1,10,"lines 12-12:
+assert find_Index(2) == 4","10:             k += 1
+11:
+12: assert find_Index(2) == 4",G2_module,AssertionError,12,Assert,Constant,[],"[""find_Index"",""len"",""str""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The second branch does not alter the public off-by-one result.,conditional,not_run,"Both return branches use k-1 for the first n-digit triangular number, conflicting with the public index; the assertion then interrupts module execution.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/739"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=4583ad1011027d81314ddfb74bc8ec4cf1ae4feb9a37bac42da76177416c62c7;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=a1e491b6023eff1ff01bce581fcb87e45ab99377ee7e4ff34a09184291c24ade"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+16,4f6a1f242e4b63146785d435f3e0bcf3a50933bc9aec8a6045795b5d4e998a4b,2e5a247ec2d18722e45b386bc657ccf5fe0e38f2d3acc8861945f152c09b8eac,867ea504cd6b1711dbc45d13aa19f78263b0e9274a7b43dc85cff3caf77b31a5,Mbpp/279,55,1e56af0e5025d83f51caab2f99e5307aaf15c7a38c26700c335625d51c2e768d,63ecf3cd1dd3e4fcf5b2bb3492dfe18ebcbb1e8998dc9f4125e25b812a783cae,20d8824f1dc4dda829f1105b3fe1a717fb1d0ebea61f76fb9513262c6f33a8e6,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the nth decagonal number.
+assert is_num_decagonal(3) == 27
+""""""",is_num_decagonal,n,"def is_num_decagonal(n):
+    if n <= 0:
+        return False
+    k = int((2 * (n - 1) ** 0.5 + 1)) / 2
+    return abs(k**3 // 4 - n) < 1e-9",1,5,"lines 7-7:
+assert is_num_decagonal(3) == 27","5:     return abs(k**3 // 4 - n) < 1e-9
+6:
+7: assert is_num_decagonal(3) == 27",G2_module,AssertionError,7,Assert,Constant,[],"[""abs"",""int"",""is_num_decagonal""]",PASS,FAIL,PASS,NOT_APPLICABLE,FAIL,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L2,"[""L4""]",VALID_MODEL_OUTCOME,"[{""gate"":""G3s"",""layer"":""L2"",""mechanism"":""numeric_output_contract_as_boolean"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_required_function_output""},{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""}]","[""schema_mismatch"",""semantic_goal_drift"",""module_level_executable_assertion"",""model_assembly_failure""]",HIGH,"The function name starts with is_, but the explicit task description and numeric public result control the contract.",abstain,not_run,"The public contract requires the nth decagonal number, while every normal path returns a boolean predicate. This is an observable numeric-output contract violation; the module assertion is a later failure-chain stage. Fixing it requires replacing the algorithm, not a thin wrapper.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/279"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=4f6a1f242e4b63146785d435f3e0bcf3a50933bc9aec8a6045795b5d4e998a4b;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=2e5a247ec2d18722e45b386bc657ccf5fe0e38f2d3acc8861945f152c09b8eac"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+17,525f723f9a1c4712fdebc06ccdc6418f4de3a6e8651646cbec99288c5fee64b2,cbd27e8a1e95b28f9cde9964ae558596c8371767b9b25addd1612a57c646aa5f,706ef381051aefe33da34b9c9cf0c52805db8178333f688986eb32786c0674c6,Mbpp/432,22,78776738795520341d2db64c67339496a77b7d40925270e2d24a4ebfbffb063a,6314fe475b81efc834404177b18f11828b345d00571c97825870ccd06cd14479,d740872abaede227910999bcf84dc22ee33abb34fa7cb43c8bf4ab21e837d705,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the median length of a trapezium.
+assert median_trapezium(15,25,35)==20
+""""""",median_trapezium,"a: int, b: int, c: int","def median_trapezium(a: int, b: int, c: int) -> float:
+    """"""Calculate the median length of a trapezium given three side lengths.""""""
+    sides = sorted([a, b, c])
+    return (sides[0] + sides[-1]) / 2",1,4,"lines 6-6:
+assert median_trapezium(15, 25, 35) == 20","4:     return (sides[0] + sides[-1]) / 2
+5:
+6: assert median_trapezium(15, 25, 35) == 20",G2_module,AssertionError,6,Assert,Constant,[],"[""median_trapezium"",""sorted""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""parameter_semantics_swap"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""parameter_semantics_swap"",""mathematical_error"",""model_assembly_failure""]",MEDIUM,"The natural-language contract does not label the three parameters, but the public example establishes the required observable result.",conditional,not_run,"The function averages the smallest and largest of three values, which yields a value inconsistent with the public median-length example; the assertion exposes that parameter/geometry interpretation error.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/432"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=525f723f9a1c4712fdebc06ccdc6418f4de3a6e8651646cbec99288c5fee64b2;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=cbd27e8a1e95b28f9cde9964ae558596c8371767b9b25addd1612a57c646aa5f"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+18,629708e02e0157509188afabd3e23e38bf52328c6ba811dcf12363d83c7621a6,a731cf5bdf05e1ed765711e887b3b1b9b46159ada72943ebdd5a79475b2afef3,706ef381051aefe33da34b9c9cf0c52805db8178333f688986eb32786c0674c6,Mbpp/432,55,267a66bd91674f30091adc8f26b9d02e56756e0df74c0b28d5cf7d8f0d80322b,6c98ad18f6e3ca281700957e4ac4ee8478c4d97f01fcf35e17a51c6c059c01bb,d740872abaede227910999bcf84dc22ee33abb34fa7cb43c8bf4ab21e837d705,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the median length of a trapezium.
+assert median_trapezium(15,25,35)==20
+""""""",median_trapezium,"a, b, c","def median_trapezium(a,b,c):
+    return (a+c)/2 if a+b==c else None",1,2,"lines 4-4:
+assert median_trapezium(15,25,35)==20","2:     return (a+c)/2 if a+b==c else None
+3:
+4: assert median_trapezium(15,25,35)==20",G2_module,AssertionError,4,Assert,Constant,[],"[""median_trapezium""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""control_flow_failure"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""control_flow_failure"",""parameter_semantics_swap"",""model_assembly_failure""]",HIGH,"The meaning of the third parameter is terse, but the added equality guard is unsupported by the public contract and rejects its example.",conditional,not_run,"The function adds an a+b==c guard and returns None for the public inputs, so the copied assertion exposes an unsupported control-flow condition.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/432"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=629708e02e0157509188afabd3e23e38bf52328c6ba811dcf12363d83c7621a6;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=a731cf5bdf05e1ed765711e887b3b1b9b46159ada72943ebdd5a79475b2afef3"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+19,6367b7adf0dcc6a964ff129d3713184a0bf42b89530700ec8c0e33b1d14d5849,66dc9424d0a8471a861baeb69b47d429a130b1b96057f1b01327de9794c8a0a6,1dd9b489197fb8dc6dad6a62c34d3715eb86133468091fd186a5e8192abb54ba,Mbpp/440,22,0c00a359ffa95b60ca6b6cf13a11f1ef5265f5f7817f3e846755ed7513a8da15,b80bd515d629d8a323914574ad78d7c737e88ae476d8059f88c3cfa02fb67205,2eaa7786d831b2e34ac9ff615ef047da9e92ca9cf141e73d966abe3d577f56a6,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the first adverb and their positions in a given sentence.
+assert find_adverb_position(""clearly!! we can see the sky"")==(0, 7, 'clearly')
+""""""",find_adverb_position,sentence: str,"def find_adverb_position(sentence: str):
+    import re
+    pattern = r'\b[a-zA-Z]+ly\b'
+    match = re.search(pattern, sentence)
+    if match:
+        return (match.start(), match.end() - 1, match.group())
+    else:
+        raise ValueError(""No adverb found in the given sentence."")",1,8,"lines 10-10:
+assert find_adverb_position(""clearly!! we can see the sky"") == (0, 7, 'clearly')","8:         raise ValueError(""No adverb found in the given sentence."")
+9:
+10: assert find_adverb_position(""clearly!! we can see the sky"") == (0, 7, 'clearly')",G2_module,AssertionError,10,Assert,Constant,"[""re""]","[""ValueError"",""find_adverb_position"",""match.end"",""match.group"",""match.start"",""re.search""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""edge_case_omission"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""edge_case_omission"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public tuple fixes the position convention for the punctuation-bearing example; no hidden position cases are used.,conditional,not_run,"The regex finds the public adverb, but the function returns an inclusive end index while the public contract expects 7; the copied assertion exposes the position-semantics error.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/440"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=6367b7adf0dcc6a964ff129d3713184a0bf42b89530700ec8c0e33b1d14d5849;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=66dc9424d0a8471a861baeb69b47d429a130b1b96057f1b01327de9794c8a0a6"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+20,730042eea50b8ad4aae34728ece3f1ab16b2bb97771f5b3ddd5e5745c7e71585,37c96fcf4dff81d30e88b15c50d3c05aabb3a98c13caefc114e14671b73670b9,d205dee40d6dcc401e0d5ea0101580268e94626a441d6a7816a4dc1dfa7c1a11,Mbpp/742,22,34155c248f8116787e9adc9f5556729e05f3415d4a0dad5b33920e83891cb8c2,a74667cdd2f07abca9082b38b05f98b15d1e027c18b8cf500eea1b24aa8b295f,ff2a337a16eb8738db44e3a294911283b837a50f0926ad408c2af8cc70a0cee5,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to caluclate the area of a tetrahedron.
+assert area_tetrahedron(3)==15.588457268119894
+""""""",area_tetrahedron,edge,"def area_tetrahedron(edge):
+    """"""Calculate the surface area of a regular tetrahedron given its edge length.""""""
+    return (math.sqrt(3) / 2) * (edge ** 2) * 4",3,5,"lines 7-7:
+assert abs(area_tetrahedron(3) - 15.588457268119894) < 1e-9","5:     return (math.sqrt(3) / 2) * (edge ** 2) * 4
+6:
+7: assert abs(area_tetrahedron(3) - 15.588457268119894) < 1e-9",G2_module,AssertionError,7,Assert,Constant,"[""math""]","[""abs"",""area_tetrahedron"",""math.sqrt""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""mathematical_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""model_assembly_failure""]",HIGH,"The tolerance assertion is a model-added variant, but it preserves the public numeric target.",conditional,not_run,The source multiplies a tetrahedron-area expression by four and produces a value inconsistent with the public example; the executable tolerance assertion exposes the formula error.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/742"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=730042eea50b8ad4aae34728ece3f1ab16b2bb97771f5b3ddd5e5745c7e71585;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=37c96fcf4dff81d30e88b15c50d3c05aabb3a98c13caefc114e14671b73670b9"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+21,7738db7659ec9333e7d321294197cb3c3fef5d5fc72f77a196e819256f5ed8b9,27db6ce43b7b468c4a4cc5c34b2386007cf54430f457ac5cbbf18c2331b4c114,b5e76d2a97232b6dd75543ec97efb947e2984c1df89be6e37f0944194295d6d2,Mbpp/739,33,dc374c0c3e2a0759303dd82b6558461719cb489afba0ccd818ef95c9b79cdc20,3ac5dea5d962739b77659788cf92f5740fe893ccded276aa2fa4d5194faa6028,d82fbaf54251c6d11e42db921be3f05a047ff2cc0abddec7c8db01af47e85fac,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the index of smallest triangular number with n digits.
+assert find_Index(2) == 4
+""""""",find_Index,n,"def find_Index(n):
+    k = 1
+    while True:
+        t = (k * (k + 1)) // 2
+        if len(str(t)) == n:
+            return k - 1
+        k += 1",1,7,"lines 9-9:
+assert find_Index(2) == 4","7:         k += 1
+8:
+9: assert find_Index(2) == 4",G2_module,AssertionError,9,Assert,Constant,[],"[""find_Index"",""len"",""str""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public example directly fixes the required index convention.,conditional,not_run,The function returns k-1 after finding the first n-digit triangular number and conflicts with the public index; the copied assertion exposes the error.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/739"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=7738db7659ec9333e7d321294197cb3c3fef5d5fc72f77a196e819256f5ed8b9;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=27db6ce43b7b468c4a4cc5c34b2386007cf54430f457ac5cbbf18c2331b4c114"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+22,77ac3b8fbd623bdf0762d2ed6082720197b57f51a53b8c77fcd77523604f047d,e6edb29d32c7593fd9774360eb7e1f43e89004d741348a9d207eb3239ea11186,c25d1fe3b2e4f6d9c3505001aad034ed972eda83d2307f5df5f3302beb594319,Mbpp/777,44,e8e6bc7d8bc1d391cc611465f3132494331f65aed8e07ec137f482ced17d6724,c085d65dc17cf98fa9a2be1b35d790f0529306e8196df1a4f837e8c8b9ea0181,441182caf08024f0ea1ea38a77f2c92d05b2f18bddf1624d14ccb2c157f22384,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the sum of non-repeated elements in a given list.
+assert find_sum([1,2,3,1,1,4,5,6]) == 21
+""""""",find_sum,lst,"def find_sum(lst):
+    from collections import Counter
+    counts = Counter(lst)
+    return sum(num for num in lst if counts[num] == 1)",1,4,"lines 6-6:
+assert find_sum([1,2,3,1,1,4,5,6]) == 21","4:     return sum(num for num in lst if counts[num] == 1)
+5:
+6: assert find_sum([1,2,3,1,1,4,5,6]) == 21",G2_module,AssertionError,6,Assert,Constant,"[""collections:Counter""]","[""Counter"",""find_sum"",""sum""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""semantic_goal_drift"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""semantic_goal_drift"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public expected sum resolves the possible ambiguity in 'non-repeated elements' for this task.,conditional,not_run,The function excludes every repeated value instead of counting each distinct value once as required by the public example; the assertion exposes the semantic mismatch.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/777"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=77ac3b8fbd623bdf0762d2ed6082720197b57f51a53b8c77fcd77523604f047d;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=e6edb29d32c7593fd9774360eb7e1f43e89004d741348a9d207eb3239ea11186"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+23,84f71b53c98028b255fd361fab6deec391cb7e68bf49bd27e8a27950260897d1,164e4d0b000ecd095f5ef3bfcf49984ab69dc951caabe5be7b141ce585100586,867ea504cd6b1711dbc45d13aa19f78263b0e9274a7b43dc85cff3caf77b31a5,Mbpp/279,33,ad579aa678151b501edcdb98f7c7b15f19ca0e172f126dbdcc7cf4607c081a62,4dcb25dc6c726e6a13792e642e64741a55cb55c2db073fc1833e20ad2d2729f2,20d8824f1dc4dda829f1105b3fe1a717fb1d0ebea61f76fb9513262c6f33a8e6,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the nth decagonal number.
+assert is_num_decagonal(3) == 27
+""""""",is_num_decagonal,n,"def is_num_decagonal(n):
+    if n <= 0:
+        return False
+    # Formula for nth decagonal number: D_n = (5n^2 - 3n) / 2
+    val = (5 * n**2 - 3 * n) // 2
+    return val == int(val) and val > 0",1,6,"lines 9-9:
+assert is_num_decagonal(3) == 27","7:
+8: # Example usage to verify the assertion from the prompt
+9: assert is_num_decagonal(3) == 27",G2_module,AssertionError,9,Assert,Constant,[],"[""int"",""is_num_decagonal""]",PASS,FAIL,PASS,NOT_APPLICABLE,FAIL,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L2,"[""L4""]",VALID_MODEL_OUTCOME,"[{""gate"":""G3s"",""layer"":""L2"",""mechanism"":""numeric_output_contract_as_boolean"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_required_function_output""},{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""}]","[""schema_mismatch"",""semantic_goal_drift"",""module_level_executable_assertion"",""model_assembly_failure""]",HIGH,"Although the entry-point name is predicate-like, the task description and public expected value explicitly require a number.",abstain,not_run,"The function computes the decagonal value but returns only a boolean about it, violating the public numeric return contract. The executable assertion is a later G2 failure-chain stage; correcting the output requires semantic code change.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/279"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=84f71b53c98028b255fd361fab6deec391cb7e68bf49bd27e8a27950260897d1;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=164e4d0b000ecd095f5ef3bfcf49984ab69dc951caabe5be7b141ce585100586"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+24,c9972dbd1c76e4805401c1f08a4e25bf32b46c73b3be0befe79c623426dce6b2,4aeefd4c8d0dd04bf99b77cacba54999f01b80870a920ed6f3997c932ab6960d,c90f4209d4899c50d57432bc86676eb740a9746aca6d4cea7be02269ab5ab6f0,Mbpp/735,55,f9f310d040672619f1a628e7633b875aacacbc52f96f53eac1732efd215810eb,0447ed48f2b46b5de9dbf8e57d636bb82248bb88e9c5428ccf2897c059ad09be,8a5133497fd42b8b80c38ffc9a51e453995332a645ade3a8250a65f352a8c1e4,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to toggle bits of the number except the first and the last bit.
+assert toggle_middle_bits(9) == 15
+""""""",toggle_middle_bits,n,"def toggle_middle_bits(n):
+    if n < 3:
+        return n
+
+    # Create a mask with all bits set except first (MSB) and last (LSB) of the current bit width
+    num_bits = n.bit_length()
+
+    # Mask for middle bits only:
+    # We want to keep MSB as is, LSB as is, and toggle everything in between.
+    # Create a mask where all bits are 1 except first and last positions relative to actual number
+
+    # Actually simpler approach:
+    # Toggle all bits from bit index 0 up to num_bits-2 (excluding the very last bit)
+    # But we need to exclude both MSB and LSB of the original number's width.
+
+    # Let's use a different strategy:
+    # Create mask with all ones, then remove first and last bit positions from consideration for toggling
+
+    if n == 0 or n == 1:
+        return n
+
+    num_bits = n.bit_length()
+
+    # Mask to keep only middle bits (not MSB at position num_bits-1, not LSB at position 0)
+    # We want to toggle bits from position 1 to num_bits-2 inclusive
+
+    if num_bits <= 3:
+        return n
+
+    mask = ((1 << (num_bits - 2)) - 1) & ~((1 << (num_bits - 2))) | (((1 << (num_bits - 2)) - 1) >> 1) * 0
+
+    # Simpler approach using XOR with a pattern
+    # Toggle bits from position 1 to num_bits-2
+    toggle_mask = ((1 << (num_bits - 3 + 1)) - 1) if num_bits > 3 else 0
+
+    return n ^ toggle_mask",1,36,"lines 39-39:
+assert toggle_middle_bits(9) == 15","37:
+38: # Test the function
+39: assert toggle_middle_bits(9) == 15",G2_module,AssertionError,39,Assert,Constant,[],"[""n.bit_length"",""toggle_middle_bits""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""model_assembly_failure""]",HIGH,The public example is sufficient to show the mask is wrong; broader bit-width behavior remains for later correctness evaluation.,conditional,not_run,"The constructed XOR mask toggles the wrong bit positions for the public input, and the copied assertion exposes the bit-mask algorithm error during module execution.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/735"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=c9972dbd1c76e4805401c1f08a4e25bf32b46c73b3be0befe79c623426dce6b2;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=4aeefd4c8d0dd04bf99b77cacba54999f01b80870a920ed6f3997c932ab6960d"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+25,f59c91131c769f305f410b20a5738e70c14be1ba72df0eba0fb4f7efe6af1987,9ccb1020e50b2e30f846dd029b1e8026797288f7bc03943f0fb1a03639628fe2,aff7897b4057e987932cc8baa5bc0cb44288f0d9ed782184ffabd99c1380dd91,Mbpp/581,22,641c30c5f0f6452caebc94f074302eed880fe7cf64c26b0d8751e4bc3aaf6d68,04da78f1936389f6f834710989d360f1991d502ccd72f2494175e0859a8a697b,f8f5852c739e145f768ff68b64ce05d7514a559e8469fbf3a172edf76d7a161d,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a python function to find the surface area of a square pyramid with a given base edge and height.
+assert surface_Area(3,4) == 33
+""""""",surface_Area,"base_edge: float, height: float","def surface_Area(base_edge: float, height: float) -> float:
+    """"""Calculate the total surface area of a square pyramid.""""""
+    import math
+    base_area = base_edge ** 2
+
+    # Calculate slant height using Pythagorean theorem
+    half_base = base_edge / 2
+    slant_height = math.sqrt(height**2 + half_base**2)
+
+    lateral_surface_area = 4 * (0.5 * base_edge * slant_height)
+
+    return base_area + lateral_surface_area",1,12,"lines 14-14:
+assert surface_Area(3, 4) == 33","12:     return base_area + lateral_surface_area
+13:
+14: assert surface_Area(3, 4) == 33",G2_module,AssertionError,14,Assert,Constant,"[""math""]","[""math.sqrt"",""surface_Area""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""mathematical_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""mathematical_error"",""model_assembly_failure""]",MEDIUM,"The public expected integer constrains this cell, but the contract does not separately state a rounding convention.",conditional,not_run,"The function returns the unrounded geometric expression, which does not equal the public contract value, so the copied assertion exposes a numerical-contract mismatch. A rounding or formula rewrite is not uniquely justified.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/581"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=f59c91131c769f305f410b20a5738e70c14be1ba72df0eba0fb4f7efe6af1987;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=9ccb1020e50b2e30f846dd029b1e8026797288f7bc03943f0fb1a03639628fe2"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+26,f85bb6c1efa65465700b139dec03e685dcf850a8f10c477b5c882562b3a06bae,077f1bf7c9d65bc6221f849123c643fc21faae3c9178720e322d923c3397a603,7220d4b08e4e3b264e23e870bab5ad2bb564856e885a99c589fa1f6b8cc757c2,Mbpp/125,44,4d03ae29f2e4e4b8330c48dfb85be5290d3864482e88609a6d893fc7c39c6ee9,225f3ba9809a01c9befe83140a77c4b6193e128604aa99a47b2a06a7f3bfc5f8,5b89898d50f7dca3afc73c959d21e7995a7259d340d8ffdaa437bf76135a3e53,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the maximum difference between the number of 0s and number of 1s in any sub-string of the given binary string.
+assert find_length(""11000010001"") == 6
+""""""",find_length,s,"def find_length(s):
+    max_diff = 0
+    current_sum = 0
+
+    # Treat '1' as +1 and '0' as -1 to maximize (count_ones - count_zeros)
+    for char in s:
+        if char == '1':
+            current_sum += 1
+        else:
+            current_sum -= 1
+
+        max_diff = max(max_diff, current_sum)
+
+    # Now treat '0' as +1 and '1' as -1 to maximize (count_zeros - count_ones)
+    current_sum = 0
+    for char in s:
+        if char == '0':
+            current_sum += 1
+        else:
+            current_sum -= 1
+
+        max_diff = max(max_diff, current_sum)
+
+    return max_diff",1,24,"lines 26-26:
+assert find_length(""11000010001"") == 6","24:     return max_diff
+25:
+26: assert find_length(""11000010001"") == 6",G2_module,AssertionError,26,Assert,Constant,[],"[""find_length"",""max""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""algorithmic_error"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""algorithmic_error"",""edge_case_omission"",""model_assembly_failure""]",HIGH,The public example alone establishes the observed mismatch; hidden substring cases are not used.,conditional,not_run,"The two passes maximize whole-prefix imbalance without resetting at adverse prefixes, so they do not implement a maximum over arbitrary substrings; the public assertion exposes the error.","[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/125"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=f85bb6c1efa65465700b139dec03e685dcf850a8f10c477b5c882562b3a06bae;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=077f1bf7c9d65bc6221f849123c643fc21faae3c9178720e322d923c3397a603"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,
+27,fc6b03344724ba3afc143f9306850b95b0a8abbdb043ee45f33e9635ce88f530,672aa73645332354b575037f185dc81ac749b5da269822bbc0abd6e2c700fd13,706ef381051aefe33da34b9c9cf0c52805db8178333f688986eb32786c0674c6,Mbpp/432,11,fbfbf05e7f7ffdcb81d11f3f977c681481a24604bfe3816e27433d26d60476d1,91a69d4994b2636c2f57f0b1d268b7c68c9639baa3494794db24ef6626a20593,d740872abaede227910999bcf84dc22ee33abb34fa7cb43c8bf4ab21e837d705,AI_GENERATED_PROGRAM_FAILURE_TAXONOMY_V3,r002_v3,AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION,development,"""""""
+Write a function to find the median length of a trapezium.
+assert median_trapezium(15,25,35)==20
+""""""",median_trapezium,"a, b, c","def median_trapezium(a,b,c):
+    return (a+b+c)/3",1,2,"lines 4-4:
+assert median_trapezium(15,25,35)==20","2:     return (a+b+c)/3
+3:
+4: assert median_trapezium(15,25,35)==20",G2_module,AssertionError,4,Assert,Constant,[],"[""median_trapezium""]",PASS,FAIL,PASS,NOT_APPLICABLE,NOT_ASSESSED,NOT_APPLICABLE,PUBLIC_CONTRACT_OBSERVATION_ONLY_NOT_FORMAL_CORRECTNESS,L4,"[""L5""]",VALID_MODEL_OUTCOME,"[{""gate"":""G2"",""layer"":""L4"",""mechanism"":""module_level_executable_assertion"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""raw_module_execution""},{""evidence_scope"":""public_contract_only"",""gate"":""G4"",""layer"":""L5"",""mechanism"":""parameter_semantics_swap"",""outcome_validity"":""VALID_MODEL_OUTCOME"",""stage"":""required_function_public_contract_observation""}]","[""module_level_executable_assertion"",""parameter_semantics_swap"",""mathematical_error"",""model_assembly_failure""]",HIGH,"The parameter roles are terse in prose, but averaging all three visibly contradicts the public example.",conditional,not_run,The function averages all three inputs rather than the required trapezium median relation indicated by the public result; the copied assertion exposes the parameter-semantics error.,"[""data/mbpp_plus/tasks.jsonl#task_id=Mbpp/432"",""artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl#program_id=fc6b03344724ba3afc143f9306850b95b0a8abbdb043ee45f33e9635ce88f530;healer_account=H0"",""artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv#cell_identity_sha256=672aa73645332354b575037f185dc81ac749b5da269822bbc0abd6e2c700fd13"",""C:/Users/yehya/Downloads/AI 生成程式共同失敗分類標準（實際使用版 v3）.md#sha256=7df8f4472ce048569967436cbc73ede8fd4bd117ad67d0028ddd95af2055a304""]",,,,

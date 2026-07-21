@@ -1,0 +1,37 @@
+{
+  "adjudication_status": "AI_ASSISTED_PROVISIONAL_NOT_FORMAL_HUMAN_ADJUDICATION",
+  "cells": 27,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_eligibility_counts": {
+    "abstain": 4,
+    "conditional": 23,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "ai_assisted_provisional_adjudication.csv": "90d17695c25d4c1f054fa23949cbd5237fcfeb4ade80eb38175b3c022687b119",
+    "ai_assisted_review_report_zh.md": "a5d8deb76ace5eddb1e3b417b8fa902108db13a59a06a61ad2718d794722f14d",
+    "execution_manifest.json": "4f889d7e53edc10bc36fa7f3a4a26ea565e3ce99145bdec378ba9243f8c521e6",
+    "healer_eligibility_summary.csv": "929bdf269117890c27c2c69619f51af4948ea3d9dcf34675061d6a50d1638a92",
+    "layer_summary.csv": "2853b718b10d3ee02bdfbb08861eeb9ac85e17139e18bea2c7fd0f194a04b4b6",
+    "mechanism_tag_summary.csv": "3030dba0fbb65687a70b79bb690c2605eb92c7d1d2051af11196d98dc84b1b3b",
+    "provenance.json": "421a266a06a29942d88e6d5b2f43656d4413f502dc0a18ec44dcb00c3fc9b3be",
+    "source_hash_ledger.csv": "3d4cb169f9bd98f2e3b4743c30148c24210984569c3b89ae5a0f6bda9c7c4a55"
+  },
+  "primary_layer_counts": {
+    "L0": 0,
+    "L1": 0,
+    "L2": 2,
+    "L3": 0,
+    "L4": 25,
+    "L5": 0,
+    "UNRESOLVED": 0
+  },
+  "researcher_reviews_completed": 0,
+  "revision": "candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1",
+  "source_hashes_verified": 15,
+  "status": "AI_ASSISTED_PROVISIONAL_COMPLETE_FORMAL_HUMAN_ADJUDICATION_PENDING",
+  "validation_executions": 0
+}

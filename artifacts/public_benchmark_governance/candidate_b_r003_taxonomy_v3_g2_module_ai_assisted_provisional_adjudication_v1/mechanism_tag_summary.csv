@@ -1,0 +1,12 @@
+mechanism_tag,cells
+algorithmic_error,12
+control_flow_failure,5
+edge_case_omission,3
+mathematical_error,8
+model_assembly_failure,27
+module_level_executable_assertion,25
+parameter_semantics_swap,3
+schema_mismatch,2
+semantic_goal_drift,7
+stdlib_regex_pattern_construction,1
+text_parsing_control_flow_failure,1

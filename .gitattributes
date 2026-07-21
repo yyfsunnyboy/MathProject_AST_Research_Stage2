@@ -107,3 +107,8 @@ tests/finals_rebuild/test_candidate_b_r003_taxonomy_v3_formal_classification_pre
 artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_independent_review_v1/** text eol=lf
 scripts/prepare_candidate_b_r003_g2_module_independent_review.py text eol=lf
 tests/finals_rebuild/test_candidate_b_r003_g2_module_independent_review.py text eol=lf
+
+# Candidate B r003 taxonomy v3 G2_module AI-assisted provisional adjudication.
+artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_ai_assisted_provisional_adjudication_v1/** text eol=lf
+scripts/adjudicate_candidate_b_r003_g2_module_ai_assisted_v1.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_g2_module_ai_assisted_v1.py text eol=lf
