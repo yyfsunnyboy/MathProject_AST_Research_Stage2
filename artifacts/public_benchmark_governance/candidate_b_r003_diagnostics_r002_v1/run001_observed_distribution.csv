@@ -1,0 +1,3 @@
+phase,exception_class,termination,cells,usable_for_classification
+G2,TimeoutError,timeout,196,false
+infrastructure,WorkerProcessExit,worker_error,2,false

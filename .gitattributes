@@ -77,3 +77,10 @@ artifacts/public_benchmark_governance/candidate_b_r003_v3_crosswalk_diagnostics_
 scripts/build_candidate_b_r003_v3_crosswalk.py text eol=lf
 scripts/run_candidate_b_r003_unresolved_diagnostics.py text eol=lf
 tests/finals_rebuild/test_candidate_b_r003_v3_crosswalk_diagnostics.py text eol=lf
+
+# Candidate B r003 diagnostics run_001 incident and r002 calibration freeze.
+artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v1/** text eol=lf
+artifacts/public_benchmark_governance/candidate_b_r003_v3_crosswalk_diagnostics_protocol_v1/manual_diagnostics_run_001/** text eol=lf
+scripts/build_candidate_b_r003_diagnostics_r002_incident.py text eol=lf
+scripts/run_candidate_b_r003_diagnostics_r002.py text eol=lf
+tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_incident.py text eol=lf

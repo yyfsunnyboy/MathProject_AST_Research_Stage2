@@ -1,0 +1,28 @@
+{
+  "crosswalk_modified": false,
+  "diagnostics_executed": 198,
+  "healer_rule_evidence": false,
+  "incident_id": "candidate_b_r003_diagnostics_run001_systematic_timeout",
+  "l4_l5_conclusions_produced": false,
+  "observed": {
+    "G2_TimeoutError": 196,
+    "binding_fields_hardcoded_on_parent_timeout_path": 196,
+    "infrastructure_WorkerProcessExit": 2,
+    "return_or_source_frame_present": 0
+  },
+  "protocol_failure_confirmed": true,
+  "root_cause": {
+    "dataset_loading": "EvalPlus dataset loaded once in parent; expected outputs never loaded; per-child dataset reload was not the cause",
+    "primary": "parent joins child before consuming multiprocessing.Queue payload; Python documents this ordering as deadlock-prone because child termination waits for feeder-thread pipe flush",
+    "start_method": "runner explicitly requested fork, so Python 3.14 POSIX forkserver default was bypassed; runtime version was not recorded and explicit fork safety was not calibrated",
+    "test_gap": "prior tests never exercised production dataset initialization, ready timing, full base+plus workload, queue-before-join ordering, signal exit, or known-pass calibration",
+    "timer_conflation": "single wall timeout starts after process.start and includes worker startup, module execution, all base+plus calls, result serialization, queue flush, and process finalization",
+    "worker_process_exit": "two no-payload child exits were collapsed without exitcode/signal; both share Mbpp/119 task identity and include non-progress loop risk, but no L4 conclusion is allowed"
+  },
+  "run001_execution_manifest_sha256": "3245a980581ee0ff29c225a7b1b38dc20c782e6ffabffcb4c259a44c5368bc4c",
+  "run001_results_sha256": "da09a67b7fc461bac355cfae3b3eebed5c4183a12b4ecd7ea82eae6a18d8767b",
+  "status": "preserved_protocol_failure_no_cell_classification",
+  "suspected_protocol_failure": true,
+  "usable_classifications": 0,
+  "validation_touched": false
+}

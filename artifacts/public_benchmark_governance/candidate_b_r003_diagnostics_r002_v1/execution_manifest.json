@@ -1,0 +1,11 @@
+{
+  "diagnostics_executed": 198,
+  "evalplus_correctness_executions": 0,
+  "healer_prompt_pipeline_modified": false,
+  "model_calls": 0,
+  "new_diagnostic_executions": 0,
+  "status": "incident_preserved_r002_calibration_prepared",
+  "suspected_protocol_failure": true,
+  "usable_classifications": 0,
+  "validation_not_executed": true
+}

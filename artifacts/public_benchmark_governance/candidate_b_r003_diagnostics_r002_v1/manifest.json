@@ -1,0 +1,42 @@
+{
+  "calibration_cells": 8,
+  "calibration_output_directory_created": false,
+  "calibration_protocol_sha256": "0e81c08c9bd291fb8299966c76ef2e193bdd42d442066610d6796378de5c382c",
+  "diagnostic_executions_this_freeze": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_cells_locked": 198,
+  "formal_output_directory_created": false,
+  "formal_protocol_sha256": "8cb0b52e137978819adba56ddd1cc3c81ecee5ffb24ae5ea08aa789fc1047bc8",
+  "healer_rules_modified": false,
+  "incident": {
+    "crosswalk_modified": false,
+    "diagnostics_executed": 198,
+    "healer_rule_evidence": false,
+    "l4_l5_conclusions": 0,
+    "suspected_protocol_failure": true,
+    "usable_classifications": 0
+  },
+  "manifest_version": "candidate_b_r003_diagnostics_r002_v1",
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest_and_operator_guide": {
+    "calibration_cohort.csv": "6a688058d6f39b27baff8f045249ce62975ea213f951b7517e084da18794ef6b",
+    "calibration_protocol.json": "0e81c08c9bd291fb8299966c76ef2e193bdd42d442066610d6796378de5c382c",
+    "diagnostics_output_schema.json": "535faf4ac77b90af2f5d2a5b2c6567c84858844640e5e1dc8b2ce20a581e66a2",
+    "execution_manifest.json": "969bc914abe621666f5357dad596bc3be9ced55c3e59b4fd56949e0d15122e79",
+    "formal198_input_ledger.csv": "d2d62a33b4f51118d0a51b41aadc9445bd64d680c3b1ef5c54117ae180272640",
+    "formal_diagnostics_protocol.json": "8cb0b52e137978819adba56ddd1cc3c81ecee5ffb24ae5ea08aa789fc1047bc8",
+    "incident_ledger.json": "c20f84fbe5dcdf517674a27c9bf16275423cad510243d9c14e9b5ac8c639b523",
+    "privacy_policy_zh.md": "203165efb5d84d2773482a735a664edcd5d0646372221f523465dd8e3207df1a",
+    "provenance.json": "8a8d04c7f9680fefc04be81051ea570f5a303958da9ca391985021f2fa54393c",
+    "root_cause_report_zh.md": "28fa7690675bf2bb1cca1a734cf1d9e5026f9c25685b522515ac325c850c315d",
+    "run001_observed_distribution.csv": "4bd6ac2652c3ee9fe40f466bc382d27fca949b31d26ff6aac643bd76d888f413",
+    "source_hash_ledger.csv": "3e3801da388085d7c2a550822ad8add8ef7a554aa8fdeaa9c80476152e660e1d"
+  },
+  "source_sha256": {
+    "scripts/build_candidate_b_r003_diagnostics_r002_incident.py": "602a442ba013a90fd1fb69b55a414857df2c953977b382d8e25a92f23a60c26b",
+    "scripts/run_candidate_b_r003_diagnostics_r002.py": "4e075c2d35ee2f06d86cc54624312294bdc79c3b119241eeeb193db44e4e15af",
+    "tests/finals_rebuild/test_candidate_b_r003_diagnostics_r002_incident.py": "fa245375b3b5abe915850da82afc1d21e2f4401ee965e44f34ebee5cf6d6ed1a"
+  },
+  "status": "r002_calibration_prepared_formal_locked",
+  "validation_not_executed": true
+}
