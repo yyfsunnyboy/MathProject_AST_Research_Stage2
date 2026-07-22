@@ -1,0 +1,77 @@
+{
+  "additional_unresolved_recommended": 2,
+  "audit_status_distribution": {
+    "AFFIRMED": 18,
+    "MATERIAL": 2
+  },
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "decagonal_cells_reviewed": 3,
+  "decagonal_l2_secondary_l5_abstain_affirmed": 3,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "fixed_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "independent_reconstruction_precedes_comparison": true,
+  "l2_cells_affirmed": 3,
+  "l2_cells_reviewed": 3,
+  "l4_cells_affirmed": 1,
+  "l4_cells_reviewed": 1,
+  "material_findings": 2,
+  "model_calls": 0,
+  "new_runtime_observations": 0,
+  "original_primary_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 7,
+    "UNRESOLVED": 9
+  },
+  "original_unresolved_affirmed": 9,
+  "original_unresolved_reviewed": 9,
+  "programs_executed": 0,
+  "provisional_modified": false,
+  "provisional_records_sha256": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+  "public_test_executions": 0,
+  "ready_to_freeze": false,
+  "recommended_confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 11,
+    "MEDIUM": 2
+  },
+  "recommended_healer_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "recommended_primary_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1_independent_audit_v1",
+  "source_hashes": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1/manual_evalplus_run_001/evalplus_results.csv": "338e66ecd09f48bcf2b8c8d1c8cf75911755dad92743c99257698d994a01938e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/adjudication_records.csv": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/adjudication_roster.csv": "ca1544ad12d0336638425ac770e7bf40c19e94ca59522e7cf0a90f3d122d6e4c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/adjudication_summary.json": "603abb708bd6cdbeacfd9f3f56c261ed4cd3f8b5d4a85289bdaa70d548772c48",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/manifest.json": "888873b1ec39831511e53b9d41b6b07e71752faaf1aff23f12817e8576dc3d01",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/provenance.json": "a69c7d9e1f683d7dc4520a4dbc8b416867fdffc06a7d3fe353f496c1520f7915",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/unresolved_evidence_gaps.csv": "8f5e9c39d94e541ba185a1c5c5337b43f6ba3e7179f2b53a5a23c1b57db1d61c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/batch02_roster.csv": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c",
+    "scripts/adjudicate_candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1.py": "a3b987b03d786b5738ed8e4c5c6d3ae520576a839999226d06b019fd3578a059"
+  },
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "INDEPENDENT_STATIC_AUDIT_COMPLETE_MATERIAL_FINDINGS",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "BATCH02_POST_AUDIT_REVISION_REQUIRED",
+  "zero_eligible_and_conditional_audit_conclusion": "CORRECT_NOT_OVERLY_CONSERVATIVE"
+}

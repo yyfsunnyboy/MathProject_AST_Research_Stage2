@@ -1,0 +1,111 @@
+{
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 9,
+    "MEDIUM": 4
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "evidence_policy": "frozen raw output + public contract + existing results + static derivation only",
+  "fixed_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "mechanism_tag_distribution": {
+    "algorithm_reconstruction_required": 8,
+    "diagnostic_execution_required": 9,
+    "duplicate_value_semantics": 1,
+    "incorrect_formula": 2,
+    "incorrect_ordering_semantics": 1,
+    "incorrect_pair_domain": 1,
+    "incorrect_recurrence": 1,
+    "mixed_type_comparison_exception": 1,
+    "negative_number_boundary": 2,
+    "output_schema_mismatch": 3,
+    "plus_failure_not_localized": 9,
+    "public_example_non_discriminating": 2,
+    "public_examples_non_discriminating": 9,
+    "return_shape_mismatch": 13,
+    "semantic_boundary_repair": 2,
+    "state_invariant_broken": 1,
+    "task_semantics_misread_as_membership_predicate": 2,
+    "wrong_aggregation_operator": 1,
+    "wrong_boundary_condition": 1
+  },
+  "mechanism_tag_strength_distribution": {
+    "algorithm_reconstruction_required::CONFIRMED": 5,
+    "algorithm_reconstruction_required::SUPPORTED": 3,
+    "diagnostic_execution_required::SUPPORTED": 9,
+    "duplicate_value_semantics::CONFIRMED": 1,
+    "incorrect_formula::CONFIRMED": 2,
+    "incorrect_ordering_semantics::CONFIRMED": 1,
+    "incorrect_pair_domain::SUPPORTED": 1,
+    "incorrect_recurrence::CONFIRMED": 1,
+    "mixed_type_comparison_exception::CONFIRMED": 1,
+    "negative_number_boundary::CONFIRMED": 2,
+    "output_schema_mismatch::CONFIRMED": 3,
+    "plus_failure_not_localized::CONFIRMED": 9,
+    "public_example_non_discriminating::SUPPORTED": 2,
+    "public_examples_non_discriminating::CONFIRMED": 9,
+    "return_shape_mismatch::REJECTED": 4,
+    "return_shape_mismatch::SUSPECTED": 9,
+    "semantic_boundary_repair::SUPPORTED": 2,
+    "state_invariant_broken::CONFIRMED": 1,
+    "task_semantics_misread_as_membership_predicate::CONFIRMED": 2,
+    "wrong_aggregation_operator::CONFIRMED": 1,
+    "wrong_boundary_condition::CONFIRMED": 1
+  },
+  "model_calls": 0,
+  "new_runtime_observations": 0,
+  "no_planning_signal_promoted_directly": true,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 7,
+    "UNRESOLVED": 9
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1",
+  "secondary_layer_distribution": {
+    "(empty)": 16,
+    "L5": 4
+  },
+  "source_hashes": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_governance/candidate_b_r003_formal_paired_analysis_v1/paired_cell_results.csv": "425efbf8351cc2d1fbe2a0f22e5c6ae5e2bc29b57ee8da6a7a9adfe88752ae43",
+    "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1/manual_evalplus_run_001/evalplus_results.csv": "338e66ecd09f48bcf2b8c8d1c8cf75911755dad92743c99257698d994a01938e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/static_signal_inventory.csv": "c3ffa467ce77aca62a205a68a12768f83720bec3b202a65a8f91e4efe916ffed",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/batch02_roster.csv": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/manifest.json": "05aa6192198ba4e7c6bf2ea04e043e7bd3c14a2619ba41b623496cf34e21c0a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/provenance.json": "5913705830ce8b6685bd1e5bd6ed7aa16d12ca6ce456f2c137290aded7395fd6",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c",
+    "scripts/prepare_candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1.py": "499e3bd4d37d57b81ff8eb2ffde5ab8e59dd355c60cdb530aa948dd1faa02f70"
+  },
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_INDEPENDENT_AUDIT",
+  "suitable_for_independent_audit": true,
+  "taxonomy_v31_reference": {
+    "filename": "AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+    "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "status": "EXTERNAL_PLANNING_REFERENCE_NOT_INGESTED_INTO_REPO_GOVERNANCE"
+  },
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells": 9,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "READY_FOR_BATCH02_PROVISIONAL_V1_AUDIT"
+}

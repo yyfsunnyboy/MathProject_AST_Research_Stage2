@@ -1,0 +1,33 @@
+{
+  "audit_approved_differences": 2,
+  "audit_material_findings_sha256": "47160a3054e2bd634a1530f4f25e663209164d5d45c7f618fb02af1cb3182e9c",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "fixed_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "material_findings": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "material_findings.csv": "487af9476d180bfebd1ade842a3b4a3b1c0dce42284343f2e78a137105ea502c",
+    "per_cell_change_findings.csv": "59799471e645883e5e7969b3d4f58f785249161cae4038090c44ad8f98d1bfa6",
+    "provenance.json": "d9a1b579eee64cc98ef4c9a15c59b654963ce0cb79b10529ed62a9b944723d3d",
+    "reaudit_summary.json": "843577362e81b274406cd4175303880e9b59e0361f8157db357d591964d74505",
+    "report_zh.md": "bbbbc71126fe5a06006daed020e49dc1f87fb543ddab75de6bb298197b9b170d"
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2_independent_reaudit_v1",
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "INDEPENDENT_MECHANICAL_REAUDIT_COMPLETE_NO_MATERIAL_FINDINGS",
+  "unauthorized_differences": 0,
+  "v1_records_sha256": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+  "v2_manifest_sha256": "0f3bb9c0c106f4bed5942b4883132c92cc460f87fec1e4c146d4333f68346c0d",
+  "v2_records_sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+  "validation_executions": 0,
+  "verdict": "READY_TO_FREEZE_BATCH02_PROVISIONAL_V2"
+}

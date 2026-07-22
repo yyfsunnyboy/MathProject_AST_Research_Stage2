@@ -1,0 +1,49 @@
+{
+  "batch03_started": false,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 11,
+    "MEDIUM": 2
+  },
+  "freeze_basis_verdict": "READY_TO_FREEZE_BATCH02_PROVISIONAL_V2",
+  "frozen_records_sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "newly_frozen": 20,
+  "no_model_or_candidate_execution": true,
+  "no_new_adjudication": true,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "previously_frozen": 117,
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "provisional_v2_manifest_sha256": "0f3bb9c0c106f4bed5942b4883132c92cc460f87fec1e4c146d4333f68346c0d",
+  "provisional_v2_records_sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+  "reaudit_findings_sha256": "59799471e645883e5e7969b3d4f58f785249161cae4038090c44ad8f98d1bfa6",
+  "reaudit_manifest_sha256": "de160c2ccabe5280e7fd35b34788442b28c383a50089025b6388e69b310391c6",
+  "remaining": 61,
+  "remaining61_roster_created": false,
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1",
+  "roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "secondary_layer_distribution": {
+    "L5": 4,
+    "empty": 16
+  },
+  "status": "FORMALLY_FROZEN_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "total_frozen": 137,
+  "unauthorized_adjudication_differences": 0,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unique_task_id": 14,
+  "unresolved_gaps": 11
+}

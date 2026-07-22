@@ -1,0 +1,9 @@
+{
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "programs_executed": 0
+}

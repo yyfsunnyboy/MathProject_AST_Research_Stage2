@@ -1,0 +1,38 @@
+{
+  "audit_change_affirmed": 2,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 11,
+    "MEDIUM": 2
+  },
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "material_findings": 0,
+  "new_runtime_observations": 0,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2_independent_reaudit_v1",
+  "secondary_layer_distribution": {
+    "L5": 4,
+    "empty": 16
+  },
+  "status": "INDEPENDENT_MECHANICAL_REAUDIT_COMPLETE_NO_MATERIAL_FINDINGS",
+  "unauthorized_differences": 0,
+  "unchanged_affirmed": 18,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "upstream_modified": false,
+  "verdict": "READY_TO_FREEZE_BATCH02_PROVISIONAL_V2"
+}

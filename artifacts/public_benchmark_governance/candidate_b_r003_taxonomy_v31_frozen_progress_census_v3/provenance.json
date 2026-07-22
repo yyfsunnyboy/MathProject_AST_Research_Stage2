@@ -1,0 +1,51 @@
+{
+  "analyzer": "scripts/freeze_candidate_b_r003_taxonomy_v31_batch02_20cell_v1.py",
+  "batch02_freeze_basis_verdict": "READY_TO_FREEZE_BATCH02_PROVISIONAL_V2",
+  "batch02_freeze_revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1",
+  "batch02_frozen_cells": 20,
+  "batch02_healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "batch02_primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "batch02_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "batch02_secondary_layer_distribution": {
+    "L5": 4,
+    "empty": 16
+  },
+  "batch03_started": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "immutable_new_revision": true,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "overwrites_prior_census": false,
+  "previously_frozen": 117,
+  "prior_progress_census_manifest_sha256": "67fcd910bbfb5c07beb9c9231464b871e196931f6874059c59d28b2cacaddd71",
+  "programs_executed": 0,
+  "provisional_v2_records_sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+  "public_test_executions": 0,
+  "reaudit_manifest_sha256": "de160c2ccabe5280e7fd35b34788442b28c383a50089025b6388e69b310391c6",
+  "reconciliation": "198=137+61",
+  "remaining": 61,
+  "remaining61_roster_created": false,
+  "remaining81_minus_batch02": 61,
+  "research_statement_zh": "已凍結137格，剩餘61格；Batch02 20格全部Healer abstain。不得外推至其餘61格，不得宣稱remaining81已全部完成。",
+  "revision": "candidate_b_r003_taxonomy_v31_frozen_progress_census_v3",
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "TAXONOMY_V31_FROZEN_PROGRESS_CENSUS",
+  "tests": "tests/finals_rebuild/test_candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1.py",
+  "total_frozen": 137,
+  "validation_executions": 0
+}

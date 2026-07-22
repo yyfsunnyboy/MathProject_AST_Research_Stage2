@@ -1,0 +1,32 @@
+{
+  "batch02_cells": 20,
+  "duplicate_seed_rows_counted": 0,
+  "execution_accounts_counted_as_cells": 0,
+  "formal_population": 198,
+  "frozen_cells": 117,
+  "healer_eligibility_distribution": {
+    "abstain": 94,
+    "conditional": 23,
+    "eligible": 0
+  },
+  "healer_transition_distribution": {
+    "fail_to_fail": 117
+  },
+  "identity_basis": "program_id+cell_identity_sha256+task_id+seed+generation_id+H0_source_sha256",
+  "legacy_154_case_forensic_rows_counted": 0,
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 68,
+    "L5": 17,
+    "UNRESOLVED": 29
+  },
+  "regression": 0,
+  "remaining_after_batch02_selection": 61,
+  "remaining_before_batch02_selection": 81,
+  "status": "READY_FOR_BATCH02_20CELL_ADJUDICATION",
+  "transformed": 0,
+  "unique_frozen_cell_identity": 117,
+  "unique_frozen_program_id": 117,
+  "unique_frozen_source_sha256": 97,
+  "verified_rescue": 0
+}

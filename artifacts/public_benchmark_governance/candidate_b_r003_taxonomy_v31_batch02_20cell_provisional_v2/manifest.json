@@ -1,0 +1,32 @@
+{
+  "audit_approved_revised_cells": 2,
+  "audit_material_findings_sha256": "47160a3054e2bd634a1530f4f25e663209164d5d45c7f618fb02af1cb3182e9c",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "fixed_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_records.csv": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+    "adjudication_roster.csv": "ca1544ad12d0336638425ac770e7bf40c19e94ca59522e7cf0a90f3d122d6e4c",
+    "adjudication_summary.json": "a61e382dd3a52c6ea7ce0bc4f46f759cb862249d1e993ba9cf0c7fae9be1a442",
+    "audit_approved_changes.csv": "6544d6225c364eb8e716856934c6e44ab20bf1e840075717e55ea41db4c56897",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "provenance.json": "57bc54d2f81bd09b4267525028b989753313b6211c855c561afbe1c2b89bcab6",
+    "report_zh.md": "9d88e4065b7013f49a91bdeffe11501099cdf33f9d10a96befc7bbcfa302f9d8",
+    "unresolved_evidence_gaps.csv": "90c14c69ff97a850a7f699e3da1a2ad6d819da42f7220bb23dc0aec5b277f44a"
+  },
+  "programs_executed": 0,
+  "provisional_v1_records_sha256": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+  "public_test_executions": 0,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2",
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "AUDIT_REVISED_PROVISIONAL_ADJUDICATION_V2",
+  "unchanged_v1_cells": 18,
+  "validation_executions": 0,
+  "verdict": "READY_FOR_BATCH02_PROVISIONAL_V2_REAUDIT"
+}

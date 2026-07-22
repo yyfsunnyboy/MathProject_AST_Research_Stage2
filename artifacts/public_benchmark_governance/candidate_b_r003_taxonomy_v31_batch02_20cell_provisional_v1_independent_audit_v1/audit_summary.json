@@ -1,0 +1,46 @@
+{
+  "additional_unresolved_recommended": 2,
+  "audit_status_distribution": {
+    "AFFIRMED": 18,
+    "MATERIAL": 2
+  },
+  "cells": 20,
+  "decagonal_cells_reviewed": 3,
+  "decagonal_l2_secondary_l5_abstain_affirmed": 3,
+  "l2_cells_affirmed": 3,
+  "l2_cells_reviewed": 3,
+  "l4_cells_affirmed": 1,
+  "l4_cells_reviewed": 1,
+  "material_findings": 2,
+  "original_primary_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 7,
+    "UNRESOLVED": 9
+  },
+  "original_unresolved_affirmed": 9,
+  "original_unresolved_reviewed": 9,
+  "ready_to_freeze": false,
+  "recommended_confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 11,
+    "MEDIUM": 2
+  },
+  "recommended_healer_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "recommended_primary_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1_independent_audit_v1",
+  "status": "INDEPENDENT_STATIC_AUDIT_COMPLETE_MATERIAL_FINDINGS",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "verdict": "BATCH02_POST_AUDIT_REVISION_REQUIRED",
+  "zero_eligible_and_conditional_audit_conclusion": "CORRECT_NOT_OVERLY_CONSERVATIVE"
+}

@@ -1,0 +1,27 @@
+{
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "fixed_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "adjudication_records.csv": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+    "adjudication_roster.csv": "ca1544ad12d0336638425ac770e7bf40c19e94ca59522e7cf0a90f3d122d6e4c",
+    "adjudication_summary.json": "603abb708bd6cdbeacfd9f3f56c261ed4cd3f8b5d4a85289bdaa70d548772c48",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "provenance.json": "a69c7d9e1f683d7dc4520a4dbc8b416867fdffc06a7d3fe353f496c1520f7915",
+    "report_zh.md": "eb06d379ae904c3d5cd5fc2dd1ad88dd45597321e26bcfe08869ceeb02631830",
+    "unresolved_evidence_gaps.csv": "8f5e9c39d94e541ba185a1c5c5337b43f6ba3e7179f2b53a5a23c1b57db1d61c"
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1",
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_INDEPENDENT_AUDIT",
+  "validation_executions": 0,
+  "verdict": "READY_FOR_BATCH02_PROVISIONAL_V1_AUDIT"
+}

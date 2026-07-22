@@ -1,0 +1,79 @@
+{
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 9,
+    "MEDIUM": 4
+  },
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "mechanism_tag_distribution": {
+    "algorithm_reconstruction_required": 8,
+    "diagnostic_execution_required": 9,
+    "duplicate_value_semantics": 1,
+    "incorrect_formula": 2,
+    "incorrect_ordering_semantics": 1,
+    "incorrect_pair_domain": 1,
+    "incorrect_recurrence": 1,
+    "mixed_type_comparison_exception": 1,
+    "negative_number_boundary": 2,
+    "output_schema_mismatch": 3,
+    "plus_failure_not_localized": 9,
+    "public_example_non_discriminating": 2,
+    "public_examples_non_discriminating": 9,
+    "return_shape_mismatch": 13,
+    "semantic_boundary_repair": 2,
+    "state_invariant_broken": 1,
+    "task_semantics_misread_as_membership_predicate": 2,
+    "wrong_aggregation_operator": 1,
+    "wrong_boundary_condition": 1
+  },
+  "mechanism_tag_strength_distribution": {
+    "algorithm_reconstruction_required::CONFIRMED": 5,
+    "algorithm_reconstruction_required::SUPPORTED": 3,
+    "diagnostic_execution_required::SUPPORTED": 9,
+    "duplicate_value_semantics::CONFIRMED": 1,
+    "incorrect_formula::CONFIRMED": 2,
+    "incorrect_ordering_semantics::CONFIRMED": 1,
+    "incorrect_pair_domain::SUPPORTED": 1,
+    "incorrect_recurrence::CONFIRMED": 1,
+    "mixed_type_comparison_exception::CONFIRMED": 1,
+    "negative_number_boundary::CONFIRMED": 2,
+    "output_schema_mismatch::CONFIRMED": 3,
+    "plus_failure_not_localized::CONFIRMED": 9,
+    "public_example_non_discriminating::SUPPORTED": 2,
+    "public_examples_non_discriminating::CONFIRMED": 9,
+    "return_shape_mismatch::REJECTED": 4,
+    "return_shape_mismatch::SUSPECTED": 9,
+    "semantic_boundary_repair::SUPPORTED": 2,
+    "state_invariant_broken::CONFIRMED": 1,
+    "task_semantics_misread_as_membership_predicate::CONFIRMED": 2,
+    "wrong_aggregation_operator::CONFIRMED": 1,
+    "wrong_boundary_condition::CONFIRMED": 1
+  },
+  "no_planning_signal_promoted_directly": true,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 7,
+    "UNRESOLVED": 9
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1",
+  "secondary_layer_distribution": {
+    "(empty)": 16,
+    "L5": 4
+  },
+  "status": "AI_ASSISTED_PROVISIONAL_ADJUDICATION_NOT_INDEPENDENT_AUDIT",
+  "suitable_for_independent_audit": true,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells": 9,
+  "verdict": "READY_FOR_BATCH02_PROVISIONAL_V1_AUDIT"
+}

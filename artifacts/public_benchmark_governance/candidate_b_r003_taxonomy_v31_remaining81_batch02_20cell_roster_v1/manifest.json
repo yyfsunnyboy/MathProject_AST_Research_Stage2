@@ -1,0 +1,26 @@
+{
+  "batch02_cells": 20,
+  "batch02_roster_sha256": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "frozen_cells": 117,
+  "healer_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "batch02_roster.csv": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d",
+    "execution_counts.json": "2d5d047aeabc613adfb409149c79dbf4aca5b9cfc5ae5dedc27900f9952d4ae5",
+    "frozen117_cell_identity_audit.csv": "d8b48fa2bb2fcfd9963037fb84b0513206d0661f183c1812d7e0597040a51881",
+    "frozen117_summary.json": "9d18c34eaab958d1950061f291629e849af26395dea554eb052cf426416b5436",
+    "provenance.json": "5913705830ce8b6685bd1e5bd6ed7aa16d12ca6ce456f2c137290aded7395fd6",
+    "remaining61_roster.csv": "23187a50042dfa6e9f1c522dd5e7434285a156c7066dd52200b1f63eae1dc156",
+    "report_zh.md": "6dc615c56fd2ad6cb17a1637493bb5b15facc2873df4ec378255b4f184ec61b4"
+  },
+  "programs_executed": 0,
+  "remaining_after_selection": 61,
+  "remaining_before_selection": 81,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1",
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "READY_FOR_BATCH02_20CELL_ADJUDICATION"
+}

@@ -1,0 +1,64 @@
+{
+  "audit_change_affirmed": 2,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "confidence_distribution": {
+    "HIGH": 7,
+    "LOW": 11,
+    "MEDIUM": 2
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "material_findings": 0,
+  "model_calls": 0,
+  "new_runtime_observations": 0,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L2": 3,
+    "L4": 1,
+    "L5": 5,
+    "UNRESOLVED": 11
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2_independent_reaudit_v1",
+  "scope": "mechanical verification of exactly two approved audit revisions; eighteen rows not re-adjudicated",
+  "secondary_layer_distribution": {
+    "L5": 4,
+    "empty": 16
+  },
+  "source_hashes": {
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1/adjudication_records.csv": "cb4101111e610faeadc292f8d26dbbb5088848011bf9d4527dbbe029b07252e9",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v1_independent_audit_v1/material_findings.csv": "47160a3054e2bd634a1530f4f25e663209164d5d45c7f618fb02af1cb3182e9c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/adjudication_records.csv": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/adjudication_roster.csv": "ca1544ad12d0336638425ac770e7bf40c19e94ca59522e7cf0a90f3d122d6e4c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/adjudication_summary.json": "a61e382dd3a52c6ea7ce0bc4f46f759cb862249d1e993ba9cf0c7fae9be1a442",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/audit_approved_changes.csv": "6544d6225c364eb8e716856934c6e44ab20bf1e840075717e55ea41db4c56897",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/manifest.json": "0f3bb9c0c106f4bed5942b4883132c92cc460f87fec1e4c146d4333f68346c0d",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/provenance.json": "57bc54d2f81bd09b4267525028b989753313b6211c855c561afbe1c2b89bcab6",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/report_zh.md": "9d88e4065b7013f49a91bdeffe11501099cdf33f9d10a96befc7bbcfa302f9d8",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_provisional_v2/unresolved_evidence_gaps.csv": "90c14c69ff97a850a7f699e3da1a2ad6d819da42f7220bb23dc0aec5b277f44a",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/batch02_roster.csv": "8742e496ce63a834d6b72237319c8b2419fd749b2e2af971700aaef4055c435d"
+  },
+  "start_head": "79a6543ae888a0cedf3694a9985d88c4f97e0713",
+  "status": "INDEPENDENT_MECHANICAL_REAUDIT_COMPLETE_NO_MATERIAL_FINDINGS",
+  "unauthorized_differences": 0,
+  "unchanged_affirmed": 18,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "READY_TO_FREEZE_BATCH02_PROVISIONAL_V2"
+}
