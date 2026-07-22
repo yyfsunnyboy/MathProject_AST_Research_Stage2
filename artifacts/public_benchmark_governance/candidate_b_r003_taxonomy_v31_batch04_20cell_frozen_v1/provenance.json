@@ -1,0 +1,142 @@
+{
+  "batch05_started": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "duplicate_cells": 0,
+  "eligible_zero_is_formal_safety_result": true,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "freeze_authorized": true,
+  "freeze_basis": "READY_TO_FREEZE_BATCH04_PROVISIONAL_V2",
+  "frozen_records_byte_identical_to_v2": true,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "intersection_with_prior157": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "no_new_adjudication": true,
+  "previously_frozen": 157,
+  "programs_executed": 0,
+  "provenance_chain": [
+    {
+      "sha256": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+      "stage": "roster"
+    },
+    {
+      "sha256": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7",
+      "stage": "roster_audit"
+    },
+    {
+      "sha256": "5f61c4fc90f9200376e85c622f3fd54d4fa2fd6f0829e1606fb52a17a6033624",
+      "stage": "provisional_v1"
+    },
+    {
+      "sha256": "a264dd9b32a33911c2d6ba9fec0bbbb75d7459c3ae5599734b05178ddff46e83",
+      "stage": "v1_independent_audit"
+    },
+    {
+      "sha256": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+      "stage": "provisional_v2"
+    },
+    {
+      "sha256": "4ae6168126c6365200f253dd3e30c2ebe05a2413660612fa9a5955d1faf0251f",
+      "stage": "v2_independent_reaudit"
+    },
+    {
+      "stage": "frozen_batch04"
+    }
+  ],
+  "public_test_executions": 0,
+  "rank5_rank12_legal_shared_source": true,
+  "reaudit_affirmed": 20,
+  "reaudit_material": 0,
+  "reconciliation": "198=177+21",
+  "remaining": 21,
+  "remaining21_unchanged": true,
+  "revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1",
+  "source_hashes": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_adjudication.csv": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/manifest.json": "af9becc880d45e6969074cf5e2e53e47a3b87b4cbf6a6ecab0cb4b69963f51d9",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/adjudication_records.csv": "5f61c4fc90f9200376e85c622f3fd54d4fa2fd6f0829e1606fb52a17a6033624",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/manifest.json": "6d170aa0e8f1c54cccf10159c42b5c61fad00b133c843749d15efab1a15250e4",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/manifest.json": "a264dd9b32a33911c2d6ba9fec0bbbb75d7459c3ae5599734b05178ddff46e83",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/material_findings.csv": "17560e5c50ec7147be536c9f8c7d26ce230ae4d912e3f600c0ef7b0169a391b2",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/per_cell_audit_findings.csv": "95a7d6927666b8f153db68a39a4f4e3db219aad95ce15f3f340b55a4ce197f53",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/adjudication_records.csv": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/adjudication_summary.json": "290ce21fbe4a8aa7ba3b4bfc0f63369b499a15595303e86f386cfce7a202869d",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/approved_difference_ledger.csv": "125f6f367867fea06fc123a81765aabdd7f572a0af8709d966ce86197d6b3bc1",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/conditional_diagnostic_queue.csv": "fb82e22dad104d428fbb8e8c66024e742ccdc7c326fffa0e9b6969b6133c1808",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/manifest.json": "b0b41591716133d183b56ae9c4f9254ef726524d06831be0c2b7361f05953681",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/mechanism_ledger.csv": "10c2897809de9b0d86c8cbd9a23955eab199a76711b19e1702548fae553d3a9b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/per_cell_evidence_ledger.csv": "85a8ee679816ca931126cec3199139b3523504f7b69b915dad8765ddf2cf362e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2/unresolved_evidence_gaps.csv": "76ad7647b3348705e0069da451af73a601014f8e403b73f85b920ceb46feda48",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2_independent_reaudit_v1/approved_change_verification.csv": "f624064c3b47e7072705f788ddec14751e73a600eb5e64aff43662a028e85239",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2_independent_reaudit_v1/manifest.json": "4ae6168126c6365200f253dd3e30c2ebe05a2413660612fa9a5955d1faf0251f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2_independent_reaudit_v1/per_cell_v2_reaudit_findings.csv": "3ac3a21afa235a147b3e2a6bb3031235111c5a9a9b99c8a9282055605a01a409",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2_independent_reaudit_v1/reaudit_summary.json": "28acc9a6fb118ea4dc2f0b23758a0c8300b2692fd7311f5bceb8b911306a0845",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v3/manifest.json": "92f076996db37ea4188f83168889c70ea5b7814d6374b2b1f24cdd170760bf1e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv": "8f2410122205610f41d4e7dfbbc4b958d05c1e3da40176b9dc9269880512c0cb",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/manifest.json": "9de720aba72fa5acb134b93785201aacde0482ef817b71ac6ba3739afbe10719",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/remaining21_roster.csv": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1_independent_audit_v1/manifest.json": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c"
+  },
+  "start_head": "4ef378b6303ff58291acc2c7a60b874ee8c2cc68",
+  "statistics": {
+    "confidence": {
+      "HIGH": 11,
+      "LOW": 9
+    },
+    "healer": {
+      "abstain": 20,
+      "conditional": 0,
+      "eligible": 0
+    },
+    "mechanisms": {
+      "algorithm_reconstruction_required": 4,
+      "algorithmic_error": 3,
+      "capital_boundary_detection_error": 2,
+      "control_flow_failure": 2,
+      "diagnostic_execution_required": 9,
+      "duplicate_value_semantics": 1,
+      "frequency_one_instead_of_distinct_value": 1,
+      "incorrect_formula": 3,
+      "incorrect_pair_domain": 1,
+      "incorrect_search_bound": 1,
+      "nontermination": 1,
+      "order_sensitive_counter": 1,
+      "plus_failure_not_localized": 9,
+      "public_examples_non_discriminating": 9,
+      "semantic_goal_drift": 3,
+      "sublist_semantics_ambiguous": 2,
+      "wrong_boundary_condition": 2,
+      "wrong_parameter_semantics": 1
+    },
+    "outcome": {
+      "VALID_MODEL_OUTCOME": 20
+    },
+    "primary": {
+      "L4": 1,
+      "L5": 10,
+      "UNRESOLVED": 9
+    },
+    "secondary": {
+      "L5": 1,
+      "empty": 19
+    }
+  },
+  "status": "FORMALLY_FROZEN_AI_ASSISTED_PROVISIONAL_ADJUDICATION",
+  "total_frozen": 177,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "BATCH04_PROVISIONAL_V2_FROZEN_READY_TO_COMMIT",
+  "verified_healer_rescues_claimed": 0
+}

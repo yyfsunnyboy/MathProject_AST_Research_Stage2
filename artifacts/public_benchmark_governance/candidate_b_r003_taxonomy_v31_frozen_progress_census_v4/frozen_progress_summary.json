@@ -1,0 +1,33 @@
+{
+  "batch04_freeze_basis_verdict": "READY_TO_FREEZE_BATCH04_PROVISIONAL_V2",
+  "batch04_freeze_revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1",
+  "batch04_frozen_cells": 20,
+  "batch04_healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "batch04_primary_layer_distribution": {
+    "L4": 1,
+    "L5": 10,
+    "UNRESOLVED": 9
+  },
+  "batch04_roster_sha256": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+  "batch04_secondary_layer_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "batch05_started": false,
+  "cumulative_frozen_identity_rows": 177,
+  "formal_population": 198,
+  "newly_frozen": 20,
+  "overwrites_prior_census": false,
+  "previously_frozen": 157,
+  "reconciliation": "198=177+21",
+  "remaining": 21,
+  "remaining21_sha256": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+  "remaining21_unchanged": true,
+  "revision": "candidate_b_r003_taxonomy_v31_frozen_progress_census_v4",
+  "status": "TAXONOMY_V31_FROZEN_PROGRESS_CENSUS",
+  "total_frozen": 177
+}

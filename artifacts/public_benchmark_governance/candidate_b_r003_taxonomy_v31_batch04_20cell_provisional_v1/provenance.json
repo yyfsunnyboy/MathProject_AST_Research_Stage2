@@ -1,0 +1,92 @@
+{
+  "abstain_cells": 20,
+  "batch04_frozen": false,
+  "batch05_started": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "conditional_queue_cells": 0,
+  "confidence_distribution": {
+    "HIGH": 11,
+    "LOW": 9
+  },
+  "diagnostics_executions": 0,
+  "eligible_cells": 0,
+  "evalplus_correctness_executions": 0,
+  "evidence_scope": "preserved generated source text, public task specification, existing evaluator/EvalPlus metadata only",
+  "fixed_roster_sha256": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "legal_shared_source_groups": 1,
+  "mechanism_tag_distribution": {
+    "algorithm_reconstruction_required": 4,
+    "algorithmic_error": 3,
+    "capital_boundary_detection_error": 2,
+    "control_flow_failure": 2,
+    "dedupe_instead_of_unique_occurrence": 1,
+    "diagnostic_execution_required": 9,
+    "duplicate_value_semantics": 1,
+    "incorrect_formula": 3,
+    "incorrect_pair_domain": 1,
+    "incorrect_search_bound": 1,
+    "nontermination": 1,
+    "order_sensitive_counter": 1,
+    "plus_failure_not_localized": 9,
+    "public_examples_non_discriminating": 9,
+    "semantic_goal_drift": 3,
+    "sublist_semantics_ambiguous": 2,
+    "wrong_boundary_condition": 2,
+    "wrong_parameter_semantics": 1
+  },
+  "model_calls": 0,
+  "new_runtime_observations": 0,
+  "no_adjudication_audit": true,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L4": 1,
+    "L5": 10,
+    "UNRESOLVED": 9
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "remaining21_cells_unchanged": 21,
+  "remaining21_roster_sha256": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+  "revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1",
+  "roster_audit_findings_sha256": "4b2bb8b7a8164388658f5f09eada38a029a1f5526d00a6c703dd840bd012265f",
+  "roster_audit_manifest_sha256": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7",
+  "roster_manifest_sha256": "9de720aba72fa5acb134b93785201aacde0482ef817b71ac6ba3739afbe10719",
+  "secondary_layer_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "source_hashes": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1/manual_evalplus_run_001/evalplus_results.csv": "338e66ecd09f48bcf2b8c8d1c8cf75911755dad92743c99257698d994a01938e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/remaining101_roster.csv": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/manifest.json": "9de720aba72fa5acb134b93785201aacde0482ef817b71ac6ba3739afbe10719",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/remaining21_roster.csv": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1_independent_audit_v1/manifest.json": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1_independent_audit_v1/per_cell_roster_findings.csv": "4b2bb8b7a8164388658f5f09eada38a029a1f5526d00a6c703dd840bd012265f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "start_head": "4ef378b6303ff58291acc2c7a60b874ee8c2cc68",
+  "status": "AI_ASSISTED_STATIC_PROVISIONAL_ADJUDICATION_NOT_AUDITED",
+  "taxonomy_v31_sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells": 9,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "READY_FOR_BATCH04_PROVISIONAL_INDEPENDENT_AUDIT"
+}

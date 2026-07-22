@@ -1,0 +1,59 @@
+{
+  "abstain_cells": 20,
+  "batch05_started": false,
+  "cells": 20,
+  "conditional_queue_cells": 0,
+  "confidence_distribution": {
+    "HIGH": 11,
+    "LOW": 9
+  },
+  "eligible_cells": 0,
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "legal_shared_source_groups": 1,
+  "mechanism_tag_distribution": {
+    "algorithm_reconstruction_required": 4,
+    "algorithmic_error": 3,
+    "capital_boundary_detection_error": 2,
+    "control_flow_failure": 2,
+    "dedupe_instead_of_unique_occurrence": 1,
+    "diagnostic_execution_required": 9,
+    "duplicate_value_semantics": 1,
+    "incorrect_formula": 3,
+    "incorrect_pair_domain": 1,
+    "incorrect_search_bound": 1,
+    "nontermination": 1,
+    "order_sensitive_counter": 1,
+    "plus_failure_not_localized": 9,
+    "public_examples_non_discriminating": 9,
+    "semantic_goal_drift": 3,
+    "sublist_semantics_ambiguous": 2,
+    "wrong_boundary_condition": 2,
+    "wrong_parameter_semantics": 1
+  },
+  "new_runtime_observations": 0,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L4": 1,
+    "L5": 10,
+    "UNRESOLVED": 9
+  },
+  "remaining21_cells_unchanged": 21,
+  "revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1",
+  "secondary_layer_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "status": "AI_ASSISTED_STATIC_PROVISIONAL_ADJUDICATION_NOT_AUDITED",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells": 9,
+  "upstream_modified": false,
+  "verdict": "READY_FOR_BATCH04_PROVISIONAL_INDEPENDENT_AUDIT"
+}

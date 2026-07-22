@@ -1,0 +1,46 @@
+{
+  "affirmed": 19,
+  "batch05_started": false,
+  "cells": 20,
+  "field_level_differences": 1,
+  "healer_dispositions_affirmed": 20,
+  "identity_source_closure": 20,
+  "inferred_confidence_distribution": {
+    "HIGH": 11,
+    "LOW": 9
+  },
+  "inferred_healer_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "inferred_outcome_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "inferred_primary_distribution": {
+    "L4": 1,
+    "L5": 10,
+    "UNRESOLVED": 9
+  },
+  "inferred_secondary_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "l4_cells_affirmed": 1,
+  "l5_cells_affirmed_layer": 10,
+  "material": 1,
+  "new_runtime_observations": 0,
+  "non_material": 0,
+  "provisional_modified": false,
+  "rank14_secondary_l5_affirmed": true,
+  "revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1",
+  "shared_source_explanation": "ranks 5 and 12 share byte-identical generated source but retain distinct program/cell/generation identities",
+  "shared_source_groups": 1,
+  "status": "INDEPENDENT_STATIC_AUDIT_COMPLETE_MATERIAL_FINDINGS",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells_affirmed": 9,
+  "upstream_modified": false,
+  "verdict": "BATCH04_PROVISIONAL_V2_REVISION_REQUIRED"
+}

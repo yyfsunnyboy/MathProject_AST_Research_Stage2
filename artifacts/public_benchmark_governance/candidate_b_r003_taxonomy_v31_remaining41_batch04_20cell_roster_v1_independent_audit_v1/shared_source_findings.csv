@@ -1,0 +1,2 @@
+source_sha256,cell_count,selection_ranks_json,legality_status,distinct_cell_status,material_reason
+33d72f31564d3871f89a913a9c97c8b1c6a859511ba048de77018a77b86ce99b,2,"[""5"",""12""]",AFFIRMED,MATCH,

@@ -1,0 +1,121 @@
+{
+  "audit_material_findings_adopted": 1,
+  "audit_modified": false,
+  "batch04_frozen": false,
+  "batch05_started": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "chain": [
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv",
+      "sha256": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+      "stage": "roster"
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1_independent_audit_v1/manifest.json",
+      "sha256": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7",
+      "stage": "roster_audit"
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/adjudication_records.csv",
+      "sha256": "5f61c4fc90f9200376e85c622f3fd54d4fa2fd6f0829e1606fb52a17a6033624",
+      "stage": "provisional_v1"
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/manifest.json",
+      "sha256": "a264dd9b32a33911c2d6ba9fec0bbbb75d7459c3ae5599734b05178ddff46e83",
+      "stage": "independent_audit"
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2",
+      "stage": "provisional_v2"
+    }
+  ],
+  "changed_records": 1,
+  "confidence_distribution": {
+    "HIGH": 11,
+    "LOW": 9
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_eligibility_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "mechanism_tag_distribution": {
+    "algorithm_reconstruction_required": 4,
+    "algorithmic_error": 3,
+    "capital_boundary_detection_error": 2,
+    "control_flow_failure": 2,
+    "diagnostic_execution_required": 9,
+    "duplicate_value_semantics": 1,
+    "frequency_one_instead_of_distinct_value": 1,
+    "incorrect_formula": 3,
+    "incorrect_pair_domain": 1,
+    "incorrect_search_bound": 1,
+    "nontermination": 1,
+    "order_sensitive_counter": 1,
+    "plus_failure_not_localized": 9,
+    "public_examples_non_discriminating": 9,
+    "semantic_goal_drift": 3,
+    "sublist_semantics_ambiguous": 2,
+    "wrong_boundary_condition": 2,
+    "wrong_parameter_semantics": 1
+  },
+  "model_calls": 0,
+  "new_runtime_observations": 0,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "primary_layer_distribution": {
+    "L4": 1,
+    "L5": 10,
+    "UNRESOLVED": 9
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v2",
+  "secondary_layer_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "source_hashes": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/adjudication_records.csv": "5f61c4fc90f9200376e85c622f3fd54d4fa2fd6f0829e1606fb52a17a6033624",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/adjudication_summary.json": "8ab1fc6381d7828dbc67cb6c9a759fe6967a939d739883f436a5ab0a3f680d1b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/conditional_diagnostic_queue.csv": "fb82e22dad104d428fbb8e8c66024e742ccdc7c326fffa0e9b6969b6133c1808",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/manifest.json": "6d170aa0e8f1c54cccf10159c42b5c61fad00b133c843749d15efab1a15250e4",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/mechanism_ledger.csv": "3002f3833d14935d754dfcfcb0c507e391d2d20cc10f6c901e4ea3028e420465",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/per_cell_evidence_ledger.csv": "85a8ee679816ca931126cec3199139b3523504f7b69b915dad8765ddf2cf362e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/provenance.json": "3531dcb2aebd1595ee9ed00329b3128864ad0e282b5770e456b00793bc54724c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/report_zh.md": "8dc1dbe9c1b842e415ddc4674dbbd257178ec9783efbdcf6b97f4e18ee11c0f9",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1/unresolved_evidence_gaps.csv": "76ad7647b3348705e0069da451af73a601014f8e403b73f85b920ceb46feda48",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/audit_summary.json": "e728c12691bc8ee0da8d9aee24d6383700495b5281140988d8d161398c65f55f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/manifest.json": "a264dd9b32a33911c2d6ba9fec0bbbb75d7459c3ae5599734b05178ddff46e83",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/material_findings.csv": "17560e5c50ec7147be536c9f8c7d26ce230ae4d912e3f600c0ef7b0169a391b2",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/per_cell_audit_findings.csv": "95a7d6927666b8f153db68a39a4f4e3db219aad95ce15f3f340b55a4ce197f53",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_provisional_v1_independent_audit_v1/provenance.json": "32fa8110159248e46b2723a690afc3d6bc229010ec0f8c340d3a796e2d9d2ebd",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv": "0c77a58de44149c17c2dd33ed310c2ef4e6b81b357874eb9ab21157e59b2ecae",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/manifest.json": "9de720aba72fa5acb134b93785201aacde0482ef817b71ac6ba3739afbe10719",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1_independent_audit_v1/manifest.json": "cd11f7da198044968773198cb9e66f057b11fb5285e4a12e1f70c7fb8475f3b7"
+  },
+  "start_head": "4ef378b6303ff58291acc2c7a60b874ee8c2cc68",
+  "status": "AUDIT_REVISED_PROVISIONAL_ADJUDICATION_V2",
+  "taxonomy_path": "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+  "taxonomy_sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+  "unauthorized_differences": 0,
+  "unchanged_records": 19,
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "upstream_modified": false,
+  "v1_modified": false,
+  "v2_audited": false,
+  "validation_executions": 0,
+  "verdict": "READY_FOR_BATCH04_PROVISIONAL_V2_INDEPENDENT_REAUDIT"
+}

@@ -1,0 +1,33 @@
+{
+  "batch05_started": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cumulative_frozen_identity_ledger_sha256": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "freeze_basis_verdict": "READY_TO_FREEZE_BATCH04_PROVISIONAL_V2",
+  "freeze_revision": "candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "newly_frozen": 20,
+  "outputs_sha256_excluding_manifest": {
+    "batch_registry.csv": "cb1dd0253c07ebac80b84ef1d460e917e82bdeb96aacbef9b5ef2bdab4d01c00",
+    "cumulative_frozen_identity_ledger.csv": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "frozen_progress_report_zh.md": "7ff32bcfcf3046bdc8221f8bac9b43e8b5b5536ceaa736fa4845d315aa1c0e0b",
+    "frozen_progress_summary.json": "373d9e8bdc6b8bee81042b2ec8119ddf387d9f3e56e8105e2df9b7e501e8b643",
+    "provenance.json": "f099e660226f1a3ebd6f77e53b19cdc4cf5d651002ecbbe447297e2453ab67da"
+  },
+  "overwrites_prior_census": false,
+  "previously_frozen": 157,
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "remaining": 21,
+  "remaining21_sha256": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4",
+  "status": "TAXONOMY_V31_FROZEN_PROGRESS_CENSUS",
+  "total_frozen": 177,
+  "validation_executions": 0
+}

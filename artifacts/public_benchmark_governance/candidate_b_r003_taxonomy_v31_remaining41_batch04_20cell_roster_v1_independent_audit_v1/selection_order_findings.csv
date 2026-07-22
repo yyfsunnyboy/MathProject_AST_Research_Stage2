@@ -1,0 +1,9 @@
+check_id,audit_status,expected,observed,evidence,material_reason
+remaining41_row_field_equality,AFFIRMED,41,41,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining61_batch03_20cell_roster_v1/selection_ledger.csv,
+fixed_order_rank_1_20,AFFIRMED,1..20,"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv,
+identity_source_order_20_20,AFFIRMED,20/20,20/20,per-cell audit,
+formal_closure,AFFIRMED,198=157+20+21,198=157+20+21,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv,
+selection_closure,AFFIRMED,41=20+21,41=20+21,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining61_batch03_20cell_roster_v1/selection_ledger.csv,
+frozen157_overlap,AFFIRMED,0,0,frozen Batch01-03 union,
+batch04_duplicate_cell,AFFIRMED,0,0,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/batch04_roster.csv,
+legal_shared_source,AFFIRMED,1 group / distinct cells,1 group / 2 cells,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/shared_source_ledger.csv,
