@@ -1,0 +1,141 @@
+{
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "candidate_test_executions": 0,
+  "cells": 21,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "freeze_authorized": true,
+  "freeze_basis": "READY_TO_FREEZE_FINAL_BATCH05_PROVISIONAL_V2",
+  "frozen_records_byte_identical_to_v2": true,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "intersection_with_frozen177": 0,
+  "model_calls": 0,
+  "newly_frozen": 21,
+  "no_new_adjudication": true,
+  "previously_frozen": 177,
+  "programs_executed": 0,
+  "provenance_chain": [
+    {
+      "sha256": "4ec24e450a66c50db46230a5b950137af6e6a4cb3d9a067f182a545818851764",
+      "stage": "roster"
+    },
+    {
+      "sha256": "bb1603b8eeaf9890a85d13291628f7985cc67bfbdc2d3221f39328295e506312",
+      "stage": "roster_audit"
+    },
+    {
+      "sha256": "ab6b389c1c9d04d72e6bed6a415b422eb222f9b4a8a1cec238ba2af6c34c291c",
+      "stage": "provisional_v1"
+    },
+    {
+      "sha256": "5cef1a885e710ede709d97c02d7bb261c8ad2a979b233790a1f81a4d86f6705c",
+      "stage": "v1_independent_audit"
+    },
+    {
+      "sha256": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34",
+      "stage": "provisional_v2"
+    },
+    {
+      "sha256": "bbd6a216717b6229537faf1bc1d3158737db861c22f8d9a8f63a818b760410be",
+      "stage": "v2_independent_reaudit"
+    },
+    {
+      "stage": "frozen_final_batch05"
+    }
+  ],
+  "public_test_executions": 0,
+  "rank5_rank21_legal_shared_source": true,
+  "reaudit_affirmed": 21,
+  "reaudit_material": 0,
+  "reaudit_non_material": 0,
+  "reconciliation": "198=177+21",
+  "remaining": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1",
+  "source_hashes": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/manifest.json": "b56f1796c9b97bdbb854a5699dcdce38326c26300d9ad7bb8411c9d0499e5ea4",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/adjudication_records.csv": "ab6b389c1c9d04d72e6bed6a415b422eb222f9b4a8a1cec238ba2af6c34c291c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/manifest.json": "5cef1a885e710ede709d97c02d7bb261c8ad2a979b233790a1f81a4d86f6705c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/adjudication_records.csv": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/adjudication_summary.json": "d4e0e3abbab18e492af1d11b8b122cecf63449d6f598f8d87d012a6e72e92596",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/approved_difference_ledger.csv": "0d575930ee91d521e3ae2d11a3b989e578d922da9185744cf5b9915915acef01",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/failure_chain_ledger.csv": "d397088f5c067a4cefad360dc5ea4cb34a66c0fee227cc90961ba635007dd025",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/manifest.json": "326604be78641011c7121c157dfc5c0ba2c1082dfcd1228c078bf1c67685a595",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/mechanism_ledger.csv": "5598e35524a33371e4aca38697e5cf51c9e4264cd2e4e38490419e4e13cf4fa2",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2/unresolved_evidence_gaps.csv": "72866c3b068c76576c3744b06bdf61d7d8b87d28af1ac0285ebfbd9e6df44ee7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2_independent_reaudit_v1/approved_change_verification.csv": "6c612033b0c5e93ffb63595659ad4176e148f2a2b5df5532225f20cb940ba03d",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2_independent_reaudit_v1/manifest.json": "bbd6a216717b6229537faf1bc1d3158737db861c22f8d9a8f63a818b760410be",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2_independent_reaudit_v1/per_cell_v2_reaudit_findings.csv": "012edbcdaccda0331c7fafd5677e65f4ec1dc8e1794aa32508ae2ddac0e77588",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2_independent_reaudit_v1/reaudit_summary.json": "8631d257f4e128cd6f7853d52745ac68421ba359dc736697ccfb6f9d6f2f3cc9",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_roster_v1/batch05_roster.csv": "4ec24e450a66c50db46230a5b950137af6e6a4cb3d9a067f182a545818851764",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_roster_v1/manifest.json": "b48500bf4be94e00ec9e836c21ff72cce7218476660b231785357b383b05731e",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_roster_v1_independent_audit_v1/manifest.json": "bb1603b8eeaf9890a85d13291628f7985cc67bfbdc2d3221f39328295e506312",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4/cumulative_frozen_identity_ledger.csv": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4/manifest.json": "ba024d82aa7f2c6b8af4790fbc503b962c406ea258314981a43e1bed9d94b68f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/remaining21_roster.csv": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c"
+  },
+  "start_head": "1aa7b692c4d499ada2e0b6e0799b3475f2f68b18",
+  "statistics": {
+    "confidence": {
+      "HIGH": 10,
+      "LOW": 11
+    },
+    "healer": {
+      "abstain": 21,
+      "conditional": 0,
+      "eligible": 0
+    },
+    "mechanisms": {
+      "algorithm_reconstruction_required": 9,
+      "algorithmic_error": 4,
+      "binary_search_pair_alignment_error": 1,
+      "date_normalization_boundary": 2,
+      "decimal_precision_boundary": 1,
+      "decimal_validation_expression_error": 1,
+      "dedupe_instead_of_unique_occurrence": 1,
+      "diagnostic_execution_required": 11,
+      "diagnostic_infrastructure_failure": 1,
+      "difference_of_squares_condition_error": 1,
+      "edge_case_omission": 1,
+      "element_type_counting_semantics": 2,
+      "embedded_assert_contract_drift": 1,
+      "end_index_off_by_one": 1,
+      "exception_swallowed_to_wrong_answer": 1,
+      "expression_character_domain": 2,
+      "incorrect_ordering_semantics": 1,
+      "lowercase_letter_class_underconstrained": 1,
+      "negative_number_boundary": 2,
+      "numeric_domain_boundary": 1,
+      "pairwise_divisibility_nontransitive_dp": 1,
+      "plus_failure_not_localized": 11,
+      "predicate_instead_of_nth_value": 1,
+      "public_examples_non_discriminating": 11,
+      "second_parameter_semantics": 1,
+      "semantic_goal_drift": 3,
+      "tuple_pair_normalization_omitted": 1,
+      "wrong_boundary_condition": 1
+    },
+    "outcome": {
+      "VALID_MODEL_OUTCOME": 21
+    },
+    "primary": {
+      "L5": 10,
+      "UNRESOLVED": 11
+    },
+    "secondary": {
+      "empty": 21
+    }
+  },
+  "status": "FORMALLY_FROZEN_FINAL_BATCH05_PROVISIONAL_V2",
+  "total_frozen": 198,
+  "unique_cell_identity": 21,
+  "unique_program_id": 21,
+  "unique_source_sha256": 20,
+  "upstream_modified": false,
+  "validation_executions": 0,
+  "verdict": "FINAL_BATCH05_FROZEN_198_CELL_TAXONOMY_CLOSED"
+}

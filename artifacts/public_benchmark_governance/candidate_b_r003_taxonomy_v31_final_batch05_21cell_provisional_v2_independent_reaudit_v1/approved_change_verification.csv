@@ -1,0 +1,6 @@
+check_id,expected,observed,reaudit_status,evidence
+changed_record_count,1,1,AFFIRMED,full v1-v2 field diff
+changed_field_count,1,1,AFFIRMED,mechanism_tags_json only
+changed_rank,17,17,AFFIRMED,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/field_level_difference_ledger.csv
+unauthorized_differences,0,0,AFFIRMED,20 rows all-field equal; rank17 all nonmechanism fields equal
+removed_tag,algorithm_reconstruction_required,algorithm_reconstruction_required,AFFIRMED,set difference of parsed mechanism tags

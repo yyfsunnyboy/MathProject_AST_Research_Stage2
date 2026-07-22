@@ -1,0 +1,17 @@
+{
+  "batch04_remaining21_actual_sha256": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+  "batch05_roster_sha256": "4ec24e450a66c50db46230a5b950137af6e6a4cb3d9a067f182a545818851764",
+  "upstream_sha256": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_adjudication.csv": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/manifest.json": "b56f1796c9b97bdbb854a5699dcdce38326c26300d9ad7bb8411c9d0499e5ea4",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4/cumulative_frozen_identity_ledger.csv": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4/manifest.json": "ba024d82aa7f2c6b8af4790fbc503b962c406ea258314981a43e1bed9d94b68f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv": "8f2410122205610f41d4e7dfbbc4b958d05c1e3da40176b9dc9269880512c0cb",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_zero_execution_census_v1/remaining101_roster.csv": "8fe0f5d95e7c6e86cda5f18dabfecae486120c50eeaf1baad6fe6c12b23143f6",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/remaining21_roster.csv": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c"
+  }
+}

@@ -1,0 +1,2 @@
+source_sha256,cell_count,selection_ranks_json,program_ids_json,distinct_cell_identities,audit_status,legality,notes
+e620cba770bcd2fb047bc27efae8eed206cb95f8f0a5e89631dd65d5fbda3d34,2,"[""5"",""21""]","[""d10c4c3a33cf290555e5024a1d00fb1c827d72ea862ad8e9e70f618e6665cdc1"",""fecb44add792a30c7498be505f3bddc0c50ecf8b0f769420488d6743ed2158c8""]",2,AFFIRMED,LEGAL_SHARED_SOURCE_DISTINCT_CELLS,shared source at ranks 5 and 21; distinct program and cell identities

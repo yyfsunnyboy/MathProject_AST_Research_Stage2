@@ -1,0 +1,74 @@
+{
+  "cells": 21,
+  "freeze_authorized": true,
+  "freeze_basis": "READY_TO_FREEZE_FINAL_BATCH05_PROVISIONAL_V2",
+  "frozen_records_byte_identical_to_v2": true,
+  "intersection_with_frozen177": 0,
+  "newly_frozen": 21,
+  "previously_frozen": 177,
+  "rank5_rank21_legal_shared_source": true,
+  "reaudit_affirmed": 21,
+  "reaudit_material": 0,
+  "reaudit_non_material": 0,
+  "reconciliation": "198=177+21",
+  "remaining": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1",
+  "statistics": {
+    "confidence": {
+      "HIGH": 10,
+      "LOW": 11
+    },
+    "healer": {
+      "abstain": 21,
+      "conditional": 0,
+      "eligible": 0
+    },
+    "mechanisms": {
+      "algorithm_reconstruction_required": 9,
+      "algorithmic_error": 4,
+      "binary_search_pair_alignment_error": 1,
+      "date_normalization_boundary": 2,
+      "decimal_precision_boundary": 1,
+      "decimal_validation_expression_error": 1,
+      "dedupe_instead_of_unique_occurrence": 1,
+      "diagnostic_execution_required": 11,
+      "diagnostic_infrastructure_failure": 1,
+      "difference_of_squares_condition_error": 1,
+      "edge_case_omission": 1,
+      "element_type_counting_semantics": 2,
+      "embedded_assert_contract_drift": 1,
+      "end_index_off_by_one": 1,
+      "exception_swallowed_to_wrong_answer": 1,
+      "expression_character_domain": 2,
+      "incorrect_ordering_semantics": 1,
+      "lowercase_letter_class_underconstrained": 1,
+      "negative_number_boundary": 2,
+      "numeric_domain_boundary": 1,
+      "pairwise_divisibility_nontransitive_dp": 1,
+      "plus_failure_not_localized": 11,
+      "predicate_instead_of_nth_value": 1,
+      "public_examples_non_discriminating": 11,
+      "second_parameter_semantics": 1,
+      "semantic_goal_drift": 3,
+      "tuple_pair_normalization_omitted": 1,
+      "wrong_boundary_condition": 1
+    },
+    "outcome": {
+      "VALID_MODEL_OUTCOME": 21
+    },
+    "primary": {
+      "L5": 10,
+      "UNRESOLVED": 11
+    },
+    "secondary": {
+      "empty": 21
+    }
+  },
+  "status": "FORMALLY_FROZEN_FINAL_BATCH05_PROVISIONAL_V2",
+  "total_frozen": 198,
+  "unique_cell_identity": 21,
+  "unique_program_id": 21,
+  "unique_source_sha256": 20,
+  "upstream_modified": false,
+  "verdict": "FINAL_BATCH05_FROZEN_198_CELL_TAXONOMY_CLOSED"
+}

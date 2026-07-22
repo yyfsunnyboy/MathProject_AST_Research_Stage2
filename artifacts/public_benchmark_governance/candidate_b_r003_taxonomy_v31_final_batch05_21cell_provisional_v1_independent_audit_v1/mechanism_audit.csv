@@ -1,0 +1,7 @@
+mechanism_tag,provisional_count,independent_supported_count,audit_status,affected_ranks_json,evidence
+public_examples_non_discriminating,11,11,AFFIRMED,"[1,2,3,4,5,7,9,14,15,20,21]",independent per-cell static review supports all recorded instances
+plus_failure_not_localized,11,11,AFFIRMED,"[1,2,3,4,5,7,9,14,15,20,21]",independent per-cell static review supports all recorded instances
+diagnostic_execution_required,11,11,AFFIRMED,"[1,2,3,4,5,7,9,14,15,20,21]",independent per-cell static review supports all recorded instances
+algorithm_reconstruction_required,10,9,MATERIAL,"[6,8,10,11,12,13,16,17,18,19]",rank 17 local off-by-one does not require algorithm reconstruction
+algorithmic_error,4,4,AFFIRMED,"[8,11,18,19]",independent per-cell static review supports all recorded instances
+semantic_goal_drift,3,3,AFFIRMED,"[6,10,16]",independent per-cell static review supports all recorded instances

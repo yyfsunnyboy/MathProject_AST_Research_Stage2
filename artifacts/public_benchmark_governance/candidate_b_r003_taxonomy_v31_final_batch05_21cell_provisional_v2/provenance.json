@@ -1,0 +1,113 @@
+{
+  "algorithm_reconstruction_required_v1": 10,
+  "algorithm_reconstruction_required_v2": 9,
+  "approved_differences_adopted": 1,
+  "candidate_code_imported_or_executed": false,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "candidate_test_executions": 0,
+  "cells": 21,
+  "change_policy": "apply only audit-approved rank17 mechanism_tags_json tag removal",
+  "changed_ranks": [
+    17
+  ],
+  "confidence_distribution": {
+    "HIGH": 10,
+    "LOW": 11
+  },
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_distribution": {
+    "abstain": 21,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "independent_reaudit_performed": false,
+  "legal_shared_source_ranks": [
+    5,
+    21
+  ],
+  "mechanism_distribution": {
+    "algorithm_reconstruction_required": 9,
+    "algorithmic_error": 4,
+    "binary_search_pair_alignment_error": 1,
+    "date_normalization_boundary": 2,
+    "decimal_precision_boundary": 1,
+    "decimal_validation_expression_error": 1,
+    "dedupe_instead_of_unique_occurrence": 1,
+    "diagnostic_execution_required": 11,
+    "diagnostic_infrastructure_failure": 1,
+    "difference_of_squares_condition_error": 1,
+    "edge_case_omission": 1,
+    "element_type_counting_semantics": 2,
+    "embedded_assert_contract_drift": 1,
+    "end_index_off_by_one": 1,
+    "exception_swallowed_to_wrong_answer": 1,
+    "expression_character_domain": 2,
+    "incorrect_ordering_semantics": 1,
+    "lowercase_letter_class_underconstrained": 1,
+    "negative_number_boundary": 2,
+    "numeric_domain_boundary": 1,
+    "pairwise_divisibility_nontransitive_dp": 1,
+    "plus_failure_not_localized": 11,
+    "predicate_instead_of_nth_value": 1,
+    "public_examples_non_discriminating": 11,
+    "second_parameter_semantics": 1,
+    "semantic_goal_drift": 3,
+    "tuple_pair_normalization_omitted": 1,
+    "wrong_boundary_condition": 1
+  },
+  "model_calls": 0,
+  "outcome_validity_distribution": {
+    "VALID_MODEL_OUTCOME": 21
+  },
+  "overlap_with_frozen177": 0,
+  "primary_distribution": {
+    "L5": 10,
+    "UNRESOLVED": 11
+  },
+  "programs_executed": 0,
+  "provenance_chain": "roster -> roster audit -> provisional v1 -> independent audit -> provisional v2",
+  "public_test_executions": 0,
+  "rank17_nonmechanism_fields_unchanged": true,
+  "revision": "candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v2",
+  "secondary_distribution": {
+    "empty": 21
+  },
+  "set_closure": "198=177+21",
+  "source_hashes": {
+    "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/adjudication_records.csv": "ab6b389c1c9d04d72e6bed6a415b422eb222f9b4a8a1cec238ba2af6c34c291c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/adjudication_summary.json": "d0d6c9f539014387c9c63e9bc06a909c97f2a2cfcdfe7db73e70aa376eed751f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/failure_chain_ledger.csv": "d397088f5c067a4cefad360dc5ea4cb34a66c0fee227cc90961ba635007dd025",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/manifest.json": "b28a96c894f838ace38a673d1a4c6f9d63a12336661804981ca55ff73cc8c68c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/mechanism_ledger.csv": "4db008589a4701be8bc06f267ebe10d64b89e1cf1dc978575a37a4a00cdd7f91",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/provenance.json": "c5c32c7f594795857d577834f1f34dfa5426aa51a56b78b12372711c8192a67f",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/report_zh.md": "a433acebb5c37ae068ec6c163835774016894277e8daa2183d8ba62bb8927535",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1/unresolved_evidence_gaps.csv": "72866c3b068c76576c3744b06bdf61d7d8b87d28af1ac0285ebfbd9e6df44ee7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/field_level_difference_ledger.csv": "342c36d39063f4878bcd7b02f749a31d592e888d006a7286f02c67e200fc99e7",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/manifest.json": "5cef1a885e710ede709d97c02d7bb261c8ad2a979b233790a1f81a4d86f6705c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/material_findings.csv": "86fb73fd1bc61f4b7b8ae2590280510561c6bb9b5d338fea510ab91780b3d314",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_provisional_v1_independent_audit_v1/per_cell_audit_findings.csv": "ba74b40e03eae81494e2fa84d26a6bbdb98cf0c9cb88543093f428b15d1a2afc",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_roster_v1/batch05_roster.csv": "4ec24e450a66c50db46230a5b950137af6e6a4cb3d9a067f182a545818851764",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_roster_v1_independent_audit_v1/per_cell_roster_findings.csv": "d834c492a4c61bc22048356de6d17c1da2c766f57d948f3df713570251761f34",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_frozen_progress_census_v4/cumulative_frozen_identity_ledger.csv": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining41_batch04_20cell_roster_v1/remaining21_roster.csv": "48647e94065311f5f8376fb9e3e3299b96b8a95176d97a890be90919ff2ed07b"
+  },
+  "start_head": "1aa7b692c4d499ada2e0b6e0799b3475f2f68b18",
+  "status": "AUDIT_APPROVED_SINGLE_FIELD_PROVISIONAL_V2_NOT_REAUDITED",
+  "unadjudicated_remaining": 0,
+  "unauthorized_differences": 0,
+  "unchanged_records": 20,
+  "unique_cell_identity": 21,
+  "unique_program_id": 21,
+  "unique_source_sha256": 20,
+  "v1_to_v2_changed_fields": 1,
+  "v1_to_v2_changed_records": 1,
+  "v2_frozen": false,
+  "validation_executions": 0,
+  "verdict": "READY_FOR_FINAL_BATCH05_PROVISIONAL_V2_INDEPENDENT_REAUDIT"
+}

@@ -1,0 +1,33 @@
+{
+  "batch05_frozen_records_sha256": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34",
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "candidate_test_executions": 0,
+  "complete_cumulative_ledger_sha256": "7d18c8a04ef47ae3725feeb84636ec2f6fe46490367010851003618db1622bd3",
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "formal_population": 198,
+  "frozen177_ledger_sha256": "d91c7d7f215f9e4a086aaa806958d1f8782686f0e0f71f2fa0df6a6c025f9422",
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "model_calls": 0,
+  "outputs_sha256_excluding_manifest": {
+    "batch_registry.csv": "c0d28b8b78d18466465fbfad3f1a899ab92a8c61c27b1167cef80e7ac70c807f",
+    "complete_cumulative_frozen_identity_ledger.csv": "7d18c8a04ef47ae3725feeb84636ec2f6fe46490367010851003618db1622bd3",
+    "complete_taxonomy_summary.json": "1a84e222012a2a180003a46bd2f0817466e7350459ed5a72f31858d35d012ca0",
+    "execution_counts.json": "046f0571a0f3c6039edda24ba333324ae5d7063e606a91d353a7cc2ddb1da217",
+    "provenance.json": "83cfc4eae08d3c3786c60aa4de95a8ac08b674879a8261724dbe4dc37d04738c",
+    "report_zh.md": "5ae98bf3a1967c0e76cc46243c143714d86eed01498afd6fe819115b2a3a8542",
+    "sha_ledger.json": "d51894e2d8062a8cfc2dc45ebc55d69b0fb3ad57907f94cac01729f878289453"
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "reconciliation": "198=177+21",
+  "remaining": 0,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1",
+  "start_head": "1aa7b692c4d499ada2e0b6e0799b3475f2f68b18",
+  "status": "COMPLETE_198_CELL_TAXONOMY_SET_CLOSED",
+  "total_frozen": 198,
+  "validation_executions": 0,
+  "verdict": "FINAL_BATCH05_FROZEN_198_CELL_TAXONOMY_CLOSED"
+}
