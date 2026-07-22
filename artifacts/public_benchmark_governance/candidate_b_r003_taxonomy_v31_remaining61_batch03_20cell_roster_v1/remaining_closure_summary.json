@@ -1,0 +1,22 @@
+{
+  "batch03_selected": 20,
+  "duplicate_identities": 0,
+  "formal_closure": "198=137+20+41",
+  "formal_population": 198,
+  "frozen_before_batch03": 137,
+  "omitted_identities": 0,
+  "overlap_with_batch01": 0,
+  "overlap_with_batch02": 0,
+  "overlap_with_frozen117": 0,
+  "planned_remaining_after_batch03": 41,
+  "remaining_before_batch03": 61,
+  "revision": "candidate_b_r003_taxonomy_v31_remaining61_batch03_20cell_roster_v1",
+  "selection_closure": "61=20+41",
+  "selection_rule": "remaining101_fixed_order_excluding_frozen_batch01_and_batch02_take_first20",
+  "selection_uses_program_content_or_adjudication": false,
+  "status": "IMMUTABLE_BATCH03_20CELL_ROSTER_READY_FOR_AUDIT",
+  "unique_batch03_cell_identity": 20,
+  "unique_batch03_program_id": 20,
+  "upstream_modified": false,
+  "verdict": "READY_FOR_BATCH03_ROSTER_AUDIT"
+}

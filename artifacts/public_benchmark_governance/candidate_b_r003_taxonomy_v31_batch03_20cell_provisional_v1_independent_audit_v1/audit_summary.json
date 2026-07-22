@@ -1,0 +1,43 @@
+{
+  "affirmed": 18,
+  "cells": 20,
+  "field_level_differences": 2,
+  "healer_dispositions_affirmed": 20,
+  "identity_source_closure": 20,
+  "inferred_confidence_distribution": {
+    "HIGH": 13,
+    "LOW": 7
+  },
+  "inferred_healer_distribution": {
+    "abstain": 20,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "inferred_outcome_distribution": {
+    "VALID_MODEL_OUTCOME": 20
+  },
+  "inferred_primary_distribution": {
+    "L2": 1,
+    "L5": 12,
+    "UNRESOLVED": 7
+  },
+  "inferred_secondary_distribution": {
+    "L5": 1,
+    "empty": 19
+  },
+  "l2_cells_affirmed": 1,
+  "l5_cells_affirmed_layer": 12,
+  "material": 2,
+  "new_runtime_observations": 0,
+  "non_material": 0,
+  "revision": "candidate_b_r003_taxonomy_v31_batch03_20cell_provisional_v1_independent_audit_v1",
+  "shared_source_explanation": "two distinct cells share byte-identical generated source but retain distinct program/cell/generation identities",
+  "shared_source_groups": 1,
+  "status": "INDEPENDENT_STATIC_AUDIT_COMPLETE_MATERIAL_FINDINGS",
+  "unique_cell_identity": 20,
+  "unique_program_id": 20,
+  "unique_source_sha256": 19,
+  "unresolved_cells_affirmed": 7,
+  "upstream_modified": false,
+  "verdict": "BATCH03_PROVISIONAL_REVISION_REQUIRED"
+}

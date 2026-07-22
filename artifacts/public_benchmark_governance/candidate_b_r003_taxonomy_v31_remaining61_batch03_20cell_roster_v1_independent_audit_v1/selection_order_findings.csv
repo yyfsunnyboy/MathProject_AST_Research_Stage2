@@ -1,0 +1,9 @@
+check_id,audit_status,expected,observed,evidence,material_reason
+remaining61_row_field_equality,AFFIRMED,61,61,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/remaining61_roster.csv,
+fixed_order_rank_1_20,AFFIRMED,1..20,"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20",artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining61_batch03_20cell_roster_v1/batch03_roster.csv,
+formal_closure,AFFIRMED,198=137+20+41,198=137+20+41,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv,
+selection_closure,AFFIRMED,61=20+41,61=20+41,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/remaining61_roster.csv,
+frozen117_overlap,AFFIRMED,0,0,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining81_batch02_20cell_roster_v1/frozen117_cell_identity_audit.csv,
+batch01_overlap,AFFIRMED,0,0,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_roster.csv,
+batch02_overlap,AFFIRMED,0,0,artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_roster.csv,
+duplicate_and_omission,AFFIRMED,0/0,0/0,independent set reconciliation,

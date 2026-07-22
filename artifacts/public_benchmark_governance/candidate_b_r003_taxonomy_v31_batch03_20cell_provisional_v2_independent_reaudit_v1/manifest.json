@@ -1,0 +1,33 @@
+{
+  "affirmed": 20,
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "cells": 20,
+  "diagnostics_executions": 0,
+  "evalplus_correctness_executions": 0,
+  "healer_executions": 0,
+  "hidden_test_executions": 0,
+  "material": 0,
+  "model_calls": 0,
+  "non_material": 0,
+  "outputs_sha256_excluding_manifest": {
+    "approved_change_verification.csv": "b2b1036b80617f1fc63b708b97759bdac214e21ae31c37759b455cba869705d1",
+    "execution_counts.json": "a2689e5b6dca7db3a16ca8460cda80476eea60a6907dda92bee875e294f3d4a7",
+    "field_level_difference_verification.csv": "9b48bf5086bf3037f5b145b8b7f033e92c7f6ef8e6a66ae0c2fa9e6e3b703bd2",
+    "material_findings.csv": "322cf8603152270edfa15123d285afc0fc339b02afce1962832cd0cd7ee3ed16",
+    "non_material_findings.csv": "322cf8603152270edfa15123d285afc0fc339b02afce1962832cd0cd7ee3ed16",
+    "per_cell_v2_reaudit_findings.csv": "cd2872712d19ded8dd0b6b7510b669bebd06f1e491677aba594f5bd418458d4a",
+    "provenance.json": "4159b573d07c8d70e8f46c46adaaabefcc5c309ffc69f318078fa2ec3161d93b",
+    "reaudit_summary.json": "307b54d62be0a91e7bb114c1d30b61a7a7f6c1e713556edca8252f8a6878ffb0",
+    "report_zh.md": "00ef9404cd0bdedd9778793b8f8cc0b80c3e4a24b6bb36ff5ef78b67774417db"
+  },
+  "programs_executed": 0,
+  "public_test_executions": 0,
+  "revision": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_provisional_v2_independent_reaudit_v1",
+  "start_head": "923e828b5f0455fd10f5646541f4c9a68a47837b",
+  "status": "INDEPENDENT_V2_REAUDIT_COMPLETE_NO_MATERIAL_FINDINGS",
+  "v2_manifest_sha256": "88c460e1357e637ab10734dedbc416aec579342ad036644258a3b821b37310d2",
+  "v2_records_sha256": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f",
+  "validation_executions": 0,
+  "verdict": "READY_TO_FREEZE_BATCH03_PROVISIONAL_V2"
+}
