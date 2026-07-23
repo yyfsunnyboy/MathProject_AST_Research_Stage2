@@ -1,0 +1,3560 @@
+{
+  "cross_analysis": {
+    "benchmark_by_healer": {
+      "HumanEval+": {
+        "denominator": 0,
+        "values": {
+          "abstain": {
+            "n": 0,
+            "percent": null
+          },
+          "conditional": {
+            "n": 0,
+            "percent": null
+          },
+          "eligible": {
+            "n": 0,
+            "percent": null
+          }
+        }
+      },
+      "MBPP+": {
+        "denominator": 198,
+        "values": {
+          "abstain": {
+            "n": 175,
+            "percent": 88.4
+          },
+          "conditional": {
+            "n": 23,
+            "percent": 11.6
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      }
+    },
+    "benchmark_by_primary": {
+      "HumanEval+": {
+        "denominator": 0,
+        "values": {
+          "L0": {
+            "n": 0,
+            "percent": null
+          },
+          "L1": {
+            "n": 0,
+            "percent": null
+          },
+          "L2": {
+            "n": 0,
+            "percent": null
+          },
+          "L3": {
+            "n": 0,
+            "percent": null
+          },
+          "L4": {
+            "n": 0,
+            "percent": null
+          },
+          "L5": {
+            "n": 0,
+            "percent": null
+          },
+          "UNRESOLVED": {
+            "n": 0,
+            "percent": null
+          }
+        }
+      },
+      "MBPP+": {
+        "denominator": 198,
+        "values": {
+          "L0": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L1": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L2": {
+            "n": 7,
+            "percent": 3.5
+          },
+          "L3": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L4": {
+            "n": 70,
+            "percent": 35.4
+          },
+          "L5": {
+            "n": 54,
+            "percent": 27.3
+          },
+          "UNRESOLVED": {
+            "n": 67,
+            "percent": 33.8
+          }
+        }
+      }
+    },
+    "condition_by_healer": {
+      "Candidate_B/H0": {
+        "denominator": 198,
+        "values": {
+          "abstain": {
+            "n": 175,
+            "percent": 88.4
+          },
+          "conditional": {
+            "n": 23,
+            "percent": 11.6
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "Candidate_B/H1": {
+        "denominator": 0,
+        "values": {
+          "abstain": {
+            "n": 0,
+            "percent": null
+          },
+          "conditional": {
+            "n": 0,
+            "percent": null
+          },
+          "eligible": {
+            "n": 0,
+            "percent": null
+          }
+        }
+      }
+    },
+    "condition_by_primary": {
+      "Candidate_B/H0": {
+        "denominator": 198,
+        "values": {
+          "L0": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L1": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L2": {
+            "n": 7,
+            "percent": 3.5
+          },
+          "L3": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L4": {
+            "n": 70,
+            "percent": 35.4
+          },
+          "L5": {
+            "n": 54,
+            "percent": 27.3
+          },
+          "UNRESOLVED": {
+            "n": 67,
+            "percent": 33.8
+          }
+        }
+      },
+      "Candidate_B/H1": {
+        "denominator": 0,
+        "values": {
+          "L0": {
+            "n": 0,
+            "percent": null
+          },
+          "L1": {
+            "n": 0,
+            "percent": null
+          },
+          "L2": {
+            "n": 0,
+            "percent": null
+          },
+          "L3": {
+            "n": 0,
+            "percent": null
+          },
+          "L4": {
+            "n": 0,
+            "percent": null
+          },
+          "L5": {
+            "n": 0,
+            "percent": null
+          },
+          "UNRESOLVED": {
+            "n": 0,
+            "percent": null
+          }
+        }
+      }
+    },
+    "confidence_by_healer": {
+      "HIGH": {
+        "denominator": 126,
+        "values": {
+          "abstain": {
+            "n": 106,
+            "percent": 84.1
+          },
+          "conditional": {
+            "n": 20,
+            "percent": 15.9
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "LOW": {
+        "denominator": 67,
+        "values": {
+          "abstain": {
+            "n": 67,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "MEDIUM": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 40.0
+          },
+          "conditional": {
+            "n": 3,
+            "percent": 60.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      }
+    },
+    "layer_by_healer": {
+      "L2": {
+        "denominator": 7,
+        "values": {
+          "abstain": {
+            "n": 7,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "L4": {
+        "denominator": 70,
+        "values": {
+          "abstain": {
+            "n": 47,
+            "percent": 67.1
+          },
+          "conditional": {
+            "n": 23,
+            "percent": 32.9
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "L5": {
+        "denominator": 54,
+        "values": {
+          "abstain": {
+            "n": 54,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "UNRESOLVED": {
+        "denominator": 67,
+        "values": {
+          "abstain": {
+            "n": 67,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      }
+    },
+    "mechanism_by_healer": {
+      "aggregation_axis_mismatch": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "algorithm_reconstruction_required": {
+        "denominator": 31,
+        "values": {
+          "abstain": {
+            "n": 31,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "algorithmic_error": {
+        "denominator": 21,
+        "values": {
+          "abstain": {
+            "n": 9,
+            "percent": 42.9
+          },
+          "conditional": {
+            "n": 12,
+            "percent": 57.1
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "algorithmic_logic_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "binary_search_missing_final_return": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "binary_search_pair_alignment_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "broken_collection_construction": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "capital_boundary_detection_error": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "code_bloat": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "combinatorial_explosion": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "complex_dp_without_public_trace": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "complex_sqrt_path": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "control_flow_failure": {
+        "denominator": 7,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 42.9
+          },
+          "conditional": {
+            "n": 4,
+            "percent": 57.1
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "date_normalization_boundary": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "decimal_precision_boundary": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "decimal_validation_expression_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "dedupe_instead_of_unique_occurrence": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "diagnostic_execution_required": {
+        "denominator": 49,
+        "values": {
+          "abstain": {
+            "n": 49,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "diagnostic_infrastructure_failure": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "difference_of_squares_condition_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "dual_delete_bug": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "duplicate_definition_override": {
+        "denominator": 6,
+        "values": {
+          "abstain": {
+            "n": 6,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "duplicate_value_semantics": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "edge_case_omission": {
+        "denominator": 6,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 50.0
+          },
+          "conditional": {
+            "n": 3,
+            "percent": 50.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "element_type_counting_semantics": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "embedded_assert_contract_drift": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "end_index_off_by_one": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "exception_swallowed_to_wrong_answer": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "explicit_value_error_guard": {
+        "denominator": 7,
+        "values": {
+          "abstain": {
+            "n": 7,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "expression_character_domain": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "extra_wrapper_or_output": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "formula_mismatch": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "frequency_one_instead_of_distinct_value": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "generator_instead_of_list": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "hardcoded_public_example": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_formula": {
+        "denominator": 14,
+        "values": {
+          "abstain": {
+            "n": 14,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_ordering_semantics": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_pair_domain": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_recurrence": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_search_bound": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_surface_area_formula": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "incorrect_trapezium_median_formula": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "index_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "index_invalidation": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "lowercase_letter_class_underconstrained": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "mathematical_error": {
+        "denominator": 8,
+        "values": {
+          "abstain": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "conditional": {
+            "n": 8,
+            "percent": 100.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "median_index_error": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "memory_error": {
+        "denominator": 6,
+        "values": {
+          "abstain": {
+            "n": 6,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "merge_logic_error": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "mixed_type_comparison_exception": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "model_assembly_failure": {
+        "denominator": 27,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 14.8
+          },
+          "conditional": {
+            "n": 23,
+            "percent": 85.2
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "module_execution_exception": {
+        "denominator": 48,
+        "values": {
+          "abstain": {
+            "n": 48,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "module_level_executable_assertion": {
+        "denominator": 28,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 17.9
+          },
+          "conditional": {
+            "n": 23,
+            "percent": 82.1
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "multiple_plausible_root_causes": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "negative_number_boundary": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "nontermination": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "numeric_domain_boundary": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "order_sensitive_counter": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "output_schema_mismatch": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "packaging_or_scaffold_residue": {
+        "denominator": 14,
+        "values": {
+          "abstain": {
+            "n": 14,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "pairwise_divisibility_nontransitive_dp": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "parameter_semantics_swap": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "conditional": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "partition_error": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "partition_index_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "plus_failure_not_localized": {
+        "denominator": 38,
+        "values": {
+          "abstain": {
+            "n": 38,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "precision_validation_error": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "predicate_instead_of_nth_value": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "public_example_non_discriminating": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "public_examples_non_discriminating": {
+        "denominator": 49,
+        "values": {
+          "abstain": {
+            "n": 49,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "return_shape_mismatch": {
+        "denominator": 20,
+        "values": {
+          "abstain": {
+            "n": 20,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "return_shape_observed": {
+        "denominator": 20,
+        "values": {
+          "abstain": {
+            "n": 20,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "runtime_type_error": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "runtime_vs_semantic_not_closed": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "schema_mismatch": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "second_parameter_semantics": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "self_recursive_override": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "semantic_goal_drift": {
+        "denominator": 17,
+        "values": {
+          "abstain": {
+            "n": 12,
+            "percent": 70.6
+          },
+          "conditional": {
+            "n": 5,
+            "percent": 29.4
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "state_invariant_broken": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "stdlib_complex_type_incompatibility": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "stdlib_regex_pattern_construction": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "strict_inequality_boundary": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "sublist_semantics_ambiguous": {
+        "denominator": 4,
+        "values": {
+          "abstain": {
+            "n": 4,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "task_semantics_misread_as_membership_predicate": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "test_execution_failure_signal": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "text_parsing_control_flow_failure": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "tuple_pair_normalization_omitted": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "type_error": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "unbound_name": {
+        "denominator": 7,
+        "values": {
+          "abstain": {
+            "n": 7,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "unbound_name_stats": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "unsupported_input_guard": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "value_error_without_visible_guard": {
+        "denominator": 3,
+        "values": {
+          "abstain": {
+            "n": 3,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "wrong_aggregation_operator": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "wrong_boundary_condition": {
+        "denominator": 8,
+        "values": {
+          "abstain": {
+            "n": 8,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "wrong_parameter_semantics": {
+        "denominator": 2,
+        "values": {
+          "abstain": {
+            "n": 2,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "xor_accumulate_instead_of_sum": {
+        "denominator": 1,
+        "values": {
+          "abstain": {
+            "n": 1,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      },
+      "zero_division": {
+        "denominator": 5,
+        "values": {
+          "abstain": {
+            "n": 5,
+            "percent": 100.0
+          },
+          "conditional": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "eligible": {
+            "n": 0,
+            "percent": 0.0
+          }
+        }
+      }
+    },
+    "outcome_by_layer": {
+      "VALID_MODEL_OUTCOME": {
+        "denominator": 198,
+        "values": {
+          "L0": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L1": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L2": {
+            "n": 7,
+            "percent": 3.5
+          },
+          "L3": {
+            "n": 0,
+            "percent": 0.0
+          },
+          "L4": {
+            "n": 70,
+            "percent": 35.4
+          },
+          "L5": {
+            "n": 54,
+            "percent": 27.3
+          },
+          "UNRESOLVED": {
+            "n": 67,
+            "percent": 33.8
+          }
+        }
+      }
+    },
+    "scaffold_like": {
+      "denominator": 0,
+      "reason": "formal frozen records沒有scaffold_like欄位，禁止事後推定。",
+      "status": "NA"
+    }
+  },
+  "distributions": {
+    "confidence": {
+      "HIGH": {
+        "n": 126,
+        "percent": 63.6
+      },
+      "LOW": {
+        "n": 67,
+        "percent": 33.8
+      },
+      "MEDIUM": {
+        "n": 5,
+        "percent": 2.5
+      }
+    },
+    "failure_chain": {
+      "layer_patterns": {
+        "L2": {
+          "n": 1,
+          "percent": 0.5
+        },
+        "L2 + secondary L4": {
+          "n": 2,
+          "percent": 1.0
+        },
+        "L2 + secondary L5": {
+          "n": 4,
+          "percent": 2.0
+        },
+        "L4": {
+          "n": 32,
+          "percent": 16.2
+        },
+        "L4 + secondary L5": {
+          "n": 38,
+          "percent": 19.2
+        },
+        "L5": {
+          "n": 54,
+          "percent": 27.3
+        },
+        "UNRESOLVED": {
+          "n": 67,
+          "percent": 33.8
+        }
+      },
+      "node_count": {
+        "1 node": {
+          "n": 36,
+          "percent": 18.2
+        },
+        "2 nodes": {
+          "n": 45,
+          "percent": 22.7
+        },
+        "3+ nodes": {
+          "n": 117,
+          "percent": 59.1
+        }
+      },
+      "nonempty": {
+        "n": 198,
+        "percent": 100.0
+      }
+    },
+    "healer": {
+      "abstain": {
+        "n": 175,
+        "percent": 88.4
+      },
+      "conditional": {
+        "n": 23,
+        "percent": 11.6
+      },
+      "eligible": {
+        "n": 0,
+        "percent": 0.0
+      }
+    },
+    "mechanism_families": {
+      "entry_point": {
+        "matching_rule": [
+          "entry_point"
+        ],
+        "n": 0,
+        "non_exclusive": true,
+        "percent": 0.0
+      },
+      "import_or_dependency": {
+        "matching_rule": [
+          "import",
+          "dependency"
+        ],
+        "n": 0,
+        "non_exclusive": true,
+        "percent": 0.0
+      },
+      "runtime_or_assembly": {
+        "matching_rule": [
+          "runtime",
+          "exception",
+          "nameerror",
+          "undefined",
+          "unbound",
+          "arity",
+          "type_error",
+          "missing_return",
+          "execution_timeout",
+          "nontermination",
+          "control_flow",
+          "parameter_source",
+          "module_level_executable"
+        ],
+        "n": 80,
+        "non_exclusive": true,
+        "percent": 40.4
+      },
+      "semantic_or_algorithm": {
+        "matching_rule": [
+          "algorithm",
+          "formula",
+          "semantic",
+          "boundary",
+          "ordering",
+          "dedupe",
+          "frequency_one",
+          "edge_case",
+          "predicate",
+          "hardcoded",
+          "answer_incorrect",
+          "mathematical_error"
+        ],
+        "n": 109,
+        "non_exclusive": true,
+        "percent": 55.1
+      },
+      "syntax_or_extraction": {
+        "matching_rule": [
+          "syntax",
+          "indentation",
+          "candidate_extraction",
+          "format_contamination",
+          "multiple_candidates"
+        ],
+        "n": 0,
+        "non_exclusive": true,
+        "percent": 0.0
+      },
+      "truncation": {
+        "matching_rule": [
+          "truncation",
+          "possible_truncation"
+        ],
+        "n": 0,
+        "non_exclusive": true,
+        "percent": 0.0
+      }
+    },
+    "mechanism_statuses": {
+      "aggregation_axis_mismatch": {
+        "LEGACY_ACTIVE": 5
+      },
+      "algorithm_reconstruction_required": {
+        "CONFIRMED": 7,
+        "SUPPORTED": 23,
+        "SUSPECTED": 1
+      },
+      "algorithmic_error": {
+        "CONFIRMED": 9,
+        "LEGACY_ACTIVE": 12
+      },
+      "algorithmic_logic_error": {
+        "LEGACY_ACTIVE": 1
+      },
+      "binary_search_missing_final_return": {
+        "LEGACY_ACTIVE": 1
+      },
+      "binary_search_pair_alignment_error": {
+        "CONFIRMED": 1
+      },
+      "broken_collection_construction": {
+        "LEGACY_ACTIVE": 2
+      },
+      "capital_boundary_detection_error": {
+        "CONFIRMED": 3
+      },
+      "code_bloat": {
+        "CONFIRMED": 1
+      },
+      "combinatorial_explosion": {
+        "LEGACY_ACTIVE": 5
+      },
+      "complex_dp_without_public_trace": {
+        "LEGACY_ACTIVE": 3
+      },
+      "complex_sqrt_path": {
+        "LEGACY_ACTIVE": 2
+      },
+      "control_flow_failure": {
+        "CONFIRMED": 2,
+        "LEGACY_ACTIVE": 5
+      },
+      "date_normalization_boundary": {
+        "SUSPECTED": 2
+      },
+      "decimal_precision_boundary": {
+        "SUSPECTED": 1
+      },
+      "decimal_validation_expression_error": {
+        "CONFIRMED": 1
+      },
+      "dedupe_instead_of_unique_occurrence": {
+        "CONFIRMED": 1,
+        "LEGACY_ACTIVE": 1
+      },
+      "diagnostic_execution_required": {
+        "CONFIRMED": 11,
+        "REJECTED": 1,
+        "SUPPORTED": 38
+      },
+      "diagnostic_infrastructure_failure": {
+        "CONFIRMED": 1
+      },
+      "difference_of_squares_condition_error": {
+        "CONFIRMED": 1
+      },
+      "dual_delete_bug": {
+        "LEGACY_ACTIVE": 3
+      },
+      "duplicate_definition_override": {
+        "LEGACY_ACTIVE": 6
+      },
+      "duplicate_value_semantics": {
+        "CONFIRMED": 5
+      },
+      "edge_case_omission": {
+        "CONFIRMED": 3,
+        "LEGACY_ACTIVE": 3
+      },
+      "element_type_counting_semantics": {
+        "SUSPECTED": 2
+      },
+      "embedded_assert_contract_drift": {
+        "CONFIRMED": 1
+      },
+      "end_index_off_by_one": {
+        "CONFIRMED": 1
+      },
+      "entry_point_unique_candidate": {
+        "REJECTED": 20
+      },
+      "exception_swallowed_to_wrong_answer": {
+        "CONFIRMED": 1
+      },
+      "explicit_value_error_guard": {
+        "LEGACY_ACTIVE": 7
+      },
+      "expression_character_domain": {
+        "SUSPECTED": 2
+      },
+      "extra_wrapper_or_output": {
+        "SUPPORTED": 5
+      },
+      "formula_mismatch": {
+        "LEGACY_ACTIVE": 3
+      },
+      "frequency_one_instead_of_distinct_value": {
+        "CONFIRMED": 3
+      },
+      "generator_instead_of_list": {
+        "LEGACY_ACTIVE": 1
+      },
+      "hardcoded_public_example": {
+        "CONFIRMED": 1
+      },
+      "incorrect_formula": {
+        "CONFIRMED": 13,
+        "SUSPECTED": 1
+      },
+      "incorrect_ordering_semantics": {
+        "CONFIRMED": 4
+      },
+      "incorrect_pair_domain": {
+        "CONFIRMED": 1,
+        "SUPPORTED": 1,
+        "SUSPECTED": 1
+      },
+      "incorrect_recurrence": {
+        "CONFIRMED": 1
+      },
+      "incorrect_search_bound": {
+        "CONFIRMED": 2
+      },
+      "incorrect_surface_area_formula": {
+        "LEGACY_ACTIVE": 2
+      },
+      "incorrect_trapezium_median_formula": {
+        "LEGACY_ACTIVE": 1
+      },
+      "index_error": {
+        "LEGACY_ACTIVE": 1
+      },
+      "index_invalidation": {
+        "LEGACY_ACTIVE": 3
+      },
+      "lowercase_letter_class_underconstrained": {
+        "CONFIRMED": 1
+      },
+      "mathematical_error": {
+        "LEGACY_ACTIVE": 8
+      },
+      "median_index_error": {
+        "LEGACY_ACTIVE": 4
+      },
+      "memory_error": {
+        "LEGACY_ACTIVE": 6
+      },
+      "merge_logic_error": {
+        "LEGACY_ACTIVE": 4
+      },
+      "mixed_type_comparison_exception": {
+        "CONFIRMED": 1
+      },
+      "model_assembly_failure": {
+        "LEGACY_ACTIVE": 27
+      },
+      "module_execution_exception": {
+        "LEGACY_ACTIVE": 48
+      },
+      "module_level_executable_assertion": {
+        "LEGACY_ACTIVE": 28
+      },
+      "multiple_plausible_root_causes": {
+        "SUPPORTED": 2
+      },
+      "negative_number_boundary": {
+        "SUSPECTED": 4
+      },
+      "nontermination": {
+        "CONFIRMED": 1
+      },
+      "numeric_domain_boundary": {
+        "SUSPECTED": 1
+      },
+      "order_sensitive_counter": {
+        "CONFIRMED": 1,
+        "LEGACY_ACTIVE": 2
+      },
+      "output_schema_mismatch": {
+        "CONFIRMED": 4
+      },
+      "packaging_or_scaffold_residue": {
+        "LEGACY_ACTIVE": 14
+      },
+      "pairwise_divisibility_nontransitive_dp": {
+        "CONFIRMED": 1
+      },
+      "parameter_semantics_swap": {
+        "LEGACY_ACTIVE": 3
+      },
+      "partition_error": {
+        "LEGACY_ACTIVE": 2
+      },
+      "partition_index_error": {
+        "LEGACY_ACTIVE": 1
+      },
+      "plus_failure_not_localized": {
+        "CONFIRMED": 38
+      },
+      "precision_validation_error": {
+        "CONFIRMED": 2
+      },
+      "predicate_instead_of_nth_value": {
+        "CONFIRMED": 1
+      },
+      "public_example_non_discriminating": {
+        "SUPPORTED": 2
+      },
+      "public_examples_non_discriminating": {
+        "CONFIRMED": 49,
+        "REJECTED": 2
+      },
+      "return_shape_mismatch": {
+        "REJECTED": 13,
+        "SUSPECTED": 20
+      },
+      "return_shape_observed": {
+        "LEGACY_ACTIVE": 20
+      },
+      "runtime_type_error": {
+        "LEGACY_ACTIVE": 1
+      },
+      "runtime_vs_semantic_not_closed": {
+        "REJECTED": 1,
+        "SUPPORTED": 2
+      },
+      "schema_mismatch": {
+        "LEGACY_ACTIVE": 2
+      },
+      "second_parameter_semantics": {
+        "SUSPECTED": 1
+      },
+      "self_recursive_override": {
+        "LEGACY_ACTIVE": 1
+      },
+      "semantic_goal_drift": {
+        "CONFIRMED": 9,
+        "LEGACY_ACTIVE": 7,
+        "SUPPORTED": 1
+      },
+      "state_invariant_broken": {
+        "CONFIRMED": 1
+      },
+      "stdlib_complex_type_incompatibility": {
+        "LEGACY_ACTIVE": 5
+      },
+      "stdlib_regex_pattern_construction": {
+        "LEGACY_ACTIVE": 1
+      },
+      "strict_inequality_boundary": {
+        "LEGACY_ACTIVE": 5
+      },
+      "sublist_semantics_ambiguous": {
+        "SUSPECTED": 4
+      },
+      "task_semantics_misread_as_membership_predicate": {
+        "CONFIRMED": 2
+      },
+      "test_execution_failure_signal": {
+        "LEGACY_ACTIVE": 1
+      },
+      "text_parsing_control_flow_failure": {
+        "LEGACY_ACTIVE": 1
+      },
+      "tuple_pair_normalization_omitted": {
+        "CONFIRMED": 1
+      },
+      "type_error": {
+        "LEGACY_ACTIVE": 3
+      },
+      "unbound_name": {
+        "LEGACY_ACTIVE": 7
+      },
+      "unbound_name_stats": {
+        "LEGACY_ACTIVE": 5
+      },
+      "unsupported_input_guard": {
+        "SUSPECTED": 1
+      },
+      "value_error_without_visible_guard": {
+        "LEGACY_ACTIVE": 3
+      },
+      "wrong_aggregation_operator": {
+        "CONFIRMED": 1
+      },
+      "wrong_boundary_condition": {
+        "CONFIRMED": 8
+      },
+      "wrong_parameter_semantics": {
+        "CONFIRMED": 1,
+        "SUPPORTED": 1
+      },
+      "xor_accumulate_instead_of_sum": {
+        "LEGACY_ACTIVE": 1
+      },
+      "zero_division": {
+        "LEGACY_ACTIVE": 5
+      }
+    },
+    "mechanisms": {
+      "aggregation_axis_mismatch": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "algorithm_reconstruction_required": {
+        "n": 31,
+        "percent": 15.7
+      },
+      "algorithmic_error": {
+        "n": 21,
+        "percent": 10.6
+      },
+      "algorithmic_logic_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "binary_search_missing_final_return": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "binary_search_pair_alignment_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "broken_collection_construction": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "capital_boundary_detection_error": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "code_bloat": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "combinatorial_explosion": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "complex_dp_without_public_trace": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "complex_sqrt_path": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "control_flow_failure": {
+        "n": 7,
+        "percent": 3.5
+      },
+      "date_normalization_boundary": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "decimal_precision_boundary": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "decimal_validation_expression_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "dedupe_instead_of_unique_occurrence": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "diagnostic_execution_required": {
+        "n": 49,
+        "percent": 24.7
+      },
+      "diagnostic_infrastructure_failure": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "difference_of_squares_condition_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "dual_delete_bug": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "duplicate_definition_override": {
+        "n": 6,
+        "percent": 3.0
+      },
+      "duplicate_value_semantics": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "edge_case_omission": {
+        "n": 6,
+        "percent": 3.0
+      },
+      "element_type_counting_semantics": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "embedded_assert_contract_drift": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "end_index_off_by_one": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "exception_swallowed_to_wrong_answer": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "explicit_value_error_guard": {
+        "n": 7,
+        "percent": 3.5
+      },
+      "expression_character_domain": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "extra_wrapper_or_output": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "formula_mismatch": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "frequency_one_instead_of_distinct_value": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "generator_instead_of_list": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "hardcoded_public_example": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "incorrect_formula": {
+        "n": 14,
+        "percent": 7.1
+      },
+      "incorrect_ordering_semantics": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "incorrect_pair_domain": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "incorrect_recurrence": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "incorrect_search_bound": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "incorrect_surface_area_formula": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "incorrect_trapezium_median_formula": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "index_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "index_invalidation": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "lowercase_letter_class_underconstrained": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "mathematical_error": {
+        "n": 8,
+        "percent": 4.0
+      },
+      "median_index_error": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "memory_error": {
+        "n": 6,
+        "percent": 3.0
+      },
+      "merge_logic_error": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "mixed_type_comparison_exception": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "model_assembly_failure": {
+        "n": 27,
+        "percent": 13.6
+      },
+      "module_execution_exception": {
+        "n": 48,
+        "percent": 24.2
+      },
+      "module_level_executable_assertion": {
+        "n": 28,
+        "percent": 14.1
+      },
+      "multiple_plausible_root_causes": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "negative_number_boundary": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "nontermination": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "numeric_domain_boundary": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "order_sensitive_counter": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "output_schema_mismatch": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "packaging_or_scaffold_residue": {
+        "n": 14,
+        "percent": 7.1
+      },
+      "pairwise_divisibility_nontransitive_dp": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "parameter_semantics_swap": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "partition_error": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "partition_index_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "plus_failure_not_localized": {
+        "n": 38,
+        "percent": 19.2
+      },
+      "precision_validation_error": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "predicate_instead_of_nth_value": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "public_example_non_discriminating": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "public_examples_non_discriminating": {
+        "n": 49,
+        "percent": 24.7
+      },
+      "return_shape_mismatch": {
+        "n": 20,
+        "percent": 10.1
+      },
+      "return_shape_observed": {
+        "n": 20,
+        "percent": 10.1
+      },
+      "runtime_type_error": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "runtime_vs_semantic_not_closed": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "schema_mismatch": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "second_parameter_semantics": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "self_recursive_override": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "semantic_goal_drift": {
+        "n": 17,
+        "percent": 8.6
+      },
+      "state_invariant_broken": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "stdlib_complex_type_incompatibility": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "stdlib_regex_pattern_construction": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "strict_inequality_boundary": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "sublist_semantics_ambiguous": {
+        "n": 4,
+        "percent": 2.0
+      },
+      "task_semantics_misread_as_membership_predicate": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "test_execution_failure_signal": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "text_parsing_control_flow_failure": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "tuple_pair_normalization_omitted": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "type_error": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "unbound_name": {
+        "n": 7,
+        "percent": 3.5
+      },
+      "unbound_name_stats": {
+        "n": 5,
+        "percent": 2.5
+      },
+      "unsupported_input_guard": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "value_error_without_visible_guard": {
+        "n": 3,
+        "percent": 1.5
+      },
+      "wrong_aggregation_operator": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "wrong_boundary_condition": {
+        "n": 8,
+        "percent": 4.0
+      },
+      "wrong_parameter_semantics": {
+        "n": 2,
+        "percent": 1.0
+      },
+      "xor_accumulate_instead_of_sum": {
+        "n": 1,
+        "percent": 0.5
+      },
+      "zero_division": {
+        "n": 5,
+        "percent": 2.5
+      }
+    },
+    "outcome_validity": {
+      "INVALID_CONTRACT": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "INVALID_EVALUATOR": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "INVALID_INFRASTRUCTURE": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "PENDING_REVIEW": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "VALID_MODEL_OUTCOME": {
+        "n": 198,
+        "percent": 100.0
+      }
+    },
+    "primary": {
+      "L0": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L1": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L2": {
+        "n": 7,
+        "percent": 3.5
+      },
+      "L3": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L4": {
+        "n": 70,
+        "percent": 35.4
+      },
+      "L5": {
+        "n": 54,
+        "percent": 27.3
+      },
+      "UNRESOLVED": {
+        "n": 67,
+        "percent": 33.8
+      }
+    },
+    "secondary": {
+      "denominator": 198,
+      "empty": {
+        "n": 154,
+        "percent": 77.8
+      },
+      "layers": {
+        "L4": {
+          "n": 2,
+          "percent": 1.0
+        },
+        "L5": {
+          "n": 42,
+          "percent": 21.2
+        }
+      },
+      "non_exclusive": true
+    }
+  },
+  "execution_counts": {
+    "candidate_executions": 0,
+    "candidate_imports": 0,
+    "diagnostics": 0,
+    "evalplus": 0,
+    "healer": 0,
+    "hidden_tests": 0,
+    "model_calls": 0,
+    "programs_executed": 0,
+    "public_tests": 0,
+    "validation": 0
+  },
+  "interpretation_guards": {
+    "direct_data": "僅使用frozen primary/secondary/confidence/outcome/healer/mechanism/failure-chain與正式identity。",
+    "future_hypothesis": "UNRESOLVED diagnostics、deterministic Healer replay與跨模型驗證只列為後續研究，不視為已完成結果。",
+    "reasonable_interpretation": "可說明安全邊界與樣本內關聯，不建立因果或跨模型泛化結論。"
+  },
+  "key_counts": {
+    "algorithm_reconstruction_required": 31,
+    "entry_point": 0,
+    "import_or_dependency": 0,
+    "runtime_or_assembly": 80,
+    "semantic_or_algorithm": 109,
+    "syntax_or_extraction": 0,
+    "truncation": 0
+  },
+  "method": {
+    "mechanism_counting": "每格active mechanism去重；legacy字串視為active；物件tag只有status/strength非REJECTED才納入已成立機制。",
+    "mechanism_non_exclusive": true,
+    "normalization_without_readjudication": true,
+    "percent_rounding": "one_decimal_place",
+    "scaffold_like_formal_field_available": false,
+    "secondary_non_exclusive": true,
+    "unit": "cell/program",
+    "zero_denominator": "NA"
+  },
+  "provenance": {
+    "authorities": [
+      {
+        "byte_verified": true,
+        "path": "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+        "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv",
+        "sha256": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl",
+        "sha256": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/complete_cumulative_frozen_identity_ledger.csv",
+        "sha256": "7d18c8a04ef47ae3725feeb84636ec2f6fe46490367010851003618db1622bd3"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/manifest.json",
+        "sha256": "749f19fb4464d1a17536d2fd55beae2e0771bdec72a8ddaf92b1364d8ea59b66"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv",
+        "sha256": "38694d644d7916aa14a716bfbfdbdb1eaed4b1c2557865bde3aee1d215d2b820"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/manifest.json",
+        "sha256": "5e4c7d7c8704902086533cfba8d70b6a7d1382c303687e505481cfc456e68f53"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv",
+        "sha256": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/manifest.json",
+        "sha256": "72b02ab7da59e65db2d5e09cee9344c3d52940a717ea3dfea05310e0529d76c1"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv",
+        "sha256": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/manifest.json",
+        "sha256": "fd26fdbd103ad216e2a38c8e16b839c9e2b72a242e360713edee8d7762f59336"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv",
+        "sha256": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/manifest.json",
+        "sha256": "a9bc5d19e4a4aa4d3fde4db23a296cb1b2d32b9e51c6ebe9ace5c548691f8eab"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv",
+        "sha256": "8f2410122205610f41d4e7dfbbc4b958d05c1e3da40176b9dc9269880512c0cb"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/manifest.json",
+        "sha256": "8cbed23b396ba7149fac485abf30160327ad6b483166ca22cccb3a6e1e4210ae"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_adjudication.csv",
+        "sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/manifest.json",
+        "sha256": "41f8f76edf2669ee37494a03cf9d05ec0464bb7379d6ada58a6e2921fbeafee6"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv",
+        "sha256": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/manifest.json",
+        "sha256": "af9becc880d45e6969074cf5e2e53e47a3b87b4cbf6a6ecab0cb4b69963f51d9"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv",
+        "sha256": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/manifest.json",
+        "sha256": "b56f1796c9b97bdbb854a5699dcdce38326c26300d9ad7bb8411c9d0499e5ea4"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1/frozen_adjudication_records.csv",
+        "sha256": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34"
+      },
+      {
+        "byte_verified": true,
+        "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1/manifest.json",
+        "sha256": "f7d36575b55bb5dc9c3cb94458b0489c4dfcfa7ff99890927f844d5f56f32b9d"
+      }
+    ],
+    "builder_path": "scripts/build_candidate_b_r003_198cell_taxonomy_report.py",
+    "builder_sha256": "c67148f5542427eaf601fc6c46eb0c929608eef3e5f58acc60f28a0e3ecc4a5e",
+    "closure": {
+      "authority_files_verified": 23,
+      "batch_cells": {
+        "batch01": 20,
+        "batch02": 20,
+        "batch03": 20,
+        "batch04": 20,
+        "final_batch05": 21,
+        "legacy_g2_module_27": 27,
+        "legacy_module_exception_37": 37,
+        "legacy_multiple_signal_13": 13,
+        "legacy_output_contract_shape_20": 20
+      },
+      "duplicate_cells": 0,
+      "duplicate_programs": 0,
+      "final_batch05": 21,
+      "formal_population": 198,
+      "omissions": 0,
+      "overlap_frozen177_batch05": 0,
+      "previously_frozen": 177,
+      "reconciliation": "198=177+21",
+      "remaining": 0,
+      "unique_cell_identity": 198,
+      "unique_program_id": 198,
+      "unique_source_sha256": 155
+    },
+    "report_path": "docs/experiments/reports/Candidate_B_r003_198格失敗分類與Healer安全邊界統整報告.md",
+    "summary_path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1/summary.json",
+    "taxonomy_path": "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+    "taxonomy_sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0"
+  },
+  "representative_cases": {
+    "abstain": [
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv",
+        "batch": "legacy_module_exception_37",
+        "cell_identity_sha256": "0092d498eb446aed1baf94d861943fb58fe60c10a3ea160605ba7ae32076b294",
+        "cell_identity_short": "0092d498eb44",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "broken_collection_construction",
+          "module_execution_exception",
+          "type_error"
+        ],
+        "primary": "L4",
+        "program_id": "7545d939bbed34004192b1b463e1d5afa7a76b846269f93dd9d178209f9ae1c0",
+        "program_id_short": "7545d939bbed",
+        "reason": "Return expression nests zip/map/set in a way that does not construct a valid set of tuples; static structure indicates TypeError before any meaningful intersection logic executes.",
+        "secondary": [],
+        "task_id": "Mbpp/473"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv",
+        "batch": "batch01",
+        "cell_identity_sha256": "01382bbb873bec949cdfd837b6cdbf14e2cf62c1e746c28feeb28ed93fe7e019",
+        "cell_identity_short": "01382bbb873b",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "algorithm_reconstruction_required",
+          "incorrect_formula"
+        ],
+        "primary": "L5",
+        "program_id": "ece76238dc23e4c6ac96b346c685f1846406516726a1310a5427ae189f79cad6",
+        "program_id_short": "ece76238dc23",
+        "reason": "Average-path formula reconstruction not a unique safe local edit.",
+        "secondary": [],
+        "task_id": "Mbpp/721"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv",
+        "batch": "legacy_multiple_signal_13",
+        "cell_identity_sha256": "039cb0be94945980ffb1a0fa552bf08b728787bed5178c3a31f20c0155e40e02",
+        "cell_identity_short": "039cb0be9494",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "module_execution_exception",
+          "strict_inequality_boundary",
+          "unbound_name",
+          "unbound_name_stats"
+        ],
+        "primary": "L4",
+        "program_id": "fe973455ae8aa6d18d84cc677a9789d83520d0257a3d01fa61fa796a4371ac12",
+        "program_id_short": "fe973455ae8a",
+        "reason": "Multi-issue repair: binding stats alone leaves public equality failure; `>`→`>=` is semantic and does not fix NameError.",
+        "secondary": [
+          "L5"
+        ],
+        "task_id": "Mbpp/722"
+      }
+    ],
+    "algorithm_reconstruction_required": [
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv",
+        "batch": "batch01",
+        "cell_identity_sha256": "01382bbb873bec949cdfd837b6cdbf14e2cf62c1e746c28feeb28ed93fe7e019",
+        "cell_identity_short": "01382bbb873b",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "algorithm_reconstruction_required",
+          "incorrect_formula"
+        ],
+        "primary": "L5",
+        "program_id": "ece76238dc23e4c6ac96b346c685f1846406516726a1310a5427ae189f79cad6",
+        "program_id_short": "ece76238dc23",
+        "reason": "Average-path formula reconstruction not a unique safe local edit.",
+        "secondary": [],
+        "task_id": "Mbpp/721"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv",
+        "batch": "batch01",
+        "cell_identity_sha256": "0b022ac7499d438587247188eb4d83ed24b12b30b34aa9ca0a4bbdf643cb4e85",
+        "cell_identity_short": "0b022ac7499d",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "algorithm_reconstruction_required",
+          "incorrect_formula"
+        ],
+        "primary": "L5",
+        "program_id": "bfa80269cd8ac74c1987bbbac1e79a24054e0e85f65cf1a4afe972f89b56e57b",
+        "program_id_short": "bfa80269cd8a",
+        "reason": "L5 DP algorithm reconstruction is not a unique contract-local safe edit; deterministic Healer abstain.",
+        "secondary": [],
+        "task_id": "Mbpp/103"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv",
+        "batch": "batch03",
+        "cell_identity_sha256": "21c08b508eee0864b8e73e614838e190cbdf094e7565b4fea5f75598096b1974",
+        "cell_identity_short": "21c08b508eee",
+        "confidence": "HIGH",
+        "healer": "abstain",
+        "mechanisms": [
+          "algorithm_reconstruction_required",
+          "incorrect_ordering_semantics"
+        ],
+        "primary": "L5",
+        "program_id": "578c5bf9895c10e09e10e0c1194a2ddf6b87d783e19582571098150b36269dea",
+        "program_id_short": "578c5bf9895c",
+        "reason": "membership logic is plausible but the required ordering is not implemented",
+        "secondary": [],
+        "task_id": "Mbpp/769"
+      }
+    ],
+    "conditional": [
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv",
+        "batch": "legacy_g2_module_27",
+        "cell_identity_sha256": "077f1bf7c9d65bc6221f849123c643fc21faae3c9178720e322d923c3397a603",
+        "cell_identity_short": "077f1bf7c9d6",
+        "confidence": "HIGH",
+        "healer": "conditional",
+        "mechanisms": [
+          "algorithmic_error",
+          "edge_case_omission",
+          "model_assembly_failure",
+          "module_level_executable_assertion"
+        ],
+        "primary": "L4",
+        "program_id": "f85bb6c1efa65465700b139dec03e685dcf850a8f10c477b5c882562b3a06bae",
+        "program_id_short": "f85bb6c1efa6",
+        "reason": "The two passes maximize whole-prefix imbalance without resetting at adverse prefixes, so they do not implement a maximum over arbitrary substrings; the public assertion exposes the error.",
+        "secondary": [
+          "L5"
+        ],
+        "task_id": "Mbpp/125"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv",
+        "batch": "legacy_g2_module_27",
+        "cell_identity_sha256": "27db6ce43b7b468c4a4cc5c34b2386007cf54430f457ac5cbbf18c2331b4c114",
+        "cell_identity_short": "27db6ce43b7b",
+        "confidence": "HIGH",
+        "healer": "conditional",
+        "mechanisms": [
+          "algorithmic_error",
+          "model_assembly_failure",
+          "module_level_executable_assertion"
+        ],
+        "primary": "L4",
+        "program_id": "7738db7659ec9333e7d321294197cb3c3fef5d5fc72f77a196e819256f5ed8b9",
+        "program_id_short": "7738db7659ec",
+        "reason": "The function returns k-1 after finding the first n-digit triangular number and conflicts with the public index; the copied assertion exposes the error.",
+        "secondary": [
+          "L5"
+        ],
+        "task_id": "Mbpp/739"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv",
+        "batch": "legacy_g2_module_27",
+        "cell_identity_sha256": "2c8a29019eddb8bc7e24251236af213d7f100c8bcb4513e7f17aa8c9b6fa5c84",
+        "cell_identity_short": "2c8a29019edd",
+        "confidence": "HIGH",
+        "healer": "conditional",
+        "mechanisms": [
+          "mathematical_error",
+          "model_assembly_failure",
+          "module_level_executable_assertion"
+        ],
+        "primary": "L4",
+        "program_id": "225def7e7fc2e4f0bdbede03a1813db354a4eff641e2de7b042c07a5608f106e",
+        "program_id_short": "225def7e7fc2",
+        "reason": "The function applies a magnitude-dependent rounding operation that does not satisfy the public surface-area example; the module assertion exposes the numerical error.",
+        "secondary": [
+          "L5"
+        ],
+        "task_id": "Mbpp/581"
+      }
+    ],
+    "eligible": [],
+    "entry_point": [],
+    "unresolved": [
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv",
+        "batch": "legacy_module_exception_37",
+        "cell_identity_sha256": "08b8b9d40d6490a428d6618da09386342bd1f3118f1179d818dc285388c4a40e",
+        "cell_identity_short": "08b8b9d40d64",
+        "confidence": "LOW",
+        "healer": "abstain",
+        "mechanisms": [
+          "module_execution_exception",
+          "packaging_or_scaffold_residue",
+          "value_error_without_visible_guard"
+        ],
+        "primary": "UNRESOLVED",
+        "program_id": "b7f7b3ad0cd0e64a4a89bfab78560985393b23746de0bfb589d3e5539e1041f2",
+        "program_id_short": "b7f7b3ad0cd0",
+        "reason": "Frozen coarse diagnostic records ValueError, but the visible H0 source only computes int(math.sqrt(n))+1 squared with no explicit raise ValueError guard; static evidence alone cannot identify the failing statement.",
+        "secondary": [],
+        "task_id": "Mbpp/244"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv",
+        "batch": "legacy_output_contract_shape_20",
+        "cell_identity_sha256": "106ea34c17e55e41e161d66e0ab4e7a85536bd7add63a01b556982ca6409bcc5",
+        "cell_identity_short": "106ea34c17e5",
+        "confidence": "LOW",
+        "healer": "abstain",
+        "mechanisms": [
+          "packaging_or_scaffold_residue",
+          "return_shape_observed"
+        ],
+        "primary": "UNRESOLVED",
+        "program_id": "e46a657fce3ecde2ac8078af376204deab08196894a3a0db8c3029e317c0a95c",
+        "program_id_short": "e46a657fce3e",
+        "reason": "Distinct source for Mbpp/473; packaging assert expects the public set and does not expose a closable taxonomy root cause from allowed evidence.",
+        "secondary": [],
+        "task_id": "Mbpp/473"
+      },
+      {
+        "authority_record": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv",
+        "batch": "batch04",
+        "cell_identity_sha256": "1df0c8bb6adddd65adb92e94fd9d23b782f6cb26d5bffb6a4df978c96084a9d9",
+        "cell_identity_short": "1df0c8bb6add",
+        "confidence": "LOW",
+        "healer": "abstain",
+        "mechanisms": [
+          "diagnostic_execution_required",
+          "plus_failure_not_localized",
+          "public_examples_non_discriminating"
+        ],
+        "primary": "UNRESOLVED",
+        "program_id": "a63f9d97cba10e46cb00cd363e9f3de9cec93661af43258ddfd7f9deda1dae91",
+        "program_id_short": "a63f9d97cba1",
+        "reason": "review completed but current static evidence does not close one L0-L5 root layer",
+        "secondary": [],
+        "task_id": "Mbpp/287"
+      }
+    ]
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1",
+  "start_head": "00c39eb070c74005f98126ec87a620bcf873c1e6",
+  "status": "DETERMINISTIC_REPORT_SUMMARY_BUILT_FROM_FROZEN_RECORDS",
+  "units": {
+    "benchmark": {
+      "HumanEval+": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "MBPP+": {
+        "n": 198,
+        "percent": 100.0
+      }
+    },
+    "cells": 198,
+    "cells_in_shared_source_groups": 68,
+    "condition": {
+      "Candidate_B/H0": {
+        "n": 198,
+        "percent": 100.0
+      },
+      "Candidate_B/H1": {
+        "n": 0,
+        "percent": 0.0
+      }
+    },
+    "model_run": {
+      "mbpp_q35_9b_candidate_b_development60_replay_r003": {
+        "n": 198,
+        "percent": 100.0
+      }
+    },
+    "programs": 198,
+    "scaffold_like": {
+      "availability": "NOT_RECORDED_IN_FORMAL_FROZEN_RECORDS",
+      "comparison_permitted": false,
+      "recorded_n": 0,
+      "unrecorded_n": 198
+    },
+    "seed": {
+      "11": {
+        "n": 37,
+        "percent": 18.7
+      },
+      "22": {
+        "n": 40,
+        "percent": 20.2
+      },
+      "33": {
+        "n": 41,
+        "percent": 20.7
+      },
+      "44": {
+        "n": 37,
+        "percent": 18.7
+      },
+      "55": {
+        "n": 43,
+        "percent": 21.7
+      }
+    },
+    "shared_source_groups": 25,
+    "shared_sources": [
+      {
+        "cells": 5,
+        "percent_of_cells": 2.5,
+        "source_sha256": "9b56e46c4de759dcbc5e2d6c998aac5fd8476fb5efa0bbfa4808fc61e5c24f05"
+      },
+      {
+        "cells": 5,
+        "percent_of_cells": 2.5,
+        "source_sha256": "c0d3c3231ddafb575c0f7832334d0ee9fbeb493e6639f4a545d4ee26b913ef7d"
+      },
+      {
+        "cells": 4,
+        "percent_of_cells": 2.0,
+        "source_sha256": "4232a0988257265f142d08fb6513e8204bbcc3ad620c2ada06b255b92b695d62"
+      },
+      {
+        "cells": 4,
+        "percent_of_cells": 2.0,
+        "source_sha256": "ae6c09a25f6362175124006d4d507dc906c10e2c73d4e38ef11e338b56ead6e8"
+      },
+      {
+        "cells": 4,
+        "percent_of_cells": 2.0,
+        "source_sha256": "ca412e8dce1022bee8cf8262556c7529fffb87d158ac85ffae23af3695d911d1"
+      },
+      {
+        "cells": 4,
+        "percent_of_cells": 2.0,
+        "source_sha256": "e620cba770bcd2fb047bc27efae8eed206cb95f8f0a5e89631dd65d5fbda3d34"
+      },
+      {
+        "cells": 3,
+        "percent_of_cells": 1.5,
+        "source_sha256": "33d72f31564d3871f89a913a9c97c8b1c6a859511ba048de77018a77b86ce99b"
+      },
+      {
+        "cells": 3,
+        "percent_of_cells": 1.5,
+        "source_sha256": "5d42e07b73cd94f1566f80d4c314ba907073729b2db4e850e167eb184853b68d"
+      },
+      {
+        "cells": 3,
+        "percent_of_cells": 1.5,
+        "source_sha256": "5e4f3547d664de916546e430068ff97295cdfb83fa156ec81f847f5bbe18a76a"
+      },
+      {
+        "cells": 3,
+        "percent_of_cells": 1.5,
+        "source_sha256": "cb1af19e1fa01ea4684aabac3b4308abf204e5baaffe3a2b92e515ef1a02326b"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "3041fbe17ee9320a111716daf315be599d97e58241592434cc0b6c4c196cc84e"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "37940ebd2d5fa967f199890cbfd470ea482e27a0bbd8ec818d6fe6a10d072dff"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "3ac5dea5d962739b77659788cf92f5740fe893ccded276aa2fa4d5194faa6028"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "79ddde1f1c4fb93383183e049d1e502948d9f354d7c75226d644a9d40472e542"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "7f61b30cfdadcfc365c6cf6daaa79170942e69f2f3c1dabf2d87ae549cdedefe"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "9c73960f4d24aa953a7530bc6e3411f71d38f0ce414fc1fb21b268e1d23edd5a"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "c085d65dc17cf98fa9a2be1b35d790f0529306e8196df1a4f837e8c8b9ea0181"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "c2e0f9035e3c95667299ee69a78ea21f52b32cfc77fa1c870f729e4257524dca"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "c372761f36477131b571012670731979310bc92b70e635ae5d23d829efa0cd72"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "c56bec069269094d467466bfb56701887b576de490367dddb8baaa35815182d9"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "c72fd96a7c231c1c50016cb898cadb41e08d679ce2032e3bcb92b92a508e7463"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "d15d4edc70c54f81e92cb072b1661a325d33768fe011b3348b1df66ae0a3107a"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "f4490808899e16947fcb70c38e43256419b4ea33bf5b57630cce463b73f54ea9"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "fa1491b3a3a251438a25263d0ce1c9e572cf6b6c724a2df3eb8c9bdf816d7695"
+      },
+      {
+        "cells": 2,
+        "percent_of_cells": 1.0,
+        "source_sha256": "fe3b3c8c5938a81091f5b5e370ec5a7331b764eebf92181ead4d7a495e3ddc1f"
+      }
+    ],
+    "sources": 155,
+    "tasks": 50
+  },
+  "verdict": "READY_FOR_198CELL_REPORT_INDEPENDENT_AUDIT"
+}

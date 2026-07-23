@@ -1,0 +1,147 @@
+{
+  "audit_builder": "scripts/audit_candidate_b_r003_198cell_taxonomy_report.py",
+  "audit_builder_sha256": "1721029d90a20c8ac4a77216f0203777cc78ff895ff205fac382951501add5fa",
+  "authority_files": [
+    {
+      "path": "docs/experiments/reports/Candidate_B_r003_198格失敗分類與Healer安全邊界統整報告.md",
+      "sha256": "12789f5b458fceeafc93ceead7f1dc65e54b32d72c06c5063b94a230d0386b7f",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1/summary.json",
+      "sha256": "03169d8cbafb7e24f2e75210a7b6707a2c228216828df9dc35e949d1ab699b53",
+      "verified": true
+    },
+    {
+      "path": "scripts/build_candidate_b_r003_198cell_taxonomy_report.py",
+      "sha256": "c67148f5542427eaf601fc6c46eb0c929608eef3e5f58acc60f28a0e3ecc4a5e",
+      "verified": true
+    },
+    {
+      "path": "tests/finals_rebuild/test_candidate_b_r003_198cell_taxonomy_report.py",
+      "sha256": "527a07b7606b0aaef16b412c13cd5968c9b1cd6e2999d87ee764187f97cd36b3",
+      "verified": true
+    },
+    {
+      "path": "C:/Users/yehya/Downloads/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md",
+      "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv",
+      "sha256": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl",
+      "sha256": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/complete_cumulative_frozen_identity_ledger.csv",
+      "sha256": "7d18c8a04ef47ae3725feeb84636ec2f6fe46490367010851003618db1622bd3",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/manifest.json",
+      "sha256": "749f19fb4464d1a17536d2fd55beae2e0771bdec72a8ddaf92b1364d8ea59b66",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv",
+      "sha256": "38694d644d7916aa14a716bfbfdbdb1eaed4b1c2557865bde3aee1d215d2b820",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/manifest.json",
+      "sha256": "5e4c7d7c8704902086533cfba8d70b6a7d1382c303687e505481cfc456e68f53",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv",
+      "sha256": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/manifest.json",
+      "sha256": "72b02ab7da59e65db2d5e09cee9344c3d52940a717ea3dfea05310e0529d76c1",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv",
+      "sha256": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/manifest.json",
+      "sha256": "fd26fdbd103ad216e2a38c8e16b839c9e2b72a242e360713edee8d7762f59336",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv",
+      "sha256": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/manifest.json",
+      "sha256": "a9bc5d19e4a4aa4d3fde4db23a296cb1b2d32b9e51c6ebe9ace5c548691f8eab",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv",
+      "sha256": "8f2410122205610f41d4e7dfbbc4b958d05c1e3da40176b9dc9269880512c0cb",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/manifest.json",
+      "sha256": "8cbed23b396ba7149fac485abf30160327ad6b483166ca22cccb3a6e1e4210ae",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_adjudication.csv",
+      "sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/manifest.json",
+      "sha256": "41f8f76edf2669ee37494a03cf9d05ec0464bb7379d6ada58a6e2921fbeafee6",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv",
+      "sha256": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/manifest.json",
+      "sha256": "af9becc880d45e6969074cf5e2e53e47a3b87b4cbf6a6ecab0cb4b69963f51d9",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv",
+      "sha256": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/manifest.json",
+      "sha256": "b56f1796c9b97bdbb854a5699dcdce38326c26300d9ad7bb8411c9d0499e5ea4",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1/frozen_adjudication_records.csv",
+      "sha256": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34",
+      "verified": true
+    },
+    {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1/manifest.json",
+      "sha256": "f7d36575b55bb5dc9c3cb94458b0489c4dfcfa7ff99890927f844d5f56f32b9d",
+      "verified": true
+    }
+  ],
+  "candidate_execution_used": false,
+  "independent_rebuild": true,
+  "model_used": false,
+  "original_builder_imported": false,
+  "revision": "candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1_independent_audit_v1",
+  "start_head": "00c39eb070c74005f98126ec87a620bcf873c1e6"
+}

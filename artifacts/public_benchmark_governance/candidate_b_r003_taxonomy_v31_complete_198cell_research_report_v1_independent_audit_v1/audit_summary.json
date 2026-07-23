@@ -1,0 +1,155 @@
+{
+  "findings": {
+    "AFFIRMED": 22,
+    "MATERIAL": 0,
+    "NON_MATERIAL": 0
+  },
+  "independent_statistics": {
+    "closure": {
+      "authority_files_verified": 23,
+      "batch_cells": {
+        "batch01": 20,
+        "batch02": 20,
+        "batch03": 20,
+        "batch04": 20,
+        "final_batch05": 21,
+        "legacy_g2_module_27": 27,
+        "legacy_module_exception_37": 37,
+        "legacy_multiple_signal_13": 13,
+        "legacy_output_contract_shape_20": 20
+      },
+      "duplicate_cells": 0,
+      "duplicate_programs": 0,
+      "final_batch05": 21,
+      "formal_population": 198,
+      "omissions": 0,
+      "overlap_frozen177_batch05": 0,
+      "previously_frozen": 177,
+      "reconciliation": "198=177+21",
+      "remaining": 0,
+      "unique_cell_identity": 198,
+      "unique_program_id": 198,
+      "unique_source_sha256": 155
+    },
+    "confidence": {
+      "HIGH": {
+        "n": 126,
+        "percent": 63.6
+      },
+      "LOW": {
+        "n": 67,
+        "percent": 33.8
+      },
+      "MEDIUM": {
+        "n": 5,
+        "percent": 2.5
+      }
+    },
+    "healer": {
+      "abstain": {
+        "n": 175,
+        "percent": 88.4
+      },
+      "conditional": {
+        "n": 23,
+        "percent": 11.6
+      },
+      "eligible": {
+        "n": 0,
+        "percent": 0.0
+      }
+    },
+    "key_counts": {
+      "algorithm_reconstruction_required": 31,
+      "entry_point": 0,
+      "import_or_dependency": 0,
+      "runtime_or_assembly": 80,
+      "semantic_or_algorithm": 109,
+      "syntax_or_extraction": 0,
+      "truncation": 0
+    },
+    "outcome_validity": {
+      "INVALID_CONTRACT": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "INVALID_EVALUATOR": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "INVALID_INFRASTRUCTURE": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "PENDING_REVIEW": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "VALID_MODEL_OUTCOME": {
+        "n": 198,
+        "percent": 100.0
+      }
+    },
+    "primary": {
+      "L0": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L1": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L2": {
+        "n": 7,
+        "percent": 3.5
+      },
+      "L3": {
+        "n": 0,
+        "percent": 0.0
+      },
+      "L4": {
+        "n": 70,
+        "percent": 35.4
+      },
+      "L5": {
+        "n": 54,
+        "percent": 27.3
+      },
+      "UNRESOLVED": {
+        "n": 67,
+        "percent": 33.8
+      }
+    },
+    "secondary": {
+      "denominator": 198,
+      "empty": {
+        "n": 154,
+        "percent": 77.8
+      },
+      "layers": {
+        "L4": {
+          "n": 2,
+          "percent": 1.0
+        },
+        "L5": {
+          "n": 42,
+          "percent": 21.2
+        }
+      },
+      "non_exclusive": true
+    },
+    "units": {
+      "cells": 198,
+      "programs": 198,
+      "sources": 155,
+      "tasks": 50
+    }
+  },
+  "narrative_rules_checked": 7,
+  "numeric_expectations_checked": 253,
+  "revision": "candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1_independent_audit_v1",
+  "status": "INDEPENDENT_198CELL_REPORT_AUDIT_COMPLETE",
+  "unauthorized_execution_nonzero_fields": 0,
+  "upstream_sha_mismatches": 0,
+  "verdict": "READY_TO_FINALIZE_198CELL_REPORT"
+}

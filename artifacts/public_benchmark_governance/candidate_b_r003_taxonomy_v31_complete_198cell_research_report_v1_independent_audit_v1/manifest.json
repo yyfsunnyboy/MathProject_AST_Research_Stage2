@@ -1,0 +1,29 @@
+{
+  "abstain": 175,
+  "affirmed": 22,
+  "conditional": 23,
+  "eligible": 0,
+  "execution_counts_all_zero": true,
+  "formal_population": 198,
+  "h0": 198,
+  "h1": 0,
+  "humaneval_plus": 0,
+  "material": 0,
+  "mbpp_plus": 198,
+  "non_material": 0,
+  "outputs_sha256_excluding_manifest": {
+    "audit_findings.csv": "ecae69602974d86e5725c3688be6c7a4543043176aa59b00508b181d303d0ed9",
+    "audit_summary.json": "e7cb5adf37735c477ab9861ae6351af89000aeff88097fb4af974e897ac2657b",
+    "difference_ledger.csv": "f0285d0497ec9312d4706656d05468b3a27d48a044d97308b2de928c0a8111de",
+    "execution_counts.json": "bcc5cdb07141a1d880de0780e2847232bbe0d55c867d8f9e5342a8a49f5ec1df",
+    "provenance.json": "db16f276d40951aea0b1077b524bf0b501e6815367854405ce6b5194c3a32e79",
+    "report_zh.md": "3c551872305d6e4bcac4809704106032d7c1a44e7eb8ff2c6d81d83b3478fdf1"
+  },
+  "revision": "candidate_b_r003_taxonomy_v31_complete_198cell_research_report_v1_independent_audit_v1",
+  "status": "INDEPENDENT_198CELL_REPORT_AUDIT_COMPLETE",
+  "unique_cell_identity": 198,
+  "unique_program_id": 198,
+  "unique_source_sha256": 155,
+  "unique_task_id": 50,
+  "verdict": "READY_TO_FINALIZE_198CELL_REPORT"
+}

@@ -1,0 +1,23 @@
+finding_id,scope,status,expected,observed,evidence,recommendation
+F001,identity_and_shared_source,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F002,units,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F003,primary,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F004,secondary,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F005,confidence,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F006,outcome_validity,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F007,healer,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F008,mechanisms,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F009,mechanism_statuses,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F010,mechanism_families,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F011,failure_chains,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F012,cross_analysis,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F013,key_counts,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F014,zero_execution,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F015,report_numbers,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,nine frozen sources + complete ledger,none
+F016,unresolved_meaning,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F017,abstain_not_failure,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F018,conditional_not_ready,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F019,eligible_zero_boundary,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F020,algorithm_not_rescue,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F021,scaffold_healer_separation,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
+F022,external_validity_and_na,AFFIRMED,independent frozen-record rebuild and v3.1-safe wording,matches,report paragraph + taxonomy v3.1 guard,none
