@@ -78,6 +78,8 @@ coverage.xml
 *.py,cover
 .hypothesis/
 .pytest_cache/
+.tmp_pilot_tests/
+
 cover/
 
 # Translations
@@ -169,6 +171,11 @@ artifacts/public_benchmark_governance/*
 !artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/
 !artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/**
 artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/**/__pycache__/
+
+# Keep 4B development-only failure-supply pilot preregistration tracked.
+!artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/
+!artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/**
+artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/**/__pycache__/
 
 
 

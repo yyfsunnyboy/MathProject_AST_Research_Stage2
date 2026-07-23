@@ -1,0 +1,165 @@
+{
+  "cell_count": 200,
+  "dataset": "MBPP+",
+  "design": {
+    "auto_expand_to_60_tasks": false,
+    "conditions": [
+      {
+        "condition_id": "Ab1_H0",
+        "generation_condition": "Ab1",
+        "healer_account_mapping": "H0",
+        "prompt_condition": "Ab1",
+        "scaffold_mode": "bare",
+        "spec_label": "Ab1-Raw / Observed control mapping"
+      },
+      {
+        "condition_id": "Ab2g_H1",
+        "generation_condition": "Ab2g",
+        "healer_account_mapping": "H1",
+        "prompt_condition": "Ab2g",
+        "scaffold_mode": "generic_scaffold_v0",
+        "spec_label": "Ab2g-Raw with Generic Code Scaffold v0 (mapped as H1 arm)"
+      }
+    ],
+    "formula": "20 tasks × 5 seeds × 2 conditions = 200 raw programs",
+    "raw_program_cells": 200,
+    "seeds": [
+      11,
+      22,
+      33,
+      44,
+      55
+    ],
+    "tasks": 20
+  },
+  "execution_state": {
+    "candidate_code_executions": 0,
+    "evalplus_executions": 0,
+    "healer_modifications": 0,
+    "model_calls": 0,
+    "preregistered_not_executed": true,
+    "raw_programs_materialized": 0
+  },
+  "manifest_version": "candidate_b_4b_development_failure_supply_pilot_preregistration_v1",
+  "model": {
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "digest_source": "local_ollama_/api/tags_live_inspect_matched_protocol",
+    "modified_at": "2026-07-16T22:38:31.4275049+08:00",
+    "observed_ollama_runtime_version_at_preregistration": "0.32.1",
+    "parameter_size": "4.7B",
+    "pilot_execution_waiver": "development_only_failure_supply_pilot_v1",
+    "protocol_ollama_version_pin": "0.32.0",
+    "protocol_role": "frozen_transfer_model",
+    "public_benchmark_general_execution_allowed": false,
+    "quantization": "Q4_K_M",
+    "size_bytes": 3389983735,
+    "tag": "qwen3.5:4b",
+    "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+  },
+  "output_directory": "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot/runs/mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "parity_with_9b": {
+    "generation_options": {
+      "num_ctx": 8192,
+      "num_predict": 2048,
+      "stream": false,
+      "temperature": 0.2,
+      "thinking": false,
+      "top_k": 20,
+      "top_p": 0.95
+    },
+    "healer_modification_allowed": false,
+    "healer_path": "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py",
+    "healer_sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "isolated_from_9b_output_dirs": [
+      "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003",
+      "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003",
+      "artifacts/pbd/mbpp_sv0/r002"
+    ],
+    "pipeline_path": "agent_tools/finals_rebuild/extraction.py",
+    "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "planned_primary_difference": "model_tag_and_digest_only_qwen3.5:4b",
+    "primary_contrast_model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "primary_contrast_model_tag": "qwen3.5:9b",
+    "prompt_separator": "\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\n",
+    "scaffold_path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+    "scaffold_sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
+  },
+  "pilot_waiver": "development_only_failure_supply_pilot_v1",
+  "research_scope": "HumanEval+_MBPP+_Stage2_development_only",
+  "resume_policy": {
+    "any_identity_mismatch": "fail_closed",
+    "overwrite_forbidden": true,
+    "resume_skip_requires_exact_match_of": [
+      "cell_identity",
+      "model_tag",
+      "model_digest",
+      "composed_prompt_sha256",
+      "condition_id",
+      "seed",
+      "completion_flag=success"
+    ]
+  },
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "source_hashes": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "artifacts/public_benchmark_governance/frozen_split.csv": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
+  },
+  "split_policy": {
+    "active_development_generation_subset_only": true,
+    "allowed_role": "historical_development_pool",
+    "forbid_confirmatory": true,
+    "forbid_humaneval_plus_external": true,
+    "forbid_sealed_reserve": true,
+    "forbid_validation": true,
+    "forbidden_roles": [
+      "validation",
+      "confirmatory",
+      "sealed_reserve",
+      "human_eval_plus_external"
+    ],
+    "frozen_split_sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "source": "artifacts/public_benchmark_governance/frozen_split.csv",
+    "task_count": 20,
+    "task_ids": [
+      "Mbpp/633",
+      "Mbpp/769",
+      "Mbpp/453",
+      "Mbpp/259",
+      "Mbpp/739",
+      "Mbpp/124",
+      "Mbpp/72",
+      "Mbpp/792",
+      "Mbpp/435",
+      "Mbpp/597",
+      "Mbpp/732",
+      "Mbpp/721",
+      "Mbpp/765",
+      "Mbpp/777",
+      "Mbpp/473",
+      "Mbpp/420",
+      "Mbpp/742",
+      "Mbpp/279",
+      "Mbpp/125",
+      "Mbpp/603"
+    ]
+  },
+  "status": "4B_DEVELOPMENT_FAILURE_SUPPLY_PILOT_PREREGISTERED_NOT_EXECUTED",
+  "stop_and_expansion_gates": {
+    "answer_independent_safety_guard_required": true,
+    "auto_expand_to_60_forbidden": true,
+    "candidate_general_rule_min_distinct_tasks": 2,
+    "complete_200_cells_before_any_rule_search": true,
+    "detector_may_use_answers": false,
+    "detector_may_use_post_repair_pass": false,
+    "detector_may_use_task_id": false,
+    "fail_gate_implies": "GENERAL_HEALER_ABSTAIN_NO_HEALER_MODIFICATION",
+    "repair_must_be_unique_local_deterministic": true,
+    "stop_rule_search_if_distinct_failure_tasks_lt": 5,
+    "stop_rule_search_if_pipeline_corrected_failures_lt": 20
+  },
+  "unique_condition_count": 2,
+  "unique_task_count": 20
+}

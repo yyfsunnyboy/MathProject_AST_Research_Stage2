@@ -1,0 +1,13 @@
+{
+  "answer_independent_safety_guard_required": true,
+  "auto_expand_to_60_forbidden": true,
+  "candidate_general_rule_min_distinct_tasks": 2,
+  "complete_200_cells_before_any_rule_search": true,
+  "detector_may_use_answers": false,
+  "detector_may_use_post_repair_pass": false,
+  "detector_may_use_task_id": false,
+  "fail_gate_implies": "GENERAL_HEALER_ABSTAIN_NO_HEALER_MODIFICATION",
+  "repair_must_be_unique_local_deterministic": true,
+  "stop_rule_search_if_distinct_failure_tasks_lt": 5,
+  "stop_rule_search_if_pipeline_corrected_failures_lt": 20
+}

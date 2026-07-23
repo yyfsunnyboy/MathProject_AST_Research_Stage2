@@ -1,0 +1,25 @@
+{
+  "candidate_code_executions": 0,
+  "cell_count": 200,
+  "condition_count": 2,
+  "development_only_verified": true,
+  "evalplus_executions": 0,
+  "forbidden_roles_blocked": [
+    "validation",
+    "confirmatory",
+    "sealed_reserve",
+    "human_eval_plus_external"
+  ],
+  "healer_modifications": 0,
+  "model_calls": 0,
+  "model_digest_pinned": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+  "ollama_generation_calls": 0,
+  "output_directory": "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot/runs/mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "output_directory_must_be_absent_or_compatible_resume": true,
+  "overwrite_forbidden": true,
+  "pilot_waiver": "development_only_failure_supply_pilot_v1",
+  "public_benchmark_general_execution_allowed": false,
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "status": "zero_model_preflight_passed",
+  "task_count": 20
+}

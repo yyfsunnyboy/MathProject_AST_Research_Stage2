@@ -1,62 +1,79 @@
-# 🏆 MathProject_AST_Research_Stage2: Small but Precise
+# 🏆 MathProject_AST_Research_Stage2
 
-本專案為旺宏科學獎決賽研究「小型在地化模型透過工程干預（Scaffold + Healer）在特定任務上超越雲端大模型」的第二階段研究 Repository。我們聚焦於系統級修復機制（Healer）在數學出題程式生成任務中的語意安全與可靠度驗證。
+本 Repository 的 **Stage2 HumanEval+／MBPP+ 公開 benchmark 研究線**與數學出題主軸並行。公開基準線目前以 MBPP+ development-only 證據為中心，服務 Scaffold × Healer 安全邊界定案，不混入 Math16／HealerBoundary／CE115／適性學習專案。
 
----
-
-## 📌 1. 專案目前定位與核心問題
-
-*   **研究主軸**：本專案仍以**「數學出題程式生成」**為主要研究對象。
-*   **核心問題**：領域特化、確定性的 **AST Active Healer**，能否在明確且安全的介入窗口（Intervention Window）中，有效提高邊緣模型（例如 Qwen-8B/14B）生成數學出題程式的可靠度。
-*   **方法論主軸**：聚焦於**「失敗驅動（Failure-driven）、語意安全（Semantic Safety）、凍結後外部驗證（Post-frozen External Verification）」**的 Scaffold ＋ deterministic Healer 建構方法。本專案不以模型自主的 ad-hoc生成或不受控的 retry 為手段，而是依靠嚴謹的後端單一真相（Source of Truth）進行 deterministic 出題與求解。
+上位規範：[`docs/HumanEval+／MBPP+ 跨域 Scaffold × Healer 實驗啟動規格.md`](docs/HumanEval+／MBPP+%20跨域%20Scaffold%20×%20Healer%20實驗啟動規格.md)
 
 ---
 
-## 🔬 2. 兩條平行研究軌
+## 📌 1. 兩條研究軌（現況）
 
-本研究透過以下兩條正式軌道進行雙重驗證：
-
-1.  **數學出題程式軌 (Math Track)**：
-    *   對象為 **CE115 數學出題任務**（含 G1–G6 評量、多項式四則、根式四則與 RPM 轉速換算等問題）。
-    *   以領域特化的 **Domain Scaffold** 為基礎，結合特製的 **Healer 邊界限制**，並導入獨立的 **Oracle 解題合約**。
-2.  **公開基準軌 (Public Benchmark Track)**：
-    *   對象為 **HumanEval+／MBPP+** 數據集（透過官方 EvalPlus 引擎評估）。
-    *   本軌道僅用作**外部效度（External Validity）**與 **Regression Safety** 驗證，用以觀察通用代碼修復的安全介入窗口，**不取代**數學主研究的主軸地位。
+1. **公開基準軌（本 README 目前狀態重點）**
+   - 對象：HumanEval+／MBPP+（EvalPlus）
+   - 主模型：`qwen3.5:9b`；transfer／failure-supply pilot 模型：`qwen3.5:4b`（一般 public execution 仍關閉，僅 development-only pilot waiver）
+   - 已凍結：`frozen_split.csv`、active 20 development tasks、development60 Candidate B r003、198 格 taxonomy v3.1、Conditional23 跨題搜尋結論
+2. **數學出題程式軌**
+   - 對象：CE115 等數學出題任務；與公開基準線分帳，不互相覆蓋結論
 
 ---
 
-## 📊 3. 評量與驗證原則
+## 🔬 2. Scaffold 生成條件 ≠ Pipeline-corrected
 
-為確保研究證據的學術嚴謹度，本專案執行以下評量原則：
+必須分開記帳，不可寫成同一件事：
 
-*   **ITT 原則 (Intent-to-Treat)**：第一射（first attempt）結果固定為 ITT 基準，不允許透過多次重試（retry）或篩選最佳輸出覆蓋第一次的 Observed 結果。
-*   **三帳分列**：所有生成結果依 **Observed（未修復）**、**Pipeline-corrected（Scaffold 修正）**、與 **Post-Healer（Healer 修復後）** 三帳平行分列，透明呈現每一階段的改進。
-*   **外部驗證（No Self-Grading）**：答案正確性、執行狀況、合約相符性與輸出格式均由外部 evaluator / oracle 進行獨立驗證，**不再以自建的 MCRI 100 分加權總分作為主要研究證據**。
-*   **Eligibility 與修復的區別**：Eligibility（適用性/符合介入資格）僅代表候選介入窗口，不等於 Healer 修復成功，兩者數據必須分離統計。
+| 階段 | 介入時間 | 含義 |
+|---|---|---|
+| **Scaffold 生成條件**（Ab1 bare／Ab2g generic scaffold） | 生成前 | 改變模型輸入條件 |
+| **Pipeline-corrected** | 生成後、Healer 前 | 抽取／正規化等 pipeline 處理，不是 Scaffold，也不是 Healer rescue |
+| **Post-Healer** | pipeline 之後 | 僅在安全窗口內的 deterministic local repair |
 
----
-
-## ⚠️ 4. 證據限制與邊界
-
-*   **Healer 版本區分**：必須嚴格區分 **Minimal Core／原先凍結 of 正式 Healer** 與探索性開發的 **Safe Historical Healer**。
-*   **避免循環論證**：同批校準/探索資料上所開發出的 Healer 規則與 replay 結果，**不得**包裝成凍結後驗證的 confirmatory evidence（確證性證據）。
-*   **Pilot 狀態標示**：目前規劃的 corrected four-task pilot 若僅有 design 與 manifest 結構、尚未完成大規模生成者，在文件中必須如實標示為「設計/探索階段」，不得宣稱已取得 confirmatory results。
+三帳分列：Observed（raw）／Pipeline-corrected／Post-Healer。
 
 ---
 
-## 🚀 5. 快速入口與結構導引
+## 📊 3. 198 格與 Conditional23 邊界結論（已定案）
 
-本專案目前的決賽 rebuild 評估完全脫離了 Flask Web UI 機制，全面使用離線的專屬 runner 與測試集。以下為核心入口（皆為 Repository 相對連結）：
+詳見 [`docs/決賽文件/7月23Candidate_B_r003_198格失敗分類與Healer安全邊界報告.md`](docs/決賽文件/7月23Candidate_B_r003_198格失敗分類與Healer安全邊界報告.md)。
 
-*   **核心 Runner**：
-    *   決賽重建 Pipeline：[pipeline.py](agent_tools/finals_rebuild/pipeline.py)
-    *   數學生成執行器：[math_generation_runner.py](agent_tools/finals_rebuild/math_generation_runner.py)
-    *   外部基準執行器：[public_benchmark_runner.py](agent_tools/finals_rebuild/public_benchmark_runner.py)
-*   **研究設計與證據**：
-    *   CE115 任務設計：[CE115_Math_Pilot_Task_Design.md](docs/研究設計/CE115_Math_Pilot_Task_Design.md)
-    *   Ab2d 技能合約與審計：[ab2d_skill_contract_and_capability.md](docs/experiments/ab2d_skill_contract_and_capability.md)
-    *   Healer-vNext 法醫學驗證證據：[fail_to_fail_forensics/](artifacts/fail_to_fail_forensics/)
-*   **一鍵驗證腳本**：
-    *   決賽 Rebuild 檢查：[verify_finals_rebuild.sh](scripts/verify_finals_rebuild.sh)
-*   **測試套件**：
-    *   決賽 Rebuild 測試集：[tests/finals_rebuild/](tests/finals_rebuild/)
+Coverage（重算核對）：
+
+- 合法 development 母體 **116** 題；development60 實際涵蓋 **60** 題（未完整搜尋 116）
+- H0 總格 **300**；H0 失敗格 **224**；H0 通過格 **76**（不得把總格數寫成失敗格數）
+- Conditional23 coverage = **23**
+
+正式結論：
+
+- `TASK_SPECIFIC_REPAIR_ONLY`／`NO_SAFE_GENERALIZABLE_RULE_FOUND`／`GENERAL_HEALER_ABSTAIN`
+- 現有 Healer **凍結**，不修改任何 repair 規則
+- 多 seed 可重現 ≠ 跨題泛化；不得把 Task ID 白名單寫進通用 Healer
+- 限縮主張：在本輪指定機制及實際可用 development evidence 範圍內，未找到安全跨題規則；**不宣稱已窮盡所有可能 Healer 機制**
+
+---
+
+## 🧪 4. 4B development-only failure-supply pilot（預登錄完成，尚未執行）
+
+Governance：`artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/`
+
+| 項目 | 凍結值 |
+|---|---|
+| Model | `qwen3.5:4b`／digest `2a654d98…eefd`／`Q4_K_M` |
+| Tasks | 凍結 active20（`frozen_split` SHA `3bb00bab…f9d4`） |
+| Seeds | 11, 22, 33, 44, 55 |
+| Conditions | `Ab1_H0`（bare）與 `Ab2g_H1`（Generic Code Scaffold v0） |
+| Cells | 20 × 5 × 2 = **200** raw programs |
+| 狀態 | **執行配套與預登錄完成；尚未呼叫模型、尚未產生結果、尚未找到新 Healer 規則** |
+
+入口：
+
+- Freeze：`scripts/freeze_candidate_b_4b_development_failure_supply_pilot_v1.py`
+- Preflight：`scripts/preflight_candidate_b_4b_development_failure_supply_pilot_v1.py`
+- Runner（本輪 generate 仍 gated）：`scripts/run_candidate_b_4b_development_failure_supply_pilot_v1.py`
+
+---
+
+## 🚀 5. 快速入口
+
+- 跨域規格：[`docs/HumanEval+／MBPP+ 跨域 Scaffold × Healer 實驗啟動規格.md`](docs/HumanEval+／MBPP+%20跨域%20Scaffold%20×%20Healer%20實驗啟動規格.md)
+- 生成協議：[`configs/public_benchmark_generation_protocol_v1.json`](configs/public_benchmark_generation_protocol_v1.json)
+- 公開基準 runner：[`agent_tools/finals_rebuild/public_benchmark_runner.py`](agent_tools/finals_rebuild/public_benchmark_runner.py)
+- 決賽 Rebuild 測試：[`tests/finals_rebuild/`](tests/finals_rebuild/)

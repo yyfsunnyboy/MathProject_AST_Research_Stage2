@@ -1,0 +1,36 @@
+{
+  "authoritative_sources": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "artifacts/public_benchmark_governance/frozen_split.csv": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305"
+  },
+  "execution_state": {
+    "candidate_code_executions": 0,
+    "evalplus_executions": 0,
+    "healer_modifications": 0,
+    "model_calls": 0,
+    "preregistered_not_executed": true,
+    "raw_programs_materialized": 0
+  },
+  "isolation": {
+    "must_not_overwrite": [
+      "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003",
+      "artifacts/public_benchmark_development/mbpp_qwen35_9b_ab1/runs/mbpp_qwen35_9b_ab1_dev_run_003",
+      "artifacts/pbd/mbpp_sv0/r002"
+    ],
+    "pilot_output": "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot/runs/mbpp_q35_4b_dev20_failure_supply_pilot_r001"
+  },
+  "model_fingerprint": {
+    "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "modified_at": "2026-07-16T22:38:31.4275049+08:00",
+    "observed_ollama_runtime_version_at_preregistration": "0.32.1",
+    "parameter_size": "4.7B",
+    "quantization": "Q4_K_M",
+    "size_bytes": 3389983735,
+    "tag": "qwen3.5:4b",
+    "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+  },
+  "status": "4B_DEVELOPMENT_FAILURE_SUPPLY_PILOT_PREREGISTERED_NOT_EXECUTED"
+}
