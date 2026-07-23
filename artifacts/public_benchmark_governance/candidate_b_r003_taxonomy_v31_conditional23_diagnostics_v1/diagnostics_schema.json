@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Conditional23DiagnosticsEvidence",
+  "type": "object",
+  "properties": {
+    "cell_id": {
+      "type": "string"
+    },
+    "task_id": {
+      "type": "string"
+    },
+    "source_hash": {
+      "type": "string"
+    },
+    "preflight_passed": {
+      "type": "boolean"
+    },
+    "ast_diagnostics": {
+      "type": "object",
+      "properties": {
+        "has_top_level_assert": {
+          "type": "boolean"
+        },
+        "top_level_assert_count": {
+          "type": "integer"
+        },
+        "assert_node_lines": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "has_top_level_assert",
+        "top_level_assert_count",
+        "assert_node_lines"
+      ]
+    },
+    "execution_diagnostics": {
+      "type": "object",
+      "properties": {
+        "executed": {
+          "type": "boolean"
+        },
+        "exit_code": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "stdout": {
+          "type": "string"
+        },
+        "stderr": {
+          "type": "string"
+        },
+        "error_message": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "executed",
+        "exit_code",
+        "stdout",
+        "stderr",
+        "error_message"
+      ]
+    },
+    "fingerprint": {
+      "type": "string"
+    },
+    "decision": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "INSUFFICIENT_EXISTING_EVIDENCE",
+            "PROVISIONAL_INELIGIBLE"
+          ]
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "ABSTAIN"
+          ]
+        }
+      },
+      "required": [
+        "status",
+        "action"
+      ]
+    }
+  },
+  "required": [
+    "cell_id",
+    "task_id",
+    "source_hash",
+    "fingerprint",
+    "preflight_passed",
+    "ast_diagnostics",
+    "execution_diagnostics",
+    "decision"
+  ]
+}

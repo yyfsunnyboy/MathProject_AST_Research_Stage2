@@ -1,0 +1,25 @@
+{
+  "cell_id": "f30e88e1c07b06c6fdc11213bea99ef203e929783f8b5137d71e67969550c021",
+  "task_id": "Mbpp/739",
+  "source_hash": "fa1491b3a3a251438a25263d0ce1c9e572cf6b6c724a2df3eb8c9bdf816d7695",
+  "preflight_passed": true,
+  "fingerprint": "32fd7aa5b20d6966f1e5e4f5dd2831fbda3856e475264cf5660915dcfd1bfe22",
+  "ast_diagnostics": {
+    "has_top_level_assert": true,
+    "top_level_assert_count": 1,
+    "assert_node_lines": [
+      9
+    ]
+  },
+  "execution_diagnostics": {
+    "executed": false,
+    "exit_code": null,
+    "stdout": "",
+    "stderr": "",
+    "error_message": "Candidate execution prohibited during preflight phase"
+  },
+  "decision": {
+    "status": "INSUFFICIENT_EXISTING_EVIDENCE",
+    "action": "ABSTAIN"
+  }
+}

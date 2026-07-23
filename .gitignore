@@ -165,3 +165,10 @@ artifacts/public_benchmark_governance/*
 !artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_preregistration_v1/
 !artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_preregistration_v1/**
 
+# Keep Healer diagnostics draft artifacts tracked.
+!artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/
+!artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/**
+artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_diagnostics_v1/**/__pycache__/
+
+
+
