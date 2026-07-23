@@ -1,0 +1,110 @@
+{
+  "status": "DRAFT_AWAITING_INDEPENDENT_AUDIT",
+  "description": "Provenance summary of all authority sources and generated files for the conditional23 preregistration draft.",
+  "authoritative_sources": {
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_preregistration_v1/references/AI_生成程式共同失敗分類標準_實際使用版_v3.1.md": {
+      "role": "AI failure taxonomy v3.1 standard reference",
+      "sha256": "93908ec8e4721f0039acc779fb948988b6c25e712c29890bd98aa7c21a8422a0",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_formal_classification_preparation_v1/classification_preparation.csv": {
+      "role": "Candidate B failure classification preparation ledger",
+      "sha256": "5b0106b93f2d192d89c740659f83021956c15113397f1a54b70e65b7cc7a128c",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": {
+      "role": "H0/H1 development run execution accounts",
+      "sha256": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/complete_cumulative_frozen_identity_ledger.csv": {
+      "role": "Official cumulative 198-cell frozen identity ledger",
+      "sha256": "7d18c8a04ef47ae3725feeb84636ec2f6fe46490367010851003618db1622bd3",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_complete_198cell_closure_v1/manifest.json": {
+      "role": "Official cumulative 198-cell ledger manifest",
+      "sha256": "749f19fb4464d1a17536d2fd55beae2e0771bdec72a8ddaf92b1364d8ea59b66",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_g2_module_researcher_review_v1/researcher_review_worksheet.csv": {
+      "role": "Batch G2 researcher review authority sheet",
+      "sha256": "38694d644d7916aa14a716bfbfdbdb1eaed4b1c2557865bde3aee1d215d2b820",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining171_module_exception_provisional_v1/ai_provisional_adjudication.csv": {
+      "role": "Batch remaining171 provisional exceptions authority sheet",
+      "sha256": "8b32d0561c0d42efe07c1bf89bd3bcaf4b7a42657f54bee25922f0be2aca6ab7",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining134_multiple_signal_chain13_provisional_v1/ai_provisional_adjudication.csv": {
+      "role": "Batch remaining134 multiple signal chain authority sheet",
+      "sha256": "dc2e7202c048400d32e019fed6940051f65ca1a67b865727152d94dccf302d70",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v3_remaining121_output_contract_shape20_frozen_v1/frozen_adjudication.csv": {
+      "role": "Batch remaining121 output contract shape authority sheet",
+      "sha256": "eda69f61051228ff9d976ec57f6dcd9febea95a2c541095edac19f55074eac1f",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_remaining101_batch01_20cell_frozen_v1/frozen_adjudication.csv": {
+      "role": "Batch remaining101 batch01 authority sheet",
+      "sha256": "8f2410122205610f41d4e7dfbbc4b958d05c1e3da40176b9dc9269880512c0cb",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch02_20cell_frozen_v1/frozen_adjudication.csv": {
+      "role": "Batch batch02 authority sheet",
+      "sha256": "dc6d4a4fa0f0027eb87e3af48b3567c72443255fcda2e2779acf7fe0fbf70f04",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch03_20cell_frozen_v1/frozen_adjudication_records.csv": {
+      "role": "Batch batch03 authority sheet",
+      "sha256": "d0f59af50c2e433c7d02546da04a3d3802641077b75c649144f953f3c2b4d80f",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_batch04_20cell_frozen_v1/frozen_adjudication_records.csv": {
+      "role": "Batch batch04 authority sheet",
+      "sha256": "03cf83d8f295815f5f5f66dbdc3eb347556606245e542d052d88d0a50d945028",
+      "byte_verified": true
+    },
+    "artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_final_batch05_21cell_frozen_v1/frozen_adjudication_records.csv": {
+      "role": "Batch batch05 final authority sheet",
+      "sha256": "22faba56d483e172064338f2649533e4758bfd1110e64467d8ce6eff2a47cf34",
+      "byte_verified": true
+    }
+  },
+  "generated_draft_files": {
+    "conditional23_candidate_roster.csv": {
+      "role": "Roster of 23 conditional cells",
+      "sha256": "6a7e84ad69972d02b43fd8e980e52d6e5117519ec5511b4387f2a29a1aedbbf9"
+    },
+    "evidence_cluster_ledger.csv": {
+      "role": "Ledger of evidence clusters",
+      "sha256": "743a1366a0b35c5284eb92d2546fda6ba7ea8975e6254a3d124fde4d95f32019"
+    },
+    "mechanism_family_registry.json": {
+      "role": "Registry of provisional mechanism families",
+      "sha256": "9c4b6a574bca36a2124ef0b4ba49bad3462528168cf1e89368137b62c9bc42e4"
+    },
+    "diagnostics_guard_preregistration.md": {
+      "role": "Diagnostics & safety guards documentation",
+      "sha256": "9b352f53ef3595235833dd284b3e4df2eecb9e0b1bc22e3ab23e533f0b7ecca3"
+    },
+    "decision_schema.json": {
+      "role": "Promotion/retention/elimination decision schema",
+      "sha256": "0489aa425fbdfd4ba25fe090d9223b853ba08565caa41a49224c4ff641d47c52"
+    },
+    "build_preregistration.py": {
+      "role": "Deterministic builder script",
+      "sha256": "2be6a2c1b94ce29f8ac7d9f93d6198032f4db85572575c3b9345108c0e33ac7e"
+    },
+    "validate_preregistration.py": {
+      "role": "Read-only zero-model validator script",
+      "sha256": "b75eaee27503dc38b36cd4a49781a5eb4a4f7aa847979a8ad85583ccd1d952fc"
+    },
+    "test_preregistration.py": {
+      "role": "Targeted validation and determinism tests script",
+      "sha256": "6da905baeff442f1fd30ce8048acbe6cb68acfa41ef3a6efa9eefedd90d8aeaf"
+    }
+  }
+}

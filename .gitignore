@@ -158,3 +158,10 @@ artifacts/*
 # Keep Healer-vNext fail-to-fail forensic milestone artifacts tracked.
 !artifacts/fail_to_fail_forensics/
 !artifacts/fail_to_fail_forensics/**
+
+# Keep Healer preregistration draft artifacts tracked.
+!artifacts/public_benchmark_governance/
+artifacts/public_benchmark_governance/*
+!artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_preregistration_v1/
+!artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional23_preregistration_v1/**
+

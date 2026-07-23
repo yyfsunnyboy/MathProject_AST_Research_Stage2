@@ -1,0 +1,34 @@
+{
+  "status": "DRAFT_AWAITING_INDEPENDENT_AUDIT",
+  "description": "Rules governing the state transitions of provisional mechanism grouping families.",
+  "promotion_rules": {
+    "to_eligible_for_implementation": {
+      "required_conditions": [
+        "Deterministic transformation template is uniquely defined",
+        "Safety guards cover all 4 layers (Identity, Detection, Uniqueness, Semantic-risk)",
+        "Evidence matches cross-task requirement (at least 2 distinct tasks, 2 distinct sources)",
+        "No algorithm reconstruction required in any member cell",
+        "Answer-free and evaluator-blind validation passes",
+        "All member cells resolved to zero semantic-risk"
+      ]
+    }
+  },
+  "retention_rules": {
+    "keep_as_provisional": {
+      "conditions": [
+        "Underlying mechanisms are verified, but a deterministic transformation is not yet established",
+        "Insufficient independent evidence exists (e.g., covers only 1 task or 1 source)",
+        "Diagnostics require further data collection/execution trace without violating semantic safety"
+      ]
+    }
+  },
+  "elimination_rules": {
+    "to_abstain_or_ineligible": {
+      "conditions": [
+        "Correcting the failure requires algorithm reconstruction (e.g., rewriting loops, conditionals, or data structures)",
+        "Fixing the bug requires guessing the model intent or hardcoding constants",
+        "Removal of surface exception exposes unresolvable logical flaws"
+      ]
+    }
+  }
+}
