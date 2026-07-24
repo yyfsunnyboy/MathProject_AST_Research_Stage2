@@ -1,0 +1,31 @@
+{
+  "audit_version": "candidate_b_4b_failure_supply_pilot_independent_audit_v1",
+  "checks": {
+    "ambiguous_fail_closed_14": true,
+    "artifact_hashes_match_receipt": true,
+    "canonical_extraction_replayed": true,
+    "cell5_ambiguous_no_candidate": true,
+    "eligibility_200": true,
+    "generation_evidence_200": true,
+    "h0_evalplus_results_186": true,
+    "healer_h1_rescue_regression_absent": true,
+    "itt_denominator_200": true,
+    "parallel_1": true,
+    "raw_and_journal_sha_bound": true,
+    "taxonomy_v3_1_200": true,
+    "unsupported_l5_absent": true
+  },
+  "major_artifact_sha256": {
+    "aggregate_summary.json": "4f80546f9f63be27a8a4a522a341e24e8f719952551a6458603d270be939130f",
+    "cell_itt_ledger.csv": "adeb6b4145663f0ca3ceebbffc431cc14b56773631bb3fa272419a2536c32007",
+    "extraction_itt_ledger.csv": "19d4b171c54a90345e28b4e759d58253519549e32cdb560ddee33d3ed3bfdb67",
+    "generation_evidence_inventory.csv": "7af93c54164cfd8275069a44fb34c4d21f177429b42b9f9c77edab5c863af808",
+    "healer_eligibility_ledger.csv": "0c972e700e680df5dd050e4de28c9576f03f14196d7f0a6bddfd100f634b66b2",
+    "manual_h0_evalplus_run_001/h0_evalplus_results.csv": "5e62be708a4f148589d5a78e8e77d66ede6ffbee3337742be185952f6c90a861",
+    "reproducibility_receipt.json": "bdc2437f27d7983784bea77639689fad4a9918a37d6de179138aee8045f1a391",
+    "research_report_zh.md": "a1aa780c72f7872fdf68380ff1587b07e8270d1e40f70a5a34ce34c3cf266546",
+    "taxonomy_v31_ledger.csv": "93a4dda8681d62ba17fe7fc7fa95dbebb96167ee9be4125ed1dac4e474975b0a"
+  },
+  "scope": "Stage2_MBPP+_only",
+  "status": "PASS"
+}

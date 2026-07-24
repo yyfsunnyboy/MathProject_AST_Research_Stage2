@@ -1,0 +1,35 @@
+{
+  "cell_count": 200,
+  "extraction_distribution": {
+    "ambiguous": 14,
+    "extracted": 186
+  },
+  "fail_closed_cells": [
+    5,
+    9,
+    13,
+    51,
+    53,
+    63,
+    91,
+    95,
+    115,
+    125,
+    149,
+    155,
+    181,
+    183
+  ],
+  "h0_evalplus_cells": 186,
+  "h1_created": false,
+  "healer_applied": false,
+  "itt_denominator": 200,
+  "journal_count": 200,
+  "manifest_sha256": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+  "model_calls": 0,
+  "parallel_required": 1,
+  "raw_response_count": 200,
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "scope": "Stage2_MBPP+_only",
+  "status": "zero_model_preflight_passed"
+}

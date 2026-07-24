@@ -1,0 +1,33 @@
+{
+  "canonical_extraction_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "deterministic_output_sha256": {
+    "aggregate_summary.json": "4f80546f9f63be27a8a4a522a341e24e8f719952551a6458603d270be939130f",
+    "cell_itt_ledger.csv": "adeb6b4145663f0ca3ceebbffc431cc14b56773631bb3fa272419a2536c32007",
+    "healer_eligibility_ledger.csv": "0c972e700e680df5dd050e4de28c9576f03f14196d7f0a6bddfd100f634b66b2",
+    "taxonomy_v31_ledger.csv": "93a4dda8681d62ba17fe7fc7fa95dbebb96167ee9be4125ed1dac4e474975b0a"
+  },
+  "evalplus_execution_manifest_sha256": "be45463802bcbeb363b5b544a70cb6d6dfd1548033f58ab2d0a83f30e12cb774",
+  "evalplus_results_sha256": "5e62be708a4f148589d5a78e8e77d66ede6ffbee3337742be185952f6c90a861",
+  "formal_evaluation_environment": {
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "evalplus": "0.3.1",
+    "os": "WSL/Linux",
+    "python": "/home/yehya/.venvs/ast_evalplus/bin/python"
+  },
+  "frozen_input_manifest_sha256": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe",
+  "generation_manifest_sha256": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+  "model_calls": 0,
+  "parallel": 1,
+  "preexecution_driver_incident": {
+    "candidate_cells_evaluated_before_failure": 0,
+    "disposition": "runner signature corrected before any candidate evaluation; formal output created once",
+    "occurred": true,
+    "output_directory_created": false,
+    "reason": "initial driver called check_correctness with one tuple instead of positional arguments"
+  },
+  "receipt_version": "candidate_b_4b_failure_supply_pilot_reproducibility_v1",
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "start_head": "6e759a6cb36b3588f5e59e45fc5ea8cc8bb6721f",
+  "status": "complete_pending_independent_audit"
+}

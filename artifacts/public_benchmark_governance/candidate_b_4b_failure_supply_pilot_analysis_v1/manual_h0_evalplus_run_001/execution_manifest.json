@@ -1,0 +1,33 @@
+{
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "evalplus_version": "0.3.1",
+  "evaluated_cells": 186,
+  "frozen_input_manifest_sha256": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe",
+  "h1_created": false,
+  "healer_applied": false,
+  "itt_denominator": 200,
+  "model_calls": 0,
+  "parallel": 1,
+  "results_sha256": "5e62be708a4f148589d5a78e8e77d66ede6ffbee3337742be185952f6c90a861",
+  "retry_resume_selective_acceptance_overwrite": false,
+  "scope": "Stage2_MBPP+_only",
+  "source_manifest_status": "frozen_inputs_ready_for_h0_evalplus",
+  "status": "h0_evalplus_complete",
+  "unevaluated_extraction_ambiguous_cells": [
+    5,
+    9,
+    13,
+    51,
+    53,
+    63,
+    91,
+    95,
+    115,
+    125,
+    149,
+    155,
+    181,
+    183
+  ]
+}

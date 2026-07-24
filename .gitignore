@@ -177,5 +177,10 @@ artifacts/public_benchmark_governance/candidate_b_r003_taxonomy_v31_conditional2
 !artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/**
 artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/**/__pycache__/
 
+# Keep the Stage2 MBPP+ 4B failure-supply analysis and frozen accounts tracked.
+!artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/
+!artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/**
+artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/wsl_eval*
+
 
 

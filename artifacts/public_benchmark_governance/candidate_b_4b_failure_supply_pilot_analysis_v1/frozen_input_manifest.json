@@ -1,0 +1,53 @@
+{
+  "cell5_policy": "extraction_ambiguous_no_candidate_selected_itt_retained",
+  "counts": {
+    "ambiguous": 14,
+    "cells": 200,
+    "extracted": 186,
+    "h0_evalplus": 186,
+    "journals": 200,
+    "raw_responses": 200
+  },
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "evalplus_version": "0.3.1",
+  "fail_closed_ambiguous_cells": [
+    5,
+    9,
+    13,
+    51,
+    53,
+    63,
+    91,
+    95,
+    115,
+    125,
+    149,
+    155,
+    181,
+    183
+  ],
+  "generation_manifest_sha256": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+  "h1_results_created": 0,
+  "healer_modifications": 0,
+  "manifest_version": "candidate_b_4b_failure_supply_pilot_analysis_v1",
+  "model_calls": 0,
+  "pipeline_sha256": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+  "prepared_output_sha256": {
+    "extraction_itt_ledger.csv": "19d4b171c54a90345e28b4e759d58253519549e32cdb560ddee33d3ed3bfdb67",
+    "generation_evidence_inventory.csv": "7af93c54164cfd8275069a44fb34c4d21f177429b42b9f9c77edab5c863af808",
+    "h0_evalplus_input.jsonl": "fe0ad6fc353d7d44bc9d69d4326bcb592ab1f077a9f73b26b25a6019f8434230",
+    "zero_model_preflight.json": "673cf27f02ee47dba5786814f8cfcf0b18745809f00102c412091dab57cedbcd"
+  },
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "scope": "Stage2_MBPP+_only",
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot/runs/mbpp_q35_4b_dev20_failure_supply_pilot_r001/execution_manifest.json": "8ebdd36a48c1b9d645cec65b98e75240f0d5633aa379816f8978fd0874091695",
+    "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot/runs/mbpp_q35_4b_dev20_failure_supply_pilot_r001/live_model_provenance.json": "a580c12c79a635fc9232274fef10b778306c4aa476862a6710b4871aaf84e9da",
+    "artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/generation_cells.csv": "1d6c1dfc85d3b607eb99da0b2c2cb055fd56764225c281233a8c3c4e0ff5f7b3",
+    "artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/manifest.json": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb"
+  },
+  "start_head": "6e759a6cb36b3588f5e59e45fc5ea8cc8bb6721f",
+  "status": "frozen_inputs_ready_for_h0_evalplus"
+}

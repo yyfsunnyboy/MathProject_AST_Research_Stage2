@@ -1,0 +1,88 @@
+{
+  "cell5": {
+    "candidate_selected": false,
+    "condition_id": "Ab1_H0",
+    "extraction_status": "ambiguous",
+    "h0_evaluated": false,
+    "healer_eligibility": "abstain",
+    "itt_included": true,
+    "primary_failure_layer": "L0",
+    "seed": 33,
+    "task_id": "Mbpp/633"
+  },
+  "extraction": {
+    "ambiguous": 14,
+    "extracted": 186
+  },
+  "generation": {
+    "completed": 200,
+    "failed": 0,
+    "model_calls_this_phase": 0
+  },
+  "h0_evalplus": {
+    "aggregate_status_evaluable": {
+      "fail": 134,
+      "pass": 52
+    },
+    "base_status_evaluable": {
+      "fail": 114,
+      "pass": 68,
+      "timeout": 4
+    },
+    "evaluated": 186,
+    "itt_base_pass": 68,
+    "itt_base_pass_rate": 0.34,
+    "itt_base_plus_pass": 52,
+    "itt_base_plus_pass_rate": 0.26,
+    "itt_plus_pass": 52,
+    "itt_plus_pass_rate": 0.26,
+    "not_evaluated_extraction_ambiguous": 14,
+    "plus_status_evaluable": {
+      "fail": 130,
+      "pass": 52,
+      "timeout": 4
+    }
+  },
+  "h1_created": false,
+  "healer_applied": false,
+  "healer_eligibility": {
+    "abstain": 200,
+    "conditional": 0,
+    "eligible": 0
+  },
+  "itt_denominator": 200,
+  "regression_results_created": false,
+  "rescue_results_created": false,
+  "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001",
+  "scope": "Stage2_MBPP+_only",
+  "status": "analysis_complete",
+  "taxonomy_v3_1": {
+    "classification_status_distribution": {
+      "ADJUDICATED": 148,
+      "NOT_APPLICABLE_PASS": 52
+    },
+    "confidence_distribution": {
+      "HIGH": 103,
+      "LOW": 97
+    },
+    "mechanism_tag_distribution": {
+      "base_and_plus_failure_unlocalized": 81,
+      "diagnostic_execution_not_run": 97,
+      "duplicate_required_entry_point": 3,
+      "extraction_ambiguous": 14,
+      "fail_closed_no_candidate_selection": 14,
+      "h0_base_plus_pass": 52,
+      "missing_entry_point": 12,
+      "output_contract_failure": 15,
+      "plus_only_failure_unlocalized": 16,
+      "syntax_or_format_failure": 22
+    },
+    "primary_distribution": {
+      "L0": 14,
+      "L1": 22,
+      "L2": 15,
+      "NOT_APPLICABLE_PASS": 52,
+      "UNRESOLVED": 97
+    }
+  }
+}
