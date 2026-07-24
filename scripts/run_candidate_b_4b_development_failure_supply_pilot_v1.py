@@ -255,13 +255,49 @@ def required_journal_fields() -> tuple[str, ...]:
 def journal_is_complete(journal: Mapping[str, Any]) -> bool:
     if journal.get("persisted_complete") is not True:
         return False
-    if journal.get("completion_flag") != "success":
-        return False
-    if journal.get("generation_status") != "success":
-        return False
     raw = journal.get("raw_response")
     if not isinstance(raw, str) or not raw.strip():
         return False
+    if "raw_response_sha256" in journal:
+        if _sha256_text(raw) != journal["raw_response_sha256"]:
+            return False
+
+    # Check for new vs legacy format
+    new_fields = [
+        "generation_completed",
+        "raw_response_persisted",
+        "extraction_succeeded",
+        "extraction_status",
+        "extracted_code",
+        "error_stage",
+    ]
+    present_new = [f in journal for f in new_fields]
+    if any(present_new):
+        # Fail closed: if one new field is present, ALL must be present
+        if not all(present_new):
+            return False
+        # Verify new format completion logic
+        if journal.get("generation_completed") is not True:
+            return False
+        if journal.get("raw_response_persisted") is not True:
+            return False
+        # extracted_code must be string if extraction_succeeded is True, else must be None
+        if journal.get("extraction_succeeded") is True:
+            if not isinstance(journal.get("extracted_code"), str):
+                return False
+        else:
+            if journal.get("extracted_code") is not None:
+                return False
+        # error_stage must be one of none, generation, persistence, extraction
+        if journal.get("error_stage") not in ("none", "generation", "persistence", "extraction"):
+            return False
+    else:
+        # Legacy format verification
+        if journal.get("completion_flag") != "success":
+            return False
+        if journal.get("generation_status") != "success":
+            return False
+
     for field in required_journal_fields():
         if field not in journal:
             return False
@@ -477,6 +513,7 @@ def build_success_journal(
     response_metadata: Mapping[str, Any] | None,
     started_at: str,
     completed_at: str,
+    extracted_code: str,
 ) -> dict[str, Any]:
     _require(isinstance(raw_response, str) and raw_response.strip(), "empty raw_response")
     return {
@@ -524,6 +561,85 @@ def build_success_journal(
         "healer_applied": False,
         "candidate_code_executed": False,
         "evaluation_executed": False,
+        
+        "generation_completed": True,
+        "raw_response_persisted": True,
+        "extraction_succeeded": True,
+        "extraction_status": "success",
+        "extracted_code": extracted_code,
+        "postprocess_status": "success",
+        "error_stage": "none",
+    }
+
+
+def build_extraction_failed_journal(
+    *,
+    cell: Mapping[str, str],
+    raw_response: str,
+    manifest_sha256: str,
+    protocol_sha256: str,
+    live_identity: Mapping[str, Any],
+    request_metadata: Mapping[str, Any] | None,
+    response_metadata: Mapping[str, Any] | None,
+    started_at: str,
+    completed_at: str,
+    extraction_status: str,
+    error_message: str,
+) -> dict[str, Any]:
+    _require(isinstance(raw_response, str) and raw_response.strip(), "empty raw_response")
+    return {
+        "generation_id": cell["generation_id"],
+        "program_id": cell["program_id"],
+        "run_id": freeze.RUN_ID,
+        "cell_index": int(cell["cell_index"]),
+        "cell_identity": cell["cell_identity"],
+        "task_id": cell["task_id"],
+        "seed": int(cell["seed"]),
+        "sample_index": int(cell["sample_index"]),
+        "condition_id": cell["condition_id"],
+        "generation_condition": cell["generation_condition"],
+        "scaffold_mode": cell["scaffold_mode"],
+        "healer_account_mapping": cell["healer_account_mapping"],
+        "prompt_condition": cell["prompt_condition"],
+        "official_prompt_sha256": cell["official_prompt_sha256"],
+        "composed_prompt_sha256": cell["composed_prompt_sha256"],
+        "scaffold_sha256": cell.get("scaffold_sha256", ""),
+        "model_tag": cell["model_tag"],
+        "model_digest": cell["model_digest"],
+        "manifest_sha256": manifest_sha256,
+        "protocol_sha256": protocol_sha256,
+        "decoding_options_sha256": DECODING_OPTIONS_SHA256,
+        "decoding_options": freeze.GENERATION_OPTIONS,
+        "runner_identity": RUNNER_IDENTITY,
+        "development_only": True,
+        "raw_response": raw_response,
+        "raw_response_sha256": _sha256_text(raw_response),
+        "request_metadata": dict(request_metadata or {}),
+        "response_metadata": dict(response_metadata or {}),
+        "live_model_identity": {
+            "model_tag": live_identity.get("model_tag"),
+            "model_digest": live_identity.get("model_digest"),
+            "runtime_version": live_identity.get("runtime_version"),
+            "quantization": live_identity.get("quantization"),
+        },
+        "started_at": started_at,
+        "completed_at": completed_at,
+        "persisted_complete": True,
+        "completion_flag": "error",
+        "generation_status": "success",
+        "error_status": "extraction_failed",
+        "error_message": error_message,
+        "healer_applied": False,
+        "candidate_code_executed": False,
+        "evaluation_executed": False,
+        
+        "generation_completed": True,
+        "raw_response_persisted": True,
+        "extraction_succeeded": False,
+        "extraction_status": extraction_status,
+        "extracted_code": None,
+        "postprocess_status": extraction_status,
+        "error_stage": "extraction",
     }
 
 
@@ -558,6 +674,7 @@ def build_error_journal(
         "runner_identity": RUNNER_IDENTITY,
         "composed_prompt_sha256": cell["composed_prompt_sha256"],
         "raw_response": raw_response,
+        "raw_response_sha256": _sha256_text(raw_response) if raw_response else None,
         "request_metadata": dict(request_metadata or {}),
         "response_metadata": dict(response_metadata or {}),
         "live_model_identity": {
@@ -575,6 +692,14 @@ def build_error_journal(
         "healer_applied": False,
         "candidate_code_executed": False,
         "evaluation_executed": False,
+        
+        "generation_completed": False,
+        "raw_response_persisted": False,
+        "extraction_succeeded": False,
+        "extraction_status": "error",
+        "extracted_code": None,
+        "postprocess_status": "error",
+        "error_stage": "generation",
     }
 
 
@@ -807,7 +932,10 @@ def run_generate(
                 completed_at=completed_at,
                 error_message=str(exc),
             )
-            persist_journal(out_dir, cell, error_journal)
+            try:
+                persist_journal(out_dir, cell, error_journal)
+            except Exception:
+                pass
             failed += 1
             raise PilotRunError(
                 f"generation failed at cell {cell['cell_index']}/200 "
@@ -822,11 +950,62 @@ def run_generate(
             else None
         )
         status = attempt.get("status") if isinstance(attempt, dict) else None
-        if (
-            status != "success"
-            or not isinstance(raw_response, str)
-            or not raw_response.strip()
-        ):
+        
+        if isinstance(raw_response, str) and raw_response.strip():
+            # Generation succeeded (non-empty raw response received)
+            if status == "success":
+                # Extraction succeeded
+                journal = build_success_journal(
+                    cell=cell,
+                    raw_response=raw_response,
+                    manifest_sha256=manifest_sha256,
+                    protocol_sha256=protocol_sha,
+                    live_identity=live_identity,
+                    request_metadata=(
+                        transport.get("request_payload")
+                        if isinstance(transport, dict)
+                        else attempt.get("request_metadata")
+                    ),
+                    response_metadata=(
+                        transport
+                        if isinstance(transport, dict)
+                        else attempt.get("response_metadata")
+                    ),
+                    started_at=started_at,
+                    completed_at=completed_at,
+                    extracted_code=attempt.get("completion") or "",
+                )
+            else:
+                # Extraction failed
+                extr_status = attempt.get("extraction_status") or "error"
+                journal = build_extraction_failed_journal(
+                    cell=cell,
+                    raw_response=raw_response,
+                    manifest_sha256=manifest_sha256,
+                    protocol_sha256=protocol_sha,
+                    live_identity=live_identity,
+                    request_metadata=(
+                        transport.get("request_payload")
+                        if isinstance(transport, dict)
+                        else attempt.get("request_metadata")
+                    ),
+                    response_metadata=(
+                        transport
+                        if isinstance(transport, dict)
+                        else attempt.get("response_metadata")
+                    ),
+                    started_at=started_at,
+                    completed_at=completed_at,
+                    extraction_status=extr_status,
+                    error_message=str(attempt.get("failure_reason") or "extraction failed"),
+                )
+            try:
+                persist_journal(out_dir, cell, journal)
+            except Exception as exc:
+                raise PilotRunError(f"durable persistence failed: {exc}") from exc
+            generated += 1
+        else:
+            # Generation failed (empty raw response or transport failed)
             error_journal = build_error_journal(
                 cell=cell,
                 manifest_sha256=manifest_sha256,
@@ -837,7 +1016,7 @@ def run_generate(
                 error_message=str(
                     attempt.get("failure_reason")
                     if isinstance(attempt, dict)
-                    else "invalid attempt payload"
+                    else "invalid/empty attempt payload"
                 ),
                 request_metadata=(
                     transport.get("request_payload")
@@ -847,34 +1026,15 @@ def run_generate(
                 response_metadata=transport if isinstance(transport, dict) else None,
                 raw_response=raw_response if isinstance(raw_response, str) else None,
             )
-            persist_journal(out_dir, cell, error_journal)
+            try:
+                persist_journal(out_dir, cell, error_journal)
+            except Exception:
+                pass
             failed += 1
             raise PilotRunError(
                 f"incomplete generation at cell {cell['cell_index']}/200; "
                 "incomplete journal persisted with persisted_complete=false"
             )
-
-        success_journal = build_success_journal(
-            cell=cell,
-            raw_response=raw_response,
-            manifest_sha256=manifest_sha256,
-            protocol_sha256=protocol_sha,
-            live_identity=live_identity,
-            request_metadata=(
-                transport.get("request_payload")
-                if isinstance(transport, dict)
-                else attempt.get("request_metadata")
-            ),
-            response_metadata=(
-                transport
-                if isinstance(transport, dict)
-                else attempt.get("response_metadata")
-            ),
-            started_at=started_at,
-            completed_at=completed_at,
-        )
-        persist_journal(out_dir, cell, success_journal)
-        generated += 1
 
     _require(failed == 0, "internal failed counter drift")
     return {

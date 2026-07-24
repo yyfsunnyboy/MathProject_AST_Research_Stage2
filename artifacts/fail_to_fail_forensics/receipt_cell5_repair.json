@@ -1,0 +1,14 @@
+{
+  "after_journal_sha256": "5357098bc86c7a12e99e2486aea31db5eb84d3ac98df1dd765d05c265ddece93",
+  "before_journal_sha256": "f6f4d604a73d9da38ac553abffdc6427b29f04d5815393ede42c0a816ce59e20",
+  "declaration": "No model APIs were called, raw_response was not modified, and no code execution/evaluation was run.",
+  "git_head": "fc9f74927100a91f19ce5d2a20aa1677b2410a76",
+  "manifest_sha256": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+  "migration_time": "2026-07-24T09:23:46.078079+00:00",
+  "migration_tool_version": "1.0.0",
+  "original_backup_path": "artifacts/fail_to_fail_forensics/quarantine/ddf887bc974d8f55f970ad35dfb5a9649507a1a875ceb989e45e088c47be68f5.json",
+  "raw_response_after_sha256": "2904c66bb5c55dffc616ffee5e12f64ce56f779dd14783cbec68f9e7bb098c23",
+  "raw_response_before_sha256": "2904c66bb5c55dffc616ffee5e12f64ce56f779dd14783cbec68f9e7bb098c23",
+  "raw_response_length": 5096,
+  "schema_version": "4B_STATE_DECOUPLE_V1"
+}
