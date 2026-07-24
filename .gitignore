@@ -182,5 +182,9 @@ artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_
 !artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/**
 artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/wsl_eval*
 
+# Keep 9B Candidate B r003 source-evidence archive note tracked.
+!artifacts/public_benchmark_governance/candidate_b_r003_9b_source_evidence_archive_v1/
+!artifacts/public_benchmark_governance/candidate_b_r003_9b_source_evidence_archive_v1/**
+
 
 

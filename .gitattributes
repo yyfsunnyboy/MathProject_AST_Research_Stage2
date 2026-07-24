@@ -248,3 +248,6 @@ scripts/audit_candidate_b_4b_failure_supply_analysis_v1.py text eol=lf
 tests/finals_rebuild/test_candidate_b_4b_failure_supply_analysis_v1.py text eol=lf
 docs/決賽文件/7月23Candidate_B_r003_198格失敗分類與Healer安全邊界報告.md text eol=lf
 README.md text eol=lf
+
+# 9B Candidate B r003 source evidence archive note
+artifacts/public_benchmark_governance/candidate_b_r003_9b_source_evidence_archive_v1/** text eol=lf
