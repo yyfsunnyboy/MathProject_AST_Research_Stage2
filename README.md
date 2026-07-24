@@ -50,7 +50,7 @@ Coverage（重算核對）：
 
 ---
 
-## 🧪 4. 4B development-only failure-supply pilot（預登錄完成，尚未執行）
+## 🧪 4. 4B development-only failure-supply pilot（runner 已啟用，尚未執行）
 
 Governance：`artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/`
 
@@ -61,13 +61,14 @@ Governance：`artifacts/public_benchmark_governance/candidate_b_4b_development_f
 | Seeds | 11, 22, 33, 44, 55 |
 | Conditions | `Ab1_H0`（bare）與 `Ab2g_H1`（Generic Code Scaffold v0） |
 | Cells | 20 × 5 × 2 = **200** raw programs |
-| 狀態 | **執行配套與預登錄完成；尚未呼叫模型、尚未產生結果、尚未找到新 Healer 規則** |
+| 狀態 | **`RUNNER_ENABLED_NOT_EXECUTED`**：正式 generate path 已實作並經 mock／zero-model 測試；**尚未呼叫 4B、尚未產生任何 200 格結果、尚未正式評測、Healer 未修改**；下一輪仍需人工下達正式執行命令 |
 
 入口：
 
 - Freeze：`scripts/freeze_candidate_b_4b_development_failure_supply_pilot_v1.py`
 - Preflight：`scripts/preflight_candidate_b_4b_development_failure_supply_pilot_v1.py`
-- Runner（本輪 generate 仍 gated）：`scripts/run_candidate_b_4b_development_failure_supply_pilot_v1.py`
+- Runner：`scripts/run_candidate_b_4b_development_failure_supply_pilot_v1.py`（`plan`／`preflight`／gated `generate`）
+- Addendum：`execution_enablement_addendum_v1.md`
 
 ---
 

@@ -686,10 +686,11 @@ def write_outputs(repo_root: Path, *, check_only: bool = False) -> dict[str, str
                 f"frozen artifact drift: {path.as_posix()}",
             )
         return hashes
+    allowed_extra = {"execution_enablement_addendum_v1.md"}
     if out_dir.exists():
         existing = sorted(p.name for p in out_dir.iterdir() if p.is_file())
         _require(
-            not existing or set(existing) <= set(outputs),
+            not existing or set(existing) <= set(outputs) | allowed_extra,
             f"refusing to overwrite unexpected files in {out_dir.as_posix()}: {existing}",
         )
     out_dir.mkdir(parents=True, exist_ok=True)

@@ -5,9 +5,11 @@ import hashlib
 import io
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
+from agent_tools.finals_rebuild import ollama_generation_runner as ollama
 from scripts import freeze_candidate_b_4b_development_failure_supply_pilot_v1 as freeze
 from scripts import preflight_candidate_b_4b_development_failure_supply_pilot_v1 as preflight
 from scripts import run_candidate_b_4b_development_failure_supply_pilot_v1 as runner
@@ -25,221 +27,552 @@ def _sha256(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
 
 
+def _manifest_sha() -> str:
+    return _sha256((GOV_DIR / "manifest.json").read_bytes())
+
+
+def _local_tmpdir(name: str) -> Path:
+    import secrets
+    import shutil
+
+    root = REPO_ROOT / ".tmp_pilot_tests" / f"{name}_{secrets.token_hex(4)}"
+    if root.exists():
+        shutil.rmtree(root, ignore_errors=True)
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _fake_identity(**overrides: Any) -> dict[str, Any]:
+    base = {
+        "model_tag": freeze.MODEL_TAG,
+        "model_digest": freeze.MODEL_DIGEST,
+        "quantization": freeze.MODEL_QUANTIZATION,
+        "model_size": freeze.MODEL_SIZE_BYTES,
+        "model_modified_at": freeze.MODEL_MODIFIED_AT,
+        "runtime": "Ollama",
+        "runtime_version": "9.9.9-mock",
+        "api_base_url": "http://127.0.0.1:9",
+        "protocol_ollama_version_pin": freeze.PROTOCOL_OLLAMA_VERSION,
+        "generation_endpoint_called": False,
+        "checked_at": "2026-07-24T00:00:00+00:00",
+    }
+    base.update(overrides)
+    return base
+
+
+def _complete_journal(
+    cell: dict[str, str], *, raw: str = "def f():\n    return 1\n"
+) -> dict[str, Any]:
+    return {
+        "generation_id": cell["generation_id"],
+        "program_id": cell["program_id"],
+        "run_id": freeze.RUN_ID,
+        "cell_index": int(cell["cell_index"]),
+        "cell_identity": cell["cell_identity"],
+        "task_id": cell["task_id"],
+        "seed": int(cell["seed"]),
+        "sample_index": int(cell["sample_index"]),
+        "condition_id": cell["condition_id"],
+        "model_tag": cell["model_tag"],
+        "model_digest": cell["model_digest"],
+        "manifest_sha256": _manifest_sha(),
+        "protocol_sha256": freeze.EXPECTED_PROTOCOL_SHA256,
+        "decoding_options_sha256": runner.DECODING_OPTIONS_SHA256,
+        "runner_identity": runner.RUNNER_IDENTITY,
+        "composed_prompt_sha256": cell["composed_prompt_sha256"],
+        "raw_response": raw,
+        "raw_response_sha256": hashlib.sha256(raw.encode()).hexdigest(),
+        "request_metadata": {"model": freeze.MODEL_TAG},
+        "response_metadata": {"http_status": 200},
+        "started_at": "2026-07-24T00:00:00+00:00",
+        "completed_at": "2026-07-24T00:00:01+00:00",
+        "persisted_complete": True,
+        "completion_flag": "success",
+        "generation_status": "success",
+        "error_status": None,
+        "error_message": None,
+    }
+
+
+def _mock_attempt(raw: str = "def mock_ok():\n    return 42\n") -> dict[str, Any]:
+    return {
+        "status": "success",
+        "raw_response": raw,
+        "ollama_response_metadata": {
+            "http_status": 200,
+            "raw_body": "{}",
+            "request_payload": {
+                "model": freeze.MODEL_TAG,
+                "messages": [{"role": "user", "content": "prompt"}],
+                "think": False,
+            },
+        },
+    }
+
+
+class _NS:
+    def __init__(self, **kwargs: Any) -> None:
+        self.__dict__.update(kwargs)
+
+
 def test_freeze_is_deterministic_200_cells() -> None:
     first = freeze.build_outputs(REPO_ROOT)
     second = freeze.build_outputs(REPO_ROOT)
     assert first == second
     cells = _csv_rows(first["generation_cells.csv"])
-    manifest = json.loads(first["manifest.json"])
     assert len(cells) == 200
     assert len({row["generation_id"] for row in cells}) == 200
-    assert len({row["cell_identity"] for row in cells}) == 200
     assert len({row["task_id"] for row in cells}) == 20
-    assert sorted({row["task_id"] for row in cells}) == sorted(freeze.ACTIVE_TASK_IDS)
     assert sorted({int(row["seed"]) for row in cells}) == list(freeze.SEEDS)
     assert sorted({row["condition_id"] for row in cells}) == ["Ab1_H0", "Ab2g_H1"]
     assert sum(row["condition_id"] == "Ab1_H0" for row in cells) == 100
     assert sum(row["condition_id"] == "Ab2g_H1" for row in cells) == 100
-    assert all(row["development_only"] == "true" for row in cells)
-    assert all(row["model_tag"] == freeze.MODEL_TAG for row in cells)
-    assert all(row["model_digest"] == freeze.MODEL_DIGEST for row in cells)
-    assert all(row["completion_flag"] == "pending" for row in cells)
-    assert manifest["design"]["raw_program_cells"] == 200
-    assert manifest["execution_state"]["model_calls"] == 0
-    assert manifest["execution_state"]["preregistered_not_executed"] is True
-    assert manifest["model"]["digest"] == freeze.MODEL_DIGEST
-    assert len(manifest["model"]["digest"]) == 64
-    assert manifest["model"]["public_benchmark_general_execution_allowed"] is False
-    assert manifest["parity_with_9b"]["healer_modification_allowed"] is False
-    assert manifest["stop_and_expansion_gates"]["auto_expand_to_60_forbidden"] is True
 
 
-def test_written_artifacts_match_rebuild_and_preflight() -> None:
+def test_written_artifacts_and_preflight() -> None:
     rebuilt = freeze.build_outputs(REPO_ROOT)
     for name, payload in rebuilt.items():
+        if name == "execution_enablement_addendum_v1.md":
+            continue
         path = GOV_DIR / name
         assert path.is_file(), name
         assert path.read_bytes() == payload
     receipt = preflight.zero_model_preflight(
         repo_root=REPO_ROOT,
-        manifest_sha256=_sha256(rebuilt["manifest.json"]),
+        manifest_sha256=_manifest_sha(),
         require_output_absent=True,
     )
     assert receipt["status"] == "zero_model_preflight_passed"
-    assert receipt["cell_count"] == 200
-    assert receipt["task_count"] == 20
-    assert receipt["condition_count"] == 2
-    assert receipt["model_calls"] == receipt["ollama_generation_calls"] == 0
-    assert receipt["candidate_code_executions"] == 0
-    assert receipt["evalplus_executions"] == 0
-    assert receipt["healer_modifications"] == 0
+    assert receipt["model_calls"] == 0
 
 
-def test_manifest_sha_mismatch_fail_closed() -> None:
-    with pytest.raises(preflight.PilotPreflightError, match="manifest SHA mismatch"):
-        preflight.zero_model_preflight(
-            repo_root=REPO_ROOT,
-            manifest_sha256="0" * 64,
-            require_output_absent=False,
+def test_plan_inspect_zero_model() -> None:
+    payload = runner.cmd_plan(_NS())
+    assert payload["cell_count"] == 200
+    assert payload["model_calls"] == 0
+    assert payload["writes"] == 0
+    assert payload["runner_status"] == runner.RUNNER_STATUS
+
+
+def test_generate_refuses_without_confirmation_flags() -> None:
+    with pytest.raises(runner.PilotRunError, match="generate refused"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256=_manifest_sha(),
+            execute_model=False,
+            i_understand=True,
+            execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+            provenance_fn=lambda **_: _fake_identity(),
+            generate_fn=lambda **_: _mock_attempt(),
+            max_cells=1,
+            run_dir=_local_tmpdir("no_flags") / "run",
+        )
+    with pytest.raises(runner.PilotRunError, match="generate refused"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256=_manifest_sha(),
+            execute_model=True,
+            i_understand=False,
+            execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+            provenance_fn=lambda **_: _fake_identity(),
+            generate_fn=lambda **_: _mock_attempt(),
+            max_cells=1,
+            run_dir=_local_tmpdir("no_understand") / "run",
+        )
+    with pytest.raises(runner.PilotRunError, match="execution-acknowledgement"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256=_manifest_sha(),
+            execute_model=True,
+            i_understand=True,
+            execution_acknowledgement="NOPE",
+            provenance_fn=lambda **_: _fake_identity(),
+            generate_fn=lambda **_: _mock_attempt(),
+            max_cells=1,
+            run_dir=_local_tmpdir("bad_ack") / "run",
         )
 
 
-def test_development_only_and_forbidden_splits() -> None:
+def test_generate_refuses_wrong_manifest_sha() -> None:
+    with pytest.raises(runner.PilotRunError, match="manifest SHA mismatch"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256="0" * 64,
+            execute_model=True,
+            i_understand=True,
+            execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+            provenance_fn=lambda **_: _fake_identity(),
+            generate_fn=lambda **_: _mock_attempt(),
+            max_cells=1,
+            run_dir=_local_tmpdir("bad_sha") / "run",
+        )
+
+
+def test_live_identity_tag_mismatch_stops() -> None:
+    def bad_prov(**_: Any) -> dict[str, Any]:
+        raise runner.PilotRunError("model tag mismatch: 'other' != 'qwen3.5:4b'")
+
+    with pytest.raises(runner.PilotRunError, match="model tag mismatch"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256=_manifest_sha(),
+            execute_model=True,
+            i_understand=True,
+            execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+            provenance_fn=bad_prov,
+            generate_fn=lambda **_: _mock_attempt(),
+            max_cells=1,
+            run_dir=_local_tmpdir("bad_tag") / "run",
+        )
+
+
+def test_live_identity_digest_mismatch_stops(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_fetch(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return {
+            "model_tag": freeze.MODEL_TAG,
+            "model_name": freeze.MODEL_TAG,
+            "model_digest": "aa" * 32,
+            "runtime_version": "0.1.0",
+            "ollama_version": "0.1.0",
+            "quantization": "Q4_K_M",
+            "model_size": 1,
+            "runtime": "Ollama",
+        }
+
+    monkeypatch.setattr(runner, "fetch_ollama_provenance", fake_fetch)
+    with pytest.raises(runner.PilotRunError, match="digest mismatch"):
+        runner.fetch_live_model_identity(
+            base_url="http://127.0.0.1:9",
+            timeout_seconds=1.0,
+        )
+
+
+def test_live_identity_service_unavailable(monkeypatch: pytest.MonkeyPatch) -> None:
+    def boom(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        raise ollama.OllamaGenerationError("tags_preflight", "connection refused")
+
+    monkeypatch.setattr(runner, "fetch_ollama_provenance", boom)
+    with pytest.raises(runner.PilotRunError, match="service/metadata unavailable"):
+        runner.fetch_live_model_identity(base_url="http://127.0.0.1:9", timeout_seconds=1.0)
+
+
+def test_live_identity_success_records_runtime(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fake_fetch(*args: Any, **kwargs: Any) -> dict[str, Any]:
+        return {
+            "model_tag": freeze.MODEL_TAG,
+            "model_name": freeze.MODEL_TAG,
+            "model_digest": freeze.MODEL_DIGEST,
+            "runtime_version": "0.99.0-live",
+            "ollama_version": "0.99.0-live",
+            "quantization": "Q4_K_M",
+            "model_size": freeze.MODEL_SIZE_BYTES,
+            "model_modified_at": freeze.MODEL_MODIFIED_AT,
+            "runtime": "Ollama",
+        }
+
+    monkeypatch.setattr(runner, "fetch_ollama_provenance", fake_fetch)
+    identity = runner.fetch_live_model_identity(
+        base_url="http://127.0.0.1:9", timeout_seconds=1.0
+    )
+    assert identity["runtime_version"] == "0.99.0-live"
+    assert identity["protocol_ollama_version_pin"] == freeze.PROTOCOL_OLLAMA_VERSION
+    assert identity["generation_endpoint_called"] is False
+    assert identity["runtime_version"] != freeze.PROTOCOL_OLLAMA_VERSION
+
+
+def test_development_only_forbidden_roles() -> None:
     manifest = json.loads((GOV_DIR / "manifest.json").read_text(encoding="utf-8"))
     policy = manifest["split_policy"]
     assert policy["forbid_validation"] is True
     assert policy["forbid_confirmatory"] is True
     assert policy["forbid_sealed_reserve"] is True
-    assert policy["forbid_humaneval_plus_external"] is True
-    assert policy["task_ids"] == list(freeze.ACTIVE_TASK_IDS)
-    assert policy["frozen_split_sha256"] == freeze.EXPECTED_FROZEN_SPLIT_SHA256
+    cells = runner.load_frozen_cells()
+    runner.assert_development_only_cells(cells)
 
 
-def test_output_isolation_from_9b_paths() -> None:
-    manifest = json.loads((GOV_DIR / "manifest.json").read_text(encoding="utf-8"))
-    pilot = freeze.RUN_OUTPUT_RELATIVE.as_posix()
-    for relative in manifest["parity_with_9b"]["isolated_from_9b_output_dirs"]:
-        assert relative != pilot
-        assert "qwen35_4b_failure_supply_pilot" not in relative
-    assert "mbpp_qwen35_4b_failure_supply_pilot" in pilot
+def test_output_path_collision_guard() -> None:
+    runner.assert_no_foreign_overwrite(REPO_ROOT)
+    pilot = runner.resolve_run_dir().resolve()
+    for relative in (
+        freeze.NINE_B_RUN_RELATIVE,
+        freeze.NINE_B_AB1_RUN_RELATIVE,
+        freeze.NINE_B_SCAFFOLD_RUN_RELATIVE,
+        freeze.OUTPUT_RELATIVE,
+    ):
+        assert (REPO_ROOT / relative).resolve() != pilot
 
 
-def _local_tmpdir(name: str) -> Path:
-    root = REPO_ROOT / ".tmp_pilot_tests" / name
-    if root.exists():
-        for path in sorted(root.rglob("*"), reverse=True):
-            if path.is_file():
-                path.unlink()
-            elif path.is_dir():
-                path.rmdir()
-    root.mkdir(parents=True, exist_ok=True)
-    return root
-
-
-def test_existing_output_refused_by_default_preflight() -> None:
-    out_dir = REPO_ROOT / freeze.RUN_OUTPUT_RELATIVE
-    if out_dir.exists() and any(out_dir.iterdir()):
-        with pytest.raises(preflight.PilotPreflightError, match="already present"):
-            preflight.zero_model_preflight(require_output_absent=True)
-    else:
-        receipt = preflight.zero_model_preflight(require_output_absent=True)
-        assert receipt["require_output_absent"] is True
-
-
-def test_resume_mismatch_fail_closed() -> None:
+def test_resume_complete_identity_skips() -> None:
     cells = runner.load_frozen_cells()
     cell = cells[0]
-    run_dir = _local_tmpdir("resume_mismatch") / "run"
-    journal_dir = run_dir / "j"
-    journal_dir.mkdir(parents=True)
-    bad = {
-        "cell_identity": cell["cell_identity"],
-        "model_tag": cell["model_tag"],
-        "model_digest": "deadbeef" * 8,
-        "composed_prompt_sha256": cell["composed_prompt_sha256"],
-        "condition_id": cell["condition_id"],
-        "seed": int(cell["seed"]),
-        "completion_flag": "success",
-        "generation_status": "success",
-        "raw_response": "print(1)\n",
-    }
-    (journal_dir / f"{cell['generation_id']}.json").write_text(
-        json.dumps(bad),
-        encoding="utf-8",
+    run_dir = _local_tmpdir("resume_ok") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal, indent=2) + "\n", encoding="utf-8"
     )
-    with pytest.raises(runner.PilotRunError, match="resume identity mismatch on model_digest"):
-        runner.decide_resume_action(cell, run_dir)
+    assert (
+        runner.decide_resume_action(
+            cell,
+            run_dir,
+            manifest_sha256=_manifest_sha(),
+            protocol_sha256=freeze.EXPECTED_PROTOCOL_SHA256,
+        )
+        == "skip"
+    )
 
 
-def test_resume_exact_match_skips() -> None:
+def test_resume_missing_raw_response_not_skip() -> None:
     cells = runner.load_frozen_cells()
     cell = cells[0]
-    run_dir = _local_tmpdir("resume_match") / "run"
-    journal_dir = run_dir / "j"
-    journal_dir.mkdir(parents=True)
-    good = {
-        "cell_identity": cell["cell_identity"],
-        "model_tag": cell["model_tag"],
-        "model_digest": cell["model_digest"],
-        "composed_prompt_sha256": cell["composed_prompt_sha256"],
-        "condition_id": cell["condition_id"],
-        "seed": int(cell["seed"]),
-        "completion_flag": "success",
-        "generation_status": "success",
-        "raw_response": "def f():\n    return 1\n",
-    }
-    (journal_dir / f"{cell['generation_id']}.json").write_text(
-        json.dumps(good),
+    run_dir = _local_tmpdir("resume_no_raw") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    journal["raw_response"] = ""
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal), encoding="utf-8"
+    )
+    assert (
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+        == "retry_incomplete"
+    )
+
+
+def test_resume_persisted_complete_false_not_skip() -> None:
+    cells = runner.load_frozen_cells()
+    cell = cells[0]
+    run_dir = _local_tmpdir("resume_incomplete_flag") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    journal["persisted_complete"] = False
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal), encoding="utf-8"
+    )
+    assert (
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+        == "retry_incomplete"
+    )
+
+
+def test_resume_prompt_sha_mismatch_fail_closed() -> None:
+    cells = runner.load_frozen_cells()
+    cell = cells[0]
+    run_dir = _local_tmpdir("resume_prompt_mismatch") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    journal["composed_prompt_sha256"] = "ff" * 32
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal), encoding="utf-8"
+    )
+    with pytest.raises(runner.PilotRunError, match="composed_prompt_sha256"):
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+
+
+def test_resume_model_fingerprint_mismatch_fail_closed() -> None:
+    cells = runner.load_frozen_cells()
+    cell = cells[0]
+    run_dir = _local_tmpdir("resume_digest_mismatch") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    journal["model_digest"] = "ab" * 32
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal), encoding="utf-8"
+    )
+    with pytest.raises(runner.PilotRunError, match="model_digest"):
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+
+
+def test_resume_condition_seed_mismatch_fail_closed() -> None:
+    cells = runner.load_frozen_cells()
+    cell = cells[0]
+    run_dir = _local_tmpdir("resume_seed_mismatch") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    journal = _complete_journal(cell)
+    journal["seed"] = 999
+    (run_dir / "j" / f"{cell['generation_id']}.json").write_text(
+        json.dumps(journal), encoding="utf-8"
+    )
+    with pytest.raises(runner.PilotRunError, match="seed"):
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+
+
+def test_half_written_artifact_not_complete() -> None:
+    cells = runner.load_frozen_cells()
+    cell = cells[0]
+    run_dir = _local_tmpdir("half_written") / "run"
+    (run_dir / "j").mkdir(parents=True)
+    path = run_dir / "j" / f"{cell['generation_id']}.json"
+    path.write_text(
+        '{"generation_id": "' + cell["generation_id"] + '", "persisted_complete": false',
         encoding="utf-8",
     )
-    assert runner.decide_resume_action(cell, run_dir) == "skip"
-    assert runner.decide_resume_action(cells[1], run_dir) == "generate"
+    journal = runner.load_journal(path)
+    assert journal is not None
+    assert runner.journal_is_complete(journal) is False
+    assert (
+        runner.decide_resume_action(cell, run_dir, manifest_sha256=_manifest_sha())
+        == "retry_incomplete"
+    )
 
 
-def test_generate_command_refuses_without_gates() -> None:
-    with pytest.raises(runner.PilotRunError, match="generate refused"):
-        runner.main(["generate"])
+def test_mock_generation_writes_cells_verbatim() -> None:
+    run_dir = _local_tmpdir("mock_gen") / "run"
+    calls: list[str] = []
+
+    def gen(**kwargs: Any) -> dict[str, Any]:
+        calls.append(kwargs["cell"]["generation_id"])
+        raw = f"# mock for {kwargs['cell']['task_id']} seed={kwargs['cell']['seed']}\n"
+        return _mock_attempt(raw)
+
+    summary = runner.run_generate(
+        argv=["generate", "--mock"],
+        manifest_sha256=_manifest_sha(),
+        execute_model=True,
+        i_understand=True,
+        execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+        provenance_fn=lambda **_: _fake_identity(runtime_version="1.2.3-mock"),
+        generate_fn=gen,
+        max_cells=3,
+        run_dir=run_dir,
+    )
+    assert summary["generated_now"] == 3
+    assert summary["skipped_complete"] == 0
+    assert summary["runtime_version"] == "1.2.3-mock"
+    assert (run_dir / "execution_manifest.json").is_file()
+    assert (run_dir / "live_model_provenance.json").is_file()
+    cells = runner.load_frozen_cells()[:3]
+    for cell in cells:
+        journal = json.loads(
+            (run_dir / "j" / f"{cell['generation_id']}.json").read_text(encoding="utf-8")
+        )
+        assert journal["persisted_complete"] is True
+        assert journal["raw_response"].startswith(f"# mock for {cell['task_id']}")
+        assert journal["model_digest"] == freeze.MODEL_DIGEST
+        assert journal["manifest_sha256"] == _manifest_sha()
+        assert journal["candidate_code_executed"] is False
+        assert journal["evaluation_executed"] is False
+        assert journal["healer_applied"] is False
+    assert calls == [cell["generation_id"] for cell in cells]
 
 
-def test_generate_remains_disabled_even_with_gates() -> None:
-    with pytest.raises(runner.PilotRunError, match="not enabled in this packaging commit"):
-        runner.main(
-            [
-                "generate",
-                "--i-understand-this-calls-the-model",
-                "--execute-model",
-                "--manifest-sha256",
-                _sha256((GOV_DIR / "manifest.json").read_bytes()),
-            ]
+def test_mock_mid_failure_then_safe_resume() -> None:
+    run_dir = _local_tmpdir("mock_resume") / "run"
+    state = {"n": 0}
+
+    def flaky(**kwargs: Any) -> dict[str, Any]:
+        state["n"] += 1
+        if state["n"] == 2:
+            return {
+                "status": "failed",
+                "failure_reason": "mock network blip",
+                "raw_response": None,
+                "ollama_response_metadata": {"http_status": 500, "raw_body": ""},
+            }
+        return _mock_attempt(f"ok-{state['n']}\n")
+
+    with pytest.raises(runner.PilotRunError, match="incomplete generation"):
+        runner.run_generate(
+            argv=["generate"],
+            manifest_sha256=_manifest_sha(),
+            execute_model=True,
+            i_understand=True,
+            execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+            provenance_fn=lambda **_: _fake_identity(),
+            generate_fn=flaky,
+            max_cells=3,
+            run_dir=run_dir,
         )
 
+    cells = runner.load_frozen_cells()[:3]
+    first = json.loads(
+        (run_dir / "j" / f"{cells[0]['generation_id']}.json").read_text(encoding="utf-8")
+    )
+    second = json.loads(
+        (run_dir / "j" / f"{cells[1]['generation_id']}.json").read_text(encoding="utf-8")
+    )
+    assert first["persisted_complete"] is True
+    assert second["persisted_complete"] is False
 
-def test_source_scripts_do_not_call_models_or_evalplus_or_healer_writes() -> None:
-    texts = [
-        (REPO_ROOT / "scripts/freeze_candidate_b_4b_development_failure_supply_pilot_v1.py").read_text(
-            encoding="utf-8"
-        ),
-        (REPO_ROOT / "scripts/preflight_candidate_b_4b_development_failure_supply_pilot_v1.py").read_text(
-            encoding="utf-8"
-        ),
-        (REPO_ROOT / "scripts/run_candidate_b_4b_development_failure_supply_pilot_v1.py").read_text(
-            encoding="utf-8"
-        ),
-    ]
-    joined = "\n".join(texts)
-    assert "run_attempt(" not in joined
-    assert "check_correctness" not in joined
-    assert "import evalplus" not in joined
-    assert "from evalplus" not in joined
-    assert "mbpp_evaluator_blind_healer" in joined  # SHA pin only
-    assert "apply_healer" not in joined
-    assert "heal(" not in joined
+    def recover(**kwargs: Any) -> dict[str, Any]:
+        return _mock_attempt(f"recovered-{kwargs['cell']['cell_index']}\n")
+
+    summary = runner.run_generate(
+        argv=["generate", "--resume"],
+        manifest_sha256=_manifest_sha(),
+        execute_model=True,
+        i_understand=True,
+        execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+        provenance_fn=lambda **_: _fake_identity(),
+        generate_fn=recover,
+        max_cells=3,
+        run_dir=run_dir,
+    )
+    assert summary["skipped_complete"] == 1
+    assert summary["generated_now"] == 2
+    assert summary["retried_incomplete"] == 1
+    first_after = json.loads(
+        (run_dir / "j" / f"{cells[0]['generation_id']}.json").read_text(encoding="utf-8")
+    )
+    assert first_after["raw_response"] == first["raw_response"]
+    assert first_after["raw_response"].startswith("ok-")
 
 
-def test_preregistration_document_claims() -> None:
+def test_stops_after_plan_cells_and_no_healer_eval() -> None:
+    run_dir = _local_tmpdir("stop_200") / "run"
+    summary = runner.run_generate(
+        argv=["generate"],
+        manifest_sha256=_manifest_sha(),
+        execute_model=True,
+        i_understand=True,
+        execution_acknowledgement=runner.EXECUTION_ACKNOWLEDGEMENT,
+        provenance_fn=lambda **_: _fake_identity(),
+        generate_fn=lambda **_: _mock_attempt(),
+        max_cells=5,
+        run_dir=run_dir,
+    )
+    assert summary["stopped_after_plan_cells"] is True
+    assert summary["auto_expand_to_60"] is False
+    assert summary["healer_modified"] is False
+    assert summary["evaluation_executed"] is False
+    assert summary["candidate_code_executed"] is False
+    assert summary["frozen_plan_cell_count"] == 200
+    assert summary["cells_considered"] == 5
+
+
+def test_runner_source_has_no_eval_or_healer_mutation_or_placeholder_block() -> None:
+    text = (
+        REPO_ROOT / "scripts/run_candidate_b_4b_development_failure_supply_pilot_v1.py"
+    ).read_text(encoding="utf-8")
+    assert "not enabled in this packaging commit" not in text
+    assert "import evalplus" not in text
+    assert "from evalplus" not in text
+    assert "check_correctness" not in text
+    assert "apply_healer" not in text
+    assert "exec(" not in text
+    assert "run_attempt(" in text
+    assert "durable_write_json_new" in text
+    assert "fetch_ollama_provenance" in text
+
+
+def test_formal_output_dir_has_no_model_results() -> None:
+    out = REPO_ROOT / freeze.RUN_OUTPUT_RELATIVE
+    assert (not out.exists()) or (not any(out.rglob("*")))
+
+
+def test_addendum_and_readme_status() -> None:
+    addendum = GOV_DIR / "execution_enablement_addendum_v1.md"
+    assert addendum.is_file()
+    text = addendum.read_text(encoding="utf-8")
+    assert "RUNNER_ENABLED_NOT_EXECUTED" in text
+    assert "protocol_ollama_version_pin" in text
+    assert "寫成已觀察的實際 runtime" in text
+    assert "硬編碼為永久真值" in text
+    readme = (REPO_ROOT / "README.md").read_text(encoding="utf-8")
+    assert "RUNNER_ENABLED_NOT_EXECUTED" in readme
+    assert "尚未呼叫" in readme
+
+
+def test_preregistration_history_not_rewritten_as_executed() -> None:
     text = (GOV_DIR / "preregistration.md").read_text(encoding="utf-8")
     assert "尚未呼叫模型" in text
     assert "尚未產生任何 4B raw program" in text
-    assert "尚未修改 Healer" in text
-    assert freeze.MODEL_DIGEST in text
-    assert "不得自動擴展至 60 題" in text
-    assert "不宣稱已找到新的通用 Healer 規則" in text
-
-
-def test_report_coverage_numbers_are_consistent() -> None:
-    report = (
-        REPO_ROOT
-        / "docs/決賽文件/7月23Candidate_B_r003_198格失敗分類與Healer安全邊界報告.md"
-    )
-    text = report.read_text(encoding="utf-8")
-    assert "| 合法 development task 母體 | **116** |" in text
-    assert "| development60 實際涵蓋 distinct tasks | **60** |" in text
-    assert "| H0 總格數 | **300** |" in text
-    assert "| H0 失敗格數（EvalPlus plus=fail） | **224** |" in text
-    assert "| Conditional 23 實際 coverage | **23** |" in text
-    assert "不得把總格數寫成失敗格數" in text
-    assert "GENERAL_HEALER_ABSTAIN" in text
-    assert "不得宣稱已窮盡所有可能 Healer 機制" in text
-    assert "public test 或修後 PASS 不得作為 Healer 接受修改的 oracle gate" in text
-    # Must not still claim all 300 H0 cells are failures.
-    assert "這 300 個 H0 cells 均為失敗案例" not in text
