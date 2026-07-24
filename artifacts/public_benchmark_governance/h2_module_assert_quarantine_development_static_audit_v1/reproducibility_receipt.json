@@ -1,0 +1,47 @@
+{
+  "builder_sha256": "54a1927ddb30bef0805e111f944c20a4c9cac84a83eaccb4c61b89f1d9b8c7d2",
+  "controls": {
+    "candidate_source_executed": false,
+    "canonical_solution_or_hidden_tests_read": false,
+    "evalplus_invoked": false,
+    "existing_h1_modified_or_applied": false,
+    "model_invoked": false,
+    "outcomes_supplied_to_rule": false,
+    "task_id_supplied_to_rule": false
+  },
+  "dataset_manifest_sha256": "502e946fb273751805ec74472856a8d2e6cd732368547c9f45e2310495b831be",
+  "four_b_provenance": {
+    "frozen_counts": {
+      "ambiguous": 14,
+      "cells": 200,
+      "extracted": 186,
+      "h0_evalplus": 186,
+      "journals": 200,
+      "raw_responses": 200
+    },
+    "frozen_input_manifest_sha256": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe",
+    "generation_manifest_sha256": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+    "run_id": "mbpp_q35_4b_dev20_failure_supply_pilot_r001"
+  },
+  "nine_b_provenance": {
+    "accounts_sha256": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "conditional_roster_rows": 23,
+    "conditional_roster_sha256": "6a7e84ad69972d02b43fd8e980e52d6e5117519ec5511b4387f2a29a1aedbbf9",
+    "frozen_manifest_sha256": "e8d0f8e9198848e8708d910f6c859622c272de850a2b1045d62993c114c98fbd",
+    "raw_generations_sha256": "3d8295ff5e7260d733d8f68736a792afa79501d70ca8bde8d4dd88c1b2b002b3",
+    "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r003"
+  },
+  "output_sha256_excluding_manifest_and_receipt": {
+    "aggregate_summary.json": "924154e1a5380856f68b0e28e92d9c741dba069ac4b7d83debb401f109517141",
+    "credential_scan.json": "7c77c105e77f0dd3055b1e14d06e0cd1f5d23754bc52d73f9323f33251b8e761",
+    "decision_ledger.csv": "2c7f87cc91949fd9bfcc91c18cb786406c72507dc6b7b2874f64d7919cf39013",
+    "research_report_zh.md": "80f79359b5e59ac7ea7381224c70e192253b2940d5d552cad3de3cda8e089863",
+    "transformed_sources.jsonl": "b46140ff59dce0147467edd27404af3c22051347655d2488c01ab0dd08c3e4d6"
+  },
+  "receipt_id": "h2_module_assert_quarantine_reproducibility_v1",
+  "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+  "rule_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "rule_status": "development_candidate_not_frozen",
+  "scope": "Stage2_MBPP+_only",
+  "tasks_sha256": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+}

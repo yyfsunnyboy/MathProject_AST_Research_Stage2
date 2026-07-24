@@ -1,0 +1,79 @@
+{
+  "audit_id": "h2_module_assert_quarantine_development_static_audit_v1",
+  "candidate_execution_count": 0,
+  "claim": "module_load_assert_quarantined_only_no_pass_claim",
+  "cohorts": {
+    "4B_all_module_level_assert_cells": {
+      "abstained": 20,
+      "cells": 68,
+      "reason_groups": {
+        "complex_external_or_incomplete": 8,
+        "entrypoint_missing_or_nonunique": 9,
+        "multiple_module_asserts": 3,
+        "transformed": 48
+      },
+      "reasons": {
+        "assert_has_external_or_side_effectful_call": 1,
+        "assert_message_depends_on_external_state": 1,
+        "assert_not_direct_entrypoint_selftest": 1,
+        "entry_point_missing": 9,
+        "module_assert_count_not_one": 3,
+        "source_truncated_or_completion_unknown": 5,
+        "transformed_module_assert_quarantined": 48
+      },
+      "transformed": 48,
+      "triggered": 68
+    },
+    "9B_formal_Conditional23": {
+      "abstained": 0,
+      "cells": 23,
+      "reason_groups": {
+        "transformed": 23
+      },
+      "reasons": {
+        "transformed_module_assert_quarantined": 23
+      },
+      "transformed": 23,
+      "triggered": 23
+    }
+  },
+  "evalplus_execution_count": 0,
+  "model_call_count": 0,
+  "outcomes_available_to_rule": false,
+  "posthoc_control_outcome_used_for_rule": false,
+  "reference_actual": {
+    "four_b_abstained": 20,
+    "four_b_cells": 68,
+    "four_b_complex_external_or_incomplete": 8,
+    "four_b_entrypoint_abstain": 9,
+    "four_b_multiple_assert_abstain": 3,
+    "four_b_transformed": 48,
+    "four_b_transformed_prior_pass_control": 25,
+    "nine_b_conditional_cells": 23,
+    "nine_b_conditional_transformed": 23
+  },
+  "reference_comparison_is_non_gating": true,
+  "reference_expected": {
+    "four_b_abstained": 23,
+    "four_b_cells": 68,
+    "four_b_complex_external_or_incomplete": 11,
+    "four_b_entrypoint_abstain": 9,
+    "four_b_multiple_assert_abstain": 3,
+    "four_b_transformed": 45,
+    "four_b_transformed_prior_pass_control": 21,
+    "nine_b_conditional_cells": 23,
+    "nine_b_conditional_transformed": 23
+  },
+  "reference_match": false,
+  "reference_reconciliation": {
+    "explanation": "The supplied complex/external reference 11 equals 6 incomplete + 5 predicate-risk flags, but 3 cells have both flags. Treating primary abstain reasons as mutually exclusive prevents those cells from being subtracted twice. The same cohort-agnostic rule must allow the pure builtin abs tolerance shape because two formal 9B Conditional23 cells use that identical shape.",
+    "naive_incomplete_plus_predicate_count": 11,
+    "nonexclusive_message_external_or_complex": 1,
+    "nonexclusive_predicate_external_or_complex": 5,
+    "nonexclusive_source_incomplete": 6,
+    "source_incomplete_and_predicate_complex_overlap": 3
+  },
+  "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+  "rule_status": "development_candidate_not_frozen",
+  "scope": "Stage2_MBPP+_only"
+}

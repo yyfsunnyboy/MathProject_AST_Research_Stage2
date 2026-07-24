@@ -251,3 +251,9 @@ README.md text eol=lf
 
 # 9B Candidate B r003 source evidence archive note
 artifacts/public_benchmark_governance/candidate_b_r003_9b_source_evidence_archive_v1/** text eol=lf
+
+# H2 module-assert quarantine development candidate and static audit
+agent_tools/finals_rebuild/mbpp_h2_module_assert_quarantine.py text eol=lf
+scripts/build_h2_module_assert_quarantine_static_audit_v1.py text eol=lf
+tests/test_mbpp_h2_module_assert_quarantine.py text eol=lf
+artifacts/public_benchmark_governance/h2_module_assert_quarantine_development_static_audit_v1/** text eol=lf
