@@ -1,0 +1,13 @@
+{
+  "manifest_id": "h2_module_assert_quarantine_functional_evaluation_artifacts_v1",
+  "output_sha256_excluding_manifest": {
+    "aggregate_summary.json": "910a686aeedf7817356e2fbcf244e6e36af5345252fc43b8970bc03b138ef194",
+    "credential_scan.json": "dfed91a07ecfae080985b90dcc30b9e76fec7eafa41fcafe434347c57c04e907",
+    "evaluation_manifest.json": "f7fda43aa37f100925ba704f042159ff0aa94dfef644a832fd5a85529ff90728",
+    "execution_receipt.json": "4a9a0153694580a3b4f0668f687222a1b3c2ec9151cdc14204fba30d058b6c03",
+    "freeze_decision.json": "def014a4e9960081e3d431879e1fcb38270fda24f1f22bce9dd510dfcc7cfcec",
+    "paired_cell_ledger.jsonl": "e228dccb6d6b1db427b73464bcb9fd1bc2de3c547b82e97d7781fc131913530f",
+    "research_report_zh.md": "ac8d00c99ab07984619fb112f4650689a1ddebb5f1924256c49353121d22b281"
+  },
+  "status": "development_candidate_not_frozen"
+}

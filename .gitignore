@@ -190,5 +190,9 @@ artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analys
 !artifacts/public_benchmark_governance/h2_module_assert_quarantine_development_static_audit_v1/
 !artifacts/public_benchmark_governance/h2_module_assert_quarantine_development_static_audit_v1/**
 
+# Keep the H2 module-assert quarantine functional evaluation tracked.
+!artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/
+!artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/**
+
 
 

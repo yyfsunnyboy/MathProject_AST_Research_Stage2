@@ -1,0 +1,515 @@
+{
+  "blocker_removed_but_still_failed": [
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "9dfc1d7cd599ab3f3af077b4dcd4dfdef3d001b75b433d101f3815073e3cc35d",
+      "task_id": "Mbpp/633"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "a4e20446ad1d6bd0adcc2c5b0eb07f68ad421cfd9dcaf5eaecd404cfd4235f7f",
+      "task_id": "Mbpp/633"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "edf1072103afbc18b15c943e5e2284756135ebe3d7f3d0adea55ba29970f9aac",
+      "task_id": "Mbpp/633"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "c870f2b3dfe1174cbb3f3b21b47c960f5d5832f042644564e11c914ed6090a1a",
+      "task_id": "Mbpp/769"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "f3296791cd4bd8b0b1a4360be891b09590e8ff870fa64354b3f93f0815566005",
+      "task_id": "Mbpp/259"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "57e490f3aa56300030a805759f2491faa68ba6c02a1c6ea36f8ffbd26720a336",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "866f18b0b61ee6c69051cac7cb59261e1ca6a7a8f61c8cac42daed961ea258de",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "ce08a4aba31e1baff9141dae557a6c101145ad21a1c005b97accee28695ffae5",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "dc3b1406ed6521e99e4fd21ea39c83220dd38bf49835358e77dee10b5b8b9278",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "pass",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "45231b1b1278cbe5397dd82ff684fc0b54eb202b2277bdcd37fe977387cbb002",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "pass",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "d96df2b556b6f9a984b5c4dd83c2ee5e18753cf748f1d984100567a731c8d029",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "pass",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "9ed2c5b8bdf4efd7a28f0c13f96959be26cf8e8824fc1a04cbc1f6b8cdebe102",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "pass",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "fc011a7486581953ed31c3f828db3c7f00555e2221b0037c1fbcbafe4052c114",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "pass",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "c977a6ebd9a75b2ce2de2d5ae21870631d64fd81cca9502a2a55a553fd70ba01",
+      "task_id": "Mbpp/792"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "f3f8b43b4858546497d74682f071bd24557e64ab72ceb26b73f3da166dd5bd05",
+      "task_id": "Mbpp/765"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "cd59a4582c14b7604a2700c1087d3b53725422ede8097f9666697422b89a6eaf",
+      "task_id": "Mbpp/777"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "16923c2b1089de0b28407aae18b166c1c17ad352b3811907b68dc4c2379e1807",
+      "task_id": "Mbpp/473"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "e9449ce73ead2aa016d4de08483756c738d650038d623743a09bf32c4e8bc3ee",
+      "task_id": "Mbpp/420"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "61a1672a5661e74dd594382c68c14691c83addcb60b7bbd489aae2c3b00eb170",
+      "task_id": "Mbpp/420"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "7ad3d56851f950cdf203602421d82ed75501e397b12103210aef6796ee030668",
+      "task_id": "Mbpp/279"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "11aaef19dc7052d3cf5ff00f9a26cd61b4377b2f1578b4da7e043e288b7356e1",
+      "task_id": "Mbpp/279"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "5870c661401945210db4d474f12179483b925b64dc60973c9afb229bf92dc502",
+      "task_id": "Mbpp/279"
+    },
+    {
+      "cohort": "4B_all_module_level_assert_cells",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "f5070a2dd755ec56bfb8c2ca999a014b45f2f8bf9ae00ba7a15ba38886ffecb0",
+      "task_id": "Mbpp/125"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "a1e491b6023eff1ff01bce581fcb87e45ab99377ee7e4ff34a09184291c24ade",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "986356145523dd664151d8e0b78ce04d5fdfcdbb39014eb82a9194d7eb1cb050",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "27db6ce43b7b468c4a4cc5c34b2386007cf54430f457ac5cbbf18c2331b4c114",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "d9af9e684995ae0fd31339af9a56a8984950683d6a2d1f208414807da68a7e69",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "f30e88e1c07b06c6fdc11213bea99ef203e929783f8b5137d71e67969550c021",
+      "task_id": "Mbpp/739"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "e6edb29d32c7593fd9774360eb7e1f43e89004d741348a9d207eb3239ea11186",
+      "task_id": "Mbpp/777"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "814ae99fa94821a1c45cba8ccc28c1265070d5d60c28cb6ab46dd8e21e82fd84",
+      "task_id": "Mbpp/777"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "37c96fcf4dff81d30e88b15c50d3c05aabb3a98c13caefc114e14671b73670b9",
+      "task_id": "Mbpp/742"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "640c7544c87c0f5b40cf6113d1342ee47207bff3568a4fff235e49d7f5a518b6",
+      "task_id": "Mbpp/742"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "81b1b9916304cfbcfd7cf807cbc1ee2f749ea3ca71ed1310e7db39569bccbcbf",
+      "task_id": "Mbpp/125"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "077f1bf7c9d65bc6221f849123c643fc21faae3c9178720e322d923c3397a603",
+      "task_id": "Mbpp/125"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "d7db6cb73b9f5f7c5693a194dcc4d3738bade6d02d719e50008a12429c1b0d7c",
+      "task_id": "Mbpp/430"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "7ce98a367f29080d205ac02e5b76248df7a4c714c1b70af8f871c1f3459bc3e7",
+      "task_id": "Mbpp/430"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 11,
+      "source_record_id": "672aa73645332354b575037f185dc81ac749b5da269822bbc0abd6e2c700fd13",
+      "task_id": "Mbpp/432"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "cbd27e8a1e95b28f9cde9964ae558596c8371767b9b25addd1612a57c646aa5f",
+      "task_id": "Mbpp/432"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "a731cf5bdf05e1ed765711e887b3b1b9b46159ada72943ebdd5a79475b2afef3",
+      "task_id": "Mbpp/432"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "64187ed15da3a753654af4583d63c98578716b198ba919db3ddb1b1fb6855fbc",
+      "task_id": "Mbpp/138"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "49fbbe8f8a8ca4e49bd79707da38c3cf1246450da8809ec8d4f7ce38f3977253",
+      "task_id": "Mbpp/138"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 55,
+      "source_record_id": "4aeefd4c8d0dd04bf99b77cacba54999f01b80870a920ed6f3997c932ab6960d",
+      "task_id": "Mbpp/735"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 33,
+      "source_record_id": "8125ee6ba4083e73589b37f3bfd5b38b4b0f8dba482e530d889dad5b93078b36",
+      "task_id": "Mbpp/410"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "9ccb1020e50b2e30f846dd029b1e8026797288f7bc03943f0fb1a03639628fe2",
+      "task_id": "Mbpp/581"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 44,
+      "source_record_id": "2c8a29019eddb8bc7e24251236af213d7f100c8bcb4513e7f17aa8c9b6fa5c84",
+      "task_id": "Mbpp/581"
+    },
+    {
+      "cohort": "9B_formal_Conditional23",
+      "post_h2_base_status": "fail",
+      "post_h2_plus_status": "fail",
+      "raw_strict_status": "fail",
+      "seed": 22,
+      "source_record_id": "66dc9424d0a8471a861baeb69b47d429a130b1b96057f1b01327de9794c8a0a6",
+      "task_id": "Mbpp/440"
+    }
+  ],
+  "cohorts": {
+    "4B_all_module_level_assert_cells": {
+      "abstained": 20,
+      "abstained_unchanged": 20,
+      "blocker_removed": 48,
+      "execution_error": 0,
+      "partial_repair": 23,
+      "post_h2": {
+        "base_pass": 33,
+        "cells": 68,
+        "plus_pass": 28,
+        "strict_fail": 40,
+        "strict_pass": 28
+      },
+      "preserved_pass": 25,
+      "raw": {
+        "base_pass": 33,
+        "cells": 68,
+        "plus_pass": 28,
+        "strict_fail": 40,
+        "strict_pass": 28
+      },
+      "regression": 0,
+      "timeout": 0,
+      "transformed": 48,
+      "unchanged_failure": 0,
+      "verified_rescue": 0
+    },
+    "9B_formal_Conditional23": {
+      "abstained": 0,
+      "abstained_unchanged": 0,
+      "blocker_removed": 23,
+      "execution_error": 0,
+      "partial_repair": 23,
+      "post_h2": {
+        "base_pass": 0,
+        "cells": 23,
+        "plus_pass": 0,
+        "strict_fail": 23,
+        "strict_pass": 0
+      },
+      "preserved_pass": 0,
+      "raw": {
+        "base_pass": 0,
+        "cells": 23,
+        "plus_pass": 0,
+        "strict_fail": 23,
+        "strict_pass": 0
+      },
+      "regression": 0,
+      "timeout": 0,
+      "transformed": 23,
+      "unchanged_failure": 0,
+      "verified_rescue": 0
+    },
+    "combined": {
+      "abstained": 20,
+      "abstained_unchanged": 20,
+      "blocker_removed": 71,
+      "execution_error": 0,
+      "partial_repair": 46,
+      "post_h2": {
+        "base_pass": 33,
+        "cells": 91,
+        "plus_pass": 28,
+        "strict_fail": 63,
+        "strict_pass": 28
+      },
+      "preserved_pass": 25,
+      "raw": {
+        "base_pass": 33,
+        "cells": 91,
+        "plus_pass": 28,
+        "strict_fail": 63,
+        "strict_pass": 28
+      },
+      "regression": 0,
+      "timeout": 0,
+      "transformed": 71,
+      "unchanged_failure": 0,
+      "verified_rescue": 0
+    }
+  },
+  "evaluation_id": "h2_module_assert_quarantine_functional_evaluation_v1",
+  "fail_to_pass_source_record_ids": [],
+  "four_b_transformed_raw_pass_controls": {
+    "count": 25,
+    "preserved": 25,
+    "regressed": 0
+  },
+  "nine_b_all_raw_pass_controls": {
+    "count": 0,
+    "preserved": 0,
+    "regressed": 0
+  },
+  "pass_to_fail_source_record_ids": [],
+  "scope": "Stage2_MBPP+_only"
+}

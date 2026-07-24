@@ -257,3 +257,10 @@ agent_tools/finals_rebuild/mbpp_h2_module_assert_quarantine.py text eol=lf
 scripts/build_h2_module_assert_quarantine_static_audit_v1.py text eol=lf
 tests/test_mbpp_h2_module_assert_quarantine.py text eol=lf
 artifacts/public_benchmark_governance/h2_module_assert_quarantine_development_static_audit_v1/** text eol=lf
+
+# H2 module-assert quarantine functional evaluation
+scripts/prepare_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
+scripts/run_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
+scripts/finalize_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
+tests/test_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
+artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/** text eol=lf
