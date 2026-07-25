@@ -1,0 +1,138 @@
+{
+  "frozen_split_sha256": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+  "mutually_exclusive_from": [
+    "historical_development_pool",
+    "internal_confirmatory_candidate",
+    "external_confirmatory_candidate",
+    "sealed_reserve",
+    "excluded_historical"
+  ],
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "role": "validation",
+  "source": "artifacts/public_benchmark_governance/frozen_split.csv",
+  "task_count": 20,
+  "task_ids": [
+    "Mbpp/4",
+    "Mbpp/86",
+    "Mbpp/130",
+    "Mbpp/132",
+    "Mbpp/247",
+    "Mbpp/264",
+    "Mbpp/265",
+    "Mbpp/281",
+    "Mbpp/405",
+    "Mbpp/418",
+    "Mbpp/425",
+    "Mbpp/456",
+    "Mbpp/459",
+    "Mbpp/564",
+    "Mbpp/569",
+    "Mbpp/580",
+    "Mbpp/586",
+    "Mbpp/611",
+    "Mbpp/755",
+    "Mbpp/775"
+  ],
+  "tasks": [
+    {
+      "entry_point": "heap_queue_largest",
+      "official_prompt_sha256": "cd7839bdeefa153de08f6a6e10120fb6e0b0570d5d92e8e01c2aaab1bb758e04",
+      "task_id": "Mbpp/4"
+    },
+    {
+      "entry_point": "centered_hexagonal_number",
+      "official_prompt_sha256": "b1e5e6f4b0b1f2ab05800d2a0e9844617d39407d33897bdd2972fbbd1eddb263",
+      "task_id": "Mbpp/86"
+    },
+    {
+      "entry_point": "max_occurrences",
+      "official_prompt_sha256": "2e502687fbc39a56386f4b0d032f1d1dfd7cc3ea0b8633c0cacf2d5c347ba318",
+      "task_id": "Mbpp/130"
+    },
+    {
+      "entry_point": "tup_string",
+      "official_prompt_sha256": "98164fd878ba2bbbe874d7b1d2c42ffcea2e1e764a7281b75dfb91fce8e5b020",
+      "task_id": "Mbpp/132"
+    },
+    {
+      "entry_point": "lps",
+      "official_prompt_sha256": "3852c07441552c89dfeb171772e347c512fffe09da6492183c6f8bca3af3bef2",
+      "task_id": "Mbpp/247"
+    },
+    {
+      "entry_point": "dog_age",
+      "official_prompt_sha256": "614b1239f23bbdbaa9a20a167b19e4e53cd12defa4b10d0eeb875ffee078008b",
+      "task_id": "Mbpp/264"
+    },
+    {
+      "entry_point": "list_split",
+      "official_prompt_sha256": "b6779271937f41c56070f224420644dc79da5a5170809ec6ba1dff42ec3266c8",
+      "task_id": "Mbpp/265"
+    },
+    {
+      "entry_point": "all_unique",
+      "official_prompt_sha256": "48427ef5e950043599b584e990ca21022eed96f4d2531dc6f97c5a0419199d86",
+      "task_id": "Mbpp/281"
+    },
+    {
+      "entry_point": "check_tuplex",
+      "official_prompt_sha256": "285725faffbda55e0825d299c8d7290ac7faf2a7e9e8faf1179bf653f70421f0",
+      "task_id": "Mbpp/405"
+    },
+    {
+      "entry_point": "Find_Max",
+      "official_prompt_sha256": "b43b670b9119ecc9d07a6f753639d61803804b32017e4a6f0425e21f55691a76",
+      "task_id": "Mbpp/418"
+    },
+    {
+      "entry_point": "count_element_in_list",
+      "official_prompt_sha256": "828dad37413e8a8a6d636cf559dc1e5fbccc60dc54f2bf2693dfa531c69c4986",
+      "task_id": "Mbpp/425"
+    },
+    {
+      "entry_point": "reverse_string_list",
+      "official_prompt_sha256": "54d719e6c8b9777bc581a21144d02926767deaee83f23a9f935dd64ac3d969ae",
+      "task_id": "Mbpp/456"
+    },
+    {
+      "entry_point": "remove_uppercase",
+      "official_prompt_sha256": "315956402357ea081c20b680d9fa228199b04238e15b6be02adf5f2385e55e6c",
+      "task_id": "Mbpp/459"
+    },
+    {
+      "entry_point": "count_Pairs",
+      "official_prompt_sha256": "e31a1e864d0fc1ca47d84e6a724edfb9af1af27ffbfd6cd41d9ff8847fbbf3d0",
+      "task_id": "Mbpp/564"
+    },
+    {
+      "entry_point": "sort_sublists",
+      "official_prompt_sha256": "c6380f3475172ed14cdc9e3465a4b76fcef0e0da89a00338a91273f59959e63f",
+      "task_id": "Mbpp/569"
+    },
+    {
+      "entry_point": "extract_even",
+      "official_prompt_sha256": "475ef0fd62a9411c4a67fa996bfe8224d0cbd6bad9afbe14ff41dc52c72d8a19",
+      "task_id": "Mbpp/580"
+    },
+    {
+      "entry_point": "split_Arr",
+      "official_prompt_sha256": "839d7d1cdd05e1ce783dc95683ebf76803954e51b9321460409f0e0cfd0f2bb4",
+      "task_id": "Mbpp/586"
+    },
+    {
+      "entry_point": "max_of_nth",
+      "official_prompt_sha256": "530858c931f20ad6f0599ccb6cd166a84d4fcc56ff68fc1754a6a9aa7d3aedbf",
+      "task_id": "Mbpp/611"
+    },
+    {
+      "entry_point": "second_smallest",
+      "official_prompt_sha256": "3406e90c3d7c3bc5e48c941e0d410c28f3c1fd12885d47495446d3434f8682eb",
+      "task_id": "Mbpp/755"
+    },
+    {
+      "entry_point": "odd_position",
+      "official_prompt_sha256": "0b66627ec11afe75267311ba914e5881cfaf097200fc23b3625ad7b31a98b5f0",
+      "task_id": "Mbpp/775"
+    }
+  ]
+}

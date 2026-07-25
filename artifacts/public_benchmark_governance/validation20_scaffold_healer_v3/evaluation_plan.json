@@ -1,0 +1,63 @@
+{
+  "candidate_program_executed": false,
+  "cells_by_model": {
+    "qwen3.5:4b": 1200,
+    "qwen3.5:9b": 1200,
+    "qwen3:0.6b": 1200
+  },
+  "cells_total": 3600,
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "derived_summary_priority": [
+    "invalid_or_missing_candidate",
+    "evaluator_infrastructure_failure",
+    "verified_rescue",
+    "execution_regression",
+    "transformed_known_pass_preserved",
+    "partial_repair",
+    "unchanged_pass",
+    "unchanged_failure"
+  ],
+  "evalplus_executed": false,
+  "evalplus_version": "0.3.1",
+  "evaluator_engine": "evalplus_0.3.1_check_correctness_subset",
+  "execution_environment": "wsl_linux_only",
+  "formal_ledger_dimensions": [
+    "decision",
+    "transition",
+    "repair_depth",
+    "rule_trace"
+  ],
+  "healer_blindness": {
+    "no_canonical_solution_to_healer": true,
+    "no_pass_fail_input_to_healer": true,
+    "raw_pass_also_receives_eligibility": true,
+    "transform_before_evalplus": true
+  },
+  "ledgers_required": [
+    "execution_manifest.json",
+    "cell_level_ledger.csv",
+    "aggregate_summary.json",
+    "rescue_ledger.csv",
+    "regression_ledger.csv",
+    "infrastructure_failure_ledger.csv",
+    "eval_result_cache_provenance.jsonl"
+  ],
+  "model_calls": 0,
+  "pairing": {
+    "byte_identical_cache_requires_provenance_record": true,
+    "byte_identical_stage_cache_allowed": true,
+    "final_stage": "post_h1_h2_h3_h4",
+    "immutable_candidate_identity": "generation_id",
+    "pipeline_stage": "pipeline_corrected",
+    "raw_stage": "raw",
+    "stage_accounts_never_dropped_when_bytes_identical": true
+  },
+  "plan_id": "mbpp_validation20_scaffold_healer_v3_evaluation",
+  "stages": [
+    "raw",
+    "pipeline_corrected",
+    "post_h1_h2_h3_h4"
+  ],
+  "status": "prepared_not_executed"
+}

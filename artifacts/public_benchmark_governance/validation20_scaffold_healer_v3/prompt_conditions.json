@@ -1,0 +1,36 @@
+{
+  "ab2a_text": "Before writing the final code, internally:\n1. identify an algorithm that handles all valid inputs;\n2. check important edge cases and index boundaries;\n3. verify the return value and type;\n4. mentally test one normal case and one edge case;\n5. verify that every loop and recursive call has a guaranteed termination condition.",
+  "ab2a_text_sha256": "cfd5d40ecaf6757526df372fcfd9eae709cd123474ed48d38d1fb116709ab460",
+  "ab2g_path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+  "ab2g_sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+  "conditions": [
+    {
+      "algorithmic_scaffold": false,
+      "generic_scaffold": false,
+      "prompt_condition": "Ab1",
+      "scaffold_compose": "bare"
+    },
+    {
+      "algorithmic_scaffold": false,
+      "generic_scaffold": true,
+      "prompt_condition": "Ab2g",
+      "scaffold_compose": "ab2g_only"
+    },
+    {
+      "algorithmic_scaffold": true,
+      "generic_scaffold": false,
+      "prompt_condition": "Ab2A",
+      "scaffold_compose": "ab2a_only"
+    },
+    {
+      "algorithmic_scaffold": true,
+      "generic_scaffold": true,
+      "prompt_condition": "Ab2gA-factorial-v1",
+      "scaffold_compose": "ab2g_then_ab2a"
+    }
+  ],
+  "factorial_note": "Ab2gA-factorial-v1 = Ab2g exact text + blank line + Ab2A exact text; never substitute Ab2gA-short-v1",
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "separator": "\n\n--- VALIDATION20_PROMPT_CONDITION ---\n\n",
+  "separator_sha256": "0bed70f3c676b039e545231ccd88d74adb1019af851cddf197cad7b8b9b68c86"
+}

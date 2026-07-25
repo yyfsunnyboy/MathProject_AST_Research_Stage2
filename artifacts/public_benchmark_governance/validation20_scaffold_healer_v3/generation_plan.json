@@ -1,0 +1,40 @@
+{
+  "candidate_program_executed": false,
+  "evalplus_executed": false,
+  "formula": "20 tasks \u00d7 5 seeds \u00d7 4 prompt conditions \u00d7 3 models = 1200",
+  "generation_options": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "immutable_candidates": 1200,
+  "model_calls": 0,
+  "models": {
+    "qwen3.5:4b": {
+      "identity_status": "machine_verified_on_build_host",
+      "operator_role": "local_team",
+      "output_dir": "artifacts/public_benchmark_development/mbpp_validation20/qwen35_4b/runs/mbpp_validation20_qwen35_4b_r001",
+      "run_id": "mbpp_validation20_qwen35_4b_r001"
+    },
+    "qwen3.5:9b": {
+      "identity_status": "machine_verified_on_build_host",
+      "operator_role": "local_team",
+      "output_dir": "artifacts/public_benchmark_development/mbpp_validation20/qwen35_9b/runs/mbpp_validation20_qwen35_9b_r001",
+      "run_id": "mbpp_validation20_qwen35_9b_r001"
+    },
+    "qwen3:0.6b": {
+      "identity_status": "pending_machine_verification",
+      "operator_role": "classmate",
+      "output_dir": "artifacts/public_benchmark_development/mbpp_validation20/qwen3_0_6b/runs/mbpp_validation20_qwen3_0_6b_r001",
+      "run_id": "mbpp_validation20_qwen3_0_6b_r001"
+    }
+  },
+  "per_model_candidates": 400,
+  "plan_id": "mbpp_validation20_scaffold_healer_v3_generation",
+  "single_model_per_invocation": true,
+  "status": "prepared_not_generated"
+}

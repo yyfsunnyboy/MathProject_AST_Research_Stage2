@@ -1,0 +1,34 @@
+{
+  "forbidden_equivalences": [
+    "partial_repair != verified_rescue",
+    "parse_rescue != verified_rescue",
+    "execution_rescue != verified_rescue"
+  ],
+  "formal_base_ledger": [
+    "decision",
+    "transition",
+    "repair_depth",
+    "rule_trace"
+  ],
+  "mutex_summary_priority": [
+    "invalid_or_missing_candidate",
+    "evaluator_infrastructure_failure",
+    "verified_rescue",
+    "execution_regression",
+    "transformed_known_pass_preserved",
+    "partial_repair",
+    "unchanged_pass",
+    "unchanged_failure"
+  ],
+  "rules": {
+    "evaluator_infrastructure_failure": "EvalPlus harness/platform/import/result-locate failure; not counted as candidate failure",
+    "execution_regression": "raw EvalPlus pass AND post_h1_h2_h3_h4 EvalPlus fail",
+    "invalid_or_missing_candidate": "candidate missing, SHA mismatch, or stage source unavailable",
+    "partial_repair": "raw fail AND final fail AND repair_depth indicates improvement without full EvalPlus pass",
+    "transformed_known_pass_preserved": "raw pass AND final pass AND decision=transformed",
+    "unchanged_failure": "decision=abstained/no_source_change AND raw fail AND final fail",
+    "unchanged_pass": "decision=abstained/no_source_change AND raw pass AND final pass",
+    "verified_rescue": "raw EvalPlus fail AND post_h1_h2_h3_h4 EvalPlus full pass; parse_rescue/partial_repair/execution_rescue alone never qualify"
+  },
+  "schema_id": "mbpp_validation20_scaffold_healer_v3_derived_summary_v1"
+}

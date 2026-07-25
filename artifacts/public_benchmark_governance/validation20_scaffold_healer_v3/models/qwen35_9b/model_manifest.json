@@ -1,0 +1,142 @@
+{
+  "candidate_program_executed": false,
+  "cell_count": 400,
+  "counts": {
+    "candidates": 400,
+    "evalplus_cells": 1200,
+    "prompt_conditions": 4,
+    "seeds": 5,
+    "stages_per_candidate": 3,
+    "tasks": 20
+  },
+  "dataset": {
+    "hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "name": "MBPP+",
+    "version": "v0.2.0"
+  },
+  "evalplus": {
+    "engine": "evalplus_0.3.1_check_correctness_subset",
+    "execution_environment": "wsl_linux_only",
+    "version": "0.3.1"
+  },
+  "evalplus_executed": false,
+  "generation_options": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "generation_options_sha256": "c5d398992028a56068a52d835215bc947946d4802b032d086064943cbad7b6c9",
+  "isolation": {
+    "forbid_cross_model_output_collision": true,
+    "forbidden_collision_paths": [
+      "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1",
+      "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1",
+      "artifacts/public_benchmark_governance/h4_top_level_demo_print_quarantine_development_replay_v1",
+      "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1",
+      "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1",
+      "artifacts/public_benchmark_development/mbpp_qwen35_4b_failure_supply_pilot",
+      "artifacts/public_benchmark_development/mbpp_candidate_b_development60"
+    ],
+    "peer_model_output_dirs": [
+      "artifacts/public_benchmark_development/mbpp_validation20/qwen35_4b/runs/mbpp_validation20_qwen35_4b_r001",
+      "artifacts/public_benchmark_development/mbpp_validation20/qwen3_0_6b/runs/mbpp_validation20_qwen3_0_6b_r001"
+    ]
+  },
+  "manifest_version": "mbpp_validation20_scaffold_healer_v3_model_qwen35_9b",
+  "model": {
+    "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "digest_must_be_full_64_hex": true,
+    "family": "qwen35",
+    "format": "gguf",
+    "guessing_forbidden": true,
+    "identity_source": "local_ollama_/api/tags_2026-07-25",
+    "identity_status": "machine_verified_on_build_host",
+    "machine_verified_identity_required_before_generate": true,
+    "model_key": "qwen35_9b",
+    "modified_at": "2026-07-16T22:38:34.436418+08:00",
+    "operator_role": "local_team",
+    "parameter_size": "9.7B",
+    "quantization_level": "Q4_K_M",
+    "size_bytes": 6594474711,
+    "tag": "qwen3.5:9b",
+    "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+  },
+  "model_calls": 0,
+  "paths": {
+    "evalplus_output_dir": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/evalplus_runs/qwen35_9b/manual_evalplus_run_001",
+    "generation_cells": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_9b/generation_cells.csv",
+    "generation_output_dir": "artifacts/public_benchmark_development/mbpp_validation20/qwen35_9b/runs/mbpp_validation20_qwen35_9b_r001",
+    "governance_model_dir": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_9b",
+    "raw_candidate_sha_ledger": "artifacts/public_benchmark_development/mbpp_validation20/qwen35_9b/runs/mbpp_validation20_qwen35_9b_r001/raw_candidate_sha_ledger.csv"
+  },
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "prompt_conditions": [
+    "Ab1",
+    "Ab2g",
+    "Ab2A",
+    "Ab2gA-factorial-v1"
+  ],
+  "resume_policy": {
+    "any_identity_mismatch": "fail_closed",
+    "overwrite_forbidden": true,
+    "resume_skip_requires_exact_match_of": [
+      "cell_identity",
+      "generation_id",
+      "model_tag",
+      "model_digest",
+      "composed_prompt_sha256",
+      "prompt_condition",
+      "seed",
+      "completion_flag=success",
+      "persisted_complete=true"
+    ],
+    "single_model_only": true
+  },
+  "run_id": "mbpp_validation20_qwen35_9b_r001",
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "agent_tools/finals_rebuild/mbpp_h1_h2_cumulative_pipeline.py": "2662adb0be59435cae696e0609fce98c7300f1dc0e90a5717176320c6c044590",
+    "agent_tools/finals_rebuild/mbpp_h2_module_assert_quarantine.py": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+    "agent_tools/finals_rebuild/mbpp_h3_empty_suite_pass_insertion.py": "8e7f7f36bd390b054b0e7ba5f57c4c0f98d7bce2d397bc53e9f15979be167c6e",
+    "agent_tools/finals_rebuild/mbpp_h4_top_level_demo_print_quarantine.py": "1aabe131b7312c9bc1e0b34b20540bef6f7d3ec858c2c2994cf84bc84f85a513",
+    "artifacts/public_benchmark_governance/frozen_split.csv": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "status": "prepared_not_generated",
+  "task_ids": [
+    "Mbpp/4",
+    "Mbpp/86",
+    "Mbpp/130",
+    "Mbpp/132",
+    "Mbpp/247",
+    "Mbpp/264",
+    "Mbpp/265",
+    "Mbpp/281",
+    "Mbpp/405",
+    "Mbpp/418",
+    "Mbpp/425",
+    "Mbpp/456",
+    "Mbpp/459",
+    "Mbpp/564",
+    "Mbpp/569",
+    "Mbpp/580",
+    "Mbpp/586",
+    "Mbpp/611",
+    "Mbpp/755",
+    "Mbpp/775"
+  ]
+}

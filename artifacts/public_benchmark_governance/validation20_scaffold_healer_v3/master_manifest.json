@@ -1,0 +1,194 @@
+{
+  "2b_forbidden": true,
+  "ab2a_text": "Before writing the final code, internally:\n1. identify an algorithm that handles all valid inputs;\n2. check important edge cases and index boundaries;\n3. verify the return value and type;\n4. mentally test one normal case and one edge case;\n5. verify that every loop and recursive call has a guaranteed termination condition.",
+  "ab2a_text_sha256": "cfd5d40ecaf6757526df372fcfd9eae709cd123474ed48d38d1fb116709ab460",
+  "ab2g_path": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+  "ab2g_sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+  "accounting": {
+    "derived_mutex_summary": [
+      "invalid_or_missing_candidate",
+      "evaluator_infrastructure_failure",
+      "verified_rescue",
+      "execution_regression",
+      "transformed_known_pass_preserved",
+      "partial_repair",
+      "unchanged_pass",
+      "unchanged_failure"
+    ],
+    "derived_summary_is_mechanically_derived": true,
+    "dimensions": [
+      "decision",
+      "transition",
+      "repair_depth",
+      "rule_trace"
+    ],
+    "execution_rescue_not_verified_rescue": true,
+    "formal_ledger": "non_exclusive_multidimensional_labels_v3",
+    "parse_rescue_not_verified_rescue": true,
+    "partial_repair_not_verified_rescue": true
+  },
+  "candidate_program_executed": false,
+  "counts": {
+    "attribution_rows_pipeline_corrected": 1200,
+    "classmate_candidates": 400,
+    "classmate_evalplus_cells": 1200,
+    "evalplus_stage_evaluations": 3600,
+    "immutable_candidates": 1200,
+    "local_team_candidates": 800,
+    "local_team_evalplus_cells": 2400,
+    "models": 3,
+    "primary_comparison_rows_raw_vs_post_healer": 2400,
+    "prompt_conditions": 4,
+    "seeds": 5,
+    "validation_tasks": 20
+  },
+  "design": "2x2 prompt factorial \u00d7 paired Healer pre/post \u00d7 3 models",
+  "evalplus_executed": false,
+  "execution_environment": {
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "evalplus_version": "0.3.1",
+    "formal_evaluator": "wsl_linux_only",
+    "native_windows_evalplus_forbidden": true,
+    "powershell_may_only_invoke_wsl": true
+  },
+  "experiment_name": "Validation20 Scaffold \u00d7 Algorithm Scaffold \u00d7 Cumulative Healer",
+  "forbidden_practices": [
+    "no_2b_model",
+    "no_development_candidate_substitute",
+    "no_evalplus_before_blind_healer",
+    "no_pass_fail_gated_healer",
+    "no_cross_model_output_overwrite",
+    "no_native_windows_evalplus"
+  ],
+  "generation_options": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "h4_archive": {
+    "commit": "8954a257826582197ad7c0a10fe0c4b0c59fd4f9",
+    "development_replay_is_not_evalplus_qualification": true,
+    "engineering_status": "functionally_demonstrated",
+    "evalplus_executed": false,
+    "execution_safety_status": "not_established",
+    "implementation_frozen_for_validation": true,
+    "qualification_status": "development_candidate_not_frozen",
+    "rule_path": "agent_tools/finals_rebuild/mbpp_h4_top_level_demo_print_quarantine.py",
+    "rule_sha256": "1aabe131b7312c9bc1e0b34b20540bef6f7d3ec858c2c2994cf84bc84f85a513"
+  },
+  "healer_order": [
+    "pipeline_correction=extract_code",
+    "H1",
+    "H2",
+    "H3",
+    "H4",
+    "EvalPlus"
+  ],
+  "model_calls": 0,
+  "model_manifests": {
+    "qwen3.5:4b": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_4b/model_manifest.json",
+    "qwen3.5:9b": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_9b/model_manifest.json",
+    "qwen3:0.6b": "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen3_0_6b/model_manifest.json"
+  },
+  "models_axis": [
+    "qwen3.5:4b",
+    "qwen3.5:9b",
+    "qwen3:0.6b"
+  ],
+  "operator_split": {
+    "classmate": [
+      "qwen3:0.6b"
+    ],
+    "local_team": [
+      "qwen3.5:4b",
+      "qwen3.5:9b"
+    ]
+  },
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "preregistration_doc": "docs/\u6c7a\u8cfd\u6587\u4ef6/20260725_Stage2_Validation20_Scaffold_Healer_\u9810\u767b\u9304\u898f\u683c_v3.md",
+  "prompt_conditions": [
+    "Ab1",
+    "Ab2g",
+    "Ab2A",
+    "Ab2gA-factorial-v1"
+  ],
+  "prompt_separator": "\n\n--- VALIDATION20_PROMPT_CONDITION ---\n\n",
+  "removed_models": [
+    "2B"
+  ],
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "source_sha256": {
+    "agent_tools/finals_rebuild/extraction.py": "a59da1c0a76fe24e868a51481306a5ea09d8d8977c92aab38a6c0c4dc38feccf",
+    "agent_tools/finals_rebuild/mbpp_evaluator_blind_healer.py": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "agent_tools/finals_rebuild/mbpp_h1_h2_cumulative_pipeline.py": "2662adb0be59435cae696e0609fce98c7300f1dc0e90a5717176320c6c044590",
+    "agent_tools/finals_rebuild/mbpp_h2_module_assert_quarantine.py": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+    "agent_tools/finals_rebuild/mbpp_h3_empty_suite_pass_insertion.py": "8e7f7f36bd390b054b0e7ba5f57c4c0f98d7bce2d397bc53e9f15979be167c6e",
+    "agent_tools/finals_rebuild/mbpp_h4_top_level_demo_print_quarantine.py": "1aabe131b7312c9bc1e0b34b20540bef6f7d3ec858c2c2994cf84bc84f85a513",
+    "artifacts/public_benchmark_governance/frozen_split.csv": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "stages": [
+    "raw",
+    "pipeline_corrected",
+    "post_h1_h2_h3_h4"
+  ],
+  "status": "frozen_plans_not_executed",
+  "supersedes": "docs/\u6c7a\u8cfd\u6587\u4ef6/20260725_Stage2_Validation20_Scaffold_Healer_\u9810\u767b\u9304\u898f\u683c_v2.md",
+  "task_entry_points": {
+    "Mbpp/130": "max_occurrences",
+    "Mbpp/132": "tup_string",
+    "Mbpp/247": "lps",
+    "Mbpp/264": "dog_age",
+    "Mbpp/265": "list_split",
+    "Mbpp/281": "all_unique",
+    "Mbpp/4": "heap_queue_largest",
+    "Mbpp/405": "check_tuplex",
+    "Mbpp/418": "Find_Max",
+    "Mbpp/425": "count_element_in_list",
+    "Mbpp/456": "reverse_string_list",
+    "Mbpp/459": "remove_uppercase",
+    "Mbpp/564": "count_Pairs",
+    "Mbpp/569": "sort_sublists",
+    "Mbpp/580": "extract_even",
+    "Mbpp/586": "split_Arr",
+    "Mbpp/611": "max_of_nth",
+    "Mbpp/755": "second_smallest",
+    "Mbpp/775": "odd_position",
+    "Mbpp/86": "centered_hexagonal_number"
+  },
+  "task_ids": [
+    "Mbpp/4",
+    "Mbpp/86",
+    "Mbpp/130",
+    "Mbpp/132",
+    "Mbpp/247",
+    "Mbpp/264",
+    "Mbpp/265",
+    "Mbpp/281",
+    "Mbpp/405",
+    "Mbpp/418",
+    "Mbpp/425",
+    "Mbpp/456",
+    "Mbpp/459",
+    "Mbpp/564",
+    "Mbpp/569",
+    "Mbpp/580",
+    "Mbpp/586",
+    "Mbpp/611",
+    "Mbpp/755",
+    "Mbpp/775"
+  ]
+}

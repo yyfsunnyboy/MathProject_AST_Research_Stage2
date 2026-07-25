@@ -1,0 +1,21 @@
+{
+  "artifact_sha256": {
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/derived_summary_schema.json": "6d3375c2ffd69a64bb9e220303862eb89901bcacb8f20633ce533be2bc20607d",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/evaluation_plan.json": "69b6b43e26fab7b42e899c1bb625a4c296ca20ca0b283ce4697d6224fe360cfe",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/generation_plan.json": "3bca998ff42a01e14fe58bfe4d4af16b5e8cc72779fe791a06795ee3df7d4a02",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/master_manifest.json": "f5427bc5095c3a3a2a4fbe5739d61ec07da093043bbec1af5daf0440f967b3e6",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_4b/generation_cells.csv": "56fbad1fc1cf6439a91c893bca6c09cf4e67988de3b93563bb8b7759ccc9752b",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_4b/model_manifest.json": "8d2db9cdb501e630a3e4d7bd0ceb1ae5b7f434cd52a0f031529f6d59c386a95a",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_9b/generation_cells.csv": "05c36eca449d91c45ffe449aaf3c3fd1355372524abb183e21ebbb00a272a399",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen35_9b/model_manifest.json": "7b918dbac39ba5bd8eeb2ff404908ae49d49ea8660ac5ffdd9d6de3bb17e4c3b",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen3_0_6b/generation_cells.csv": "10077e2259e5c0ad07c8b2adcf592c809569486ca2947bc43662529f2851497d",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/models/qwen3_0_6b/model_manifest.json": "ccd58974fcd11014733ab092053457db103c218bf1e7935c2cbe2239dbe8f5d7",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/prompt_conditions.json": "48ef0c8464409d56e9294134ed52863aedd0c95d815fdd5ab77632eab43c358b",
+    "artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/task_manifest.json": "51d0e3dec12b967d7578bab309680a177709a591a9050d2443f5a1dacc917381"
+  },
+  "candidate_program_executed": false,
+  "evalplus_executed": false,
+  "model_calls": 0,
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "status": "frozen_plans_not_executed"
+}

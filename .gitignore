@@ -208,4 +208,10 @@ artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual
 !artifacts/public_benchmark_governance/h4_top_level_demo_print_quarantine_development_replay_v1/
 !artifacts/public_benchmark_governance/h4_top_level_demo_print_quarantine_development_replay_v1/**
 
+# Keep Validation20 Scaffold × Healer v3 frozen plans / manifests tracked.
+# Formal EvalPlus run directories remain ignored until a future freeze.
+!artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/
+!artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/**
+artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/evalplus_runs/
+artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/evalplus_runs/**
 
