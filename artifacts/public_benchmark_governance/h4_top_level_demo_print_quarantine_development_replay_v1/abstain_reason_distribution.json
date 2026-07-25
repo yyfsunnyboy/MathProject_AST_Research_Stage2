@@ -1,0 +1,27 @@
+{
+  "demo_print_cohort": {
+    "adjacent_assert_not_in_public_prompt": 4,
+    "h2_did_not_transform_no_provenance": 310,
+    "h2_input_top_level_print_count_not_one": 4,
+    "no_h2_input_top_level_print": 98,
+    "print_arguments_not_literal_or_entrypoint_literal_call": 4,
+    "source_truncated_or_completion_unknown": 59
+  },
+  "existing600": {
+    "adjacent_assert_not_in_public_prompt": 10,
+    "h2_did_not_transform_no_provenance": 347,
+    "h2_input_top_level_print_count_not_one": 6,
+    "missing_or_empty_source_for_h4": 68,
+    "no_h2_input_top_level_print": 60,
+    "print_arguments_not_literal_or_entrypoint_literal_call": 3,
+    "source_truncated_or_completion_unknown": 71
+  },
+  "h2_roster": {
+    "adjacent_assert_not_in_public_prompt": 4,
+    "h2_did_not_transform_no_provenance": 14,
+    "h2_input_top_level_print_count_not_one": 1,
+    "no_h2_input_top_level_print": 49,
+    "print_arguments_not_literal_or_entrypoint_literal_call": 4,
+    "source_truncated_or_completion_unknown": 6
+  }
+}

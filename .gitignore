@@ -204,4 +204,8 @@ artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analys
 artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001/
 artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001/**
 
+# Keep the H4 top-level demo/print quarantine development replay tracked.
+!artifacts/public_benchmark_governance/h4_top_level_demo_print_quarantine_development_replay_v1/
+!artifacts/public_benchmark_governance/h4_top_level_demo_print_quarantine_development_replay_v1/**
+
 

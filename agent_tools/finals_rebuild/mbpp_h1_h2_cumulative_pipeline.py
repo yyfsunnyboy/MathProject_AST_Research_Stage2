@@ -1,4 +1,4 @@
-"""Cumulative H1 → H2 → H3 pipeline for Stage2 MBPP+ development evidence.
+"""Cumulative H1 → H2 → H3 → H4 pipeline for Stage2 MBPP+ development evidence.
 
 Data flow (no model calls; rules are imported unchanged)::
 
@@ -14,9 +14,15 @@ Data flow (no model calls; rules are imported unchanged)::
   H3  insert_pass_for_empty_suite(...)          # empty suite recovery
         │
         ▼
+  H4  quarantine_post_h2_top_level_demo_print(...)  # post-H2 provenance-gated print merge
+        │
+        ▼
   EvalPlus-ready completion (hook only; this module never runs EvalPlus)
 
-H2 always receives H1's output_source; H3 always receives H2's output_source.
+Each stage input is previous stage's output_source. H4 is the one exception:
+because it requires structural H2 provenance (see
+mbpp_h4_top_level_demo_print_quarantine), it additionally receives H2's own
+input source and H2's changed flag, not only H3's output_source.
 """
 
 from __future__ import annotations
@@ -38,8 +44,18 @@ from agent_tools.finals_rebuild.mbpp_h3_empty_suite_pass_insertion import (
     RULE_ID as H3_RULE_ID,
     insert_pass_for_empty_suite,
 )
+from agent_tools.finals_rebuild.mbpp_h4_top_level_demo_print_quarantine import (
+    RULE_ID as H4_RULE_ID,
+    quarantine_post_h2_top_level_demo_print,
+)
 
-TRANSFORM_CLASSES = ("H1_ONLY", "H2_ONLY", "H3_ONLY", "H1_AND_H2", "H1_AND_H3", "H2_AND_H3", "H1_AND_H2_AND_H3", "UNCHANGED")
+TRANSFORM_CLASSES = (
+    "H1_ONLY", "H2_ONLY", "H3_ONLY", "H4_ONLY",
+    "H1_AND_H2", "H1_AND_H3", "H1_AND_H4", "H2_AND_H3", "H2_AND_H4", "H3_AND_H4",
+    "H1_AND_H2_AND_H3", "H1_AND_H2_AND_H4", "H1_AND_H3_AND_H4", "H2_AND_H3_AND_H4",
+    "H1_AND_H2_AND_H3_AND_H4",
+    "UNCHANGED"
+)
 
 
 def _sha256_text(value: str | None) -> str | None:
@@ -91,12 +107,14 @@ class CumulativePipelineResult:
     h1_output_sha256: str | None
     h2_output_sha256: str | None
     h3_output_sha256: str | None
+    h4_output_sha256: str | None
     final_source: str | None
     final_sha256: str | None
     transform_class: str
     h1: StageRecord
     h2: StageRecord
     h3: StageRecord
+    h4: StageRecord
     evalplus: dict[str, Any]
 
     def to_dict(self, *, include_sources: bool = False) -> dict[str, Any]:
@@ -112,31 +130,49 @@ class CumulativePipelineResult:
             "h1_output_sha256": self.h1_output_sha256,
             "h2_output_sha256": self.h2_output_sha256,
             "h3_output_sha256": self.h3_output_sha256,
+            "h4_output_sha256": self.h4_output_sha256,
             "final_sha256": self.final_sha256,
             "transform_class": self.transform_class,
             "h1": _stage(self.h1),
             "h2": _stage(self.h2),
             "h3": _stage(self.h3),
+            "h4": _stage(self.h4),
             "evalplus": dict(self.evalplus),
             "final_source": self.final_source if include_sources else None,
         }
 
 
-def classify_transform(*, h1_changed: bool, h2_changed: bool, h3_changed: bool) -> str:
+def classify_transform(*, h1_changed: bool, h2_changed: bool, h3_changed: bool, h4_changed: bool = False) -> str:
+    if h1_changed and h2_changed and h3_changed and h4_changed:
+        return "H1_AND_H2_AND_H3_AND_H4"
     if h1_changed and h2_changed and h3_changed:
         return "H1_AND_H2_AND_H3"
+    if h1_changed and h2_changed and h4_changed:
+        return "H1_AND_H2_AND_H4"
+    if h1_changed and h3_changed and h4_changed:
+        return "H1_AND_H3_AND_H4"
+    if h2_changed and h3_changed and h4_changed:
+        return "H2_AND_H3_AND_H4"
     if h1_changed and h2_changed:
         return "H1_AND_H2"
     if h1_changed and h3_changed:
         return "H1_AND_H3"
+    if h1_changed and h4_changed:
+        return "H1_AND_H4"
     if h2_changed and h3_changed:
         return "H2_AND_H3"
+    if h2_changed and h4_changed:
+        return "H2_AND_H4"
+    if h3_changed and h4_changed:
+        return "H3_AND_H4"
     if h1_changed:
         return "H1_ONLY"
     if h2_changed:
         return "H2_ONLY"
     if h3_changed:
         return "H3_ONLY"
+    if h4_changed:
+        return "H4_ONLY"
     return "UNCHANGED"
 
 
@@ -308,6 +344,83 @@ def apply_h3_stage(
     )
 
 
+def apply_h4_stage(
+    *,
+    source: str | None,
+    h2_input_source: str | None,
+    h2_changed: bool,
+    entry_point: str,
+    extraction_unambiguous: bool | None,
+    source_complete: bool | None,
+    public_assert_fingerprints: Iterable[str] | None = None,
+) -> StageRecord:
+    """``source`` is H3's output_source (H4's input, per fixed H1->H2->H3->H4
+    order). ``h2_input_source`` is H2's own input (H1's output_source) and
+    ``h2_changed`` is H2's StageRecord.changed for this cell -- both required
+    for H4's post-H2 structural provenance check; see
+    mbpp_h4_top_level_demo_print_quarantine for why H4 cannot safely reuse
+    the pre-H2 top-level-assert guard shape.
+    """
+    if source is None or not str(source).strip():
+        digest = _sha256_text(source) if isinstance(source, str) else None
+        return StageRecord(
+            stage="H4",
+            rule_id=H4_RULE_ID,
+            status="abstained",
+            changed=False,
+            abstained=True,
+            reason="missing_or_empty_source_for_h4",
+            input_sha256=digest,
+            output_sha256=digest,
+            input_source=source,
+            output_source=source,
+            diff="",
+            extras={
+                "extraction_unambiguous": extraction_unambiguous,
+                "source_complete": source_complete,
+                "h2_changed": h2_changed,
+                "public_assert_fingerprints_provided": public_assert_fingerprints is not None,
+            },
+        )
+
+    decision = quarantine_post_h2_top_level_demo_print(
+        h2_input_source=h2_input_source or "",
+        h4_input_source=source,
+        h2_changed=h2_changed,
+        entry_point=entry_point,
+        extraction_unambiguous=extraction_unambiguous,
+        source_complete=source_complete,
+        public_assert_fingerprints=public_assert_fingerprints or [],
+    )
+    return StageRecord(
+        stage="H4",
+        rule_id=decision.rule_id,
+        status=(
+            "transformed"
+            if decision.transformed
+            else ("abstained" if decision.abstained else "no_op")
+        ),
+        changed=decision.transformed,
+        abstained=decision.abstained,
+        reason=decision.reason,
+        input_sha256=decision.source_sha256,
+        output_sha256=decision.output_sha256,
+        input_source=source,
+        output_source=decision.output_source,
+        diff=_unified_diff(
+            source,
+            decision.output_source,
+            from_label="h3_output",
+            to_label="h4_output",
+        ),
+        extras={
+            "triggered": decision.triggered,
+            "guard_results": decision.guard_results,
+            "h2_changed": h2_changed,
+        },
+    )
+
+
 def evalplus_stage_hook(
     *,
     final_source: str | None,
@@ -329,7 +442,7 @@ def evalplus_stage_hook(
     }
 
 
-def run_h1_then_h2_then_h3(
+def run_h1_then_h2_then_h3_then_h4(
     *,
     normalized_source: str | None,
     entry_point: str,
@@ -339,8 +452,9 @@ def run_h1_then_h2_then_h3(
     source_complete: bool | None,
     task_id: str | None = None,
     execute_evalplus: bool = False,
+    public_assert_fingerprints: Iterable[str] | None = None,
 ) -> CumulativePipelineResult:
-    """Apply H1 then H2 then H3. Each stage input is previous stage's output_source."""
+    """Apply H1 then H2 then H3 then H4. Each stage input is previous stage's output_source."""
     h1 = apply_h1_stage(
         normalized_source=normalized_source,
         entry_point=entry_point,
@@ -359,10 +473,19 @@ def run_h1_then_h2_then_h3(
         extraction_unambiguous=extraction_unambiguous,
         source_complete=source_complete,
     )
-    transform_class = classify_transform(
-        h1_changed=h1.changed, h2_changed=h2.changed, h3_changed=h3.changed
+    h4 = apply_h4_stage(
+        source=h3.output_source,
+        h2_input_source=h1.output_source,
+        h2_changed=h2.changed,
+        entry_point=entry_point,
+        extraction_unambiguous=extraction_unambiguous,
+        source_complete=source_complete,
+        public_assert_fingerprints=public_assert_fingerprints,
     )
-    final_source = h3.output_source
+    transform_class = classify_transform(
+        h1_changed=h1.changed, h2_changed=h2.changed, h3_changed=h3.changed, h4_changed=h4.changed
+    )
+    final_source = h4.output_source
     evalplus = evalplus_stage_hook(
         final_source=final_source,
         task_id=task_id,
@@ -373,13 +496,40 @@ def run_h1_then_h2_then_h3(
         h1_output_sha256=h1.output_sha256,
         h2_output_sha256=h2.output_sha256,
         h3_output_sha256=h3.output_sha256,
+        h4_output_sha256=h4.output_sha256,
         final_source=final_source,
-        final_sha256=h3.output_sha256,
+        final_sha256=h4.output_sha256,
         transform_class=transform_class,
         h1=h1,
         h2=h2,
         h3=h3,
+        h4=h4,
         evalplus=evalplus,
+    )
+
+
+def run_h1_then_h2_then_h3(
+    *,
+    normalized_source: str | None,
+    entry_point: str,
+    expected_positional_arities: Iterable[int],
+    generation_truncated: bool,
+    extraction_unambiguous: bool | None,
+    source_complete: bool | None,
+    task_id: str | None = None,
+    execute_evalplus: bool = False,
+) -> CumulativePipelineResult:
+    """Deprecated: use run_h1_then_h2_then_h3_then_h4 instead. Kept for backward compatibility."""
+    return run_h1_then_h2_then_h3_then_h4(
+        normalized_source=normalized_source,
+        entry_point=entry_point,
+        expected_positional_arities=expected_positional_arities,
+        generation_truncated=generation_truncated,
+        extraction_unambiguous=extraction_unambiguous,
+        source_complete=source_complete,
+        task_id=task_id,
+        execute_evalplus=execute_evalplus,
+        public_assert_fingerprints=None,
     )
 
 
@@ -394,8 +544,8 @@ def run_h1_then_h2(
     task_id: str | None = None,
     execute_evalplus: bool = False,
 ) -> CumulativePipelineResult:
-    """Deprecated: use run_h1_then_h2_then_h3 instead. Kept for backward compatibility."""
-    return run_h1_then_h2_then_h3(
+    """Deprecated: use run_h1_then_h2_then_h3_then_h4 instead. Kept for backward compatibility."""
+    return run_h1_then_h2_then_h3_then_h4(
         normalized_source=normalized_source,
         entry_point=entry_point,
         expected_positional_arities=expected_positional_arities,
@@ -404,6 +554,7 @@ def run_h1_then_h2(
         source_complete=source_complete,
         task_id=task_id,
         execute_evalplus=execute_evalplus,
+        public_assert_fingerprints=None,
     )
 
 

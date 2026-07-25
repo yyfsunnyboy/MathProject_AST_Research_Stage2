@@ -1,0 +1,93 @@
+{
+  "cross_cohort_note": "Existing600 (A), H2 91-cell roster (B), and the demo-print original 500-cell cohort (C) are independent populations and are never summed into a single count. Each cohort's stats above are self-contained.",
+  "demo_print_cohort": {
+    "cohort_size": 500,
+    "execution_safety_status": "not_established",
+    "h2_provenance_candidate_count": 131,
+    "h4_abstained_count": 479,
+    "h4_eligible_count": 21,
+    "h4_only_observed_count": 0,
+    "h4_only_structurally_impossible_under_current_stage_contract": true,
+    "h4_transformed_count": 21,
+    "new_execution_regression": "not_evaluated",
+    "note_on_transformed_known_pass": "transformed_known_pass counts cells whose SOURCE BYTES changed and whose raw status is known PASS; H4's own function_segments_unchanged guard structurally guarantees the tested function body is byte-identical, but whether the transformed source still evaluates to PASS is NOT verified in this round (no EvalPlus execution).",
+    "parse_rescue_by_stage": {
+      "h1": 0,
+      "h2": 0,
+      "h3": 0,
+      "h4": 0
+    },
+    "parse_rescue_total": 0,
+    "preserved_known_pass_end_to_end_unchanged_bytes": 75,
+    "transform_classes": {
+      "H1_ONLY": 10,
+      "H2_AND_H4": 21,
+      "H2_ONLY": 110,
+      "UNCHANGED": 359
+    },
+    "transformed_known_pass": 17
+  },
+  "existing600": {
+    "cohort_size": 600,
+    "execution_safety_status": "not_established",
+    "h2_provenance_candidate_count": 114,
+    "h4_abstained_count": 565,
+    "h4_eligible_count": 35,
+    "h4_only_observed_count": 0,
+    "h4_only_structurally_impossible_under_current_stage_contract": true,
+    "h4_transformed_count": 35,
+    "new_execution_regression": "not_evaluated",
+    "note_on_transformed_known_pass": "transformed_known_pass counts cells whose SOURCE BYTES changed and whose raw status is known PASS; H4's own function_segments_unchanged guard structurally guarantees the tested function body is byte-identical, but whether the transformed source still evaluates to PASS is NOT verified in this round (no EvalPlus execution).",
+    "parse_rescue_by_stage": {
+      "h1": 0,
+      "h2": 0,
+      "h3": 3,
+      "h4": 0
+    },
+    "parse_rescue_total": 3,
+    "preserved_known_pass_end_to_end_unchanged_bytes": 99,
+    "transform_classes": {
+      "H1_ONLY": 41,
+      "H2_AND_H4": 35,
+      "H2_ONLY": 79,
+      "H3_ONLY": 3,
+      "UNCHANGED": 442
+    },
+    "transformed_known_pass": 16
+  },
+  "fixed_conclusions": {
+    "engineering_status": "functionally_demonstrated",
+    "evalplus_executed": false,
+    "execution_safety_status": "not_established",
+    "new_execution_regression": "not_evaluated",
+    "new_verified_rescue": 0,
+    "qualification_status": "development_candidate_not_frozen"
+  },
+  "h2_roster": {
+    "cohort_size": 91,
+    "execution_safety_status": "not_established",
+    "h2_provenance_candidate_count": 71,
+    "h4_abstained_count": 78,
+    "h4_eligible_count": 13,
+    "h4_only_observed_count": 0,
+    "h4_only_structurally_impossible_under_current_stage_contract": true,
+    "h4_transformed_count": 13,
+    "new_execution_regression": "not_evaluated",
+    "note_on_transformed_known_pass": "transformed_known_pass counts cells whose SOURCE BYTES changed and whose raw status is known PASS; H4's own function_segments_unchanged guard structurally guarantees the tested function body is byte-identical, but whether the transformed source still evaluates to PASS is NOT verified in this round (no EvalPlus execution).",
+    "parse_rescue_by_stage": {
+      "h1": 0,
+      "h2": 0,
+      "h3": 0,
+      "h4": 0
+    },
+    "parse_rescue_total": 0,
+    "preserved_known_pass_end_to_end_unchanged_bytes": 3,
+    "transform_classes": {
+      "H1_ONLY": 7,
+      "H2_AND_H4": 13,
+      "H2_ONLY": 58,
+      "UNCHANGED": 13
+    },
+    "transformed_known_pass": 10
+  }
+}

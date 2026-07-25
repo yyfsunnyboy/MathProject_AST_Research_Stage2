@@ -1,0 +1,41 @@
+{
+  "artifact_id": "h4_top_level_demo_print_quarantine_development_replay_v1",
+  "candidate_executions": 0,
+  "cohorts": {
+    "Existing600": {
+      "authority": "healer_h0_h1_functional_evaluation_v1",
+      "size": 600
+    },
+    "H2_roster": {
+      "authority": "h2_module_assert_quarantine_development_static_audit_v1",
+      "size": 91
+    },
+    "demo_print_cohort": {
+      "authority": "top_level_demo_print_quarantine_development_v1",
+      "size": 500
+    }
+  },
+  "eligibility_uses_execution_outcome": false,
+  "evalplus_executions": 0,
+  "fixed_conclusions": {
+    "engineering_status": "functionally_demonstrated",
+    "evalplus_executed": false,
+    "execution_safety_status": "not_established",
+    "new_execution_regression": "not_evaluated",
+    "new_verified_rescue": 0,
+    "qualification_status": "development_candidate_not_frozen"
+  },
+  "generator_script": "scripts/run_mbpp_h1_h2_h3_h4_cumulative_replay_v1.py",
+  "model_calls": 0,
+  "output_files_sha256": {
+    "abstain_reason_distribution.json": "bf9cd62135f2f21c90689486d15198644c995af5fc2dc6119d10b0cf2741bc83",
+    "summary.json": "ed60bfbd3cd80913d648188599be9b4b8fd64da667688642ce089f54842d97db",
+    "triggered_cell_ledger.csv": "a90f4046f87c5385bff76c38719c2513bb864b97cd02df5151d438967342dbe6"
+  },
+  "public_assert_fingerprint_source": "data/mbpp_plus/tasks.jsonl (public prompt text only; no hidden tests/canonical solutions per dataset_manifest.json)",
+  "purpose": "Deterministic H1->H2->H3->H4 replay across three independent cohorts; no model calls, no EvalPlus, no candidate execution.",
+  "rule_files": {
+    "h4": "agent_tools/finals_rebuild/mbpp_h4_top_level_demo_print_quarantine.py",
+    "pipeline": "agent_tools/finals_rebuild/mbpp_h1_h2_cumulative_pipeline.py"
+  }
+}
