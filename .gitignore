@@ -198,5 +198,10 @@ artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analys
 !artifacts/public_benchmark_governance/qwen06_h2_replay_pipeline_v1/
 !artifacts/public_benchmark_governance/qwen06_h2_replay_pipeline_v1/**
 
+# Keep the qwen06 H2 full-replay evaluation runner stub tracked (not manual_run_001).
+!artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/
+!artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/**
+artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001/
+artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001/**
 
 

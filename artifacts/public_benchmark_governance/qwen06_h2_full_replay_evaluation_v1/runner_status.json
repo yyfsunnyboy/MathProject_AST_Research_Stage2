@@ -1,0 +1,16 @@
+{
+  "conditions": [
+    "Ab1-Raw",
+    "Ab1-H2",
+    "Ab2g-Raw",
+    "Ab2g-H2"
+  ],
+  "entrypoint": "python scripts/run_qwen06_h2_replay_pipeline_v1.py run-full-benchmark --dataset all --output-dir artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001 --parallel 1",
+  "h2_rule_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "h2_rule_status": "development_candidate_not_frozen",
+  "itt_states_expected": 2168,
+  "manual_run_001_executed": false,
+  "model_calls": 0,
+  "status": "RUNNER_ENABLED_NOT_EXECUTED",
+  "task_count_expected": 542
+}

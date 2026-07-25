@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent H2 replay pipeline for qwen3:0.6b public-benchmark runs.
 
-Data-flow position (fixed extractor → H2 → four conditions):
+Data-flow position (fixed extractor → H2 → four conditions → EvalPlus):
 
   generation_attempts / treatment.jsonl completions
         │
@@ -13,10 +13,20 @@ Data-flow position (fixed extractor → H2 → four conditions):
         │
         ├── Ab1-Raw / Ab2g-Raw   (identity of extracted completion)
         └── Ab1-H2 / Ab2g-H2     (H2Decision.output_source)
+        │
+        ▼
+  EvalPlus base/plus (via run-full-benchmark; never regenerates the model)
 
-This module never calls a model, never runs EvalPlus, never modifies H2, and
-never overwrites Ab3 or existing run artifacts.  Full ITT replay is available
-as a gated function but is not executed by the default smoke entrypoint.
+Unique full-benchmark entrypoint::
+
+  python scripts/run_qwen06_h2_replay_pipeline_v1.py run-full-benchmark \\
+    --dataset all \\
+    --output-dir artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1/manual_run_001 \\
+    --parallel 1
+
+This module never calls a model, never modifies H2, and never overwrites Ab3
+or existing 0.6B run artifacts.  Use ``--dry-run`` to materialize the 2,168
+ITT states without invoking EvalPlus.
 """
 
 from __future__ import annotations
@@ -25,9 +35,13 @@ import argparse
 import ast
 import hashlib
 import json
+import os
+import platform
+import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
-from typing import Any, Mapping, Sequence
+from typing import Any, Callable, Mapping, Sequence
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 if str(REPO_ROOT) not in sys.path:
@@ -74,6 +88,22 @@ AB3_BASELINES = {
 TREATMENTS = ("ab1", "ab2g")
 CONDITIONS = ("Ab1-Raw", "Ab1-H2", "Ab2g-Raw", "Ab2g-H2")
 PIPELINE_STATUS = "H2_REPLAY_PIPELINE_WIRED_SMOKE_ONLY_NOT_FULL_ITT"
+EXPECTED_TASK_COUNTS = {"humaneval": 164, "mbpp": 378}
+EXPECTED_ITT_STATES_ALL = 2168  # 542 tasks × 4 conditions
+FULL_EVAL_PACKAGE_RELATIVE = Path(
+    "artifacts/public_benchmark_governance/qwen06_h2_full_replay_evaluation_v1"
+)
+DEFAULT_FULL_RUN_OUTPUT = FULL_EVAL_PACKAGE_RELATIVE / "manual_run_001"
+EXPECTED_EVALPLUS_VERSION = "0.3.1"
+EVALPLUS_ENGINE = "evalplus_0.3.1_cli_full_benchmark"
+PROTECTED_RUN_FILES = (
+    Path("runs/he_qwen06/ab1.jsonl"),
+    Path("runs/he_qwen06/ab2g.jsonl"),
+    Path("runs/he_qwen06/generation_attempts.jsonl"),
+    Path("runs/mb_qwen06/ab1.jsonl"),
+    Path("runs/mb_qwen06/ab2g.jsonl"),
+    Path("runs/mb_qwen06/generation_attempts.jsonl"),
+)
 
 
 class H2ReplayError(RuntimeError):
@@ -742,7 +772,7 @@ def replay_itt_roster(
     repo_root: Path = REPO_ROOT,
     max_tasks: int | None = None,
 ) -> list[dict[str, Any]]:
-    """Full ITT four-condition builder. Not invoked by default smoke."""
+    """Full ITT four-condition builder for one dataset."""
     roster = load_task_roster(dataset, repo_root)
     if max_tasks is not None:
         roster = roster[:max_tasks]
@@ -762,6 +792,531 @@ def replay_itt_roster(
             )
         )
     return records
+
+
+def resolve_datasets(dataset: str) -> list[str]:
+    if dataset == "all":
+        return ["humaneval", "mbpp"]
+    _require(dataset in TASK_FILES, f"unsupported dataset: {dataset}")
+    return [dataset]
+
+
+def expected_itt_states(datasets: Sequence[str]) -> int:
+    return sum(EXPECTED_TASK_COUNTS[name] * len(CONDITIONS) for name in datasets)
+
+
+def snapshot_protected_inputs(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    hashes = ab3_baseline_hashes(repo_root)
+    hashes[RULE_RELATIVE.as_posix()] = verify_h2_rule(repo_root)
+    for relative in PROTECTED_RUN_FILES:
+        path = repo_root / relative
+        _require(path.is_file(), f"missing protected input: {relative.as_posix()}")
+        hashes[relative.as_posix()] = _sha256_bytes(path.read_bytes())
+    return hashes
+
+
+def assert_protected_inputs_unchanged(
+    before: Mapping[str, str], repo_root: Path = REPO_ROOT
+) -> None:
+    after = snapshot_protected_inputs(repo_root)
+    _require(before == after, "protected H2/Ab3/0.6B inputs changed during run")
+
+
+def materialize_full_benchmark_cells(
+    *,
+    datasets: Sequence[str],
+    repo_root: Path = REPO_ROOT,
+) -> list[dict[str, Any]]:
+    cells: list[dict[str, Any]] = []
+    for dataset in datasets:
+        roster = load_task_roster(dataset, repo_root)
+        _require(
+            len(roster) == EXPECTED_TASK_COUNTS[dataset],
+            f"{dataset} roster size drift: {len(roster)}",
+        )
+        cells.extend(replay_itt_roster(dataset=dataset, repo_root=repo_root))
+    _require(
+        len(cells) == expected_itt_states(datasets),
+        f"ITT state count drift: {len(cells)}",
+    )
+    return cells
+
+
+def cell_ledger_row(cell: Mapping[str, Any]) -> dict[str, Any]:
+    """Serializable per-condition ITT row (omit bulky source body)."""
+    return {
+        "dataset": cell["dataset"],
+        "task_id": cell["task_id"],
+        "treatment": cell["treatment"],
+        "condition": cell["condition"],
+        "entry_point": cell["entry_point"],
+        "input_sha256": cell.get("input_sha256"),
+        "output_sha256": cell.get("output_sha256"),
+        "rule_id": cell.get("rule_id"),
+        "rule_sha256": cell.get("rule_sha256"),
+        "rule_status": cell.get("rule_status"),
+        "triggered": cell.get("triggered"),
+        "transformed": cell.get("transformed"),
+        "abstained": cell.get("abstained"),
+        "reason": cell.get("reason"),
+        "guard_results": cell.get("guard_results"),
+        "extraction_unambiguous": cell.get("extraction_unambiguous"),
+        "source_complete": cell.get("source_complete"),
+        "missing_extracted_completion": cell.get("missing_extracted_completion"),
+        "byte_identical_to_input": cell.get("byte_identical_to_input"),
+    }
+
+
+def write_condition_samples_jsonl(
+    *,
+    cells: Sequence[Mapping[str, Any]],
+    dataset: str,
+    condition: str,
+    path: Path,
+) -> dict[str, Any]:
+    """Write full-ITT EvalPlus samples; missing completions use empty solution."""
+    selected = [cell for cell in cells if cell["dataset"] == dataset and cell["condition"] == condition]
+    _require(
+        len(selected) == EXPECTED_TASK_COUNTS[dataset],
+        f"{dataset}/{condition} sample count drift: {len(selected)}",
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    missing = 0
+    with path.open("w", encoding="utf-8", newline="\n") as handle:
+        for cell in selected:
+            if cell.get("missing_extracted_completion") or not cell.get("output_source"):
+                missing += 1
+                payload = {"task_id": cell["task_id"], "solution": ""}
+            else:
+                payload = {
+                    "task_id": cell["task_id"],
+                    "completion": cell["output_source"],
+                }
+            handle.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    return {
+        "path": path.as_posix(),
+        "dataset": dataset,
+        "condition": condition,
+        "task_count": len(selected),
+        "missing_extracted_completion": missing,
+        "sha256": _sha256_bytes(path.read_bytes()),
+    }
+
+
+def write_full_benchmark_samples(
+    *,
+    cells: Sequence[Mapping[str, Any]],
+    datasets: Sequence[str],
+    samples_dir: Path,
+) -> list[dict[str, Any]]:
+    manifests: list[dict[str, Any]] = []
+    for dataset in datasets:
+        for condition in CONDITIONS:
+            path = samples_dir / dataset / f"{condition}.jsonl"
+            manifests.append(
+                write_condition_samples_jsonl(
+                    cells=cells,
+                    dataset=dataset,
+                    condition=condition,
+                    path=path,
+                )
+            )
+    return manifests
+
+
+def _strict_status(base: str, plus: str) -> str:
+    return "pass" if base == "pass" and plus == "pass" else "fail"
+
+
+def classify_paired_outcome(
+    *,
+    raw_strict: str,
+    h2_strict: str,
+    missing: bool,
+) -> str:
+    if missing:
+        return "missing_extracted_completion"
+    if raw_strict == "pass" and h2_strict == "pass":
+        return "preserved_pass"
+    if raw_strict == "pass" and h2_strict != "pass":
+        return "regression"
+    if raw_strict != "pass" and h2_strict == "pass":
+        return "verified_rescue"
+    return "unchanged_failure"
+
+
+def parse_evalplus_result_file(path: Path) -> dict[str, dict[str, str]]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    _require(isinstance(data, dict) and isinstance(data.get("eval"), dict), f"bad EvalPlus result: {path}")
+    out: dict[str, dict[str, str]] = {}
+    for task_id, entries in data["eval"].items():
+        _require(isinstance(entries, list) and entries, f"missing entries for {task_id}")
+        entry = entries[0]
+        base = str(entry.get("base_status", "")).lower()
+        plus = str(entry.get("plus_status", "")).lower()
+        out[task_id] = {
+            "base_status": base,
+            "plus_status": plus,
+            "strict_status": _strict_status(base, plus),
+        }
+    return out
+
+
+def invoke_evalplus_cli(
+    *,
+    dataset: str,
+    samples_path: Path,
+    timeout_seconds: float = 7200.0,
+) -> subprocess.CompletedProcess[str]:
+    _require(
+        not (os.name == "nt" or sys.platform.startswith("win")),
+        "full EvalPlus requires WSL/Linux (native Windows aborted)",
+    )
+    cmd = [
+        sys.executable,
+        "-m",
+        "evalplus.evaluate",
+        "--dataset",
+        dataset,
+        "--samples",
+        str(samples_path),
+    ]
+    return subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=timeout_seconds,
+        check=False,
+    )
+
+
+EvaluateFn = Callable[..., dict[str, dict[str, str]]]
+
+
+def default_evaluate_condition(
+    *,
+    dataset: str,
+    condition: str,
+    samples_path: Path,
+    eval_output_dir: Path,
+    parallel: int,
+) -> dict[str, dict[str, str]]:
+    _require(parallel == 1, "parallel must equal 1")
+    eval_output_dir.mkdir(parents=True, exist_ok=True)
+    proc = invoke_evalplus_cli(dataset=dataset, samples_path=samples_path)
+    (eval_output_dir / "stdout.txt").write_text(proc.stdout or "", encoding="utf-8")
+    (eval_output_dir / "stderr.txt").write_text(proc.stderr or "", encoding="utf-8")
+    _require(
+        proc.returncode == 0,
+        f"EvalPlus failed for {dataset}/{condition}: rc={proc.returncode}",
+    )
+    result_path = samples_path.with_name(samples_path.stem + "_eval_results.json")
+    _require(result_path.is_file(), f"missing EvalPlus result: {result_path}")
+    # Keep a copy under the run output tree without touching the samples sibling
+    # only when results already sit next to samples (EvalPlus default).
+    copied = eval_output_dir / "eval_results.json"
+    copied.write_bytes(result_path.read_bytes())
+    parsed = parse_evalplus_result_file(copied)
+    (eval_output_dir / "eval_summary.json").write_bytes(
+        _canonical_json(
+            {
+                "dataset": dataset,
+                "condition": condition,
+                "task_count": len(parsed),
+                "base_pass": sum(v["base_status"] == "pass" for v in parsed.values()),
+                "plus_pass": sum(v["plus_status"] == "pass" for v in parsed.values()),
+                "strict_pass": sum(v["strict_status"] == "pass" for v in parsed.values()),
+                "evaluator_engine": EVALPLUS_ENGINE,
+                "evalplus_version": EXPECTED_EVALPLUS_VERSION,
+                "parallel": 1,
+            }
+        )
+    )
+    return parsed
+
+
+def build_paired_cell_ledger(
+    *,
+    cells: Sequence[Mapping[str, Any]],
+    eval_by_key: Mapping[tuple[str, str, str], Mapping[str, str]],
+) -> list[dict[str, Any]]:
+    by_identity: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for cell in cells:
+        key = (cell["dataset"], cell["task_id"], cell["treatment"])
+        by_identity.setdefault(key, {})[cell["condition"]] = cell
+
+    paired: list[dict[str, Any]] = []
+    for (dataset, task_id, treatment), cond_map in sorted(by_identity.items()):
+        raw_name = "Ab1-Raw" if treatment == "ab1" else "Ab2g-Raw"
+        h2_name = "Ab1-H2" if treatment == "ab1" else "Ab2g-H2"
+        raw_cell = cond_map[raw_name]
+        h2_cell = cond_map[h2_name]
+        raw_eval = eval_by_key[(dataset, raw_name, task_id)]
+        h2_eval = eval_by_key[(dataset, h2_name, task_id)]
+        missing = bool(raw_cell.get("missing_extracted_completion"))
+        outcome = classify_paired_outcome(
+            raw_strict=raw_eval["strict_status"],
+            h2_strict=h2_eval["strict_status"],
+            missing=missing,
+        )
+        paired.append(
+            {
+                "dataset": dataset,
+                "task_id": task_id,
+                "treatment": treatment,
+                "entry_point": raw_cell["entry_point"],
+                "raw_condition": raw_name,
+                "h2_condition": h2_name,
+                "missing_extracted_completion": missing,
+                "triggered": h2_cell.get("triggered"),
+                "transformed": h2_cell.get("transformed"),
+                "abstained": h2_cell.get("abstained"),
+                "reason": h2_cell.get("reason"),
+                "guard_results": h2_cell.get("guard_results"),
+                "extraction_unambiguous": h2_cell.get("extraction_unambiguous"),
+                "source_complete": h2_cell.get("source_complete"),
+                "input_sha256": h2_cell.get("input_sha256"),
+                "output_sha256": h2_cell.get("output_sha256"),
+                "rule_id": h2_cell.get("rule_id"),
+                "rule_sha256": h2_cell.get("rule_sha256"),
+                "rule_status": h2_cell.get("rule_status"),
+                "raw_base_status": raw_eval["base_status"],
+                "raw_plus_status": raw_eval["plus_status"],
+                "raw_strict_status": raw_eval["strict_status"],
+                "h2_base_status": h2_eval["base_status"],
+                "h2_plus_status": h2_eval["plus_status"],
+                "h2_strict_status": h2_eval["strict_status"],
+                "outcome": outcome,
+            }
+        )
+    return paired
+
+
+def aggregate_full_benchmark_stats(
+    *,
+    cells: Sequence[Mapping[str, Any]],
+    paired: Sequence[Mapping[str, Any]],
+    datasets: Sequence[str],
+) -> dict[str, Any]:
+    h2_cells = [cell for cell in cells if cell["condition"].endswith("-H2")]
+    outcome_counts = Counter(row["outcome"] for row in paired)
+    return {
+        "datasets": list(datasets),
+        "task_count": sum(EXPECTED_TASK_COUNTS[name] for name in datasets),
+        "itt_states": len(cells),
+        "paired_rows": len(paired),
+        "conditions": list(CONDITIONS),
+        "triggered": sum(1 for cell in h2_cells if cell.get("triggered")),
+        "transformed": sum(1 for cell in h2_cells if cell.get("transformed")),
+        "abstained": sum(1 for cell in h2_cells if cell.get("abstained")),
+        "missing_extracted_completion": sum(
+            1 for cell in cells if cell.get("missing_extracted_completion")
+        ),
+        "verified_rescue": outcome_counts.get("verified_rescue", 0),
+        "regression": outcome_counts.get("regression", 0),
+        "preserved_pass": outcome_counts.get("preserved_pass", 0),
+        "unchanged_failure": outcome_counts.get("unchanged_failure", 0),
+        "missing_extracted_completion_paired": outcome_counts.get(
+            "missing_extracted_completion", 0
+        ),
+        "outcomes": dict(sorted(outcome_counts.items())),
+        "model_calls": 0,
+    }
+
+
+def run_full_benchmark(
+    *,
+    dataset: str,
+    output_dir: Path,
+    parallel: int,
+    dry_run: bool = False,
+    repo_root: Path = REPO_ROOT,
+    evaluate_fn: EvaluateFn | None = None,
+) -> dict[str, Any]:
+    """Unique full-benchmark path: replay H2 on saved Ab1/Ab2g, then EvalPlus."""
+    _require(parallel == 1, "parallel must equal 1")
+    if not output_dir.is_absolute():
+        output_dir = (repo_root / output_dir).resolve()
+    else:
+        output_dir = output_dir.resolve()
+    _require(not output_dir.exists(), f"output exists; refuse overwrite: {output_dir}")
+
+    datasets = resolve_datasets(dataset)
+    before = snapshot_protected_inputs(repo_root)
+    cells = materialize_full_benchmark_cells(datasets=datasets, repo_root=repo_root)
+
+    output_dir.mkdir(parents=True, exist_ok=False)
+    samples_dir = output_dir / "samples"
+    sample_manifests = write_full_benchmark_samples(
+        cells=cells, datasets=datasets, samples_dir=samples_dir
+    )
+    ledger_rows = [cell_ledger_row(cell) for cell in cells]
+    (output_dir / "cell_ledger.jsonl").write_bytes(
+        "".join(
+            json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
+            for row in ledger_rows
+        ).encode("utf-8")
+    )
+
+    plan = {
+        "command": "run-full-benchmark",
+        "dataset_arg": dataset,
+        "datasets": list(datasets),
+        "output_dir": output_dir.as_posix(),
+        "parallel": parallel,
+        "dry_run": dry_run,
+        "itt_states": len(cells),
+        "expected_itt_states": expected_itt_states(datasets),
+        "sample_files": sample_manifests,
+        "conditions": list(CONDITIONS),
+        "model_calls": 0,
+        "evalplus_engine": EVALPLUS_ENGINE,
+        "h2_rule_sha256": before[RULE_RELATIVE.as_posix()],
+        "protected_input_sha256": before,
+    }
+    (output_dir / "execution_plan.json").write_bytes(_canonical_json(plan))
+
+    if dry_run:
+        dry_manifest = {
+            "status": "dry_run_materialized_not_evaluated",
+            "evalplus_executed": False,
+            "model_calls": 0,
+            "itt_states": len(cells),
+            "paired_rows_expected": len(cells) // 2,
+            "datasets": list(datasets),
+            "sample_files": sample_manifests,
+            "stats_preview": {
+                "triggered": sum(
+                    1
+                    for cell in cells
+                    if cell["condition"].endswith("-H2") and cell.get("triggered")
+                ),
+                "transformed": sum(
+                    1
+                    for cell in cells
+                    if cell["condition"].endswith("-H2") and cell.get("transformed")
+                ),
+                "abstained": sum(
+                    1
+                    for cell in cells
+                    if cell["condition"].endswith("-H2") and cell.get("abstained")
+                ),
+                "missing_extracted_completion": sum(
+                    1 for cell in cells if cell.get("missing_extracted_completion")
+                ),
+            },
+        }
+        (output_dir / "dry_run_manifest.json").write_bytes(_canonical_json(dry_manifest))
+        assert_protected_inputs_unchanged(before, repo_root)
+        return dry_manifest
+
+    evaluator = evaluate_fn or default_evaluate_condition
+    eval_by_key: dict[tuple[str, str, str], dict[str, str]] = {}
+    for sample in sample_manifests:
+        ds = sample["dataset"]
+        condition = sample["condition"]
+        samples_path = Path(sample["path"])
+        if not samples_path.is_absolute():
+            samples_path = repo_root / samples_path
+        parsed = evaluator(
+            dataset=ds,
+            condition=condition,
+            samples_path=samples_path,
+            eval_output_dir=output_dir / "evalplus" / ds / condition,
+            parallel=parallel,
+        )
+        _require(
+            len(parsed) == EXPECTED_TASK_COUNTS[ds],
+            f"EvalPlus coverage drift for {ds}/{condition}: {len(parsed)}",
+        )
+        for task_id, statuses in parsed.items():
+            eval_by_key[(ds, condition, task_id)] = dict(statuses)
+
+    paired = build_paired_cell_ledger(cells=cells, eval_by_key=eval_by_key)
+    stats = aggregate_full_benchmark_stats(
+        cells=cells, paired=paired, datasets=datasets
+    )
+    (output_dir / "paired_cell_ledger.jsonl").write_bytes(
+        "".join(
+            json.dumps(row, ensure_ascii=False, sort_keys=True) + "\n"
+            for row in paired
+        ).encode("utf-8")
+    )
+    (output_dir / "aggregate_summary.json").write_bytes(_canonical_json(stats))
+    execution = {
+        "status": "full_benchmark_evalplus_complete",
+        "evalplus_executed": True,
+        "model_calls": 0,
+        "datasets": list(datasets),
+        "itt_states": len(cells),
+        "paired_rows": len(paired),
+        "parallel": parallel,
+        "evaluator_engine": EVALPLUS_ENGINE,
+        "platform": platform.platform(),
+        "python_version": platform.python_version(),
+        "aggregate": stats,
+    }
+    (output_dir / "execution_record.json").write_bytes(_canonical_json(execution))
+    assert_protected_inputs_unchanged(before, repo_root)
+    return execution
+
+
+def build_full_eval_package_readme() -> bytes:
+    return (
+        "# qwen06 H2 full replay evaluation v1\n\n"
+        "Status: `RUNNER_ENABLED_NOT_EXECUTED`\n\n"
+        "Unique entrypoint (zero model calls; reads saved Ab1/Ab2g only):\n\n"
+        "```bash\n"
+        "python scripts/run_qwen06_h2_replay_pipeline_v1.py run-full-benchmark \\\n"
+        "  --dataset all \\\n"
+        "  --output-dir artifacts/public_benchmark_governance/"
+        "qwen06_h2_full_replay_evaluation_v1/manual_run_001 \\\n"
+        "  --parallel 1\n"
+        "```\n\n"
+        "Dry-run (materialize 2,168 ITT states + samples; no EvalPlus):\n\n"
+        "```bash\n"
+        "python scripts/run_qwen06_h2_replay_pipeline_v1.py run-full-benchmark \\\n"
+        "  --dataset all \\\n"
+        "  --output-dir /tmp/qwen06_h2_full_dry_run \\\n"
+        "  --parallel 1 \\\n"
+        "  --dry-run\n"
+        "```\n\n"
+        "Formal EvalPlus requires WSL/Linux. This packaging round does **not** "
+        "execute `manual_run_001`.\n"
+    ).encode("utf-8")
+
+
+def write_full_eval_package_stub(repo_root: Path = REPO_ROOT) -> dict[str, str]:
+    """Trackable governance stub proving the runner exists but is not executed."""
+    out_dir = repo_root / FULL_EVAL_PACKAGE_RELATIVE
+    out_dir.mkdir(parents=True, exist_ok=True)
+    payloads = {
+        "README.md": build_full_eval_package_readme(),
+        "runner_status.json": _canonical_json(
+            {
+                "status": "RUNNER_ENABLED_NOT_EXECUTED",
+                "entrypoint": (
+                    "python scripts/run_qwen06_h2_replay_pipeline_v1.py "
+                    "run-full-benchmark --dataset all "
+                    f"--output-dir {DEFAULT_FULL_RUN_OUTPUT.as_posix()} "
+                    "--parallel 1"
+                ),
+                "itt_states_expected": EXPECTED_ITT_STATES_ALL,
+                "task_count_expected": 542,
+                "conditions": list(CONDITIONS),
+                "model_calls": 0,
+                "manual_run_001_executed": False,
+                "h2_rule_sha256": EXPECTED_RULE_SHA256,
+                "h2_rule_status": EXPECTED_RULE_STATUS,
+            }
+        ),
+    }
+    hashes: dict[str, str] = {}
+    for name, payload in payloads.items():
+        path = out_dir / name
+        path.write_bytes(payload)
+        hashes[name] = _sha256_bytes(payload)
+    return hashes
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -789,7 +1344,8 @@ def build_parser() -> argparse.ArgumentParser:
         return {
             "status": "wiring_ok",
             "data_flow": (
-                "fixed extractor completion → H2 → Ab1-Raw/Ab1-H2/Ab2g-Raw/Ab2g-H2"
+                "fixed extractor completion → H2 → Ab1-Raw/Ab1-H2/Ab2g-Raw/Ab2g-H2 "
+                "→ EvalPlus(base/plus)"
             ),
             "h2_entry": (
                 "quarantine_module_assert_entrypoint_selftest("
@@ -798,10 +1354,61 @@ def build_parser() -> argparse.ArgumentParser:
             ),
             "conditions": list(CONDITIONS),
             "model_calls": 0,
-            "full_itt_not_executed": True,
+            "full_benchmark_entrypoint": "run-full-benchmark",
+            "itt_states_expected_all": EXPECTED_ITT_STATES_ALL,
         }
 
     inspect.set_defaults(func=_inspect)
+
+    full = sub.add_parser(
+        "run-full-benchmark",
+        help="Replay H2 on saved Ab1/Ab2g and evaluate EvalPlus base/plus",
+    )
+    full.add_argument(
+        "--dataset",
+        required=True,
+        choices=("all", "humaneval", "mbpp"),
+        help="Benchmark scope; 'all' = HumanEval+164 + MBPP+378",
+    )
+    full.add_argument(
+        "--output-dir",
+        type=Path,
+        required=True,
+        help="Fresh output directory (must not already exist)",
+    )
+    full.add_argument(
+        "--parallel",
+        type=int,
+        required=True,
+        help="Must be 1",
+    )
+    full.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Materialize 2,168 ITT states + samples without EvalPlus",
+    )
+
+    def _run_full(args: argparse.Namespace) -> dict[str, Any]:
+        return run_full_benchmark(
+            dataset=args.dataset,
+            output_dir=args.output_dir,
+            parallel=args.parallel,
+            dry_run=args.dry_run,
+        )
+
+    full.set_defaults(func=_run_full)
+
+    stub = sub.add_parser(
+        "write-full-eval-stub",
+        help="Write governance README/status for the unexecuted full runner",
+    )
+    stub.set_defaults(
+        func=lambda _args: {
+            "status": "full_eval_stub_written",
+            "artifact_sha256": write_full_eval_package_stub(),
+            "model_calls": 0,
+        }
+    )
     return parser
 
 

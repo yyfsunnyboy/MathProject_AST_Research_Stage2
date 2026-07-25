@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import ast
 import hashlib
+import json
+import shutil
+import uuid
 from pathlib import Path
 
 from scripts import run_qwen06_h2_replay_pipeline_v1 as pipeline
@@ -11,10 +14,21 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / pipeline.OUTPUT_RELATIVE
 H2_PATH = ROOT / pipeline.RULE_RELATIVE
 AB3_PATHS = [ROOT / relative for relative in pipeline.AB3_BASELINES.values()]
+LOCAL_TMP = ROOT / "artifacts" / "_tmp_qwen06_h2_replay_tests"
 
 
 def _sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _fresh_dir(label: str) -> Path:
+    LOCAL_TMP.mkdir(parents=True, exist_ok=True)
+    return LOCAL_TMP / f"{label}_{uuid.uuid4().hex}"
+
+
+def _cleanup_dir(path: Path) -> None:
+    if path.exists():
+        shutil.rmtree(path, ignore_errors=True)
 
 
 def test_h2_rule_sha_and_status_unchanged() -> None:
@@ -214,8 +228,225 @@ def test_replay_helper_exists_but_default_smoke_is_not_full_itt() -> None:
     # Wiring exists for full ITT rebuild, but this packaging round must not
     # silently execute the 542-task replay.
     assert callable(pipeline.replay_itt_roster)
+    assert callable(pipeline.run_full_benchmark)
     manifest = __import__("json").loads(
         pipeline.build_smoke_artifact_bytes(ROOT)["pipeline_manifest.json"]
     )
     assert manifest["status"] == pipeline.PIPELINE_STATUS
     assert "full_0.6B_H2_ITT_not_executed" in manifest["non_claims"]
+
+
+def test_classify_paired_outcomes() -> None:
+    assert (
+        pipeline.classify_paired_outcome(
+            raw_strict="fail", h2_strict="pass", missing=False
+        )
+        == "verified_rescue"
+    )
+    assert (
+        pipeline.classify_paired_outcome(
+            raw_strict="pass", h2_strict="fail", missing=False
+        )
+        == "regression"
+    )
+    assert (
+        pipeline.classify_paired_outcome(
+            raw_strict="fail", h2_strict="fail", missing=True
+        )
+        == "missing_extracted_completion"
+    )
+
+
+def test_run_full_benchmark_dry_run_materializes_2168_itt_states() -> None:
+    out = _fresh_dir("dry_run_all")
+    try:
+        before = pipeline.snapshot_protected_inputs(ROOT)
+        result = pipeline.run_full_benchmark(
+            dataset="all",
+            output_dir=out,
+            parallel=1,
+            dry_run=True,
+            repo_root=ROOT,
+        )
+        assert result["status"] == "dry_run_materialized_not_evaluated"
+        assert result["evalplus_executed"] is False
+        assert result["model_calls"] == 0
+        assert result["itt_states"] == pipeline.EXPECTED_ITT_STATES_ALL
+
+        ledger = [
+            json.loads(line)
+            for line in (out / "cell_ledger.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+        assert len(ledger) == 2168
+        assert {row["condition"] for row in ledger} == set(pipeline.CONDITIONS)
+        assert sum(1 for row in ledger if row["dataset"] == "humaneval") == 164 * 4
+        assert sum(1 for row in ledger if row["dataset"] == "mbpp") == 378 * 4
+        assert any(row["missing_extracted_completion"] for row in ledger)
+
+        he_ab1 = [
+            json.loads(line)
+            for line in (out / "samples/humaneval/Ab1-Raw.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+        assert len(he_ab1) == 164
+        missing_rows = [row for row in he_ab1 if row.get("solution") == ""]
+        assert len(missing_rows) == 149
+        assert all("completion" not in row for row in missing_rows)
+
+        plan = json.loads((out / "execution_plan.json").read_text(encoding="utf-8"))
+        assert plan["parallel"] == 1
+        assert len(plan["sample_files"]) == 8
+        pipeline.assert_protected_inputs_unchanged(before, ROOT)
+    finally:
+        _cleanup_dir(out)
+
+
+def test_run_full_benchmark_mock_evalplus_builds_paired_ledger() -> None:
+    def _fake_evaluate(
+        *,
+        dataset: str,
+        condition: str,
+        samples_path: Path,
+        eval_output_dir: Path,
+        parallel: int,
+    ) -> dict[str, dict[str, str]]:
+        assert parallel == 1
+        eval_output_dir.mkdir(parents=True, exist_ok=True)
+        parsed: dict[str, dict[str, str]] = {}
+        for line in samples_path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            task_id = json.loads(line)["task_id"]
+            if (
+                dataset == "humaneval"
+                and task_id == "HumanEval/0"
+                and condition == "Ab1-H2"
+            ):
+                status = {
+                    "base_status": "pass",
+                    "plus_status": "pass",
+                    "strict_status": "pass",
+                }
+            elif (
+                dataset == "humaneval"
+                and task_id == "HumanEval/0"
+                and condition == "Ab1-Raw"
+            ):
+                status = {
+                    "base_status": "fail",
+                    "plus_status": "fail",
+                    "strict_status": "fail",
+                }
+            else:
+                status = {
+                    "base_status": "fail",
+                    "plus_status": "fail",
+                    "strict_status": "fail",
+                }
+            parsed[task_id] = status
+        return parsed
+
+    out = _fresh_dir("mock_full_run")
+    try:
+        before = pipeline.snapshot_protected_inputs(ROOT)
+        result = pipeline.run_full_benchmark(
+            dataset="all",
+            output_dir=out,
+            parallel=1,
+            dry_run=False,
+            repo_root=ROOT,
+            evaluate_fn=_fake_evaluate,
+        )
+        assert result["status"] == "full_benchmark_evalplus_complete"
+        assert result["model_calls"] == 0
+        assert result["itt_states"] == 2168
+        assert result["paired_rows"] == 1084
+
+        paired = [
+            json.loads(line)
+            for line in (out / "paired_cell_ledger.jsonl")
+            .read_text(encoding="utf-8")
+            .splitlines()
+            if line.strip()
+        ]
+        assert len(paired) == 1084
+        summary = json.loads(
+            (out / "aggregate_summary.json").read_text(encoding="utf-8")
+        )
+        assert summary["verified_rescue"] >= 0
+        assert "regression" in summary
+        assert "triggered" in summary
+        assert "transformed" in summary
+        assert "abstained" in summary
+        assert summary["model_calls"] == 0
+        assert summary["missing_extracted_completion"] > 0
+        pipeline.assert_protected_inputs_unchanged(before, ROOT)
+    finally:
+        _cleanup_dir(out)
+
+
+def test_run_full_benchmark_rejects_parallel_not_one() -> None:
+    import pytest
+
+    out = _fresh_dir("bad_parallel")
+    _cleanup_dir(out)
+    with pytest.raises(pipeline.H2ReplayError, match="parallel must equal 1"):
+        pipeline.run_full_benchmark(
+            dataset="humaneval",
+            output_dir=out,
+            parallel=2,
+            dry_run=True,
+            repo_root=ROOT,
+        )
+
+
+def test_cli_formal_command_dry_run() -> None:
+    out = _fresh_dir("cli_dry")
+    try:
+        argv = [
+            "run-full-benchmark",
+            "--dataset",
+            "humaneval",
+            "--output-dir",
+            str(out),
+            "--parallel",
+            "1",
+            "--dry-run",
+        ]
+        parser = pipeline.build_parser()
+        args = parser.parse_args(argv)
+        result = args.func(args)
+        assert result["itt_states"] == 164 * 4
+        assert result["evalplus_executed"] is False
+        assert (out / "samples/humaneval/Ab2g-H2.jsonl").is_file()
+        assert not (out / "paired_cell_ledger.jsonl").exists()
+        plan = json.loads((out / "execution_plan.json").read_text(encoding="utf-8"))
+        assert plan["dataset_arg"] == "humaneval"
+    finally:
+        _cleanup_dir(out)
+
+
+def test_full_eval_package_stub_and_formal_entrypoint_string() -> None:
+    hashes = pipeline.write_full_eval_package_stub(ROOT)
+    assert "README.md" in hashes
+    status = json.loads(
+        (
+            ROOT
+            / pipeline.FULL_EVAL_PACKAGE_RELATIVE
+            / "runner_status.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert status["status"] == "RUNNER_ENABLED_NOT_EXECUTED"
+    assert status["manual_run_001_executed"] is False
+    assert status["itt_states_expected"] == 2168
+    assert status["model_calls"] == 0
+    assert (
+        "--dataset all" in status["entrypoint"]
+        and "--parallel 1" in status["entrypoint"]
+        and "manual_run_001" in status["entrypoint"]
+    )
