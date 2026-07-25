@@ -1,0 +1,14 @@
+{
+  "basis": {
+    "all_raw_pass_preserved": true,
+    "demo_print_only_regression": 0,
+    "demo_print_only_verified_rescue": 0,
+    "determinism_idempotence_ast_provenance": true
+  },
+  "confirmatory_claim": false,
+  "criterion": "B",
+  "decision": "development_candidate_not_frozen",
+  "h2_effect_attributed_to_new_rule": false,
+  "rule_id": "top_level_literal_only_demo_print_quarantine_v0",
+  "rule_sha256": "a0b89828b2f3e524fd8d03a64bc0a5afe00b38b774aae47572d22c0e0a7f3ee9"
+}

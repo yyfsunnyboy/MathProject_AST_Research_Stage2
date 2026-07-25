@@ -1,0 +1,14 @@
+{
+  "manifest_id": "h2_module_assert_quarantine_development_static_audit_v1",
+  "output_sha256_excluding_manifest": {
+    "aggregate_summary.json": "924154e1a5380856f68b0e28e92d9c741dba069ac4b7d83debb401f109517141",
+    "credential_scan.json": "7c77c105e77f0dd3055b1e14d06e0cd1f5d23754bc52d73f9323f33251b8e761",
+    "decision_ledger.csv": "2c7f87cc91949fd9bfcc91c18cb786406c72507dc6b7b2874f64d7919cf39013",
+    "reproducibility_receipt.json": "73a097bbf6e3167f1de1c982b270d0fc18e0fc36b4dfece479f89d96781d9bab",
+    "research_report_zh.md": "80f79359b5e59ac7ea7381224c70e192253b2940d5d552cad3de3cda8e089863",
+    "transformed_sources.jsonl": "b46140ff59dce0147467edd27404af3c22051347655d2488c01ab0dd08c3e4d6"
+  },
+  "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+  "scope": "Stage2_MBPP+_only",
+  "status": "development_candidate_not_frozen"
+}

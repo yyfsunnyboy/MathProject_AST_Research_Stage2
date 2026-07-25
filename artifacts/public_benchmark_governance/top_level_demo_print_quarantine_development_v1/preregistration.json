@@ -1,0 +1,146 @@
+{
+  "arms": [
+    "raw",
+    "demo_print_only",
+    "h2_only",
+    "h2_plus_demo_print"
+  ],
+  "confirmatory_claim": false,
+  "dataset_manifest": {
+    "created_at_utc": "2026-07-16T13:56:30.224244+00:00",
+    "creation_script": "scripts/prepare_mbpp_plus_tasks.py",
+    "dataset_name": "MBPP+",
+    "dataset_role": "official_task_prompts_and_evalplus_tests",
+    "environment_variable": "MBPP_PLUS_VERSION=v0.2.0",
+    "evalplus_dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "evalplus_package_version": "0.3.1",
+    "fallback_policy": "forbidden_original_mbpp",
+    "first_task_id": "Mbpp/2",
+    "last_task_id": "Mbpp/809",
+    "notes": [
+      "Exported through evalplus.data.get_mbpp_plus via the repository EvalPlus bridge",
+      "No fallback to original non-Plus MBPP is allowed",
+      "Official tests, canonical solutions, contracts, inputs, and expected outputs are not stored",
+      "Only task_id, prompt, and entry_point are model-visible in tasks.jsonl"
+    ],
+    "official_tests_and_canonical_solutions_included": false,
+    "release_tag_or_dataset_version": "v0.2.0",
+    "source_loader": "evalplus.data.get_mbpp_plus",
+    "source_prompt_field": "prompt",
+    "source_repository": "https://github.com/evalplus/evalplus",
+    "stored_fields": [
+      "task_id",
+      "prompt",
+      "entry_point"
+    ],
+    "task_count": 378,
+    "task_ids_sha256": "c3739802c5cb67fa06dd679b1777fcfafcec6c2479c173af5df99e3a0e394114",
+    "task_order_policy": "official_loader_order",
+    "tasks_file": "data/mbpp_plus/tasks.jsonl",
+    "tasks_sha256": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c",
+    "wsl_python_version": "3.14.4"
+  },
+  "definitions": {
+    "blocker_removed": "arm returns PASS on either suite or at least one per-test detail",
+    "partial_repair": "Raw strict FAIL -> arm strict FAIL AND blocker_removed",
+    "preserved_pass": "Raw strict PASS -> arm strict PASS",
+    "regression": "Raw strict PASS -> arm strict FAIL",
+    "unchanged_failure": "Raw strict FAIL -> arm strict FAIL AND NOT blocker_removed",
+    "verified_rescue": "Raw strict FAIL -> arm strict PASS"
+  },
+  "evaluator": {
+    "dataset": "MBPP+",
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "engine": "evalplus_0.3.1_check_correctness_subset",
+    "evalplus_version": "0.3.1",
+    "os": "WSL2 Ubuntu/Linux",
+    "parallel": 1,
+    "python": "/home/yehya/.venvs/ast_evalplus/bin/python",
+    "python_version": "3.14.4",
+    "runner": "scripts/run_top_level_demo_print_quarantine_functional_eval_v1.py",
+    "runner_sha256": "2bc3b67006e9adbb7c6cd3fde5efa7b7402dcf323bd893b10d9cf593bc22f2b1"
+  },
+  "execution": {
+    "candidate_generations": 0,
+    "h2_reused": 13,
+    "model_calls": 0,
+    "new_evalplus_cells": 50,
+    "parallel": 1,
+    "raw_reused": 21,
+    "retry_resume_overwrite": false
+  },
+  "forbidden": [
+    "model generation",
+    "hidden test inspection",
+    "canonical solution inspection",
+    "post-outcome guard modification",
+    "selective rerun",
+    "H1 modification",
+    "H2 modification or merge"
+  ],
+  "freeze_criteria": {
+    "A": "regression=0 AND every Raw PASS preserved AND verified_rescue>=1 AND determinism/idempotence/AST/provenance all pass => development_rule_frozen_no_confirmatory_claim",
+    "B": "regression=0 AND verified_rescue=0 => development_candidate_not_frozen",
+    "C": "regression>0 => development_rejected_pending_review",
+    "post_outcome_guard_change_or_rerun": "forbidden",
+    "priority": "C, then A, then B"
+  },
+  "frozen_files": {
+    "four_arm_evaluation_plan.jsonl": "d618742d94536181542beb07c69d2b72d1ac72ee59a3d01ca9d1f2f926d6f125",
+    "frozen_rule.py": "a0b89828b2f3e524fd8d03a64bc0a5afe00b38b774aae47572d22c0e0a7f3ee9",
+    "functional_eval_input.jsonl": "3d4e187751415a0736871fb561975d2885a988790097aa148e0bdb2eb8605c30",
+    "schema.json": "b9b90f74bf9fc9ab10cf1fb5ef39bbfc3546f7fef5da265a3fbb4dd148112edf",
+    "static_audit_ledger.csv": "3046cef5a823cef78d4eccf8b5fb6be3bd1a64e31f2e5aecd4534e19641571ac",
+    "static_audit_summary.json": "7f0a3a7ae4e57f7e7f49b6be87ce1e91eab2ff3370ed50e970ec640d71c5c059",
+    "transformed_sources.jsonl": "1bbbffd27922f6e9c550be3b73bf50e7512395eebb6720db74611fb3d7405601"
+  },
+  "h1": {
+    "modified": false,
+    "rule_id": "entrypoint_alias_unique_arity_compatible_v0",
+    "sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44"
+  },
+  "h2": {
+    "attribution": "separate",
+    "composition_order": "demo_print_then_H2",
+    "modified_or_merged": false,
+    "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+    "sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18"
+  },
+  "preregistration_id": "top_level_demo_print_quarantine_development_v1",
+  "research_role": "development_candidate",
+  "rule": {
+    "guard_changes_after_preregistration": "forbidden",
+    "path": "agent_tools/finals_rebuild/mbpp_top_level_demo_print_quarantine.py",
+    "rule_id": "top_level_literal_only_demo_print_quarantine_v0",
+    "sha256": "a0b89828b2f3e524fd8d03a64bc0a5afe00b38b774aae47572d22c0e0a7f3ee9",
+    "status": "development_candidate_not_frozen"
+  },
+  "source_sha256": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec",
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/raw_generations.jsonl": "3d8295ff5e7260d733d8f68736a792afa79501d70ca8bde8d4dd88c1b2b002b3",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/extraction_itt_ledger.csv": "19d4b171c54a90345e28b4e759d58253519549e32cdb560ddee33d3ed3bfdb67",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/frozen_input_manifest.json": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/generation_evidence_inventory.csv": "7af93c54164cfd8275069a44fb34c4d21f177429b42b9f9c77edab5c863af808",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/h0_evalplus_input.jsonl": "fe0ad6fc353d7d44bc9d69d4326bcb592ab1f077a9f73b26b25a6019f8434230",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/manual_h0_evalplus_run_001/h0_evalplus_results.csv": "5e62be708a4f148589d5a78e8e77d66ede6ffbee3337742be185952f6c90a861",
+    "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1/manual_evalplus_run_001/evalplus_results.csv": "338e66ecd09f48bcf2b8c8d1c8cf75911755dad92743c99257698d994a01938e",
+    "artifacts/public_benchmark_governance/deterministic_healer_candidate_inventory_4b9b_v1/candidate_ledger.csv": "38863208763db00fa50ce277075a5ac64d031415921c6db06730ed718d050b49",
+    "artifacts/public_benchmark_governance/deterministic_healer_candidate_inventory_4b9b_v1/summary.json": "1bafd487aa32ef8a1107dcc90d2d3fb9d17752fd712f1fc490da2c7f137bb445",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/cell_roster.jsonl": "7c8cb3e963d349b7dae86ea00d93310780c37f3504787c8c7e547189201cf7a3",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/manual_post_h2_evalplus_run_001/post_h2_evalplus_results.csv": "99b443c03b29c6a1531baef6a7101353aa799d80974a0b00904525a38dac1a89",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/post_h2_eval_input.jsonl": "e4a6a477927c3b2e69e3e4a9437a4c4d9d672efe4f286e14b034007145675a4b",
+    "data/mbpp_plus/dataset_manifest.json": "502e946fb273751805ec74472856a8d2e6cd732368547c9f45e2310495b831be",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "static_audit": {
+    "abstained": 479,
+    "four_b": 200,
+    "full_development_cohort": 500,
+    "nine_b": 300,
+    "outcome_blind_rule_decision": true,
+    "raw_pass_controls": 128,
+    "transformed": 21
+  },
+  "status": "preregistered_not_executed"
+}

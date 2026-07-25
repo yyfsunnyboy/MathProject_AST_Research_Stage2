@@ -1,0 +1,41 @@
+{
+  "base": {
+    "bitwise_change": false,
+    "copied_artifact": "frozen_ab2g_base.txt",
+    "formal_manifest": "configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json",
+    "formal_source": "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt",
+    "sha256": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+    "size_bytes": 478
+  },
+  "composition": {
+    "complete_prompt_order": [
+      "official_task_prompt_verbatim",
+      "existing_ab2g_prompt_separator",
+      "composite_scaffold"
+    ],
+    "composite_scaffold_sha256": "0c1bc9c4865eafe8f07917f9e58fa0ff04988263db3bc22adcfc99ecf69300ff",
+    "existing_ab2g_prompt_separator_sha256": "dc61671dd31a04c2f638edd612b86cc339fa1c89f81df2e4fb73344312077c1e",
+    "existing_ab2g_prompt_separator_utf8": "\n\n--- GENERIC CODE SCAFFOLD V0 ---\n\n",
+    "incremental_separator_hex": "0a",
+    "incremental_separator_utf8": "\n",
+    "scaffold_order": [
+      "frozen_ab2g_base_bytes",
+      "incremental_separator",
+      "frozen_incremental_block_bytes"
+    ]
+  },
+  "increment": {
+    "copied_artifact": "frozen_incremental_block.txt",
+    "final_newline": true,
+    "line_endings": "LF",
+    "sha256": "20a24ce1cecc28f4d021a36b24a706f20d781fc394a542800ae27dbcf8b4ac6a",
+    "size_bytes": 240
+  },
+  "prohibitions": {
+    "additional_instructional_content": true,
+    "cohort_expansion": true,
+    "rewrite_delete_or_reformat_ab2g": true
+  },
+  "scaffold_id": "Ab2gA-short-v1",
+  "status": "frozen_development_condition_transfer_increment"
+}

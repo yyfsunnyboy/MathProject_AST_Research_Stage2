@@ -1,0 +1,71 @@
+{
+  "arm_summary": {
+    "demo_print_only": {
+      "blocker_removed": 17,
+      "cells": 21,
+      "partial_repair": 0,
+      "preserved_pass": 17,
+      "regression": 0,
+      "strict_fail": 4,
+      "strict_pass": 17,
+      "unchanged_failure": 4,
+      "verified_rescue": 0
+    },
+    "h2_only": {
+      "blocker_removed": 21,
+      "cells": 21,
+      "partial_repair": 4,
+      "preserved_pass": 17,
+      "regression": 0,
+      "strict_fail": 4,
+      "strict_pass": 17,
+      "unchanged_failure": 0,
+      "verified_rescue": 0
+    },
+    "h2_plus_demo_print": {
+      "blocker_removed": 21,
+      "cells": 21,
+      "partial_repair": 4,
+      "preserved_pass": 17,
+      "regression": 0,
+      "strict_fail": 4,
+      "strict_pass": 17,
+      "unchanged_failure": 0,
+      "verified_rescue": 0
+    }
+  },
+  "candidate_generations": 0,
+  "cohort": {
+    "4B": 200,
+    "9B": 300,
+    "total": 500
+  },
+  "decision": "development_candidate_not_frozen",
+  "four_arm_rows": 84,
+  "h1_modified": false,
+  "h2_modified_or_merged": false,
+  "model_calls": 0,
+  "new_evalplus_executions": 50,
+  "raw_controls": {
+    "fail": 358,
+    "not_evaluated": 14,
+    "pass": 128
+  },
+  "research_role": "development_candidate",
+  "reused_h2_results": 13,
+  "reused_raw_results": 21,
+  "static_audit": {
+    "abstained": 479,
+    "transformed": 21
+  },
+  "status": "functional_evaluation_complete",
+  "verification": {
+    "all_raw_pass_preserved": true,
+    "ast_parseable_all_outputs": true,
+    "deterministic_rebuild": true,
+    "idempotence_all_transformed": true,
+    "provenance_guards_all_transformed": true,
+    "raw_pass_abstained_byte_identical": 111,
+    "raw_pass_transformed_and_evaluated": 17
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "confirmatory_claim_for_unseen_tasks": false,
+  "counts": {
+    "cells": 200,
+    "qwen3.5:4b": 100,
+    "qwen3.5:9b": 100
+  },
+  "execution_state": {
+    "candidate_executions": 0,
+    "evalplus_executions": 0,
+    "model_calls": 0,
+    "raw_outputs_materialized": 0
+  },
+  "forbidden_this_round": [
+    "model calls",
+    "candidate execution",
+    "EvalPlus execution",
+    "H1 modification",
+    "H2 modification",
+    "Ab2g modification",
+    "old result modification",
+    "fabricated Raw output",
+    "cohort expansion"
+  ],
+  "generation_parameters": {
+    "num_ctx": 8192,
+    "num_predict": 2048,
+    "stream": false,
+    "temperature": 0.2,
+    "thinking": false,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "h1": {
+    "modification_allowed": false,
+    "role": "existing_frozen_evaluator_blind_healer",
+    "rule_order": [
+      "entrypoint_alias_unique_arity_compatible_v0"
+    ],
+    "sha256": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44"
+  },
+  "h2": {
+    "current_status": "development_candidate_not_frozen",
+    "modification_allowed": false,
+    "name_must_not_be_claimed": "frozen Healer",
+    "role": "prospectively_fixed_development_candidate_evaluation_only",
+    "sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18"
+  },
+  "metrics": [
+    "Base pass",
+    "Plus pass",
+    "strict pass",
+    "extractability",
+    "parseability",
+    "executability",
+    "eligible",
+    "transformed",
+    "abstained",
+    "blocker removed",
+    "verified rescue",
+    "partial repair",
+    "regression",
+    "preserved pass",
+    "failure layer",
+    "failure chain",
+    "per-cell paired transition"
+  ],
+  "models": [
+    {
+      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "modified_at": "2026-07-16T22:38:31.4275049+08:00",
+      "parameter_size": "4.7B",
+      "public_benchmark_execution_allowed": false,
+      "quantization": "Q4_K_M",
+      "role": "transfer_only",
+      "size_bytes": 3389983735,
+      "tag": "qwen3.5:4b",
+      "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+    },
+    {
+      "digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+      "modified_at": "2026-07-16T22:38:34.436418+08:00",
+      "parameter_size": "9.7B",
+      "public_benchmark_execution_allowed": true,
+      "quantization": "Q4_K_M",
+      "role": "primary_development_model",
+      "size_bytes": 6594474711,
+      "tag": "qwen3.5:9b",
+      "template_sha256": "b507b9c2f6ca642bffcd06665ea7c91f235fd32daeefdf875a0f938db05fb315"
+    }
+  ],
+  "paired_analysis": {
+    "no_post_outcome_cell_exclusion": true,
+    "pairing": "exact",
+    "report_counts_and_paired_transitions": true,
+    "unit": "model_tag × task_id × seed"
+  },
+  "preregistration_id": "ab2ga_short_v1_preregistration",
+  "primary_comparisons": [
+    "Ab2g-Raw vs Ab2gA-short-v1-Raw",
+    "Raw vs existing frozen H1"
+  ],
+  "research_role": "development_condition_transfer_increment",
+  "scope": "Stage2_MBPP+_existing_development20_only",
+  "seeds": [
+    11,
+    22,
+    33,
+    44,
+    55
+  ],
+  "status": "preregistered_frozen_not_executed",
+  "tasks": [
+    "Mbpp/633",
+    "Mbpp/769",
+    "Mbpp/453",
+    "Mbpp/259",
+    "Mbpp/739",
+    "Mbpp/124",
+    "Mbpp/72",
+    "Mbpp/792",
+    "Mbpp/435",
+    "Mbpp/597",
+    "Mbpp/732",
+    "Mbpp/721",
+    "Mbpp/765",
+    "Mbpp/777",
+    "Mbpp/473",
+    "Mbpp/420",
+    "Mbpp/742",
+    "Mbpp/279",
+    "Mbpp/125",
+    "Mbpp/603"
+  ]
+}

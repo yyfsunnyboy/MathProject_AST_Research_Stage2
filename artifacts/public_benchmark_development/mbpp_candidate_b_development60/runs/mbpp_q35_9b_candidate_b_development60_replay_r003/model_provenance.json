@@ -1,0 +1,28 @@
+{
+  "api_base_url": "http://127.0.0.1:11434",
+  "api_endpoint": "/api/chat",
+  "architecture": null,
+  "candidate_b_identity_validation": {
+    "digest_type": "str",
+    "digest_value": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "quantization_expected_value": "Q4_K_M",
+    "quantization_json_path": "models[].details.quantization_level",
+    "quantization_normalized_value": "Q4_K_M",
+    "quantization_raw_type": "str",
+    "quantization_raw_value": "Q4_K_M"
+  },
+  "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+  "model_modified_at": "2026-07-16T22:38:34.436418+08:00",
+  "model_name": "qwen3.5:9b",
+  "model_size": 6594474711,
+  "model_size_gb": 6.1,
+  "model_tag": "qwen3.5:9b",
+  "ollama_version": "0.32.1",
+  "parameters": null,
+  "quantization": "Q4_K_M",
+  "quantization_api_source": "/api/tags models[].details.quantization_level",
+  "quantization_api_value": "Q4_K_M",
+  "response_field": "message.content",
+  "runtime": "Ollama",
+  "runtime_version": "0.32.1"
+}

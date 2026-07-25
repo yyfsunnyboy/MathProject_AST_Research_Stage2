@@ -1,0 +1,17 @@
+{
+  "cell_roster_sha256": "7c8cb3e963d349b7dae86ea00d93310780c37f3504787c8c7e547189201cf7a3",
+  "counts": {
+    "abstained_identity_only": 20,
+    "executed": 71,
+    "roster": 91
+  },
+  "freeze_decision": "development_candidate_not_frozen",
+  "manifest_id": "h2_module_assert_quarantine_functional_evaluation_v1",
+  "post_h2_eval_input_sha256": "e4a6a477927c3b2e69e3e4a9437a4c4d9d672efe4f286e14b034007145675a4b",
+  "post_h2_eval_results_sha256": "99b443c03b29c6a1531baef6a7101353aa799d80974a0b00904525a38dac1a89",
+  "preregistration_sha256": "35e8caef4d13aafdc65e8abdd6b633b07a40c591155ed3426bc2fe8fe276a024",
+  "raw_execution_record_sha256": "c7cbb7b2528a663262c01e68cdb7f12dd5beb706f9d81fda43e1fbf5761b591f",
+  "rule_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "scope": "Stage2_MBPP+_only",
+  "status": "complete"
+}

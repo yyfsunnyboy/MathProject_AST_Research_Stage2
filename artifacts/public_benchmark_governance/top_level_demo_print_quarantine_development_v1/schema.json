@@ -1,0 +1,35 @@
+{
+  "audit_required_fields": [
+    "cohort",
+    "cell_id",
+    "cell_index",
+    "program_id",
+    "task_id",
+    "seed",
+    "condition",
+    "model",
+    "entry_point",
+    "source_sha256",
+    "output_sha256",
+    "triggered",
+    "transformed",
+    "abstained",
+    "reason",
+    "guard_results_json",
+    "raw_control_status",
+    "outcome_blind_rule_decision"
+  ],
+  "evaluation_plan_arms": 84,
+  "metrics": [
+    "verified_rescue",
+    "partial_repair",
+    "unchanged_failure",
+    "preserved_pass",
+    "regression",
+    "blocker_removed"
+  ],
+  "new_evalplus_cells": 50,
+  "schema_id": "top_level_demo_print_quarantine_development_v1",
+  "static_audit_rows": 500,
+  "transformed_rows": 21
+}

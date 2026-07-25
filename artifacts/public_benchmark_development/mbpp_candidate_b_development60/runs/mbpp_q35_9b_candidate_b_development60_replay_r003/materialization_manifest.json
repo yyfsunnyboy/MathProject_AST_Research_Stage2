@@ -1,0 +1,16 @@
+{
+  "candidate_b_accounts": 600,
+  "elapsed_seconds": 2619.39,
+  "evalplus_executions": 0,
+  "evidence_role": "development_replay_only",
+  "factorial_accounts_after_p0_reuse": 1200,
+  "factorial_programs_after_p0_reuse": 600,
+  "generation_cells": 300,
+  "healer_transformed": 2,
+  "model_calls": 300,
+  "resume": false,
+  "retry_count": 0,
+  "run_id": "mbpp_q35_9b_candidate_b_development60_replay_r003",
+  "selective_retry": false,
+  "status": "candidate_b_generation_and_h0_h1_materialization_complete_pending_separately_authorized_evalplus"
+}

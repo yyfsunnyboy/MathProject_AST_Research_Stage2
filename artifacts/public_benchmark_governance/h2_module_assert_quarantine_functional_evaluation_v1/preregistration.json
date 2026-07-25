@@ -1,0 +1,94 @@
+{
+  "counts": {
+    "abstained_identity_only": 20,
+    "roster": 91,
+    "transformed_to_execute": 71
+  },
+  "definitions": {
+    "abstained_unchanged": "H2 abstained AND pipeline/output SHA identical; no execution",
+    "base_pass": "EvalPlus base status equals pass",
+    "blocker_removed": "Post-H2 transformed AST is valid and EvalPlus returns PASS on either suite or at least one per-test detail, proving evaluation advanced beyond module-load assertion",
+    "partial_repair": "Raw strict FAIL -> Post-H2 strict FAIL AND blocker_removed",
+    "plus_pass": "EvalPlus plus status equals pass",
+    "preserved_pass": "Raw strict PASS -> Post-H2 strict PASS",
+    "regression": "Raw strict PASS -> Post-H2 strict FAIL",
+    "strict_pass": "base_status == pass AND plus_status == pass",
+    "unchanged_failure": "Raw strict FAIL -> Post-H2 strict FAIL AND NOT blocker_removed",
+    "verified_rescue": "Raw strict FAIL -> Post-H2 strict PASS"
+  },
+  "evaluator": {
+    "dataset": "MBPP+",
+    "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+    "dataset_version": "v0.2.0",
+    "engine": "evalplus_0.3.1_check_correctness_subset",
+    "package": "evalplus",
+    "runner_path": "scripts/run_h2_module_assert_quarantine_functional_eval_v1.py",
+    "runner_sha256": "7063824cca9ba66b6c65f6af7430e5789f6892bab232d8d6f5f6c60860df69cf",
+    "version": "0.3.1"
+  },
+  "execution": {
+    "abstained_execution_count": 0,
+    "candidate_execution_scope": "exactly 71 transformed roster cells",
+    "candidate_generations": 0,
+    "fast_check": true,
+    "model_calls": 0,
+    "os": "WSL2 Ubuntu/Linux",
+    "parallel": 1,
+    "python": "/home/yehya/.venvs/ast_evalplus/bin/python",
+    "python_version": "3.14.4",
+    "retry_resume_overwrite": false,
+    "sandbox": "EvalPlus untrusted_check isolated subprocess reliability guard",
+    "timeout": "EvalPlus 0.3.1 per-test adaptive limit; min_time_limit=1.0 seconds; gt_time_limit_factor=4.0"
+  },
+  "freeze_criteria": {
+    "A": "regression=0 AND every Raw PASS preserved AND verified_rescue>=1 AND determinism/idempotence/AST/provenance all pass => module_assert_entrypoint_selftest_quarantine_v1_frozen",
+    "B": "regression=0 AND verified_rescue=0 => development_candidate_not_frozen",
+    "C": "regression>0 OR any Raw PASS degrades => development_rejected_pending_review",
+    "post_outcome_modification": "forbidden",
+    "priority": "C, then A, then B"
+  },
+  "frozen_files": {
+    "cell_roster.jsonl": "7c8cb3e963d349b7dae86ea00d93310780c37f3504787c8c7e547189201cf7a3",
+    "post_h2_eval_input.jsonl": "e4a6a477927c3b2e69e3e4a9437a4c4d9d672efe4f286e14b034007145675a4b"
+  },
+  "non_actions": {
+    "candidate_regeneration": 0,
+    "h1_modified": false,
+    "h2_modified": false,
+    "model_calls": 0,
+    "new_algorithm_scaffold_experiment": false,
+    "raw_evidence_modified": false
+  },
+  "preregistration_id": "h2_module_assert_quarantine_functional_evaluation_v1",
+  "rule": {
+    "commit": "7f8c2aedf0a9cd7ac58e813bd775b79ec7956c11",
+    "guard_changes_after_preregistration": "forbidden",
+    "pre_evaluation_status": "development_candidate_not_frozen",
+    "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+    "sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18"
+  },
+  "scope": "Stage2_MBPP+_only",
+  "source_authorities": {
+    "four_b_frozen_manifest": {
+      "path": "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/frozen_input_manifest.json",
+      "sha256": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe"
+    },
+    "four_b_raw_results": {
+      "path": "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/manual_h0_evalplus_run_001/h0_evalplus_results.csv",
+      "sha256": "5e62be708a4f148589d5a78e8e77d66ede6ffbee3337742be185952f6c90a861"
+    },
+    "nine_b_accounts": {
+      "path": "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/h0_h1_accounts.jsonl",
+      "sha256": "b1313615bf41840bc1c45c36d2b8ac9b544f37fb5bb801c104aad1657ca2c2ec"
+    },
+    "nine_b_formal_raw_results": {
+      "path": "artifacts/public_benchmark_governance/candidate_b_r003_h0_h1_evalplus_v1/manual_evalplus_run_001/evalplus_results.csv",
+      "sha256": "338e66ecd09f48bcf2b8c8d1c8cf75911755dad92743c99257698d994a01938e"
+    },
+    "static_audit_manifest": {
+      "path": "artifacts/public_benchmark_governance/h2_module_assert_quarantine_development_static_audit_v1/manifest.json",
+      "sha256": "d7007689acace5f6cfd226b9ba8ed595bae988c303cfcb03645d113fe2c1378f"
+    }
+  },
+  "status": "preregistered_not_executed"
+}

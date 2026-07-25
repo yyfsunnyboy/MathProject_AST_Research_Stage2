@@ -1,0 +1,79 @@
+{
+  "cohort": {
+    "4B_development_errors": 148,
+    "9B_development_errors": 224,
+    "selection_note": "formal error membership defines the requested cohort; outcome status is not used as evidence for mechanism detection or recommendation",
+    "total": 372
+  },
+  "eligibility_counts": {
+    "abstain": 6,
+    "eligible_candidate": 2,
+    "excluded_existing_H1": 2,
+    "excluded_existing_H2": 64,
+    "not_eligible": 225,
+    "scaffold_or_pipeline_correction": 73
+  },
+  "eligible_distinct_tasks_by_rule": {
+    "top_level_literal_only_demo_print_quarantine_v0": 2
+  },
+  "eligible_rule_counts": {
+    "top_level_literal_only_demo_print_quarantine_v0": 2
+  },
+  "inventory_id": "deterministic_healer_candidate_inventory_4b9b_v1",
+  "mechanism_counts": {
+    "entry_point_mismatch_ambiguous": 1,
+    "module_assert": 64,
+    "other_syntax_or_ast_failure": 5,
+    "packaging_markdown_extractor": 73,
+    "semantic_algorithm_boundary_or_no_unique_local_mechanism": 202,
+    "top_level_demo_print_side_effect": 2,
+    "truncation": 23,
+    "unique_entry_point_mismatch": 2
+  },
+  "priority_findings": {
+    "1_unique_entry_point_mismatch": "no new candidate; any unique safe case belongs to existing H1, ambiguous mappings abstain",
+    "2_unique_missing_stdlib_import": "0 eligible cells",
+    "3_top_level_demo_call_print": "2 eligible cells across 2 tasks after excluding H2 Assert nodes",
+    "4_other_syntax_ast": "no uniquely inferable semantics-preserving repeated edit"
+  },
+  "recommendation": {
+    "candidate_cells": [
+      "01b6bac38cef8f198113a5cd475e8be41beccd60d7c559172443b76df714e34c",
+      "1ed09edb92c4da77d9ccb4eac0e420c2cbd4319a9d8a55e3340ea9f1a20544d8"
+    ],
+    "candidate_rule": "top_level_literal_only_demo_print_quarantine_v0",
+    "guards": [
+      "module parses without candidate execution",
+      "required entry point is present",
+      "top-level statement is Expr(print(...))",
+      "print is immediately adjacent to a top-level public self-test Assert",
+      "each print argument is literal-only or a required-entry-point call with literal-only arguments",
+      "print return is unused and there are no other unclassified top-level calls",
+      "H2 Assert handling remains separate and unchanged"
+    ],
+    "not_claimed": [
+      "implemented",
+      "frozen",
+      "validated",
+      "confirmatory"
+    ],
+    "status": "recommend_for_separate_preregistration_and_static_audit_only",
+    "tasks": [
+      "Mbpp/138",
+      "Mbpp/787"
+    ],
+    "verdict": "ONE_DEVELOPMENT_CANDIDATE_IDENTIFIED"
+  },
+  "status": "complete_static_read_only_inventory",
+  "zero_execution": {
+    "EvalPlus_executions": 0,
+    "H1_modifications": 0,
+    "H2_modifications": 0,
+    "candidate_executions": 0,
+    "candidate_imports": 0,
+    "canonical_solutions_viewed": 0,
+    "hidden_tests_viewed": 0,
+    "model_calls": 0,
+    "rule_implementations": 0
+  }
+}

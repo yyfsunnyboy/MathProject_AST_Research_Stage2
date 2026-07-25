@@ -1,0 +1,20 @@
+{
+  "all_raw_pass_preserved": true,
+  "criterion": "B",
+  "decision": "development_candidate_not_frozen",
+  "frozen": false,
+  "reason": "Criterion B: regression=0 and every Raw strict PASS was preserved, but verified_rescue=0; retain development_candidate_not_frozen.",
+  "regression": 0,
+  "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+  "rule_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "rule_sha_unchanged": true,
+  "validation_gates": {
+    "abstained_sha_identity_20": true,
+    "deterministic_static_rebuild": true,
+    "execution_scope_exactly_71": true,
+    "h2_idempotence_and_ast": true,
+    "provenance_and_sha": true,
+    "rule_sha_unchanged": true
+  },
+  "verified_rescue": 0
+}

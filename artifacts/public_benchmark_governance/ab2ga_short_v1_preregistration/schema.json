@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "cell_plan": {
+    "format": "CSV UTF-8 LF",
+    "paired_key": [
+      "model_tag",
+      "task_id",
+      "seed"
+    ],
+    "required_columns_in_order": [
+      "cell_index",
+      "cell_identity",
+      "model_role",
+      "model_tag",
+      "model_digest",
+      "quantization",
+      "task_id",
+      "seed",
+      "sample_index",
+      "condition_id",
+      "official_prompt_sha256",
+      "complete_prompt_sha256",
+      "execution_state"
+    ],
+    "row_count": 200,
+    "unique_key": [
+      "cell_identity"
+    ]
+  },
+  "complete_prompt_manifest": {
+    "format": "JSON Lines UTF-8 LF",
+    "required_fields": [
+      "cell_index",
+      "cell_identity",
+      "model_role",
+      "model_tag",
+      "model_digest",
+      "quantization",
+      "task_id",
+      "seed",
+      "sample_index",
+      "condition_id",
+      "official_prompt_sha256",
+      "complete_prompt_sha256",
+      "execution_state",
+      "complete_prompt"
+    ],
+    "row_count": 200,
+    "sha_contract": "sha256(UTF-8 complete_prompt) == complete_prompt_sha256"
+  },
+  "execution_counts": {
+    "candidate_executions": {
+      "const": 0
+    },
+    "evalplus_executions": {
+      "const": 0
+    },
+    "model_calls": {
+      "const": 0
+    }
+  },
+  "scaffold": {
+    "base_contract": "frozen_ab2g_base.txt is byte-identical to formal source",
+    "composition_contract": "base_bytes + UTF-8 incremental_separator + incremental_block_bytes"
+  },
+  "schema_id": "ab2ga_short_v1_preregistration_schema"
+}

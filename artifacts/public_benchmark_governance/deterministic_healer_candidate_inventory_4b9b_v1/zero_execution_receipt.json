@@ -1,0 +1,20 @@
+{
+  "analysis_operations": [
+    "UTF-8 read",
+    "SHA-256",
+    "CSV/JSON parse",
+    "ast.parse"
+  ],
+  "candidate_executions": 0,
+  "candidate_imports": 0,
+  "evalplus_executions": 0,
+  "model_calls": 0,
+  "output_sha256_excluding_receipt": {
+    "candidate_ledger.csv": "38863208763db00fa50ce277075a5ac64d031415921c6db06730ed718d050b49",
+    "provenance.json": "f56c0d90e601eeaea61e9dd0268ad4448b58412fef00673a6ef2fe00fc5bbd30",
+    "report_zh.md": "1c7591313d6ceb8eb039c5b1d4cd3e97d3800b2445e10b11af828bb2b7f504ec",
+    "summary.json": "1bafd487aa32ef8a1107dcc90d2d3fb9d17752fd712f1fc490da2c7f137bb445"
+  },
+  "receipt_id": "deterministic_healer_candidate_inventory_4b9b_v1",
+  "row_count": 372
+}

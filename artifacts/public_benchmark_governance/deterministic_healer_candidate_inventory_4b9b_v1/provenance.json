@@ -1,0 +1,38 @@
+{
+  "fixed_existing_rules": {
+    "H1": "cf4d086ca6e3af968f31b0d087ed2479e5ad38be4b7abe5d2ce5516b68000d44",
+    "H2": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18"
+  },
+  "input_policy": {
+    "allowed": [
+      "formal manifests",
+      "formal taxonomy",
+      "formal diagnostics",
+      "raw candidate and persisted public request metadata"
+    ],
+    "forbidden": [
+      "hidden tests",
+      "canonical solution",
+      "PASS/FAIL-based rule selection",
+      "candidate execution",
+      "model calls",
+      "EvalPlus execution"
+    ]
+  },
+  "inventory_id": "deterministic_healer_candidate_inventory_4b9b_v1",
+  "source_sha256": {
+    "artifacts/public_benchmark_development/mbpp_candidate_b_development60/runs/mbpp_q35_9b_candidate_b_development60_replay_r003/raw_generations.jsonl": "3d8295ff5e7260d733d8f68736a792afa79501d70ca8bde8d4dd88c1b2b002b3",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/cell_itt_ledger.csv": "adeb6b4145663f0ca3ceebbffc431cc14b56773631bb3fa272419a2536c32007",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/frozen_input_manifest.json": "63578b6265ba6a9e460574f9039972d43b87a8846f557ecaf47e46c57d5da6fe",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/generation_evidence_inventory.csv": "7af93c54164cfd8275069a44fb34c4d21f177429b42b9f9c77edab5c863af808",
+    "artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analysis_v1/taxonomy_v31_ledger.csv": "93a4dda8681d62ba17fe7fc7fa95dbebb96167ee9be4125ed1dac4e474975b0a",
+    "artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/formal198_input_ledger.csv": "d2d62a33b4f51118d0a51b41aadc9445bd64d680c3b1ef5c54117ae180272640",
+    "artifacts/public_benchmark_governance/candidate_b_r003_diagnostics_r002_v3/manual_formal_diagnostics_run_001/coarse_diagnostics.csv": "dafba357a47341856de32d6766aa27cf37fc4a326c9427b5df6fadef659d8f4c",
+    "artifacts/public_benchmark_governance/candidate_b_r003_failure_census_v1/candidate_b_r003_failure_census.csv": "289b2d1e562453bb944032254cc02b47d738a504720aca6dc85da6c252c10740",
+    "artifacts/public_benchmark_governance/candidate_b_r003_failure_census_v1/manifest.json": "6e2dfa1ea9fbc3f7362f8f69ff5b02bae9edb57a4134ca3a6ec58cabfa594593",
+    "artifacts/public_benchmark_governance/candidate_b_r003_v3_crosswalk_diagnostics_protocol_v1/candidate_b_r003_v3_derived_crosswalk.csv": "6a083a06b2cbbb5f937b6f1ae343466ae3bc97e35f93323c8902adec4f5658f7",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/cell_roster.jsonl": "7c8cb3e963d349b7dae86ea00d93310780c37f3504787c8c7e547189201cf7a3",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/evaluation_manifest.json": "f7fda43aa37f100925ba704f042159ff0aa94dfef644a832fd5a85529ff90728",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/manifest.json": "420eb05267f11f4f9f157f63167398e86fbc68322f33b33b9bf5656fb6f24913"
+  }
+}
