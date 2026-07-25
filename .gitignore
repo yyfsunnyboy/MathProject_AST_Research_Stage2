@@ -194,5 +194,9 @@ artifacts/public_benchmark_governance/candidate_b_4b_failure_supply_pilot_analys
 !artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/
 !artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/**
 
+# Keep the qwen06 H2 replay pipeline wiring + synthetic smoke tracked.
+!artifacts/public_benchmark_governance/qwen06_h2_replay_pipeline_v1/
+!artifacts/public_benchmark_governance/qwen06_h2_replay_pipeline_v1/**
+
 
 

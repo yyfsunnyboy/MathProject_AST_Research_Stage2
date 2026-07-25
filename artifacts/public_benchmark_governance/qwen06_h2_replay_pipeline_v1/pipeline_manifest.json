@@ -1,0 +1,51 @@
+{
+  "ab3_baselines_unchanged": {
+    "runs/he_qwen06/public_benchmark_raw/humaneval/evalplus/ab3_core.jsonl": "4ea935969cc53122acd652d236aa3028564cb514abd5d22af39975b7aabc24df",
+    "runs/he_qwen06/public_benchmark_raw/humaneval/evalplus/ab3_full.jsonl": "4ea935969cc53122acd652d236aa3028564cb514abd5d22af39975b7aabc24df",
+    "runs/mb_qwen06/public_benchmark_raw/mbpp/evalplus/ab3_core.jsonl": "1917304f1b64527c25f6151ef8032eb96a9518530e09b769885522424ca13d3a",
+    "runs/mb_qwen06/public_benchmark_raw/mbpp/evalplus/ab3_full.jsonl": "1917304f1b64527c25f6151ef8032eb96a9518530e09b769885522424ca13d3a"
+  },
+  "conditions": [
+    "Ab1-Raw",
+    "Ab1-H2",
+    "Ab2g-Raw",
+    "Ab2g-H2"
+  ],
+  "data_flow": "fixed_extractor_completion → H2 quarantine_module_assert_entrypoint_selftest → Ab1-Raw / Ab1-H2 / Ab2g-Raw / Ab2g-H2",
+  "evalplus_executed": false,
+  "full_itt_replay_executed": false,
+  "h2_rule": {
+    "frozen": false,
+    "label": "development_candidate_not_frozen",
+    "path": "agent_tools/finals_rebuild/mbpp_h2_module_assert_quarantine.py",
+    "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+    "rule_status": "development_candidate_not_frozen",
+    "sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18"
+  },
+  "inputs": {
+    "he_ab1": "runs/he_qwen06/ab1.jsonl",
+    "he_ab2g": "runs/he_qwen06/ab2g.jsonl",
+    "he_attempts": "runs/he_qwen06/generation_attempts.jsonl",
+    "mb_ab1": "runs/mb_qwen06/ab1.jsonl",
+    "mb_ab2g": "runs/mb_qwen06/ab2g.jsonl",
+    "mb_attempts": "runs/mb_qwen06/generation_attempts.jsonl",
+    "tasks_humaneval": "tasks_humaneval.jsonl",
+    "tasks_mbpp": "tasks_mbpp.jsonl"
+  },
+  "model_calls": 0,
+  "non_claims": [
+    "full_0.6B_H2_ITT_not_executed",
+    "EvalPlus_not_executed",
+    "H2_not_frozen",
+    "Ab3_not_overwritten",
+    "no_entry_point_rename_rule"
+  ],
+  "pipeline_id": "qwen06_h2_replay_pipeline_v1",
+  "smoke": {
+    "abstained": 6,
+    "cell_count": 9,
+    "missing_extracted_completion": 1,
+    "transformed": 1
+  },
+  "status": "H2_REPLAY_PIPELINE_WIRED_SMOKE_ONLY_NOT_FULL_ITT"
+}

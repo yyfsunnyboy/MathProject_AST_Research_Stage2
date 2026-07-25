@@ -1,0 +1,87 @@
+{
+  "model_calls": 0,
+  "records": [
+    {
+      "abstained": false,
+      "condition": "Ab1-H2",
+      "missing_extracted_completion": false,
+      "reason": "transformed_module_assert_quarantined",
+      "smoke_name": "unique_module_selftest_transform",
+      "transformed": true,
+      "triggered": true
+    },
+    {
+      "abstained": true,
+      "condition": "Ab1-H2",
+      "missing_extracted_completion": false,
+      "reason": "no_module_level_assert",
+      "smoke_name": "no_module_assert_noop",
+      "transformed": false,
+      "triggered": false
+    },
+    {
+      "abstained": true,
+      "condition": "Ab2g-H2",
+      "missing_extracted_completion": false,
+      "reason": "module_assert_count_not_one",
+      "smoke_name": "multiple_module_asserts_abstain",
+      "transformed": false,
+      "triggered": true
+    },
+    {
+      "abstained": true,
+      "condition": "Ab1-H2",
+      "missing_extracted_completion": false,
+      "reason": "entry_point_missing",
+      "smoke_name": "entry_point_missing_abstain",
+      "transformed": false,
+      "triggered": true
+    },
+    {
+      "abstained": true,
+      "condition": "Ab1-H2",
+      "missing_extracted_completion": false,
+      "reason": "extraction_ambiguous_or_unknown",
+      "smoke_name": "ambiguous_extraction_abstain",
+      "transformed": false,
+      "triggered": true
+    },
+    {
+      "abstained": true,
+      "condition": "Ab2g-H2",
+      "missing_extracted_completion": false,
+      "reason": "source_truncated_or_completion_unknown",
+      "smoke_name": "source_complete_unknown_abstain",
+      "transformed": false,
+      "triggered": true
+    },
+    {
+      "abstained": true,
+      "condition": "Ab1-H2",
+      "missing_extracted_completion": true,
+      "reason": "missing_extracted_completion",
+      "smoke_name": "missing_completion_itt_retained",
+      "transformed": false,
+      "triggered": false
+    },
+    {
+      "abstained": false,
+      "condition": "Ab2g-Raw",
+      "missing_extracted_completion": false,
+      "reason": "raw_extracted_completion_identity",
+      "smoke_name": "ab2g_raw_identity",
+      "transformed": false,
+      "triggered": false
+    },
+    {
+      "abstained": false,
+      "condition": "Ab1-Raw",
+      "missing_extracted_completion": false,
+      "reason": "raw_extracted_completion_identity",
+      "smoke_name": "ab1_raw_identity",
+      "transformed": false,
+      "triggered": false
+    }
+  ],
+  "status": "synthetic_smoke_passed"
+}

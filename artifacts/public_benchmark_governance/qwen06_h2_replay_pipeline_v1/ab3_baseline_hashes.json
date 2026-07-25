@@ -1,0 +1,6 @@
+{
+  "runs/he_qwen06/public_benchmark_raw/humaneval/evalplus/ab3_core.jsonl": "4ea935969cc53122acd652d236aa3028564cb514abd5d22af39975b7aabc24df",
+  "runs/he_qwen06/public_benchmark_raw/humaneval/evalplus/ab3_full.jsonl": "4ea935969cc53122acd652d236aa3028564cb514abd5d22af39975b7aabc24df",
+  "runs/mb_qwen06/public_benchmark_raw/mbpp/evalplus/ab3_core.jsonl": "1917304f1b64527c25f6151ef8032eb96a9518530e09b769885522424ca13d3a",
+  "runs/mb_qwen06/public_benchmark_raw/mbpp/evalplus/ab3_full.jsonl": "1917304f1b64527c25f6151ef8032eb96a9518530e09b769885522424ca13d3a"
+}
