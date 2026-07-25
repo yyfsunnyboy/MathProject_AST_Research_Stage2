@@ -1,0 +1,22 @@
+{
+  "ab1_available_count": 378,
+  "ab1_missing_count": 0,
+  "ab2g_extraction_failure_count": 0,
+  "ab2g_extraction_success_count": 378,
+  "ab2g_raw_available_count": 378,
+  "ab2g_raw_missing_count": 0,
+  "ab3_core_extraction_failure_count": 0,
+  "ab3_core_extraction_success_count": 378,
+  "ab3_full_extraction_failure_count": 0,
+  "ab3_full_extraction_success_count": 378,
+  "ab3_target_count": 378,
+  "benchmark": "mbpp",
+  "core_changed_count": 0,
+  "execution_rescued_by_core": 0,
+  "execution_rescued_by_full": 0,
+  "not_test_assessable_count": 0,
+  "spec_changed_count": 0,
+  "syntax_rescued_by_core": 0,
+  "syntax_rescued_by_full": 0,
+  "total_tasks": 378
+}

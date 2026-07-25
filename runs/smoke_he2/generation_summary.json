@@ -1,0 +1,16 @@
+{
+  "ab1_attempts": 3,
+  "ab1_failures": 3,
+  "ab1_successes": 0,
+  "ab2g_attempts": 3,
+  "ab2g_failures": 0,
+  "ab2g_successes": 3,
+  "api_failure_count": 0,
+  "extraction_ambiguous_count": 3,
+  "extraction_empty_count": 0,
+  "failed_attempts": 3,
+  "fence_count": 6,
+  "successful_attempts": 3,
+  "surrounding_text_count": 3,
+  "total_attempts": 6
+}
