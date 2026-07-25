@@ -125,6 +125,7 @@ _MODEL_PROFILES: Dict[str, Dict[str, Any]] = {
         "parameters": "8B",
         "quantization": None,
         "expected_digest_prefix": None,
+        "thinking": None,          # 新增:維持原本不送 think 參數的行為
     },
 }
 
@@ -151,6 +152,7 @@ class OllamaGenerationSettings:
         profile = _MODEL_PROFILES.get(model, {})
         return cls(
             model=model,
+            thinking=profile.get("thinking", False),   # 新增:未登記的模型預設關閉 thinking
             expected_digest_prefix=profile.get("expected_digest_prefix"),
         )
 
