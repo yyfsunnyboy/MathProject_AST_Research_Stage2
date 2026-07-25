@@ -1,0 +1,20 @@
+{
+  "candidate_executions": 50,
+  "evalplus_executions": 50,
+  "evalplus_results_sha256": "e3c84016a0edbb423eb9d7ff9efe1df9c5df963587e5702966131a6108651796",
+  "execution_record_sha256": "fb217c48e07cdcc02629df17ff9fbb8d38385ff8102c4e498678bf647d513db0",
+  "functional_eval_input_sha256": "3d4e187751415a0736871fb561975d2885a988790097aa148e0bdb2eb8605c30",
+  "guard_modified_after_preregistration": false,
+  "h2_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "model_calls": 0,
+  "outputs": {
+    "evaluation_summary.json": "7fcc9fa591e9325fb406b81e38ea9ddfcc13af16997d4b0c5f19db64c1245230",
+    "freeze_decision.json": "d42255828b5a2526f9c0c55d2ace5b0a394f4d3550c3b301cabe249ab5de6d90",
+    "paired_four_arm_ledger.csv": "d02e94d596ff2056143b74d3e1d437cc4fd74558918189fd0fc9366942e6c751",
+    "research_report_zh.md": "9ba4904bbd150841833a9ffbd4d8c5e1122c76b9ec8b398f23a224ebfaed78e2"
+  },
+  "preregistration_sha256": "01f96a7a4d1c93484ff18a7dcd36d089d1828c83101c614a8df71acbff9cd579",
+  "receipt_id": "top_level_demo_print_quarantine_development_v1",
+  "rule_sha256": "a0b89828b2f3e524fd8d03a64bc0a5afe00b38b774aae47572d22c0e0a7f3ee9",
+  "selective_rerun": false
+}

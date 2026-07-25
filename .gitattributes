@@ -270,3 +270,15 @@ artifacts/public_benchmark_governance/ab2ga_short_v1_preregistration/** text eol
 scripts/build_ab2ga_short_v1_preregistration.py text eol=lf
 scripts/preflight_ab2ga_short_v1_preregistration.py text eol=lf
 tests/test_ab2ga_short_v1_preregistration.py text eol=lf
+
+# Deterministic healer inventory and demo-print development evaluation
+artifacts/public_benchmark_governance/deterministic_healer_candidate_inventory_4b9b_v1/** text eol=lf
+scripts/build_deterministic_healer_candidate_inventory_4b9b_v1.py text eol=lf
+tests/test_deterministic_healer_candidate_inventory_4b9b_v1.py text eol=lf
+agent_tools/finals_rebuild/mbpp_top_level_demo_print_quarantine.py text eol=lf
+artifacts/public_benchmark_governance/top_level_demo_print_quarantine_development_v1/** text eol=lf
+scripts/prepare_top_level_demo_print_quarantine_development_v1.py text eol=lf
+scripts/run_top_level_demo_print_quarantine_functional_eval_v1.py text eol=lf
+scripts/finalize_top_level_demo_print_quarantine_development_v1.py text eol=lf
+tests/test_mbpp_top_level_demo_print_quarantine.py text eol=lf
+tests/test_top_level_demo_print_quarantine_development_v1.py text eol=lf

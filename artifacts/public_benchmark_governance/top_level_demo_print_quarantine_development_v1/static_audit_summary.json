@@ -1,0 +1,34 @@
+{
+  "candidate_executions": 0,
+  "cohort": {
+    "4B": 200,
+    "9B": 300,
+    "total": 500
+  },
+  "evalplus_executions": 0,
+  "model_calls": 0,
+  "outcome_blind": true,
+  "raw_controls": {
+    "fail": 358,
+    "not_evaluated": 14,
+    "pass": 128
+  },
+  "static_decisions": {
+    "abstained": 479,
+    "reason_counts": {
+      "adjacent_assert_not_in_public_prompt": 5,
+      "assert_not_literal_entrypoint_selftest": 1,
+      "entry_point_missing": 12,
+      "entry_point_multiple": 8,
+      "no_top_level_assert": 1,
+      "no_top_level_print": 365,
+      "print_arguments_not_literal_or_entrypoint_literal_call": 4,
+      "source_truncated_or_completion_unknown": 23,
+      "source_unparseable": 53,
+      "top_level_assert_count_not_one": 1,
+      "top_level_print_count_not_one": 6,
+      "transformed_top_level_demo_print_quarantined": 21
+    },
+    "transformed": 21
+  }
+}

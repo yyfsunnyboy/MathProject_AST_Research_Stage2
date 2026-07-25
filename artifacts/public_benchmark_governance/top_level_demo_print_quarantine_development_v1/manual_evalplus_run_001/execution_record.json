@@ -1,0 +1,20 @@
+{
+  "candidate_executions": 50,
+  "candidate_generations": 0,
+  "canonical_solution_contents_emitted": false,
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "evalplus_executions": 50,
+  "evalplus_version": "0.3.1",
+  "evaluated_cells": 50,
+  "evaluator_engine": "evalplus_0.3.1_check_correctness_subset",
+  "functional_eval_input_sha256": "3d4e187751415a0736871fb561975d2885a988790097aa148e0bdb2eb8605c30",
+  "guard_or_rule_modified": false,
+  "hidden_test_contents_emitted": false,
+  "model_calls": 0,
+  "parallel": 1,
+  "preregistration_sha256": "01f96a7a4d1c93484ff18a7dcd36d089d1828c83101c614a8df71acbff9cd579",
+  "results_sha256": "e3c84016a0edbb423eb9d7ff9efe1df9c5df963587e5702966131a6108651796",
+  "retry_resume_selective_acceptance_overwrite": false,
+  "status": "minimal_evalplus_complete_pending_finalization"
+}
