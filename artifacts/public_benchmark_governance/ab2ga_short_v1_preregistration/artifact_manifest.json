@@ -1,0 +1,29 @@
+{
+  "artifact_sha256_excluding_manifest": {
+    "build_receipt.json": "d54e505bf004fdc12f67e8a49e3e4be046b7b225e8c299bdc6c047751f79b797",
+    "cell_plan.csv": "e5ec0be81844043f1251c15f6e7122070fb1e0d2f4d722e3660769768da8460a",
+    "complete_prompt_manifest.jsonl": "f8cd4d030486c36c4755ce974ec452f2486a0fc07748c86c671f0c7e7e25f036",
+    "frozen_ab2g_base.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+    "frozen_incremental_block.txt": "20a24ce1cecc28f4d021a36b24a706f20d781fc394a542800ae27dbcf8b4ac6a",
+    "preregistration.json": "3b4f3945c31d5f36a10e9021142d06532f9b9371ebd18eba309969253524e274",
+    "preregistration.md": "d5de82c1d7e32d2eb661231a1a3fda0ad86b2a1f1b76173f0f23987ec7274bfa",
+    "research_note_zh.md": "32649e52e0ea2548440907589cf3012499ac423a0722e979a196a79aba2a16ad",
+    "scaffold_spec.json": "c2890bee389dda3fe44fd074c7dd2e582c685ff73e19ae9040ea5708b382a716",
+    "schema.json": "2ab647f7c8d2b6fbdb3352454b1d159dbbe05fb200102a3cb2587c0d4f68d39f"
+  },
+  "manifest_id": "ab2ga_short_v1_preregistration_artifacts",
+  "source_provenance": {
+    "artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/generation_cells.csv": "1d6c1dfc85d3b607eb99da0b2c2cb055fd56764225c281233a8c3c4e0ff5f7b3",
+    "artifacts/public_benchmark_governance/candidate_b_4b_development_failure_supply_pilot_preregistration_v1/manifest.json": "955a0b463e2ca6a71b76ed745a266977c5cd7005562e621a1b8091a28fd3eccb",
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r003_v1/candidate_b_generation_cells.csv": "1e7ab332d441f0fff207f8ec80ac24379184b39387f569e2e6985c232c0effc5",
+    "artifacts/public_benchmark_governance/candidate_b_development60_replay_r003_v1/manifest.json": "e8d0f8e9198848e8708d910f6c859622c272de850a2b1045d62993c114c98fbd",
+    "artifacts/public_benchmark_governance/frozen_split.csv": "3bb00bab0d9476412d03c67923c1db4ab1352f551f0e8020ee7e8cb7a367f9d4",
+    "artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/evaluation_manifest.json": "f7fda43aa37f100925ba704f042159ff0aa94dfef644a832fd5a85529ff90728",
+    "artifacts/public_benchmark_governance/healer_h0_h1_functional_evaluation_v1/manifest.json": "420eb05267f11f4f9f157f63167398e86fbc68322f33b33b9bf5656fb6f24913",
+    "configs/public_benchmark_generation_protocol_v1.json": "987fb107bd6b36703ba6289fbd89a2aa69856031fd82402600794915ae0b583d",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0.txt": "31969abe8799b1846c488d3f7fca558af79875c7eb90ab76db7a6b62ad263305",
+    "configs/scaffolds/mbpp_generic_code_scaffold_v0_manifest.json": "b48576bf74c6b5aae1a3f4a4c4266da5ee78e1df8e77f877b67f903e9ada93da",
+    "data/mbpp_plus/tasks.jsonl": "b816022b8b587047cb1d275417a96acb009de328684e5914e7ac010c9d8c6f3c"
+  },
+  "status": "frozen_preregistered_not_executed"
+}

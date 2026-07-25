@@ -264,3 +264,9 @@ scripts/run_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
 scripts/finalize_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
 tests/test_h2_module_assert_quarantine_functional_eval_v1.py text eol=lf
 artifacts/public_benchmark_governance/h2_module_assert_quarantine_functional_evaluation_v1/** text eol=lf
+
+# Ab2gA-short-v1 frozen development condition-transfer preregistration
+artifacts/public_benchmark_governance/ab2ga_short_v1_preregistration/** text eol=lf
+scripts/build_ab2ga_short_v1_preregistration.py text eol=lf
+scripts/preflight_ab2ga_short_v1_preregistration.py text eol=lf
+tests/test_ab2ga_short_v1_preregistration.py text eol=lf

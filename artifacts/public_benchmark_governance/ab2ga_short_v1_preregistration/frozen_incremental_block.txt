@@ -1,0 +1,5 @@
+Before writing the final code, internally:
+1. identify an algorithm that handles all valid inputs;
+2. check important edge cases and index boundaries;
+3. verify the return value and type;
+4. mentally test one normal case and one edge case.
