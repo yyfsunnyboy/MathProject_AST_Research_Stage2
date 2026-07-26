@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "ea805dde50f4db6171d10135e7eb6205a6c30f1a5e63b1f993ad3628690107e4",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "ff3b5bb9efa08108c2ff4cf55c2cdfa54e35b1c32f3c1ff160dab4c4e227e6cf",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "syntax_blocked",
+  "pipeline_corrected_detail": "SyntaxError: unterminated triple-quoted string literal (detected at line 175) at line 3",
+  "post_h1_h2_h3_h4_category": "syntax_blocked",
+  "post_h1_h2_h3_h4_detail": "SyntaxError: unterminated triple-quoted string literal (detected at line 175) at line 3",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "",
+  "seed": "22",
+  "task_id": "Mbpp/264",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "b1877a222a1f931170e4b2a505cfe26aadb4cc07c2e3736bfd82ed2f2fe97816",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "13fc1a0bbc92246a31747a1eb732d8f52c8c0eac737bc9cc4aee756066e81610",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "syntax_blocked",
+  "pipeline_corrected_detail": "SyntaxError: unterminated string literal (detected at line 5) at line 5",
+  "post_h1_h2_h3_h4_category": "syntax_blocked",
+  "post_h1_h2_h3_h4_detail": "SyntaxError: unterminated string literal (detected at line 5) at line 5",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2A",
+  "rules_applied": "",
+  "seed": "55",
+  "task_id": "Mbpp/459",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

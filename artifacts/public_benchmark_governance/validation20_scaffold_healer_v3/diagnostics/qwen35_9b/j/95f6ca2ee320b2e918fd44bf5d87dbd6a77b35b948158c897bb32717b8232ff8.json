@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "a7450cf270a691625eec1f3a039a3e2aebb4fcf7af7c8f1afe5619c807db6a84",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "95f6ca2ee320b2e918fd44bf5d87dbd6a77b35b948158c897bb32717b8232ff8",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "ValueError: Not enough distinct numbers in the list.",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "ValueError: Not enough distinct numbers in the list.",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "module_assert_entrypoint_selftest_quarantine_v0",
+  "seed": "11",
+  "task_id": "Mbpp/755",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

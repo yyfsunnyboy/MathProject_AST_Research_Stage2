@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "1167ac8594046791ce2fb9233256bf236d8758030949b712b5314da6ca308760",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "6b5dcc72f73c66595b3dbe52e220dbcc04fe4795422b33755b591954654b21e4",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "passed",
+  "pipeline_corrected_detail": "all_tests_passed",
+  "post_h1_h2_h3_h4_category": "passed",
+  "post_h1_h2_h3_h4_detail": "all_tests_passed",
+  "preserved_executable": "true",
+  "prompt_condition": "Ab2gA-factorial-v1",
+  "rules_applied": "",
+  "seed": "11",
+  "task_id": "Mbpp/4",
+  "transition_category": "preserved_executable",
+  "unchanged_blocked": "false",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "6495786b01cab22541d7052a7c68b669c5b9314a41d7010fdc238838dd92cf59",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "2e9bc0489e7ea8f459965111449c2632e27dd92d15750f3eeaac9f76abe7d62f",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "ValueError: List must contain at least two distinct numbers.",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "ValueError: List must contain at least two distinct numbers.",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "module_assert_entrypoint_selftest_quarantine_v0",
+  "seed": "33",
+  "task_id": "Mbpp/755",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

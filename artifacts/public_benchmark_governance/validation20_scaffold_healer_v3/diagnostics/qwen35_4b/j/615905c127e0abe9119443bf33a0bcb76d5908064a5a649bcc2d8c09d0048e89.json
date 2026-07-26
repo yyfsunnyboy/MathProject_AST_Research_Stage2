@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "5c54d3f18c8d39ee57b711f2115f343f8d4466bd720da6a14b6f755c35f893a8",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "615905c127e0abe9119443bf33a0bcb76d5908064a5a649bcc2d8c09d0048e89",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "syntax_blocked",
+  "pipeline_corrected_detail": "SyntaxError: invalid syntax at line 4",
+  "post_h1_h2_h3_h4_category": "syntax_blocked",
+  "post_h1_h2_h3_h4_detail": "SyntaxError: invalid syntax at line 4",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2A",
+  "rules_applied": "",
+  "seed": "44",
+  "task_id": "Mbpp/86",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

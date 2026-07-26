@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "6c1abe32f86dc6b235f1c4e19f3e9741750d7a27eb84f522e6562ad872554790",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "cdd613e3bccdb72d8ec0c0b9baea38197bb116e6e5ba30a5003145d48b6ce9d7",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "import_or_load_blocked",
+  "pipeline_corrected_detail": "TopLevel_AssertionError: ",
+  "post_h1_h2_h3_h4_category": "import_or_load_blocked",
+  "post_h1_h2_h3_h4_detail": "TopLevel_AssertionError: ",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "",
+  "seed": "22",
+  "task_id": "Mbpp/775",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

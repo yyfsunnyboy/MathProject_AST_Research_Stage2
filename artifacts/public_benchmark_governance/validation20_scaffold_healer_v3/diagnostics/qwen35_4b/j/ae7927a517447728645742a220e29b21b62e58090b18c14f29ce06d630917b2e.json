@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "ef326385d196fc9eb4c8ee1e9682f8bcab71f6ec49e9c758c27bc6581cd0ac01",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "ae7927a517447728645742a220e29b21b62e58090b18c14f29ce06d630917b2e",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "syntax_blocked",
+  "pipeline_corrected_detail": "SyntaxError: invalid character '–' (U+2013) at line 6",
+  "post_h1_h2_h3_h4_category": "syntax_blocked",
+  "post_h1_h2_h3_h4_detail": "SyntaxError: invalid character '–' (U+2013) at line 6",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2A",
+  "rules_applied": "",
+  "seed": "55",
+  "task_id": "Mbpp/264",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

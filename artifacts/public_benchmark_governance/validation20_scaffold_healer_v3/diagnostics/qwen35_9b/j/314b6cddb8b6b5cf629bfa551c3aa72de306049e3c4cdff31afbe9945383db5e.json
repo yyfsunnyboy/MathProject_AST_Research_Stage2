@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "847e3a14e1db809dd875cb26b07551a87346491439ae4c05aa63d8afa55d287c",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "314b6cddb8b6b5cf629bfa551c3aa72de306049e3c4cdff31afbe9945383db5e",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "ValueError: Length of nums does not match provided n",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "ValueError: Length of nums does not match provided n",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2g",
+  "rules_applied": "",
+  "seed": "33",
+  "task_id": "Mbpp/564",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

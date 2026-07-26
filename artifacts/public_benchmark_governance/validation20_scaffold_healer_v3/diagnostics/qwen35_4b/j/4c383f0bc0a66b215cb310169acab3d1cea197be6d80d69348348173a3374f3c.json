@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "94d2d35e10515bc4149ccac3750ed682158d3a3290c8cc7ec74fcc738693f97f",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "4c383f0bc0a66b215cb310169acab3d1cea197be6d80d69348348173a3374f3c",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "syntax_blocked",
+  "pipeline_corrected_detail": "SyntaxError: expected an indented block after 'if' statement on line 175 at line 177",
+  "post_h1_h2_h3_h4_category": "syntax_blocked",
+  "post_h1_h2_h3_h4_detail": "SyntaxError: expected an indented block after 'if' statement on line 175 at line 177",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2g",
+  "rules_applied": "",
+  "seed": "55",
+  "task_id": "Mbpp/580",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

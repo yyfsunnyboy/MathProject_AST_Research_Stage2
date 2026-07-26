@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "7d8eacbd453bed0892f81dfcbf20b87e485ab58646c35026bc4d7e543dc42e7b",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "23ec7fea93085303ddaf8f785f0a596c9ff12208e0a594ab7f9343ab008156da",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "ValueError: Invalid input",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "ValueError: Invalid input",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2gA-factorial-v1",
+  "rules_applied": "",
+  "seed": "44",
+  "task_id": "Mbpp/586",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "3f7df306a489c1b3b1fc5d45de26ba004e13443e786f683f45ce518d128add6c",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "44389e152ef9323a268bf27e423c40f2fc7b6d0624c79a7ffc1659d6f5df3de5",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "import_or_load_blocked",
+  "pipeline_corrected_detail": "TopLevel_TypeError: extract_even() takes 1 positional argument but 2 were given",
+  "post_h1_h2_h3_h4_category": "import_or_load_blocked",
+  "post_h1_h2_h3_h4_detail": "TopLevel_TypeError: extract_even() takes 1 positional argument but 2 were given",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "",
+  "seed": "11",
+  "task_id": "Mbpp/580",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

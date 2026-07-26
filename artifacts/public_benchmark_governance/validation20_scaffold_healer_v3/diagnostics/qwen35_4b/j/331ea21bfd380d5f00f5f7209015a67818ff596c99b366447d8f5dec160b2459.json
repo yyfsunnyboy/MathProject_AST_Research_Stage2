@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "2a9bb1b7b6a86fc51c25480b7f386d1a69e78d419dc4482b4800d2db99212302",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "331ea21bfd380d5f00f5f7209015a67818ff596c99b366447d8f5dec160b2459",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "import_or_load_blocked",
+  "pipeline_corrected_detail": "NameError: name 'n' is not defined",
+  "post_h1_h2_h3_h4_category": "import_or_load_blocked",
+  "post_h1_h2_h3_h4_detail": "NameError: name 'n' is not defined",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "",
+  "seed": "11",
+  "task_id": "Mbpp/611",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "8916e2d488c3711a8f3971eba11bb0aa0d4ef01514fdbd5d42e206844f338959",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "04f8dc6b06b0df2cb8c2559a728736a9550363ba187b9f68d63dce9b81169381",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "IndexError: Column index -1 is out of bounds for the matrix.",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "IndexError: Column index -1 is out of bounds for the matrix.",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2A",
+  "rules_applied": "module_assert_entrypoint_selftest_quarantine_v0|top_level_demo_print_quarantine_v0",
+  "seed": "33",
+  "task_id": "Mbpp/611",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

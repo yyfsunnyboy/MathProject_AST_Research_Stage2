@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "f0080f2176773b1d2f5b87ef9f9bf5eb1e26f88806ba0fa3a3ce7940988711b0",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "9ec935bc3975fd3ebb81b03b9614a1f6d53653bdadd94fcd621be3dafdfe5a8e",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "AttributeError: 'int' object has no attribute 'isdigit'",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "AttributeError: 'int' object has no attribute 'isdigit'",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2gA-factorial-v1",
+  "rules_applied": "",
+  "seed": "11",
+  "task_id": "Mbpp/611",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

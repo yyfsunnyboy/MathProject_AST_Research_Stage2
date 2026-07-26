@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "3efa4f45de03433e45814c46a6ba824e645806075137c1c4543b47b9deb4434b",
+  "executable_regression": "false",
+  "execution_rescue": "true",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "2da649fbd8fe5518f53a9ca4a88e6d3658fad586b50811ef23e0f3a238737410",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "entry_point_blocked",
+  "pipeline_corrected_detail": "missing_or_uncallable_entry_point: check_tuplex",
+  "post_h1_h2_h3_h4_category": "passed",
+  "post_h1_h2_h3_h4_detail": "all_tests_passed",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "entrypoint_alias_unique_arity_compatible_v0",
+  "seed": "55",
+  "task_id": "Mbpp/405",
+  "transition_category": "verified_rescue",
+  "unchanged_blocked": "false",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "true"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "e864b8c4edbc2ada6e96987f1832942dd7ace39b622ab13aee1c9cf18aef5586",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "9aca23af9578c55e87e8d0d7fd80d647a60e76bce5045be8314ac22775a7dbf9",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "entry_point_blocked",
+  "pipeline_corrected_detail": "TypeError_arity_mismatch: Input must be a nested tuple of mixed elements",
+  "post_h1_h2_h3_h4_category": "entry_point_blocked",
+  "post_h1_h2_h3_h4_detail": "TypeError_arity_mismatch: Input must be a nested tuple of mixed elements",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2g",
+  "rules_applied": "",
+  "seed": "22",
+  "task_id": "Mbpp/580",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

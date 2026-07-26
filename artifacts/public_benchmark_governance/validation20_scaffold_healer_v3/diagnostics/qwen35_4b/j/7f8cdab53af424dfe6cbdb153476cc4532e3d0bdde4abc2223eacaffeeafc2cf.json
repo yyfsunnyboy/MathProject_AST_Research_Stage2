@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "4b65f68cd0c08b5b0bbcf61f8871e7c9d35fac519c373218b89fede99ca85fb8",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "7f8cdab53af424dfe6cbdb153476cc4532e3d0bdde4abc2223eacaffeeafc2cf",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "IndexError: list index out of range",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "IndexError: list index out of range",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2gA-factorial-v1",
+  "rules_applied": "",
+  "seed": "44",
+  "task_id": "Mbpp/265",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "9ce4cdb28cca6bb49f6e0b631ae59e157cf0698cab074dc9b3dff791126b6678",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "8ebefa1f2201ab6fee54fd8aee45cdd7a1a0cc2f2877d4eefb4b69c508bbc155",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "ValueError: List does not have more than one distinct value.",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "ValueError: List does not have more than one distinct value.",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "module_assert_entrypoint_selftest_quarantine_v0",
+  "seed": "55",
+  "task_id": "Mbpp/755",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

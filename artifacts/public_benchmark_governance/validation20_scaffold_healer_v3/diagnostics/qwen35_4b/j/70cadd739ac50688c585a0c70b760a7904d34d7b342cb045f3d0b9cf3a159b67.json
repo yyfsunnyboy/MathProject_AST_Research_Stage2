@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "e28d0a1477d1addf10efb28fea2f161f567aa99bfb1bb7a5b72e63895013148a",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "70cadd739ac50688c585a0c70b760a7904d34d7b342cb045f3d0b9cf3a159b67",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "runtime_exception",
+  "pipeline_corrected_detail": "IndexError: Column index -1 exceeds the length of rows.",
+  "post_h1_h2_h3_h4_category": "runtime_exception",
+  "post_h1_h2_h3_h4_detail": "IndexError: Column index -1 exceeds the length of rows.",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2A",
+  "rules_applied": "",
+  "seed": "33",
+  "task_id": "Mbpp/611",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "56466a9a20f1446c21d39012ec1006e3ad16e7b5cf4ed7a22e6fec21b6cef356",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "",
+  "generation_id": "baab16539e15662ab7e4cd36671b87f62118562d43c9ca2776aff6bcba3781ee",
+  "model_tag": "qwen3.5:9b",
+  "pipeline_corrected_category": "entry_point_blocked",
+  "pipeline_corrected_detail": "TypeError_arity_mismatch: unsupported operand type(s) for %: 'list' and 'int'",
+  "post_h1_h2_h3_h4_category": "entry_point_blocked",
+  "post_h1_h2_h3_h4_detail": "TypeError_arity_mismatch: unsupported operand type(s) for %: 'list' and 'int'",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab2g",
+  "rules_applied": "",
+  "seed": "11",
+  "task_id": "Mbpp/580",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}

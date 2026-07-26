@@ -1,0 +1,23 @@
+{
+  "abstained": "false",
+  "blocker_removed_but_incorrect": "false",
+  "cell_identity": "32f54648a0a86e4fa281ce629b0ac56ef5324a715dd7dcdadf7ff65cf14518e0",
+  "executable_regression": "false",
+  "execution_rescue": "false",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "5d5ac1b2f5d319e99dfbdab17cff1022f9ddc05c937ff3411e772f7da65dcfcc",
+  "model_tag": "qwen3.5:4b",
+  "pipeline_corrected_category": "import_or_load_blocked",
+  "pipeline_corrected_detail": "NameError: name 'tup_string' is not defined",
+  "post_h1_h2_h3_h4_category": "import_or_load_blocked",
+  "post_h1_h2_h3_h4_detail": "NameError: name 'tup_string' is not defined",
+  "preserved_executable": "false",
+  "prompt_condition": "Ab1",
+  "rules_applied": "entrypoint_alias_unique_arity_compatible_v0",
+  "seed": "33",
+  "task_id": "Mbpp/132",
+  "transition_category": "unchanged_blocked",
+  "unchanged_blocked": "true",
+  "unchanged_incorrect": "false",
+  "verified_rescue": "false"
+}
