@@ -1,0 +1,8 @@
+{
+  "plan_id": "qwen4b_qwen9b_full_benchmark_preregistration_v1",
+  "preregistration_manifest": "preregistration_manifest.json",
+  "prompt_manifest": "prompt_manifest.jsonl",
+  "prompt_manifest_sha256": "bbe713d49e00df81d249f505fad4cabcadbe6078a2ebe5fbc1855aecc8d759a9",
+  "status": "master_preregistration_frozen",
+  "total_prompt_manifest_entries": 2168
+}

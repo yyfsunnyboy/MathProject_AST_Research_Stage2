@@ -1,0 +1,61 @@
+{
+  "counts": {
+    "humaneval_tasks": 164,
+    "itt_eval_conditions_per_task": 4,
+    "itt_states_per_model": 2168,
+    "mbpp_tasks": 378,
+    "raw_generations_per_model": 1084,
+    "total_itt_states_both_models": 4336,
+    "total_raw_generations_both_models": 2168,
+    "total_tasks": 542,
+    "treatments_per_task": 2
+  },
+  "created_at": "2026-07-26T20:24:30Z",
+  "decoding_options": {
+    "num_predict": 1024,
+    "ollama_base_url": "http://127.0.0.1:11434",
+    "seed": 0,
+    "system_prompt": "",
+    "temperature": 0.0,
+    "think": false,
+    "top_k": 40,
+    "top_p": 1.0
+  },
+  "extractor_hash": "aa331bbe5fbd17b4fc1372fb4de8e740a67f1d4c7b86114eb8d8d14c4c7d6ee2",
+  "governance": {
+    "model_calls": 0,
+    "status": "preregistration_frozen",
+    "validation20_incompatible_count": 40,
+    "validation20_isolated": true,
+    "validation20_reusable": false
+  },
+  "h2_rule_hash": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "models": {
+    "qwen3.5:4b": {
+      "expected_itt_states": 2168,
+      "expected_raw_count": 1084,
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "model_key": "qwen35_4b",
+      "output_directories": [
+        "runs/he_qwen35_4b",
+        "runs/mb_qwen35_4b"
+      ]
+    },
+    "qwen3.5:9b": {
+      "expected_itt_states": 2168,
+      "expected_raw_count": 1084,
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "model_key": "qwen35_9b",
+      "output_directories": [
+        "runs/he_qwen35_9b",
+        "runs/mb_qwen35_9b"
+      ]
+    }
+  },
+  "plan_id": "qwen4b_qwen9b_full_benchmark_preregistration_v1",
+  "roster_hashes": {
+    "humaneval": "d26c9379a412db03c955b063506c04d7a6da5fb5ef77265ec603c7565922b829",
+    "mbpp": "8bc9f3ff73ac65e013336dc91a16adb8e088d439952f4d4da938585459d1e47b"
+  },
+  "runner_identity": "public_benchmark_generation_runner_v1"
+}
