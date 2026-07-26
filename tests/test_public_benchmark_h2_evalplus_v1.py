@@ -1,4 +1,4 @@
-"""Targeted unit tests for model-parameterized public benchmark H2 EvalPlus runner (no live model/EvalPlus execution)."""
+"""Targeted unit tests for model-parameterized public benchmark H2 EvalPlus runner."""
 
 from __future__ import annotations
 
@@ -48,3 +48,8 @@ def test_9b_evalplus_dry_run_not_ready() -> None:
     assert res["planned_eval_cells"] == 2168
     assert res["present_replay_journals"] == 0
     assert res["missing_replay_journals"] == 2168
+
+
+def test_missing_replay_journals_fail_closed() -> None:
+    with pytest.raises(runner.EvalPlusRunnerError):
+        runner.run_evalplus_execution(model="qwen3.5:9b", dataset="all", repo_root=REPO)

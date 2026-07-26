@@ -29,6 +29,9 @@ from agent_tools.finals_rebuild.extraction import extract_code  # noqa: E402
 from agent_tools.finals_rebuild.generation_persistence import (  # noqa: E402
     durable_write_json_new,
 )
+from agent_tools.finals_rebuild.ollama_generation_runner import (  # noqa: E402
+    run_ollama_generation,
+)
 
 RUNNER_IDENTITY = "public_benchmark_generation_runner_v1"
 GENERATE_ACK = "I_ACKNOWLEDGE_THIS_WILL_CALL_THE_PINNED_FULL_BENCHMARK_MODEL"
@@ -197,7 +200,6 @@ def audit_generation_provenance(
         reusable = 0
         incompatible = 0
 
-        # Pre-index existing journals for this group across run dirs and development dirs
         ds_type = "humaneval" if g_key.endswith("HumanEval") else "mbpp"
         scan_dirs = [repo_root / g_spec["dir_prefix"][ds_type] / "j"]
         if ds_type == "mbpp":
@@ -251,8 +253,6 @@ def audit_generation_provenance(
             "remaining_to_generate": missing,
         }
 
-    # Validation20 40 generations compatibility verdict
-    # Validation20 generations use seeds {11..55} and experimental runner identity => incompatible for standard single-seed 0 full benchmark
     v20_verdict = {
         "status": "incompatible_existing_generation",
         "validation20_generation_count": 40,
@@ -260,8 +260,6 @@ def audit_generation_provenance(
         "reusable_exact_match_count": 0,
     }
 
-    target_group_key = f"{'4B' if model_tag == 'qwen3.5:4b' else '9B'}_{'HumanEval' if dataset_name == 'humaneval' else ('MBPP' if dataset_name == 'mbpp' else 'All')}"
-    
     total_required = sum(v["required_raw"] for k, v in group_results.items() if k.startswith('4B' if model_tag == 'qwen3.5:4b' else '9B'))
     total_reusable = sum(v["exact_reusable"] for k, v in group_results.items() if k.startswith('4B' if model_tag == 'qwen3.5:4b' else '9B'))
     total_missing = sum(v["remaining_to_generate"] for k, v in group_results.items() if k.startswith('4B' if model_tag == 'qwen3.5:4b' else '9B'))
@@ -306,6 +304,43 @@ def run_dry_run(
     }
 
 
+def execute_generation(
+    *,
+    model: str,
+    dataset: str,
+    treatment: str = "all",
+    resume: bool = True,
+    repo_root: pathlib.Path = REPO_ROOT,
+) -> dict[str, Any]:
+    """Executes formal LLM generation via Ollama HTTP API."""
+    _require(model in ALLOWED_MODELS, f"unsupported model: {model}")
+    datasets = ["humaneval", "mbpp"] if dataset == "all" else [dataset]
+
+    results = {}
+    spec = MODEL_SPECS[model]
+
+    for ds in datasets:
+        tasks_p = repo_root / TASK_FILES[ds]
+        out_d = repo_root / spec["dir_prefix"][ds]
+
+        gen_res = run_ollama_generation(
+            tasks_path=tasks_p,
+            benchmark=ds,
+            output_dir=out_d,
+            model=model,
+            resume=resume,
+            repo_root=repo_root,
+        )
+        results[ds] = gen_res
+
+    return {
+        "status": "generation_execution_completed",
+        "model_tag": model,
+        "dataset": dataset,
+        "results": results,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--model", required=True, choices=ALLOWED_MODELS)
@@ -331,7 +366,14 @@ def main(argv: list[str] | None = None) -> int:
         args.acknowledgement == GENERATE_ACK,
         "formal generation requires acknowledgement: " + GENERATE_ACK,
     )
-    print("Formal generation runner initialized (zero model calls during audit).")
+
+    result = execute_generation(
+        model=args.model,
+        dataset=args.dataset,
+        treatment=args.treatment,
+        resume=args.resume,
+    )
+    print(json.dumps(result, indent=2, sort_keys=True))
     return 0
 
 
