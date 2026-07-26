@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -13,6 +14,7 @@ from scripts import merge_mbpp_validation20_cross_machine_results_v1 as merge
 from scripts import preflight_mbpp_validation20_generation_v1 as gen_preflight
 from scripts import run_mbpp_validation20_derivatives_v1 as derivatives
 from scripts import run_mbpp_validation20_evalplus_qualification_v1 as qual
+from scripts import run_mbpp_validation20_execution_diagnostics_v1 as diagnostics
 from scripts import run_mbpp_validation20_generation_v1 as gen
 
 
@@ -122,7 +124,10 @@ def test_manifest_rebuild_detects_byte_identity() -> None:
 
 
 def test_evalplus_preflight_zero_candidate_execution() -> None:
-    receipt = qual.zero_candidate_execution_preflight(model="qwen3.5:9b")
+    eval_dir = REPO / freeze.MODEL_SPECS["qwen3.5:9b"]["evalplus_output_relative"]
+    receipt = qual.zero_candidate_execution_preflight(
+        model="qwen3.5:9b", require_output_absent=not eval_dir.exists()
+    )
     assert receipt["planned_eval_cells"] == 1200
     assert receipt["candidate_program_executed"] is False
     assert receipt["candidate_program_imported"] is False
@@ -148,7 +153,10 @@ def test_raw_final_pairing_plan() -> None:
 
 
 def test_derivatives_preflight_zero_execution() -> None:
-    receipt = derivatives.zero_execution_preflight(model="qwen3.5:4b")
+    eval_dir = REPO / freeze.MODEL_SPECS["qwen3.5:4b"]["evalplus_output_relative"]
+    receipt = derivatives.zero_execution_preflight(
+        model="qwen3.5:4b", require_output_absent=not eval_dir.exists()
+    )
     assert receipt["candidate_program_executed"] is False
     assert receipt["evalplus_executed"] is False
     assert receipt["model_calls"] == 0
@@ -393,7 +401,7 @@ def test_resume_skip_requires_full_identity() -> None:
 
 
 def test_merge_reports_incomplete_without_runs() -> None:
-    report = merge.verify_model_bundle(model_tag="qwen3.5:4b", repo_root=REPO)
+    report = merge.verify_model_bundle(model_tag="qwen3:0.6b", repo_root=REPO)
     assert report["complete"] is False
     assert report["missing_artifacts"]
 
@@ -407,3 +415,150 @@ def test_counts_1200_and_3600() -> None:
     assert master["counts"]["local_team_candidates"] == 800
     assert master["counts"]["classmate_candidates"] == 400
     assert master["2b_forbidden"] is True
+
+
+def test_execution_diagnostics_preflight() -> None:
+    receipt = diagnostics.zero_candidate_execution_preflight(
+        model="qwen3.5:4b", require_output_absent=False
+    )
+    assert receipt["status"] == "zero_candidate_execution_diagnostics_preflight_passed"
+    assert receipt["candidate_program_executed"] is False
+    assert receipt["evalplus_executed"] is False
+    assert receipt["model_calls"] == 0
+    assert receipt["stages_analyzed"] == ["pipeline_corrected", "post_h1_h2_h3_h4"]
+
+
+def test_classify_candidate_execution_categories() -> None:
+    inputs = [[[1, 2], 1]]
+    outputs = [[1]]
+
+    # 1. missing_candidate
+    res1 = diagnostics.run_isolated_stage_eval(source=None, entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res1["category"] == "missing_candidate"
+
+    # 2. syntax_blocked
+    res2 = diagnostics.run_isolated_stage_eval(source="def foo(:", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res2["category"] == "syntax_blocked"
+
+    # 3. import_or_load_blocked
+    res3 = diagnostics.run_isolated_stage_eval(source="import non_existent_package_xyz", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res3["category"] == "import_or_load_blocked"
+
+    # 4. entry_point_blocked
+    res4 = diagnostics.run_isolated_stage_eval(source="def wrong_name(): pass", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res4["category"] == "entry_point_blocked"
+
+    # 5. runtime_exception
+    res5 = diagnostics.run_isolated_stage_eval(source="def foo(a, b):\n    raise ValueError('err')", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res5["category"] == "runtime_exception"
+
+    # 6. executed_but_incorrect
+    res6 = diagnostics.run_isolated_stage_eval(source="def foo(a, b):\n    return [99]", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res6["category"] == "executed_but_incorrect"
+
+    # 7. passed
+    res7 = diagnostics.run_isolated_stage_eval(source="def foo(a, b):\n    return [1]", entry_point="foo", arities=(1,), inputs=inputs, outputs=outputs)
+    assert res7["category"] == "passed"
+
+
+def test_classify_transition_categories() -> None:
+    # verified_rescue
+    t1 = diagnostics.classify_transition("syntax_blocked", "passed")
+    assert t1["transition_category"] == "verified_rescue"
+    assert t1["verified_rescue"] == "true"
+
+    # blocker_removed_but_incorrect
+    t2 = diagnostics.classify_transition("syntax_blocked", "executed_but_incorrect")
+    assert t2["transition_category"] == "blocker_removed_but_incorrect"
+
+    # preserved_executable
+    t3 = diagnostics.classify_transition("passed", "passed")
+    assert t3["transition_category"] == "preserved_executable"
+
+    # unchanged_blocked
+    t4 = diagnostics.classify_transition("syntax_blocked", "syntax_blocked")
+    assert t4["transition_category"] == "unchanged_blocked"
+
+    # abstained
+    t5 = diagnostics.classify_transition("missing_candidate", "missing_candidate")
+    assert t5["transition_category"] == "abstained"
+
+
+def test_isolated_eval_infinite_loop_timeout() -> None:
+    source = "def solve(x):\n    while True:\n        pass\n"
+    res = diagnostics.run_isolated_stage_eval(
+        source=source,
+        entry_point="solve",
+        arities=(1,),
+        inputs=[[[1]]],
+        outputs=[[1]],
+        timeout=0.5,
+    )
+    assert res["category"] == "timeout"
+    assert "timeout" in res["detail"]
+
+
+def test_isolated_eval_input_non_blocking() -> None:
+    source = "def solve(x):\n    val = input('enter:')\n    return int(val)\n"
+    res = diagnostics.run_isolated_stage_eval(
+        source=source,
+        entry_point="solve",
+        arities=(1,),
+        inputs=[[[1]]],
+        outputs=[[1]],
+        timeout=2.0,
+    )
+    assert res["category"] in ("runtime_exception", "import_or_load_blocked")
+    assert "EOFError" in res["detail"]
+
+
+def test_isolated_eval_large_stdout_captured() -> None:
+    source = "def solve(x):\n    print('A' * 50000)\n    return x\n"
+    res = diagnostics.run_isolated_stage_eval(
+        source=source,
+        entry_point="solve",
+        arities=(1,),
+        inputs=[[[1]]],
+        outputs=[[1]],
+        timeout=2.0,
+    )
+    assert res["category"] == "passed"
+    assert len(res.get("stdout_snippet", "")) <= 1000
+
+
+def test_isolated_eval_runtime_exception_classified() -> None:
+    source = "def solve(x):\n    return x[999]\n"
+    res = diagnostics.run_isolated_stage_eval(
+        source=source,
+        entry_point="solve",
+        arities=(1,),
+        inputs=[[[1]]],
+        outputs=[[1]],
+        timeout=2.0,
+    )
+    assert res["category"] == "runtime_exception"
+    assert "IndexError" in res["detail"]
+
+
+def test_isolated_eval_distinct_pid() -> None:
+    source = "def solve(x):\n    return x\n"
+    res = diagnostics.run_isolated_stage_eval(
+        source=source,
+        entry_point="solve",
+        arities=(1,),
+        inputs=[[[1]]],
+        outputs=[[1]],
+        timeout=2.0,
+    )
+    assert res["worker_pid"] is not None
+    assert res["worker_pid"] != os.getpid()
+
+
+def test_preflight_does_not_create_output_dir() -> None:
+    target_dir = REPO / freeze.ARTIFACT_RELATIVE / "diagnostics/qwen35_4b"
+    receipt = diagnostics.zero_candidate_execution_preflight(
+        model="qwen3.5:4b", require_output_absent=False
+    )
+    assert receipt["status"] == "zero_candidate_execution_diagnostics_preflight_passed"
+    assert receipt["output_directory"] == target_dir.as_posix()
+

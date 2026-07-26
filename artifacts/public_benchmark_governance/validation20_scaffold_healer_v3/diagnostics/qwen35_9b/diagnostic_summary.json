@@ -1,0 +1,49 @@
+{
+  "candidate_source_modified": false,
+  "candidates": 400,
+  "counts_by_stage": {
+    "pipeline_corrected": {
+      "entry_point_blocked": 24,
+      "executed_but_incorrect": 52,
+      "import_or_load_blocked": 12,
+      "missing_candidate": 24,
+      "passed": 220,
+      "runtime_exception": 42,
+      "syntax_blocked": 26,
+      "timeout": 0
+    },
+    "post_h1_h2_h3_h4": {
+      "entry_point_blocked": 10,
+      "executed_but_incorrect": 52,
+      "import_or_load_blocked": 12,
+      "missing_candidate": 24,
+      "passed": 234,
+      "runtime_exception": 42,
+      "syntax_blocked": 26,
+      "timeout": 0
+    }
+  },
+  "evalplus_formal_overwritten": false,
+  "healer_rerun": false,
+  "model_calls": 0,
+  "model_key": "qwen35_9b",
+  "model_tag": "qwen3.5:9b",
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "runner_identity": "mbpp_validation20_execution_diagnostics_runner_v1",
+  "stages_analyzed": [
+    "pipeline_corrected",
+    "post_h1_h2_h3_h4"
+  ],
+  "status": "diagnostics_complete",
+  "subprocess_isolation": true,
+  "transition_counts": {
+    "abstained": 24,
+    "blocker_removed_but_incorrect": 0,
+    "executable_regression": 0,
+    "execution_rescue": 0,
+    "preserved_executable": 220,
+    "unchanged_blocked": 90,
+    "unchanged_incorrect": 52,
+    "verified_rescue": 14
+  }
+}

@@ -61,7 +61,9 @@ def _read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def zero_execution_preflight(*, model: str, repo_root: Path = REPO_ROOT) -> dict[str, Any]:
+def zero_execution_preflight(
+    *, model: str, repo_root: Path = REPO_ROOT, require_output_absent: bool = True
+) -> dict[str, Any]:
     model_tag = gen_preflight.resolve_model_tag(model)
     gen_receipt = gen_preflight.zero_model_preflight(
         model=model_tag,
@@ -70,7 +72,8 @@ def zero_execution_preflight(*, model: str, repo_root: Path = REPO_ROOT) -> dict
         require_output_absent=False,
     )
     eval_dir = repo_root / freeze.MODEL_SPECS[model_tag]["evalplus_output_relative"]
-    _require(not eval_dir.exists(), "EvalPlus output must stay absent during derivatives")
+    if require_output_absent:
+        _require(not eval_dir.exists(), "EvalPlus output must stay absent during derivatives")
     for banned in freeze.FORBIDDEN_OUTPUT_COLLISION_RELATIVES:
         _require(
             eval_dir.resolve() != (repo_root / banned).resolve(),

@@ -142,10 +142,11 @@ def zero_model_preflight(
         )
 
     eval_dir = repo_root / freeze.MODEL_SPECS[model_tag]["evalplus_output_relative"]
-    _require(
-        not eval_dir.exists(),
-        f"EvalPlus output must remain absent during generation preflight: {eval_dir.as_posix()}",
-    )
+    if require_output_absent:
+        _require(
+            not eval_dir.exists(),
+            f"EvalPlus output must remain absent during generation preflight: {eval_dir.as_posix()}",
+        )
 
     return {
         "status": "zero_model_preflight_passed",
