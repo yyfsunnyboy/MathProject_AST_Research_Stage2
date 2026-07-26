@@ -1,0 +1,16 @@
+{
+  "candidate_program_executed": true,
+  "dataset_hash": "ee43ecabebf20deef4bb776a405ac5b1",
+  "dataset_version": "v0.2.0",
+  "eval_cells": 1200,
+  "evalplus_executed": true,
+  "evalplus_version": "0.3.1",
+  "evaluator_engine": "evalplus_0.3.1_check_correctness_subset",
+  "model_calls": 0,
+  "model_tag": "qwen3.5:9b",
+  "parallel": 1,
+  "plan_id": "mbpp_validation20_scaffold_healer_v3",
+  "results_sha256": "18ebefd836d2a006e86a29842463e3bd26673e7f5b3e801b931c4bb0151aadea",
+  "resume": false,
+  "status": "evalplus_complete_pending_cross_machine_merge"
+}
