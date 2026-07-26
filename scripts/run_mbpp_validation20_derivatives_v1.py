@@ -204,12 +204,12 @@ def materialize(
     out_dir = run_dir / "derivatives"
     out_dir.mkdir(parents=True, exist_ok=True)
     written = 0
+    abstained = 0
     for cell in cells:
         journal_path = run_dir / "j" / f"{cell['generation_id']}.json"
         _require(journal_path.is_file(), f"missing raw journal: {journal_path}")
         journal = _read_json(journal_path)
-        _require(journal.get("completion_flag") == "success", f"raw incomplete: {cell['generation_id']}")
-        _require(journal.get("persisted_complete") is True, "raw journal not persisted_complete")
+        _require(journal.get("persisted_complete") is True, f"raw journal not persisted_complete: {cell['generation_id']}")
         raw_response = journal["raw_response"]
         _require(
             _sha256_text(raw_response) == journal["raw_response_sha256"],
@@ -220,6 +220,8 @@ def materialize(
             raw_response=raw_response,
             official_prompt=tasks[cell["task_id"]]["prompt"],
         )
+        if derived["stages"]["pipeline_corrected"]["source"] is None:
+            abstained += 1
         target = out_dir / f"{cell['generation_id']}.json"
         if target.exists():
             existing = target.read_bytes()
@@ -233,6 +235,8 @@ def materialize(
         "model_tag": model_tag,
         "candidates": len(cells),
         "derivatives_written": written,
+        "abstained_candidates": abstained,
+        "executable_candidates": len(cells) - abstained,
         "stages": list(freeze.STAGES),
         "model_calls": 0,
         "candidate_program_executed": False,

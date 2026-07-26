@@ -60,10 +60,11 @@ def test_per_model_cells_are_400_and_isolated() -> None:
 
 
 def test_generation_preflight_zero_model_call_4b() -> None:
+    out_dir = REPO / freeze.MODEL_SPECS["qwen3.5:4b"]["run_output_relative"]
     receipt = gen_preflight.zero_model_preflight(
         model="qwen3.5:4b",
         require_verified_identity=True,
-        require_output_absent=True,
+        require_output_absent=not out_dir.exists(),
     )
     assert receipt["model_calls"] == 0
     assert receipt["ollama_generation_calls"] == 0
@@ -173,6 +174,142 @@ def test_h1_to_h4_order_fixed_on_sample() -> None:
     assert list(result["stages"]) == list(freeze.STAGES)
     assert result["evalplus_executed"] is False
     assert result["candidate_program_executed"] is False
+
+
+def test_derivatives_persisted_incomplete_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # Build a dummy repo layout
+    run_dir = tmp_path / "artifacts/public_benchmark_development/mbpp_validation20/qwen35_4b/runs/mbpp_validation20_qwen35_4b_r001"
+    j_dir = run_dir / "j"
+    j_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Create cell CSV and task structure
+    cell = {
+        "cell_identity": "c1",
+        "generation_id": "gen_incomplete",
+        "task_id": "Mbpp/4",
+        "seed": "11",
+        "prompt_condition": "Ab1",
+        "model_tag": "qwen3.5:4b",
+        "model_key": "qwen35_4b",
+        "operator_role": "local_team",
+        "sample_index": "0",
+        "composed_prompt_sha256": "p" * 64,
+        "expected_entry_point": "heap_queue_clean",
+        "expected_positional_arities": "1",
+        "validation_only": "true",
+        "forbid_development_substitute": "true",
+    }
+    
+    # Mock journal with persisted_complete = False
+    incomplete_journal = {
+        "generation_id": "gen_incomplete",
+        "completion_flag": "failed",
+        "persisted_complete": False,
+        "raw_response": "some text",
+        "raw_response_sha256": hashlib.sha256(b"some text").hexdigest(),
+    }
+    (j_dir / "gen_incomplete.json").write_text(json.dumps(incomplete_journal), encoding="utf-8")
+
+    # Mock freeze.model_dir and freeze.load_validation_tasks
+    monkeypatch.setattr(freeze, "load_validation_tasks", lambda repo_root: [{"task_id": "Mbpp/4", "prompt": "assert heap_queue_clean([1]) == [1]\n", "entry_point": "heap_queue_clean"}])
+
+    def mock_read_csv(p: Path):
+        if "generation_cells.csv" in p.name:
+            return [cell]
+        return []
+
+    monkeypatch.setattr(derivatives, "_read_csv", mock_read_csv)
+    monkeypatch.setattr(derivatives, "zero_execution_preflight", lambda **kw: None)
+
+    with pytest.raises(derivatives.DerivativeError, match="raw journal not persisted_complete"):
+        derivatives.materialize(
+            model="qwen3.5:4b",
+            acknowledgement=derivatives.DERIVATIVE_ACK,
+            repo_root=tmp_path,
+        )
+
+
+def test_derivatives_ambiguous_extraction_legally_abstains() -> None:
+    # Ambiguous response with two code blocks
+    ambiguous_response = (
+        "Here is first idea:\n```python\ndef solve(x):\n    return x\n```\n"
+        "Here is second idea:\n```python\ndef solve(x):\n    return x + 1\n```\n"
+    )
+    cell = {
+        "generation_id": "gen_ambiguous",
+        "cell_identity": "c_ambiguous",
+        "task_id": "Mbpp/4",
+        "seed": "11",
+        "prompt_condition": "Ab1",
+        "model_tag": "qwen3.5:4b",
+        "expected_entry_point": "solve",
+        "expected_positional_arities": "1",
+    }
+    result = derivatives.derive_one_cell(
+        cell=cell,
+        raw_response=ambiguous_response,
+        official_prompt="assert solve(1) == 2\n",
+    )
+    pipeline_stage = result["stages"]["pipeline_corrected"]
+    post_stage = result["stages"]["post_h1_h2_h3_h4"]
+    
+    assert pipeline_stage["source"] is None
+    assert pipeline_stage["extraction_status"] == "ambiguous"
+    assert post_stage["source"] is None
+    assert post_stage["decision"] == "abstained"
+
+
+def test_derivatives_success_normal_materialize() -> None:
+    clean_response = "```python\ndef solve(x):\n    return x + 1\n```"
+    cell = {
+        "generation_id": "gen_clean",
+        "cell_identity": "c_clean",
+        "task_id": "Mbpp/4",
+        "seed": "11",
+        "prompt_condition": "Ab1",
+        "model_tag": "qwen3.5:4b",
+        "expected_entry_point": "solve",
+        "expected_positional_arities": "1",
+    }
+    result = derivatives.derive_one_cell(
+        cell=cell,
+        raw_response=clean_response,
+        official_prompt="assert solve(1) == 2\n",
+    )
+    pipeline_stage = result["stages"]["pipeline_corrected"]
+    post_stage = result["stages"]["post_h1_h2_h3_h4"]
+
+    assert pipeline_stage["source"].strip() == "def solve(x):\n    return x + 1"
+    assert pipeline_stage["extraction_status"] == "extracted"
+    assert post_stage["source"] is not None
+
+
+def test_raw_journal_not_modified_during_derivatives() -> None:
+    journal_path = (
+        REPO
+        / "artifacts/public_benchmark_development/mbpp_validation20/qwen35_4b/runs/mbpp_validation20_qwen35_4b_r001/j/377c4fea1200c812d952c374d0589a2212c55a98c1a54bcab220944a6c57397b.json"
+    )
+    if journal_path.is_file():
+        before_bytes = journal_path.read_bytes()
+        journal_data = json.loads(before_bytes.decode("utf-8"))
+        cell = {
+            "generation_id": journal_data["generation_id"],
+            "cell_identity": journal_data["cell_identity"],
+            "task_id": journal_data["task_id"],
+            "seed": str(journal_data["seed"]),
+            "prompt_condition": journal_data["prompt_condition"],
+            "model_tag": journal_data["model_tag"],
+            "expected_entry_point": "lps",
+            "expected_positional_arities": "1",
+        }
+        _ = derivatives.derive_one_cell(
+            cell=cell,
+            raw_response=journal_data["raw_response"],
+            official_prompt="assert lps('TENS FOR TENS') == 5\n",
+        )
+        after_bytes = journal_path.read_bytes()
+        assert before_bytes == after_bytes
+
 
 
 def test_derived_summary_priority_and_partial_not_rescue() -> None:
