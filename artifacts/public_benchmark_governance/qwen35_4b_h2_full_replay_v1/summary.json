@@ -1,0 +1,20 @@
+{
+  "ab1_h2_count": 542,
+  "ab1_raw_count": 542,
+  "ab2g_h2_count": 542,
+  "ab2g_raw_count": 542,
+  "dataset": "all",
+  "duplicate": 0,
+  "evalplus_executed": false,
+  "executed_cells": 0,
+  "humaneval_itt_states": 656,
+  "itt_states": 2168,
+  "mbpp_itt_states": 1512,
+  "missing": 0,
+  "model_calls": 0,
+  "model_tag": "qwen3.5:4b",
+  "output_directory": "C:/Projects/MathProject_AST_Research_Stage2/artifacts/public_benchmark_governance/qwen35_4b_h2_full_replay_v1",
+  "raw_generations": 1084,
+  "skipped_resume_cells": 2168,
+  "status": "replay_execution_completed"
+}

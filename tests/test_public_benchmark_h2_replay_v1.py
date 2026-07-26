@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pathlib
+import shutil
 import pytest
 
 from scripts import run_public_benchmark_h2_replay_v1 as runner
@@ -42,9 +43,13 @@ def test_4b_dry_run_audit_statistics() -> None:
     assert inv["mbpp_tasks"] == 378
     assert inv["conditions_count"] == 4
     assert inv["total_planned_itt_states"] == 2168
-    assert inv["readiness_status"] == "NOT_READY"
-    assert inv["breakdown"]["humaneval"]["missing_raw"] == 328
-    assert inv["breakdown"]["mbpp"]["missing_raw"] == 716
+    assert inv["readiness_status"] == "READY"
+    assert inv["present_raw_generations"] == 1084
+    assert inv["missing_raw_generations"] == 0
+    assert inv["breakdown"]["humaneval"]["present_raw"] == 328
+    assert inv["breakdown"]["mbpp"]["present_raw"] == 756
+    assert inv["breakdown"]["humaneval"]["missing_raw"] == 0
+    assert inv["breakdown"]["mbpp"]["missing_raw"] == 0
 
 
 def test_9b_dry_run_audit_statistics() -> None:
@@ -61,8 +66,53 @@ def test_9b_dry_run_audit_statistics() -> None:
     assert inv["conditions_count"] == 4
     assert inv["total_planned_itt_states"] == 2168
     assert inv["readiness_status"] == "NOT_READY"
+    assert inv["present_raw_generations"] == 0
+    assert inv["missing_raw_generations"] == 1084
     assert inv["breakdown"]["humaneval"]["missing_raw"] == 328
-    assert inv["breakdown"]["mbpp"]["missing_raw"] == 716
+    assert inv["breakdown"]["mbpp"]["missing_raw"] == 756
+
+
+def test_missing_raw_generations_fail_closed() -> None:
+    with pytest.raises(runner.BenchmarkRunnerError):
+        runner.run_replay_execution(model="qwen3.5:9b", dataset="all", repo_root=REPO)
+
+
+def test_validation20_isolation_guarantee() -> None:
+    spec = runner.MODEL_SPECS["qwen3.5:4b"]
+    run_dirs = spec["run_dirs"]
+    assert run_dirs["humaneval"] == pathlib.Path("runs/he_qwen35_4b")
+    assert run_dirs["mbpp"] == pathlib.Path("runs/mb_qwen35_4b")
+    for d in run_dirs.values():
+        assert "validation20" not in d.as_posix()
+        assert "public_benchmark_development" not in d.as_posix()
+
+
+def test_replay_execution_humaneval_smoke(tmp_path: pathlib.Path) -> None:
+    rel_out = tmp_path.relative_to(REPO) if tmp_path.is_relative_to(REPO) else tmp_path
+    res = runner.run_replay_execution(
+        model="qwen3.5:4b",
+        dataset="humaneval",
+        resume=True,
+        output_dir_arg=str(tmp_path),
+        repo_root=REPO,
+    )
+    assert res["status"] == "replay_execution_completed"
+    assert res["model_calls"] == 0
+    assert res["evalplus_executed"] is False
+    assert res["raw_generations"] == 328
+    assert res["itt_states"] == 656
+    assert res["executed_cells"] == 656
+
+    # Test resume skipping
+    res_resume = runner.run_replay_execution(
+        model="qwen3.5:4b",
+        dataset="humaneval",
+        resume=True,
+        output_dir_arg=str(tmp_path),
+        repo_root=REPO,
+    )
+    assert res_resume["executed_cells"] == 0
+    assert res_resume["skipped_resume_cells"] == 656
 
 
 def test_extractor_and_h2_quarantine_deterministic() -> None:

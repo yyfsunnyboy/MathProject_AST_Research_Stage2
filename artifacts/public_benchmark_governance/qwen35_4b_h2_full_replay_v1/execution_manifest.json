@@ -1,0 +1,13 @@
+{
+  "created_at_utc": "2026-07-26T14:46:09.301961+00:00",
+  "dataset": "all",
+  "evalplus_executed": false,
+  "executed_cells": 2168,
+  "model_calls": 0,
+  "model_tag": "qwen3.5:4b",
+  "plan_id": "qwen35_4b_h2_full_replay_v1",
+  "rule_id": "module_assert_entrypoint_selftest_quarantine_v0",
+  "rule_sha256": "dbd96fc3c1228f74c784e2444350102de121d4e202dcb0075aad214090bbfa18",
+  "total_planned_itt_states": 2168,
+  "total_tasks": 542
+}
