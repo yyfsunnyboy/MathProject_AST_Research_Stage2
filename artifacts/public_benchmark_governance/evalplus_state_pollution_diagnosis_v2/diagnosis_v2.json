@@ -1,0 +1,303 @@
+{
+  "cells": [
+    {
+      "cell_identity": "251ddd15a1217e7e940e0365e29c5fca3d6effb32433516f6ca45203f0189a26",
+      "conclusion": "evaluator_artifact",
+      "final_sha256": "45a36d4465fe7bc6a3a91bf7accd31c2142023f2e3d63d14c31ef25f8849350f",
+      "layers_changed": [],
+      "model": "qwen3.5:4b",
+      "order_invariant": true,
+      "raw_sha256": "45a36d4465fe7bc6a3a91bf7accd31c2142023f2e3d63d14c31ef25f8849350f",
+      "sources_identical": true,
+      "task_id": "Mbpp/240",
+      "treatment": "ab2g",
+      "v1": {
+        "final": {
+          "base_pass": false,
+          "final_pass": false,
+          "plus_pass": false
+        },
+        "raw": {
+          "base_pass": true,
+          "final_pass": true,
+          "plus_pass": true
+        },
+        "transition": "regression"
+      },
+      "v2_final_then_raw": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      },
+      "v2_raw_then_final": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      }
+    },
+    {
+      "cell_identity": "c7e7b62bf09a3ea8f930f28540195b40d64fe79b62418b7733054f10281cc590",
+      "conclusion": "evaluator_artifact",
+      "final_sha256": "19520708f52f0d7337d30b325a3edd72f95b50d87a4948c7b6dc5d1acba18549",
+      "layers_changed": [
+        "H2"
+      ],
+      "model": "qwen3.5:4b",
+      "order_invariant": true,
+      "raw_sha256": "3c87e7c862047192a166642393d42ad0bfa727a52c7d060dc1913a5491decb49",
+      "sources_identical": false,
+      "task_id": "Mbpp/591",
+      "treatment": "ab2g",
+      "v1": {
+        "final": {
+          "base_pass": false,
+          "final_pass": false,
+          "plus_pass": false
+        },
+        "raw": {
+          "base_pass": true,
+          "final_pass": true,
+          "plus_pass": true
+        },
+        "transition": "regression"
+      },
+      "v2_final_then_raw": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      },
+      "v2_raw_then_final": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      }
+    },
+    {
+      "cell_identity": "80f3248946afc14a809633467ed074220cb5dc1ff21606ca68cd41531bb1e3dd",
+      "conclusion": "evaluator_artifact",
+      "final_sha256": "458ce8bf01ce2854c618031e5179f2f15995e830cdc2e19ab755ad32af645ad6",
+      "layers_changed": [],
+      "model": "qwen3.5:9b",
+      "order_invariant": true,
+      "raw_sha256": "458ce8bf01ce2854c618031e5179f2f15995e830cdc2e19ab755ad32af645ad6",
+      "sources_identical": true,
+      "task_id": "Mbpp/644",
+      "treatment": "ab2g",
+      "v1": {
+        "final": {
+          "base_pass": false,
+          "final_pass": false,
+          "plus_pass": false
+        },
+        "raw": {
+          "base_pass": true,
+          "final_pass": true,
+          "plus_pass": true
+        },
+        "transition": "regression"
+      },
+      "v2_final_then_raw": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      },
+      "v2_raw_then_final": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      }
+    },
+    {
+      "cell_identity": "d543e43c0eae75e2fe7bc6b608ffac3f88ede04dec6743f284e313819c7b20b1",
+      "conclusion": "evaluator_artifact",
+      "final_sha256": "1a2fd2f7ecc5d852c1a8959814585ed99f2783027f256ddcb34dfcde3e42b464",
+      "layers_changed": [],
+      "model": "qwen3.5:9b",
+      "order_invariant": true,
+      "raw_sha256": "1a2fd2f7ecc5d852c1a8959814585ed99f2783027f256ddcb34dfcde3e42b464",
+      "sources_identical": true,
+      "task_id": "Mbpp/591",
+      "treatment": "ab1",
+      "v1": {
+        "final": {
+          "base_pass": false,
+          "final_pass": false,
+          "plus_pass": false
+        },
+        "raw": {
+          "base_pass": true,
+          "final_pass": true,
+          "plus_pass": true
+        },
+        "transition": "regression"
+      },
+      "v2_final_then_raw": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      },
+      "v2_raw_then_final": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      }
+    },
+    {
+      "cell_identity": "ed3eff9be1754a7aa4348d6aebc182acaf9cbdb046829ac03c57809a2409c724",
+      "conclusion": "evaluator_artifact",
+      "final_sha256": "f884b8b348bc9295b2c0286cf01f2bc93e71ff3edde35cc5280b0f3c375f5175",
+      "layers_changed": [],
+      "model": "qwen3.5:9b",
+      "order_invariant": true,
+      "raw_sha256": "f884b8b348bc9295b2c0286cf01f2bc93e71ff3edde35cc5280b0f3c375f5175",
+      "sources_identical": true,
+      "task_id": "Mbpp/591",
+      "treatment": "ab2g",
+      "v1": {
+        "final": {
+          "base_pass": false,
+          "final_pass": false,
+          "plus_pass": false
+        },
+        "raw": {
+          "base_pass": true,
+          "final_pass": true,
+          "plus_pass": true
+        },
+        "transition": "regression"
+      },
+      "v2_final_then_raw": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      },
+      "v2_raw_then_final": {
+        "final": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        },
+        "raw": {
+          "base_pass": true,
+          "base_status": "pass",
+          "final_pass": true,
+          "plus_pass": true,
+          "plus_status": "pass"
+        }
+      }
+    }
+  ],
+  "counts": {
+    "evaluator_artifact": 5,
+    "true_regression": 0,
+    "v1_v2_agree_non_regression": 0,
+    "v2_isolation_failure": 0
+  },
+  "created_at_utc": "2026-07-27T12:26:34.256509+00:00",
+  "diagnosis_id": "evalplus_state_pollution_diagnosis_v2",
+  "evalplus_version": "0.3.1",
+  "isolation": "evalplus.check_correctness->untrusted_check->fresh_process",
+  "model_calls": 0,
+  "replay_executed": false
+}
