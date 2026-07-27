@@ -20,6 +20,8 @@ sys.path.insert(0, str(REPO))
 from scripts.diagnose_cumulative_h1_h4_modified_final_failures_v2 import (  # noqa: E402
     SANDBOX_WORK_DIR,
     build_bubblewrap_command,
+    resolve_evalplus_dataset_cache,
+    resolve_evalplus_runtime,
 )
 
 WORKER = pathlib.Path(__file__).with_name("diagnose_v2_sandbox_smoke_worker_harmless.py")
@@ -91,15 +93,19 @@ def main() -> int:
             json.dumps({"mode": "harmless_sandbox_sleep", "sleep_seconds": 12}),
             encoding="utf-8",
         )
+        runtime = resolve_evalplus_runtime()
+        dataset_cache = resolve_evalplus_dataset_cache()
         command = build_bubblewrap_command(
-            python_executable=sys.executable,
+            runtime=runtime,
             worker_path=str(worker),
             request_path=str(request),
+            dataset_cache=dataset_cache,
         )
         sleep_command = build_bubblewrap_command(
-            python_executable=sys.executable,
+            runtime=runtime,
             worker_path=str(worker),
             request_path=str(sleep_request),
+            dataset_cache=dataset_cache,
         )
         joined = " ".join(command)
         if "--tmpfs /work" in joined or "/work/worker.py" in joined:

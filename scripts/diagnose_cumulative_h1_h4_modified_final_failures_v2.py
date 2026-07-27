@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import importlib.metadata
 import json
 import os
 import pathlib
@@ -24,6 +25,7 @@ import subprocess
 import sys
 import tempfile
 from collections import Counter
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any
 
@@ -49,30 +51,140 @@ OUTCOME_CATEGORIES = (
     "timeout",
     "test_assertion_wrong_answer",
     "pass",
+    "evaluator_or_infrastructure_error",
     "other_unclassifiable",
 )
+MAX_PROTOCOL_TEXT_BYTES = 4096
+MAX_THIRD_PARTY_STDOUT_BYTES = 2048
+EXPECTED_EVALPLUS_VERSION = "0.3.1"
+HUMANEVAL_PLUS_VERSION = "v0.1.10"
+MBPP_PLUS_VERSION = "v0.2.0"
 
 # Work directory must live under a path that already exists after the writable
 # /tmp tmpfs is mounted. Creating /work on the read-only host root fails with
 # "bwrap: Can't mkdir /work: Read-only file system".
 SANDBOX_WORK_DIR = "/tmp/stage2-work"
+SANDBOX_EVALPLUS_CACHE_DIR = f"{SANDBOX_WORK_DIR}/.cache/evalplus"
+
+
+@dataclass(frozen=True)
+class EvalPlusRuntime:
+    """Absolute, host-validated interpreter and read-only dependency directory."""
+
+    python_executable: str
+    site_packages: str
+    evalplus_version: str
+
+
+@dataclass(frozen=True)
+class EvalPlusDatasetCache:
+    """Host EvalPlus cache directory with required HumanEval+/MBPP+ JSONL files."""
+
+    host_cache_dir: str
+    humaneval_plus_jsonl: str
+    mbpp_plus_jsonl: str
+
+
+# ``-I`` deliberately ignores PYTHONPATH and the user site.  This bootstrap
+# restores only the one preflight-validated absolute site-packages directory,
+# then runs the read-only worker.  It does not relax interpreter isolation.
+ISOLATED_BOOTSTRAP = (
+    "import runpy,sys;"
+    "sys.path.insert(0,sys.argv[1]);"
+    "sys.argv=[sys.argv[2],sys.argv[3]];"
+    "runpy.run_path(sys.argv[0],run_name='__main__')"
+)
+
+# Shared by probe/WORKER: capture third-party prints so stdout stays one JSON record.
+WORKER_STDOUT_ISOLATION = r'''
+import io, json, sys
+_REAL_STDOUT = sys.stdout
+_CAPTURED_STDOUT = io.StringIO()
+sys.stdout = _CAPTURED_STDOUT
+_MAX_THIRD_PARTY_STDOUT_BYTES = 2048
+
+def _bounded_third_party_stdout(text):
+    raw = text.encode("utf-8", "replace")
+    if len(raw) <= _MAX_THIRD_PARTY_STDOUT_BYTES:
+        return text
+    clipped = raw[:_MAX_THIRD_PARTY_STDOUT_BYTES].decode("utf-8", "replace")
+    return "%s\n[truncated after %s bytes]" % (clipped, _MAX_THIRD_PARTY_STDOUT_BYTES)
+
+def emit(value):
+    payload = dict(value)
+    noise = _CAPTURED_STDOUT.getvalue()
+    if noise.strip():
+        payload["third_party_stdout"] = _bounded_third_party_stdout(noise)
+        print(noise, end="", file=sys.stderr)
+    print(json.dumps(payload, sort_keys=True), file=_REAL_STDOUT, flush=True)
+'''
+
+SANDBOX_EVALPLUS_PROBE = WORKER_STDOUT_ISOLATION + r'''
+import importlib.metadata, sys
+import evalplus
+emit({
+    "phase": "sandbox_evalplus_preflight",
+    "exception_class": "NONE",
+    "detail": "sandbox EvalPlus import succeeded",
+    "python_executable": sys.executable,
+    "sys_prefix": sys.prefix,
+    "sys_base_prefix": sys.base_prefix,
+    "evalplus_file": evalplus.__file__,
+    "evalplus_version": importlib.metadata.version("evalplus"),
+    "sys_path": sys.path,
+})
+'''
 
 # Written into a read-only file and run only inside the future OS sandbox.
 # It deliberately uses the actual EvalPlus 0.3.1 task and ground-truth APIs;
 # there are no synthetic arguments or hand-written assertions here.
-WORKER = r'''
-import ast, inspect, json, sys, traceback
-from evalplus.data import get_human_eval_plus, get_human_eval_plus_hash, get_mbpp_plus, get_mbpp_plus_hash
+WORKER = WORKER_STDOUT_ISOLATION + r'''
+import ast, inspect, multiprocessing, sys, traceback
+try:
+    # EvalPlus untrusted_check uses multiprocessing.Process. Under runpy + the
+    # Linux spawn/forkserver default, child re-entry poisons stdout with a second
+    # JSON record. Fork keeps the official check_correctness path and one stdout.
+    multiprocessing.set_start_method("fork")
+except RuntimeError:
+    pass
+from evalplus.data import get_human_eval_plus, get_mbpp_plus
 from evalplus.eval._special_oracle import MBPP_OUTPUT_NOT_NONE_TASKS
-from evalplus.evaluate import check_correctness, get_groundtruth
-
-def emit(value):
-    print(json.dumps(value, sort_keys=True), flush=True)
+from evalplus.evaluate import check_correctness
+from evalplus.gen.util import trusted_exec
 
 def trace(exc):
     frames = traceback.extract_tb(exc.__traceback__)
     candidate = next((f for f in reversed(frames) if f.filename == "<candidate>"), None)
-    return "exception_type=%s; candidate_line=%s" % (type(exc).__name__, candidate.lineno if candidate else "unavailable")
+    return "exception_type=%s; candidate_line=%s; exc=%s" % (
+        type(exc).__name__,
+        candidate.lineno if candidate else "unavailable",
+        exc,
+    )
+
+def groundtruth_one(problem, output_not_none_tasks):
+    """Mirror EvalPlus get_groundtruth for one task only.
+
+    Loading the full host ground-truth pickle exceeds the 512MiB cgroup cap
+    (~800MiB RSS). Recomputing a single-task oracle stays inside the limit and
+    still uses EvalPlus trusted_exec + the real task inputs.
+    """
+    output_not_none = problem["entry_point"] in output_not_none_tasks
+    oracle = {}
+    oracle["base"], oracle["base_time"] = trusted_exec(
+        problem["prompt"] + problem["canonical_solution"],
+        problem["base_input"],
+        problem["entry_point"],
+        record_time=True,
+        output_not_none=output_not_none,
+    )
+    oracle["plus"], oracle["plus_time"] = trusted_exec(
+        problem["prompt"] + problem["canonical_solution"],
+        problem["plus_input"],
+        problem["entry_point"],
+        record_time=True,
+        output_not_none=output_not_none,
+    )
+    return oracle
 
 request = json.load(open(sys.argv[1], encoding="utf-8"))
 source = request["source"]
@@ -83,12 +195,15 @@ except SyntaxError as exc:
     raise SystemExit(0)
 try:
     if request["dataset"] == "humaneval":
-        tasks = get_human_eval_plus(); groundtruth = get_groundtruth(tasks, get_human_eval_plus_hash(), [])
+        tasks = get_human_eval_plus()
+        output_not_none_tasks = []
     elif request["dataset"] == "mbpp":
-        tasks = get_mbpp_plus(); groundtruth = get_groundtruth(tasks, get_mbpp_plus_hash(), MBPP_OUTPUT_NOT_NONE_TASKS)
+        tasks = get_mbpp_plus()
+        output_not_none_tasks = MBPP_OUTPUT_NOT_NONE_TASKS
     else:
         raise ValueError("unsupported dataset")
-    problem, expected = tasks[request["task_id"]], groundtruth[request["task_id"]]
+    problem = tasks[request["task_id"]]
+    expected = groundtruth_one(problem, output_not_none_tasks)
     if problem["entry_point"] != request["entry_point"]:
         emit({"phase":"entrypoint", "exception_class":"EntryPointMismatch", "parse_result":"success", "detail":"journal entry point differs from actual EvalPlus task"})
         raise SystemExit(0)
@@ -120,6 +235,40 @@ except BaseException as exc:
 def _require(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
+
+
+def resolve_evalplus_runtime() -> EvalPlusRuntime:
+    """Validate the exact Python and site-packages required inside bwrap."""
+    import evalplus
+
+    executable = pathlib.Path(sys.executable).resolve()
+    package_file = pathlib.Path(evalplus.__file__).resolve()
+    site_packages = package_file.parents[1]
+    version = importlib.metadata.version("evalplus")
+    _require(executable.is_absolute() and executable.is_file(), "EvalPlus interpreter is not an absolute executable")
+    _require(site_packages.is_absolute() and site_packages.is_dir(), "EvalPlus site-packages directory is unavailable")
+    _require(version == EXPECTED_EVALPLUS_VERSION, f"EvalPlus version mismatch: {version}")
+    return EvalPlusRuntime(str(executable), str(site_packages), version)
+
+
+def resolve_evalplus_dataset_cache() -> EvalPlusDatasetCache:
+    """Locate host HumanEval+/MBPP+ JSONL via the verified interpreter's EvalPlus cache.
+
+    Refuses download: if the required files are absent, raise with exact paths.
+    """
+    from evalplus.data.utils import CACHE_DIR
+
+    cache_dir = pathlib.Path(CACHE_DIR).resolve()
+    humaneval = cache_dir / f"HumanEvalPlus-{HUMANEVAL_PLUS_VERSION}.jsonl"
+    mbpp = cache_dir / f"MbppPlus-{MBPP_PLUS_VERSION}.jsonl"
+    missing = [str(path) for path in (humaneval, mbpp) if not path.is_file()]
+    if missing:
+        raise RuntimeError(
+            "EvalPlus HumanEval+/MBPP+ dataset cache missing on host; refusing network download. "
+            f"expected_cache_dir={cache_dir}; "
+            f"expected_humaneval={humaneval}; expected_mbpp={mbpp}; missing={missing}"
+        )
+    return EvalPlusDatasetCache(str(cache_dir), str(humaneval), str(mbpp))
 
 
 def _read_json(path: pathlib.Path) -> dict[str, Any]:
@@ -233,6 +382,10 @@ def sandbox_preflight() -> dict[str, Any]:
                 "only sandbox /tmp tmpfs and per-cell "
                 f"{SANDBOX_WORK_DIR} tmpfs (never mkdir on the read-only host root)"
             ),
+            "evalplus_dataset_cache": (
+                f"host CACHE_DIR read-only bind-mounted at {SANDBOX_EVALPLUS_CACHE_DIR}; "
+                "network download remains disabled"
+            ),
             "cpu_memory_pids": (
                 "systemd-run transient cgroup: CPUQuota=100%, MemoryMax=512M, "
                 "MemorySwapMax=0, TasksMax=64"
@@ -245,17 +398,26 @@ def sandbox_preflight() -> dict[str, Any]:
             "This runner intentionally refuses execution when these Linux primitives are unavailable; Windows alone is not an equivalent security boundary.",
             "The host must permit unprivileged bubblewrap user namespaces and systemd transient cgroups; preflight checks presence, execution validates command success.",
             "Kernel vulnerabilities and a malicious host administrator are outside this sandbox threat model.",
+            "HumanEval+/MBPP+ must already exist in the host EvalPlus cache; this runner never downloads datasets.",
         ],
     }
 
 
-def build_bubblewrap_command(*, python_executable: str, worker_path: str, request_path: str) -> list[str]:
+def build_bubblewrap_command(
+    *,
+    runtime: EvalPlusRuntime,
+    worker_path: str,
+    request_path: str,
+    dataset_cache: EvalPlusDatasetCache,
+) -> list[str]:
     """Build the future per-cell OS-sandbox command; does not execute it.
 
     Mount order is intentional: bind the host root read-only, replace ``/tmp``
-    with a writable tmpfs, then create the per-cell work tmpfs under that
-    already-writable ``/tmp``. Never ask bwrap to ``mkdir /work`` on the
-    read-only root.
+    with a writable tmpfs, create the per-cell work tmpfs under that
+    already-writable ``/tmp``, then read-only bind the host EvalPlus cache into
+    the path ``appdirs.user_cache_dir("evalplus")`` resolves to under sandbox
+    ``HOME``. Never ask bwrap to ``mkdir /work`` on the read-only root, and never
+    open the network for dataset download.
     """
     work = SANDBOX_WORK_DIR
     worker_in_sandbox = f"{work}/worker.py"
@@ -270,6 +432,7 @@ def build_bubblewrap_command(*, python_executable: str, worker_path: str, reques
         "--ro-bind", "/", "/",
         "--tmpfs", "/tmp",
         "--tmpfs", work,
+        "--ro-bind", dataset_cache.host_cache_dir, SANDBOX_EVALPLUS_CACHE_DIR,
         "--proc", "/proc",
         "--dev", "/dev",
         "--chdir", work,
@@ -281,7 +444,8 @@ def build_bubblewrap_command(*, python_executable: str, worker_path: str, reques
         "--ro-bind", worker_path, worker_in_sandbox,
         "--ro-bind", request_path, request_in_sandbox,
         "setpriv", "--no-new-privs", "--",
-        python_executable, "-I", worker_in_sandbox, request_in_sandbox,
+        runtime.python_executable, "-I", "-c", ISOLATED_BOOTSTRAP,
+        runtime.site_packages, worker_in_sandbox, request_in_sandbox,
     ]
 
 
@@ -296,6 +460,8 @@ def _classify_execution(result: dict[str, Any]) -> str:
         return "entrypoint_callability_signature_failure"
     if phase in {"module_load", "runtime"}:
         return "runtime_exception"
+    if phase == "sandbox_or_worker_error":
+        return "evaluator_or_infrastructure_error"
     if phase != "evalplus_tests":
         return "other_unclassifiable"
     base, plus = result.get("base_status"), result.get("plus_status")
@@ -311,30 +477,102 @@ def _classify_execution(result: dict[str, Any]) -> str:
     return "other_unclassifiable"
 
 
-def _execute_one_source(*, row: dict[str, Any], source: str, timeout_seconds: float) -> dict[str, Any]:
-    """Future execution path: one source, one cgroup+bubblewrap subprocess."""
-    readiness = sandbox_preflight()
-    _require(readiness["ready_for_candidate_execution"], "OS sandbox preflight is not satisfied")
-    dataset_id = "humaneval" if row["dataset"] == "HumanEval+" else "mbpp"
+def _bounded_protocol_text(value: str) -> str:
+    """Retain bounded protocol evidence without allowing unbounded artifacts."""
+    raw = value.encode("utf-8", "replace")
+    if len(raw) <= MAX_PROTOCOL_TEXT_BYTES:
+        return value
+    clipped = raw[:MAX_PROTOCOL_TEXT_BYTES].decode("utf-8", "replace")
+    return f"{clipped}\n[truncated after {MAX_PROTOCOL_TEXT_BYTES} bytes]"
+
+
+def _protocol_fields(completed: subprocess.CompletedProcess[str]) -> dict[str, Any]:
+    lines = [line for line in completed.stdout.splitlines() if line.strip()]
+    return {
+        "return_code": completed.returncode,
+        "worker_stdout": _bounded_protocol_text(completed.stdout),
+        "worker_stderr": _bounded_protocol_text(completed.stderr),
+        "nonempty_stdout_line_count": len(lines),
+    }
+
+
+def _run_sandbox_worker(
+    *,
+    runtime: EvalPlusRuntime,
+    worker_text: str,
+    request: dict[str, Any],
+    timeout_seconds: float,
+    dataset_cache: EvalPlusDatasetCache | None = None,
+) -> dict[str, Any]:
+    """Run a supplied diagnostic worker once and preserve its complete protocol evidence."""
+    cache = dataset_cache if dataset_cache is not None else resolve_evalplus_dataset_cache()
     with tempfile.TemporaryDirectory(prefix="evalplus_v2_diagnosis_host_") as temp_dir:
         host = pathlib.Path(temp_dir)
         worker_path, request_path = host / "worker.py", host / "request.json"
-        worker_path.write_text(WORKER, encoding="utf-8")
-        request_path.write_text(json.dumps({"dataset": dataset_id, "task_id": row["task_id"], "entry_point": row["entry_point"], "source": SOURCE_PREFIX + source}), encoding="utf-8")
-        command = build_bubblewrap_command(python_executable=sys.executable, worker_path=str(worker_path), request_path=str(request_path))
+        worker_path.write_text(worker_text, encoding="utf-8")
+        request_path.write_text(json.dumps(request), encoding="utf-8")
+        command = build_bubblewrap_command(
+            runtime=runtime,
+            worker_path=str(worker_path),
+            request_path=str(request_path),
+            dataset_cache=cache,
+        )
         try:
             completed = subprocess.run(command, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout_seconds, check=False)
         except subprocess.TimeoutExpired:
-            return {"phase": "timeout", "exception_class": "NONE", "detail": "parent per-cell timeout", "timeout_flag": True}
+            return {
+                "phase": "timeout", "exception_class": "NONE", "detail": "parent per-cell timeout",
+                "timeout_flag": True, "return_code": None, "worker_stdout": "", "worker_stderr": "",
+                "nonempty_stdout_line_count": 0, "protocol_error_kind": None, "json_decode_error": None,
+            }
+    fields = _protocol_fields(completed)
     lines = [line for line in completed.stdout.splitlines() if line.strip()]
-    if completed.returncode != 0 or len(lines) != 1:
-        return {"phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "sandbox returned no unique diagnostic record", "timeout_flag": False}
+    if completed.returncode != 0:
+        return {**fields, "phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "sandbox or worker returned nonzero", "timeout_flag": False, "protocol_error_kind": "nonzero_return", "json_decode_error": None}
+    if not lines:
+        return {**fields, "phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "worker emitted no diagnostic record", "timeout_flag": False, "protocol_error_kind": "empty_stdout", "json_decode_error": None}
+    if len(lines) != 1:
+        return {**fields, "phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "worker emitted multiple diagnostic records", "timeout_flag": False, "protocol_error_kind": "multiple_records", "json_decode_error": None}
     try:
         result = json.loads(lines[0])
-    except json.JSONDecodeError:
-        result = {"phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "invalid diagnostic JSON"}
-    result["timeout_flag"] = False
+    except json.JSONDecodeError as exc:
+        return {**fields, "phase": "sandbox_or_worker_error", "exception_class": "SandboxProtocolError", "detail": "worker emitted invalid diagnostic JSON", "timeout_flag": False, "protocol_error_kind": "invalid_json", "json_decode_error": f"{exc.msg} at line {exc.lineno}, column {exc.colno}"}
+    result.update({**fields, "timeout_flag": False, "protocol_error_kind": None, "json_decode_error": None})
     return result
+
+
+def sandbox_evalplus_preflight(*, runtime: EvalPlusRuntime, timeout_seconds: float) -> dict[str, Any]:
+    """Prove sandboxed import/version before any diagnostic source is touched."""
+    result = _run_sandbox_worker(runtime=runtime, worker_text=SANDBOX_EVALPLUS_PROBE, request={}, timeout_seconds=timeout_seconds)
+    if result.get("phase") != "sandbox_evalplus_preflight":
+        raise RuntimeError("sandbox EvalPlus preflight failed: " + json.dumps(result, sort_keys=True))
+    _require(result.get("evalplus_version") == EXPECTED_EVALPLUS_VERSION, "sandbox EvalPlus version mismatch")
+    _require(result.get("python_executable") == runtime.python_executable, "sandbox interpreter path drift")
+    return result
+
+
+def _execute_one_source(*, runtime: EvalPlusRuntime, row: dict[str, Any], source: str, timeout_seconds: float) -> dict[str, Any]:
+    """Run one existing source in one cgroup+bubblewrap subprocess."""
+    readiness = sandbox_preflight()
+    _require(readiness["ready_for_candidate_execution"], "OS sandbox preflight is not satisfied")
+    dataset_id = "humaneval" if row["dataset"] == "HumanEval+" else "mbpp"
+    return _run_sandbox_worker(
+        runtime=runtime,
+        worker_text=WORKER,
+        request={"dataset": dataset_id, "task_id": row["task_id"], "entry_point": row["entry_point"], "source": SOURCE_PREFIX + source},
+        timeout_seconds=timeout_seconds,
+    )
+
+
+def _final_category_summary(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Summarize model rows plus an ALL row over the complete population."""
+    groups = {model: [row for row in rows if row["model"] == model] for model in MODEL_SPECS}
+    groups["ALL"] = rows
+    summary = []
+    for model, selected in groups.items():
+        counts = Counter(row["final_category"] for row in selected)
+        summary.append({"model": model, "total": len(selected), **{category: counts[category] for category in OUTCOME_CATEGORIES}})
+    return summary
 
 
 def _public_manifest_rows(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -389,27 +627,34 @@ def diagnose(repo_root: pathlib.Path, output_dir: pathlib.Path, timeout_seconds:
     """Future reviewed mode: diagnose raw and final separately in fresh sandboxes."""
     _require(timeout_seconds > 0, "timeout must be positive")
     _require(sandbox_preflight()["ready_for_candidate_execution"], "OS sandbox preflight is not satisfied")
+    runtime = resolve_evalplus_runtime()
+    sandbox_evalplus_preflight(runtime=runtime, timeout_seconds=timeout_seconds)
     _require(not output_dir.exists(), f"refusing to overwrite existing output: {output_dir}")
     rows, cohort_audit = load_130_cell_manifest(repo_root)
     output_dir.mkdir(parents=True)
     output: list[dict[str, Any]] = []
     for row in rows:
-        raw = _execute_one_source(row=row, source=row["_raw_source"], timeout_seconds=timeout_seconds)
-        final = _execute_one_source(row=row, source=row["_final_source"], timeout_seconds=timeout_seconds)
+        raw = _execute_one_source(runtime=runtime, row=row, source=row["_raw_source"], timeout_seconds=timeout_seconds)
+        final = _execute_one_source(runtime=runtime, row=row, source=row["_final_source"], timeout_seconds=timeout_seconds)
         output.append({
             **_public_manifest_rows([row])[0],
             "raw_phase": raw.get("phase"), "raw_exception_class": raw.get("exception_class"),
             "raw_timeout_flag": raw.get("timeout_flag", False), "raw_evidence": raw.get("detail"),
+            "raw_return_code": raw.get("return_code"), "raw_worker_stdout": raw.get("worker_stdout"),
+            "raw_worker_stderr": raw.get("worker_stderr"), "raw_nonempty_stdout_line_count": raw.get("nonempty_stdout_line_count"),
+            "raw_protocol_error_kind": raw.get("protocol_error_kind"), "raw_json_decode_error": raw.get("json_decode_error"),
             "raw_category": _classify_execution(raw),
             "final_phase": final.get("phase"), "final_exception_class": final.get("exception_class"),
             "final_timeout_flag": final.get("timeout_flag", False), "final_evidence": final.get("detail"),
+            "final_return_code": final.get("return_code"), "final_worker_stdout": final.get("worker_stdout"),
+            "final_worker_stderr": final.get("worker_stderr"), "final_nonempty_stdout_line_count": final.get("nonempty_stdout_line_count"),
+            "final_protocol_error_kind": final.get("protocol_error_kind"), "final_json_decode_error": final.get("json_decode_error"),
             "final_category": _classify_execution(final),
         })
     _require(len(output) == EXPECTED_TOTAL, "diagnostic output count drift")
     _require(len({(r["model"], r["cell_identity"]) for r in output}) == EXPECTED_TOTAL, "duplicate output identity")
     _write_csv(output_dir / "raw_final_diagnostic_ledger.csv", output)
-    counts = {model: Counter(row["final_category"] for row in output if row["model"] == model) for model in [*MODEL_SPECS, "ALL"]}
-    summary = [{"model": model, "total": sum(counts[model].values()), **{category: counts[model][category] for category in OUTCOME_CATEGORIES}} for model in counts]
+    summary = _final_category_summary(output)
     _write_csv(output_dir / "final_category_summary.csv", summary)
     manifest = {"evidence_label": EVIDENCE_LABEL, "mode": "executed_os_sandboxed_actual_evalplus_tests", "cohort_audit": cohort_audit, "sandbox": sandbox_preflight(), "per_cell_timeout_seconds": timeout_seconds, "category_counts": summary}
     (output_dir / "diagnosis_manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
