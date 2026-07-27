@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e06cfa7188871e9714903dc35e655047d8c2d78dcbc3e6717db434a70ec9d4c6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "pancake_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "final_source": "def pancake_sort(arr):\n    \"\"\"\n    Sorts a list of elements using the Pancake Sorting Algorithm.\n    \n    Args:\n        arr (list): The list to be sorted.\n        \n    Returns:\n        list: A new sorted list.\n    \"\"\"\n    n = len(arr)\n    \n    # We iterate from the last position down to 1\n    for i in range(n - 1, 0, -1):\n        # Find the index of the maximum element in arr[0...i]\n        max_idx = 0\n        for j in range(1, i + 1):\n            if arr[j] > arr[max_idx]:\n                max_idx = j\n        \n        # If the maximum is not at position 'i', we need to flip it into place\n        if max_idx != i:\n            # Step 1: Flip the maximum element to index 0 (if it's not already there)\n            if max_idx > 0:\n                pancake_flip(arr, max_idx + 1)\n            \n            # Step 2: Flip from index 0 to 'i' to move the max element to its correct position at 'i'\n            pancake_flip(arr, i + 1)\n\n    return arr\n\n\ndef pancake_flip(arr, k):\n    \"\"\"\n    Flips the subarray arr[0...k-1].\n    \n    Args:\n        arr (list): The list containing elements.\n        k (int): Size of the prefix to flip.\n    \"\"\"\n    # Reverse the first k elements in place\n    for j in range(k // 2):\n        arr[j], arr[k - 1 - j] = arr[k - 1 - j], arr[j]\n\n\n# Test Case as per your requirement\nif __name__ == \"__main__\":\n    test_list = [15, 79, 25, 38, 69]\n    \n    # Note: The original list is modified in-place. \n    # To keep the input clean for testing assertions on a fresh copy, we can work with a copy or just print result.\n    sorted_list = pancake_sort(test_list.copy())\n    \n    expected_result = [15, 25, 38, 69, 79]\n    \n    # Verify the assertion logic manually since modifying input affects subsequent tests if not careful\n    assert sorted_list == expected_result, f\"Expected {expected_result}, got {sorted_list}\"\n    \n    print(f\"Input:   {test_list}\")\n    print(f\"Output:  {sorted_list}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/141:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "post_h2_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "post_h3_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "post_h4_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0c14887c9f1a39aad72f79e21862918e90e84e6d312e5b3592a5239ead852654",
+  "raw_source": "def pancake_sort(arr):\n    \"\"\"\n    Sorts a list of elements using the Pancake Sorting Algorithm.\n    \n    Args:\n        arr (list): The list to be sorted.\n        \n    Returns:\n        list: A new sorted list.\n    \"\"\"\n    n = len(arr)\n    \n    # We iterate from the last position down to 1\n    for i in range(n - 1, 0, -1):\n        # Find the index of the maximum element in arr[0...i]\n        max_idx = 0\n        for j in range(1, i + 1):\n            if arr[j] > arr[max_idx]:\n                max_idx = j\n        \n        # If the maximum is not at position 'i', we need to flip it into place\n        if max_idx != i:\n            # Step 1: Flip the maximum element to index 0 (if it's not already there)\n            if max_idx > 0:\n                pancake_flip(arr, max_idx + 1)\n            \n            # Step 2: Flip from index 0 to 'i' to move the max element to its correct position at 'i'\n            pancake_flip(arr, i + 1)\n\n    return arr\n\n\ndef pancake_flip(arr, k):\n    \"\"\"\n    Flips the subarray arr[0...k-1].\n    \n    Args:\n        arr (list): The list containing elements.\n        k (int): Size of the prefix to flip.\n    \"\"\"\n    # Reverse the first k elements in place\n    for j in range(k // 2):\n        arr[j], arr[k - 1 - j] = arr[k - 1 - j], arr[j]\n\n\n# Test Case as per your requirement\nif __name__ == \"__main__\":\n    test_list = [15, 79, 25, 38, 69]\n    \n    # Note: The original list is modified in-place. \n    # To keep the input clean for testing assertions on a fresh copy, we can work with a copy or just print result.\n    sorted_list = pancake_sort(test_list.copy())\n    \n    expected_result = [15, 25, 38, 69, 79]\n    \n    # Verify the assertion logic manually since modifying input affects subsequent tests if not careful\n    assert sorted_list == expected_result, f\"Expected {expected_result}, got {sorted_list}\"\n    \n    print(f\"Input:   {test_list}\")\n    print(f\"Output:  {sorted_list}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/141",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

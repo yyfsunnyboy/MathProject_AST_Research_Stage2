@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "994565fc848462d8d5137f2bdeb5fa2bce4225727ec27cb437197e1eee142d9c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "remove_vowels",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "final_source": "def remove_vowels(text):\n    \"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    \n    Vowels considered: A, E, I, O, U (case-insensitive)\n    \n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\\\nghjklm'  # Note: \\n is preserved as newline in output representation\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\"\n    \n    vowels = set(\"AEIOUaeiou\")\n    return ''.join(char for char in text if char not in vowels)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_cases = [\n        '',\n        \"abcdef\\nghijklm\",\n        'abcdef',\n        'aaaaa',\n        'aaBAA',\n        'zbcd'\n    ]\n    \n    for case in test_cases:\n        print(f\"Input: {repr(case)}\")\n        result = remove_vowels(case)\n        print(f\"Output: {repr(result)}\\n\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/51:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "post_h2_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "post_h3_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "post_h4_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "85d61c2ec35c83ce55665ef9911ad62be6d5848614df3d3444afced393d7991d",
+  "raw_source": "def remove_vowels(text):\n    \"\"\"\n    remove_vowels is a function that takes string and returns string without vowels.\n    \n    Vowels considered: A, E, I, O, U (case-insensitive)\n    \n    >>> remove_vowels('')\n    ''\n    >>> remove_vowels(\"abcdef\\nghijklm\")\n    'bcdf\\\\nghjklm'  # Note: \\n is preserved as newline in output representation\n    >>> remove_vowels('abcdef')\n    'bcdf'\n    >>> remove_vowels('aaaaa')\n    ''\n    >>> remove_vowels('aaBAA')\n    'B'\n    >>> remove_vowels('zbcd')\n    'zbcd'\n    \"\"\"\n    \n    vowels = set(\"AEIOUaeiou\")\n    return ''.join(char for char in text if char not in vowels)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_cases = [\n        '',\n        \"abcdef\\nghijklm\",\n        'abcdef',\n        'aaaaa',\n        'aaBAA',\n        'zbcd'\n    ]\n    \n    for case in test_cases:\n        print(f\"Input: {repr(case)}\")\n        result = remove_vowels(case)\n        print(f\"Output: {repr(result)}\\n\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/51",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

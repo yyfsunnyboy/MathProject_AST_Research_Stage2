@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8468131a3238d596cb7e26f80e1374b1751be551e4a459c766730c261c0c5bd5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sample_nam",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "final_source": "def sample_nam(names):\n    total_length = 0\n    \n    for name in names:\n        # Check if the first character is NOT a lowercase letter\n        if not (len(name) > 0 and name[0].islower()):\n            total_length += len(name)\n            \n    return total_length\n\n# Test case based on your assertion\nnames = ['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']\n\n# Expected calculation:\n# sally (starts with lowercase) -> SKIP\n# Dylan (starts uppercase) -> Keep, len=5\n# rebecca (starts with lowercase) -> SKIP\n# Diana (starts uppercase) -> Keep, len=5\n# Joanne (starts uppercase) -> Keep, len=6\n# keith (starts with lowercase) -> SKIP\n\n# Sum: 5 + 5 + 6 = 16\n\nresult = sample_nam(names)\nprint(f\"Result: {result}\") # Output should be 16\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/639:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "post_h2_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "post_h3_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "post_h4_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "78ed603e63f3ba8caebdd8640edab276a0fe0f1b25d1804948dde63a6da7cbc7",
+  "raw_source": "def sample_nam(names):\n    total_length = 0\n    \n    for name in names:\n        # Check if the first character is NOT a lowercase letter\n        if not (len(name) > 0 and name[0].islower()):\n            total_length += len(name)\n            \n    return total_length\n\n# Test case based on your assertion\nnames = ['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']\n\n# Expected calculation:\n# sally (starts with lowercase) -> SKIP\n# Dylan (starts uppercase) -> Keep, len=5\n# rebecca (starts with lowercase) -> SKIP\n# Diana (starts uppercase) -> Keep, len=5\n# Joanne (starts uppercase) -> Keep, len=6\n# keith (starts with lowercase) -> SKIP\n\n# Sum: 5 + 5 + 6 = 16\n\nresult = sample_nam(names)\nprint(f\"Result: {result}\") # Output should be 16\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/639",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "5e7017466fff2757b391d7b73f03d92b9c656a8d4c0351a53b3c63c759a2bf06",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "any_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "final_source": "def any_int(x, y, z):\n    \"\"\"\n    Create a function that takes 3 numbers.\n    Returns true if one of the numbers is equal to the sum of the other two, \n    and all numbers are integers.\n    Returns false in any other cases.\n    \n    Examples:\n        any_int(5, 2, 7) ➞ True   (5 + 2 = 7)\n        any_int(3, 2, 2) ➞ False # No number equals sum of others; also not all integers? Actually they are ints but condition fails.\n        any_int(3, -2, 1) ➞ True # (-2) + 3 = 1 or 3 + (-2) = 1 etc.\n        any_int(3.6, -2.2, 2) ➞ False (not all integers)\n    \"\"\"\n    # Check if all are integers\n    if not isinstance(x, int) or not isinstance(y, int) or not isinstance(z, int):\n        return False\n    \n    # Check any combination: x = y + z OR y = x + z OR z = x + y\n    return (x == y + z) or (y == x + z) or (z == x + y)\n\n\n# Example usage:\nprint(any_int(5, 2, 7))      # True\nprint(any_int(3, 2, 2))      # False\nprint(any_int(3, -2, 1))     # True\nprint(any_int(3.6, -2.2, 2)) # False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/92:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "post_h2_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "post_h3_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "post_h4_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fae230ecca61997e5b4d0d4f36e1260e0a7ad17303b02ea700ee7c52f350b5e6",
+  "raw_source": "def any_int(x, y, z):\n    \"\"\"\n    Create a function that takes 3 numbers.\n    Returns true if one of the numbers is equal to the sum of the other two, \n    and all numbers are integers.\n    Returns false in any other cases.\n    \n    Examples:\n        any_int(5, 2, 7) ➞ True   (5 + 2 = 7)\n        any_int(3, 2, 2) ➞ False # No number equals sum of others; also not all integers? Actually they are ints but condition fails.\n        any_int(3, -2, 1) ➞ True # (-2) + 3 = 1 or 3 + (-2) = 1 etc.\n        any_int(3.6, -2.2, 2) ➞ False (not all integers)\n    \"\"\"\n    # Check if all are integers\n    if not isinstance(x, int) or not isinstance(y, int) or not isinstance(z, int):\n        return False\n    \n    # Check any combination: x = y + z OR y = x + z OR z = x + y\n    return (x == y + z) or (y == x + z) or (z == x + y)\n\n\n# Example usage:\nprint(any_int(5, 2, 7))      # True\nprint(any_int(3, 2, 2))      # False\nprint(any_int(3, -2, 1))     # True\nprint(any_int(3.6, -2.2, 2)) # False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/92",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

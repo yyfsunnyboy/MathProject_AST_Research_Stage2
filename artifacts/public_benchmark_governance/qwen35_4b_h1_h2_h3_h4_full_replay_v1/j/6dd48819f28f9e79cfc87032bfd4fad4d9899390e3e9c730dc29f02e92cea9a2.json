@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "6dd48819f28f9e79cfc87032bfd4fad4d9899390e3e9c730dc29f02e92cea9a2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "any_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "final_source": "def any_int(x, y, z):\n    if isinstance(x, int) and isinstance(y, int) and isinstance(z, int):\n        return x == (y + z) or y == (x + z) or z == (x + y)\n    else:\n        return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/92:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "post_h2_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "post_h3_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "post_h4_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e294da4fd666fbd48a3d8e2430d7cf141c0bc65ef4e4fb2c527e826eddc67a8c",
+  "raw_source": "def any_int(x, y, z):\n    if isinstance(x, int) and isinstance(y, int) and isinstance(z, int):\n        return x == (y + z) or y == (x + z) or z == (x + y)\n    else:\n        return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/92",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "3b49f8fe9bab13d93102694fae61f3c9770341b8df6a23f724d178bfbfc3d0ca",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "merge_sorted_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "final_source": "def merge_sorted_list(list1, list2, list3):\n    \"\"\"\n    Merges three input lists into a single sorted list in ascending order.\n    \n    Args:\n        list1 (list): First list of integers.\n        list2 (list): Second list of integers.\n        list3 (list): Third list of integers.\n        \n    Returns:\n        list: A new list containing all elements from the three inputs, sorted.\n    \"\"\"\n    # Unpack the lists and pass them to the built-in sorted function\n    return sorted(list1 + list2 + list3)\n\n# Test case as provided in your request\nif __name__ == \"__main__\":\n    result = merge_sorted_list([25, 24, 15, 4, 5, 29, 110], [19, 20, 11, 56, 25, 233, 154], [24, 26, 54, 48])\n    expected = [4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/108:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "post_h2_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "post_h3_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "post_h4_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4e73c5df6c53752ac67ae175fa87bacbd476fab0bce61b288500a1c77a020a1a",
+  "raw_source": "def merge_sorted_list(list1, list2, list3):\n    \"\"\"\n    Merges three input lists into a single sorted list in ascending order.\n    \n    Args:\n        list1 (list): First list of integers.\n        list2 (list): Second list of integers.\n        list3 (list): Third list of integers.\n        \n    Returns:\n        list: A new list containing all elements from the three inputs, sorted.\n    \"\"\"\n    # Unpack the lists and pass them to the built-in sorted function\n    return sorted(list1 + list2 + list3)\n\n# Test case as provided in your request\nif __name__ == \"__main__\":\n    result = merge_sorted_list([25, 24, 15, 4, 5, 29, 110], [19, 20, 11, 56, 25, 233, 154], [24, 26, 54, 48])\n    expected = [4, 5, 11, 15, 19, 20, 24, 24, 25, 25, 26, 29, 48, 54, 56, 110, 154, 233]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/108",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

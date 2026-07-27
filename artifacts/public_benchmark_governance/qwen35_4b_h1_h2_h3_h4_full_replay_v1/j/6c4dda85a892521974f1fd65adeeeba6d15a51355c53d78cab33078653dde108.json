@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "6c4dda85a892521974f1fd65adeeeba6d15a51355c53d78cab33078653dde108",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "interleave_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "final_source": "def interleave_lists(list1, list2, list3):\n    \"\"\"\n    Interleaves three lists of the same length into a single flat list.\n    \n    Args:\n        list1 (list): First input list\n        list2 (list): Second input list\n        list3 (list): Third input list\n        \n    Returns:\n        list: A new list with elements from each input list interleaved in order.\n        \n    Example:\n        interleave_lists([1, 2], [10, 20], [100, 200]) \n        returns [1, 10, 100, 2, 20, 200]\n    \"\"\"\n    # Check if all lists have the same length (optional validation)\n    len1 = len(list1)\n    len2 = len(list2)\n    len3 = len(list3)\n    \n    if not (len1 == len2 and len2 == len3):\n        raise ValueError(\"All input lists must be of equal length.\")\n\n    result = []\n    # Iterate through the index range up to the length of one list\n    for i in range(len1):\n        result.append(list1[i])  # Add element from first list\n        result.append(list2[i])  # Add element from second list\n        result.append(list3[i])  # Add element from third list\n        \n    return result\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    test_list1 = [1, 2, 3, 4, 5, 6, 7]\n    test_list2 = [10, 20, 30, 40, 50, 60, 70]\n    test_list3 = [100, 200, 300, 400, 500, 600, 700]\n    \n    expected_output = [1, 10, 100, 2, 20, 200, 3, 30, 300, \n                       4, 40, 400, 5, 50, 500, 6, 60, 600, \n                       7, 70, 700]\n    \n    result = interleave_lists(test_list1, test_list2, test_list3)\n    \n    assert result == expected_output, \"Test failed!\"\n    print(\"All tests passed successfully.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/578:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "post_h2_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "post_h3_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "post_h4_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "69bc174fecbe392a217d3ee2fa8a7e3aa21b40b306c9d0e817695b7c0fd9a821",
+  "raw_source": "def interleave_lists(list1, list2, list3):\n    \"\"\"\n    Interleaves three lists of the same length into a single flat list.\n    \n    Args:\n        list1 (list): First input list\n        list2 (list): Second input list\n        list3 (list): Third input list\n        \n    Returns:\n        list: A new list with elements from each input list interleaved in order.\n        \n    Example:\n        interleave_lists([1, 2], [10, 20], [100, 200]) \n        returns [1, 10, 100, 2, 20, 200]\n    \"\"\"\n    # Check if all lists have the same length (optional validation)\n    len1 = len(list1)\n    len2 = len(list2)\n    len3 = len(list3)\n    \n    if not (len1 == len2 and len2 == len3):\n        raise ValueError(\"All input lists must be of equal length.\")\n\n    result = []\n    # Iterate through the index range up to the length of one list\n    for i in range(len1):\n        result.append(list1[i])  # Add element from first list\n        result.append(list2[i])  # Add element from second list\n        result.append(list3[i])  # Add element from third list\n        \n    return result\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    test_list1 = [1, 2, 3, 4, 5, 6, 7]\n    test_list2 = [10, 20, 30, 40, 50, 60, 70]\n    test_list3 = [100, 200, 300, 400, 500, 600, 700]\n    \n    expected_output = [1, 10, 100, 2, 20, 200, 3, 30, 300, \n                       4, 40, 400, 5, 50, 500, 6, 60, 600, \n                       7, 70, 700]\n    \n    result = interleave_lists(test_list1, test_list2, test_list3)\n    \n    assert result == expected_output, \"Test failed!\"\n    print(\"All tests passed successfully.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/578",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

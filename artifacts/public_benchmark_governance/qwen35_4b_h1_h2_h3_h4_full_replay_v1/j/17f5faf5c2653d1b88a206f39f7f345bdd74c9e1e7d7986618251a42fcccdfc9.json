@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "17f5faf5c2653d1b88a206f39f7f345bdd74c9e1e7d7986618251a42fcccdfc9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_sublist",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "final_source": "def is_sublist(lst, sub):\n    if len(sub) == 0:\n        return True\n    for i in range(len(lst) - len(sub) + 1):\n        match = True\n        for j in range(len(sub)):\n            if lst[i+j] != sub[j]:\n                match = False\n                break\n        if match:\n            return True\n    return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/69:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "post_h2_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "post_h3_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "post_h4_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "746f570b7b03c09a85ce6b2963b8a32f346253c3c6108eeb3310c941e2979dde",
+  "raw_source": "def is_sublist(lst, sub):\n    if len(sub) == 0:\n        return True\n    for i in range(len(lst) - len(sub) + 1):\n        match = True\n        for j in range(len(sub)):\n            if lst[i+j] != sub[j]:\n                match = False\n                break\n        if match:\n            return True\n    return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/69",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

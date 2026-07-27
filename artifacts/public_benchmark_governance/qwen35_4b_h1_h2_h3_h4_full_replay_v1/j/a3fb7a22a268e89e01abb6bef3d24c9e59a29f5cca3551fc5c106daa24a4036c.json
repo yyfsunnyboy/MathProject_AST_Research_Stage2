@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a3fb7a22a268e89e01abb6bef3d24c9e59a29f5cca3551fc5c106daa24a4036c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_distinct_characters",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "final_source": "def count_distinct_characters(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n    \n    Examples:\n        >>> count_distinct_characters('xyzXYZ')\n        3\n        >>> count_distinct_characters('Jerry')\n        4\n    \"\"\"\n    # Convert to lowercase and use a set to get unique characters\n    return len(set(string.lower()))\n\n\n# Example usage (optional):\nif __name__ == \"__main__\":\n    print(count_distinct_characters(\"xyzXYZ\"))   # Output: 3\n    print(count_distinct_characters(\"Jerry\"))     # Output: 4\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/16:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "post_h2_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "post_h3_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "post_h4_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3afc7bd701f05821e7651e498e96cb9cefb881cef5aed7054b31cfed5d79b8ba",
+  "raw_source": "def count_distinct_characters(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n    \n    Examples:\n        >>> count_distinct_characters('xyzXYZ')\n        3\n        >>> count_distinct_characters('Jerry')\n        4\n    \"\"\"\n    # Convert to lowercase and use a set to get unique characters\n    return len(set(string.lower()))\n\n\n# Example usage (optional):\nif __name__ == \"__main__\":\n    print(count_distinct_characters(\"xyzXYZ\"))   # Output: 3\n    print(count_distinct_characters(\"Jerry\"))     # Output: 4\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/16",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

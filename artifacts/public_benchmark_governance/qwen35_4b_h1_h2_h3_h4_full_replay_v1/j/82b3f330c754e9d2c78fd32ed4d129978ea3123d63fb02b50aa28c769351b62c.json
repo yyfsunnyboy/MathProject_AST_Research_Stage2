@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "82b3f330c754e9d2c78fd32ed4d129978ea3123d63fb02b50aa28c769351b62c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "parse_nested_parens",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "final_source": "from typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    \"\"\" Input to this function is a string represented multiple groups for nested parentheses separated by spaces.\n    For each of the group, output the deepest level of nesting of parentheses.\n    E.g. (()()) has maximum two levels of nesting while ((())) has three.\n\n    >>> parse_nested_parens('(()()) ((())) () ((())()())')\n    [2, 3, 1, 3]\n    \"\"\"\n    \n    # Split the input string by spaces to get individual groups\n    groups = paren_string.split()\n    result = []\n    \n    for group in groups:\n        max_level = 0\n        current_level = 0\n        \n        for char in group:\n            if char == '(':\n                current_level += 1\n                # Update maximum level seen so far for this group\n                if current_level > max_level:\n                    max_level = current_level\n            elif char == ')':\n                current_level -= 1\n        \n        result.append(max_level)\n    \n    return result\n\n\n# Example usage and test case (uncomment to run):\nif __name__ == \"__main__\":\n    # import doctest\n    # doctest.testmod()\n\n    print(parse_nested_parens('(()()) ((())) () ((())()())'))  # Expected: [2, 3, 1, 3]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/6:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "post_h2_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "post_h3_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "post_h4_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e59d5f834e8a970f9e6a3ec389093d1f591ffcf5a9ebf78b0c41e87d9a988d78",
+  "raw_source": "from typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    \"\"\" Input to this function is a string represented multiple groups for nested parentheses separated by spaces.\n    For each of the group, output the deepest level of nesting of parentheses.\n    E.g. (()()) has maximum two levels of nesting while ((())) has three.\n\n    >>> parse_nested_parens('(()()) ((())) () ((())()())')\n    [2, 3, 1, 3]\n    \"\"\"\n    \n    # Split the input string by spaces to get individual groups\n    groups = paren_string.split()\n    result = []\n    \n    for group in groups:\n        max_level = 0\n        current_level = 0\n        \n        for char in group:\n            if char == '(':\n                current_level += 1\n                # Update maximum level seen so far for this group\n                if current_level > max_level:\n                    max_level = current_level\n            elif char == ')':\n                current_level -= 1\n        \n        result.append(max_level)\n    \n    return result\n\n\n# Example usage and test case (uncomment to run):\nif __name__ == \"__main__\":\n    # import doctest\n    # doctest.testmod()\n\n    print(parse_nested_parens('(()()) ((())) () ((())()())'))  # Expected: [2, 3, 1, 3]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/6",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7be0498ce8dde652a935980d017d5e4a302fc62dbe9cad5c9c002f7a75644ce1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "change_date_format",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0abd1d7b15fb9a6afc12b853670142fa884d6367d1952830d4d362b2aaeae3a9",
+  "final_source": "def change_date_format(date_str):\n    \"\"\"\n    Converts a date from yyyy-mm-dd format to dd-mm-yyyy.\n    \n    Args:\n        date_str (str): Date in 'yyyy-mm-dd' format\n        \n    Returns:\n        str: Date in 'dd-mm-yyyy' format\n    \"\"\"\n    # Split the string by '-' and convert parts to integers for easier manipulation\n    year, month, day = map(int, date_str.split('-'))\n    \n    # Reorder components as dd-mm-yyyy\n    new_date = f\"{day:02d}-{month:02d}-{year}\"\n    \n    return new_date\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    assert change_date_format(\"2026-01-02\") == '02-01-2026'\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/427:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4888a966cf1374cd41cff5697319d5d2e37fbc03a1c17c9f3edaa9a31b297bbe",
+  "post_h2_sha256": "969b201313556570648da1768ed7d174e481c4b2c672b9a69c82dcfa294e93c0",
+  "post_h3_sha256": "969b201313556570648da1768ed7d174e481c4b2c672b9a69c82dcfa294e93c0",
+  "post_h4_sha256": "0abd1d7b15fb9a6afc12b853670142fa884d6367d1952830d4d362b2aaeae3a9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4888a966cf1374cd41cff5697319d5d2e37fbc03a1c17c9f3edaa9a31b297bbe",
+  "raw_source": "def change_date_format(date_str):\n    \"\"\"\n    Converts a date from yyyy-mm-dd format to dd-mm-yyyy.\n    \n    Args:\n        date_str (str): Date in 'yyyy-mm-dd' format\n        \n    Returns:\n        str: Date in 'dd-mm-yyyy' format\n    \"\"\"\n    # Split the string by '-' and convert parts to integers for easier manipulation\n    year, month, day = map(int, date_str.split('-'))\n    \n    # Reorder components as dd-mm-yyyy\n    new_date = f\"{day:02d}-{month:02d}-{year}\"\n    \n    return new_date\n\n# Test the function with the provided assertion case\nassert change_date_format(\"2026-01-02\") == '02-01-2026'\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/427",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f7e7885566a88dd8c9fc36d0c8da0b9cfb0f1ec487fae8a23fcf0cb21b075453",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_occurrences",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "408cd34bff585f8cdb9b164e2f9257f690126ee74f97888f61cf793cb9f5306b",
+  "final_source": "from collections import Counter\n\ndef max_occurrences(lst):\n    \"\"\"\n    Returns the item with the highest frequency from the list.\n    \n    Args:\n        lst (list): A list of items (integers, strings, etc.).\n        \n    Returns:\n        The most frequent item in the list. If there's a tie, \n        it returns one of them (typically the first encountered).\n    \"\"\"\n    if not lst:  # Handle empty list case gracefully\n        return None\n    \n    counts = Counter(lst)\n    \n    max_freq = -1\n    result_item = None\n    \n    for item in counts.keys():\n        freq = counts[item]\n        if freq > max_freq:\n            max_freq = freq\n            result_item = item\n            \n    return result_item\n\n# Test the function with your assertion case\nif __name__ == \"__main__\":\n    assert max_occurrences([2,3,8,4,7,9,8,2,6,5,1,6,1,2,3,2,4,6,9,1,2]) == 2\nprint(\"Test passed!\")\n\n# Additional test cases for clarity\nprint(max_occurrences(['a', 'b', 'c']))          # Returns first item in case of tie: 'a'\nprint(max_occurrences([5]))                      # Single element\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/130:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f4317688189d84424ee4c293d0d2c69d3fde3666e132ccc9a70d6d9d34dc3dfd",
+  "post_h2_sha256": "408cd34bff585f8cdb9b164e2f9257f690126ee74f97888f61cf793cb9f5306b",
+  "post_h3_sha256": "408cd34bff585f8cdb9b164e2f9257f690126ee74f97888f61cf793cb9f5306b",
+  "post_h4_sha256": "408cd34bff585f8cdb9b164e2f9257f690126ee74f97888f61cf793cb9f5306b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f4317688189d84424ee4c293d0d2c69d3fde3666e132ccc9a70d6d9d34dc3dfd",
+  "raw_source": "from collections import Counter\n\ndef max_occurrences(lst):\n    \"\"\"\n    Returns the item with the highest frequency from the list.\n    \n    Args:\n        lst (list): A list of items (integers, strings, etc.).\n        \n    Returns:\n        The most frequent item in the list. If there's a tie, \n        it returns one of them (typically the first encountered).\n    \"\"\"\n    if not lst:  # Handle empty list case gracefully\n        return None\n    \n    counts = Counter(lst)\n    \n    max_freq = -1\n    result_item = None\n    \n    for item in counts.keys():\n        freq = counts[item]\n        if freq > max_freq:\n            max_freq = freq\n            result_item = item\n            \n    return result_item\n\n# Test the function with your assertion case\nassert max_occurrences([2,3,8,4,7,9,8,2,6,5,1,6,1,2,3,2,4,6,9,1,2]) == 2\nprint(\"Test passed!\")\n\n# Additional test cases for clarity\nprint(max_occurrences(['a', 'b', 'c']))          # Returns first item in case of tie: 'a'\nprint(max_occurrences([5]))                      # Single element\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/130",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

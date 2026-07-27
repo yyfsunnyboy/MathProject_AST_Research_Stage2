@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "218a3d6d61a74f688aa9d5498692a9116791535e09ad5355897f871cd11dc8dc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "minSubArraySum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "final_source": "def minSubArraySum(nums):\n    \"\"\"\n    Given an array of integers nums, find the minimum sum of any non-empty sub-array\n    of nums.\n    \n    Examples:\n        minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n        minSubArraySum([-1, -2, -3]) == -6\n    \"\"\"\n    if not nums:\n        raise ValueError(\"Input array must be non-empty\")\n\n    current_sum = min_so_far = nums[0]\n\n    for x in nums[1:]:\n        # Either extend the existing subarray or start a new one from x\n        current_sum = min(x, current_sum + x)\n        min_so_far = min(min_so_far, current_sum)\n\n    return min_so_far\n\n\n# Quick tests\nif __name__ == \"__main__\":\n    print(minSubArraySum([2, 3, 4, 1, 2, 4]))   # Expected: 1 (subarray [1])\n    print(minSubArraySum([-1, -2, -3]))          # Expected: -6 (entire array)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/114:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "post_h2_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "post_h3_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "post_h4_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5ed834ed5d1c1a22f0c412293928d10cce5bf827832abd6a8715b1c159279fd4",
+  "raw_source": "def minSubArraySum(nums):\n    \"\"\"\n    Given an array of integers nums, find the minimum sum of any non-empty sub-array\n    of nums.\n    \n    Examples:\n        minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n        minSubArraySum([-1, -2, -3]) == -6\n    \"\"\"\n    if not nums:\n        raise ValueError(\"Input array must be non-empty\")\n\n    current_sum = min_so_far = nums[0]\n\n    for x in nums[1:]:\n        # Either extend the existing subarray or start a new one from x\n        current_sum = min(x, current_sum + x)\n        min_so_far = min(min_so_far, current_sum)\n\n    return min_so_far\n\n\n# Quick tests\nif __name__ == \"__main__\":\n    print(minSubArraySum([2, 3, 4, 1, 2, 4]))   # Expected: 1 (subarray [1])\n    print(minSubArraySum([-1, -2, -3]))          # Expected: -6 (entire array)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/114",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

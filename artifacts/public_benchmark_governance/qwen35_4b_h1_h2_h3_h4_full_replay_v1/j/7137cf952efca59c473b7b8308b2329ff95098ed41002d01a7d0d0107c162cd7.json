@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "7137cf952efca59c473b7b8308b2329ff95098ed41002d01a7d0d0107c162cd7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_median",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "final_source": "def get_median(list1, list2, size):\n    merged = sorted(list1 + list2)\n    mid_index = (size * 2 // 2) / 2 if (size * 2 % 2 == 0) else ((size * 2 - 1) // 2)\n    \n    # Calculate the correct index for median in a combined even-sized list\n    total_size = size + size\n    mid_idx = total_size // 2\n    \n    return float(merged[mid_idx])",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/622:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "post_h2_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "post_h3_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "post_h4_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6aa2584e8399c3d37af42c27934eda1d200e389dcac7e9ff60e625320ec8bfc6",
+  "raw_source": "def get_median(list1, list2, size):\n    merged = sorted(list1 + list2)\n    mid_index = (size * 2 // 2) / 2 if (size * 2 % 2 == 0) else ((size * 2 - 1) // 2)\n    \n    # Calculate the correct index for median in a combined even-sized list\n    total_size = size + size\n    mid_idx = total_size // 2\n    \n    return float(merged[mid_idx])",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/622",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "53b9791efe538467bcee3d473a7f758b2a7b0e7266ca214e94874770fea35cf9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "mul_even_odd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "final_source": "def mul_even_odd(lst):\n    evens = [x for x in lst if x % 2 == 0]\n    odds = [x for x in lst if x % 2 != 0]\n    \n    n_evens = len(evens)\n    n_odds = len(odds)\n    \n    product_even = 1\n    for num in evens:\n        product_even *= num\n        \n    product_odd = 1\n    for num in odds:\n        product_odd *= num\n    \n    if n_evens % 2 == 0 and n_odds % 2 != 0:\n        return product_even * product_odd\n    elif n_evens % 2 != 0 and n_odds % 2 == 0:\n        return product_even * product_odd\n    else:\n        return None",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/784:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "post_h2_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "post_h3_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "post_h4_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a7209b266e270c2364241ddeb0e0de9b03b2a2c623cb2e53bbd0ddaa971f73d4",
+  "raw_source": "def mul_even_odd(lst):\n    evens = [x for x in lst if x % 2 == 0]\n    odds = [x for x in lst if x % 2 != 0]\n    \n    n_evens = len(evens)\n    n_odds = len(odds)\n    \n    product_even = 1\n    for num in evens:\n        product_even *= num\n        \n    product_odd = 1\n    for num in odds:\n        product_odd *= num\n    \n    if n_evens % 2 == 0 and n_odds % 2 != 0:\n        return product_even * product_odd\n    elif n_evens % 2 != 0 and n_odds % 2 == 0:\n        return product_even * product_odd\n    else:\n        return None",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/784",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "cbe3a7f497f0a332b2eb92f06c437b128832e055b0fa063bc9b8b9e9637017c2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "left_rotate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "de5a0045f688f501b2c8118b1e194a64c9dd66026acd69e9352afbceb6ea2d7c",
+  "final_source": "def left_rotate(n, d):\n    \"\"\"\n    Rotates a given number n (treated as 32-bit unsigned) to the left by d bits.\n    \n    Args:\n        n (int): The input integer.\n        d (int): Number of positions to rotate left.\n        \n    Returns:\n        int: The rotated integer within 32-bit range.\n    \"\"\"\n    # Ensure we treat inputs as unsigned 32-bit integers initially if necessary,\n    # though the logic works for standard positive ints too.\n    n = n & 0xFFFFFFFF\n    \n    d = d % 32  # Handle cases where d >= 32 or negative (though problem implies simple left)\n    \n    # Calculate rotation:\n    # Part 1: Shift bits to the left by d positions, masked to 32 bits.\n    part1 = ((n << d) & 0xFFFFFFFF)\n    \n    # Part 2: Take the top (32-d) bits and move them to the bottom d positions.\n    # In Python, shifting right on positive integers works logically for this purpose \n    # if we mask the result before ORing.\n    part2 = ((n >> (32 - d)) & 0xFFFFFFFF)\n    \n    return part1 | part2\n\n# Test cases based on your requirement and edge cases\nif __name__ == \"__main__\":\n    assert left_rotate(16, 2) == 64\nprint(\"Test passed: left_rotate(16, 2) =\", left_rotate(16, 2))\n\n# Additional test to ensure wrapping works correctly in a larger context\n# Example: Rotate 0b100 (4) by 3 bits -> should be 0b1000 = 8? \n# Wait, let's trace manually. \n# n=4 (binary ...000100), d=3\n# Left shift 3: ...001000 (8)\n# Right shift (32-3)=29 bits of a small number is just the top bit if it existed, but here we need to wrap.\n# Actually for n=4 (bits at pos 2), rotating left by 3 moves bit at pos 2 -> pos 5? \n# No, rotation means: [b1 b0] becomes [b0 ...]. Wait, Left Rotate is MSB goes to LSB.\n# Let's re-verify definition with the example provided.\n# Example: 16 (binary ...0001 0000) -> rotate left by 2 -> ...0001 0000 00? No.\n# Standard Left Rotate of bits [b31...b0]: new b_i = old b_{i+1}.\n# Old: ...00010000 (bit index 4 is set)\n# Shift left by 2: bit at index 6 becomes set -> value 64. Correct.\n\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/799:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6bd9ce57a009f9f44dbff52113bcc2542f8d95c335c1f50a9eda9bbf16183f2d",
+  "post_h2_sha256": "de5a0045f688f501b2c8118b1e194a64c9dd66026acd69e9352afbceb6ea2d7c",
+  "post_h3_sha256": "de5a0045f688f501b2c8118b1e194a64c9dd66026acd69e9352afbceb6ea2d7c",
+  "post_h4_sha256": "de5a0045f688f501b2c8118b1e194a64c9dd66026acd69e9352afbceb6ea2d7c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6bd9ce57a009f9f44dbff52113bcc2542f8d95c335c1f50a9eda9bbf16183f2d",
+  "raw_source": "def left_rotate(n, d):\n    \"\"\"\n    Rotates a given number n (treated as 32-bit unsigned) to the left by d bits.\n    \n    Args:\n        n (int): The input integer.\n        d (int): Number of positions to rotate left.\n        \n    Returns:\n        int: The rotated integer within 32-bit range.\n    \"\"\"\n    # Ensure we treat inputs as unsigned 32-bit integers initially if necessary,\n    # though the logic works for standard positive ints too.\n    n = n & 0xFFFFFFFF\n    \n    d = d % 32  # Handle cases where d >= 32 or negative (though problem implies simple left)\n    \n    # Calculate rotation:\n    # Part 1: Shift bits to the left by d positions, masked to 32 bits.\n    part1 = ((n << d) & 0xFFFFFFFF)\n    \n    # Part 2: Take the top (32-d) bits and move them to the bottom d positions.\n    # In Python, shifting right on positive integers works logically for this purpose \n    # if we mask the result before ORing.\n    part2 = ((n >> (32 - d)) & 0xFFFFFFFF)\n    \n    return part1 | part2\n\n# Test cases based on your requirement and edge cases\nassert left_rotate(16, 2) == 64\nprint(\"Test passed: left_rotate(16, 2) =\", left_rotate(16, 2))\n\n# Additional test to ensure wrapping works correctly in a larger context\n# Example: Rotate 0b100 (4) by 3 bits -> should be 0b1000 = 8? \n# Wait, let's trace manually. \n# n=4 (binary ...000100), d=3\n# Left shift 3: ...001000 (8)\n# Right shift (32-3)=29 bits of a small number is just the top bit if it existed, but here we need to wrap.\n# Actually for n=4 (bits at pos 2), rotating left by 3 moves bit at pos 2 -> pos 5? \n# No, rotation means: [b1 b0] becomes [b0 ...]. Wait, Left Rotate is MSB goes to LSB.\n# Let's re-verify definition with the example provided.\n# Example: 16 (binary ...0001 0000) -> rotate left by 2 -> ...0001 0000 00? No.\n# Standard Left Rotate of bits [b31...b0]: new b_i = old b_{i+1}.\n# Old: ...00010000 (bit index 4 is set)\n# Shift left by 2: bit at index 6 becomes set -> value 64. Correct.\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/799",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

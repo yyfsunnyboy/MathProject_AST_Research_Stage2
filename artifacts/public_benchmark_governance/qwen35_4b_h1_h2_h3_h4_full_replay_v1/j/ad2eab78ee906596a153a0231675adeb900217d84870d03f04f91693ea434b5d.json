@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ad2eab78ee906596a153a0231675adeb900217d84870d03f04f91693ea434b5d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dog_age",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ec49e16ea72a7f3072d769304c50d11f91823c39c38fb9b081e0d602a9931040",
+  "final_source": "def dog_age(human_years):\n    \"\"\"\n    Calculates a human age in dog's years.\n    \n    Logic based on common veterinary approximations:\n    - The first year of life counts as 15 dog years.\n    - The second year adds another 9 dog years (totaling 24).\n    - Each subsequent year adds approximately 4 dog years.\n    \"\"\"\n    if human_years == 0:\n        return 0\n    \n    # First two years are special cases in the standard formula\n    if human_years <= 1:\n        return human_years * 15\n    elif human_years == 2:\n        return 24\n    else:\n        # Remaining years contribute 4 dog years each\n        remaining_years = human_years - 2\n        additional_dog_years = remaining_years * 4\n        total = 24 + additional_dog_years\n        \n        return int(total)\n\n# Test the function as requested in your prompt\nif __name__ == \"__main__\":\n    assert dog_age(12) == 61, \"Test failed: Expected 61 for input 12\"\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/264:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bc07368fbef239b79975af2dd93bd5e731e9c1e87992d31b65b069786bc3de47",
+  "post_h2_sha256": "ec49e16ea72a7f3072d769304c50d11f91823c39c38fb9b081e0d602a9931040",
+  "post_h3_sha256": "ec49e16ea72a7f3072d769304c50d11f91823c39c38fb9b081e0d602a9931040",
+  "post_h4_sha256": "ec49e16ea72a7f3072d769304c50d11f91823c39c38fb9b081e0d602a9931040",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bc07368fbef239b79975af2dd93bd5e731e9c1e87992d31b65b069786bc3de47",
+  "raw_source": "def dog_age(human_years):\n    \"\"\"\n    Calculates a human age in dog's years.\n    \n    Logic based on common veterinary approximations:\n    - The first year of life counts as 15 dog years.\n    - The second year adds another 9 dog years (totaling 24).\n    - Each subsequent year adds approximately 4 dog years.\n    \"\"\"\n    if human_years == 0:\n        return 0\n    \n    # First two years are special cases in the standard formula\n    if human_years <= 1:\n        return human_years * 15\n    elif human_years == 2:\n        return 24\n    else:\n        # Remaining years contribute 4 dog years each\n        remaining_years = human_years - 2\n        additional_dog_years = remaining_years * 4\n        total = 24 + additional_dog_years\n        \n        return int(total)\n\n# Test the function as requested in your prompt\nassert dog_age(12) == 61, \"Test failed: Expected 61 for input 12\"\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/264",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

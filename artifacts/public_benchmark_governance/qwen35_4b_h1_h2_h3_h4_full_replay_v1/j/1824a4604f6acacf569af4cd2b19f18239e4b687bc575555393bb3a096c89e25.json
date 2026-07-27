@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1824a4604f6acacf569af4cd2b19f18239e4b687bc575555393bb3a096c89e25",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "text_match_three",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "951fedbf23564f454752cd75c7779538a98996ce972498b8e24585c36d0fa6bc",
+  "final_source": "import re\n\ndef text_match_three(text):\n    \"\"\"\n    Returns True if 'text' contains exactly one 'a' followed by three 'b's.\n    Uses anchors to ensure no other characters precede or follow this sequence \n    (standard interpretation for \"matches a string that has...\").\n    \n    If you intended to match it as a substring anywhere in the text regardless of surrounding chars,\n    remove '^' and '$'. Based on your assert example (\"ac\" should fail), anchoring is appropriate.\n    \"\"\"\n    # Pattern: Start (^) -> one 'a', three 'b's (1+3=4 total length) -> End ($)\n    pattern = r\"^abbbb$\" \n    return bool(re.match(pattern, text))\n\n# Testing the function based on your requirement\nif __name__ == \"__main__\":\n    assert not text_match_three(\"ac\")  # Should pass: \"ac\" does not match ^abbbb$\n    print(\"All assertions passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/787:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "719f3dc5114d5a55610606b99dcc7176bc8c9448f26822f2515b027550407a5c",
+  "post_h2_sha256": "49f840a9fadc82f66b429df178537f73bd4c9a2ae0454be7bc4c6c5cf560f941",
+  "post_h3_sha256": "49f840a9fadc82f66b429df178537f73bd4c9a2ae0454be7bc4c6c5cf560f941",
+  "post_h4_sha256": "951fedbf23564f454752cd75c7779538a98996ce972498b8e24585c36d0fa6bc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "719f3dc5114d5a55610606b99dcc7176bc8c9448f26822f2515b027550407a5c",
+  "raw_source": "import re\n\ndef text_match_three(text):\n    \"\"\"\n    Returns True if 'text' contains exactly one 'a' followed by three 'b's.\n    Uses anchors to ensure no other characters precede or follow this sequence \n    (standard interpretation for \"matches a string that has...\").\n    \n    If you intended to match it as a substring anywhere in the text regardless of surrounding chars,\n    remove '^' and '$'. Based on your assert example (\"ac\" should fail), anchoring is appropriate.\n    \"\"\"\n    # Pattern: Start (^) -> one 'a', three 'b's (1+3=4 total length) -> End ($)\n    pattern = r\"^abbbb$\" \n    return bool(re.match(pattern, text))\n\n# Testing the function based on your requirement\nassert not text_match_three(\"ac\")  # Should pass: \"ac\" does not match ^abbbb$\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/787",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

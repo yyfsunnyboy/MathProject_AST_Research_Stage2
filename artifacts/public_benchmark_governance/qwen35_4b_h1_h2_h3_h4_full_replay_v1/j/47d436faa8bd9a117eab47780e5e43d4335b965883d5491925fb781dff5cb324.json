@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "47d436faa8bd9a117eab47780e5e43d4335b965883d5491925fb781dff5cb324",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_expression",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "afb102f2cf5906e103b49ebc1003c7336cf964fd30f722f69c43dff3fc99cbc0",
+  "final_source": "def check_expression(expr):\n    \"\"\"\n    Check if the given string of characters containing '()', [], {} \n    forms a balanced sequence.\n    \n    Returns True if balanced, False otherwise.\n    \"\"\"\n    stack = []\n    mapping = {')': '(', ']': '[', '}': '{'}\n\n    for char in expr:\n        # If it's an opening bracket, push to stack\n        if char in \"([{\":\n            stack.append(char)\n        # If it's a closing bracket\n        elif char in \")]}\":\n            if not stack:\n                return False  # No matching open bracket\n            top = stack.pop()\n            if mapping[char] != top:\n                return False  # Mismatched pair\n\n    return len(stack) == 0  # Stack should be empty\n\n\n# Example usage and assertion from the prompt\nif __name__ == \"__main__\":\n    assert check_expression(\"{()}[{}]\") == True, \"Expression is not balanced!\"\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/771:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b70e6622e8a9f0e53de83201f2fa02786fc8c4f6e47a8379acd2956297449159",
+  "post_h2_sha256": "afb102f2cf5906e103b49ebc1003c7336cf964fd30f722f69c43dff3fc99cbc0",
+  "post_h3_sha256": "afb102f2cf5906e103b49ebc1003c7336cf964fd30f722f69c43dff3fc99cbc0",
+  "post_h4_sha256": "afb102f2cf5906e103b49ebc1003c7336cf964fd30f722f69c43dff3fc99cbc0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b70e6622e8a9f0e53de83201f2fa02786fc8c4f6e47a8379acd2956297449159",
+  "raw_source": "def check_expression(expr):\n    \"\"\"\n    Check if the given string of characters containing '()', [], {} \n    forms a balanced sequence.\n    \n    Returns True if balanced, False otherwise.\n    \"\"\"\n    stack = []\n    mapping = {')': '(', ']': '[', '}': '{'}\n\n    for char in expr:\n        # If it's an opening bracket, push to stack\n        if char in \"([{\":\n            stack.append(char)\n        # If it's a closing bracket\n        elif char in \")]}\":\n            if not stack:\n                return False  # No matching open bracket\n            top = stack.pop()\n            if mapping[char] != top:\n                return False  # Mismatched pair\n\n    return len(stack) == 0  # Stack should be empty\n\n\n# Example usage and assertion from the prompt\nassert check_expression(\"{()}[{}]\") == True, \"Expression is not balanced!\"\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/771",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "c6392b7809a967a19254b912606b6a0f20c6363fc35e8d4aee1e9f4cd8e0fdd8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "simplify",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "final_source": "def simplify(x, n):\n    \"\"\"Your task is to implement a function that will simplify the expression\n    x * n. The function returns True if x * n evaluates to a whole number and False\n    otherwise. Both x and n, are string representation of a fraction, and have the following format,\n    <numerator>/<denominator> where both numerator and denominator are positive whole numbers.\n\n    You can assume that x, and n are valid fractions, and do not have zero as denominator.\n\n    simplify(\"1/5\", \"5/1\") = True\n    simplify(\"1/6\", \"2/1\") = False\n    simplify(\"7/10\", \"10/2\") = False\n    \"\"\"\n\n\ndef parse_fraction(frac_str):\n    numerator, denominator = map(int, frac_str.split('/'))\n    return numerator, denominator\n\nx_num, x_denom = parse_fraction(x)\nn_num, n_denom = parse_fraction(n)\n\nproduct_numerator = x_num * n_num\nproduct_denominator = x_denom * n_denom\n\nif product_numerator % product_denominator == 0:\n    return True\nelse:\n    return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/144:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "post_h2_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "post_h3_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "post_h4_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b298e99c785dd30d3068f9663eb126bcc354e71119b08f1adeaf31fad5d73a22",
+  "raw_source": "def simplify(x, n):\n    \"\"\"Your task is to implement a function that will simplify the expression\n    x * n. The function returns True if x * n evaluates to a whole number and False\n    otherwise. Both x and n, are string representation of a fraction, and have the following format,\n    <numerator>/<denominator> where both numerator and denominator are positive whole numbers.\n\n    You can assume that x, and n are valid fractions, and do not have zero as denominator.\n\n    simplify(\"1/5\", \"5/1\") = True\n    simplify(\"1/6\", \"2/1\") = False\n    simplify(\"7/10\", \"10/2\") = False\n    \"\"\"\n\n\ndef parse_fraction(frac_str):\n    numerator, denominator = map(int, frac_str.split('/'))\n    return numerator, denominator\n\nx_num, x_denom = parse_fraction(x)\nn_num, n_denom = parse_fraction(n)\n\nproduct_numerator = x_num * n_num\nproduct_denominator = x_denom * n_denom\n\nif product_numerator % product_denominator == 0:\n    return True\nelse:\n    return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/144",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

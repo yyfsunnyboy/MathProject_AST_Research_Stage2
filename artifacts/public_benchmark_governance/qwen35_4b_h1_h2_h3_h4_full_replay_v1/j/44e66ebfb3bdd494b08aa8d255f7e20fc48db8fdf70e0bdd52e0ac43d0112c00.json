@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "44e66ebfb3bdd494b08aa8d255f7e20fc48db8fdf70e0bdd52e0ac43d0112c00",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_Equivalent",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "final_source": "def odd_Equivalent(s, n):\n    if len(s) == 0:\n        return 0\n    \n    # Count initial ones (odd values in binary string context usually means '1')\n    count = s.count('1')\n    \n    length = len(s)\n    \n    # If the number of rotations is a multiple of the string length, \n    # we end up with the same configuration.\n    n %= length\n    \n    if n == 0:\n        return count\n    \n    # Rotate left by n positions\n    rotated_s = s[n:] + s[:n]\n    \n    # Count ones in the rotated string\n    new_count = rotated_s.count('1')\n    \n    return new_count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/109:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "post_h2_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "post_h3_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "post_h4_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6ebefc4050248386879663cb1f3a00c53328bf88a01b503c62cd89f8a5c161fc",
+  "raw_source": "def odd_Equivalent(s, n):\n    if len(s) == 0:\n        return 0\n    \n    # Count initial ones (odd values in binary string context usually means '1')\n    count = s.count('1')\n    \n    length = len(s)\n    \n    # If the number of rotations is a multiple of the string length, \n    # we end up with the same configuration.\n    n %= length\n    \n    if n == 0:\n        return count\n    \n    # Rotate left by n positions\n    rotated_s = s[n:] + s[:n]\n    \n    # Count ones in the rotated string\n    new_count = rotated_s.count('1')\n    \n    return new_count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/109",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

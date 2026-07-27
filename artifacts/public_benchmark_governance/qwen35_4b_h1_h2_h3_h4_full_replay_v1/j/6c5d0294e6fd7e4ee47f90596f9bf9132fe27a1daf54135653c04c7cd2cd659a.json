@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "6c5d0294e6fd7e4ee47f90596f9bf9132fe27a1daf54135653c04c7cd2cd659a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "histogram",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "final_source": "def histogram(test):\n    counts = {}\n    for char in test.split():\n        if char in counts:\n            counts[char] += 1\n        else:\n            counts[char] = 1\n    \n    max_count = max(counts.values())\n    \n    result = {char: count for char, count in counts.items() if count == max_count}\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/111:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "post_h2_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "post_h3_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "post_h4_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0f3701e97618bde5a23eb6d6b8ea3fbd63faf318a7c1ee62d4798984b2364731",
+  "raw_source": "def histogram(test):\n    counts = {}\n    for char in test.split():\n        if char in counts:\n            counts[char] += 1\n        else:\n            counts[char] = 1\n    \n    max_count = max(counts.values())\n    \n    result = {char: count for char, count in counts.items() if count == max_count}\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

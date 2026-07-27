@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "160a309766c924bf29c91e0caec6f0ef4b852e3d4a0403933dbbad71078d961c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "final_source": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n\nif n <= 1:\n    return False\nfor i in range(2, int(n**0.5)+1):\n    if n % i == 0:\n        return False\nreturn True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/31:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "post_h2_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "post_h3_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "post_h4_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d29f2a099b51ca66dca84d9bda020539c18dab64a49930792738c3bdb0adfbf7",
+  "raw_source": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n\nif n <= 1:\n    return False\nfor i in range(2, int(n**0.5)+1):\n    if n % i == 0:\n        return False\nreturn True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/31",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

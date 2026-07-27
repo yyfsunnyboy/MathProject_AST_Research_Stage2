@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a78aab1b77ee8fd0baf26e8926dc650e5c72a797a6f595b47eeb3ff52bc9ecf6",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "get_Inv_Count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "final_source": "def get_Inv_Count(arr):\n    # Base case: arrays of size 0 or 1 have no inversions\n    if len(arr) <= 1:\n        return arr, 0\n    \n    mid = len(arr) // 2\n    left_sub_arr, count_left = get_Inv_Count(arr[:mid])\n    right_sub_arr, count_right = get_Inv_Count(arr[mid:])\n    \n    # Merge the two sorted sub-arrays and count split inversions\n    merged_arr = []\n    i = j = 0\n    \n    # Counters for indices in left and right arrays\n    idx_left = 0\n    idx_right = 0\n    \n    while i < len(left_sub_arr) and j < len(right_sub_arr):\n        if left_sub_arr[i] <= right_sub_arr[j]:\n            merged_arr.append(left_sub_arr[i])\n            i += 1\n        else:\n            # Inversion found: all remaining elements in the left sub-array \n            # are greater than the current element in the right sub-array.\n            count_left + count_right += (len(left_sub_arr) - idx_left)\n            \n            merged_arr.append(right_sub_arr[j])\n            j += 1\n            \n    # Append any remaining elements from both arrays to avoid recursion depth issues \n    # and ensure correctness, though strictly speaking the loop handles most.\n    \n    while i < len(left_sub_arr):\n        merged_arr.append(left_sub_arr[i])\n        idx_left = i + 1\n        i += 1\n        \n    while j < len(right_sub_arr):\n        merged_arr.append(right_sub_arr[j])\n        \n    return merged_arr, count_left + count_right\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    arr = [1, 20, 6, 4, 5]\n    \n    # Calculate inversions manually to verify:\n    # (20, 6), (20, 4), (20, 5) -> 3\n    # (6, 4), (6, 5)          -> 2\n    # Total = 5\n    \n    result_count = get_Inv_Count(arr)[1]\n    \n    assert result_count == 5, f\"Expected 5 inversions but got {result_count}\"\n    print(f\"Inversion count for {arr} is: {result_count}\")\n\n# Additional test cases to ensure robustness\nassert get_Inv_Count([0]) == 0\nassert get_Inv_Count([]) == 0\nassert get_Inv_Count([5, 4, 3, 2, 1]) == 10 # Fully reversed array: n*(n-1)/2 = 5*4/2 = 10\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/296:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "post_h2_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "post_h3_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "post_h4_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "768e25d6827cbdd9e9835323d3ee972eff4095480edc9dfa6eebf321cbea9d35",
+  "raw_source": "def get_Inv_Count(arr):\n    # Base case: arrays of size 0 or 1 have no inversions\n    if len(arr) <= 1:\n        return arr, 0\n    \n    mid = len(arr) // 2\n    left_sub_arr, count_left = get_Inv_Count(arr[:mid])\n    right_sub_arr, count_right = get_Inv_Count(arr[mid:])\n    \n    # Merge the two sorted sub-arrays and count split inversions\n    merged_arr = []\n    i = j = 0\n    \n    # Counters for indices in left and right arrays\n    idx_left = 0\n    idx_right = 0\n    \n    while i < len(left_sub_arr) and j < len(right_sub_arr):\n        if left_sub_arr[i] <= right_sub_arr[j]:\n            merged_arr.append(left_sub_arr[i])\n            i += 1\n        else:\n            # Inversion found: all remaining elements in the left sub-array \n            # are greater than the current element in the right sub-array.\n            count_left + count_right += (len(left_sub_arr) - idx_left)\n            \n            merged_arr.append(right_sub_arr[j])\n            j += 1\n            \n    # Append any remaining elements from both arrays to avoid recursion depth issues \n    # and ensure correctness, though strictly speaking the loop handles most.\n    \n    while i < len(left_sub_arr):\n        merged_arr.append(left_sub_arr[i])\n        idx_left = i + 1\n        i += 1\n        \n    while j < len(right_sub_arr):\n        merged_arr.append(right_sub_arr[j])\n        \n    return merged_arr, count_left + count_right\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    arr = [1, 20, 6, 4, 5]\n    \n    # Calculate inversions manually to verify:\n    # (20, 6), (20, 4), (20, 5) -> 3\n    # (6, 4), (6, 5)          -> 2\n    # Total = 5\n    \n    result_count = get_Inv_Count(arr)[1]\n    \n    assert result_count == 5, f\"Expected 5 inversions but got {result_count}\"\n    print(f\"Inversion count for {arr} is: {result_count}\")\n\n# Additional test cases to ensure robustness\nassert get_Inv_Count([0]) == 0\nassert get_Inv_Count([]) == 0\nassert get_Inv_Count([5, 4, 3, 2, 1]) == 10 # Fully reversed array: n*(n-1)/2 = 5*4/2 = 10\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/296",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

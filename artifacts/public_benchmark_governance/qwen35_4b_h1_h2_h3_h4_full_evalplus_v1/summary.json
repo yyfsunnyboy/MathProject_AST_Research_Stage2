@@ -1,0 +1,27 @@
+{
+  "dataset": "all",
+  "duplicate": 0,
+  "evalplus_executed": true,
+  "evalplus_version": "0.3.1",
+  "executed_pairs": 1084,
+  "expected_executions": 2168,
+  "expected_pairs": 1084,
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "missing": 0,
+  "model_calls": 0,
+  "model_tag": "qwen3.5:4b",
+  "output_directory": "C:/Projects/MathProject_AST_Research_Stage2/artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1",
+  "skipped_resume_pairs": 0,
+  "status": "cumulative_evalplus_execution_completed",
+  "total_executions": 2168,
+  "total_pairs": 1084,
+  "transition_counts": {
+    "abstained_unchanged": 377,
+    "blocker_removed_but_incorrect": 3,
+    "modified_but_still_failed": 75,
+    "preserved_pass": 601,
+    "regression": 2,
+    "unchanged_failure": 0,
+    "verified_rescue": 26
+  }
+}

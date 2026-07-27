@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f3a70cd6c65e4ac24bc14d209c16524d0ef1b5342c39f43071ad502198ff90e0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "lateralsurface_cube",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "290f46965673e2c085e8f950a76a51402b19fdd678a4004fb9e546352133775d",
+  "final_source": "def lateralsurface_cube(side_length):\n    \"\"\"\n    Calculate the total lateral (side) surface area of a cube.\n    \n    A cube has 6 faces, but \"lateral\" usually refers to the side surfaces only \n    when viewed from one direction (4 sides). However, in many contexts involving cubes,\n    if no orientation is specified and it's just called \"surface area\", people sometimes mean total surface area.\n\n    But strictly speaking:\n      - Total Surface Area = 6 * s^2\n      - Lateral Surface Area of a cube (if considered as having one base/top) = 4 * s^2\n    \n    Given the test case: assert lateralsurface_cube(5)==100\n        If side_length = 5, then:\n          Total SA = 6 * 25 = 150 -> does NOT match 100\n          Lateral (4 sides) = 4 * 25 = 100 -> MATCHES\n\n    Therefore, we compute the lateral surface area as 4 * side_length^2.\n    \n    Parameters:\n        side_length (float or int): The length of one side of the cube\n    \n    Returns:\n        float: Lateral surface area of the cube\n    \"\"\"\n    return 4 * (side_length ** 2)\n\n# Test assertion as provided in your prompt\nif __name__ == \"__main__\":\n    assert lateralsurface_cube(5) == 100, \"Lateral surface area for side=5 should be 100\"\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/266:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "94ee1e443d61d2fcee504eb38a25c8a922862ad6ed2b78d3c719143549ba1ddb",
+  "post_h2_sha256": "290f46965673e2c085e8f950a76a51402b19fdd678a4004fb9e546352133775d",
+  "post_h3_sha256": "290f46965673e2c085e8f950a76a51402b19fdd678a4004fb9e546352133775d",
+  "post_h4_sha256": "290f46965673e2c085e8f950a76a51402b19fdd678a4004fb9e546352133775d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "94ee1e443d61d2fcee504eb38a25c8a922862ad6ed2b78d3c719143549ba1ddb",
+  "raw_source": "def lateralsurface_cube(side_length):\n    \"\"\"\n    Calculate the total lateral (side) surface area of a cube.\n    \n    A cube has 6 faces, but \"lateral\" usually refers to the side surfaces only \n    when viewed from one direction (4 sides). However, in many contexts involving cubes,\n    if no orientation is specified and it's just called \"surface area\", people sometimes mean total surface area.\n\n    But strictly speaking:\n      - Total Surface Area = 6 * s^2\n      - Lateral Surface Area of a cube (if considered as having one base/top) = 4 * s^2\n    \n    Given the test case: assert lateralsurface_cube(5)==100\n        If side_length = 5, then:\n          Total SA = 6 * 25 = 150 -> does NOT match 100\n          Lateral (4 sides) = 4 * 25 = 100 -> MATCHES\n\n    Therefore, we compute the lateral surface area as 4 * side_length^2.\n    \n    Parameters:\n        side_length (float or int): The length of one side of the cube\n    \n    Returns:\n        float: Lateral surface area of the cube\n    \"\"\"\n    return 4 * (side_length ** 2)\n\n# Test assertion as provided in your prompt\nassert lateralsurface_cube(5) == 100, \"Lateral surface area for side=5 should be 100\"\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/266",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

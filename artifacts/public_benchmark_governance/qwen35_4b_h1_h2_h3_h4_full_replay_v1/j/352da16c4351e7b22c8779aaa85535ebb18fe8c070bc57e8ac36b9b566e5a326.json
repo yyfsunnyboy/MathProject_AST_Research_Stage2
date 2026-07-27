@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "352da16c4351e7b22c8779aaa85535ebb18fe8c070bc57e8ac36b9b566e5a326",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_odd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6fc11368a9ee8d16d329b446d31a9863fbdfdf11aed56461842b9010603d05b5",
+  "final_source": "def remove_odd(s):\n    \"\"\"\n    Removes characters at odd indices (0-based index) from the string.\n    \n    In a 0-indexed system:\n    - Index 0 is even -> Keep 'p' in \"python\"\n    - Index 1 is odd   -> Remove 'y'\n    - Index 2 is even -> Keep 'h'\n    - ... and so on\n    \n    This matches the expected output for remove_odd(\"python\") == (\"pyhn\").\n    \n    Note: If your requirement was to keep characters at ODD positions (indices 1, 3...), \n    simply reverse the logic below. Based on standard \"odd position\" interpretations in coding challenges,\n    we usually target indices that are odd numbers. However, looking at your example:\n      Input: \"python\" -> Output: \"yhn\"\n      \n      Let's trace this specific requirement manually:\n      p (0) - y (1) - t (2) - h (3) - o (4) - n (5)\n         ^           ^   ^     ^       ^   \n         Keep? No    Yes  ?    Yes   ?    \n      \n      To get \"yhn\":\n      'p' is removed. \n      't', 'o' are skipped/removed implicitly or kept? Wait, the result has length 3: y-h-n.\n      \n      Let's re-evaluate based strictly on the example provided in your prompt:\n      Input: \"python\" (length 6)\n      Expected Output: \"yhn\"\n      \n      Indices and characters:\n      0: p -> Removed? Yes (Result doesn't have it)\n      1: y -> Kept? Yes\n      2: t -> Removed? Yes (Result is 'yh' so far, then 'n')\n      3: h -> Kept? Yes\n      4: o -> Removed? Yes\n      5: n -> Kept? Yes\n      \n      Pattern observed from \"python\" -> \"yhn\":\n      Keep indices where index % 2 == 1 (Odd indices).\n      \n    \"\"\"\n    return \"\".join([char for idx, char in enumerate(s) if idx % 2 != 0])\n\n# Test the function\nif __name__ == \"__main__\":\n    assert remove_odd(\"python\") == (\"yhn\"), \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/437:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c38bed38fcd4585ab13f3adf9c4d7d8d61fa99bd00b8861305697bc0c8761620",
+  "post_h2_sha256": "6fc11368a9ee8d16d329b446d31a9863fbdfdf11aed56461842b9010603d05b5",
+  "post_h3_sha256": "6fc11368a9ee8d16d329b446d31a9863fbdfdf11aed56461842b9010603d05b5",
+  "post_h4_sha256": "6fc11368a9ee8d16d329b446d31a9863fbdfdf11aed56461842b9010603d05b5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c38bed38fcd4585ab13f3adf9c4d7d8d61fa99bd00b8861305697bc0c8761620",
+  "raw_source": "def remove_odd(s):\n    \"\"\"\n    Removes characters at odd indices (0-based index) from the string.\n    \n    In a 0-indexed system:\n    - Index 0 is even -> Keep 'p' in \"python\"\n    - Index 1 is odd   -> Remove 'y'\n    - Index 2 is even -> Keep 'h'\n    - ... and so on\n    \n    This matches the expected output for remove_odd(\"python\") == (\"pyhn\").\n    \n    Note: If your requirement was to keep characters at ODD positions (indices 1, 3...), \n    simply reverse the logic below. Based on standard \"odd position\" interpretations in coding challenges,\n    we usually target indices that are odd numbers. However, looking at your example:\n      Input: \"python\" -> Output: \"yhn\"\n      \n      Let's trace this specific requirement manually:\n      p (0) - y (1) - t (2) - h (3) - o (4) - n (5)\n         ^           ^   ^     ^       ^   \n         Keep? No    Yes  ?    Yes   ?    \n      \n      To get \"yhn\":\n      'p' is removed. \n      't', 'o' are skipped/removed implicitly or kept? Wait, the result has length 3: y-h-n.\n      \n      Let's re-evaluate based strictly on the example provided in your prompt:\n      Input: \"python\" (length 6)\n      Expected Output: \"yhn\"\n      \n      Indices and characters:\n      0: p -> Removed? Yes (Result doesn't have it)\n      1: y -> Kept? Yes\n      2: t -> Removed? Yes (Result is 'yh' so far, then 'n')\n      3: h -> Kept? Yes\n      4: o -> Removed? Yes\n      5: n -> Kept? Yes\n      \n      Pattern observed from \"python\" -> \"yhn\":\n      Keep indices where index % 2 == 1 (Odd indices).\n      \n    \"\"\"\n    return \"\".join([char for idx, char in enumerate(s) if idx % 2 != 0])\n\n# Test the function\nassert remove_odd(\"python\") == (\"yhn\"), \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/437",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2b657eb8c5a4a750055412b5ab064010f55615616d00388d6b6da0c593b22e9a",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "magic_square_test",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "final_source": "def magic_square_test(matrix):\n    n = len(matrix)\n    \n    # Check if matrix is square and contains numbers from 1 to n^2 exactly once\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    return sorted(flat_matrix) == expected_numbers\n\n# Verify rows sum equal magic constant (sum of first row)\nmagic_sum = sum(matrix[0])\nfor i in range(n):\n    if not all(sum(row[j] for j in range(i+1, i+n+1)) == magic_sum or \n               any(j >= n)): # Handle wrap-around logic implicitly by checking full rows and diagonals properly below\n    \n        pass\n\n# Corrected approach: Check sums of rows, columns, and two main diagonals\nfor row in matrix:\n    if sum(row) != magic_sum:\n        return False\n        \ncol_sums = [sum(matrix[i][j] for i in range(n)) for j in range(n)]\nif col_sums == list(magic_sum * n): # This check is wrong, should be equality to single value\n    pass\n\n# Re-evaluating logic cleanly:\ndef magic_square_test_correct(matrix):\n    if not matrix or len(matrix) != 1 and all(len(row) == len(matrix)):\n        return False\n        \n    n = len(matrix)\n    \n    # Check for numbers 1 to n^2 exactly once\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    if sorted(flat_matrix) != expected_numbers:\n        return False\n        \n    magic_sum = sum(matrix[0])\n    \n    # Check rows\n    for i in range(n):\n        if not all(sum(row[j] for j in range(i+1, i+n+1)): \n            pass\n            \n# Final clean implementation without errors or placeholders\n\ndef magic_square_test_final(matrix):\n    n = len(matrix)\n    \n    # Validate square matrix dimensions and content (numbers 1 to n^2 unique)\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    if sorted(flat_matrix) != expected_numbers:\n        return False\n        \n    magic_sum = sum(matrix[0])\n    \n    # Check all rows sums equal to magic constant\n    for i in range(n):\n        row_sum = sum(matrix[i][j] for j in range(n))\n        if row_sum != magic_sum:\n            return False\n            \n    # Check all column sums equal to magic constant\n    for j in range(n):\n        col_sum = sum(matrix[i][j] for i in range(n))\n        if col_sum != magic_sum:\n            return False\n            \n    # Check main diagonal (top-left to bottom-right)\n    diag1_sum = sum(matrix[i][i] for i in range(n))\n    if diag1_sum != magic_sum:\n        return False\n        \n    # Check anti-diagonal (bottom-left to top-right)\n    diag2_sum = sum(matrix[i][n - 1 - i] for i in range(n))\n    if diag2_sum != magic_sum:\n        return False\n        \n    return True\n\n# Test case verification logic is handled by the function itself, so we just define it. \n# The assert statement provided in the prompt will be executed externally or internally to verify correctness.",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/129:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "post_h2_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "post_h3_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "post_h4_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "ef539b464627e37eb1308104a072f46ac54471253f1a2cc04041b37a3a1da6c9",
+  "raw_source": "def magic_square_test(matrix):\n    n = len(matrix)\n    \n    # Check if matrix is square and contains numbers from 1 to n^2 exactly once\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    return sorted(flat_matrix) == expected_numbers\n\n# Verify rows sum equal magic constant (sum of first row)\nmagic_sum = sum(matrix[0])\nfor i in range(n):\n    if not all(sum(row[j] for j in range(i+1, i+n+1)) == magic_sum or \n               any(j >= n)): # Handle wrap-around logic implicitly by checking full rows and diagonals properly below\n    \n        pass\n\n# Corrected approach: Check sums of rows, columns, and two main diagonals\nfor row in matrix:\n    if sum(row) != magic_sum:\n        return False\n        \ncol_sums = [sum(matrix[i][j] for i in range(n)) for j in range(n)]\nif col_sums == list(magic_sum * n): # This check is wrong, should be equality to single value\n    pass\n\n# Re-evaluating logic cleanly:\ndef magic_square_test_correct(matrix):\n    if not matrix or len(matrix) != 1 and all(len(row) == len(matrix)):\n        return False\n        \n    n = len(matrix)\n    \n    # Check for numbers 1 to n^2 exactly once\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    if sorted(flat_matrix) != expected_numbers:\n        return False\n        \n    magic_sum = sum(matrix[0])\n    \n    # Check rows\n    for i in range(n):\n        if not all(sum(row[j] for j in range(i+1, i+n+1)): \n            pass\n            \n# Final clean implementation without errors or placeholders\n\ndef magic_square_test_final(matrix):\n    n = len(matrix)\n    \n    # Validate square matrix dimensions and content (numbers 1 to n^2 unique)\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = list(range(1, n * n + 1))\n    if sorted(flat_matrix) != expected_numbers:\n        return False\n        \n    magic_sum = sum(matrix[0])\n    \n    # Check all rows sums equal to magic constant\n    for i in range(n):\n        row_sum = sum(matrix[i][j] for j in range(n))\n        if row_sum != magic_sum:\n            return False\n            \n    # Check all column sums equal to magic constant\n    for j in range(n):\n        col_sum = sum(matrix[i][j] for i in range(n))\n        if col_sum != magic_sum:\n            return False\n            \n    # Check main diagonal (top-left to bottom-right)\n    diag1_sum = sum(matrix[i][i] for i in range(n))\n    if diag1_sum != magic_sum:\n        return False\n        \n    # Check anti-diagonal (bottom-left to top-right)\n    diag2_sum = sum(matrix[i][n - 1 - i] for i in range(n))\n    if diag2_sum != magic_sum:\n        return False\n        \n    return True\n\n# Test case verification logic is handled by the function itself, so we just define it. \n# The assert statement provided in the prompt will be executed externally or internally to verify correctness.",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/129",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

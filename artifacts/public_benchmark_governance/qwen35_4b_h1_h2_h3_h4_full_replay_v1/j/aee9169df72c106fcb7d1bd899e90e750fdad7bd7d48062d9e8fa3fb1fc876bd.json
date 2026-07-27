@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "aee9169df72c106fcb7d1bd899e90e750fdad7bd7d48062d9e8fa3fb1fc876bd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "final_source": "def max_length(lst):\n    if not lst:\n        return (0, [])\n    \n    max_len = 0\n    result_list = []\n    \n    for item in lst:\n        length = len(item)\n        if length > max_len:\n            max_len = length\n            result_list = [item]\n        elif length == max_len:\n            result_list.append(item)\n            \n    return (max_len, result_list)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/290:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "post_h2_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "post_h3_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "post_h4_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4871cc375ee37874e13be0c6ebed7a643625a8d99a1b80905c0465ad8e36dd6b",
+  "raw_source": "def max_length(lst):\n    if not lst:\n        return (0, [])\n    \n    max_len = 0\n    result_list = []\n    \n    for item in lst:\n        length = len(item)\n        if length > max_len:\n            max_len = length\n            result_list = [item]\n        elif length == max_len:\n            result_list.append(item)\n            \n    return (max_len, result_list)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/290",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "13b2b813b28de7d0dd6dc2ff0ea6f564dca230631aa4c2cde3915eb53f540677",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "decimal_to_binary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "final_source": "def decimal_to_binary(decimal):\n    \"\"\"You will be given a number in decimal form and your task is to convert it to\n    binary format. The function should return a string, with each character representing a binary\n    number. Each character in the string will be '0' or '1'.\n\n    There will be an extra couple of characters 'db' at the beginning and at the end of the string.\n    The extra characters are there to help with the format.\n\n    Examples:\n    decimal_to_binary(15)   # returns \"db1111db\"\n    decimal_to_binary(32)   # returns \"db100000db\"\n    \"\"\"\n    \n    binary_str = bin(decimal)[2:]\n    return f\"db{binary_str}db\"",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/79:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "post_h2_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "post_h3_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "post_h4_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a1f8c3e197909fa60504576f3f5dfe7d38e4bc4313836a6e5f8b642f6b3ad9f5",
+  "raw_source": "def decimal_to_binary(decimal):\n    \"\"\"You will be given a number in decimal form and your task is to convert it to\n    binary format. The function should return a string, with each character representing a binary\n    number. Each character in the string will be '0' or '1'.\n\n    There will be an extra couple of characters 'db' at the beginning and at the end of the string.\n    The extra characters are there to help with the format.\n\n    Examples:\n    decimal_to_binary(15)   # returns \"db1111db\"\n    decimal_to_binary(32)   # returns \"db100000db\"\n    \"\"\"\n    \n    binary_str = bin(decimal)[2:]\n    return f\"db{binary_str}db\"",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/79",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

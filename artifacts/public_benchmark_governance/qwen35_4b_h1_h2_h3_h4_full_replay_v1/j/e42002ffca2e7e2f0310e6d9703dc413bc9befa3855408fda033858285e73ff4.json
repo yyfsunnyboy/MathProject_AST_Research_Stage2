@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "e42002ffca2e7e2f0310e6d9703dc413bc9befa3855408fda033858285e73ff4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "reverse_delete",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "final_source": "def reverse_delete(s, c):\n    \"\"\"\n    Task: \n    We are given two strings s and c, you have to deleted all the characters in s \n    that are equal to any character in c, then check if the result string is a palindrome.\n    \n    Args:\n        s (str): The input string to process.\n        c (str): The set of characters to delete from s.\n        \n    Returns:\n        tuple: A tuple containing (result_string, is_palindrome).\n               - result_string: String after deleting specified characters.\n               - is_palindrome: Boolean indicating if the result is a palindrome.\n    \"\"\"\n    \n    # Step 1: Create a set of characters to delete for O(1) lookup efficiency\n    chars_to_delete = set(c)\n    \n    # Step 2: Build the new string by keeping only characters NOT in 'chars_to_delete'\n    result_string = ''.join(char for char in s if char not in chars_to_delete)\n    \n    # Step 3: Check if the resulting string is a palindrome\n    # A string is a palindrome if it equals its reverse. \n    # We handle empty strings as palindromes (reads same forward/backward).\n    is_palindrome = result_string == result_string[::-1]\n    \n    return (result_string, is_palindrome)\n\n# --- Example Usage and Tests based on your description ---\n\nif __name__ == \"__main__\":\n    # Test Case 1: s = \"abcde\", c = \"ae\" -> Expected ('bcd', False)\n    res1 = reverse_delete(\"abcde\", \"ae\")\n    print(f\"s='abcde', c='ae' => {res1}\") \n    assert res1 == (\"bcd\", False), f\"Test 1 Failed: Got {res1}\"\n\n    # Test Case 2: s = \"abcdef\", c = \"b\" -> Expected ('acdef', False)\n    res2 = reverse_delete(\"abcdef\", \"b\")\n    print(f\"s='abcdef', c='b' => {res2}\") \n    assert res2 == (\"acdef\", False), f\"Test 2 Failed: Got {res2}\"\n\n    # Test Case 3: s = \"abcdedcba\", c = \"ab\" -> Expected ('cdedc', True)\n    res3 = reverse_delete(\"abcdedcba\", \"ab\")\n    print(f\"s='abcdedcba', c='ab' => {res3}\") \n    assert res3 == (\"cdedc\", True), f\"Test 3 Failed: Got {res3}\"\n\n    # Additional Test Case: Empty result should be considered a palindrome\n    res4 = reverse_delete(\"abcde\", \"abcdef\")\n    print(f\"s='abcde', c='abcdef' => {res4}\") \n    assert res4 == (\"\", True), f\"Test 4 Failed: Got {res4}\"\n\n    # Additional Test Case: No deletion needed (already palindrome)\n    res5 = reverse_delete(\"radar\", \"x\")\n    print(f\"s='radar', c='x' => {res5}\") \n    assert res5 == (\"radar\", True), f\"Test 5 Failed: Got {res5}\"\n\n    print(\"\\nAll tests passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/112:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "post_h2_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "post_h3_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "post_h4_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8b473b9b3027854f2af5edc5e1e4a69155776a292529dcf7b2c9c9413120d3e8",
+  "raw_source": "def reverse_delete(s, c):\n    \"\"\"\n    Task: \n    We are given two strings s and c, you have to deleted all the characters in s \n    that are equal to any character in c, then check if the result string is a palindrome.\n    \n    Args:\n        s (str): The input string to process.\n        c (str): The set of characters to delete from s.\n        \n    Returns:\n        tuple: A tuple containing (result_string, is_palindrome).\n               - result_string: String after deleting specified characters.\n               - is_palindrome: Boolean indicating if the result is a palindrome.\n    \"\"\"\n    \n    # Step 1: Create a set of characters to delete for O(1) lookup efficiency\n    chars_to_delete = set(c)\n    \n    # Step 2: Build the new string by keeping only characters NOT in 'chars_to_delete'\n    result_string = ''.join(char for char in s if char not in chars_to_delete)\n    \n    # Step 3: Check if the resulting string is a palindrome\n    # A string is a palindrome if it equals its reverse. \n    # We handle empty strings as palindromes (reads same forward/backward).\n    is_palindrome = result_string == result_string[::-1]\n    \n    return (result_string, is_palindrome)\n\n# --- Example Usage and Tests based on your description ---\n\nif __name__ == \"__main__\":\n    # Test Case 1: s = \"abcde\", c = \"ae\" -> Expected ('bcd', False)\n    res1 = reverse_delete(\"abcde\", \"ae\")\n    print(f\"s='abcde', c='ae' => {res1}\") \n    assert res1 == (\"bcd\", False), f\"Test 1 Failed: Got {res1}\"\n\n    # Test Case 2: s = \"abcdef\", c = \"b\" -> Expected ('acdef', False)\n    res2 = reverse_delete(\"abcdef\", \"b\")\n    print(f\"s='abcdef', c='b' => {res2}\") \n    assert res2 == (\"acdef\", False), f\"Test 2 Failed: Got {res2}\"\n\n    # Test Case 3: s = \"abcdedcba\", c = \"ab\" -> Expected ('cdedc', True)\n    res3 = reverse_delete(\"abcdedcba\", \"ab\")\n    print(f\"s='abcdedcba', c='ab' => {res3}\") \n    assert res3 == (\"cdedc\", True), f\"Test 3 Failed: Got {res3}\"\n\n    # Additional Test Case: Empty result should be considered a palindrome\n    res4 = reverse_delete(\"abcde\", \"abcdef\")\n    print(f\"s='abcde', c='abcdef' => {res4}\") \n    assert res4 == (\"\", True), f\"Test 4 Failed: Got {res4}\"\n\n    # Additional Test Case: No deletion needed (already palindrome)\n    res5 = reverse_delete(\"radar\", \"x\")\n    print(f\"s='radar', c='x' => {res5}\") \n    assert res5 == (\"radar\", True), f\"Test 5 Failed: Got {res5}\"\n\n    print(\"\\nAll tests passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/112",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

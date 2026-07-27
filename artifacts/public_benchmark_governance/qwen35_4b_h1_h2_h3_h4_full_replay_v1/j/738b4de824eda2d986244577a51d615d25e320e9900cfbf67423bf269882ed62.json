@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "738b4de824eda2d986244577a51d615d25e320e9900cfbf67423bf269882ed62",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "combinations_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "final_source": "def combinations_list(lst):\n    # Start with a list containing one empty set: [[]]\n    res = [[]]\n    \n    for item in lst:\n        # For each existing combination, create new ones by adding 'item' to them\n        temp_res = []\n        for i in range(len(res)):\n            current_combination = res[i][:]  # Create a copy of the list (mutable)\n            if len(current_combination) > 0:\n                current_combination.append(item)\n            \n            # Add both the modified combination and the single-item version \n            # to ensure we cover all permutations in the expected order.\n            temp_res.append(current_combination)\n        \n        res.extend(temp_res)\n    \n    return res\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    result = combinations_list(['orange', 'red', 'green', 'blue'])\n    \n    # The expected output from the prompt is:\n    expected = [\n        [], \n        ['orange'], \n        ['red'], \n        ['red', 'orange'], \n        ['green'], \n        ['green', 'orange'], \n        ['green', 'red'], \n        ['green', 'red', 'orange'], \n        ['blue'], \n        ['blue', 'orange'], \n        ['blue', 'red'], \n        ['blue', 'red', 'orange'], \n        ['blue', 'green'], \n        ['blue', 'green', 'orange'], \n        ['blue', 'green', 'red'], \n        ['blue', 'green', 'red', 'orange']\n    ]\n\n    assert result == expected, f\"Result mismatch.\\nGot: {result}\\nExpected: {expected}\"\n    \n    print(\"All assertions passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/462:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "post_h2_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "post_h3_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "post_h4_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a67a27af5edc35c5670674514b6de3f4095368947fd3f3da5ca5082d48ffa474",
+  "raw_source": "def combinations_list(lst):\n    # Start with a list containing one empty set: [[]]\n    res = [[]]\n    \n    for item in lst:\n        # For each existing combination, create new ones by adding 'item' to them\n        temp_res = []\n        for i in range(len(res)):\n            current_combination = res[i][:]  # Create a copy of the list (mutable)\n            if len(current_combination) > 0:\n                current_combination.append(item)\n            \n            # Add both the modified combination and the single-item version \n            # to ensure we cover all permutations in the expected order.\n            temp_res.append(current_combination)\n        \n        res.extend(temp_res)\n    \n    return res\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    result = combinations_list(['orange', 'red', 'green', 'blue'])\n    \n    # The expected output from the prompt is:\n    expected = [\n        [], \n        ['orange'], \n        ['red'], \n        ['red', 'orange'], \n        ['green'], \n        ['green', 'orange'], \n        ['green', 'red'], \n        ['green', 'red', 'orange'], \n        ['blue'], \n        ['blue', 'orange'], \n        ['blue', 'red'], \n        ['blue', 'red', 'orange'], \n        ['blue', 'green'], \n        ['blue', 'green', 'orange'], \n        ['blue', 'green', 'red'], \n        ['blue', 'green', 'red', 'orange']\n    ]\n\n    assert result == expected, f\"Result mismatch.\\nGot: {result}\\nExpected: {expected}\"\n    \n    print(\"All assertions passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/462",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

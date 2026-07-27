@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "705ad11e13d8a36c90c158ba231eef3a015fe571c7c8d8a65873df8b2551dcbb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "armstrong_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "final_source": "def armstrong_number(n):\n    original_num = n\n    digits = []\n    \n    while n > 0:\n        remainder = n % 10\n        digits.append(remainder)\n        n //= 10\n    \n    sum_of_powers = sum(d ** len(digits) for d in digits)\n    \n    return sum_of_powers == original_num",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/598:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "post_h2_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "post_h3_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "post_h4_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ef48f7378919581260d758216a4ac490bd685cbcba0a6b69c1a6fa03ad133ae4",
+  "raw_source": "def armstrong_number(n):\n    original_num = n\n    digits = []\n    \n    while n > 0:\n        remainder = n % 10\n        digits.append(remainder)\n        n //= 10\n    \n    sum_of_powers = sum(d ** len(digits) for d in digits)\n    \n    return sum_of_powers == original_num",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/598",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

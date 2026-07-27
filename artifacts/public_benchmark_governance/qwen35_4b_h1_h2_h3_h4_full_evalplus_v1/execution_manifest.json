@@ -1,0 +1,11 @@
+{
+  "created_at_utc": "2026-07-27T09:39:47.318358+00:00",
+  "dataset": "all",
+  "evalplus_executed": true,
+  "evalplus_version": "0.3.1",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "model_calls": 0,
+  "model_tag": "qwen3.5:4b",
+  "plan_id": "qwen35_4b_h1_h2_h3_h4_full_evalplus_v1",
+  "total_pairs": 1084
+}

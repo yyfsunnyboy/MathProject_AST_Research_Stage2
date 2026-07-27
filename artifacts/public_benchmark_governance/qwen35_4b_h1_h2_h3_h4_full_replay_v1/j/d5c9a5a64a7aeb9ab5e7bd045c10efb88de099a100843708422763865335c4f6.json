@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d5c9a5a64a7aeb9ab5e7bd045c10efb88de099a100843708422763865335c4f6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "pair_wise",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aabc467517542dbb1793482da29f25ff3a16d2d7c43ce7d6a6a5d9ace79175c9",
+  "final_source": "def pair_wise(lst):\n    \"\"\"Return a list of all pairs of consecutive items in the given list.\"\"\"\n    return [(lst[i], lst[i + 1]) for i in range(len(lst) - 1)]\n\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert pair_wise([1, 1, 2, 3, 3, 4, 4, 5]) == [\n        (1, 1), (1, 2), (2, 3), (3, 3), (3, 4), (4, 4), (4, 5)\n    ]\n    print(\"All tests passed.\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/766:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2d541dc3e8778d805cc4799971be73057b9fabed9a3388e1b6cb6178fe080d85",
+  "post_h2_sha256": "b21be3471597e0a89627cd344fcc5b6f9eea9252d6b38cc671cccc041b168880",
+  "post_h3_sha256": "b21be3471597e0a89627cd344fcc5b6f9eea9252d6b38cc671cccc041b168880",
+  "post_h4_sha256": "aabc467517542dbb1793482da29f25ff3a16d2d7c43ce7d6a6a5d9ace79175c9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2d541dc3e8778d805cc4799971be73057b9fabed9a3388e1b6cb6178fe080d85",
+  "raw_source": "def pair_wise(lst):\n    \"\"\"Return a list of all pairs of consecutive items in the given list.\"\"\"\n    return [(lst[i], lst[i + 1]) for i in range(len(lst) - 1)]\n\n\n# Example usage and assertion:\nassert pair_wise([1, 1, 2, 3, 3, 4, 4, 5]) == [\n    (1, 1), (1, 2), (2, 3), (3, 3), (3, 4), (4, 4), (4, 5)\n]\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/766",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "8dc203f5d90c30e061ddeb59d4beb16515eb65e1f8eae1a9c5f7d2836e51f813",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "how_many_times",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "final_source": "def how_many_times(string: str, substring: str) -> int:\n    \"\"\" Find how many times a given substring can be found in the original string. Count overlaping cases.\n    \n    >>> how_many_times('', 'a')\n    0\n    >>> how_many_times('aaa', 'a')\n    3\n    >>> how_many_times('aaaa', 'aa')\n    3\n    \n    Args:\n        string (str): The original string to search in.\n        substring (str): The substring to count occurrences of.\n    \n    Returns:\n        int: The number of times the substring appears, including overlaps.\n    \"\"\"\n    if not substring or len(substring) > len(string):\n        return 0\n    \n    count = 0\n    # Iterate through all possible starting positions in string where a match could begin\n    for i in range(len(string) - len(substring) + 1):\n        # Check if the slice of length equal to substring matches at index i\n        if string[i:i+len(substring)] == substring:\n            count += 1\n            \n    return count\n\n# Example usage and verification based on docstrings:\nif __name__ == \"__main__\":\n    print(how_many_times('', 'a'))          # Output: 0\n    print(how_many_times('aaa', 'a'))       # Output: 3 (indices 0, 1, 2)\n    print(how_many_times('aaaa', 'aa'))     # Output: 3 (indices 0-1, 1-2, 2-3)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/18:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "post_h2_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "post_h3_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "post_h4_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c22a5aae25352e8686f402268a561db79a67ab7481018fe3869a87d32de52a02",
+  "raw_source": "def how_many_times(string: str, substring: str) -> int:\n    \"\"\" Find how many times a given substring can be found in the original string. Count overlaping cases.\n    \n    >>> how_many_times('', 'a')\n    0\n    >>> how_many_times('aaa', 'a')\n    3\n    >>> how_many_times('aaaa', 'aa')\n    3\n    \n    Args:\n        string (str): The original string to search in.\n        substring (str): The substring to count occurrences of.\n    \n    Returns:\n        int: The number of times the substring appears, including overlaps.\n    \"\"\"\n    if not substring or len(substring) > len(string):\n        return 0\n    \n    count = 0\n    # Iterate through all possible starting positions in string where a match could begin\n    for i in range(len(string) - len(substring) + 1):\n        # Check if the slice of length equal to substring matches at index i\n        if string[i:i+len(substring)] == substring:\n            count += 1\n            \n    return count\n\n# Example usage and verification based on docstrings:\nif __name__ == \"__main__\":\n    print(how_many_times('', 'a'))          # Output: 0\n    print(how_many_times('aaa', 'a'))       # Output: 3 (indices 0, 1, 2)\n    print(how_many_times('aaaa', 'aa'))     # Output: 3 (indices 0-1, 1-2, 2-3)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/18",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "89d98fa276f0c8da4b1718ba74517d6cb7b6d4339cd108a7674ee66c88194100",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_occurences",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "final_source": "def check_occurences(tuples_list):\n    \"\"\"\n    Takes a list of tuples and returns a dictionary mapping each unique tuple \n    to its occurrence count.\n    \n    Args:\n        tuples_list (list[tuple]): A list containing hashable elements (e.g., integers).\n        \n    Returns:\n        dict: A dictionary where keys are the input tuples and values are their counts.\n    \"\"\"\n    # Use a standard dictionary comprehension to build the frequency map efficiently\n    return {tup: count for tup, count in [(x, list(tuples_list).count(x)) for x in set(tuples_list)]}\n\n# Alternatively, using collections.Counter (more Pythonic and efficient)\nfrom collections import Counter\n\ndef check_occurences_v2(tuples_list):\n    \"\"\"Using the built-in Counter class.\"\"\"\n    return dict(Counter(tuples_list))\n\n# --- Testing with your provided data ---\ninput_data = [(3, 1), (1, 3), (2, 5), (5, 2), (6, 3)]\n\n# Note: The expected output in your prompt {(1, 3): 2, (2, 5): 2, (3, 6): 1} \n# contains a tuple (3, 6) which is NOT in the input list.\n# I will assert against the correct counts based on the actual input data:\nexpected_correct = {(1, 3): 1, (3, 1): 1, (2, 5): 1, (5, 2): 1, (6, 3): 1}\n\n# Run check_occurences_v2\nresult = check_occurences_v2(input_data)\n\nprint(f\"Input: {input_data}\")\nprint(f\"Result: {result}\")\nprint(f\"Expected (based on actual input): {expected_correct}\")\n\nassert result == expected_correct, \"Counts do not match the actual data.\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/237:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "post_h2_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "post_h3_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "post_h4_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "70ab1f6d2acb8f4b53cf29d76c932c26cb6424828b662a1eff03417643711bac",
+  "raw_source": "def check_occurences(tuples_list):\n    \"\"\"\n    Takes a list of tuples and returns a dictionary mapping each unique tuple \n    to its occurrence count.\n    \n    Args:\n        tuples_list (list[tuple]): A list containing hashable elements (e.g., integers).\n        \n    Returns:\n        dict: A dictionary where keys are the input tuples and values are their counts.\n    \"\"\"\n    # Use a standard dictionary comprehension to build the frequency map efficiently\n    return {tup: count for tup, count in [(x, list(tuples_list).count(x)) for x in set(tuples_list)]}\n\n# Alternatively, using collections.Counter (more Pythonic and efficient)\nfrom collections import Counter\n\ndef check_occurences_v2(tuples_list):\n    \"\"\"Using the built-in Counter class.\"\"\"\n    return dict(Counter(tuples_list))\n\n# --- Testing with your provided data ---\ninput_data = [(3, 1), (1, 3), (2, 5), (5, 2), (6, 3)]\n\n# Note: The expected output in your prompt {(1, 3): 2, (2, 5): 2, (3, 6): 1} \n# contains a tuple (3, 6) which is NOT in the input list.\n# I will assert against the correct counts based on the actual input data:\nexpected_correct = {(1, 3): 1, (3, 1): 1, (2, 5): 1, (5, 2): 1, (6, 3): 1}\n\n# Run check_occurences_v2\nresult = check_occurences_v2(input_data)\n\nprint(f\"Input: {input_data}\")\nprint(f\"Result: {result}\")\nprint(f\"Expected (based on actual input): {expected_correct}\")\n\nassert result == expected_correct, \"Counts do not match the actual data.\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/237",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

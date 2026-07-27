@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "53e828ca671bbb7f93727001f4e03980bb14d34d5f3fc44ed33f00c047a69300",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_string",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "final_source": "def extract_string(strings_list, size):\n    \"\"\"\n    Extracts strings from the list that have exactly 'size' characters.\n    \n    Args:\n        strings_list (list of str): The input list of strings.\n        size (int): The target length for the extracted strings.\n        \n    Returns:\n        list of str: A new list containing only the strings with the specified length.\n    \"\"\"\n    return [s for s in strings_list if len(s) == size]\n\n# Testing based on your assertion logic\ninput_data = ['Python', 'list', 'exercises', 'practice', 'solution']\nresult = extract_string(input_data, 8)\n\nprint(f\"Input: {input_data}\")\nprint(f\"Size requested: 8\")\nprint(f\"Output: {result}\")\n\n# Verification against your assertion logic\nassert result == ['practice', 'solution'], f\"Expected ['practice', 'solution'] but got {result}\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/450:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "post_h2_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "post_h3_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "post_h4_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9c8a600559bb97abc0a96c65ecac4df92207d438aed3f8a8ccab2828ad01e7a0",
+  "raw_source": "def extract_string(strings_list, size):\n    \"\"\"\n    Extracts strings from the list that have exactly 'size' characters.\n    \n    Args:\n        strings_list (list of str): The input list of strings.\n        size (int): The target length for the extracted strings.\n        \n    Returns:\n        list of str: A new list containing only the strings with the specified length.\n    \"\"\"\n    return [s for s in strings_list if len(s) == size]\n\n# Testing based on your assertion logic\ninput_data = ['Python', 'list', 'exercises', 'practice', 'solution']\nresult = extract_string(input_data, 8)\n\nprint(f\"Input: {input_data}\")\nprint(f\"Size requested: 8\")\nprint(f\"Output: {result}\")\n\n# Verification against your assertion logic\nassert result == ['practice', 'solution'], f\"Expected ['practice', 'solution'] but got {result}\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/450",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

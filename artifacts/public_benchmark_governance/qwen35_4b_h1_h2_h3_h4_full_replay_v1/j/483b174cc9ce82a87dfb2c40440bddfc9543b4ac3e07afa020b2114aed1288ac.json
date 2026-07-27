@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "483b174cc9ce82a87dfb2c40440bddfc9543b4ac3e07afa020b2114aed1288ac",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "search",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "final_source": "def search(lst):\n    freq = {}\n    for num in lst:\n        if num > 0 and num <= len(lst) + 1:\n            freq[num] = freq.get(num, 0) + 1\n    \n    max_val = -1\n    for val in range(1, len(lst) + 2):\n        count = freq.get(val, 0)\n        if count >= val and val > max_val:\n            max_val = val\n            \n    return max_val",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/69:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "post_h2_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "post_h3_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "post_h4_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "578a35be39a249db23542c58426b1657e45e43e21178941432f62f89ca35e0e6",
+  "raw_source": "def search(lst):\n    freq = {}\n    for num in lst:\n        if num > 0 and num <= len(lst) + 1:\n            freq[num] = freq.get(num, 0) + 1\n    \n    max_val = -1\n    for val in range(1, len(lst) + 2):\n        count = freq.get(val, 0)\n        if count >= val and val > max_val:\n            max_val = val\n            \n    return max_val",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/69",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

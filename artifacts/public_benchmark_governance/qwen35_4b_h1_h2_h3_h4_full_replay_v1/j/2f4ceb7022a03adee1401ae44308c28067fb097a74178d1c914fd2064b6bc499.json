@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2f4ceb7022a03adee1401ae44308c28067fb097a74178d1c914fd2064b6bc499",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "int_to_mini_roman",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "final_source": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]\n    symbols = ['m', 'cm', 'd', 'cd', 'c', 'xc', 'l', 'xl', 'x', 'ix', 'v', 'iv', 'i']\n\n    result = []\n    i = 0\n    while number > 0:\n        for j in range(len(values)):\n            if values[j] <= number:\n                count = number // values[j]\n                result.append(symbols[j] * count)\n                number -= values[j] * count\n                break\n\n    return ''.join(result).lower()",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/156:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "post_h2_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "post_h3_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "post_h4_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4c55e073131df7a447ddb0446de1ee340b0044939a9c8cffb1f61344544ebc19",
+  "raw_source": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]\n    symbols = ['m', 'cm', 'd', 'cd', 'c', 'xc', 'l', 'xl', 'x', 'ix', 'v', 'iv', 'i']\n\n    result = []\n    i = 0\n    while number > 0:\n        for j in range(len(values)):\n            if values[j] <= number:\n                count = number // values[j]\n                result.append(symbols[j] * count)\n                number -= values[j] * count\n                break\n\n    return ''.join(result).lower()",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/156",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

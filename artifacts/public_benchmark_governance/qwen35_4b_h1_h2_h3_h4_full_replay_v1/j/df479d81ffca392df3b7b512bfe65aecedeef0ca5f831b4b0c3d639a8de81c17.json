@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "df479d81ffca392df3b7b512bfe65aecedeef0ca5f831b4b0c3d639a8de81c17",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_combinations",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "final_source": "def find_combinations(tuple_list):\n    \"\"\"\n    Finds combinations of sums by adding the first elements together \n    and second elements together for every unique pair of tuples in the list.\n    \n    Args:\n        tuple_list (list[tuple]): A list of 2-element tuples.\n        \n    Returns:\n        list[tuple]: A list of summed tuples from all possible pairs.\n    \"\"\"\n    combinations = []\n    n = len(tuple_list)\n    \n    # Iterate through each pair of indices (i, j) where i < j\n    for i in range(n):\n        for j in range(i + 1, n):\n            t1 = tuple_list[i]\n            t2 = tuple_list[j]\n            \n            # Calculate the sum of corresponding elements\n            current_sum = (t1[0] + t2[0], t1[1] + t2[1])\n            combinations.append(current_sum)\n            \n    return combinations\n\n# Test with the provided assertion case\nif __name__ == \"__main__\":\n    input_data = [(2, 4), (6, 7), (5, 1), (6, 10)]\n    \n    # Perform the check manually to ensure correctness before asserting\n    result = find_combinations(input_data)\n    \n    expected_output = [(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]\n    \n    print(f\"Input: {input_data}\")\n    print(f\"Output: {result}\")\n    print(f\"Expected: {expected_output}\")\n    \n    assert result == expected_output, f\"Mismatch! Got {result}, Expected {expected_output}\"\n    print(\"Assertion passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/780:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "post_h2_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "post_h3_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "post_h4_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a2d28a33b50bd3019a207a41ac42933a9af661d40dd97bcae476a434a0b0cba3",
+  "raw_source": "def find_combinations(tuple_list):\n    \"\"\"\n    Finds combinations of sums by adding the first elements together \n    and second elements together for every unique pair of tuples in the list.\n    \n    Args:\n        tuple_list (list[tuple]): A list of 2-element tuples.\n        \n    Returns:\n        list[tuple]: A list of summed tuples from all possible pairs.\n    \"\"\"\n    combinations = []\n    n = len(tuple_list)\n    \n    # Iterate through each pair of indices (i, j) where i < j\n    for i in range(n):\n        for j in range(i + 1, n):\n            t1 = tuple_list[i]\n            t2 = tuple_list[j]\n            \n            # Calculate the sum of corresponding elements\n            current_sum = (t1[0] + t2[0], t1[1] + t2[1])\n            combinations.append(current_sum)\n            \n    return combinations\n\n# Test with the provided assertion case\nif __name__ == \"__main__\":\n    input_data = [(2, 4), (6, 7), (5, 1), (6, 10)]\n    \n    # Perform the check manually to ensure correctness before asserting\n    result = find_combinations(input_data)\n    \n    expected_output = [(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]\n    \n    print(f\"Input: {input_data}\")\n    print(f\"Output: {result}\")\n    print(f\"Expected: {expected_output}\")\n    \n    assert result == expected_output, f\"Mismatch! Got {result}, Expected {expected_output}\"\n    print(\"Assertion passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/780",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

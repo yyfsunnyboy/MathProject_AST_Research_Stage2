@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "48fd3f2a614868a5c8afa4ab8a35853dd2b2e061aa22de5676ddf7dc548d6372",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "empty_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8ff8a03c6be67e73c496c9cd11e006dd5c4efe68094a028f31e72c63edbd6ffc",
+  "final_source": "def empty_list(n):\n    \"\"\"Create a list containing n empty dictionaries.\"\"\"\n    return [{} for _ in range(n)]\n\n# Test assertion as requested\nif __name__ == \"__main__\":\n    assert empty_list(5) == [{}, {}, {}, {}, {}]\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/568:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "074b8700b7b30d5529548defcb79369312f4fbc39f8cccc4ea028fbfee37c860",
+  "post_h2_sha256": "41d28d9811f2bdc8820fd6ba530e06f5bb5eeb6608fd1143cd4dd17b9c944e4a",
+  "post_h3_sha256": "41d28d9811f2bdc8820fd6ba530e06f5bb5eeb6608fd1143cd4dd17b9c944e4a",
+  "post_h4_sha256": "8ff8a03c6be67e73c496c9cd11e006dd5c4efe68094a028f31e72c63edbd6ffc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "074b8700b7b30d5529548defcb79369312f4fbc39f8cccc4ea028fbfee37c860",
+  "raw_source": "def empty_list(n):\n    \"\"\"Create a list containing n empty dictionaries.\"\"\"\n    return [{} for _ in range(n)]\n\n# Test assertion as requested\nassert empty_list(5) == [{}, {}, {}, {}, {}]\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/568",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "31f46fc9ca6442862e84dc147213420e9dbd451cd6c570534a8fcd957a16f9cf",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "add_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "final_source": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n    \n    Args:\n        arr (List[int]): A list of integers.\n        k (int): The number of initial elements to consider.\n        \n    Returns:\n        int: Sum of valid numbers within the specified range.\n    \"\"\"\n    # Ensure we don't go out of bounds if k is larger than len(arr)\n    limit = min(k, len(arr))\n    \n    total_sum = 0\n    \n    for i in range(limit):\n        num = arr[i]\n        \n        # Check if the number has at most two digits.\n        # We can do this by converting to string and checking length, \n        # or mathematically: abs(num) < 10 (1 digit) OR abs(num) <= 99 (2 digits).\n        # Note: The problem implies positive integers based on the example [111, 21...],\n        # but this logic works for negative numbers too if we consider absolute value.\n        \n        num_str = str(abs(num)) \n        if len(num_str) <= 2:\n            total_sum += num\n            \n    return total_sum\n\n# Example Test Case from the prompt\narr_example = [111, 21, 3, 4000, 5, 6, 7, 8, 9]\nk_example = 4\n\nresult = add_elements(arr_example, k_example)\nprint(f\"Input: arr = {arr_example}, k = {k_example}\")\nprint(f\"Output: {result} # Expected: 24\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/122:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "post_h2_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "post_h3_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "post_h4_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8a3eb1d24f6dc0caa302dd854a9b8057050a806c9abfd6a3ba712a488f0e0fe3",
+  "raw_source": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n    \n    Args:\n        arr (List[int]): A list of integers.\n        k (int): The number of initial elements to consider.\n        \n    Returns:\n        int: Sum of valid numbers within the specified range.\n    \"\"\"\n    # Ensure we don't go out of bounds if k is larger than len(arr)\n    limit = min(k, len(arr))\n    \n    total_sum = 0\n    \n    for i in range(limit):\n        num = arr[i]\n        \n        # Check if the number has at most two digits.\n        # We can do this by converting to string and checking length, \n        # or mathematically: abs(num) < 10 (1 digit) OR abs(num) <= 99 (2 digits).\n        # Note: The problem implies positive integers based on the example [111, 21...],\n        # but this logic works for negative numbers too if we consider absolute value.\n        \n        num_str = str(abs(num)) \n        if len(num_str) <= 2:\n            total_sum += num\n            \n    return total_sum\n\n# Example Test Case from the prompt\narr_example = [111, 21, 3, 4000, 5, 6, 7, 8, 9]\nk_example = 4\n\nresult = add_elements(arr_example, k_example)\nprint(f\"Input: arr = {arr_example}, k = {k_example}\")\nprint(f\"Output: {result} # Expected: 24\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/122",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

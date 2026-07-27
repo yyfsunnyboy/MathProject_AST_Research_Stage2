@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "6cad31eb94d345917eb002bba74e86a4310b29fa4577b4d9c93ef483744a58c2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "next_smallest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "final_source": "def next_smallest(lst):\n    \"\"\"\n    Returns the 2nd smallest element of the list.\n    Return None if there is no such element (i.e., fewer than two distinct elements).\n    \n    Examples:\n        next_smallest([1, 2, 3, 4, 5]) == 2\n        next_smallest([5, 1, 4, 3, 2]) == 2\n        next_smallest([]) == None\n        next_smallest([1, 1]) == None\n    \"\"\"\n    if len(lst) < 2:\n        return None\n\n    # Use a set to find distinct elements and sort them\n    unique_elements = sorted(set(lst))\n\n    # If fewer than two distinct elements, there is no \"second smallest\"\n    if len(unique_elements) < 2:\n        return None\n\n    return unique_elements[1]\n\n\n# Example usage:\nprint(next_smallest([1, 2, 3, 4, 5]))      # Output: 2\nprint(next_smallest([5, 1, 4, 3, 2]))      # Output: 2\nprint(next_smallest([]))                   # Output: None\nprint(next_smallest([1, 1]))               # Output: None\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/90:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "post_h2_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "post_h3_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "post_h4_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2e526cab85d73627ace2b33cb1cc516afb6bfb55c5afcd1d4a04b8d73ca4aa82",
+  "raw_source": "def next_smallest(lst):\n    \"\"\"\n    Returns the 2nd smallest element of the list.\n    Return None if there is no such element (i.e., fewer than two distinct elements).\n    \n    Examples:\n        next_smallest([1, 2, 3, 4, 5]) == 2\n        next_smallest([5, 1, 4, 3, 2]) == 2\n        next_smallest([]) == None\n        next_smallest([1, 1]) == None\n    \"\"\"\n    if len(lst) < 2:\n        return None\n\n    # Use a set to find distinct elements and sort them\n    unique_elements = sorted(set(lst))\n\n    # If fewer than two distinct elements, there is no \"second smallest\"\n    if len(unique_elements) < 2:\n        return None\n\n    return unique_elements[1]\n\n\n# Example usage:\nprint(next_smallest([1, 2, 3, 4, 5]))      # Output: 2\nprint(next_smallest([5, 1, 4, 3, 2]))      # Output: 2\nprint(next_smallest([]))                   # Output: None\nprint(next_smallest([1, 1]))               # Output: None\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/90",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

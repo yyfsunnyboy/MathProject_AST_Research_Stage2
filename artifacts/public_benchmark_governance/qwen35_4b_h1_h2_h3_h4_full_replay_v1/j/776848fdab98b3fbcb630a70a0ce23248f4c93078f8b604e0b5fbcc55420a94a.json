@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "776848fdab98b3fbcb630a70a0ce23248f4c93078f8b604e0b5fbcc55420a94a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "longest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "final_source": "from typing import List, Optional\n\n\ndef longest(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    \n    >>> longest([])\n    None\n    \n    >>> longest(['a', 'b', 'c'])\n    'a'\n    \n    >>> longest(['a', 'bb', 'ccc'])\n    'ccc'\n    \"\"\"\n    if not strings:  # Check for an empty list\n        return None\n\n    max_string = \"\"  # Initialize with an empty string (length 0)\n\n    for s in strings:\n        # If current string is longer than the longest found so far, update it.\n        # This naturally handles \"return first one\" because we only replace on strict greater length.\n        if len(s) > len(max_string):\n            max_string = s\n\n    return max_string\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/12:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "post_h2_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "post_h3_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "post_h4_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ad4359aa9cdf5ac8bdaf613e736cfda9b19925f0f3f04a26323fffafeb6c4ba6",
+  "raw_source": "from typing import List, Optional\n\n\ndef longest(strings: List[str]) -> Optional[str]:\n    \"\"\" Out of list of strings, return the longest one. Return the first one in case of multiple\n    strings of the same length. Return None in case the input list is empty.\n    \n    >>> longest([])\n    None\n    \n    >>> longest(['a', 'b', 'c'])\n    'a'\n    \n    >>> longest(['a', 'bb', 'ccc'])\n    'ccc'\n    \"\"\"\n    if not strings:  # Check for an empty list\n        return None\n\n    max_string = \"\"  # Initialize with an empty string (length 0)\n\n    for s in strings:\n        # If current string is longer than the longest found so far, update it.\n        # This naturally handles \"return first one\" because we only replace on strict greater length.\n        if len(s) > len(max_string):\n            max_string = s\n\n    return max_string\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/12",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

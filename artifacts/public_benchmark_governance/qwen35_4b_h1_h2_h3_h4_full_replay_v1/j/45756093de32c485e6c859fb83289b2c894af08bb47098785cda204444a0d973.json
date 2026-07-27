@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "45756093de32c485e6c859fb83289b2c894af08bb47098785cda204444a0d973",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "armstrong_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "af332fe985f34f634c3002e132428af46d567ccce28ccd7027574ff4df23014a",
+  "final_source": "def armstrong_number(n):\n    \"\"\"\n    Check whether the given integer n is an Armstrong number.\n    \n    An Armstrong number is equal to the sum of its own digits each raised \n    to the power of the total number of digits.\n    \n    Examples:\n        153 -> 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153 (True)\n        9474 -> True, etc.\n    \"\"\"\n    # Handle negative numbers explicitly if desired; here we assume non-negative input\n    original_n = n\n    digits_count = len(str(n))\n\n    total_sum = sum(int(digit)**digits_count for digit in str(n))\n\n    return total_sum == original_n\n\n\n# Test assertion from the problem statement\nif __name__ == \"__main__\":\n    assert armstrong_number(153) is True, \"Expected 153 to be an Armstrong number.\"\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/598:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "40c10ae6cb756d2cd3593080f7857344b68a632e28218aa666015427bdcc5d4c",
+  "post_h2_sha256": "af332fe985f34f634c3002e132428af46d567ccce28ccd7027574ff4df23014a",
+  "post_h3_sha256": "af332fe985f34f634c3002e132428af46d567ccce28ccd7027574ff4df23014a",
+  "post_h4_sha256": "af332fe985f34f634c3002e132428af46d567ccce28ccd7027574ff4df23014a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "40c10ae6cb756d2cd3593080f7857344b68a632e28218aa666015427bdcc5d4c",
+  "raw_source": "def armstrong_number(n):\n    \"\"\"\n    Check whether the given integer n is an Armstrong number.\n    \n    An Armstrong number is equal to the sum of its own digits each raised \n    to the power of the total number of digits.\n    \n    Examples:\n        153 -> 1^3 + 5^3 + 3^3 = 1 + 125 + 27 = 153 (True)\n        9474 -> True, etc.\n    \"\"\"\n    # Handle negative numbers explicitly if desired; here we assume non-negative input\n    original_n = n\n    digits_count = len(str(n))\n\n    total_sum = sum(int(digit)**digits_count for digit in str(n))\n\n    return total_sum == original_n\n\n\n# Test assertion from the problem statement\nassert armstrong_number(153) is True, \"Expected 153 to be an Armstrong number.\"\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/598",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

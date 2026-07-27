@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "6c52f998dbdbbbc8516dca8c5b77643fea6342909505bbf39781767746b5e571",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "large_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "final_source": "def large_product(list1, list2, n):\n    products = []\n    for x in list1:\n        for y in list2:\n            products.append(x * y)\n    \n    # Sort descending and take top n unique values if duplicates exist based on value not index? \n    # The example [60, 54, 50] suggests we want the largest distinct product values.\n    # Let's check logic with input:\n    # list1=[1..6], list2=[3,6,8,9,10,6]\n    # Max is 6*10=60 (from 6 in list1 and 10 in list2) -> correct.\n    # Next max? \n    # If we allow duplicates from different pairs: e.g., if there were two ways to make 54, would it appear twice?\n    # The example output [60, 54, 50] has length 3 and contains distinct values.\n    # Let's assume the requirement is \"largest n unique product values\".\n    \n    products.sort(reverse=True)\n    seen = set()\n    result = []\n    for p in products:\n        if p not in seen:\n            seen.add(p)\n            result.append(p)\n            if len(result) == n:\n                break\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/308:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "post_h2_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "post_h3_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "post_h4_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7721968e0e37eb422faab1738a96632681f0c26cbf214799abdb2bd8d99e05be",
+  "raw_source": "def large_product(list1, list2, n):\n    products = []\n    for x in list1:\n        for y in list2:\n            products.append(x * y)\n    \n    # Sort descending and take top n unique values if duplicates exist based on value not index? \n    # The example [60, 54, 50] suggests we want the largest distinct product values.\n    # Let's check logic with input:\n    # list1=[1..6], list2=[3,6,8,9,10,6]\n    # Max is 6*10=60 (from 6 in list1 and 10 in list2) -> correct.\n    # Next max? \n    # If we allow duplicates from different pairs: e.g., if there were two ways to make 54, would it appear twice?\n    # The example output [60, 54, 50] has length 3 and contains distinct values.\n    # Let's assume the requirement is \"largest n unique product values\".\n    \n    products.sort(reverse=True)\n    seen = set()\n    result = []\n    for p in products:\n        if p not in seen:\n            seen.add(p)\n            result.append(p)\n            if len(result) == n:\n                break\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/308",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

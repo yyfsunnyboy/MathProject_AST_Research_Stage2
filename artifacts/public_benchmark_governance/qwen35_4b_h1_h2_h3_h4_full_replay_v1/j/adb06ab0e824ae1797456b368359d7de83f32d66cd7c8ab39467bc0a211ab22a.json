@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "adb06ab0e824ae1797456b368359d7de83f32d66cd7c8ab39467bc0a211ab22a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "even_odd_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "final_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n    \n    Args:\n        n (int): A positive integer between 1 and 10^3.\n        \n    Returns:\n        Tuple[int, int]: (count_of_even_palindromes, count_of_odd_palindromes)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        # Check if the number is a palindrome\n        s_i = str(i)\n        if s_i == s_i[::-1]:\n            # Determine parity based on the last digit (or first digit of palindromes)\n            last_digit = int(s_i[-1])\n            \n            if last_digit % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)\n\n# --- Testing with provided examples ---\nif __name__ == \"__main__\":\n    # Example 1\n    result_1 = even_odd_palindrome(3)\n    print(f\"Input: 3 -> Output: {result_1}\") \n    # Expected: (1, 2). Palindromes: 1(O), 2(E), 3(O). Even=1, Odd=2.\n\n    # Example 2\n    result_2 = even_odd_palindrome(12)\n    print(f\"Input: 12 -> Output: {result_2}\") \n    # Expected: (4, 6). Palindromes: 1(O), 2(E), 3(O), 4(E), 5(O), 6(E), 7(O), 8(E), 9(O), 11(O).\n    # Evens: 2, 4, 6, 8 (Total 4)\n    # Odds: 1, 3, 5, 7, 9, 11 (Total 6)\n\n    print(\"\\nAdditional Test Case:\")\n    result_3 = even_odd_palindrome(100)\n    print(f\"Input: 100 -> Output: {result_3}\") \n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/107:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "post_h2_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "post_h3_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "post_h4_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a608a52930ce56314a6c400fc73e1f284927bcabfdf21e988fe0172be2480505",
+  "raw_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n    \n    Args:\n        n (int): A positive integer between 1 and 10^3.\n        \n    Returns:\n        Tuple[int, int]: (count_of_even_palindromes, count_of_odd_palindromes)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        # Check if the number is a palindrome\n        s_i = str(i)\n        if s_i == s_i[::-1]:\n            # Determine parity based on the last digit (or first digit of palindromes)\n            last_digit = int(s_i[-1])\n            \n            if last_digit % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)\n\n# --- Testing with provided examples ---\nif __name__ == \"__main__\":\n    # Example 1\n    result_1 = even_odd_palindrome(3)\n    print(f\"Input: 3 -> Output: {result_1}\") \n    # Expected: (1, 2). Palindromes: 1(O), 2(E), 3(O). Even=1, Odd=2.\n\n    # Example 2\n    result_2 = even_odd_palindrome(12)\n    print(f\"Input: 12 -> Output: {result_2}\") \n    # Expected: (4, 6). Palindromes: 1(O), 2(E), 3(O), 4(E), 5(O), 6(E), 7(O), 8(E), 9(O), 11(O).\n    # Evens: 2, 4, 6, 8 (Total 4)\n    # Odds: 1, 3, 5, 7, 9, 11 (Total 6)\n\n    print(\"\\nAdditional Test Case:\")\n    result_3 = even_odd_palindrome(100)\n    print(f\"Input: 100 -> Output: {result_3}\") \n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/107",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

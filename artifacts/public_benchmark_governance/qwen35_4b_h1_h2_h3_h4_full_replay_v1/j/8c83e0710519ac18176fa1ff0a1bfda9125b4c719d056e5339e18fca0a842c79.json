@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "8c83e0710519ac18176fa1ff0a1bfda9125b4c719d056e5339e18fca0a842c79",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "valid_date",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "final_source": "def valid_date(date):\n    \"\"\"You have to write a function which validates a given date string and\n    returns True if the date is valid otherwise False.\n    The date is valid if all of the following rules are satisfied:\n    1. The date string is not empty.\n    2. The number of days is not less than 1 or higher than 31 days for months \n       1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than \n       30 days for months 4,6,9,11. And, the number of days is not less than \n       1 or higher than 29 for the month 2.\n    3. The months should not be less than 1 or higher than 12.\n    4. The date should be in the format: mm-dd-yyyy\n\n    Examples:\n        valid_date('03-11-2000') => True\n        valid_date('15-01-2012') => False\n        valid_date('04-0-2040') => False\n        valid_date('06-04-2020') => True\n        valid_date('06/04/2020') => False\n    \"\"\"\n\n    # Rule 1: date string must not be empty\n    if not date or len(date.strip()) == 0:\n        return False\n\n    # Check format and split by '-' (rule 4)\n    parts = date.split('-')\n    \n    # Must have exactly 3 parts in mm-dd-yyyy format with dashes\n    if len(parts) != 3:\n        return False\n    \n    month_str, day_str, year_str = [p.strip() for p in parts]\n\n    try:\n        month = int(month_str)\n        day = int(day_str)\n        # Year is not strictly validated beyond being present; we don't check leap years here.\n        year = int(year_str)\n    except ValueError:\n        return False\n    \n    if month < 1 or month > 12:\n        return False\n\n    days_in_month = {\n        1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,\n        7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31\n    }\n\n    # Rule 2: days must be within allowed range for the given month.\n    max_days = days_in_month.get(month)\n    \n    if day < 1 or (max_days is not None and day > max_days):\n        return False\n    \n    return True\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(valid_date('03-11-2000'))   # True\n    print(valid_date('15-01-2012'))   # False (day > 31)\n    print(valid_date('04-0-2040'))    # False (day < 1)\n    print(valid_date('06-04-2020'))   # True\n    print(valid_date('06/04/2020'))   # False (wrong separator)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/124:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "post_h2_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "post_h3_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "post_h4_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "65258225e3807cab1a8d21f37fe0fd8e848ac2ed659bdba6fc6890bfc7459ea8",
+  "raw_source": "def valid_date(date):\n    \"\"\"You have to write a function which validates a given date string and\n    returns True if the date is valid otherwise False.\n    The date is valid if all of the following rules are satisfied:\n    1. The date string is not empty.\n    2. The number of days is not less than 1 or higher than 31 days for months \n       1,3,5,7,8,10,12. And the number of days is not less than 1 or higher than \n       30 days for months 4,6,9,11. And, the number of days is not less than \n       1 or higher than 29 for the month 2.\n    3. The months should not be less than 1 or higher than 12.\n    4. The date should be in the format: mm-dd-yyyy\n\n    Examples:\n        valid_date('03-11-2000') => True\n        valid_date('15-01-2012') => False\n        valid_date('04-0-2040') => False\n        valid_date('06-04-2020') => True\n        valid_date('06/04/2020') => False\n    \"\"\"\n\n    # Rule 1: date string must not be empty\n    if not date or len(date.strip()) == 0:\n        return False\n\n    # Check format and split by '-' (rule 4)\n    parts = date.split('-')\n    \n    # Must have exactly 3 parts in mm-dd-yyyy format with dashes\n    if len(parts) != 3:\n        return False\n    \n    month_str, day_str, year_str = [p.strip() for p in parts]\n\n    try:\n        month = int(month_str)\n        day = int(day_str)\n        # Year is not strictly validated beyond being present; we don't check leap years here.\n        year = int(year_str)\n    except ValueError:\n        return False\n    \n    if month < 1 or month > 12:\n        return False\n\n    days_in_month = {\n        1: 31, 2: 29, 3: 31, 4: 30, 5: 31, 6: 30,\n        7: 31, 8: 31, 9: 30, 10: 31, 11: 30, 12: 31\n    }\n\n    # Rule 2: days must be within allowed range for the given month.\n    max_days = days_in_month.get(month)\n    \n    if day < 1 or (max_days is not None and day > max_days):\n        return False\n    \n    return True\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(valid_date('03-11-2000'))   # True\n    print(valid_date('15-01-2012'))   # False (day > 31)\n    print(valid_date('04-0-2040'))    # False (day < 1)\n    print(valid_date('06-04-2020'))   # True\n    print(valid_date('06/04/2020'))   # False (wrong separator)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/124",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

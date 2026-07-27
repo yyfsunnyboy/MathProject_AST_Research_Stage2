@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "cb6b8c51568498ff89d7c5b49634d16be5faff4d33582e0ec735b0a9f683e22c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "largest_smallest_integers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "final_source": "def largest_smallest_integers(lst):\n    \"\"\"\n    Create a function that returns a tuple (a, b), where 'a' is\n    the largest of negative integers, and 'b' is the smallest\n    of positive integers in a list.\n    If there is no negative or positive integers, return them as None.\n\n    Examples:\n        largest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)\n        largest_smallest_integers([]) == (None, None)\n        largest_smallest_integers([0]) == (None, None)\n    \"\"\"\n    \n    # Initialize flags to track if we've seen any negative or positive numbers\n    has_negative = False\n    max_neg = float('-inf')  # Largest negative will be the one closest to 0\n    \n    min_pos = float('inf')   # Smallest positive will be the one closest to 0\n\n    for num in lst:\n        if num < 0:\n            has_negative = True\n            if num > max_neg:\n                max_neg = num\n        \n        elif num > 0:\n            min_pos = min(min_pos, num)\n\n    # Convert infinity values and flags to None as required\n    a = max_neg if (has_negative and max_neg != float('-inf')) else None\n    b = min_pos if (min_pos != float('inf')) else None\n    \n    return (a, b)\n\n\n# Example usage:\nprint(largest_smallest_integers([2, 4, 1, 3, 5, 7]))   # (None, 1)\nprint(largest_smallest_integers([]))                   # (None, None)\nprint(largest_smallest_integers([0]))                  # (None, None)\nprint(largest_smallest_integers([-5, -2, -9, 3, 7]))   # (-2, 3)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/136:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "post_h2_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "post_h3_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "post_h4_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b5635de7284fceccf528cbccbd7e195e3fbd6379c437efaac833304d8bdc84f6",
+  "raw_source": "def largest_smallest_integers(lst):\n    \"\"\"\n    Create a function that returns a tuple (a, b), where 'a' is\n    the largest of negative integers, and 'b' is the smallest\n    of positive integers in a list.\n    If there is no negative or positive integers, return them as None.\n\n    Examples:\n        largest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)\n        largest_smallest_integers([]) == (None, None)\n        largest_smallest_integers([0]) == (None, None)\n    \"\"\"\n    \n    # Initialize flags to track if we've seen any negative or positive numbers\n    has_negative = False\n    max_neg = float('-inf')  # Largest negative will be the one closest to 0\n    \n    min_pos = float('inf')   # Smallest positive will be the one closest to 0\n\n    for num in lst:\n        if num < 0:\n            has_negative = True\n            if num > max_neg:\n                max_neg = num\n        \n        elif num > 0:\n            min_pos = min(min_pos, num)\n\n    # Convert infinity values and flags to None as required\n    a = max_neg if (has_negative and max_neg != float('-inf')) else None\n    b = min_pos if (min_pos != float('inf')) else None\n    \n    return (a, b)\n\n\n# Example usage:\nprint(largest_smallest_integers([2, 4, 1, 3, 5, 7]))   # (None, 1)\nprint(largest_smallest_integers([]))                   # (None, None)\nprint(largest_smallest_integers([0]))                  # (None, None)\nprint(largest_smallest_integers([-5, -2, -9, 3, 7]))   # (-2, 3)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/136",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

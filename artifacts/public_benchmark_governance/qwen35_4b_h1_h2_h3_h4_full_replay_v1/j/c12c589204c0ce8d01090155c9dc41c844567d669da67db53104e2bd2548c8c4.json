@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c12c589204c0ce8d01090155c9dc41c844567d669da67db53104e2bd2548c8c4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_Equivalent",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "final_source": "def odd_Equivalent(s, n):\n    \"\"\"\n    Counts the total number of '1's (odd values) in a binary string.\n    \n    Note: Rotating a binary string does not change the count of set bits ('1').\n    Therefore, regardless of how many times we rotate it, the answer is \n    simply the initial count of '1's.\n    \n    Args:\n        s (str): A binary string consisting of '0' and '1'.\n        n (int): The number of rotations (irrelevant for this specific metric).\n        \n    Returns:\n        int: The total count of '1's in the string.\n    \"\"\"\n    # Count occurrences of '1' directly from the original string\n    return s.count('1')\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = odd_Equivalent(\"011001\", 6)\n    print(f\"Result for '011001' rotated 6 times: {result}\")\n    \n    # Verify against the assert condition\n    if result == 3:\n        print(\"Test passed!\")\n    else:\n        print(\"Test failed!\")\n\n# Additional test cases to ensure robustness\nprint(f\"'1010': {odd_Equivalent('1010', 2)}\") # Expected: 2\nprint(f\"'0000': {odd_Equivalent('0000', 5)}\") # Expected: 0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/109:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "post_h2_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "post_h3_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "post_h4_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5529e124028b23fa7874fd3fe286df2be5560a5a2c394e0ffb876f60b58e1a5f",
+  "raw_source": "def odd_Equivalent(s, n):\n    \"\"\"\n    Counts the total number of '1's (odd values) in a binary string.\n    \n    Note: Rotating a binary string does not change the count of set bits ('1').\n    Therefore, regardless of how many times we rotate it, the answer is \n    simply the initial count of '1's.\n    \n    Args:\n        s (str): A binary string consisting of '0' and '1'.\n        n (int): The number of rotations (irrelevant for this specific metric).\n        \n    Returns:\n        int: The total count of '1's in the string.\n    \"\"\"\n    # Count occurrences of '1' directly from the original string\n    return s.count('1')\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = odd_Equivalent(\"011001\", 6)\n    print(f\"Result for '011001' rotated 6 times: {result}\")\n    \n    # Verify against the assert condition\n    if result == 3:\n        print(\"Test passed!\")\n    else:\n        print(\"Test failed!\")\n\n# Additional test cases to ensure robustness\nprint(f\"'1010': {odd_Equivalent('1010', 2)}\") # Expected: 2\nprint(f\"'0000': {odd_Equivalent('0000', 5)}\") # Expected: 0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/109",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

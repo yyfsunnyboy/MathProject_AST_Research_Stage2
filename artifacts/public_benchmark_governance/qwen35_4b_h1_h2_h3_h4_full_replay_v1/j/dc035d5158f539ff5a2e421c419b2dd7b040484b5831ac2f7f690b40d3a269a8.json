@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "dc035d5158f539ff5a2e421c419b2dd7b040484b5831ac2f7f690b40d3a269a8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_values_string",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a3bdb0d950c6d4cad918c21749ffa66a5026279cf7a25b4df3f3f9abebdd0fe1",
+  "final_source": "def odd_values_string(s):\n    \"\"\"\n    Removes characters from the input string that are at even index positions (0, 2, 4...).\n    \n    Note: In most programming contexts, \"odd values\" refers to indices like 1, 3, 5. \n    However, your example 'abcdef' -> 'ace' implies keeping indices 0 ('a'), 2 ('c'), and 4 ('e').\n    This means the function actually keeps characters at EVEN indices and removes those at ODD indices.\n    \n    If you strictly need to remove odd-indexed characters (keeping even ones), this is the correct logic:\n    \"\"\"\n    result = []\n    for index, char in enumerate(s):\n        # Keep character if its index is even (0, 2, 4...) based on your example output 'ace'\n        if index % 2 == 0: \n            result.append(char)\n    \n    return \"\".join(result)\n\n# Test case from the prompt\nif __name__ == \"__main__\":\n    assert odd_values_string('abcdef') == 'ace', \"Test failed!\"\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/226:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "23566d4e406f3a99d1ab8d0dbe039ca17fad0648123db6faa1b7003562fe3fca",
+  "post_h2_sha256": "a3bdb0d950c6d4cad918c21749ffa66a5026279cf7a25b4df3f3f9abebdd0fe1",
+  "post_h3_sha256": "a3bdb0d950c6d4cad918c21749ffa66a5026279cf7a25b4df3f3f9abebdd0fe1",
+  "post_h4_sha256": "a3bdb0d950c6d4cad918c21749ffa66a5026279cf7a25b4df3f3f9abebdd0fe1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "23566d4e406f3a99d1ab8d0dbe039ca17fad0648123db6faa1b7003562fe3fca",
+  "raw_source": "def odd_values_string(s):\n    \"\"\"\n    Removes characters from the input string that are at even index positions (0, 2, 4...).\n    \n    Note: In most programming contexts, \"odd values\" refers to indices like 1, 3, 5. \n    However, your example 'abcdef' -> 'ace' implies keeping indices 0 ('a'), 2 ('c'), and 4 ('e').\n    This means the function actually keeps characters at EVEN indices and removes those at ODD indices.\n    \n    If you strictly need to remove odd-indexed characters (keeping even ones), this is the correct logic:\n    \"\"\"\n    result = []\n    for index, char in enumerate(s):\n        # Keep character if its index is even (0, 2, 4...) based on your example output 'ace'\n        if index % 2 == 0: \n            result.append(char)\n    \n    return \"\".join(result)\n\n# Test case from the prompt\nassert odd_values_string('abcdef') == 'ace', \"Test failed!\"\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/226",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

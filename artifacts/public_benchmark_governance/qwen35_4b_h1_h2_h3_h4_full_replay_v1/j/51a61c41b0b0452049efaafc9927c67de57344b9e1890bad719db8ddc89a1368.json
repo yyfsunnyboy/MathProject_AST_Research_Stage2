@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "51a61c41b0b0452049efaafc9927c67de57344b9e1890bad719db8ddc89a1368",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d39ff6b96d6ceb9417cabd9f1b0d38ec315c474ecbc7d88fb34fbc158de72299",
+  "final_source": "def odd_position(lst):\n    \"\"\"\n    Check whether every element at an odd index (1-based or 0-based? \n    Based on the example: indices 1 and 5 are checked -> values 1 and 7, both odd.\n    \n    In Python lists use 0-based indexing. The problem says \"odd index\", which usually means\n    indices that are odd numbers in the list (i.e., 1, 3, 5, ...).\n\n    Example: [2,1,4,3,6,7,6,3]\n       Index:   0 1 2 3 4 5 6 7\n       Values at odd indices: index 1 -> 1 (odd), index 3 -> 3 (odd), \n                             index 5 -> 7 (odd)\n\n    Returns True if all values at odd indices are odd, else False.\n    \"\"\"\n    for i in range(1, len(lst), 2):  # step by 2 starting from index 1\n        if lst[i] % 2 == 0:\n            return False\n    return True\n\n\n# Test\nif __name__ == \"__main__\":\n    assert odd_position([2, 1, 4, 3, 6, 7, 6, 3]) == True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/775:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3a18f3232f8a5e4ff87b5b5d0e382efba3d52dbcad2a997677ff6b1942329c16",
+  "post_h2_sha256": "d39ff6b96d6ceb9417cabd9f1b0d38ec315c474ecbc7d88fb34fbc158de72299",
+  "post_h3_sha256": "d39ff6b96d6ceb9417cabd9f1b0d38ec315c474ecbc7d88fb34fbc158de72299",
+  "post_h4_sha256": "d39ff6b96d6ceb9417cabd9f1b0d38ec315c474ecbc7d88fb34fbc158de72299",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3a18f3232f8a5e4ff87b5b5d0e382efba3d52dbcad2a997677ff6b1942329c16",
+  "raw_source": "def odd_position(lst):\n    \"\"\"\n    Check whether every element at an odd index (1-based or 0-based? \n    Based on the example: indices 1 and 5 are checked -> values 1 and 7, both odd.\n    \n    In Python lists use 0-based indexing. The problem says \"odd index\", which usually means\n    indices that are odd numbers in the list (i.e., 1, 3, 5, ...).\n\n    Example: [2,1,4,3,6,7,6,3]\n       Index:   0 1 2 3 4 5 6 7\n       Values at odd indices: index 1 -> 1 (odd), index 3 -> 3 (odd), \n                             index 5 -> 7 (odd)\n\n    Returns True if all values at odd indices are odd, else False.\n    \"\"\"\n    for i in range(1, len(lst), 2):  # step by 2 starting from index 1\n        if lst[i] % 2 == 0:\n            return False\n    return True\n\n\n# Test\nassert odd_position([2, 1, 4, 3, 6, 7, 6, 3]) == True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/775",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

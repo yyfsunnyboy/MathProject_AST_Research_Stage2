@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "204fe3466a6cf3bfb3c66ec0209c6100875f0a606793924c4fa6b3915fd7cd61",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "common_in_nested_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "final_source": "def common_in_nested_lists(nested_list):\n    \"\"\"\n    Finds all unique elements that appear in every inner sub-list of the given nested list.\n    \n    Args:\n        nested_list (list of lists): A list containing multiple integer lists.\n        \n    Returns:\n        set: A set of integers present in all sub-lists.\n    \"\"\"\n    if not nested_list or any(len(sub) == 0 for sub in nested_list):\n        return set()\n\n    # Start with the elements of the first inner list as our initial candidate set\n    common_elements = set(nested_list[0])\n\n    # Iterate through the remaining lists and update 'common_elements' to only include \n    # items found in both the current intersection and the next sub-list.\n    for i in range(1, len(nested_list)):\n        if not nested_list[i]:  # Safety check for empty inner list\n            return set()\n        \n        common_elements = common_elements.intersection(set(nested_list[i]))\n\n    return common_elements\n\n\n# Test case based on your assertion\nresult = common_in_nested_lists([[12, 18, 23, 25, 45], [7, 12, 18, 24, 28], [1, 5, 8, 12, 15, 16, 18]])\nassert result == set([18, 12]), f\"Expected {{18, 12}}, got {result}\"\n\nprint(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/111:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "post_h2_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "post_h3_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "post_h4_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6f0c98615f52671ae6c765a3efaa89d89b7c421867bb6075edba0bf442c21748",
+  "raw_source": "def common_in_nested_lists(nested_list):\n    \"\"\"\n    Finds all unique elements that appear in every inner sub-list of the given nested list.\n    \n    Args:\n        nested_list (list of lists): A list containing multiple integer lists.\n        \n    Returns:\n        set: A set of integers present in all sub-lists.\n    \"\"\"\n    if not nested_list or any(len(sub) == 0 for sub in nested_list):\n        return set()\n\n    # Start with the elements of the first inner list as our initial candidate set\n    common_elements = set(nested_list[0])\n\n    # Iterate through the remaining lists and update 'common_elements' to only include \n    # items found in both the current intersection and the next sub-list.\n    for i in range(1, len(nested_list)):\n        if not nested_list[i]:  # Safety check for empty inner list\n            return set()\n        \n        common_elements = common_elements.intersection(set(nested_list[i]))\n\n    return common_elements\n\n\n# Test case based on your assertion\nresult = common_in_nested_lists([[12, 18, 23, 25, 45], [7, 12, 18, 24, 28], [1, 5, 8, 12, 15, 16, 18]])\nassert result == set([18, 12]), f\"Expected {{18, 12}}, got {result}\"\n\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

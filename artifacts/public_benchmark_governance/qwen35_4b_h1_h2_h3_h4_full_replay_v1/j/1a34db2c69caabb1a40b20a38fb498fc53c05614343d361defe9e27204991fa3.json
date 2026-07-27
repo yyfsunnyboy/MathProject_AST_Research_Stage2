@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "1a34db2c69caabb1a40b20a38fb498fc53c05614343d361defe9e27204991fa3",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "convert_list_dictionary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "final_source": "def convert_list_dictionary(list1, list2, list3):\n    \"\"\"\n    Converts three parallel lists into a nested dictionary structure where:\n    - The outer key is an item from the first list (e.g., 'S001').\n    - The inner key is an item from the second list (e.g., 'Adina Park').\n    - The value is the corresponding number from the third list.\n\n    Args:\n        list1 (list): List of IDs or keys (e.g., ['S001', ...])\n        list2 (list): List of names or inner keys (e.g., ['Adina Park', ...])\n        list3 (list): List of values/numbers (e.g., [85, 98, ...])\n\n    Returns:\n        list: A list of dictionaries containing the nested structure.\n    \"\"\"\n    \n    # Check if all lists have the same length to ensure valid pairing\n    if len(list1) != len(list2) or len(list1) != len(list3):\n        raise ValueError(\"All input lists must have the same number of elements.\")\n\n    result = []\n    \n    for i in range(len(list1)):\n        # Create a dictionary with one key-value pair: {name: score}\n        inner_dict = {}\n        inner_dict[list2[i]] = list3[i]\n        \n        # Wrap it inside another dictionary using the ID from list1 as the outer key\n        nested_item = {list1[i]}[0]: inner_dict\n        \n        result.append(nested_item)\n\n    return result\n\n\n# Test case based on your requirement\nif __name__ == \"__main__\":\n    input_list1 = [\"S001\", \"S002\", \"S003\", \"S004\"]\n    input_list2 = [\"Adina Park\", \"Leyton Marsh\", \"Duncan Boyle\", \"Saim Richards\"]\n    input_list3 = [85, 98, 89, 92]\n\n    output = convert_list_dictionary(input_list1, input_list2, input_list3)\n\n    expected_output = [{'S001': {'Adina Park': 85}}, \n                       {'S002': {'Leyton Marsh': 98}}, \n                       {'S003': {'Duncan Boyle': 89}}, \n                       {'S004': {'Saim Richards': 92}}]\n\n    assert output == expected_output, \"Output does not match the expected nested dictionary structure.\"\n    \n    print(\"Assertion passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/391:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "post_h2_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "post_h3_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "post_h4_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "6bc5782ca53d6886db18ad5f090e84cd634c90358062f7cf4f48b07afa56a241",
+  "raw_source": "def convert_list_dictionary(list1, list2, list3):\n    \"\"\"\n    Converts three parallel lists into a nested dictionary structure where:\n    - The outer key is an item from the first list (e.g., 'S001').\n    - The inner key is an item from the second list (e.g., 'Adina Park').\n    - The value is the corresponding number from the third list.\n\n    Args:\n        list1 (list): List of IDs or keys (e.g., ['S001', ...])\n        list2 (list): List of names or inner keys (e.g., ['Adina Park', ...])\n        list3 (list): List of values/numbers (e.g., [85, 98, ...])\n\n    Returns:\n        list: A list of dictionaries containing the nested structure.\n    \"\"\"\n    \n    # Check if all lists have the same length to ensure valid pairing\n    if len(list1) != len(list2) or len(list1) != len(list3):\n        raise ValueError(\"All input lists must have the same number of elements.\")\n\n    result = []\n    \n    for i in range(len(list1)):\n        # Create a dictionary with one key-value pair: {name: score}\n        inner_dict = {}\n        inner_dict[list2[i]] = list3[i]\n        \n        # Wrap it inside another dictionary using the ID from list1 as the outer key\n        nested_item = {list1[i]}[0]: inner_dict\n        \n        result.append(nested_item)\n\n    return result\n\n\n# Test case based on your requirement\nif __name__ == \"__main__\":\n    input_list1 = [\"S001\", \"S002\", \"S003\", \"S004\"]\n    input_list2 = [\"Adina Park\", \"Leyton Marsh\", \"Duncan Boyle\", \"Saim Richards\"]\n    input_list3 = [85, 98, 89, 92]\n\n    output = convert_list_dictionary(input_list1, input_list2, input_list3)\n\n    expected_output = [{'S001': {'Adina Park': 85}}, \n                       {'S002': {'Leyton Marsh': 98}}, \n                       {'S003': {'Duncan Boyle': 89}}, \n                       {'S004': {'Saim Richards': 92}}]\n\n    assert output == expected_output, \"Output does not match the expected nested dictionary structure.\"\n    \n    print(\"Assertion passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/391",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

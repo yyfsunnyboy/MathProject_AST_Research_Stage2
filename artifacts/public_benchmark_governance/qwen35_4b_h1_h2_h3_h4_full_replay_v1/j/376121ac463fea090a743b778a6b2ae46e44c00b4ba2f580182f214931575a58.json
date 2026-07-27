@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "376121ac463fea090a743b778a6b2ae46e44c00b4ba2f580182f214931575a58",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_star_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "final_source": "def find_star_num(n):\n    if n == 1:\n        return 3\n    \n    prev = [0, 3]\n    \n    for i in range(2, n + 1):\n        current_sum = sum(prev) * (i - 1) // 4\n        \n        # Adjust the last term to ensure it's divisible by 8 and fits the pattern\n        while current_sum % 8 != 0:\n            current_sum += prev[i-3] if i >= 4 else 2\n            \n        next_val = sum(prev[:i]) * (i - 1) // 4\n        \n        # Recalculate based on established sequence logic for star numbers\n        # Star number S_n satisfies the recurrence relation derived from triangular sums of previous terms adjusted by powers of 8/3\n        if i == 2:\n            next_val = 7\n        elif i == 3:\n            next_val = 15\n        \n        prev.append(next_val)\n\n    return prev[n]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/268:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "post_h2_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "post_h3_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "post_h4_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "499c2f6b4e4124dbd0b6ba4ccbcd2cb4ab1b32f68c4a85aea8dc4c7bf3e55ca5",
+  "raw_source": "def find_star_num(n):\n    if n == 1:\n        return 3\n    \n    prev = [0, 3]\n    \n    for i in range(2, n + 1):\n        current_sum = sum(prev) * (i - 1) // 4\n        \n        # Adjust the last term to ensure it's divisible by 8 and fits the pattern\n        while current_sum % 8 != 0:\n            current_sum += prev[i-3] if i >= 4 else 2\n            \n        next_val = sum(prev[:i]) * (i - 1) // 4\n        \n        # Recalculate based on established sequence logic for star numbers\n        # Star number S_n satisfies the recurrence relation derived from triangular sums of previous terms adjusted by powers of 8/3\n        if i == 2:\n            next_val = 7\n        elif i == 3:\n            next_val = 15\n        \n        prev.append(next_val)\n\n    return prev[n]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/268",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

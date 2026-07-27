@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "9e597bbc9d1c662f5b06f466c405753daf5d2a6e0a8f58fa176996fcc935e91a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sum_squares",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "final_source": "import math\n\ndef sum_squares(lst):\n    \"\"\"You are given a list of numbers.\n    You need to return the sum of squared numbers in the given list,\n    round each element in the list to the upper int(Ceiling) first.\n    \n    Examples:\n        lst = [1,2,3] -> 14   (ceil(1)=1, ceil(2)=2, ceil(3)=3; 1^2+2^2+3^2=14)\n        lst = [1,4,9] -> 98   (same as above: 1+16+81=98)\n        lst = [1,3,5,7] -> 84 (ceil(1)=1,...; 1+9+25+49=84)\n        lst = [1.4,4.2,0] -> 29 (ceil(1.4)=2, ceil(4.2)=5, ceil(0)=0; 4+25+0=29)\n        lst = [-2.4,1,1] -> 6  (ceil(-2.4)=-2, ceil(1)=1, ceil(1)=1; (-2)^2+1^2+1^2=6)\n    \"\"\"\n    return sum(math.ceil(x)**2 for x in lst)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(sum_squares([1.4, 4.2, 0]))   # Output: 29\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/133:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "post_h2_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "post_h3_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "post_h4_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2f4398abc2e1e7b9b4ab5f4153a234d27d618949774897e76094a1690d7aae27",
+  "raw_source": "import math\n\ndef sum_squares(lst):\n    \"\"\"You are given a list of numbers.\n    You need to return the sum of squared numbers in the given list,\n    round each element in the list to the upper int(Ceiling) first.\n    \n    Examples:\n        lst = [1,2,3] -> 14   (ceil(1)=1, ceil(2)=2, ceil(3)=3; 1^2+2^2+3^2=14)\n        lst = [1,4,9] -> 98   (same as above: 1+16+81=98)\n        lst = [1,3,5,7] -> 84 (ceil(1)=1,...; 1+9+25+49=84)\n        lst = [1.4,4.2,0] -> 29 (ceil(1.4)=2, ceil(4.2)=5, ceil(0)=0; 4+25+0=29)\n        lst = [-2.4,1,1] -> 6  (ceil(-2.4)=-2, ceil(1)=1, ceil(1)=1; (-2)^2+1^2+1^2=6)\n    \"\"\"\n    return sum(math.ceil(x)**2 for x in lst)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(sum_squares([1.4, 4.2, 0]))   # Output: 29\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/133",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f91cc6916fa76d265b2b506366e9c82f8e1a1f4ae4aa677c6442c4427d80b9c0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_perfect_square",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "93d38d82c4a8e0b53be27cd396a1b8f73b4371e85b7a581e462232d79a7275c3",
+  "final_source": "import math\n\ndef is_perfect_square(n):\n    \"\"\"Return True if n is a perfect square, False otherwise.\"\"\"\n    # Handle non-positive numbers explicitly (optional; 0 is technically a perfect square)\n    if n < 0:\n        return False\n    \n    root = int(math.isqrt(n))  # Integer square root in Python 3.8+\n    \n    # Check if squaring the integer root gives back n\n    return root * root == n\n\n\n# Test as shown in your example\nif __name__ == \"__main__\":\n    assert not is_perfect_square(10)   # False → assertion passes\n    print(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/803:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "91eac325603475aa6ec64c01b0fa0844e45308c883a8614ddf0850a3cd676143",
+  "post_h2_sha256": "94231e99db565afa5667d3c866dcf19fc993ebcd9df35a2186652fbad72524de",
+  "post_h3_sha256": "94231e99db565afa5667d3c866dcf19fc993ebcd9df35a2186652fbad72524de",
+  "post_h4_sha256": "93d38d82c4a8e0b53be27cd396a1b8f73b4371e85b7a581e462232d79a7275c3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "91eac325603475aa6ec64c01b0fa0844e45308c883a8614ddf0850a3cd676143",
+  "raw_source": "import math\n\ndef is_perfect_square(n):\n    \"\"\"Return True if n is a perfect square, False otherwise.\"\"\"\n    # Handle non-positive numbers explicitly (optional; 0 is technically a perfect square)\n    if n < 0:\n        return False\n    \n    root = int(math.isqrt(n))  # Integer square root in Python 3.8+\n    \n    # Check if squaring the integer root gives back n\n    return root * root == n\n\n\n# Test as shown in your example\nassert not is_perfect_square(10)   # False → assertion passes\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/803",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

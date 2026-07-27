@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "919012dbbe5168766cca3b8c7cb13b053d15f80ab19ff088c00fde623fd328bc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_woodall",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2fd4a64b3f36095b388e41fb32b4c0af4dfa5f641d3d21a3559847ba30a98ed",
+  "final_source": "def is_prime(n):\n    \"\"\"\n    Checks if a given integer n is a prime number.\n    \n    A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.\n    \"\"\"\n    # Handle numbers less than or equal to 2 (0, 1 are not prime)\n    if n <= 2:\n        return False\n    \n    # Check divisibility from 3 up to the square root of n\n    # We only need to check odd divisors because even numbers > 2 are divisible by 2.\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n            \n    return True\n\n# Test cases based on your request and common prime examples\nassert is_prime(383) == True   # 383 is indeed a prime number\nassert is_prime(4) == False    # 4 is not prime (divisible by 2)\nassert is_prime(17) == True    # 17 is prime\n\nprint(\"All tests passed!\")\n\nis_woodall = is_prime\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/20:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f2fd4a64b3f36095b388e41fb32b4c0af4dfa5f641d3d21a3559847ba30a98ed",
+  "post_h2_sha256": "f2fd4a64b3f36095b388e41fb32b4c0af4dfa5f641d3d21a3559847ba30a98ed",
+  "post_h3_sha256": "f2fd4a64b3f36095b388e41fb32b4c0af4dfa5f641d3d21a3559847ba30a98ed",
+  "post_h4_sha256": "f2fd4a64b3f36095b388e41fb32b4c0af4dfa5f641d3d21a3559847ba30a98ed",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5c5d89092d44b69c8ee39b6909ca4f074b4efe76a5815044930ee59e48482cf8",
+  "raw_source": "def is_prime(n):\n    \"\"\"\n    Checks if a given integer n is a prime number.\n    \n    A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.\n    \"\"\"\n    # Handle numbers less than or equal to 2 (0, 1 are not prime)\n    if n <= 2:\n        return False\n    \n    # Check divisibility from 3 up to the square root of n\n    # We only need to check odd divisors because even numbers > 2 are divisible by 2.\n    for i in range(3, int(n**0.5) + 1, 2):\n        if n % i == 0:\n            return False\n            \n    return True\n\n# Test cases based on your request and common prime examples\nassert is_prime(383) == True   # 383 is indeed a prime number\nassert is_prime(4) == False    # 4 is not prime (divisible by 2)\nassert is_prime(17) == True    # 17 is prime\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/20",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

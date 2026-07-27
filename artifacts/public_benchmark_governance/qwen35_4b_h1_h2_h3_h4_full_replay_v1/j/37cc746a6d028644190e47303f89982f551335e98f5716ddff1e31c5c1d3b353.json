@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "37cc746a6d028644190e47303f89982f551335e98f5716ddff1e31c5c1d3b353",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "can_arrange",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "final_source": "def can_arrange(arr):\n    \"\"\"Create a function which returns the largest index of an element which\n    is not greater than or equal to the element immediately preceding it. If\n    no such element exists then return -1. The given array will not contain\n    duplicate values.\n\n    Examples:\n        can_arrange([1,2,4,3,5]) = 3\n        can_arrange([1,2,3]) = -1\n    \"\"\"\n    \n    # We need the largest index i such that arr[i] <= arr[i-1].\n    # So we iterate from right to left (or just track max while going forward).\n    \n    best_index = -1\n    \n    for i in range(1, len(arr)):  # start at 1 because we compare with previous element\n        if arr[i] <= arr[i-1]:\n            best_index = i  # keep updating to get the largest index found so far\n            \n    return best_index\n\n\n# Quick tests:\nif __name__ == \"__main__\":\n    print(can_arrange([1,2,4,3,5]))   # Expected: 3 (since 3 <= 4)\n    print(can_arrange([1,2,3]))       # Expected: -1\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/135:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "post_h2_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "post_h3_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "post_h4_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f70d4dbee37a189a11000080f50c0b7a2607bb6241bae24444a79d64a2d9c8e7",
+  "raw_source": "def can_arrange(arr):\n    \"\"\"Create a function which returns the largest index of an element which\n    is not greater than or equal to the element immediately preceding it. If\n    no such element exists then return -1. The given array will not contain\n    duplicate values.\n\n    Examples:\n        can_arrange([1,2,4,3,5]) = 3\n        can_arrange([1,2,3]) = -1\n    \"\"\"\n    \n    # We need the largest index i such that arr[i] <= arr[i-1].\n    # So we iterate from right to left (or just track max while going forward).\n    \n    best_index = -1\n    \n    for i in range(1, len(arr)):  # start at 1 because we compare with previous element\n        if arr[i] <= arr[i-1]:\n            best_index = i  # keep updating to get the largest index found so far\n            \n    return best_index\n\n\n# Quick tests:\nif __name__ == \"__main__\":\n    print(can_arrange([1,2,4,3,5]))   # Expected: 3 (since 3 <= 4)\n    print(can_arrange([1,2,3]))       # Expected: -1\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/135",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

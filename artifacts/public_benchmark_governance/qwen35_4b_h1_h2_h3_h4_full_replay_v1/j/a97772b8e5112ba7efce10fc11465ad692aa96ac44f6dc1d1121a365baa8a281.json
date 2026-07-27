@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a97772b8e5112ba7efce10fc11465ad692aa96ac44f6dc1d1121a365baa8a281",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "toggle_middle_bits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef78ed5bf13b07615d963d3d570faa6e4508d1e4f6fdfa57a167cb6e129a0684",
+  "final_source": "def toggle_middle_bits(n):\n    if n == 0:\n        return 0 # Edge case, though bit_length is 0 or 1 depending on definition\n    \n    length = n.bit_length()\n    \n    # Create a mask with all bits set from 0 to length-1\n    full_mask = (1 << length) - 1\n    \n    # We want to toggle bits strictly between the first (MSB at index length-1) \n    # and last (LSB at index 0).\n    # So we create a mask that has 1s only from index 1 to length-2.\n    \n    # Start with full_mask of ones: e.g., for n=9 (len 4), mask is 1111\n    # We need to clear the bit at index 0 and the bit at index length-1\n    \n    # Clear LSB (index 0)\n    mask = full_mask & ~(1 << 0) \n    \n    # Clear MSB of our range (which corresponds to original number's MSB position, index length-1)\n    msb_pos = length - 1\n    mask &= ~(1 << msb_pos)\n    \n    return n ^ mask\n\n# Test case from prompt\nif __name__ == \"__main__\":\n    assert toggle_middle_bits(9) == 15\n    print(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/735:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "dc4af7eea59a2ca945db669adc73a567e085ecc1ca3b3321d7a98067fad8f3b0",
+  "post_h2_sha256": "31255848c9934a7e527ebeb7209000e66c2faf1bbccf6bcc3cb557d4f25feffe",
+  "post_h3_sha256": "31255848c9934a7e527ebeb7209000e66c2faf1bbccf6bcc3cb557d4f25feffe",
+  "post_h4_sha256": "ef78ed5bf13b07615d963d3d570faa6e4508d1e4f6fdfa57a167cb6e129a0684",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "dc4af7eea59a2ca945db669adc73a567e085ecc1ca3b3321d7a98067fad8f3b0",
+  "raw_source": "def toggle_middle_bits(n):\n    if n == 0:\n        return 0 # Edge case, though bit_length is 0 or 1 depending on definition\n    \n    length = n.bit_length()\n    \n    # Create a mask with all bits set from 0 to length-1\n    full_mask = (1 << length) - 1\n    \n    # We want to toggle bits strictly between the first (MSB at index length-1) \n    # and last (LSB at index 0).\n    # So we create a mask that has 1s only from index 1 to length-2.\n    \n    # Start with full_mask of ones: e.g., for n=9 (len 4), mask is 1111\n    # We need to clear the bit at index 0 and the bit at index length-1\n    \n    # Clear LSB (index 0)\n    mask = full_mask & ~(1 << 0) \n    \n    # Clear MSB of our range (which corresponds to original number's MSB position, index length-1)\n    msb_pos = length - 1\n    mask &= ~(1 << msb_pos)\n    \n    return n ^ mask\n\n# Test case from prompt\nassert toggle_middle_bits(9) == 15\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/735",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

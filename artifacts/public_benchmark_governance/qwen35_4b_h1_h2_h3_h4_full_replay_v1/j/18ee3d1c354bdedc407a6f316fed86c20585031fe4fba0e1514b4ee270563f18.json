@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "18ee3d1c354bdedc407a6f316fed86c20585031fe4fba0e1514b4ee270563f18",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "modp",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "final_source": "def modp(n: int, p: int) -> int:\n    \"\"\"Return 2^n modulo p (be aware of numerics).\"\"\"\n    \n    # Handle edge case where n is negative (though problem implies non-negative based on examples)\n    if n < 0:\n        raise ValueError(\"Exponent must be non-negative\")\n\n    base = 2 % p  # Ensure base handles cases like modp(3, 1) -> 2^3=8, 8%1=0\n    \n    result = 1\n    \n    while n > 0:\n        if n & 1:  # If the current bit is set (n is odd)\n            result = (result * base) % p\n        \n        base = (base * base) % p\n        n >>= 1     # Equivalent to n //= 2\n    \n    return result\n\n# Testing with provided examples\nif __name__ == \"__main__\":\n    print(modp(3, 5))      # Expected: 3 (8 % 5 = 3)\n    print(modp(1101, 101)) # Expected: 2\n    print(modp(0, 101))   # Expected: 1 (2^0 = 1)\n    print(modp(3, 11))     # Expected: 8 (8 % 11 = 8)\n    print(modp(100, 101))  # Expected: 1\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/49:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "post_h2_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "post_h3_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "post_h4_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e1a03c4f355c2ebe7d61627d88feb9c8f93538c06cdeacda430a4cfcbc66e1b3",
+  "raw_source": "def modp(n: int, p: int) -> int:\n    \"\"\"Return 2^n modulo p (be aware of numerics).\"\"\"\n    \n    # Handle edge case where n is negative (though problem implies non-negative based on examples)\n    if n < 0:\n        raise ValueError(\"Exponent must be non-negative\")\n\n    base = 2 % p  # Ensure base handles cases like modp(3, 1) -> 2^3=8, 8%1=0\n    \n    result = 1\n    \n    while n > 0:\n        if n & 1:  # If the current bit is set (n is odd)\n            result = (result * base) % p\n        \n        base = (base * base) % p\n        n >>= 1     # Equivalent to n //= 2\n    \n    return result\n\n# Testing with provided examples\nif __name__ == \"__main__\":\n    print(modp(3, 5))      # Expected: 3 (8 % 5 = 3)\n    print(modp(1101, 101)) # Expected: 2\n    print(modp(0, 101))   # Expected: 1 (2^0 = 1)\n    print(modp(3, 11))     # Expected: 8 (8 % 11 = 8)\n    print(modp(100, 101))  # Expected: 1\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/49",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

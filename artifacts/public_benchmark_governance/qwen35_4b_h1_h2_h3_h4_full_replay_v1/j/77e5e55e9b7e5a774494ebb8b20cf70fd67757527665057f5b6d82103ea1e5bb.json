@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "77e5e55e9b7e5a774494ebb8b20cf70fd67757527665057f5b6d82103ea1e5bb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "triangle_area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "af513c50373f6f40b24cacfe0fea58f83f44ac284bb1d02cf3f5ffc4c29e9e60",
+  "final_source": "import math\n\ndef find_largest_triangle_area(radius):\n    \"\"\"\n    Calculates the area of the largest triangle that can be inscribed in a semicircle.\n    \n    The optimal configuration for maximum area occurs when one vertex lies on \n    the diameter and two vertices lie on the arc, forming an equilateral triangle.\n    Area = (3 * sqrt(3) / 4) * r^2\n    \n    Args:\n        radius (float): Radius of the semicircle\n        \n    Returns:\n        float or None: The area if valid input is provided, otherwise None.\n    \"\"\"\n    # Handle invalid inputs based on typical constraints for geometric problems\n    # Area cannot be calculated for negative radii as per the assertion requirement\n    if radius < 0:\n        return None\n    \n    # Calculate maximum area using the formula derived from geometry\n    max_area = (3 * math.sqrt(3) / 4) * (radius ** 2)\n    \n    return max_area\n\n# Test cases based on your requirements and common edge cases\nif __name__ == \"__main__\":\n    assert find_largest_triangle_area(-1) is None, \"Negative radius should return None\"\n    print(f\"Largest triangle area for r=5: {find_largest_triangle_area(5)}\")  # Should be approx 29.68\n    \n    # Additional verification with a positive integer\n    result = find_largest_triangle_area(10)\n    expected_approx = (3 * math.sqrt(3) / 4) * 100\n    assert abs(result - expected_approx) < 1e-5, \"Calculation mismatch\"\n    \n    print(\"All tests passed.\")\n\ntriangle_area = find_largest_triangle_area\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/626:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "af513c50373f6f40b24cacfe0fea58f83f44ac284bb1d02cf3f5ffc4c29e9e60",
+  "post_h2_sha256": "af513c50373f6f40b24cacfe0fea58f83f44ac284bb1d02cf3f5ffc4c29e9e60",
+  "post_h3_sha256": "af513c50373f6f40b24cacfe0fea58f83f44ac284bb1d02cf3f5ffc4c29e9e60",
+  "post_h4_sha256": "af513c50373f6f40b24cacfe0fea58f83f44ac284bb1d02cf3f5ffc4c29e9e60",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cef32642b66e229d84d03bc9e17747e1aea815d309e376c29dd613301f624228",
+  "raw_source": "import math\n\ndef find_largest_triangle_area(radius):\n    \"\"\"\n    Calculates the area of the largest triangle that can be inscribed in a semicircle.\n    \n    The optimal configuration for maximum area occurs when one vertex lies on \n    the diameter and two vertices lie on the arc, forming an equilateral triangle.\n    Area = (3 * sqrt(3) / 4) * r^2\n    \n    Args:\n        radius (float): Radius of the semicircle\n        \n    Returns:\n        float or None: The area if valid input is provided, otherwise None.\n    \"\"\"\n    # Handle invalid inputs based on typical constraints for geometric problems\n    # Area cannot be calculated for negative radii as per the assertion requirement\n    if radius < 0:\n        return None\n    \n    # Calculate maximum area using the formula derived from geometry\n    max_area = (3 * math.sqrt(3) / 4) * (radius ** 2)\n    \n    return max_area\n\n# Test cases based on your requirements and common edge cases\nif __name__ == \"__main__\":\n    assert find_largest_triangle_area(-1) is None, \"Negative radius should return None\"\n    print(f\"Largest triangle area for r=5: {find_largest_triangle_area(5)}\")  # Should be approx 29.68\n    \n    # Additional verification with a positive integer\n    result = find_largest_triangle_area(10)\n    expected_approx = (3 * math.sqrt(3) / 4) * 100\n    assert abs(result - expected_approx) < 1e-5, \"Calculation mismatch\"\n    \n    print(\"All tests passed.\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/626",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

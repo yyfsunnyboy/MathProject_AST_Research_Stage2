@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "38c686341c5b1a5937048be427ae7f9045eb84cbca915475affd4a7120ab2f91",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "concatenate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "final_source": "from typing import List\n\n\ndef concatenate(strings: List[str]) -> str:\n    \"\"\" Concatenate list of strings into a single string\n    \n    Examples:\n        >>> concatenate([])\n        ''\n        \n        >>> concatenate(['a', 'b', 'c'])\n        'abc'\n    \n    Args:\n        strings (List[str]): A list of strings to be concatenated.\n    \n    Returns:\n        str: The concatenation of all strings in the list.\n    \"\"\"\n    return \"\".join(strings)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/28:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "post_h2_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "post_h3_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "post_h4_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b92a9fbe217bdfea2537edcf266efa8482f0a5970d1a01a426ffb997c9f42a62",
+  "raw_source": "from typing import List\n\n\ndef concatenate(strings: List[str]) -> str:\n    \"\"\" Concatenate list of strings into a single string\n    \n    Examples:\n        >>> concatenate([])\n        ''\n        \n        >>> concatenate(['a', 'b', 'c'])\n        'abc'\n    \n    Args:\n        strings (List[str]): A list of strings to be concatenated.\n    \n    Returns:\n        str: The concatenation of all strings in the list.\n    \"\"\"\n    return \"\".join(strings)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/28",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

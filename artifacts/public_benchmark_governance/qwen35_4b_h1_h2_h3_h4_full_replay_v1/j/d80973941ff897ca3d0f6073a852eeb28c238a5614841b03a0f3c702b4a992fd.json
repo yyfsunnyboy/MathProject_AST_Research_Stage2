@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d80973941ff897ca3d0f6073a852eeb28c238a5614841b03a0f3c702b4a992fd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "consecutive_duplicates",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "987f0e8348f1ddda126da2de2a91bcb41afc4941cbaa5ece71db6a8d0b07631a",
+  "final_source": "def remove_consecutive_duplicates(lst):\n    \"\"\"\n    Removes consecutive duplicate elements from a list.\n    \n    Args:\n        lst (list): The input list of integers.\n        \n    Returns:\n        list: A new list with consecutive duplicates removed.\n    \"\"\"\n    if not lst:  # Handle empty list case\n        return []\n\n    result = [lst[0]]  # Start with the first element\n    \n    for i in range(1, len(lst)):\n        # Only add to result if current element is different from the last added one\n        if lst[i] != result[-1]:\n            result.append(lst[i])\n            \n    return result\n\n# Test case provided in your prompt\nassert remove_consecutive_duplicates([0, 0, 1, 2, 3, 4, 4, 5, 6, 6, 6, 7, 8, 9, 4, 4]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 4]\n\nprint(\"Test passed successfully!\")\n\nconsecutive_duplicates = remove_consecutive_duplicates\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/730:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "987f0e8348f1ddda126da2de2a91bcb41afc4941cbaa5ece71db6a8d0b07631a",
+  "post_h2_sha256": "987f0e8348f1ddda126da2de2a91bcb41afc4941cbaa5ece71db6a8d0b07631a",
+  "post_h3_sha256": "987f0e8348f1ddda126da2de2a91bcb41afc4941cbaa5ece71db6a8d0b07631a",
+  "post_h4_sha256": "987f0e8348f1ddda126da2de2a91bcb41afc4941cbaa5ece71db6a8d0b07631a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "273fcef0c6cbd35096ffefc206d3c360596d89e04d6e6b90f31024a718c88d4d",
+  "raw_source": "def remove_consecutive_duplicates(lst):\n    \"\"\"\n    Removes consecutive duplicate elements from a list.\n    \n    Args:\n        lst (list): The input list of integers.\n        \n    Returns:\n        list: A new list with consecutive duplicates removed.\n    \"\"\"\n    if not lst:  # Handle empty list case\n        return []\n\n    result = [lst[0]]  # Start with the first element\n    \n    for i in range(1, len(lst)):\n        # Only add to result if current element is different from the last added one\n        if lst[i] != result[-1]:\n            result.append(lst[i])\n            \n    return result\n\n# Test case provided in your prompt\nassert remove_consecutive_duplicates([0, 0, 1, 2, 3, 4, 4, 5, 6, 6, 6, 7, 8, 9, 4, 4]) == [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 4]\n\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/730",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

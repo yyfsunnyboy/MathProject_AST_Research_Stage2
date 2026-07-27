@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "affbd458dd9b060936c9700b6a87a4a01951ae475acf7fd9c34429b819257dab",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_product_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "final_source": "def max_product_tuple(tuples):\n    if len(tuples) == 0:\n        return None\n    \n    max_prod = float('-inf')\n    \n    for t in tuples:\n        prod1 = abs(t[0] * t[1])\n        \n        # Check all pairs within the tuple (though problem says \"pairs of tuples\", \n        # and example shows comparing products across different tuples)\n        # Re-reading requirement: \"maximum absolute product between numbers in pairs of tuples\"\n        # This is ambiguous. Does it mean:\n        # 1. Max |a*b| for each tuple (t[0]*t[1])? -> Example: max(|2*7|=14, |2*6|=12, |1*8|=8, |4*9|=36) = 36\n        # 2. Max |x*y| where x is from one tuple and y is from another? \n        #    If so: max(|2*7*, |2*6*, etc... across all combinations of tuples).\n        \n        # Given the example output 36 (which comes from 4*9), it seems to be asking for \n        # the maximum absolute product among ALL pairs formed by taking one number from ANY tuple and another from ANY other tuple?\n        # Or simply max(|t[0]*t[1]|) per tuple?\n        \n        # Let's re-evaluate: \"maximum absolute product between numbers in pairs of tuples\"\n        # If it meant within each tuple, the phrase would likely be \"within each pair\". \n        # The phrasing \"between numbers in pairs OF TUPLES\" suggests cross-tuple pairing.\n        \n        # However, looking at standard coding challenge patterns and the simplicity:\n        # Option A (Per Tuple): max(abs(t[0]*t[1]) for t in tuples) -> 36 matches example.\n        # Option B (Cross Pair): Take any two numbers from ANY tuple? Or one from each of a pair of tuples?\n        \n        # If we take the literal \"pairs OF TUPLES\", it implies selecting two distinct tuples, say A and B, \n        # then forming pairs between them: x in A, y in B. Then max |x*y|.\n        # Let's test Option B with example:\n        # Tuples: (2,7), (2,6), (1,8), (4,9)\n        # Pairs of tuples: \n        # ((2,7),(2,6)) -> pairs: 2*2=4, 2*6=12, 7*2=14, 7*6=42. Max=42.\n        # But example says 36. So Option B is incorrect because 42 > 36 and not returned.\n        \n        # Therefore, the requirement must be interpreted as: \n        # \"Find the maximum absolute product of numbers within each tuple\" (i.e., t[0]*t[1]).\n        # The phrasing \"pairs of tuples\" might be a slightly awkward way to say \"each pair inside a tuple\".\n        \n        # Wait, another interpretation: Maybe it means pairs OF NUMBERS that are IN TUPLES? \n        # i.e. Just max(|x*y|) for all x,y in the entire list flattened? No, 4*9=36 is still there but so is 7*8=56 if we mix tuples.\n        \n        # Let's reconsider the example strictly: Result is 36. \n        # In (2,7), product is 14.\n        # In (2,6), product is 12.\n        # In (1,8), product is 8.\n        # In (4,9), product is 36.\n        # Max of these is 36.\n        \n        # Conclusion: The task asks for the maximum absolute value of the product of elements within each tuple in the list.\n\n    return max(abs(t[0] * t[1]) for t in tuples)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/120:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "post_h2_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "post_h3_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "post_h4_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6233da1c96818ef51f80e3a7f958aa6598d9d336e6d36354442592a80de8d603",
+  "raw_source": "def max_product_tuple(tuples):\n    if len(tuples) == 0:\n        return None\n    \n    max_prod = float('-inf')\n    \n    for t in tuples:\n        prod1 = abs(t[0] * t[1])\n        \n        # Check all pairs within the tuple (though problem says \"pairs of tuples\", \n        # and example shows comparing products across different tuples)\n        # Re-reading requirement: \"maximum absolute product between numbers in pairs of tuples\"\n        # This is ambiguous. Does it mean:\n        # 1. Max |a*b| for each tuple (t[0]*t[1])? -> Example: max(|2*7|=14, |2*6|=12, |1*8|=8, |4*9|=36) = 36\n        # 2. Max |x*y| where x is from one tuple and y is from another? \n        #    If so: max(|2*7*, |2*6*, etc... across all combinations of tuples).\n        \n        # Given the example output 36 (which comes from 4*9), it seems to be asking for \n        # the maximum absolute product among ALL pairs formed by taking one number from ANY tuple and another from ANY other tuple?\n        # Or simply max(|t[0]*t[1]|) per tuple?\n        \n        # Let's re-evaluate: \"maximum absolute product between numbers in pairs of tuples\"\n        # If it meant within each tuple, the phrase would likely be \"within each pair\". \n        # The phrasing \"between numbers in pairs OF TUPLES\" suggests cross-tuple pairing.\n        \n        # However, looking at standard coding challenge patterns and the simplicity:\n        # Option A (Per Tuple): max(abs(t[0]*t[1]) for t in tuples) -> 36 matches example.\n        # Option B (Cross Pair): Take any two numbers from ANY tuple? Or one from each of a pair of tuples?\n        \n        # If we take the literal \"pairs OF TUPLES\", it implies selecting two distinct tuples, say A and B, \n        # then forming pairs between them: x in A, y in B. Then max |x*y|.\n        # Let's test Option B with example:\n        # Tuples: (2,7), (2,6), (1,8), (4,9)\n        # Pairs of tuples: \n        # ((2,7),(2,6)) -> pairs: 2*2=4, 2*6=12, 7*2=14, 7*6=42. Max=42.\n        # But example says 36. So Option B is incorrect because 42 > 36 and not returned.\n        \n        # Therefore, the requirement must be interpreted as: \n        # \"Find the maximum absolute product of numbers within each tuple\" (i.e., t[0]*t[1]).\n        # The phrasing \"pairs of tuples\" might be a slightly awkward way to say \"each pair inside a tuple\".\n        \n        # Wait, another interpretation: Maybe it means pairs OF NUMBERS that are IN TUPLES? \n        # i.e. Just max(|x*y|) for all x,y in the entire list flattened? No, 4*9=36 is still there but so is 7*8=56 if we mix tuples.\n        \n        # Let's reconsider the example strictly: Result is 36. \n        # In (2,7), product is 14.\n        # In (2,6), product is 12.\n        # In (1,8), product is 8.\n        # In (4,9), product is 36.\n        # Max of these is 36.\n        \n        # Conclusion: The task asks for the maximum absolute value of the product of elements within each tuple in the list.\n\n    return max(abs(t[0] * t[1]) for t in tuples)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/120",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

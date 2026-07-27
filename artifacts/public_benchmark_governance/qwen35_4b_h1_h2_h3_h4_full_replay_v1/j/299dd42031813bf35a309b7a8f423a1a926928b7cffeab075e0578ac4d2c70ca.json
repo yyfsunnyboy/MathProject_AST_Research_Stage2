@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "299dd42031813bf35a309b7a8f423a1a926928b7cffeab075e0578ac4d2c70ca",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "correct_bracketing",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "final_source": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"<\" and \">\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"<\")\n    False\n    >>> correct_bracketing(\"<>\")\n    True\n    >>> correct_bracketing(\"<<><>>\")\n    True\n    >>> correct_bracketing(\"><<>\")\n    False\n    \"\"\"\n    balance = 0\n    \n    for char in brackets:\n        if char == '<':\n            balance += 1\n        elif char == '>':\n            balance -= 1\n        \n        # If we ever have more closing than opening, it's invalid\n        if balance < 0:\n            return False\n    \n    # All opened must be closed at the end\n    return balance == 0\n\n\n# Quick test with provided examples\nif __name__ == \"__main__\":\n    print(correct_bracketing(\"<\"))           # False\n    print(correct_bracketing(\"<>\"))          # True\n    print(correct_bracketing(\"<<><>>\"))      # True\n    print(correct_bracketing(\"><<>\"))        # False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/56:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "post_h2_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "post_h3_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "post_h4_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e4d9afa5087015d7a1d865a8774d92c566ef4adb21b8bdb1a8fe4d43acec5daa",
+  "raw_source": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"<\" and \">\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"<\")\n    False\n    >>> correct_bracketing(\"<>\")\n    True\n    >>> correct_bracketing(\"<<><>>\")\n    True\n    >>> correct_bracketing(\"><<>\")\n    False\n    \"\"\"\n    balance = 0\n    \n    for char in brackets:\n        if char == '<':\n            balance += 1\n        elif char == '>':\n            balance -= 1\n        \n        # If we ever have more closing than opening, it's invalid\n        if balance < 0:\n            return False\n    \n    # All opened must be closed at the end\n    return balance == 0\n\n\n# Quick test with provided examples\nif __name__ == \"__main__\":\n    print(correct_bracketing(\"<\"))           # False\n    print(correct_bracketing(\"<>\"))          # True\n    print(correct_bracketing(\"<<><>>\"))      # True\n    print(correct_bracketing(\"><<>\"))        # False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/56",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

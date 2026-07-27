@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9f53a21f645808d9372bbe4f4ae2b9e25e742fc247e871838e7464b676956729",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "amicable_numbers_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "final_source": "def amicable_numbers_sum(n):\n    def sum_divisors(num):\n        total = 1 if num > 1 else 0\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                total += i\n                if i != num // i:\n                    total += num // i\n        return total\n\n    amicable_pairs = set()\n    \n    for number in range(2, n + 1):\n        d_sum = sum_divisors(number)\n        \n        # Check if the pair exists within bounds and is not a perfect number or part of an already found chain that isn't amicable\n        partner_d_sum = sum_divisors(d_sum)\n        \n        if partner_d_sum == number:\n            continue\n        \n        if d_sum != 1 and partner_d_sum > n:\n            break\n            \n        # Check for mutual relationship within bounds\n        if d_sum <= n and sum_divisors(partner_d_sum) == number:\n            amicable_pairs.add(min(number, d_sum))\n\n    return sum(amicable_pairs)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/123:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "post_h2_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "post_h3_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "post_h4_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2503d39312b1d6fc2b9a6e2ed32f2683dad7025ea603e1133a63bdd151f7cdcb",
+  "raw_source": "def amicable_numbers_sum(n):\n    def sum_divisors(num):\n        total = 1 if num > 1 else 0\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                total += i\n                if i != num // i:\n                    total += num // i\n        return total\n\n    amicable_pairs = set()\n    \n    for number in range(2, n + 1):\n        d_sum = sum_divisors(number)\n        \n        # Check if the pair exists within bounds and is not a perfect number or part of an already found chain that isn't amicable\n        partner_d_sum = sum_divisors(d_sum)\n        \n        if partner_d_sum == number:\n            continue\n        \n        if d_sum != 1 and partner_d_sum > n:\n            break\n            \n        # Check for mutual relationship within bounds\n        if d_sum <= n and sum_divisors(partner_d_sum) == number:\n            amicable_pairs.add(min(number, d_sum))\n\n    return sum(amicable_pairs)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/123",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

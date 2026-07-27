@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d89410639a6d1098ac2a5f0aec192062ac2b191f70520661c79e21ef1f1b3051",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_third",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "final_source": "def sort_third(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the indices that are not divisible by three, while its values at \n    the indices that are divisible by three are equal to the values of the corresponding \n    indices of l, but sorted.\n\n    >>> sort_third([1, 2, 3])\n    [1, 2, 3]\n    \n    >>> sort_third([5, 6, 3, 4, 8, 9, 2])\n    [2, 6, 3, 4, 8, 9, 5]\n    \"\"\"\n    # Extract elements at indices divisible by 3 (0-indexed: 0, 3, 6, ...)\n    third_elements = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            third_elements.append((i, l[i]))\n\n    # Sort the extracted elements based on their values\n    sorted_thirds = sorted(third_elements, key=lambda x: x[1])\n\n    # Reconstruct the list with sorted values at indices divisible by three\n    result = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            _, val = next(item for item in sorted_thirds)\n            result.append(val)\n        else:\n            result.append(l[i])\n\n    return result\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/33:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "post_h2_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "post_h3_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "post_h4_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6ae6e6ab6642adeab33ac0443d792d7e95f66cda1a4de353665c9fd6b59219bc",
+  "raw_source": "def sort_third(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the indices that are not divisible by three, while its values at \n    the indices that are divisible by three are equal to the values of the corresponding \n    indices of l, but sorted.\n\n    >>> sort_third([1, 2, 3])\n    [1, 2, 3]\n    \n    >>> sort_third([5, 6, 3, 4, 8, 9, 2])\n    [2, 6, 3, 4, 8, 9, 5]\n    \"\"\"\n    # Extract elements at indices divisible by 3 (0-indexed: 0, 3, 6, ...)\n    third_elements = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            third_elements.append((i, l[i]))\n\n    # Sort the extracted elements based on their values\n    sorted_thirds = sorted(third_elements, key=lambda x: x[1])\n\n    # Reconstruct the list with sorted values at indices divisible by three\n    result = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            _, val = next(item for item in sorted_thirds)\n            result.append(val)\n        else:\n            result.append(l[i])\n\n    return result\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/33",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

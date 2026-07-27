@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "40db9915f8fbdc0eccab1ae30102b7a2c806b6b94d53bf0e8073a51d434b8fdd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_sub_array_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "final_source": "def max_sub_array_sum(arr, expected_max):\n    \"\"\"\n    Finds the sum of the largest contiguous sublist using Kadane's Algorithm.\n    \n    Args:\n        arr (List[int]): The input list of integers.\n        expected_max (int): An assertion value to verify correctness against a known test case.\n        \n    Returns:\n        int: The maximum sum of any contiguous subarray.\n    \"\"\"\n    if not arr:\n        return 0\n\n    # Initialize current_sum and max_so_far with the first element\n    current_sum = max_so_far = arr[0]\n\n    for num in arr[1:]:\n        # Decide whether to start a new sublist at this number or extend the existing one\n        if current_sum < 0:\n            current_sum = num\n        else:\n            current_sum += num\n        \n        # Update max_so_far if we found a larger sum\n        if current_sum > max_so_far:\n            max_so_far = current_sum\n\n    return max_so_far\n\n\n# Test the function as per your requirement\nif __name__ == \"__main__\":\n    test_list = [-2, -3, 4, -1, -2, 1, 5, -3]\n    \n    # The largest contiguous sublist is [4, -1, -2, 1, 5], which sums to: \n    # 4 + (-1) + (-2) + 1 + 5 = 7\n    \n    result = max_sub_array_sum(test_list, 8)\n    \n    assert result == expected_max, f\"Expected {expected_max}, but got {result}\"\n    print(f\"The maximum contiguous sublist sum is: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/559:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "post_h2_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "post_h3_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "post_h4_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2f830fb7267ed422e31d9c955647a6e59581a36aa12a711221ead105ffa37453",
+  "raw_source": "def max_sub_array_sum(arr, expected_max):\n    \"\"\"\n    Finds the sum of the largest contiguous sublist using Kadane's Algorithm.\n    \n    Args:\n        arr (List[int]): The input list of integers.\n        expected_max (int): An assertion value to verify correctness against a known test case.\n        \n    Returns:\n        int: The maximum sum of any contiguous subarray.\n    \"\"\"\n    if not arr:\n        return 0\n\n    # Initialize current_sum and max_so_far with the first element\n    current_sum = max_so_far = arr[0]\n\n    for num in arr[1:]:\n        # Decide whether to start a new sublist at this number or extend the existing one\n        if current_sum < 0:\n            current_sum = num\n        else:\n            current_sum += num\n        \n        # Update max_so_far if we found a larger sum\n        if current_sum > max_so_far:\n            max_so_far = current_sum\n\n    return max_so_far\n\n\n# Test the function as per your requirement\nif __name__ == \"__main__\":\n    test_list = [-2, -3, 4, -1, -2, 1, 5, -3]\n    \n    # The largest contiguous sublist is [4, -1, -2, 1, 5], which sums to: \n    # 4 + (-1) + (-2) + 1 + 5 = 7\n    \n    result = max_sub_array_sum(test_list, 8)\n    \n    assert result == expected_max, f\"Expected {expected_max}, but got {result}\"\n    print(f\"The maximum contiguous sublist sum is: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/559",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

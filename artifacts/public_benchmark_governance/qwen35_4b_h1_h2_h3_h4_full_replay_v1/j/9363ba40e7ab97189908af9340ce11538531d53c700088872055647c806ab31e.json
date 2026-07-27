@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9363ba40e7ab97189908af9340ce11538531d53c700088872055647c806ab31e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_array",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "final_source": "def sort_array(arr):\n    \"\"\"\n    Sort an array of integers according to:\n      1. Number of ones in their binary representation (ascending)\n      2. Decimal value as a tie-breaker (ascending for negatives too, since Python's default int comparison works correctly with negative numbers).\n\n    Examples:\n        >>> sort_array([1, 5, 2, 3, 4]) == [1, 2, 3, 4, 5]\n        True\n        >>> sort_array([-2, -3, -4, -5, -6]) == [-6, -5, -4, -3, -2]\n        True\n        >>> sort_array([1, 0, 2, 3, 4]) == [0, 1, 2, 3, 4]\n        True\n\n    Note: The problem statement says \"non-negative integers\", but the examples include negatives.\n    This implementation works for any integer type supported by Python's bin() and int comparison.\n    \"\"\"\n    return sorted(arr, key=lambda x: (bin(x).count('1'), x))\n\n\n# Example usage / tests:\nif __name__ == \"__main__\":\n    print(sort_array([1, 5, 2, 3, 4]))          # [1, 2, 3, 4, 5]\n    print(sort_array([-2, -3, -4, -5, -6]))     # [-6, -5, -4, -3, -2]\n    print(sort_array([1, 0, 2, 3, 4]))           # [0, 1, 2, 3, 4]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/116:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "post_h2_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "post_h3_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "post_h4_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a53dd7463ba595698cf6f1320584541a7d2a2013fd656201f4c81b63f140a07b",
+  "raw_source": "def sort_array(arr):\n    \"\"\"\n    Sort an array of integers according to:\n      1. Number of ones in their binary representation (ascending)\n      2. Decimal value as a tie-breaker (ascending for negatives too, since Python's default int comparison works correctly with negative numbers).\n\n    Examples:\n        >>> sort_array([1, 5, 2, 3, 4]) == [1, 2, 3, 4, 5]\n        True\n        >>> sort_array([-2, -3, -4, -5, -6]) == [-6, -5, -4, -3, -2]\n        True\n        >>> sort_array([1, 0, 2, 3, 4]) == [0, 1, 2, 3, 4]\n        True\n\n    Note: The problem statement says \"non-negative integers\", but the examples include negatives.\n    This implementation works for any integer type supported by Python's bin() and int comparison.\n    \"\"\"\n    return sorted(arr, key=lambda x: (bin(x).count('1'), x))\n\n\n# Example usage / tests:\nif __name__ == \"__main__\":\n    print(sort_array([1, 5, 2, 3, 4]))          # [1, 2, 3, 4, 5]\n    print(sort_array([-2, -3, -4, -5, -6]))     # [-6, -5, -4, -3, -2]\n    print(sort_array([1, 0, 2, 3, 4]))           # [0, 1, 2, 3, 4]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/116",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

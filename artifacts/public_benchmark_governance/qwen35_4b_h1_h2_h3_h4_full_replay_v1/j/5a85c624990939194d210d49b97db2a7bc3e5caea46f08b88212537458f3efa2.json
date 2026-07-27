@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "5a85c624990939194d210d49b97db2a7bc3e5caea46f08b88212537458f3efa2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_up_to",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "final_source": "def count_up_to(n):\n    \"\"\"Implement a function that takes an non-negative integer and returns an array of the first n\n    integers that are prime numbers and less than n.\n    for example:\n    count_up_to(5) => [2,3]\n    count_up_to(11) => [2,3,5,7]\n    count_up_to(0) => []\n    count_up_to(20) => [2,3,5,7,11,13,17,19]\n    count_up_to(1) => []\n    count_up_to(18) => [2,3,5,7,11,13,17]\n    \"\"\"\n\n    def is_prime(num):\n        if num < 2:\n            return False\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                return False\n        return True\n\n    primes = []\n    candidate = 2\n    \n    while len(primes) < n and candidate < n:\n        if is_prime(candidate):\n            primes.append(candidate)\n        candidate += 1\n        \n    return primes",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/96:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "post_h2_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "post_h3_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "post_h4_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "622b76dd7823ddac46f02b43047d0ee4785b92eccd87d2b2152d5d41922f929f",
+  "raw_source": "def count_up_to(n):\n    \"\"\"Implement a function that takes an non-negative integer and returns an array of the first n\n    integers that are prime numbers and less than n.\n    for example:\n    count_up_to(5) => [2,3]\n    count_up_to(11) => [2,3,5,7]\n    count_up_to(0) => []\n    count_up_to(20) => [2,3,5,7,11,13,17,19]\n    count_up_to(1) => []\n    count_up_to(18) => [2,3,5,7,11,13,17]\n    \"\"\"\n\n    def is_prime(num):\n        if num < 2:\n            return False\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                return False\n        return True\n\n    primes = []\n    candidate = 2\n    \n    while len(primes) < n and candidate < n:\n        if is_prime(candidate):\n            primes.append(candidate)\n        candidate += 1\n        \n    return primes",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/96",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

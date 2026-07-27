@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "020454e8c49e3af3781162a5893bdce1ab4f970fc628b783ecfa9b09d08a1c08",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "largest_prime_factor",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "final_source": "def largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n\n    def gcd(a, b):\n        while b:\n            a, b = b, a % b\n        return a\n    \n    factors = []\n    \n    # Handle factor of 2 separately to allow incrementing by 2 later\n    if n > 1 and n % 2 == 0:\n        count = 0\n        while n % 2 == 0:\n            count += 1\n            n //= 2\n        \n        factors.append(2)\n\n    # Check for odd factors from 3 up to sqrt(n)\n    i = 3\n    temp_n = n\n    \n    if temp_n > 1 and gcd(temp_n, i) == 0:\n        while temp_n % i == 0:\n            count += 1\n            temp_n //= i\n        \n        factors.append(i)\n\n    # If remaining number is greater than 2, it's a prime factor itself\n    if n > 1 and gcd(n, i) == 0:\n        pass\n    \n    return max(factors)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/59:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "post_h2_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "post_h3_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "post_h4_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aec249ee8e82374f052ce79577860819ee6c483da10cfccdbd6f857533be289d",
+  "raw_source": "def largest_prime_factor(n: int):\n    \"\"\"Return the largest prime factor of n. Assume n > 1 and is not a prime.\n    >>> largest_prime_factor(13195)\n    29\n    >>> largest_prime_factor(2048)\n    2\n    \"\"\"\n\n    def gcd(a, b):\n        while b:\n            a, b = b, a % b\n        return a\n    \n    factors = []\n    \n    # Handle factor of 2 separately to allow incrementing by 2 later\n    if n > 1 and n % 2 == 0:\n        count = 0\n        while n % 2 == 0:\n            count += 1\n            n //= 2\n        \n        factors.append(2)\n\n    # Check for odd factors from 3 up to sqrt(n)\n    i = 3\n    temp_n = n\n    \n    if temp_n > 1 and gcd(temp_n, i) == 0:\n        while temp_n % i == 0:\n            count += 1\n            temp_n //= i\n        \n        factors.append(i)\n\n    # If remaining number is greater than 2, it's a prime factor itself\n    if n > 1 and gcd(n, i) == 0:\n        pass\n    \n    return max(factors)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/59",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

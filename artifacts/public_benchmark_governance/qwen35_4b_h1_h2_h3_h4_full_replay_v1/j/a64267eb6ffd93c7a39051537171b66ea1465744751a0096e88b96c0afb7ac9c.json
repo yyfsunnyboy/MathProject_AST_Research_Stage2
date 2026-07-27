@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a64267eb6ffd93c7a39051537171b66ea1465744751a0096e88b96c0afb7ac9c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "zero_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "final_source": "import math\n\ndef zero_count(arr):\n    \"\"\"\n    Returns the ratio of zeroes to non-zeroes in an array of integers.\n    \n    Parameters:\n        arr (list[int]): List of integers\n    \n    Returns:\n        float: Ratio = count(0) / count(non-zero elements)\n               If there are no non-zero elements, returns 0.0 or raises ValueError.\n    \"\"\"\n    zero_count_val = sum(1 for x in arr if x == 0)\n    non_zero_count_val = len(arr) - zero_count_val\n    \n    # Avoid division by zero (though the test case implies there are non-zeros)\n    if non_zero_count_val == 0:\n        return 0.0\n\n    return zero_count_val / non_zero_count_val\n\n\n# Example usage and assertion from your prompt\nif __name__ == \"__main__\":\n    arr = [0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]\n    \n    # Count manually to verify:\n    # zeros: indices 0 and 6 → count = 2\n    # non-zeros: total length 13 minus 2 zeros = 11\n    \n    result = zero_count(arr)\n    assert math.isclose(result, 0.181818, rel_tol=0.001), \"Ratio mismatch\"\n\n    print(f\"Zero count ratio: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/137:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "post_h2_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "post_h3_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "post_h4_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "20007a7b3917559e7358eea1fc2c4702880b529043b03bdd982815938255d2de",
+  "raw_source": "import math\n\ndef zero_count(arr):\n    \"\"\"\n    Returns the ratio of zeroes to non-zeroes in an array of integers.\n    \n    Parameters:\n        arr (list[int]): List of integers\n    \n    Returns:\n        float: Ratio = count(0) / count(non-zero elements)\n               If there are no non-zero elements, returns 0.0 or raises ValueError.\n    \"\"\"\n    zero_count_val = sum(1 for x in arr if x == 0)\n    non_zero_count_val = len(arr) - zero_count_val\n    \n    # Avoid division by zero (though the test case implies there are non-zeros)\n    if non_zero_count_val == 0:\n        return 0.0\n\n    return zero_count_val / non_zero_count_val\n\n\n# Example usage and assertion from your prompt\nif __name__ == \"__main__\":\n    arr = [0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]\n    \n    # Count manually to verify:\n    # zeros: indices 0 and 6 → count = 2\n    # non-zeros: total length 13 minus 2 zeros = 11\n    \n    result = zero_count(arr)\n    assert math.isclose(result, 0.181818, rel_tol=0.001), \"Ratio mismatch\"\n\n    print(f\"Zero count ratio: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/137",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

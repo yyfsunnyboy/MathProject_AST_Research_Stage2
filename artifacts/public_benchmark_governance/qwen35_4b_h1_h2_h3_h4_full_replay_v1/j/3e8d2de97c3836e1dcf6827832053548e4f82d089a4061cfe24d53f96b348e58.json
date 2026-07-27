@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3e8d2de97c3836e1dcf6827832053548e4f82d089a4061cfe24d53f96b348e58",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_array",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "final_source": "def sort_array(array):\n    \"\"\"\n    Given an array of non-negative integers, return a copy of the given array after sorting.\n    \n    - If (first_index + last_index) is odd -> ascending order\n    - If (first_index + last_index) is even  -> descending order\n    \n    Note: The original array is not modified.\n    \"\"\"\n    # Handle empty list or single element\n    if len(array) == 0:\n        return []\n    \n    first_idx = 0\n    last_idx = len(array) - 1\n\n    sum_indices = first_idx + last_idx\n    \n    # Sort a copy of the array\n    sorted_array = sorted(array)\n    \n    if sum_indices % 2 != 0:  # odd -> ascending (already done by sorted())\n        return sorted_array\n    else:                     # even -> descending\n        return sorted_array[::-1]\n\n\n# Examples:\nprint(sort_array([]))                          # []\nprint(sort_array([5]))                         # [5]\nprint(sort_array([2, 4, 3, 0, 1, 5]))         # sum = 0 + 5 = 5 (odd) -> ascending => [0,1,2,3,4,5]\nprint(sort_array([2, 4, 3, 0, 1, 5, 6]))      # sum = 0 + 6 = 6 (even) -> descending => [6,5,4,3,2,1,0]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/88:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "post_h2_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "post_h3_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "post_h4_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "63c9c63b0a19b88199f1bf1143d42ab8203fbeb5c1a152bd9b5afa575afd4f74",
+  "raw_source": "def sort_array(array):\n    \"\"\"\n    Given an array of non-negative integers, return a copy of the given array after sorting.\n    \n    - If (first_index + last_index) is odd -> ascending order\n    - If (first_index + last_index) is even  -> descending order\n    \n    Note: The original array is not modified.\n    \"\"\"\n    # Handle empty list or single element\n    if len(array) == 0:\n        return []\n    \n    first_idx = 0\n    last_idx = len(array) - 1\n\n    sum_indices = first_idx + last_idx\n    \n    # Sort a copy of the array\n    sorted_array = sorted(array)\n    \n    if sum_indices % 2 != 0:  # odd -> ascending (already done by sorted())\n        return sorted_array\n    else:                     # even -> descending\n        return sorted_array[::-1]\n\n\n# Examples:\nprint(sort_array([]))                          # []\nprint(sort_array([5]))                         # [5]\nprint(sort_array([2, 4, 3, 0, 1, 5]))         # sum = 0 + 5 = 5 (odd) -> ascending => [0,1,2,3,4,5]\nprint(sort_array([2, 4, 3, 0, 1, 5, 6]))      # sum = 0 + 6 = 6 (even) -> descending => [6,5,4,3,2,1,0]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/88",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

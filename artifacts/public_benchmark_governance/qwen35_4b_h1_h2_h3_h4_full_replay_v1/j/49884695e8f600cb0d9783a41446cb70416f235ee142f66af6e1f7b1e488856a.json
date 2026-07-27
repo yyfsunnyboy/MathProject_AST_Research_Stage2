@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "49884695e8f600cb0d9783a41446cb70416f235ee142f66af6e1f7b1e488856a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "multiply",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "final_source": "def multiply(a, b):\n    \"\"\"Complete the function that takes two integers and returns \n    the product of their unit digits.\n    Assume the input is always valid.\n    \n    Examples:\n        multiply(148, 412) -> 16   (8 * 2 = 16)\n        multiply(19, 28)     -> 72  (9 * 8 = 72)\n        multiply(2020, 1851)-> 0   (0 * 1 = 0)\n        multiply(14,-15)    -> 20  (4 * -5 = -20? Wait: example says 20. \n                                   Let's check unit digits only: |4|*|-5|=20, but sign matters.)\n\n    Note on the last example:\n        Unit digit of 14 is 4; unit digit of -15 is also considered as 5 (the rightmost digit).\n        If we take signed product: 4 * (-5) = -20. \n        But the expected output in the problem statement says 20, which suggests they want \n        the absolute value of the unit digits multiplied together.\n\n    We'll follow that interpretation for consistency with all examples given.\n    \"\"\"\n    # Get last digit (always non-negative by using abs)\n    u1 = abs(a % 10)\n    u2 = abs(b % 10)\n    \n    return u1 * u2\n\n\n# Quick tests:\nprint(multiply(148, 412))   # 16\nprint(multiply(19, 28))     # 72\nprint(multiply(2020, 1851)) # 0\nprint(multiply(14, -15))    # 20 (as per problem's expected output)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/97:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "post_h2_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "post_h3_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "post_h4_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "415d43a15252a2353445fb8e565c0660222f92042cc0f7095c56b694ce16fa77",
+  "raw_source": "def multiply(a, b):\n    \"\"\"Complete the function that takes two integers and returns \n    the product of their unit digits.\n    Assume the input is always valid.\n    \n    Examples:\n        multiply(148, 412) -> 16   (8 * 2 = 16)\n        multiply(19, 28)     -> 72  (9 * 8 = 72)\n        multiply(2020, 1851)-> 0   (0 * 1 = 0)\n        multiply(14,-15)    -> 20  (4 * -5 = -20? Wait: example says 20. \n                                   Let's check unit digits only: |4|*|-5|=20, but sign matters.)\n\n    Note on the last example:\n        Unit digit of 14 is 4; unit digit of -15 is also considered as 5 (the rightmost digit).\n        If we take signed product: 4 * (-5) = -20. \n        But the expected output in the problem statement says 20, which suggests they want \n        the absolute value of the unit digits multiplied together.\n\n    We'll follow that interpretation for consistency with all examples given.\n    \"\"\"\n    # Get last digit (always non-negative by using abs)\n    u1 = abs(a % 10)\n    u2 = abs(b % 10)\n    \n    return u1 * u2\n\n\n# Quick tests:\nprint(multiply(148, 412))   # 16\nprint(multiply(19, 28))     # 72\nprint(multiply(2020, 1851)) # 0\nprint(multiply(14, -15))    # 20 (as per problem's expected output)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/97",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3af90445adaa1fc15a5c21866bb1701b02a3a85b90c6b25a973a4074b548ffce",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "removezero_ip",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "final_source": "def removezero_ip(ip_address):\n    parts = ip_address.split('.')\n    cleaned_parts = []\n    for part in parts:\n        if len(part) > 1 and part[0] == '0':\n            cleaned_part = int(part).zfill(3)[len(str(int(part)))-2:] # This logic is flawed, let's rewrite simply.\n    \n    # Correct approach using string manipulation or integer conversion\n    result_parts = []\n    for part in parts:\n        if len(part) == 1 and not ('0' <= part[0] <= '9'): \n            pass # Shouldn't happen based on input description but good to be safe. Actually, just convert int back to string without leading zeros unless it's a single zero? No, IP octets are usually non-zero except for valid networks like 127.0.0.1 where 0 is allowed.\n        # The requirement says \"remove leading zeroes\". \n        # Example: '08' -> '8', '94' -> '94'. \n        # What about single zero? '0' should remain '0'? Usually yes in IP context (e.g., 127.0.0.1).\n        # However, the example \"216.08...\" implies removing leading zeros from multi-digit numbers starting with 0.\n        # If a part is just \"0\", it has no leading zero to remove other than itself? Or does '0' become ''? No, that breaks IP format.\n        # Standard interpretation: Remove extra leading zeros. So '08' -> '8', '0' -> '0'.\n        \n        if len(part) > 1 and part.startswith('0'):\n            cleaned_part = str(int(part))\n        else:\n            cleaned_part = part\n        \n        result_parts.append(cleaned_part)\n    \n    return '.'.join(result_parts)\n\n# Test case as per assertion in prompt (though not executed here to avoid outputting results, just defining the function logic correctly).\n# assert removezero_ip(\"216.08.094.196\") == ('216.8.94.196')",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/593:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "post_h2_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "post_h3_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "post_h4_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d0bc4a78fefa79ba0ba13ffd6ecaf7943799db0103f8b48c25b8cd8003048673",
+  "raw_source": "def removezero_ip(ip_address):\n    parts = ip_address.split('.')\n    cleaned_parts = []\n    for part in parts:\n        if len(part) > 1 and part[0] == '0':\n            cleaned_part = int(part).zfill(3)[len(str(int(part)))-2:] # This logic is flawed, let's rewrite simply.\n    \n    # Correct approach using string manipulation or integer conversion\n    result_parts = []\n    for part in parts:\n        if len(part) == 1 and not ('0' <= part[0] <= '9'): \n            pass # Shouldn't happen based on input description but good to be safe. Actually, just convert int back to string without leading zeros unless it's a single zero? No, IP octets are usually non-zero except for valid networks like 127.0.0.1 where 0 is allowed.\n        # The requirement says \"remove leading zeroes\". \n        # Example: '08' -> '8', '94' -> '94'. \n        # What about single zero? '0' should remain '0'? Usually yes in IP context (e.g., 127.0.0.1).\n        # However, the example \"216.08...\" implies removing leading zeros from multi-digit numbers starting with 0.\n        # If a part is just \"0\", it has no leading zero to remove other than itself? Or does '0' become ''? No, that breaks IP format.\n        # Standard interpretation: Remove extra leading zeros. So '08' -> '8', '0' -> '0'.\n        \n        if len(part) > 1 and part.startswith('0'):\n            cleaned_part = str(int(part))\n        else:\n            cleaned_part = part\n        \n        result_parts.append(cleaned_part)\n    \n    return '.'.join(result_parts)\n\n# Test case as per assertion in prompt (though not executed here to avoid outputting results, just defining the function logic correctly).\n# assert removezero_ip(\"216.08.094.196\") == ('216.8.94.196')",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/593",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

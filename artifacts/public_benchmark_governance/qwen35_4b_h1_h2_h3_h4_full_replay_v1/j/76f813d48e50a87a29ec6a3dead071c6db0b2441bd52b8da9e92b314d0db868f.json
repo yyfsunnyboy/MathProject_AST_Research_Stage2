@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "76f813d48e50a87a29ec6a3dead071c6db0b2441bd52b8da9e92b314d0db868f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "set_left_most_unset_bit",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "40b44aaeb9d9b869f2b4d3cbe2dd80ea0d2b74d555adbb9c9bdab8e5db0b82ff",
+  "final_source": "def set_left_most_unset_bit(n):\n    if n == 0:\n        return 1\n    \n    # Find the position of the leftmost unset bit (starting from LSB)\n    # We iterate through bits until we find an unset one\n    result = n\n    for i in range(32):\n        if not ((n >> i) & 1):\n            # Found an unset bit at position i, set it and return the new value\n            return result | (1 << i)\n\n# Test case as provided in the prompt\nif __name__ == \"__main__\":\n    assert set_left_most_unset_bit(10) == 14",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/311:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5dbb7d4f4f29a1f1442d6f12f275ca92bc9f894ce006ab8cd5dfd4c5b2fd9578",
+  "post_h2_sha256": "40b44aaeb9d9b869f2b4d3cbe2dd80ea0d2b74d555adbb9c9bdab8e5db0b82ff",
+  "post_h3_sha256": "40b44aaeb9d9b869f2b4d3cbe2dd80ea0d2b74d555adbb9c9bdab8e5db0b82ff",
+  "post_h4_sha256": "40b44aaeb9d9b869f2b4d3cbe2dd80ea0d2b74d555adbb9c9bdab8e5db0b82ff",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5dbb7d4f4f29a1f1442d6f12f275ca92bc9f894ce006ab8cd5dfd4c5b2fd9578",
+  "raw_source": "def set_left_most_unset_bit(n):\n    if n == 0:\n        return 1\n    \n    # Find the position of the leftmost unset bit (starting from LSB)\n    # We iterate through bits until we find an unset one\n    result = n\n    for i in range(32):\n        if not ((n >> i) & 1):\n            # Found an unset bit at position i, set it and return the new value\n            return result | (1 << i)\n\n# Test case as provided in the prompt\nassert set_left_most_unset_bit(10) == 14",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/311",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

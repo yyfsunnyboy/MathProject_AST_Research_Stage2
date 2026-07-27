@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "696e85ac01593de78e5b697d5404e73637a0ce10fc8100518329633f7b14c17e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "generate_integers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "final_source": "def generate_integers(a, b):\n    \"\"\"\n    Given two positive integers a and b, return the even digits between a\n    and b, in ascending order.\n\n    For example:\n    generate_integers(2, 8) => [2, 4, 6, 8]\n    generate_integers(8, 2) => [2, 4, 6, 8]\n    generate_integers(10, 14) => []\n    \"\"\"\n\n    start = min(a, b)\n    end = max(a, b)\n    \n    result = []\n    for num in range(start, end + 1):\n        if num % 2 == 0:\n            result.append(num)\n            \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/163:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "post_h2_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "post_h3_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "post_h4_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aed170bcbf91360b2fd3de7b829725a54496bb4b3f1a950cf95475a51b6da1df",
+  "raw_source": "def generate_integers(a, b):\n    \"\"\"\n    Given two positive integers a and b, return the even digits between a\n    and b, in ascending order.\n\n    For example:\n    generate_integers(2, 8) => [2, 4, 6, 8]\n    generate_integers(8, 2) => [2, 4, 6, 8]\n    generate_integers(10, 14) => []\n    \"\"\"\n\n    start = min(a, b)\n    end = max(a, b)\n    \n    result = []\n    for num in range(start, end + 1):\n        if num % 2 == 0:\n            result.append(num)\n            \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/163",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

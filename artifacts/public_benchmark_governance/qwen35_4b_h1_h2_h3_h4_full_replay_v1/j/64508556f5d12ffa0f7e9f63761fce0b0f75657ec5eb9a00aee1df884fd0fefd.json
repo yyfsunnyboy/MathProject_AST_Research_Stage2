@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "64508556f5d12ffa0f7e9f63761fce0b0f75657ec5eb9a00aee1df884fd0fefd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_majority",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "final_source": "import bisect\n\ndef is_majority(arr, n, element):\n    \"\"\"\n    Checks if 'element' is a majority element in the sorted array.\n    \n    Args:\n        arr (list): The sorted list of integers.\n        n (int): Length of the array.\n        element (int): The candidate element to check.\n        \n    Returns:\n        bool: True if element occurs more than n/2 times, False otherwise.\n    \"\"\"\n    \n    # A majority element in a sorted array MUST be at index n // 2.\n    mid_index = n // 2\n    \n    # If the middle element doesn't match our candidate, it can't be the majority.\n    if arr[mid_index] != element:\n        return False\n\n    # Find the first occurrence of 'element' (left bound)\n    left_idx = bisect.bisect_left(arr, element)\n    \n    # Find the last occurrence of 'element' + 1 to get right bound index\n    # Then subtract 1 to get the actual last index.\n    right_bound_index = bisect.bisect_right(arr, element) - 1\n    \n    if left_idx == -1 or right_bound_index < mid_index:\n        return False\n\n    count = (right_bound_index + 1) - left_idx\n    \n    # Majority means occurring more than n / 2 times.\n    return count > n // 2\n\n\n# Test cases based on the prompt and additional scenarios\nif __name__ == \"__main__\":\n    assert is_majority([1, 2, 3, 3, 3, 3, 10], 7, 3) == True\n    \n    # Additional test: No majority element (e.g., [1, 2, 3]) -> False for any single number > n/2\n    assert is_majority([1, 2, 3], 3, 2) == False \n    \n    # Edge case: All elements are the same\n    assert is_majority([5, 5, 5, 5], 4, 5) == True\n    \n    print(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/223:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "post_h2_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "post_h3_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "post_h4_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "960cbeceac464c9ff0e13acd728e48c0979402c818dc479ab7b2e7d16d256ec7",
+  "raw_source": "import bisect\n\ndef is_majority(arr, n, element):\n    \"\"\"\n    Checks if 'element' is a majority element in the sorted array.\n    \n    Args:\n        arr (list): The sorted list of integers.\n        n (int): Length of the array.\n        element (int): The candidate element to check.\n        \n    Returns:\n        bool: True if element occurs more than n/2 times, False otherwise.\n    \"\"\"\n    \n    # A majority element in a sorted array MUST be at index n // 2.\n    mid_index = n // 2\n    \n    # If the middle element doesn't match our candidate, it can't be the majority.\n    if arr[mid_index] != element:\n        return False\n\n    # Find the first occurrence of 'element' (left bound)\n    left_idx = bisect.bisect_left(arr, element)\n    \n    # Find the last occurrence of 'element' + 1 to get right bound index\n    # Then subtract 1 to get the actual last index.\n    right_bound_index = bisect.bisect_right(arr, element) - 1\n    \n    if left_idx == -1 or right_bound_index < mid_index:\n        return False\n\n    count = (right_bound_index + 1) - left_idx\n    \n    # Majority means occurring more than n / 2 times.\n    return count > n // 2\n\n\n# Test cases based on the prompt and additional scenarios\nif __name__ == \"__main__\":\n    assert is_majority([1, 2, 3, 3, 3, 3, 10], 7, 3) == True\n    \n    # Additional test: No majority element (e.g., [1, 2, 3]) -> False for any single number > n/2\n    assert is_majority([1, 2, 3], 3, 2) == False \n    \n    # Edge case: All elements are the same\n    assert is_majority([5, 5, 5, 5], 4, 5) == True\n    \n    print(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/223",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

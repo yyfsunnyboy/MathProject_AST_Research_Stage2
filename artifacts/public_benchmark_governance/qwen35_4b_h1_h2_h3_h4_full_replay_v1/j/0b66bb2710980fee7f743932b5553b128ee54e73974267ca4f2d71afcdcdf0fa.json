@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "0b66bb2710980fee7f743932b5553b128ee54e73974267ca4f2d71afcdcdf0fa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "right_insertion",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "final_source": "def right_insertion(arr, val):\n    \"\"\"\n    Locates the right insertion point for a specified value in sorted order.\n    \n    Args:\n        arr (List[int]): A list of integers sorted in ascending order.\n        val (int): The integer to find the insertion index for.\n        \n    Returns:\n        int: The 0-based index where 'val' should be inserted.\n             If duplicates exist, it returns an index after any existing \n             occurrences of 'val'.\n    \n    Example:\n        right_insertion([1,2,4,5],6) -> 4 (append at end)\n        right_insertion([1,3,5,7],4) -> 2 (insert between 3 and 5)\n    \"\"\"\n    left = 0\n    right = len(arr) - 1\n    \n    # Binary search to find the first index where arr[i] >= val\n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] < val:\n            left = mid + 1\n        else:\n            right = mid - 1\n            \n    return left\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific assertion\n    assert right_insertion([1,2,4,5],6) == 4\n    \n    # Additional test: inserting into the middle\n    assert right_insertion([1,3,5,7],4) == 2\n    \n    # Edge case: insert at beginning\n    assert right_insertion([10,20,30],5) == 0\n    \n    # Edge case: duplicate handling (should go after existing values)\n    assert right_insertion([1,2,2,2,4],2) == 4\n    \n    print(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/786:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "post_h2_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "post_h3_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "post_h4_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7c4b53f9b799fbf328430b7732819ba103d185f8e02bbf8dfe2515dfb5430684",
+  "raw_source": "def right_insertion(arr, val):\n    \"\"\"\n    Locates the right insertion point for a specified value in sorted order.\n    \n    Args:\n        arr (List[int]): A list of integers sorted in ascending order.\n        val (int): The integer to find the insertion index for.\n        \n    Returns:\n        int: The 0-based index where 'val' should be inserted.\n             If duplicates exist, it returns an index after any existing \n             occurrences of 'val'.\n    \n    Example:\n        right_insertion([1,2,4,5],6) -> 4 (append at end)\n        right_insertion([1,3,5,7],4) -> 2 (insert between 3 and 5)\n    \"\"\"\n    left = 0\n    right = len(arr) - 1\n    \n    # Binary search to find the first index where arr[i] >= val\n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] < val:\n            left = mid + 1\n        else:\n            right = mid - 1\n            \n    return left\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific assertion\n    assert right_insertion([1,2,4,5],6) == 4\n    \n    # Additional test: inserting into the middle\n    assert right_insertion([1,3,5,7],4) == 2\n    \n    # Edge case: insert at beginning\n    assert right_insertion([10,20,30],5) == 0\n    \n    # Edge case: duplicate handling (should go after existing values)\n    assert right_insertion([1,2,2,2,4],2) == 4\n    \n    print(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/786",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

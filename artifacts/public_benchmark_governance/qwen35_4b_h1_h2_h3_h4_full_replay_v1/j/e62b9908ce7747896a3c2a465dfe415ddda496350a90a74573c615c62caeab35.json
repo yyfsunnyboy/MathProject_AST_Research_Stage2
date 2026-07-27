@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "entry_point_multiple",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "e62b9908ce7747896a3c2a465dfe415ddda496350a90a74573c615c62caeab35",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_sorted",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "final_source": "def is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n        \n        if lst[i] == lst[i + 1]:\n            continue\n            \n        # Check next element to see if it's greater than current duplicate group start\n        j = i + 2\n        while j < len(lst) and lst[j - 1] == lst[j - 2]:\n            j += 1\n        \n        if j >= len(lst):\n            return True\n            \n    # If we reach here, all elements are strictly increasing or have valid duplicates in order\n    for i in range(len(lst)):\n        count = 0\n        while i < len(lst) and lst[i] == lst[0]:\n            count += 1\n            i -= 1\n        \n        if count > 2:\n            return False\n            \n    # Re-evaluate logic based on problem statement strictly\n    \n    for i in range(len(lst)):\n        current = lst[i]\n        \n        # Count consecutive duplicates starting from this position\n        j = i + 1\n        while j < len(lst) and lst[j] == current:\n            j += 1\n            \n        if j - i > 2:\n            return False\n        \n        # Check next unique element is greater than or equal to last duplicate (which it must be since sorted)\n        # But we need strictly increasing between groups of duplicates\n        if j < len(lst):\n            next_val = lst[j]\n            prev_group_max = current\n            \n            # Find the max value in this group\n            k = i - 1\n            while k >= 0 and lst[k] == current:\n                k -= 1\n                \n            last_unique_before = lst[k + 1] if k != -1 else None\n            \n            if next_val < prev_group_max or (last_unique_before is not None and next_val <= last_unique_before):\n                 # This logic is getting complex, let's simplify.\n                 pass\n    \n    return True\n\n# Correct simplified approach:\ndef is_sorted(lst):\n    '''\n    Given a list of numbers, return whether or not they are sorted\n    in ascending order. If list has more than 1 duplicate of the same\n    number, return False. Assume no negative numbers and only integers.\n    \n    Examples\n    is_sorted([5]) ➞ True\n    is_sorted([1, 2, 3, 4, 5]) ➞ True\n    is_sorted([1, 3, 2, 4, 5]) ➞ False\n    is_sorted([1, 2, 3, 4, 5, 6]) ➞ True\n    is_sorted([1, 2, 3, 4, 5, 6, 7]) ➞ True\n    is_sorted([1, 3, 2, 4, 5, 6, 7]) ➞ False\n    is_sorted([1, 2, 2, 3, 3, 4]) ➞ True\n    is_sorted([1, 2, 2, 2, 3, 4]) ➞ False\n    \n    '''\n\ndef is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst)):\n        # Count consecutive duplicates starting at index i\n        count = 0\n        j = i\n        \n        while j < len(lst) and lst[j] == lst[i]:\n            count += 1\n            j += 1\n            \n        if count > 2:\n            return False\n        \n        # Check the next unique element (if any) is greater than current value\n        if j < len(lst):\n            if lst[j] <= lst[i]:\n                return False\n    \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/126:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "post_h2_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "post_h3_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "post_h4_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "94cca923eab981ad8172939d94fd1220147d88e5c600986083132cdb3acbc616",
+  "raw_source": "def is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n        \n        if lst[i] == lst[i + 1]:\n            continue\n            \n        # Check next element to see if it's greater than current duplicate group start\n        j = i + 2\n        while j < len(lst) and lst[j - 1] == lst[j - 2]:\n            j += 1\n        \n        if j >= len(lst):\n            return True\n            \n    # If we reach here, all elements are strictly increasing or have valid duplicates in order\n    for i in range(len(lst)):\n        count = 0\n        while i < len(lst) and lst[i] == lst[0]:\n            count += 1\n            i -= 1\n        \n        if count > 2:\n            return False\n            \n    # Re-evaluate logic based on problem statement strictly\n    \n    for i in range(len(lst)):\n        current = lst[i]\n        \n        # Count consecutive duplicates starting from this position\n        j = i + 1\n        while j < len(lst) and lst[j] == current:\n            j += 1\n            \n        if j - i > 2:\n            return False\n        \n        # Check next unique element is greater than or equal to last duplicate (which it must be since sorted)\n        # But we need strictly increasing between groups of duplicates\n        if j < len(lst):\n            next_val = lst[j]\n            prev_group_max = current\n            \n            # Find the max value in this group\n            k = i - 1\n            while k >= 0 and lst[k] == current:\n                k -= 1\n                \n            last_unique_before = lst[k + 1] if k != -1 else None\n            \n            if next_val < prev_group_max or (last_unique_before is not None and next_val <= last_unique_before):\n                 # This logic is getting complex, let's simplify.\n                 pass\n    \n    return True\n\n# Correct simplified approach:\ndef is_sorted(lst):\n    '''\n    Given a list of numbers, return whether or not they are sorted\n    in ascending order. If list has more than 1 duplicate of the same\n    number, return False. Assume no negative numbers and only integers.\n    \n    Examples\n    is_sorted([5]) ➞ True\n    is_sorted([1, 2, 3, 4, 5]) ➞ True\n    is_sorted([1, 3, 2, 4, 5]) ➞ False\n    is_sorted([1, 2, 3, 4, 5, 6]) ➞ True\n    is_sorted([1, 2, 3, 4, 5, 6, 7]) ➞ True\n    is_sorted([1, 3, 2, 4, 5, 6, 7]) ➞ False\n    is_sorted([1, 2, 2, 3, 3, 4]) ➞ True\n    is_sorted([1, 2, 2, 2, 3, 4]) ➞ False\n    \n    '''\n\ndef is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst)):\n        # Count consecutive duplicates starting at index i\n        count = 0\n        j = i\n        \n        while j < len(lst) and lst[j] == lst[i]:\n            count += 1\n            j += 1\n            \n        if count > 2:\n            return False\n        \n        # Check the next unique element (if any) is greater than current value\n        if j < len(lst):\n            if lst[j] <= lst[i]:\n                return False\n    \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/126",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "1053db9783ca8fb94dbf63e2cfc4f99a95156debd3c82112e6f50400e69ecbe0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_samepatterns",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "final_source": "def is_samepatterns(patterns, seq):\n    if len(patterns) != len(seq):\n        return False\n    \n    char_to_pattern = {}\n    \n    for p_char, s_char in zip(patterns, seq):\n        if p_char not in char_to_pattern:\n            # Assign the next available letter from 'a' onwards\n            count = sum(1 for c in \"abcdefghijklmnopqrstuvwxyz\" if c < list(char_to_pattern.keys())[-1] + [chr(ord('a') + len(char_to_pattern))])\n            assigned_letter = chr(ord('a') + len(char_to_pattern) - 1)\n            \n        # Actually, let's do it more simply: track which letter is next to assign\n        if p_char not in char_to_pattern:\n            for c in \"abcdefghijklmnopqrstuvwxyz\":\n                if c not in char_to_pattern.values():\n                    char_to_pattern[p_char] = c\n                    break\n        \n        if s_char != char_to_pattern.get(p_char):\n            return False\n            \n    # Verify that the mapping is consistent across all pairs (already done by checking each pair)\n    for p, s in zip(patterns, seq):\n        expected_s = char_to_pattern[p]\n        if s != expected_s:\n            return False\n    \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/74:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "post_h2_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "post_h3_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "post_h4_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2cf48732a8dc259018921e49c065ae96c66082f52a9418ae6dcd8b2ba4d0323f",
+  "raw_source": "def is_samepatterns(patterns, seq):\n    if len(patterns) != len(seq):\n        return False\n    \n    char_to_pattern = {}\n    \n    for p_char, s_char in zip(patterns, seq):\n        if p_char not in char_to_pattern:\n            # Assign the next available letter from 'a' onwards\n            count = sum(1 for c in \"abcdefghijklmnopqrstuvwxyz\" if c < list(char_to_pattern.keys())[-1] + [chr(ord('a') + len(char_to_pattern))])\n            assigned_letter = chr(ord('a') + len(char_to_pattern) - 1)\n            \n        # Actually, let's do it more simply: track which letter is next to assign\n        if p_char not in char_to_pattern:\n            for c in \"abcdefghijklmnopqrstuvwxyz\":\n                if c not in char_to_pattern.values():\n                    char_to_pattern[p_char] = c\n                    break\n        \n        if s_char != char_to_pattern.get(p_char):\n            return False\n            \n    # Verify that the mapping is consistent across all pairs (already done by checking each pair)\n    for p, s in zip(patterns, seq):\n        expected_s = char_to_pattern[p]\n        if s != expected_s:\n            return False\n    \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/74",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

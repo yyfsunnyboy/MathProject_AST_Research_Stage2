@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "be0c6ebb1d2b186e41079a216c368cdd587904992832a92a1888013d1334862e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "kth_element",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "92a0fd64a682bf9c35df44b300928006744671d2644b743f125afd7d38e72240",
+  "final_source": "def kth_element(arr, k):\n    \"\"\"\n    Returns the k-th element in a list using 1-based indexing.\n    \n    Parameters:\n        arr (list): The input array/list of numbers.\n        k (int): The position to find (1-based index).\n        \n    Returns:\n        int/float: The k-th element if valid, otherwise raises an IndexError.\n    \"\"\"\n    # Adjust for 0-based indexing\n    idx = k - 1\n    \n    # Check bounds\n    if not arr or idx < 0 or idx >= len(arr):\n        raise IndexError(\"k is out of range\")\n    \n    return arr[idx]\n\n\n# Example usage and assertion from the problem statement:\nif __name__ == \"__main__\":\n    assert kth_element([12, 3, 5, 7, 19], 2) == 3\n    print(kth_element([12, 3, 5, 7, 19], 2))  # Output: 3\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/101:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1a9dd0ea593ff6aab6b1169b1dbec07b06b9877f21765369761b733a6a39ae4c",
+  "post_h2_sha256": "6f0caf4efd62c31b42f31a3285ebe9f6049da30af4bb85ccc410dec5add742e9",
+  "post_h3_sha256": "6f0caf4efd62c31b42f31a3285ebe9f6049da30af4bb85ccc410dec5add742e9",
+  "post_h4_sha256": "92a0fd64a682bf9c35df44b300928006744671d2644b743f125afd7d38e72240",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1a9dd0ea593ff6aab6b1169b1dbec07b06b9877f21765369761b733a6a39ae4c",
+  "raw_source": "def kth_element(arr, k):\n    \"\"\"\n    Returns the k-th element in a list using 1-based indexing.\n    \n    Parameters:\n        arr (list): The input array/list of numbers.\n        k (int): The position to find (1-based index).\n        \n    Returns:\n        int/float: The k-th element if valid, otherwise raises an IndexError.\n    \"\"\"\n    # Adjust for 0-based indexing\n    idx = k - 1\n    \n    # Check bounds\n    if not arr or idx < 0 or idx >= len(arr):\n        raise IndexError(\"k is out of range\")\n    \n    return arr[idx]\n\n\n# Example usage and assertion from the problem statement:\nassert kth_element([12, 3, 5, 7, 19], 2) == 3\n\nprint(kth_element([12, 3, 5, 7, 19], 2))  # Output: 3\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/101",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

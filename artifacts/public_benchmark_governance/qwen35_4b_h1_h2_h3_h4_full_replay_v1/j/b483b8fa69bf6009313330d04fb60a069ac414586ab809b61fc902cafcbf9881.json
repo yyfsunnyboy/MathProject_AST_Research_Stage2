@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b483b8fa69bf6009313330d04fb60a069ac414586ab809b61fc902cafcbf9881",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_row",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "final_source": "def get_row(lst, x):\n    \"\"\"\n    You are given a 2 dimensional data, as a nested lists,\n    which is similar to matrix, however, unlike matrices,\n    each row may contain a different number of columns.\n    \n    Given lst, and integer x, find integers x in the list,\n    and return list of tuples, [(x1, y1), (x2, y2) ...] such that\n    each tuple is a coordinate - (row, column), starting with 0.\n    \n    Sort coordinates initially by rows in ascending order.\n    Also, sort coordinates of the row by columns in descending order.\n    \"\"\"\n    \n    result = []\n    \n    # Iterate through each row using enumerate to get both index and content\n    for r_idx, row in enumerate(lst):\n        matches_in_row = []\n        \n        # Find all occurrences of x in the current row\n        c_idx = 0\n        while c_idx < len(row) and row[c_idx] == x:\n            matches_in_row.append((r_idx, c_idx))\n            c_idx += 1\n        \n        # If there are multiple occurrences or just one, sort them by column descending\n        if matches_in_row:\n            # Sort specifically on the second element (column index) in reverse order\n            matches_in_row.sort(key=lambda item: item[1], reverse=True)\n            \n            result.extend(matches_in_row)\n\n    return result\n\n# --- Testing with provided examples ---\n\nif __name__ == \"__main__\":\n    test_data = [\n        ([\n          [1,2,3,4,5,6],\n          [1,2,3,4,1,6],\n          [1,2,3,4,5,1]\n        ], 1), \n        ([], 1), \n        ([[], [1], [1, 2, 3]], 3)\n    ]\n\n    for data in test_data:\n        lst = data[0]\n        target = data[1]\n        output = get_row(lst, target)\n        print(f\"Input: {lst}, Target: {target}\")\n        print(f\"Output: {output}\\n\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/87:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "post_h2_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "post_h3_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "post_h4_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "00af38be32960de300944204f3746b2b7446e75cd2c1bda4279dc139aafcbc66",
+  "raw_source": "def get_row(lst, x):\n    \"\"\"\n    You are given a 2 dimensional data, as a nested lists,\n    which is similar to matrix, however, unlike matrices,\n    each row may contain a different number of columns.\n    \n    Given lst, and integer x, find integers x in the list,\n    and return list of tuples, [(x1, y1), (x2, y2) ...] such that\n    each tuple is a coordinate - (row, column), starting with 0.\n    \n    Sort coordinates initially by rows in ascending order.\n    Also, sort coordinates of the row by columns in descending order.\n    \"\"\"\n    \n    result = []\n    \n    # Iterate through each row using enumerate to get both index and content\n    for r_idx, row in enumerate(lst):\n        matches_in_row = []\n        \n        # Find all occurrences of x in the current row\n        c_idx = 0\n        while c_idx < len(row) and row[c_idx] == x:\n            matches_in_row.append((r_idx, c_idx))\n            c_idx += 1\n        \n        # If there are multiple occurrences or just one, sort them by column descending\n        if matches_in_row:\n            # Sort specifically on the second element (column index) in reverse order\n            matches_in_row.sort(key=lambda item: item[1], reverse=True)\n            \n            result.extend(matches_in_row)\n\n    return result\n\n# --- Testing with provided examples ---\n\nif __name__ == \"__main__\":\n    test_data = [\n        ([\n          [1,2,3,4,5,6],\n          [1,2,3,4,1,6],\n          [1,2,3,4,5,1]\n        ], 1), \n        ([], 1), \n        ([[], [1], [1, 2, 3]], 3)\n    ]\n\n    for data in test_data:\n        lst = data[0]\n        target = data[1]\n        output = get_row(lst, target)\n        print(f\"Input: {lst}, Target: {target}\")\n        print(f\"Output: {output}\\n\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/87",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "59cd9d0c537fb201cabcdfe8aa0c65ca1ed6cc6b49b957a1759b775501e00351",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "reverse_vowels",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0b9e71b71ec5d0d35e77dbb801bb3d2debb3e47978a36430bc889d26cd81dc78",
+  "final_source": "def reverse_vowels(s: str) -> str:\n    \"\"\"\n    Reverse only the vowels in the input string.\n    Vowels are defined as 'a', 'e', 'i', 'o', 'u' (case-insensitive).\n    Note: 'y' is NOT considered a vowel per this problem statement.\n\n    Args:\n        s (str): The input string.\n\n    Returns:\n        str: A new string with vowels reversed, non-vowels in place.\n    \"\"\"\n    \n    # Define set of vowels for O(1) lookup\n    vowels = {'a', 'e', 'i', 'o', 'u'}\n    \n    # Convert to list since strings are immutable\n    chars = list(s.lower())  # Work with lowercase for simplicity\n    \n    left, right = 0, len(chars) - 1\n    \n    while left < right:\n        if chars[left] not in vowels and chars[right] not in vowels:\n            left += 1\n            right -= 1\n        elif chars[left] in vowels and chars[right] in vowels:\n            # Swap the two vowels\n            chars[left], chars[right] = chars[right], chars[left]\n            left += 1\n            right -= 1\n        else:\n            # Move only one pointer to find a vowel\n            if chars[left] not in vowels:\n                left += 1\n            elif chars[right] not in vowels:\n                right -= 1\n    \n    return ''.join(chars)\n\n\n# Test the function as per requirement\nif __name__ == \"__main__\":\n    assert reverse_vowels(\"Python\") == \"Python\"\n\n# Additional test cases for clarity (optional but helpful):\nprint(reverse_vovels(\"hello\"))        # Output: 'holle'\nprint(reverse_vowels(\"aeiou\"))       # Output: 'uoiea'\nprint(reverse_vowels(\"AEIOU\"))       # Output: 'uoeiA'  (case preserved in output)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/131:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "660fbaaaea06afe668aa9a525b7cf1c3de15a4b5eb9894a09677a84c201f6b97",
+  "post_h2_sha256": "0b9e71b71ec5d0d35e77dbb801bb3d2debb3e47978a36430bc889d26cd81dc78",
+  "post_h3_sha256": "0b9e71b71ec5d0d35e77dbb801bb3d2debb3e47978a36430bc889d26cd81dc78",
+  "post_h4_sha256": "0b9e71b71ec5d0d35e77dbb801bb3d2debb3e47978a36430bc889d26cd81dc78",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "660fbaaaea06afe668aa9a525b7cf1c3de15a4b5eb9894a09677a84c201f6b97",
+  "raw_source": "def reverse_vowels(s: str) -> str:\n    \"\"\"\n    Reverse only the vowels in the input string.\n    Vowels are defined as 'a', 'e', 'i', 'o', 'u' (case-insensitive).\n    Note: 'y' is NOT considered a vowel per this problem statement.\n\n    Args:\n        s (str): The input string.\n\n    Returns:\n        str: A new string with vowels reversed, non-vowels in place.\n    \"\"\"\n    \n    # Define set of vowels for O(1) lookup\n    vowels = {'a', 'e', 'i', 'o', 'u'}\n    \n    # Convert to list since strings are immutable\n    chars = list(s.lower())  # Work with lowercase for simplicity\n    \n    left, right = 0, len(chars) - 1\n    \n    while left < right:\n        if chars[left] not in vowels and chars[right] not in vowels:\n            left += 1\n            right -= 1\n        elif chars[left] in vowels and chars[right] in vowels:\n            # Swap the two vowels\n            chars[left], chars[right] = chars[right], chars[left]\n            left += 1\n            right -= 1\n        else:\n            # Move only one pointer to find a vowel\n            if chars[left] not in vowels:\n                left += 1\n            elif chars[right] not in vowels:\n                right -= 1\n    \n    return ''.join(chars)\n\n\n# Test the function as per requirement\nassert reverse_vowels(\"Python\") == \"Python\"\n\n# Additional test cases for clarity (optional but helpful):\nprint(reverse_vovels(\"hello\"))        # Output: 'holle'\nprint(reverse_vowels(\"aeiou\"))       # Output: 'uoiea'\nprint(reverse_vowels(\"AEIOU\"))       # Output: 'uoeiA'  (case preserved in output)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/131",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

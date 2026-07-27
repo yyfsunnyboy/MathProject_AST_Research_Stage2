@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "b5446253e3629709d006a1e8d7c5b594a45f0d899ed2dfa0795611ccbf688599",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "heap_queue_largest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "final_source": "import heapq\n\ndef heap_queue_largest(numbers, k):\n    \"\"\"\n    Finds the n largest integers from a given list of numbers.\n    \n    Args:\n        numbers (list): List of integers.\n        k (int): Number of largest elements to find.\n        \n    Returns:\n        list: The k largest integers in descending order.\n    \"\"\"\n    if not isinstance(numbers, list) or not all(isinstance(x, int) for x in numbers):\n        raise TypeError(\"Input must be a list of integers.\")\n    \n    # Ensure we don't try to get more elements than available\n    n = len(numbers)\n    k = min(k, n)\n\n    if k <= 0:\n        return []\n\n    # Create a heap from the input list. \n    # Python's heapq is a min-heap by default (smallest element at root).\n    h = numbers[:]\n    heapq.heapify(h)\n\n    largest_elements = []\n    \n    # Pop the smallest k times to leave the largest elements behind?\n    # Actually, simpler logic: Pop the 'k' items from the heap. \n    # Since it's a min-heap, popping gives us the smallest first among remaining.\n    # Wait, if we want LARGEST, and we have a MIN-HEAP of ALL numbers...\n    # If we pop k times from a full list in a min-heap:\n    # 1st pop -> Smallest overall (Wrong)\n    \n    # CORRECT APPROACH FOR MAX K using Min Heap logic efficiently:\n    # We actually want to keep the largest ones. \n    # A common trick with a MIN-HEAP of size N is not ideal for \"Top K\" if we just dump everything in first.\n    # Let's re-evaluate based on standard library usage.\n    \n    # Standard efficient approach using Min Heap:\n    # 1. Push all elements into the heap (O(N)). \n    # 2. Pop k times? No, popping from a min-heap gives smallest to largest.\n    # If we pop 'k' items from a full list in a MIN-HEAP, we get the K SMALLEST items.\n    \n    # To fix this: We need the K LARGEST. \n    # Option A (Sort): O(N log N) - Simple and robust for small lists.\n    # Option B (Max Heap logic with Min Heap library): Not directly supported without negation or custom class.\n    # Option C (Heapify + Pop k times from a MAX heap simulation): Negate numbers? \n    #   If we negate all numbers, the smallest negative represents the largest original number.\n    \n    # Let's use the \"Negate\" trick to utilize Python's min-heap as a max-priority queue:\n    h_neg = [-x for x in numbers]\n    heapq.heapify(h_neg)\n    \n    result = []\n    for _ in range(k):\n        val = -heapq.heappop(h_neg) # Pop smallest negative -> Largest positive\n        result.append(val)\n\n    return result[::-1]  # Reverse to ensure strictly descending order [85, 75, 65]\n\n\n# Test Case from your prompt\nif __name__ == \"__main__\":\n    test_list = [25, 35, 22, 85, 14, 65, 75, 22, 58]\n    k_val = 3\n    \n    # The assertion expects: [85, 75, 65] (Descending)\n    output = heap_queue_largest(test_list, k_val)\n    \n    print(f\"Input: {test_list}\")\n    print(f\"k={k_val}\")\n    print(f\"Output: {output}\")\n    \n    # Verify the assertion logic manually\n    assert output == [85, 75, 65], f\"Expected [85, 75, 65] but got {output}\"\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/4:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "post_h2_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "post_h3_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "post_h4_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ab8cf4cf8b2919b979f7574afcf52117b7dc79c53b16f748fca341624a0baa34",
+  "raw_source": "import heapq\n\ndef heap_queue_largest(numbers, k):\n    \"\"\"\n    Finds the n largest integers from a given list of numbers.\n    \n    Args:\n        numbers (list): List of integers.\n        k (int): Number of largest elements to find.\n        \n    Returns:\n        list: The k largest integers in descending order.\n    \"\"\"\n    if not isinstance(numbers, list) or not all(isinstance(x, int) for x in numbers):\n        raise TypeError(\"Input must be a list of integers.\")\n    \n    # Ensure we don't try to get more elements than available\n    n = len(numbers)\n    k = min(k, n)\n\n    if k <= 0:\n        return []\n\n    # Create a heap from the input list. \n    # Python's heapq is a min-heap by default (smallest element at root).\n    h = numbers[:]\n    heapq.heapify(h)\n\n    largest_elements = []\n    \n    # Pop the smallest k times to leave the largest elements behind?\n    # Actually, simpler logic: Pop the 'k' items from the heap. \n    # Since it's a min-heap, popping gives us the smallest first among remaining.\n    # Wait, if we want LARGEST, and we have a MIN-HEAP of ALL numbers...\n    # If we pop k times from a full list in a min-heap:\n    # 1st pop -> Smallest overall (Wrong)\n    \n    # CORRECT APPROACH FOR MAX K using Min Heap logic efficiently:\n    # We actually want to keep the largest ones. \n    # A common trick with a MIN-HEAP of size N is not ideal for \"Top K\" if we just dump everything in first.\n    # Let's re-evaluate based on standard library usage.\n    \n    # Standard efficient approach using Min Heap:\n    # 1. Push all elements into the heap (O(N)). \n    # 2. Pop k times? No, popping from a min-heap gives smallest to largest.\n    # If we pop 'k' items from a full list in a MIN-HEAP, we get the K SMALLEST items.\n    \n    # To fix this: We need the K LARGEST. \n    # Option A (Sort): O(N log N) - Simple and robust for small lists.\n    # Option B (Max Heap logic with Min Heap library): Not directly supported without negation or custom class.\n    # Option C (Heapify + Pop k times from a MAX heap simulation): Negate numbers? \n    #   If we negate all numbers, the smallest negative represents the largest original number.\n    \n    # Let's use the \"Negate\" trick to utilize Python's min-heap as a max-priority queue:\n    h_neg = [-x for x in numbers]\n    heapq.heapify(h_neg)\n    \n    result = []\n    for _ in range(k):\n        val = -heapq.heappop(h_neg) # Pop smallest negative -> Largest positive\n        result.append(val)\n\n    return result[::-1]  # Reverse to ensure strictly descending order [85, 75, 65]\n\n\n# Test Case from your prompt\nif __name__ == \"__main__\":\n    test_list = [25, 35, 22, 85, 14, 65, 75, 22, 58]\n    k_val = 3\n    \n    # The assertion expects: [85, 75, 65] (Descending)\n    output = heap_queue_largest(test_list, k_val)\n    \n    print(f\"Input: {test_list}\")\n    print(f\"k={k_val}\")\n    print(f\"Output: {output}\")\n    \n    # Verify the assertion logic manually\n    assert output == [85, 75, 65], f\"Expected [85, 75, 65] but got {output}\"\n    print(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/4",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

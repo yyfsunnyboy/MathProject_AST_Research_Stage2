@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3d50398f509d9dab7f02643c6952f0925c5aaa950653f8d1ba4ef18f6e72cea8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encode",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "final_source": "def encode(message):\n    \"\"\"\n    Write a function that takes a message, and encodes in such a \n    way that it swaps case of all letters, replaces all vowels in \n    the message with the letter that appears 2 places ahead of that \n    vowel in the english alphabet. \n    \n    Examples:\n    >>> encode('test')\n    'TGST'\n    >>> encode('This is a message')\n    'tHKS KS C MGSSCGG'\n    \"\"\"\n\n    vowels = set(\"aeiouAEIOU\")  # include both cases for lookup\n    \n    result_chars = []\n    \n    for char in message:\n        if not char.isalpha():\n            # Non-letter characters are kept as-is (though problem says \"Assume only letters\", \n            # we handle spaces/punctuation just in case)\n            result_chars.append(char)\n            continue\n        \n        is_upper = char.isupper()\n        \n        # Step 1: Swap the case first\n        if is_upper:\n            base_char = char.lower()\n        else:\n            base_char = char.upper()\n        \n        # Check if it's a vowel (case-insensitive)\n        lower_base = base_char.lower()\n        if lower_base in vowels:\n            # Find the letter 2 places ahead\n            alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n            index = alphabet.index(lower_base)\n            \n            new_index = (index + 2) % len(alphabet)  # wrap around at end of alphabet\n            \n            encoded_char = alphabet[new_index]\n        else:\n            # Not a vowel, just keep the swapped case character\n            encoded_char = base_char\n        \n        result_chars.append(encoded_char)\n    \n    return \"\".join(result_chars)\n\n\n# Quick tests (optional):\nif __name__ == \"__main__\":\n    print(encode('test'))           # 'TGST'\n    print(encode('This is a message'))  # 'tHKS KS C MGSSCGG'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/93:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "post_h2_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "post_h3_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "post_h4_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a697d91ff5e216abaa5355865a38c9468a514ff1902ce18e310b6fa0f1527482",
+  "raw_source": "def encode(message):\n    \"\"\"\n    Write a function that takes a message, and encodes in such a \n    way that it swaps case of all letters, replaces all vowels in \n    the message with the letter that appears 2 places ahead of that \n    vowel in the english alphabet. \n    \n    Examples:\n    >>> encode('test')\n    'TGST'\n    >>> encode('This is a message')\n    'tHKS KS C MGSSCGG'\n    \"\"\"\n\n    vowels = set(\"aeiouAEIOU\")  # include both cases for lookup\n    \n    result_chars = []\n    \n    for char in message:\n        if not char.isalpha():\n            # Non-letter characters are kept as-is (though problem says \"Assume only letters\", \n            # we handle spaces/punctuation just in case)\n            result_chars.append(char)\n            continue\n        \n        is_upper = char.isupper()\n        \n        # Step 1: Swap the case first\n        if is_upper:\n            base_char = char.lower()\n        else:\n            base_char = char.upper()\n        \n        # Check if it's a vowel (case-insensitive)\n        lower_base = base_char.lower()\n        if lower_base in vowels:\n            # Find the letter 2 places ahead\n            alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n            index = alphabet.index(lower_base)\n            \n            new_index = (index + 2) % len(alphabet)  # wrap around at end of alphabet\n            \n            encoded_char = alphabet[new_index]\n        else:\n            # Not a vowel, just keep the swapped case character\n            encoded_char = base_char\n        \n        result_chars.append(encoded_char)\n    \n    return \"\".join(result_chars)\n\n\n# Quick tests (optional):\nif __name__ == \"__main__\":\n    print(encode('test'))           # 'TGST'\n    print(encode('This is a message'))  # 'tHKS KS C MGSSCGG'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/93",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

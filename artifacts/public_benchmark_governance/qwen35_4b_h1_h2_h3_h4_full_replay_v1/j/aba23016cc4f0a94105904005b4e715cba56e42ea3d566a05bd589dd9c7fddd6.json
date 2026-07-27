@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "aba23016cc4f0a94105904005b4e715cba56e42ea3d566a05bd589dd9c7fddd6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "triples_sum_to_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "final_source": "def triples_sum_to_zero(l: list):\n    \"\"\"\n    triples_sum_to_zero takes a list of integers as an input.\n    it returns True if there are three distinct elements in the list that\n    sum to zero, and False otherwise.\n\n    >>> triples_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> triples_sum_to_zero([1, 3, -2, 1])\n    True\n    >>> triples_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])\n    True\n    >>> triples_sum_to_zero([1])\n    False\n    \"\"\"\n\n    n = len(l)\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                if l[i] + l[j] + l[k] == 0:\n                    return True\n    return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/40:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "post_h2_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "post_h3_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "post_h4_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "87aef7333addbf49a769eab41adad427b289af63dc2bd6bc4542704ec9516755",
+  "raw_source": "def triples_sum_to_zero(l: list):\n    \"\"\"\n    triples_sum_to_zero takes a list of integers as an input.\n    it returns True if there are three distinct elements in the list that\n    sum to zero, and False otherwise.\n\n    >>> triples_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> triples_sum_to_zero([1, 3, -2, 1])\n    True\n    >>> triples_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])\n    True\n    >>> triples_sum_to_zero([1])\n    False\n    \"\"\"\n\n    n = len(l)\n    for i in range(n):\n        for j in range(i + 1, n):\n            for k in range(j + 1, n):\n                if l[i] + l[j] + l[k] == 0:\n                    return True\n    return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/40",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

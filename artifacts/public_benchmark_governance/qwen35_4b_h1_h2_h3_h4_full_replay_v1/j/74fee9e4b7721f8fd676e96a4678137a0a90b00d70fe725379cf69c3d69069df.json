@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "74fee9e4b7721f8fd676e96a4678137a0a90b00d70fe725379cf69c3d69069df",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_odd_collatz",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "final_source": "def get_odd_collatz(n):\n    \"\"\"\n    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.\n\n    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined\n    as follows: start with any positive integer n. Then each term is obtained from the \n    previous term as follows: if the previous term is even, the next term is one half of \n    the previous term. If the previous term is odd, the next term is 3 times the previous\n    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.\n\n    Note: \n        1. Collatz(1) is [1].\n        2. returned list sorted in increasing order.\n\n    For example:\n    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.\n    \"\"\"\n\n    def generate_sequence(num):\n        while num != 1:\n            yield num\n            if num % 2 == 0:\n                num = num // 2\n            else:\n                num = 3 * num + 1\n        yield 1\n    \n    sequence = list(generate_sequence(n))\n    odd_numbers = [x for x in sequence if x % 2 != 0]\n    return sorted(odd_numbers)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/123:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "post_h2_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "post_h3_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "post_h4_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a764d73f3f0d5d71e2ef30ed86af68406887f7cc6c5b1040650cd349cc9e734c",
+  "raw_source": "def get_odd_collatz(n):\n    \"\"\"\n    Given a positive integer n, return a sorted list that has the odd numbers in collatz sequence.\n\n    The Collatz conjecture is a conjecture in mathematics that concerns a sequence defined\n    as follows: start with any positive integer n. Then each term is obtained from the \n    previous term as follows: if the previous term is even, the next term is one half of \n    the previous term. If the previous term is odd, the next term is 3 times the previous\n    term plus 1. The conjecture is that no matter what value of n, the sequence will always reach 1.\n\n    Note: \n        1. Collatz(1) is [1].\n        2. returned list sorted in increasing order.\n\n    For example:\n    get_odd_collatz(5) returns [1, 5] # The collatz sequence for 5 is [5, 16, 8, 4, 2, 1], so the odd numbers are only 1, and 5.\n    \"\"\"\n\n    def generate_sequence(num):\n        while num != 1:\n            yield num\n            if num % 2 == 0:\n                num = num // 2\n            else:\n                num = 3 * num + 1\n        yield 1\n    \n    sequence = list(generate_sequence(n))\n    odd_numbers = [x for x in sequence if x % 2 != 0]\n    return sorted(odd_numbers)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/123",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

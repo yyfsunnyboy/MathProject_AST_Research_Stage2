@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4b4e29be0a1ed8ac4a665cac30ffccc8cbf89ebb977ea2dd3cb28d9a959c1baa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "surfacearea_cube",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8879f6a531d112abd292e5f9d01158bb9fd730eae6b41be10c1321045dd02247",
+  "final_source": "def surface_area_cube(size):\n    \"\"\"\n    Calculate the surface area of a cube with side length `size`.\n    \n    A cube has 6 faces, each being a square of size (side * side).\n    Surface Area = 6 * (side ** 2)\n    \n    Args:\n        size (int or float): The edge length of the cube.\n        \n    Returns:\n        int or float: Total surface area of the cube.\n    \"\"\"\n    return 6 * (size ** 2)\n\n# Test case as provided in your example\nassert surface_area_cube(5) == 150, \"Test failed for size=5\"\n\nsurfacearea_cube = surface_area_cube\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/441:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8879f6a531d112abd292e5f9d01158bb9fd730eae6b41be10c1321045dd02247",
+  "post_h2_sha256": "8879f6a531d112abd292e5f9d01158bb9fd730eae6b41be10c1321045dd02247",
+  "post_h3_sha256": "8879f6a531d112abd292e5f9d01158bb9fd730eae6b41be10c1321045dd02247",
+  "post_h4_sha256": "8879f6a531d112abd292e5f9d01158bb9fd730eae6b41be10c1321045dd02247",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b8e75c1e9e43c34d5d8cd68ea00d1221e13b56bb4c046235e00071158ae0fba3",
+  "raw_source": "def surface_area_cube(size):\n    \"\"\"\n    Calculate the surface area of a cube with side length `size`.\n    \n    A cube has 6 faces, each being a square of size (side * side).\n    Surface Area = 6 * (side ** 2)\n    \n    Args:\n        size (int or float): The edge length of the cube.\n        \n    Returns:\n        int or float: Total surface area of the cube.\n    \"\"\"\n    return 6 * (size ** 2)\n\n# Test case as provided in your example\nassert surface_area_cube(5) == 150, \"Test failed for size=5\"\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/441",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

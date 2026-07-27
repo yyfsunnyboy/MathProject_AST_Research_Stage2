@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9dc19d6e9f874c871517bc32556a1f71fa1fa0defa67f7fba68b03c2b877fae4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "lateralsuface_cylinder",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a991e635108baad30da4276a82c2dfc1d020532dc24df6d843d75d7155bd13e8",
+  "final_source": "import math\n\ndef lateralsurface_cylinder(radius, height):\n    return 2 * math.pi * radius * height\n\n# Test case from your example (note corrected typo in parameter name)\nassert math.isclose(lateralsurface_cylinder(10, 5), 314.1592653589793, rel_tol=0.001)\n\nlateralsuface_cylinder = lateralsurface_cylinder\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/233:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a991e635108baad30da4276a82c2dfc1d020532dc24df6d843d75d7155bd13e8",
+  "post_h2_sha256": "a991e635108baad30da4276a82c2dfc1d020532dc24df6d843d75d7155bd13e8",
+  "post_h3_sha256": "a991e635108baad30da4276a82c2dfc1d020532dc24df6d843d75d7155bd13e8",
+  "post_h4_sha256": "a991e635108baad30da4276a82c2dfc1d020532dc24df6d843d75d7155bd13e8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "312e08a01a85319713eef6abcc7b68b7d5dd67c103c6cba7356d0d502d9fc91a",
+  "raw_source": "import math\n\ndef lateralsurface_cylinder(radius, height):\n    return 2 * math.pi * radius * height\n\n# Test case from your example (note corrected typo in parameter name)\nassert math.isclose(lateralsurface_cylinder(10, 5), 314.1592653589793, rel_tol=0.001)\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/233",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

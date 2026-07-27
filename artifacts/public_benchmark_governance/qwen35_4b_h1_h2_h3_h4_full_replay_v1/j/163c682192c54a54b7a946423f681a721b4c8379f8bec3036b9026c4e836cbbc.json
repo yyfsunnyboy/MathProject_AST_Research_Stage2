@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "163c682192c54a54b7a946423f681a721b4c8379f8bec3036b9026c4e836cbbc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_element_in_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "final_source": "def count_element_in_list(matrix, element):\n    \"\"\"\n    Counts how many sublists in a list of lists contain a specific element.\n    \n    Args:\n        matrix (list[list]): The input structure containing multiple sublists.\n        element (any): The value to search for within the sublists.\n        \n    Returns:\n        int: The count of sublists that include the target element.\n    \"\"\"\n    count = 0\n    \n    # Iterate through each sublist in the main list\n    for sublist in matrix:\n        if element in sublist:\n            count += 1\n            \n    return count\n\n# Test case provided in your prompt\nif __name__ == \"__main__\":\n    test_list = [[1, 3], [5, 7], [1, 11], [1, 15, 7]]\n    \n    # The element '1' appears in:\n    # - [1, 3] (Index 0)\n    # - [1, 11] (Index 2)\n    # - [1, 15, 7] (Index 3)\n    # It does NOT appear in [5, 7].\n    \n    result = count_element_in_list(test_list, 1)\n    \n    assert result == 3, f\"Expected 3, but got {result}\"\n    print(f\"The number of sublists containing the element is: {result}\")\n\n# Additional test cases for robustness\nif __name__ == \"__main__\":\n    # Test with an empty list\n    assert count_element_in_list([], 1) == 0\n    \n    # Test where every sublist contains the element\n    assert count_element_in_list([[2], [3, 4]], 5) == 0\n    \n    print(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/425:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "post_h2_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "post_h3_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "post_h4_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6b0af1a56adc1d85a7b0b7275926ead8c7da73a11c70ecdb061104d8f5ec0177",
+  "raw_source": "def count_element_in_list(matrix, element):\n    \"\"\"\n    Counts how many sublists in a list of lists contain a specific element.\n    \n    Args:\n        matrix (list[list]): The input structure containing multiple sublists.\n        element (any): The value to search for within the sublists.\n        \n    Returns:\n        int: The count of sublists that include the target element.\n    \"\"\"\n    count = 0\n    \n    # Iterate through each sublist in the main list\n    for sublist in matrix:\n        if element in sublist:\n            count += 1\n            \n    return count\n\n# Test case provided in your prompt\nif __name__ == \"__main__\":\n    test_list = [[1, 3], [5, 7], [1, 11], [1, 15, 7]]\n    \n    # The element '1' appears in:\n    # - [1, 3] (Index 0)\n    # - [1, 11] (Index 2)\n    # - [1, 15, 7] (Index 3)\n    # It does NOT appear in [5, 7].\n    \n    result = count_element_in_list(test_list, 1)\n    \n    assert result == 3, f\"Expected 3, but got {result}\"\n    print(f\"The number of sublists containing the element is: {result}\")\n\n# Additional test cases for robustness\nif __name__ == \"__main__\":\n    # Test with an empty list\n    assert count_element_in_list([], 1) == 0\n    \n    # Test where every sublist contains the element\n    assert count_element_in_list([[2], [3, 4]], 5) == 0\n    \n    print(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/425",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

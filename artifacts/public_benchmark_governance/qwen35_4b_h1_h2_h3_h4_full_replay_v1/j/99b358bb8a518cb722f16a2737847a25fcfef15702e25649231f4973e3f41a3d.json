@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "99b358bb8a518cb722f16a2737847a25fcfef15702e25649231f4973e3f41a3d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "prod_signs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "final_source": "def prod_signs(arr):\n    if len(arr) == 0:\n        return None\n    \n    sum_magnitudes = sum(abs(x) for x in arr)\n    \n    sign_product = 1\n    has_zero = False\n    \n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        \n        if num > 0:\n            sign_product *= 1\n        else:\n            sign_product *= -1\n    \n    return sum_magnitudes * sign_product",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/128:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "post_h2_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "post_h3_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "post_h4_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "383174b89d5f571c4a9078cb3bd0f20fb28eea9852a6069006c6e052c5c7e9d4",
+  "raw_source": "def prod_signs(arr):\n    if len(arr) == 0:\n        return None\n    \n    sum_magnitudes = sum(abs(x) for x in arr)\n    \n    sign_product = 1\n    has_zero = False\n    \n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        \n        if num > 0:\n            sign_product *= 1\n        else:\n            sign_product *= -1\n    \n    return sum_magnitudes * sign_product",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/128",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0fcb6f048215e59db2763c1458aed16eeeca14ac1a5a48a0daec758c4cb7de52",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "monotonic",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "final_source": "def monotonic(l: list):\n    \"\"\"Return True if list elements are monotonically increasing or decreasing.\n    \n    Examples:\n        >>> monotonic([1, 2, 4, 20])\n        True\n        \n        >>> monotonic([1, 20, 4, 10])\n        False\n        \n        >>> monotonic([4, 1, 0, -10])\n        True\n    \n    \"\"\"\n    if len(l) <= 1:\n        return True\n\n    # Determine the direction from the first two elements\n    increasing = l[1] >= l[0]\n    \n    for i in range(2, len(l)):\n        current_inc = l[i] >= l[i-1]\n        \n        if (increasing and not current_inc) or \\\n           (not increasing and current_inc):\n            return False\n    \n    return True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/57:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "post_h2_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "post_h3_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "post_h4_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cf2c57220119295968b26ea052c1a2f0406dad6366486c1ba9173a16cbdb183c",
+  "raw_source": "def monotonic(l: list):\n    \"\"\"Return True if list elements are monotonically increasing or decreasing.\n    \n    Examples:\n        >>> monotonic([1, 2, 4, 20])\n        True\n        \n        >>> monotonic([1, 20, 4, 10])\n        False\n        \n        >>> monotonic([4, 1, 0, -10])\n        True\n    \n    \"\"\"\n    if len(l) <= 1:\n        return True\n\n    # Determine the direction from the first two elements\n    increasing = l[1] >= l[0]\n    \n    for i in range(2, len(l)):\n        current_inc = l[i] >= l[i-1]\n        \n        if (increasing and not current_inc) or \\\n           (not increasing and current_inc):\n            return False\n    \n    return True\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/57",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

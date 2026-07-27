@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d80a350c65c77651dd9add9a5b28de826f325492806c7a5164fe4432f02ccc2e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "round_and_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "final_source": "def round_and_sum(numbers):\n    \"\"\"\n    Rounds every number in the list and returns:\n        (sum of rounded numbers) * len(list)\n    \n    Example usage:\n        assert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, \n                             -12.22, 14.20, -5.20, 17.50]) == 243\n    \"\"\"\n    rounded_numbers = [round(num) for num in numbers]\n    total_sum = sum(rounded_numbers)\n    return total_sum * len(numbers)\n\n\n# Test assertion (uncomment to run if needed):\nif __name__ == \"__main__\":\n    assert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, \n                         -12.22, 14.20, -5.20, 17.50]) == 243\n    print(\"Assertion passed!\")\n\n# Optional: show intermediate values for clarity\nnumbers = [22.4, 4.0, -16.22, -9.10, 11.00, \n           -12.22, 14.20, -5.20, 17.50]\n\nrounded_numbers = [round(num) for num in numbers]\nprint(\"Rounded list:\", rounded_numbers)\ntotal_sum = sum(rounded_numbers)\nlength = len(numbers)\nresult = total_sum * length\nprint(f\"Sum of rounded: {total_sum}\")\nprint(f\"Length: {length}\")\nprint(f\"Result (sum * length): {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/419:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "post_h2_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "post_h3_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "post_h4_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4f2ff1074537a3606169f2f1d6c03c52ff6c6d7e498ea1fbfd0f03e6f7f0acae",
+  "raw_source": "def round_and_sum(numbers):\n    \"\"\"\n    Rounds every number in the list and returns:\n        (sum of rounded numbers) * len(list)\n    \n    Example usage:\n        assert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, \n                             -12.22, 14.20, -5.20, 17.50]) == 243\n    \"\"\"\n    rounded_numbers = [round(num) for num in numbers]\n    total_sum = sum(rounded_numbers)\n    return total_sum * len(numbers)\n\n\n# Test assertion (uncomment to run if needed):\nif __name__ == \"__main__\":\n    assert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, \n                         -12.22, 14.20, -5.20, 17.50]) == 243\n    print(\"Assertion passed!\")\n\n# Optional: show intermediate values for clarity\nnumbers = [22.4, 4.0, -16.22, -9.10, 11.00, \n           -12.22, 14.20, -5.20, 17.50]\n\nrounded_numbers = [round(num) for num in numbers]\nprint(\"Rounded list:\", rounded_numbers)\ntotal_sum = sum(rounded_numbers)\nlength = len(numbers)\nresult = total_sum * length\nprint(f\"Sum of rounded: {total_sum}\")\nprint(f\"Length: {length}\")\nprint(f\"Result (sum * length): {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/419",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

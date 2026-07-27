@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7d9aa05cf9a7463a0a27fe780fa09ce7dc44ed409ff3584c6791c24fa3acd9b6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "diff_even_odd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "final_source": "def diff_even_odd(lst):\n    even_num = None\n    odd_num = None\n    \n    for num in lst:\n        if num % 2 == 0 and even_num is None:\n            even_num = num\n        elif num % 2 != 0 and odd_num is None:\n            odd_num = num\n            \n        if even_num is not None and odd_num is not None:\n            break\n    \n    return (even_num - odd_num) if even_num is not None else None",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/594:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "post_h2_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "post_h3_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "post_h4_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7c232198a791b371cbb7a7513ab74b435dec926db60df9a43afb3410c53314e9",
+  "raw_source": "def diff_even_odd(lst):\n    even_num = None\n    odd_num = None\n    \n    for num in lst:\n        if num % 2 == 0 and even_num is None:\n            even_num = num\n        elif num % 2 != 0 and odd_num is None:\n            odd_num = num\n            \n        if even_num is not None and odd_num is not None:\n            break\n    \n    return (even_num - odd_num) if even_num is not None else None",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/594",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

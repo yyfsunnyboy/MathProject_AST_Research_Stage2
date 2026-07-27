@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b63c52ef04a8dfba6a9715e945d5562a080128e55b7e86044b3388ae99b94b33",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encode",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "final_source": "def encode(message):\n    vowels = 'aeiouAEIOU'\n    result = []\n    \n    for char in message:\n        if char.isalpha():\n            # Swap case\n            swapped_char = char.swapcase()\n            \n            # Check if it's a vowel and replace with letter 2 places ahead\n            original_lower = char.lower()\n            if original_lower in 'aeiou':\n                index = ord(original_lower) - ord('a')\n                new_index = (index + 2) % 26\n                replacement_char = chr(new_index + ord('a'))\n                \n                # Determine case of the replacement character based on original char's case\n                if swapped_char.isupper():\n                    result.append(replacement_char.upper())\n                else:\n                    result.append(replacement_char.lower())\n            else:\n                result.append(swapped_char)\n        else:\n            result.append(char)\n    \n    return ''.join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/93:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "post_h2_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "post_h3_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "post_h4_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c04c63f28658f2d365fa6bd77f79c21320fb73e913e3ff1d84ae4d700b9cf80a",
+  "raw_source": "def encode(message):\n    vowels = 'aeiouAEIOU'\n    result = []\n    \n    for char in message:\n        if char.isalpha():\n            # Swap case\n            swapped_char = char.swapcase()\n            \n            # Check if it's a vowel and replace with letter 2 places ahead\n            original_lower = char.lower()\n            if original_lower in 'aeiou':\n                index = ord(original_lower) - ord('a')\n                new_index = (index + 2) % 26\n                replacement_char = chr(new_index + ord('a'))\n                \n                # Determine case of the replacement character based on original char's case\n                if swapped_char.isupper():\n                    result.append(replacement_char.upper())\n                else:\n                    result.append(replacement_char.lower())\n            else:\n                result.append(swapped_char)\n        else:\n            result.append(char)\n    \n    return ''.join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/93",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

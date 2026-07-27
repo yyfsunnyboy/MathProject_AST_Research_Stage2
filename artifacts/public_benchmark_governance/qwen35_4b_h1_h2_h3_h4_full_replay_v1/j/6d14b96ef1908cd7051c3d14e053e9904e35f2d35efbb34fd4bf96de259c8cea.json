@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6d14b96ef1908cd7051c3d14e053e9904e35f2d35efbb34fd4bf96de259c8cea",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "search",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "final_source": "def search(arr):\n    left, right = 0, len(arr) - 1\n    \n    while left < right:\n        mid = (left + right) // 2\n        \n        # Check if the element at mid is even-indexed in its pair group\n        # In a sorted array with duplicates appearing twice except one unique element:\n        # If arr[mid] == arr[mid+1], then all elements from left to mid are paired, \n       # so the single element must be on the right side.\n        if arr[mid] == arr[mid + 1]:\n            left = mid + 2\n        else:\n            # If arr[mid] != arr[mid+1], it means either:\n            # 1. The unique element is at mid (if we are in the first half)\n            # 2. Or the pattern of pairs has shifted, so check if left side is balanced\n            \n            # To ensure O(log n), we need to verify which half contains the single element.\n            # If arr[mid] != arr[mid+1], then mid could be the unique one or part of a pair ending at mid-1? \n            # Actually in sorted array: pairs are (0,1), (2,3)... unless interrupted by unique.\n            \n            # Let's refine logic for binary search on this specific problem type:\n            # If arr[mid] == arr[mid+1], the single element is to the right.\n            # If arr[mid] != arr[mid+1]:\n            #   We need to check if mid-2 and mid are same? No, simpler approach:\n            \n            # Standard logic for \"single number in sorted array\":\n            # At index i (0-based), we expect arr[i] == arr[i^1]. \n            # If they differ at some point, the single element is before that.\n            \n            pass\n\n    return left",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/119:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "post_h2_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "post_h3_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "post_h4_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "68f24d7684191233bd6ab46c9f125c392afe7e8e2a1a6128975eda235d4b6907",
+  "raw_source": "def search(arr):\n    left, right = 0, len(arr) - 1\n    \n    while left < right:\n        mid = (left + right) // 2\n        \n        # Check if the element at mid is even-indexed in its pair group\n        # In a sorted array with duplicates appearing twice except one unique element:\n        # If arr[mid] == arr[mid+1], then all elements from left to mid are paired, \n       # so the single element must be on the right side.\n        if arr[mid] == arr[mid + 1]:\n            left = mid + 2\n        else:\n            # If arr[mid] != arr[mid+1], it means either:\n            # 1. The unique element is at mid (if we are in the first half)\n            # 2. Or the pattern of pairs has shifted, so check if left side is balanced\n            \n            # To ensure O(log n), we need to verify which half contains the single element.\n            # If arr[mid] != arr[mid+1], then mid could be the unique one or part of a pair ending at mid-1? \n            # Actually in sorted array: pairs are (0,1), (2,3)... unless interrupted by unique.\n            \n            # Let's refine logic for binary search on this specific problem type:\n            # If arr[mid] == arr[mid+1], the single element is to the right.\n            # If arr[mid] != arr[mid+1]:\n            #   We need to check if mid-2 and mid are same? No, simpler approach:\n            \n            # Standard logic for \"single number in sorted array\":\n            # At index i (0-based), we expect arr[i] == arr[i^1]. \n            # If they differ at some point, the single element is before that.\n            \n            pass\n\n    return left",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/119",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

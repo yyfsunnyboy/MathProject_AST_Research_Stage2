@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b14957cb275f1eeb707f97195c163e792e53e3438efa10453992f64208412475",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "prime_fib",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "final_source": "def prime_fib(n: int):\n    def is_prime(num):\n        if num < 2:\n            return False\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                return False\n        return True\n\n    a, b = 1, 1\n    count = 0\n    while count < n:\n        if is_prime(a):\n            count += 1\n        temp = a + b\n        a = b\n        b = temp\n    \n    # Adjust for the fact that we start counting from F(2)=3 in my loop logic above, but need to match examples.\n    # Examples show: \n    # n=1 -> 2 (F_3)\n    # n=2 -> 3 (F_4)\n    # n=3 -> 5 (F_6) - Wait F(7)=13? Let's recheck standard Fib sequence.\n    # Standard: 0, 1, 1, 2, 3, 5, 8, 13...\n    # Primes in order: \n    # 2 (index 3), 3 (index 4), 5 (index 6 is wrong? F(7)=13. Let's list carefully)\n    # Fib: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...\n    # Primes: \n    # F(3)=2 (Prime) -> n=1\n    # F(4)=3 (Prime) -> n=2\n    # F(6)=8? No. Fib sequence indices usually start at F0=0, F1=1 or F1=1, F2=1.\n    # Let's trace manually: \n    # 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...\n    # Primes found in this sequence (excluding duplicates if any):\n    # 2 is prime. Next is 3? No, after 2 comes 3 only if we skip the second 1 and first 1? \n    # Sequence: F(0)=0, F(1)=1, F(2)=1, F(3)=2 (P), F(4)=3 (P), F(5)=5 (P), F(6)=8, F(7)=13 (P), F(8)=21, F(9)=34, F(10)=55, F(11)=89 (P).\n    # Primes: 2, 3, 5, 13, 89. \n    # This matches the examples exactly!\n    # So we need to iterate through Fibonacci numbers starting from index where value >= 2 and check primality.\n\n    a = 0\n    b = 1\n    count = 0\n    \n    while True:\n        c = a + b\n        if is_prime(c):\n            count += 1\n            if count == n:\n                return c\n        # Optimization: F(n) for even n > 2 are not prime (divisible by F(3)=2? No, divisible by something else). \n        # Actually known property: If p|F_n and p is odd prime, then order of Fibonacci numbers... simpler to just check.\n        \n        a = b\n        b = c",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/39:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "post_h2_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "post_h3_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "post_h4_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9ef68861300fe903ff720ad6bc577921bb45bd12730ded9b313eeb733fa76b23",
+  "raw_source": "def prime_fib(n: int):\n    def is_prime(num):\n        if num < 2:\n            return False\n        for i in range(2, int(num ** 0.5) + 1):\n            if num % i == 0:\n                return False\n        return True\n\n    a, b = 1, 1\n    count = 0\n    while count < n:\n        if is_prime(a):\n            count += 1\n        temp = a + b\n        a = b\n        b = temp\n    \n    # Adjust for the fact that we start counting from F(2)=3 in my loop logic above, but need to match examples.\n    # Examples show: \n    # n=1 -> 2 (F_3)\n    # n=2 -> 3 (F_4)\n    # n=3 -> 5 (F_6) - Wait F(7)=13? Let's recheck standard Fib sequence.\n    # Standard: 0, 1, 1, 2, 3, 5, 8, 13...\n    # Primes in order: \n    # 2 (index 3), 3 (index 4), 5 (index 6 is wrong? F(7)=13. Let's list carefully)\n    # Fib: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...\n    # Primes: \n    # F(3)=2 (Prime) -> n=1\n    # F(4)=3 (Prime) -> n=2\n    # F(6)=8? No. Fib sequence indices usually start at F0=0, F1=1 or F1=1, F2=1.\n    # Let's trace manually: \n    # 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89...\n    # Primes found in this sequence (excluding duplicates if any):\n    # 2 is prime. Next is 3? No, after 2 comes 3 only if we skip the second 1 and first 1? \n    # Sequence: F(0)=0, F(1)=1, F(2)=1, F(3)=2 (P), F(4)=3 (P), F(5)=5 (P), F(6)=8, F(7)=13 (P), F(8)=21, F(9)=34, F(10)=55, F(11)=89 (P).\n    # Primes: 2, 3, 5, 13, 89. \n    # This matches the examples exactly!\n    # So we need to iterate through Fibonacci numbers starting from index where value >= 2 and check primality.\n\n    a = 0\n    b = 1\n    count = 0\n    \n    while True:\n        c = a + b\n        if is_prime(c):\n            count += 1\n            if count == n:\n                return c\n        # Optimization: F(n) for even n > 2 are not prime (divisible by F(3)=2? No, divisible by something else). \n        # Actually known property: If p|F_n and p is odd prime, then order of Fibonacci numbers... simpler to just check.\n        \n        a = b\n        b = c",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/39",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

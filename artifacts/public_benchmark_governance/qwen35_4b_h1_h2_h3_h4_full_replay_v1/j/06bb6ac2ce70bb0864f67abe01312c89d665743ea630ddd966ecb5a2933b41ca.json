@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "06bb6ac2ce70bb0864f67abe01312c89d665743ea630ddd966ecb5a2933b41ca",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "divisor",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "be01668f4a1a2490f13be4ae63cfa937ec2bd9c5b6b4b074b966036a2620cfff",
+  "final_source": "def count_divisors(n: int) -> int:\n    \"\"\"Return the number of positive divisors of n.\"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    # Count divisors up to sqrt(n) and mirror them.\n    i = 1\n    count = 0\n    \n    while i * i <= n:\n        remainder = n % i\n        if remainder == 0:\n            # If divisor is perfect square, add once; otherwise twice (i and n//i).\n            if i * i == n:\n                count += 1\n            else:\n                count += 2\n        i += 1\n    \n    return count\n\n\n# Example assertion from the problem statement\nassert count_divisors(15) == 4\n\ndivisor = count_divisors\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/96:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "be01668f4a1a2490f13be4ae63cfa937ec2bd9c5b6b4b074b966036a2620cfff",
+  "post_h2_sha256": "be01668f4a1a2490f13be4ae63cfa937ec2bd9c5b6b4b074b966036a2620cfff",
+  "post_h3_sha256": "be01668f4a1a2490f13be4ae63cfa937ec2bd9c5b6b4b074b966036a2620cfff",
+  "post_h4_sha256": "be01668f4a1a2490f13be4ae63cfa937ec2bd9c5b6b4b074b966036a2620cfff",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6b86803fd49ab642bc55d4ea0dfd371b1dece371c7bf1c0700a4bbe22549d43d",
+  "raw_source": "def count_divisors(n: int) -> int:\n    \"\"\"Return the number of positive divisors of n.\"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    # Count divisors up to sqrt(n) and mirror them.\n    i = 1\n    count = 0\n    \n    while i * i <= n:\n        remainder = n % i\n        if remainder == 0:\n            # If divisor is perfect square, add once; otherwise twice (i and n//i).\n            if i * i == n:\n                count += 1\n            else:\n                count += 2\n        i += 1\n    \n    return count\n\n\n# Example assertion from the problem statement\nassert count_divisors(15) == 4\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/96",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "73f45ab668a43885cee730304a3f4fcb19105217d1b941556fe6d031c68dea59",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "split_Arr",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "final_source": "def split_Arr(arr: list, n: int) -> list:\n    \"\"\"\n    Splits the array at the nth element.\n    The first 'n' elements are moved to the end of the list.\n    \n    Args:\n        arr (list): Input list of integers.\n        n (int): Index up to which the split occurs (0-based).\n        \n    Returns:\n        list: A new list with elements rotated right by 1 position relative to index n.\n              Effectively, it performs a rotation where [arr[0]...arr[n-1]] \n              is moved after arr[n:].\n    \n    Example:\n        split_Arr([12, 10, 5, 6, 52, 36], 2) -> [5, 6, 52, 36, 12, 10]\n    \"\"\"\n    if n < 0 or n > len(arr):\n        raise ValueError(\"Index 'n' must be between 0 and the length of the array.\")\n\n    # Split into two parts: first part (indices 0 to n-1) and second part (index n onwards)\n    first_part = arr[:n]      # [12, 10] when n=2\n    second_part = arr[n:]     # [5, 6, 52, 36]\n\n    # Concatenate them in the order: second_part followed by first_part\n    return second_part + first_part\n\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = split_Arr([12, 10, 5, 6, 52, 36], 2)\n    expected = [5, 6, 52, 36, 12, 10]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/586:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "post_h2_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "post_h3_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "post_h4_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cdcaa8930e9738fc1f49dc1b201b611dc891ed4d698f96434e50faa14b72c963",
+  "raw_source": "def split_Arr(arr: list, n: int) -> list:\n    \"\"\"\n    Splits the array at the nth element.\n    The first 'n' elements are moved to the end of the list.\n    \n    Args:\n        arr (list): Input list of integers.\n        n (int): Index up to which the split occurs (0-based).\n        \n    Returns:\n        list: A new list with elements rotated right by 1 position relative to index n.\n              Effectively, it performs a rotation where [arr[0]...arr[n-1]] \n              is moved after arr[n:].\n    \n    Example:\n        split_Arr([12, 10, 5, 6, 52, 36], 2) -> [5, 6, 52, 36, 12, 10]\n    \"\"\"\n    if n < 0 or n > len(arr):\n        raise ValueError(\"Index 'n' must be between 0 and the length of the array.\")\n\n    # Split into two parts: first part (indices 0 to n-1) and second part (index n onwards)\n    first_part = arr[:n]      # [12, 10] when n=2\n    second_part = arr[n:]     # [5, 6, 52, 36]\n\n    # Concatenate them in the order: second_part followed by first_part\n    return second_part + first_part\n\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = split_Arr([12, 10, 5, 6, 52, 36], 2)\n    expected = [5, 6, 52, 36, 12, 10]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/586",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "576f73344e61cb2936ed69fbca2a545157468767915fd2d8860bb410f565d738",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_min_heap",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "final_source": "def check_min_heap(arr):\n    if len(arr) == 0:\n        return True\n    \n    for i in range(len(arr)):\n        left_child = (i + 1) * 2 - 1\n        right_child = (i + 1) * 2\n        \n        # Check bounds to ensure children exist before comparison\n        if left_child < len(arr):\n            if arr[i] > arr[left_child]:\n                return False\n        if right_child < len(arr):\n            if arr[i] > arr[right_child]:\n                return False\n    \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/751:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "post_h2_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "post_h3_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "post_h4_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2604d36085fbf9a82ac9b5dc5cf948fa6ed71182319c2e4add079b655b220a59",
+  "raw_source": "def check_min_heap(arr):\n    if len(arr) == 0:\n        return True\n    \n    for i in range(len(arr)):\n        left_child = (i + 1) * 2 - 1\n        right_child = (i + 1) * 2\n        \n        # Check bounds to ensure children exist before comparison\n        if left_child < len(arr):\n            if arr[i] > arr[left_child]:\n                return False\n        if right_child < len(arr):\n            if arr[i] > arr[right_child]:\n                return False\n    \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/751",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

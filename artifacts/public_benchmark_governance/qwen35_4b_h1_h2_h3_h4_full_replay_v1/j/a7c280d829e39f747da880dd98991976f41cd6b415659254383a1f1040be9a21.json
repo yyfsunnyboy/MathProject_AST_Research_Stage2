@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "empty_suite_pass_inserted",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a7c280d829e39f747da880dd98991976f41cd6b415659254383a1f1040be9a21",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sum_Of_Subarray_Prod",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9eb4d6ad08e9c554885fd31f9f5ddc0ec6c7076f5e58e3e777b2ac16972c6435",
+  "final_source": "def sum_Of_Subarray_Prod(lst):\n    total_sum = 0\n    \n    n = len(lst)\n    \n    for i in range(n):\n        current_product = lst[i]\n        \n        # Single element sublist [lst[i]]\n        if i == 0:\n            pass\n        \n        for j in range(i, n):\n            product = 1\n            \n            for k in range(j - i + 1):\n                index = i + k\n                \n                if k > 0 and lst[index] != 0:\n                    pass\n                    # If we encounter a zero, the product resets to 0 for subsequent elements starting from this point within the same sublist logic unless it's just [lst[i]]... wait.\n                    # Actually, standard definition of subarray is contiguous segment. \n                    # Product of empty set? Usually not considered in such sums unless specified. Assuming non-empty subarrays.\n                    \n                if k == 0:\n                    product = lst[index]\n                \n                else:\n                    product *= lst[index]\n            \n            total_sum += product\n    \n    return total_sum\n\n# Test case to verify logic manually or via assert as per prompt structure (though only code requested)\n# The assertion in the prompt implies: \n# Subarrays of [1,2,3]:\n# [1] -> 1\n# [2] -> 2\n# [3] -> 3\n# [1,2] -> 2\n# [2,3] -> 6\n# [1,2,3] -> 6\n# Sum = 1+2+3+2+6+6 = 20. Correct.\n\nassert sum_Of_Subarray_Prod([1,2,3]) == 20",
+  "first_effective_rule": "empty_suite_pass_insertion_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/734:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H3"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "02b9ec2022d4706c464720f4cfe6a61f9d3a0120a17338bf8a8c741fbcf57420",
+  "post_h2_sha256": "02b9ec2022d4706c464720f4cfe6a61f9d3a0120a17338bf8a8c741fbcf57420",
+  "post_h3_sha256": "9eb4d6ad08e9c554885fd31f9f5ddc0ec6c7076f5e58e3e777b2ac16972c6435",
+  "post_h4_sha256": "9eb4d6ad08e9c554885fd31f9f5ddc0ec6c7076f5e58e3e777b2ac16972c6435",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "02b9ec2022d4706c464720f4cfe6a61f9d3a0120a17338bf8a8c741fbcf57420",
+  "raw_source": "def sum_Of_Subarray_Prod(lst):\n    total_sum = 0\n    \n    n = len(lst)\n    \n    for i in range(n):\n        current_product = lst[i]\n        \n        # Single element sublist [lst[i]]\n        if i == 0:\n            pass\n        \n        for j in range(i, n):\n            product = 1\n            \n            for k in range(j - i + 1):\n                index = i + k\n                \n                if k > 0 and lst[index] != 0:\n                    # If we encounter a zero, the product resets to 0 for subsequent elements starting from this point within the same sublist logic unless it's just [lst[i]]... wait.\n                    # Actually, standard definition of subarray is contiguous segment. \n                    # Product of empty set? Usually not considered in such sums unless specified. Assuming non-empty subarrays.\n                    \n                if k == 0:\n                    product = lst[index]\n                \n                else:\n                    product *= lst[index]\n            \n            total_sum += product\n    \n    return total_sum\n\n# Test case to verify logic manually or via assert as per prompt structure (though only code requested)\n# The assertion in the prompt implies: \n# Subarrays of [1,2,3]:\n# [1] -> 1\n# [2] -> 2\n# [3] -> 3\n# [1,2] -> 2\n# [2,3] -> 6\n# [1,2,3] -> 6\n# Sum = 1+2+3+2+6+6 = 20. Correct.\n\nassert sum_Of_Subarray_Prod([1,2,3]) == 20",
+  "rules_applied": [
+    "empty_suite_pass_insertion_v0"
+  ],
+  "rules_triggered": [
+    "empty_suite_pass_insertion_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/734",
+  "transform_class": "H3_ONLY",
+  "treatment": "ab2g"
+}

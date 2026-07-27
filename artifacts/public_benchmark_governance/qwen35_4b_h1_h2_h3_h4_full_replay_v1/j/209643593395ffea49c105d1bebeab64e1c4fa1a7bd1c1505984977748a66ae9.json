@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "209643593395ffea49c105d1bebeab64e1c4fa1a7bd1c1505984977748a66ae9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "add",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "final_source": "def add(lst):\n    \"\"\"Given a non-empty list of integers lst. \n    Add the even elements that are at odd indices.\"\"\"\n    \n    total = 0\n    \n    # Iterate through the list with index and value\n    for i, num in enumerate(lst):\n        # Check if index is odd AND number is even\n        if i % 2 != 0 and num % 2 == 0:\n            total += num\n            \n    return total\n\n# --- Test Cases ---\n\n# Example from the prompt: [4, 2, 6, 7]\n# Index 0 (Even): 4 -> Skip index check\n# Index 1 (Odd): 2 -> Even? Yes. Add 2. Total = 2\n# Index 2 (Even): 6 -> Skip index check\n# Index 3 (Odd): 7 -> Odd number, skip value check\nprint(add([4, 2, 6, 7])) \n# Output: 2\n\n# Additional Test Case 1: All evens at odd indices\nlst_2 = [5, 8, 9, 10]\n# Index 1 (Odd): 8 -> Even. Add 8. Total = 8\nprint(add(lst_2)) \n# Output: 8\n\n# Additional Test Case 2: No evens at odd indices\nlst_3 = [4, 5, 6, 7]\n# Index 1 (Odd): 5 -> Odd number, skip\n# Index 3 (Odd): 7 -> Odd number, skip\nprint(add(lst_3)) \n# Output: 0\n\n# Additional Test Case 3: Mixed values and indices\nlst_4 = [2, 8, 6]\n# Index 1 (Odd): 8 -> Even. Add 8. Total = 8\nprint(add(lst_4)) \n# Output: 8\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/85:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "post_h2_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "post_h3_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "post_h4_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81cf319a395454fbe2180321b87fb00b85d3a16c6ae73bbc8d4aa508910123f2",
+  "raw_source": "def add(lst):\n    \"\"\"Given a non-empty list of integers lst. \n    Add the even elements that are at odd indices.\"\"\"\n    \n    total = 0\n    \n    # Iterate through the list with index and value\n    for i, num in enumerate(lst):\n        # Check if index is odd AND number is even\n        if i % 2 != 0 and num % 2 == 0:\n            total += num\n            \n    return total\n\n# --- Test Cases ---\n\n# Example from the prompt: [4, 2, 6, 7]\n# Index 0 (Even): 4 -> Skip index check\n# Index 1 (Odd): 2 -> Even? Yes. Add 2. Total = 2\n# Index 2 (Even): 6 -> Skip index check\n# Index 3 (Odd): 7 -> Odd number, skip value check\nprint(add([4, 2, 6, 7])) \n# Output: 2\n\n# Additional Test Case 1: All evens at odd indices\nlst_2 = [5, 8, 9, 10]\n# Index 1 (Odd): 8 -> Even. Add 8. Total = 8\nprint(add(lst_2)) \n# Output: 8\n\n# Additional Test Case 2: No evens at odd indices\nlst_3 = [4, 5, 6, 7]\n# Index 1 (Odd): 5 -> Odd number, skip\n# Index 3 (Odd): 7 -> Odd number, skip\nprint(add(lst_3)) \n# Output: 0\n\n# Additional Test Case 3: Mixed values and indices\nlst_4 = [2, 8, 6]\n# Index 1 (Odd): 8 -> Even. Add 8. Total = 8\nprint(add(lst_4)) \n# Output: 8\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/85",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

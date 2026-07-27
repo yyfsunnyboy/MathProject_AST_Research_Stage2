@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9376dd9db4ef397d2033571280c899c966ea7ffa40b80ad9c4470410d2a11eca",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "surfacearea_sphere",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "694ec6877651e89737f5b4930a772dbc30e4adc7038b3e58cad4240ec821d3ac",
+  "final_source": "import math\n\ndef surface_area_sphere(radius):\n    \"\"\"Calculate the surface area of a sphere given its radius.\"\"\"\n    return 4 * math.pi * (radius ** 2)\n\n# Test assertion as provided in your example:\nassert math.isclose(surface_area_sphere(10), \n                    1256.6370614359173, rel_tol=0.001)\n\nsurfacearea_sphere = surface_area_sphere\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/85:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "694ec6877651e89737f5b4930a772dbc30e4adc7038b3e58cad4240ec821d3ac",
+  "post_h2_sha256": "694ec6877651e89737f5b4930a772dbc30e4adc7038b3e58cad4240ec821d3ac",
+  "post_h3_sha256": "694ec6877651e89737f5b4930a772dbc30e4adc7038b3e58cad4240ec821d3ac",
+  "post_h4_sha256": "694ec6877651e89737f5b4930a772dbc30e4adc7038b3e58cad4240ec821d3ac",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2e1dea5c27c75bd1173dc990dfb5e151f700b162b2c67b899c496e841e70a782",
+  "raw_source": "import math\n\ndef surface_area_sphere(radius):\n    \"\"\"Calculate the surface area of a sphere given its radius.\"\"\"\n    return 4 * math.pi * (radius ** 2)\n\n# Test assertion as provided in your example:\nassert math.isclose(surface_area_sphere(10), \n                    1256.6370614359173, rel_tol=0.001)\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/85",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

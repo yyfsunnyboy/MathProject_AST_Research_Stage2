@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7e660007e237c3caa3ece63c321bc8550d6b2906bfd0194ef8455774f9a4baff",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "file_name_check",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "final_source": "def file_name_check(file_name):\n    \"\"\"Create a function which takes a string representing a file's name, and returns\n    'Yes' if the the file's name is valid, and returns 'No' otherwise.\n    \n    A file's name is considered to be valid if and only if all the following conditions \n    are met:\n    - There should not be more than three digits ('0'-'9') in the file's name.\n    - The file's name contains exactly one dot '.'\n    - The substring before the dot should not be empty, and it starts with a letter from \n      the latin alphabet ('a'-'z' and 'A'-'Z').\n    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']\n    \n    Examples:\n        file_name_check(\"example.txt\") # => 'Yes'\n        file_name_check(\"1example.dll\") # => 'No' (the name should start with a latin alphapet letter)\n    \"\"\"\n\n    if '.' not in file_name or file_name.count('.') != 1:\n        return \"No\"\n\n    parts = file_name.split('.')\n    \n    # Check extension\n    ext = parts[-1]\n    valid_extensions = ['txt', 'exe', 'dll']\n    if ext not in valid_extensions:\n        return \"No\"\n\n    name_part = parts[0]  # The part before the dot\n    \n    # Name must not be empty and start with a letter (a-z or A-Z)\n    if len(name_part) == 0:\n        return \"No\"\n    \n    first_char = name_part[0]\n    if not ('a' <= first_char <= 'z' or 'A' <= first_char <= 'Z'):\n        return \"No\"\n\n    # Count digits in the entire file_name (or just name_part, since ext is known)\n    digit_count = sum(1 for c in file_name if c.isdigit())\n    \n    if digit_count > 3:\n        return \"No\"\n\n    return \"Yes\"\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(file_name_check(\"example.txt\"))      # Yes\n    print(file_name_check(\"1example.dll\"))     # No (starts with a number)\n    print(file_name_check(\"file.exe\"))         # Yes\n    print(file_name_check(\"a.b.c.txt\"))        # No (more than one dot, or logic depends on split behavior; here count('.') != 1 catches it)\n    print(file_name_check(\"test.dll2345.dat\")) # No (too many digits and wrong extension)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/141:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "post_h2_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "post_h3_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "post_h4_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0224bdb105bed8f4d95604ee617cf9dc79895b96243a7a19b8d7da4f88f6f860",
+  "raw_source": "def file_name_check(file_name):\n    \"\"\"Create a function which takes a string representing a file's name, and returns\n    'Yes' if the the file's name is valid, and returns 'No' otherwise.\n    \n    A file's name is considered to be valid if and only if all the following conditions \n    are met:\n    - There should not be more than three digits ('0'-'9') in the file's name.\n    - The file's name contains exactly one dot '.'\n    - The substring before the dot should not be empty, and it starts with a letter from \n      the latin alphabet ('a'-'z' and 'A'-'Z').\n    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']\n    \n    Examples:\n        file_name_check(\"example.txt\") # => 'Yes'\n        file_name_check(\"1example.dll\") # => 'No' (the name should start with a latin alphapet letter)\n    \"\"\"\n\n    if '.' not in file_name or file_name.count('.') != 1:\n        return \"No\"\n\n    parts = file_name.split('.')\n    \n    # Check extension\n    ext = parts[-1]\n    valid_extensions = ['txt', 'exe', 'dll']\n    if ext not in valid_extensions:\n        return \"No\"\n\n    name_part = parts[0]  # The part before the dot\n    \n    # Name must not be empty and start with a letter (a-z or A-Z)\n    if len(name_part) == 0:\n        return \"No\"\n    \n    first_char = name_part[0]\n    if not ('a' <= first_char <= 'z' or 'A' <= first_char <= 'Z'):\n        return \"No\"\n\n    # Count digits in the entire file_name (or just name_part, since ext is known)\n    digit_count = sum(1 for c in file_name if c.isdigit())\n    \n    if digit_count > 3:\n        return \"No\"\n\n    return \"Yes\"\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(file_name_check(\"example.txt\"))      # Yes\n    print(file_name_check(\"1example.dll\"))     # No (starts with a number)\n    print(file_name_check(\"file.exe\"))         # Yes\n    print(file_name_check(\"a.b.c.txt\"))        # No (more than one dot, or logic depends on split behavior; here count('.') != 1 catches it)\n    print(file_name_check(\"test.dll2345.dat\")) # No (too many digits and wrong extension)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/141",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

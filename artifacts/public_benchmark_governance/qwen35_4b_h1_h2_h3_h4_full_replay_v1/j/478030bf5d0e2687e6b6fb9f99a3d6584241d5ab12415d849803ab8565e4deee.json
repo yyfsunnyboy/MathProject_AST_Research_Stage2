@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "478030bf5d0e2687e6b6fb9f99a3d6584241d5ab12415d849803ab8565e4deee",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "maximum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "final_source": "import heapq\n\ndef maximum(arr, k):\n    \"\"\"\n    Given an array arr of integers and a positive integer k, return a sorted list \n    with the maximum k numbers in arr (sorted from smallest to largest).\n    \n    Note: The problem description asks for \"a sorted list\". Based on Example 1 output [-4, -3, 5],\n    it implies sorting the selected top-k elements in ascending order.\n    \"\"\"\n    \n    # Handle edge case where k is 0 or array is empty (though constraints say len >= 1)\n    if not arr or k == 0:\n        return []\n\n    # Method 1: Sorting Approach (Recommended for N <= 1000)\n    # Sort the entire list in descending order to easily pick top elements.\n    sorted_arr = sorted(arr, reverse=True)\n    \n    # Slice the first k elements and sort them back into ascending order \n    # as per Example 1 output format [-4, -3, 5].\n    result = sorted(sorted_arr[:k])\n    \n    return result\n\n# --- Alternative Method: Heap Approach (O(N log K)) ---\n# If N were very large but k was small, this would be more efficient.\ndef maximum_heap(arr, k):\n    if not arr or k == 0:\n        return []\n    \n    # Create a min-heap of size k containing the largest elements seen so far\n    heap = [x for x in arr[:k]] \n    heapq.heapify(heap)\n    \n    for num in arr[k:]:\n        if num > heap[0]:  # If current number is larger than smallest in our top-k set\n            heapq.heappop(heap)   # Remove the smallest of the k largest\n            heapq.heappush(heap, num)\n            \n    return sorted(list(heap))\n\n# --- Testing with Provided Examples ---\n\nif __name__ == \"__main__\":\n    print(\"Example 1:\", maximum([-3, -4, 5], 3)) \n    # Expected: [-4, -3, 5] (All elements selected and sorted)\n    \n    print(\"Example 2:\", maximum([4, -4, 4], 2)) \n    # Top 2 are [4, 4]. Sorted output: [4, 4]\n    \n    print(\"Example 3:\", maximum([-3, 2, 1, 2, -1, -2, 1], 1)) \n    # Max is 2. Output: [2]\n\n# If you specifically need the Heap approach for better performance on large datasets:\nprint(\"\\nUsing Heap Approach:\")\nprint(\"Example 3 (Heap):\", maximum_heap([-3, 2, 1, 2, -1, -2, 1], 1)) \n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/120:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "post_h2_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "post_h3_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "post_h4_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "03e46b5d7234c03d4b0dc7354287007603e4d3dbd5b2d862e8eab27374d62818",
+  "raw_source": "import heapq\n\ndef maximum(arr, k):\n    \"\"\"\n    Given an array arr of integers and a positive integer k, return a sorted list \n    with the maximum k numbers in arr (sorted from smallest to largest).\n    \n    Note: The problem description asks for \"a sorted list\". Based on Example 1 output [-4, -3, 5],\n    it implies sorting the selected top-k elements in ascending order.\n    \"\"\"\n    \n    # Handle edge case where k is 0 or array is empty (though constraints say len >= 1)\n    if not arr or k == 0:\n        return []\n\n    # Method 1: Sorting Approach (Recommended for N <= 1000)\n    # Sort the entire list in descending order to easily pick top elements.\n    sorted_arr = sorted(arr, reverse=True)\n    \n    # Slice the first k elements and sort them back into ascending order \n    # as per Example 1 output format [-4, -3, 5].\n    result = sorted(sorted_arr[:k])\n    \n    return result\n\n# --- Alternative Method: Heap Approach (O(N log K)) ---\n# If N were very large but k was small, this would be more efficient.\ndef maximum_heap(arr, k):\n    if not arr or k == 0:\n        return []\n    \n    # Create a min-heap of size k containing the largest elements seen so far\n    heap = [x for x in arr[:k]] \n    heapq.heapify(heap)\n    \n    for num in arr[k:]:\n        if num > heap[0]:  # If current number is larger than smallest in our top-k set\n            heapq.heappop(heap)   # Remove the smallest of the k largest\n            heapq.heappush(heap, num)\n            \n    return sorted(list(heap))\n\n# --- Testing with Provided Examples ---\n\nif __name__ == \"__main__\":\n    print(\"Example 1:\", maximum([-3, -4, 5], 3)) \n    # Expected: [-4, -3, 5] (All elements selected and sorted)\n    \n    print(\"Example 2:\", maximum([4, -4, 4], 2)) \n    # Top 2 are [4, 4]. Sorted output: [4, 4]\n    \n    print(\"Example 3:\", maximum([-3, 2, 1, 2, -1, -2, 1], 1)) \n    # Max is 2. Output: [2]\n\n# If you specifically need the Heap approach for better performance on large datasets:\nprint(\"\\nUsing Heap Approach:\")\nprint(\"Example 3 (Heap):\", maximum_heap([-3, 2, 1, 2, -1, -2, 1], 1)) \n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/120",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c6d23027f48ed6e928fa4fa6bf1a2bfd90c314b696de6bae91f881e4d347ea17",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fb95803216ad27ca7cea2cd5cc9714492088dfd4406566264e87767652193ae8",
+  "final_source": "def split(s: str) -> list[str]:\n    \"\"\"Split a string into individual characters.\"\"\"\n    return [char for char in s]\n\n\n# Test the function with an assertion\nif __name__ == \"__main__\":\n    assert split('python') == ['p', 'y', 't', 'h', 'o', 'n']\n    print(\"Test passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/565:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c7bd44662f24e077a74606e47ced6001df641e2f609ecf79410d14a98b94d5d2",
+  "post_h2_sha256": "e881ba321d637b7560d5efee66e6c6ac6a667fdf412b07b6a49d40cb8ed53738",
+  "post_h3_sha256": "e881ba321d637b7560d5efee66e6c6ac6a667fdf412b07b6a49d40cb8ed53738",
+  "post_h4_sha256": "fb95803216ad27ca7cea2cd5cc9714492088dfd4406566264e87767652193ae8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c7bd44662f24e077a74606e47ced6001df641e2f609ecf79410d14a98b94d5d2",
+  "raw_source": "def split(s: str) -> list[str]:\n    \"\"\"Split a string into individual characters.\"\"\"\n    return [char for char in s]\n\n\n# Test the function with an assertion\nassert split('python') == ['p', 'y', 't', 'h', 'o', 'n']\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/565",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

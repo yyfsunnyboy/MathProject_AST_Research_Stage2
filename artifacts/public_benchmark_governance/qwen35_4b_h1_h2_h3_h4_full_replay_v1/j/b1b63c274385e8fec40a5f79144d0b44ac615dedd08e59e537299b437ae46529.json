@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b1b63c274385e8fec40a5f79144d0b44ac615dedd08e59e537299b437ae46529",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "all_Characters_Same",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9a6abc44319cedc6780642abb27847de5a3c4b2cfb385b06deb475b4a2143c2b",
+  "final_source": "def all_Characters_Same(s):\n    if len(set(s)) == 1:\n        return True\n    else:\n        return False\n    \nif __name__ == \"__main__\":\n    assert all_Characters_Same(\"python\") == False",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/741:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "29ea397fd0f16affd4bdacb7601308cdd859463bef34d70a562bfb94471b227f",
+  "post_h2_sha256": "9a6abc44319cedc6780642abb27847de5a3c4b2cfb385b06deb475b4a2143c2b",
+  "post_h3_sha256": "9a6abc44319cedc6780642abb27847de5a3c4b2cfb385b06deb475b4a2143c2b",
+  "post_h4_sha256": "9a6abc44319cedc6780642abb27847de5a3c4b2cfb385b06deb475b4a2143c2b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "29ea397fd0f16affd4bdacb7601308cdd859463bef34d70a562bfb94471b227f",
+  "raw_source": "def all_Characters_Same(s):\n    if len(set(s)) == 1:\n        return True\n    else:\n        return False\n    \nassert all_Characters_Same(\"python\") == False",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/741",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

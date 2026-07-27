@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0deab7c20fcb54d3077cd6a6793bb59bc6249a637c611e8f15d5637bd7c84b1e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "mean_absolute_deviation",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "final_source": "def mean_absolute_deviation(numbers: List[float]) -> float:\n    if len(numbers) == 0:\n        return 0.0\n    \n    x_mean = sum(numbers) / len(numbers)\n    \n    absolute_differences = [abs(x - x_mean) for x in numbers]\n    \n    mad = sum(absolute_differences) / len(numbers)\n    \n    return mad",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/4:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "post_h2_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "post_h3_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "post_h4_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d06d4ed1be5241f91633b9bad20ca4b37f1c107f11edf3576b698ae8546c8e67",
+  "raw_source": "def mean_absolute_deviation(numbers: List[float]) -> float:\n    if len(numbers) == 0:\n        return 0.0\n    \n    x_mean = sum(numbers) / len(numbers)\n    \n    absolute_differences = [abs(x - x_mean) for x in numbers]\n    \n    mad = sum(absolute_differences) / len(numbers)\n    \n    return mad",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/4",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

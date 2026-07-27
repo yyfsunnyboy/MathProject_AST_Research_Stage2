@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "7463cbad5de99b498de042e7a37a86f359cbd85df38b4b183147b5e197c4f5cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_of_nth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "final_source": "def max_of_nth(matrix, n):\n    \"\"\"\n    Returns the maximum value in the nth column of the given matrix.\n    \n    Args:\n        matrix (List[List[int]]): A list of lists representing rows.\n        n (int): The index of the column to check (0-based).\n        \n    Returns:\n        int/float: The maximum value found in that column.\n        \n    Raises:\n        IndexError: If 'n' is out of bounds for any row's length or if matrix is empty.\n        ValueError: If n is negative.\n    \"\"\"\n    \n    # Basic validation\n    if not matrix:\n        raise ValueError(\"Matrix cannot be empty.\")\n    \n    if n < 0:\n        raise ValueError(\"Column index 'n' must be non-negative.\")\n\n    for row in matrix:\n        if len(row) <= n:\n            raise IndexError(f\"Column {n} does not exist. Matrix width is only {max(len(r) for r in matrix)} columns.\")\n\n    # Extract the column and find max\n    col_values = [row[n] for row in matrix]\n    \n    return max(col_values)\n\n\n# Test case from your example\nif __name__ == \"__main__\":\n    result = max_of_nth([[5, 6, 7], [1, 3, 5], [8, 9, 19]], 2)\n    assert result == 19, f\"Expected 19 but got {result}\"\n    print(f\"Test passed! Max of column 2 is: {result}\")\n\n# Additional test cases for robustness\nprint(max_of_nth([[5], [6], [7]], 0)) # Should return 7 (single column)\ntry:\n    max_of_nth([[1, 2], [3]], 1) \nexcept IndexError as e:\n    print(f\"Caught expected error for mismatched columns: {e}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/611:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "post_h2_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "post_h3_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "post_h4_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5355c336fcc6bb86156a14140375dd41e811dfd5013f08a150be0afd6aa99b70",
+  "raw_source": "def max_of_nth(matrix, n):\n    \"\"\"\n    Returns the maximum value in the nth column of the given matrix.\n    \n    Args:\n        matrix (List[List[int]]): A list of lists representing rows.\n        n (int): The index of the column to check (0-based).\n        \n    Returns:\n        int/float: The maximum value found in that column.\n        \n    Raises:\n        IndexError: If 'n' is out of bounds for any row's length or if matrix is empty.\n        ValueError: If n is negative.\n    \"\"\"\n    \n    # Basic validation\n    if not matrix:\n        raise ValueError(\"Matrix cannot be empty.\")\n    \n    if n < 0:\n        raise ValueError(\"Column index 'n' must be non-negative.\")\n\n    for row in matrix:\n        if len(row) <= n:\n            raise IndexError(f\"Column {n} does not exist. Matrix width is only {max(len(r) for r in matrix)} columns.\")\n\n    # Extract the column and find max\n    col_values = [row[n] for row in matrix]\n    \n    return max(col_values)\n\n\n# Test case from your example\nif __name__ == \"__main__\":\n    result = max_of_nth([[5, 6, 7], [1, 3, 5], [8, 9, 19]], 2)\n    assert result == 19, f\"Expected 19 but got {result}\"\n    print(f\"Test passed! Max of column 2 is: {result}\")\n\n# Additional test cases for robustness\nprint(max_of_nth([[5], [6], [7]], 0)) # Should return 7 (single column)\ntry:\n    max_of_nth([[1, 2], [3]], 1) \nexcept IndexError as e:\n    print(f\"Caught expected error for mismatched columns: {e}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/611",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

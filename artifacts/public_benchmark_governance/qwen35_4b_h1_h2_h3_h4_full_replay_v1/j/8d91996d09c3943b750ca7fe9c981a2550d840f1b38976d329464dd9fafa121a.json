@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8d91996d09c3943b750ca7fe9c981a2550d840f1b38976d329464dd9fafa121a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "separate_paren_groups",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "final_source": "def separate_paren_groups(paren_string: str) -> List[str]:\n    cleaned = ''.join(char for char in paren_string if char != ' ')\n    result = []\n    current_group = ''\n    \n    for char in cleaned:\n        if char == '(':\n            current_group += char\n        elif char == ')':\n            current_group += char\n            if not is_balanced(current_group):\n                while len(result) > 0 and not is_balanced(result[-1]):\n                    result.pop()\n                result.append(current_group)\n                current_group = ''\n\n    return result\n\n\ndef is_balanced(s: str) -> bool:\n    count = 0\n    for char in s:\n        if char == '(':\n            count += 1\n        elif char == ')':\n            count -= 1\n            if count < 0:\n                return False\n    return count == 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/1:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "post_h2_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "post_h3_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "post_h4_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "df39364aa88a94ad258c651770025a80c8e06c087fd9078d1f618cc048780ede",
+  "raw_source": "def separate_paren_groups(paren_string: str) -> List[str]:\n    cleaned = ''.join(char for char in paren_string if char != ' ')\n    result = []\n    current_group = ''\n    \n    for char in cleaned:\n        if char == '(':\n            current_group += char\n        elif char == ')':\n            current_group += char\n            if not is_balanced(current_group):\n                while len(result) > 0 and not is_balanced(result[-1]):\n                    result.pop()\n                result.append(current_group)\n                current_group = ''\n\n    return result\n\n\ndef is_balanced(s: str) -> bool:\n    count = 0\n    for char in s:\n        if char == '(':\n            count += 1\n        elif char == ')':\n            count -= 1\n            if count < 0:\n                return False\n    return count == 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/1",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "eec489abe95a78d320fafdf82de770998158f2d0a2f017578a1a2382106152bd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dict_depth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0168d8a29c05b00cef12898128286907740f14b3520bb71df5cf2b77b5d3d1a8",
+  "final_source": "def dict_depth(d):\n    if isinstance(d, dict) and len(d) == 0:\n        return 1\n    \n    max_sub = 0\n    for value in d.values():\n        sub_depth = dict_depth(value)\n        if sub_depth > max_sub:\n            max_sub = sub_depth\n    \n    return max_sub + 1\n\nif __name__ == \"__main__\":\n    assert dict_depth({'a':1, 'b': {'c': {'d': {}}}})==4",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/301:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "55e494a7a01d198fd75cf528467b6a36c87aab87b5f500f2a207ae5aa327c2b9",
+  "post_h2_sha256": "0168d8a29c05b00cef12898128286907740f14b3520bb71df5cf2b77b5d3d1a8",
+  "post_h3_sha256": "0168d8a29c05b00cef12898128286907740f14b3520bb71df5cf2b77b5d3d1a8",
+  "post_h4_sha256": "0168d8a29c05b00cef12898128286907740f14b3520bb71df5cf2b77b5d3d1a8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "55e494a7a01d198fd75cf528467b6a36c87aab87b5f500f2a207ae5aa327c2b9",
+  "raw_source": "def dict_depth(d):\n    if isinstance(d, dict) and len(d) == 0:\n        return 1\n    \n    max_sub = 0\n    for value in d.values():\n        sub_depth = dict_depth(value)\n        if sub_depth > max_sub:\n            max_sub = sub_depth\n    \n    return max_sub + 1\n\nassert dict_depth({'a':1, 'b': {'c': {'d': {}}}})==4",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/301",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

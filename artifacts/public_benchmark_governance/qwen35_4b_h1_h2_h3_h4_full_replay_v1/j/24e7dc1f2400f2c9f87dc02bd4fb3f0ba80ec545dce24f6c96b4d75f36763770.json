@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "24e7dc1f2400f2c9f87dc02bd4fb3f0ba80ec545dce24f6c96b4d75f36763770",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "swap_List",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "37414e06c24a27db100008cde00f380de407d738ad8b78f1c9e11e7b78b1ba48",
+  "final_source": "def swap_list(lst):\n    \"\"\"Interchange the first and last elements in a list.\"\"\"\n    if not lst:  # Handle empty list safely\n        return []\n    \n    n = len(lst)\n    if n == 1:\n        return lst\n    \n    # Swap using slicing (creates new list, doesn't modify original)\n    swapped_list = [lst[-1]] + lst[1:-1] + [lst[0]]\n    return swapped_list\n\n# Test assertion as provided in the prompt\nassert swap_list([12, 35, 9, 56, 24]) == [24, 35, 9, 56, 12], \"Test failed!\"\nprint(\"All tests passed.\")\n\nswap_List = swap_list\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/591:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "37414e06c24a27db100008cde00f380de407d738ad8b78f1c9e11e7b78b1ba48",
+  "post_h2_sha256": "37414e06c24a27db100008cde00f380de407d738ad8b78f1c9e11e7b78b1ba48",
+  "post_h3_sha256": "37414e06c24a27db100008cde00f380de407d738ad8b78f1c9e11e7b78b1ba48",
+  "post_h4_sha256": "37414e06c24a27db100008cde00f380de407d738ad8b78f1c9e11e7b78b1ba48",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "090721b06e50a1423ae94a69f6337e4c7cebe383e9b7bbcb320abc3ca93ae15c",
+  "raw_source": "def swap_list(lst):\n    \"\"\"Interchange the first and last elements in a list.\"\"\"\n    if not lst:  # Handle empty list safely\n        return []\n    \n    n = len(lst)\n    if n == 1:\n        return lst\n    \n    # Swap using slicing (creates new list, doesn't modify original)\n    swapped_list = [lst[-1]] + lst[1:-1] + [lst[0]]\n    return swapped_list\n\n# Test assertion as provided in the prompt\nassert swap_list([12, 35, 9, 56, 24]) == [24, 35, 9, 56, 12], \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/591",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

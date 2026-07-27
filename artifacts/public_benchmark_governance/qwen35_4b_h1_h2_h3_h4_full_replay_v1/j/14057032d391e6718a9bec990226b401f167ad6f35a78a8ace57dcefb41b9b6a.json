@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "14057032d391e6718a9bec990226b401f167ad6f35a78a8ace57dcefb41b9b6a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Primes_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3adf38af135ee3a443937d7069b77d6f4ff7b1c314e7d690a5f88bf6fc4b789d",
+  "final_source": "def count_primes(nums):\n    \"\"\"\n    Returns the number of prime numbers strictly less than `nums`.\n    \n    Args:\n        nums (int): A non-negative integer.\n        \n    Returns:\n        int: Count of primes < nums.\n    \"\"\"\n    if nums <= 2:\n        return 0\n\n    # Sieve of Eratosthenes up to nums-1\n    is_prime = [True] * nums\n    is_prime[0], is_prime[1] = False, False\n    \n    i = 2\n    while i * i < nums:\n        if is_prime[i]:\n            for j in range(i*i, nums, i):\n                is_prime[j] = False\n        i += 1\n\n    return sum(is_prime)\n\n\n# Example usage / assertion from the problem statement\nassert count_primes(5) == 2  # Primes < 5 are: 2, 3 → count = 2\n\ncount_Primes_nums = count_primes\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/256:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3adf38af135ee3a443937d7069b77d6f4ff7b1c314e7d690a5f88bf6fc4b789d",
+  "post_h2_sha256": "3adf38af135ee3a443937d7069b77d6f4ff7b1c314e7d690a5f88bf6fc4b789d",
+  "post_h3_sha256": "3adf38af135ee3a443937d7069b77d6f4ff7b1c314e7d690a5f88bf6fc4b789d",
+  "post_h4_sha256": "3adf38af135ee3a443937d7069b77d6f4ff7b1c314e7d690a5f88bf6fc4b789d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "12a693ca2eeb8526dd6eafc838d076f808fdc4dbdab7ae9c349e5e1da1e7bac5",
+  "raw_source": "def count_primes(nums):\n    \"\"\"\n    Returns the number of prime numbers strictly less than `nums`.\n    \n    Args:\n        nums (int): A non-negative integer.\n        \n    Returns:\n        int: Count of primes < nums.\n    \"\"\"\n    if nums <= 2:\n        return 0\n\n    # Sieve of Eratosthenes up to nums-1\n    is_prime = [True] * nums\n    is_prime[0], is_prime[1] = False, False\n    \n    i = 2\n    while i * i < nums:\n        if is_prime[i]:\n            for j in range(i*i, nums, i):\n                is_prime[j] = False\n        i += 1\n\n    return sum(is_prime)\n\n\n# Example usage / assertion from the problem statement\nassert count_primes(5) == 2  # Primes < 5 are: 2, 3 → count = 2\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/256",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

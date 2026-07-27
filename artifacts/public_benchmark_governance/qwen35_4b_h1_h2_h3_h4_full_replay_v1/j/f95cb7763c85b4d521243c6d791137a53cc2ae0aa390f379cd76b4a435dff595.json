@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f95cb7763c85b4d521243c6d791137a53cc2ae0aa390f379cd76b4a435dff595",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "freq_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4674317b3694b48099b49dccb25d7ae3de55e46ac89ef97654ed94add9e4fbaf",
+  "final_source": "from collections import Counter\n\ndef freq_count(lst):\n    \"\"\"\n    Returns a dictionary with elements as keys and their frequencies as values.\n    \n    Args:\n        lst (list): A list of hashable elements.\n        \n    Returns:\n        dict: Dictionary mapping each element to its count.\n    \"\"\"\n    # Using Counter makes the code concise, but we can also do it manually below if preferred.\n    return dict(Counter(lst))\n\n# Alternative manual implementation without importing Counter:\ndef freq_count_manual(lst):\n    frequency = {}\n    for item in lst:\n        if item in frequency:\n            frequency[item] += 1\n        else:\n            frequency[item] = 1\n    return frequency\n\n# Test the function as per your assertion requirement\nif __name__ == \"__main__\":\n    assert freq_count([10,10,10,10,20,20,20,20,40,40,50,50,30]) == {10: 4, 20: 4, 40: 2, 50: 2, 30: 1}\nprint(\"Test passed!\")\n\n# Example usage\ndata = [10, 10, 10, 10, 20, 20, 20, 20, 40, 40, 50, 50, 30]\nresult = freq_count(data)\nprint(result) \n# Output: {10: 4, 20: 4, 40: 2, 50: 2, 30: 1}\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/88:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0bd0fde5dcdeb80c0f4063a8aa558b081801763d2cef1807fb1bb0d3609531ff",
+  "post_h2_sha256": "4674317b3694b48099b49dccb25d7ae3de55e46ac89ef97654ed94add9e4fbaf",
+  "post_h3_sha256": "4674317b3694b48099b49dccb25d7ae3de55e46ac89ef97654ed94add9e4fbaf",
+  "post_h4_sha256": "4674317b3694b48099b49dccb25d7ae3de55e46ac89ef97654ed94add9e4fbaf",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0bd0fde5dcdeb80c0f4063a8aa558b081801763d2cef1807fb1bb0d3609531ff",
+  "raw_source": "from collections import Counter\n\ndef freq_count(lst):\n    \"\"\"\n    Returns a dictionary with elements as keys and their frequencies as values.\n    \n    Args:\n        lst (list): A list of hashable elements.\n        \n    Returns:\n        dict: Dictionary mapping each element to its count.\n    \"\"\"\n    # Using Counter makes the code concise, but we can also do it manually below if preferred.\n    return dict(Counter(lst))\n\n# Alternative manual implementation without importing Counter:\ndef freq_count_manual(lst):\n    frequency = {}\n    for item in lst:\n        if item in frequency:\n            frequency[item] += 1\n        else:\n            frequency[item] = 1\n    return frequency\n\n# Test the function as per your assertion requirement\nassert freq_count([10,10,10,10,20,20,20,20,40,40,50,50,30]) == {10: 4, 20: 4, 40: 2, 50: 2, 30: 1}\nprint(\"Test passed!\")\n\n# Example usage\ndata = [10, 10, 10, 10, 20, 20, 20, 20, 40, 40, 50, 50, 30]\nresult = freq_count(data)\nprint(result) \n# Output: {10: 4, 20: 4, 40: 2, 50: 2, 30: 1}\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/88",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "print_arguments_not_literal_or_entrypoint_literal_call"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1dc13ecf70890997ba9abada10d60b3c843897c0ce08ae538bf1e85762782fa4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "capital_words_spaces",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5879f30c5c4cac9ef251b355f5eb63ee7d7d5a69e3430564927dfe5cea75801f",
+  "final_source": "import re\n\ndef capital_words_spaces(text):\n    \"\"\"\n    Inserts a space between any two words where the second word starts with an uppercase letter.\n    \n    Example: \"Python\" -> \"Python\", \"helloWorld\" -> \"hello World\", \n             \"HelloWorld\" -> \"Hello World\" (assuming 'H' is start of sentence, usually no change needed unless specific logic applies)\n             \n    Note: The standard interpretation for this common coding challenge is to insert a space before any word starting with an uppercase letter.\n    \"\"\"\n    \n    # Regex explanation:\n    # (\\w+)      : Capture one or more non-whitespace characters (the previous part of the string/word)\n    # ([A-Z])    : Match exactly one uppercase letter\n    #            : This ensures we only split before capitalized words, not lowercase ones.\n    \n    return re.sub(r'(\\w+)([A-Z])', r'\\1 \\2', text)\n\n# Test cases based on your requirement and common variations:\nif __name__ == \"__main__\":\n    assert capital_words_spaces(\"Python\") == \"Python\"\nprint(f\"'{capital_words_spaces('Python')}' -> Correct\")\n\n# Additional test to verify functionality with multiple words\ntest_cases = [\n    (\"helloWorld\", \"hello World\"),\n    (\"HelloWorld\", \"Hello World\"),  # 'H' is capitalized, so it starts a new word conceptually in this context if preceded by lowercase? \n                                   # Actually, the regex above splits BEFORE any uppercase letter.\n                                   # So: hello + W -> hello W (if input was helloworldW)\n    (\"aBC\", \"a B C\"),              # 'B' and 'C' are capitals inserted with spaces before them relative to previous chars? \n                                  # Let's trace: a(B)(C) -> a \\1 \\2 for first match, then result is \"a BC\". Next pass sees space+BC.\n    (\"Python\", \"Python\")           # No lowercase preceding the 'P', so no split occurs. Correct per assertion.\n]\n\nfor input_str, expected in test_cases:\n    if isinstance(expected, str):\n        print(f\"Input: '{input_str}' -> Output: '{capital_words_spaces(input_str)}' (Expected: {expected})\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/748:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "819cd399169968ae06460c8daf2a0aeb73e2383d8817b9bab964432f689189de",
+  "post_h2_sha256": "5879f30c5c4cac9ef251b355f5eb63ee7d7d5a69e3430564927dfe5cea75801f",
+  "post_h3_sha256": "5879f30c5c4cac9ef251b355f5eb63ee7d7d5a69e3430564927dfe5cea75801f",
+  "post_h4_sha256": "5879f30c5c4cac9ef251b355f5eb63ee7d7d5a69e3430564927dfe5cea75801f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "819cd399169968ae06460c8daf2a0aeb73e2383d8817b9bab964432f689189de",
+  "raw_source": "import re\n\ndef capital_words_spaces(text):\n    \"\"\"\n    Inserts a space between any two words where the second word starts with an uppercase letter.\n    \n    Example: \"Python\" -> \"Python\", \"helloWorld\" -> \"hello World\", \n             \"HelloWorld\" -> \"Hello World\" (assuming 'H' is start of sentence, usually no change needed unless specific logic applies)\n             \n    Note: The standard interpretation for this common coding challenge is to insert a space before any word starting with an uppercase letter.\n    \"\"\"\n    \n    # Regex explanation:\n    # (\\w+)      : Capture one or more non-whitespace characters (the previous part of the string/word)\n    # ([A-Z])    : Match exactly one uppercase letter\n    #            : This ensures we only split before capitalized words, not lowercase ones.\n    \n    return re.sub(r'(\\w+)([A-Z])', r'\\1 \\2', text)\n\n# Test cases based on your requirement and common variations:\nassert capital_words_spaces(\"Python\") == \"Python\"\nprint(f\"'{capital_words_spaces('Python')}' -> Correct\")\n\n# Additional test to verify functionality with multiple words\ntest_cases = [\n    (\"helloWorld\", \"hello World\"),\n    (\"HelloWorld\", \"Hello World\"),  # 'H' is capitalized, so it starts a new word conceptually in this context if preceded by lowercase? \n                                   # Actually, the regex above splits BEFORE any uppercase letter.\n                                   # So: hello + W -> hello W (if input was helloworldW)\n    (\"aBC\", \"a B C\"),              # 'B' and 'C' are capitals inserted with spaces before them relative to previous chars? \n                                  # Let's trace: a(B)(C) -> a \\1 \\2 for first match, then result is \"a BC\". Next pass sees space+BC.\n    (\"Python\", \"Python\")           # No lowercase preceding the 'P', so no split occurs. Correct per assertion.\n]\n\nfor input_str, expected in test_cases:\n    if isinstance(expected, str):\n        print(f\"Input: '{input_str}' -> Output: '{capital_words_spaces(input_str)}' (Expected: {expected})\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/748",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

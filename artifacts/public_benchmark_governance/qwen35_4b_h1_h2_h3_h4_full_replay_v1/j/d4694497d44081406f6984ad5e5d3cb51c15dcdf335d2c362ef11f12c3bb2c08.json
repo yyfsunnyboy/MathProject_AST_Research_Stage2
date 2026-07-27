@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d4694497d44081406f6984ad5e5d3cb51c15dcdf335d2c362ef11f12c3bb2c08",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_Abs_Diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "final_source": "def max_Abs_Diff(arr):\n    if len(arr) < 2:\n        return None\n    \n    min_val = arr[0]\n    max_diff = float('-inf')\n    \n    for num in arr:\n        diff = abs(num - min_val)\n        if diff > max_diff:\n            max_diff = diff\n        \n        # Update minimum value seen so far to maximize future differences with larger numbers\n        if num < min_val:\n            min_val = num\n            \n    return int(max_diff)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/145:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "post_h2_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "post_h3_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "post_h4_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1147b4e9f6b877daf7299882432fcdaff87599466a636f7a6092dc1982f966f2",
+  "raw_source": "def max_Abs_Diff(arr):\n    if len(arr) < 2:\n        return None\n    \n    min_val = arr[0]\n    max_diff = float('-inf')\n    \n    for num in arr:\n        diff = abs(num - min_val)\n        if diff > max_diff:\n            max_diff = diff\n        \n        # Update minimum value seen so far to maximize future differences with larger numbers\n        if num < min_val:\n            min_val = num\n            \n    return int(max_diff)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/145",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "747e502de28632dd99548cf30873bab2ad5b1997613a19cd701be8d20476d589",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "concatenate_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e99c5f8564fbb50e39bf79bd2f7eda569dc4b69d8ad06f4bedec194a2ad2137e",
+  "final_source": "def concatenate_tuple(tup):\n    \"\"\"\n    Concatenates each element of a tuple with a delimiter.\n    \n    Args:\n        tup (tuple): The input tuple containing elements to be joined.\n        \n    Returns:\n        str: A single string where all elements are separated by '-'.\n    \"\"\"\n    return \"-\".join(tup)\n\n# Test the function as per your requirement\nif __name__ == \"__main__\":\n    assert concatenate_tuple((\"ID\", \"is\", 4, \"UTS\")) == 'ID-is-4-UTS'\n    print(\"Test passed successfully!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/421:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "561787a624a8c71385da0d24dd180744621a58addf81164f2247a1457f075c0e",
+  "post_h2_sha256": "9b65e7d3af63d813097b43c16793c34f5dc93caa7d60989956b805f0df5693f8",
+  "post_h3_sha256": "9b65e7d3af63d813097b43c16793c34f5dc93caa7d60989956b805f0df5693f8",
+  "post_h4_sha256": "e99c5f8564fbb50e39bf79bd2f7eda569dc4b69d8ad06f4bedec194a2ad2137e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "561787a624a8c71385da0d24dd180744621a58addf81164f2247a1457f075c0e",
+  "raw_source": "def concatenate_tuple(tup):\n    \"\"\"\n    Concatenates each element of a tuple with a delimiter.\n    \n    Args:\n        tup (tuple): The input tuple containing elements to be joined.\n        \n    Returns:\n        str: A single string where all elements are separated by '-'.\n    \"\"\"\n    return \"-\".join(tup)\n\n# Test the function as per your requirement\nassert concatenate_tuple((\"ID\", \"is\", 4, \"UTS\")) == 'ID-is-4-UTS'\n\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/421",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

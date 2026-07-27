@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6fac2da52ef5dc33c6e434e3e0cbd9d43d4ee858bace58e18a8118041e21b33d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_undulating",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "55ca1b434c4554339bd0e0defc73c8cbb30266e5c3adabed945524e142e0d5ec",
+  "final_source": "def is_undulating(n: int) -> bool:\n    \"\"\"\n    Check whether the given integer n is undulating.\n    \n    A number is considered undulating if its decimal representation alternates\n    between increasing and decreasing, e.g., 1234567890 (strictly increasing),\n    or 1212121 (up-down-up...). Note: strictly monotonic sequences are also accepted.\n\n    Examples:\n        is_undulating(1)          -> True   # single digit\n        is_undulating(1234567890)-> True   # increasing\n        is_undulating(1212121)  -> True   # up-down-up...\n        is_undulating(1234567891)-> False # breaks pattern at the end\n\n    Args:\n        n (int): The integer to check.\n\n    Returns:\n        bool: True if undulating, False otherwise.\n    \"\"\"\n    s = str(n)\n    \n    # Single digit is trivially undulating\n    if len(s) == 1:\n        return True\n    \n    prev_diff = None\n    for i in range(1, len(s)):\n        diff = int(s[i]) - int(s[i-1])\n        \n        # If two consecutive differences have the same sign (both positive or both negative), it's not undulating.\n        if prev_diff is not None and ((diff > 0) == (prev_diff > 0)):\n            return False\n        \n        prev_diff = diff\n    \n    return True\n\n\n# Test cases as per your requirement\nif __name__ == \"__main__\":\n    assert is_undulating(1212121) == True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/92:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3436f599de3ed7229e0c1b853921d40eb4a3757b77bdb853103ad51377906f40",
+  "post_h2_sha256": "55ca1b434c4554339bd0e0defc73c8cbb30266e5c3adabed945524e142e0d5ec",
+  "post_h3_sha256": "55ca1b434c4554339bd0e0defc73c8cbb30266e5c3adabed945524e142e0d5ec",
+  "post_h4_sha256": "55ca1b434c4554339bd0e0defc73c8cbb30266e5c3adabed945524e142e0d5ec",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3436f599de3ed7229e0c1b853921d40eb4a3757b77bdb853103ad51377906f40",
+  "raw_source": "def is_undulating(n: int) -> bool:\n    \"\"\"\n    Check whether the given integer n is undulating.\n    \n    A number is considered undulating if its decimal representation alternates\n    between increasing and decreasing, e.g., 1234567890 (strictly increasing),\n    or 1212121 (up-down-up...). Note: strictly monotonic sequences are also accepted.\n\n    Examples:\n        is_undulating(1)          -> True   # single digit\n        is_undulating(1234567890)-> True   # increasing\n        is_undulating(1212121)  -> True   # up-down-up...\n        is_undulating(1234567891)-> False # breaks pattern at the end\n\n    Args:\n        n (int): The integer to check.\n\n    Returns:\n        bool: True if undulating, False otherwise.\n    \"\"\"\n    s = str(n)\n    \n    # Single digit is trivially undulating\n    if len(s) == 1:\n        return True\n    \n    prev_diff = None\n    for i in range(1, len(s)):\n        diff = int(s[i]) - int(s[i-1])\n        \n        # If two consecutive differences have the same sign (both positive or both negative), it's not undulating.\n        if prev_diff is not None and ((diff > 0) == (prev_diff > 0)):\n            return False\n        \n        prev_diff = diff\n    \n    return True\n\n\n# Test cases as per your requirement\nassert is_undulating(1212121) == True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/92",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

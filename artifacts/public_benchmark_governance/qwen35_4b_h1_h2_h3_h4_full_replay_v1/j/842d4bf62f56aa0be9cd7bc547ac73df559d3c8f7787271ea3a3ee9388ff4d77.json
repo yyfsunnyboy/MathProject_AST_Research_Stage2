@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "842d4bf62f56aa0be9cd7bc547ac73df559d3c8f7787271ea3a3ee9388ff4d77",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "validate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "47d301b8e109250d923ad33074b5a4c176e6bd7468134a359433596eae36c966",
+  "final_source": "def validate(n: int) -> bool:\n    \"\"\"\n    Check if for every digit d present in n, its frequency count <= d.\n    \n    Examples:\n        - 1234: digits are {1:1, 2:1, 3:1, 4:1} → all counts ≤ their values → True\n        - 100:   digits are {1:1, 0:2}. For digit 0, count=2 > value=0 → False\n    \n    Args:\n        n (int): The integer to check.\n\n    Returns:\n        bool: True if the condition holds for all digits in n; otherwise False.\n    \"\"\"\n    # Handle negative numbers by working with absolute value\n    n = abs(n)\n    \n    digit_counts = {}\n    \n    while n > 0:\n        d = n % 10\n        digit_counts[d] = digit_counts.get(d, 0) + 1\n        n //= 10\n    \n    for digit in range(10):\n        if digit in digit_counts and digit_counts[digit] > digit:\n            return False\n            \n    return True\n\n\n# Test cases as per the requirement\nif __name__ == \"__main__\":\n    assert validate(1234) == True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/283:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "041a18c9abdb17d3c5a495377d771180d34155623e03113678c49aca2aad8806",
+  "post_h2_sha256": "47d301b8e109250d923ad33074b5a4c176e6bd7468134a359433596eae36c966",
+  "post_h3_sha256": "47d301b8e109250d923ad33074b5a4c176e6bd7468134a359433596eae36c966",
+  "post_h4_sha256": "47d301b8e109250d923ad33074b5a4c176e6bd7468134a359433596eae36c966",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "041a18c9abdb17d3c5a495377d771180d34155623e03113678c49aca2aad8806",
+  "raw_source": "def validate(n: int) -> bool:\n    \"\"\"\n    Check if for every digit d present in n, its frequency count <= d.\n    \n    Examples:\n        - 1234: digits are {1:1, 2:1, 3:1, 4:1} → all counts ≤ their values → True\n        - 100:   digits are {1:1, 0:2}. For digit 0, count=2 > value=0 → False\n    \n    Args:\n        n (int): The integer to check.\n\n    Returns:\n        bool: True if the condition holds for all digits in n; otherwise False.\n    \"\"\"\n    # Handle negative numbers by working with absolute value\n    n = abs(n)\n    \n    digit_counts = {}\n    \n    while n > 0:\n        d = n % 10\n        digit_counts[d] = digit_counts.get(d, 0) + 1\n        n //= 10\n    \n    for digit in range(10):\n        if digit in digit_counts and digit_counts[digit] > digit:\n            return False\n            \n    return True\n\n\n# Test cases as per the requirement\nassert validate(1234) == True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/283",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

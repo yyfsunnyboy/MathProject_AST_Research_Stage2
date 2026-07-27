@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "84b4480a2854c754a4c823df430c51cd81e58a315a7b4b0cc8210197f774cac5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_binary_seq",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "final_source": "import math\n\ndef count_binary_seq(n):\n    if n == 0:\n        return 1\n    \n    total_bits = 2 * n\n    half_len = n\n    \n    # Calculate number of ways to choose k bits from length half_len (combinations)\n    def combinations(k, r):\n        if r < 0 or r > k:\n            return 0\n        res = 1\n        for i in range(r):\n            res *= (k - i)\n            res //= (i + 1)\n        return res\n    \n    # Sum of first n bits must be equal to sum of last n bits.\n    # Let k be the number of set bits (1s). Then we need C(half_len, k) * C(total_bits - half_len, k).\n    # The maximum possible sum for length n is n (all 1s), minimum is 0.\n    \n    count = 0\n    \n    # Iterate over all possible sums k from 0 to n\n    for k in range(half_len + 1):\n        ways_first_half = combinations(half_len, k)\n        ways_second_half = combinations(total_bits - half_len, k)\n        \n        if ways_first_half > 0 and ways_second_half > 0:\n            count += ways_first_half * ways_second_half\n            \n    return float(count)\n\n# Test case as provided in the prompt\nassert math.isclose(count_binary_seq(1), 2.0, rel_tol=0.001)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/300:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "post_h2_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "post_h3_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "post_h4_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f55e38622124be7a3078ab1b22fb0e3cf27f7779f758ae73169356d040b04eb7",
+  "raw_source": "import math\n\ndef count_binary_seq(n):\n    if n == 0:\n        return 1\n    \n    total_bits = 2 * n\n    half_len = n\n    \n    # Calculate number of ways to choose k bits from length half_len (combinations)\n    def combinations(k, r):\n        if r < 0 or r > k:\n            return 0\n        res = 1\n        for i in range(r):\n            res *= (k - i)\n            res //= (i + 1)\n        return res\n    \n    # Sum of first n bits must be equal to sum of last n bits.\n    # Let k be the number of set bits (1s). Then we need C(half_len, k) * C(total_bits - half_len, k).\n    # The maximum possible sum for length n is n (all 1s), minimum is 0.\n    \n    count = 0\n    \n    # Iterate over all possible sums k from 0 to n\n    for k in range(half_len + 1):\n        ways_first_half = combinations(half_len, k)\n        ways_second_half = combinations(total_bits - half_len, k)\n        \n        if ways_first_half > 0 and ways_second_half > 0:\n            count += ways_first_half * ways_second_half\n            \n    return float(count)\n\n# Test case as provided in the prompt\nassert math.isclose(count_binary_seq(1), 2.0, rel_tol=0.001)",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/300",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

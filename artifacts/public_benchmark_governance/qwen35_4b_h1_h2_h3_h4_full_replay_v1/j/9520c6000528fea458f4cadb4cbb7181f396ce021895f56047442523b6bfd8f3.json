@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "9520c6000528fea458f4cadb4cbb7181f396ce021895f56047442523b6bfd8f3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "x_or_y",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "final_source": "import math\n\ndef x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n    \n    Examples:\n        for x_or_y(7, 34, 12) == 34 (since 7 is prime)\n        for x_or_y(15, 8, 5) == 5   (since 15 is not prime)\n    \"\"\"\n    \n    # Helper function to check if a number is prime\n    def is_prime(num):\n        if num <= 1:\n            return False\n        limit = int(math.sqrt(num)) + 1\n        for i in range(2, limit):\n            if num % i == 0:\n                return False\n        return True\n\n    # Main logic based on the problem description\n    if is_prime(n):\n        return x\n    else:\n        return y\n\n# --- Testing Examples from your prompt ---\nprint(x_or_y(7, 34, 12))   # Output: 34 (because 7 is prime)\nprint(x_or_y(15, 8, 5))    # Output: 5  (because 15 is not prime)\n\n# Additional test cases for verification\nprint(x_or_y(2, 99, 0))    # Output: 99 (2 is the smallest prime)\nprint(x_or_y(4, 10, 20))   # Output: 20 (4 is not prime)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/150:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "post_h2_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "post_h3_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "post_h4_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81652edfd8076d3345f5b2b368e588e78a83cdf1927e4820792a96c679d6995a",
+  "raw_source": "import math\n\ndef x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n    \n    Examples:\n        for x_or_y(7, 34, 12) == 34 (since 7 is prime)\n        for x_or_y(15, 8, 5) == 5   (since 15 is not prime)\n    \"\"\"\n    \n    # Helper function to check if a number is prime\n    def is_prime(num):\n        if num <= 1:\n            return False\n        limit = int(math.sqrt(num)) + 1\n        for i in range(2, limit):\n            if num % i == 0:\n                return False\n        return True\n\n    # Main logic based on the problem description\n    if is_prime(n):\n        return x\n    else:\n        return y\n\n# --- Testing Examples from your prompt ---\nprint(x_or_y(7, 34, 12))   # Output: 34 (because 7 is prime)\nprint(x_or_y(15, 8, 5))    # Output: 5  (because 15 is not prime)\n\n# Additional test cases for verification\nprint(x_or_y(2, 99, 0))    # Output: 99 (2 is the smallest prime)\nprint(x_or_y(4, 10, 20))   # Output: 20 (4 is not prime)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/150",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

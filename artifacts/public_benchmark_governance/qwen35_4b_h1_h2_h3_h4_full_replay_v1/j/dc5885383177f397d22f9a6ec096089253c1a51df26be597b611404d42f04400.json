@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "dc5885383177f397d22f9a6ec096089253c1a51df26be597b611404d42f04400",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "long_words",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cb822f5f6ec5104bfd758dab2ed79a294ff8d1b2153be3dab39a13167e050c20",
+  "final_source": "def long_words(n, sentence):\n    \"\"\"\n    Find all words longer than n characters in a given string.\n    \n    Parameters:\n        n (int): Minimum length threshold (words must be > n chars)\n        sentence (str): Input text containing multiple words\n    \n    Returns:\n        list[str]: List of words with more than n characters\n    \"\"\"\n    # Split the input into individual words, then filter by length\n    return [word for word in sentence.split() if len(word) > n]\n\n# Test case from your example (note: original had incorrect syntax - 'n' should be a number, not string \"3\")\nif __name__ == \"__main__\":\n    assert long_words(3, \"python is a programming language\") == ['python', 'programming', 'language']\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/128:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "74b019353690bdc0f4e72e5c09c804c985e3e40eb760474822eb29fcb8858ba6",
+  "post_h2_sha256": "3e50adcfcd1bc791715bcf7fbf707c5688cedd29ab92c87f8c59952e3fe29d9c",
+  "post_h3_sha256": "3e50adcfcd1bc791715bcf7fbf707c5688cedd29ab92c87f8c59952e3fe29d9c",
+  "post_h4_sha256": "cb822f5f6ec5104bfd758dab2ed79a294ff8d1b2153be3dab39a13167e050c20",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "74b019353690bdc0f4e72e5c09c804c985e3e40eb760474822eb29fcb8858ba6",
+  "raw_source": "def long_words(n, sentence):\n    \"\"\"\n    Find all words longer than n characters in a given string.\n    \n    Parameters:\n        n (int): Minimum length threshold (words must be > n chars)\n        sentence (str): Input text containing multiple words\n    \n    Returns:\n        list[str]: List of words with more than n characters\n    \"\"\"\n    # Split the input into individual words, then filter by length\n    return [word for word in sentence.split() if len(word) > n]\n\n# Test case from your example (note: original had incorrect syntax - 'n' should be a number, not string \"3\")\nassert long_words(3, \"python is a programming language\") == ['python', 'programming', 'language']\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/128",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

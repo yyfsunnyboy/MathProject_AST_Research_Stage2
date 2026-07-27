@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8809d5fac7dac77ea3da800ce6ac5b70c10fdcffe3b5cae179a32988e3163f8a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_first_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "final_source": "def count_first_elements(container, target):\n    \"\"\"\n    Counts how many elements occur before a given tuple element \n    within the provided container (list or tuple).\n    \n    Args:\n        container: A list or tuple containing mixed types including tuples.\n        target: The specific tuple to search for.\n        \n    Returns:\n        int: Number of preceding elements found in the container.\n    \"\"\"\n    count = 0\n    \n    # Iterate through each element in the container up to (but not including) \n    # if we find a match, or until the end is reached.\n    for item in container:\n        if item == target:\n            break\n        \n        count += 1\n            \n    return count\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = count_first_elements((1, 5, 7, (4, 6), 10))\n    \n    # Verify against the assert condition logic manually or via print\n    if result == 3:\n        print(\"Test passed!\")\n    else:\n        print(f\"Test failed! Expected 3, got {result}\")\n\n# Additional test cases for robustness\nprint(count_first_elements([10], (5,)))          # Returns 0 (target is first)\nprint(count_first_elements([(2,), (3,)], (3,)))   # Returns 1\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/278:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "post_h2_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "post_h3_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "post_h4_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "96fec33033e56278cb1a433cf8a7c25138d9119bf0e254bedc73bac27c6cb35d",
+  "raw_source": "def count_first_elements(container, target):\n    \"\"\"\n    Counts how many elements occur before a given tuple element \n    within the provided container (list or tuple).\n    \n    Args:\n        container: A list or tuple containing mixed types including tuples.\n        target: The specific tuple to search for.\n        \n    Returns:\n        int: Number of preceding elements found in the container.\n    \"\"\"\n    count = 0\n    \n    # Iterate through each element in the container up to (but not including) \n    # if we find a match, or until the end is reached.\n    for item in container:\n        if item == target:\n            break\n        \n        count += 1\n            \n    return count\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    result = count_first_elements((1, 5, 7, (4, 6), 10))\n    \n    # Verify against the assert condition logic manually or via print\n    if result == 3:\n        print(\"Test passed!\")\n    else:\n        print(f\"Test failed! Expected 3, got {result}\")\n\n# Additional test cases for robustness\nprint(count_first_elements([10], (5,)))          # Returns 0 (target is first)\nprint(count_first_elements([(2,), (3,)], (3,)))   # Returns 1\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/278",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

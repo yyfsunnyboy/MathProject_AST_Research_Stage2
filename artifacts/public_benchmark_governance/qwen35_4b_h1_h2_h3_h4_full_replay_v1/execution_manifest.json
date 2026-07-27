@@ -1,0 +1,28 @@
+{
+  "created_at_utc": "2026-07-27T09:35:35.702370+00:00",
+  "dataset": "all",
+  "evalplus_executed": false,
+  "executed_cells": 1084,
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "fixed_order": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_calls": 0,
+  "model_tag": "qwen3.5:4b",
+  "plan_id": "qwen35_4b_h1_h2_h3_h4_full_replay_v1",
+  "rule_ids": {
+    "H1": "entrypoint_alias_unique_arity_compatible_v0",
+    "H2": "module_assert_entrypoint_selftest_quarantine_v0",
+    "H3": "empty_suite_pass_insertion_v0",
+    "H4": "top_level_demo_print_quarantine_v0"
+  },
+  "rule_statuses": {
+    "H1": "development_candidate_not_frozen",
+    "H2": "development_candidate_not_frozen",
+    "H3": "development_candidate_not_frozen",
+    "H4": "development_candidate_not_frozen"
+  }
+}

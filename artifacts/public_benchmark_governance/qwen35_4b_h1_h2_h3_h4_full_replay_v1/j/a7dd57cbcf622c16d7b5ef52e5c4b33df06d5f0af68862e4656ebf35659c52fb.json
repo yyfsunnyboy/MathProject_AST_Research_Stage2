@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "a7dd57cbcf622c16d7b5ef52e5c4b33df06d5f0af68862e4656ebf35659c52fb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "final_source": "def find_max(words):\n    max_unique = 0\n    result_word = \"\"\n    \n    for word in words:\n        unique_count = len(set(word))\n        \n        if unique_count > max_unique:\n            max_unique = unique_count\n            result_word = word\n        elif unique_count == max_unique and (result_word == \"\" or word < result_word):\n            result_word = word\n            \n    return result_word",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/158:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "post_h2_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "post_h3_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "post_h4_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9e5baa17084e9260ea640e42bdbb22f3486ef2b126c5cc5a21847b0b8410d27e",
+  "raw_source": "def find_max(words):\n    max_unique = 0\n    result_word = \"\"\n    \n    for word in words:\n        unique_count = len(set(word))\n        \n        if unique_count > max_unique:\n            max_unique = unique_count\n            result_word = word\n        elif unique_count == max_unique and (result_word == \"\" or word < result_word):\n            result_word = word\n            \n    return result_word",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/158",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

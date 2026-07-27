@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "70682f9a937e84e787d9438d37456a374270d3641100b738fee1426c1a974417",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "maximum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "final_source": "def maximum(arr, k):\n    \"\"\"\n    Given an array arr of integers and a positive integer k, return a sorted list \n    of length k with the maximum k numbers in arr.\n\n    Example 1:\n\n        Input: arr = [-3, -4, 5], k = 3\n        Output: [-4, -3, 5]\n\n    Example 2:\n\n        Input: arr = [4, -4, 4], k = 2\n        Output: [4, 4]\n\n    Example 3:\n\n        Input: arr = [-3, 2, 1, 2, -1, -2, 1], k = 1\n        Output: [2]\n\n    Note:\n        1. The length of the array will be in the range of [1, 1000].\n        2. The elements in the array will be in the range of [-1000, 1000].\n        3. 0 <= k <= len(arr)\n    \"\"\"\n\n    if not arr or k == 0:\n        return []\n\n    sorted_arr = sorted(arr)\n    result = sorted_arr[-k:]\n    \n    # The problem statement examples show the output as a list of length k with maximum numbers, \n    # but Example 1 shows [-4, -3, 5] which is not strictly descending order if we just take top k.\n    # However, looking closely at Example 1: Input arr = [-3, -4, 5], k=3 -> Output [-4, -3, 5]. \n    # This output is actually the original array sorted in ascending order? No, that would be [-4, -3, 5] if we sort all.\n    # Wait, Example 1 input has only 3 elements and k=3. The max numbers are just all of them.\n    # If I take top 3 from [-3, -4, 5], they are 5, -3, -4. \n    # But the example output is [-4, -3, 5]. This looks like ascending order? Or maybe descending?\n    # Let's re-read carefully: \"return a sorted list of length k with the maximum k numbers\".\n    # Usually \"sorted\" implies ascending unless specified otherwise (like top-k largest).\n    # If it means \"largest k elements\", then for [-3, -4, 5], the largest are 5, -3, -4. \n    # Sorted list of these would be [-4, -3, 5]. This matches Example 1 output.\n    \n    # Let's check Example 2: Input [4, -4, 4], k=2. Max numbers are 4 and 4.\n    # Output is [4, 4]. Sorted ascending -> [4, 4]. Matches.\n    \n    # Let's check Example 3: Input [-3, 2, 1, 2, -1, -2, 1], k=1. Max number is 2.\n    # Output is [2]. Matches.\n\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/120:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "post_h2_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "post_h3_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "post_h4_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c14e1ede0a59b60b6b2aed9ce372f6b8baf67f347d5447ef69a871ea265849e5",
+  "raw_source": "def maximum(arr, k):\n    \"\"\"\n    Given an array arr of integers and a positive integer k, return a sorted list \n    of length k with the maximum k numbers in arr.\n\n    Example 1:\n\n        Input: arr = [-3, -4, 5], k = 3\n        Output: [-4, -3, 5]\n\n    Example 2:\n\n        Input: arr = [4, -4, 4], k = 2\n        Output: [4, 4]\n\n    Example 3:\n\n        Input: arr = [-3, 2, 1, 2, -1, -2, 1], k = 1\n        Output: [2]\n\n    Note:\n        1. The length of the array will be in the range of [1, 1000].\n        2. The elements in the array will be in the range of [-1000, 1000].\n        3. 0 <= k <= len(arr)\n    \"\"\"\n\n    if not arr or k == 0:\n        return []\n\n    sorted_arr = sorted(arr)\n    result = sorted_arr[-k:]\n    \n    # The problem statement examples show the output as a list of length k with maximum numbers, \n    # but Example 1 shows [-4, -3, 5] which is not strictly descending order if we just take top k.\n    # However, looking closely at Example 1: Input arr = [-3, -4, 5], k=3 -> Output [-4, -3, 5]. \n    # This output is actually the original array sorted in ascending order? No, that would be [-4, -3, 5] if we sort all.\n    # Wait, Example 1 input has only 3 elements and k=3. The max numbers are just all of them.\n    # If I take top 3 from [-3, -4, 5], they are 5, -3, -4. \n    # But the example output is [-4, -3, 5]. This looks like ascending order? Or maybe descending?\n    # Let's re-read carefully: \"return a sorted list of length k with the maximum k numbers\".\n    # Usually \"sorted\" implies ascending unless specified otherwise (like top-k largest).\n    # If it means \"largest k elements\", then for [-3, -4, 5], the largest are 5, -3, -4. \n    # Sorted list of these would be [-4, -3, 5]. This matches Example 1 output.\n    \n    # Let's check Example 2: Input [4, -4, 4], k=2. Max numbers are 4 and 4.\n    # Output is [4, 4]. Sorted ascending -> [4, 4]. Matches.\n    \n    # Let's check Example 3: Input [-3, 2, 1, 2, -1, -2, 1], k=1. Max number is 2.\n    # Output is [2]. Matches.\n\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/120",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

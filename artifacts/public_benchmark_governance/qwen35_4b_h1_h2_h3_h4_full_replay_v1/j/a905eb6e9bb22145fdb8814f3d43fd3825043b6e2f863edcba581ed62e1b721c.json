@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "a905eb6e9bb22145fdb8814f3d43fd3825043b6e2f863edcba581ed62e1b721c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "bf",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "final_source": "def bf(planet1, planet2):\n    # Define the order of planets from closest to furthest from the Sun\n    ordered_planets = [\n        \"Mercury\", \"Venus\", \"Earth\", \"Mars\", \n        \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"\n    ]\n\n    # Find indices of both planets\n    try:\n        idx1 = ordered_planets.index(planet1)\n        idx2 = ordered_planets.index(planet2)\n    except ValueError:\n        return ()  # Return empty tuple if either planet name is invalid\n\n    # Ensure we always get the range from smaller index to larger (sorted by proximity)\n    start, end = min(idx1, idx2), max(idx1, idx2)\n\n    # Extract planets between them (exclusive of endpoints as per examples)\n    result = ordered_planets[start + 1:end]\n\n    return tuple(result)\n\n\n# Example usage:\nprint(bf(\"Jupiter\", \"Neptune\"))   # ('Saturn', 'Uranus')\nprint(bf(\"Earth\", \"Mercury\"))    # ('Venus')\nprint(bf(\"Mercury\", \"Uranus\"))   # ('Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn')\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/148:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "post_h2_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "post_h3_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "post_h4_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "96c5b54d5095975702707fb285f05cdd8ce0d11cbca88587bbffe6ca8cdbb2a1",
+  "raw_source": "def bf(planet1, planet2):\n    # Define the order of planets from closest to furthest from the Sun\n    ordered_planets = [\n        \"Mercury\", \"Venus\", \"Earth\", \"Mars\", \n        \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"\n    ]\n\n    # Find indices of both planets\n    try:\n        idx1 = ordered_planets.index(planet1)\n        idx2 = ordered_planets.index(planet2)\n    except ValueError:\n        return ()  # Return empty tuple if either planet name is invalid\n\n    # Ensure we always get the range from smaller index to larger (sorted by proximity)\n    start, end = min(idx1, idx2), max(idx1, idx2)\n\n    # Extract planets between them (exclusive of endpoints as per examples)\n    result = ordered_planets[start + 1:end]\n\n    return tuple(result)\n\n\n# Example usage:\nprint(bf(\"Jupiter\", \"Neptune\"))   # ('Saturn', 'Uranus')\nprint(bf(\"Earth\", \"Mercury\"))    # ('Venus')\nprint(bf(\"Mercury\", \"Uranus\"))   # ('Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn')\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/148",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

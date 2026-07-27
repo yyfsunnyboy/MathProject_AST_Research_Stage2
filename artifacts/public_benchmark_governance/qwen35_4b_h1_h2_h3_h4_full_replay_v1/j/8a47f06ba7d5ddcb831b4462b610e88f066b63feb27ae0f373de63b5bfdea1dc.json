@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8a47f06ba7d5ddcb831b4462b610e88f066b63feb27ae0f373de63b5bfdea1dc",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "humaneval",
+  "entry_point": "parse_music",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "final_source": "```python\nfrom typing import List\n\n\ndef parse_music(music_string: str) -> List[int]:\n    \"\"\" Input to this function is a string representing musical notes in a special ASCII format.\n    Your task is to parse this string and return list of integers corresponding to how many beats does each\n    not last.\n\n    Here is a legend:\n    'o' - whole note, lasts four beats\n    'o|' - half note, lasts two beats\n    '.|' - quater note, lasts one beat\n\n    >>> parse_music('o o| .| o| o| .| .| .| .| o o')\n    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\n    \"\"\"\n    \n    # Map note symbols to their beat values\n    notes = {\n        'o': 4,      # whole note\n        '.|': 1,     # quarter note (note: the example uses '.' but legend says '|', \n                     # based on typical ASCII music notation and common problem versions)\n    }\n\n    beats_list = []\n\n    for i in range(len(music_string)):\n        char = music_string[i]\n        \n        if char == 'o':\n            # Check next character to distinguish between whole note ('o') \n            # and half note ('o|'). If it's '|', then this is a half note.\n            if i + 1 < len(music_string) and music_string[i+1] == '|':\n                beats_list.append(2)\n            else:\n                beats_list.append(4)\n\n        elif char == '.':\n            # Check next character to distinguish between quarter note ('.|') \n            # and other cases. If it's '|', then this is a quarter note.\n            if i + 1 < len(music_string) and music_string[i+1] == '|':\n                beats_list.append(1)\n\n    return beats_list\n\n\n# Note: The problem description has an inconsistency in the legend vs example usage.\n# Common versions of this problem use '.' for quarter note with '|' after it ('.|').\n# If your actual input uses a different symbol, adjust the notes dictionary accordingly.",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/17:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "post_h2_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "post_h3_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "post_h4_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "affceadbce172834046ebe9bda76af07bb4d04e86af71607587f7119dd293582",
+  "raw_source": "```python\nfrom typing import List\n\n\ndef parse_music(music_string: str) -> List[int]:\n    \"\"\" Input to this function is a string representing musical notes in a special ASCII format.\n    Your task is to parse this string and return list of integers corresponding to how many beats does each\n    not last.\n\n    Here is a legend:\n    'o' - whole note, lasts four beats\n    'o|' - half note, lasts two beats\n    '.|' - quater note, lasts one beat\n\n    >>> parse_music('o o| .| o| o| .| .| .| .| o o')\n    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\n    \"\"\"\n    \n    # Map note symbols to their beat values\n    notes = {\n        'o': 4,      # whole note\n        '.|': 1,     # quarter note (note: the example uses '.' but legend says '|', \n                     # based on typical ASCII music notation and common problem versions)\n    }\n\n    beats_list = []\n\n    for i in range(len(music_string)):\n        char = music_string[i]\n        \n        if char == 'o':\n            # Check next character to distinguish between whole note ('o') \n            # and half note ('o|'). If it's '|', then this is a half note.\n            if i + 1 < len(music_string) and music_string[i+1] == '|':\n                beats_list.append(2)\n            else:\n                beats_list.append(4)\n\n        elif char == '.':\n            # Check next character to distinguish between quarter note ('.|') \n            # and other cases. If it's '|', then this is a quarter note.\n            if i + 1 < len(music_string) and music_string[i+1] == '|':\n                beats_list.append(1)\n\n    return beats_list\n\n\n# Note: The problem description has an inconsistency in the legend vs example usage.\n# Common versions of this problem use '.' for quarter note with '|' after it ('.|').\n# If your actual input uses a different symbol, adjust the notes dictionary accordingly.",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/17",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

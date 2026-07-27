@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "c4bc69dea96c849f9a5504b7713d7355a5819719aa9e73926dae06149adb7b77",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_solution",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "final_source": "def find_solution(a, b, n):\n    if a == 0:\n        return None if b != 0 and n % b else (None, n // b)\n    if b == 0:\n        return None if a != 0 and n % a else (n // a, None)\n    \n    def extended_gcd(a, b):\n        if a == 0:\n            return b, 0, 1\n        gcd, x1, y1 = extended_gcd(b % a, a)\n        x = y1 - (b // a) * x1\n        y = x1\n        return gcd, x, y\n    \n    g, x0, y0 = extended_gcd(a, b)\n    \n    if n % g != 0:\n        return None\n    \n    scale = n // g\n    x = (x0 * scale) % b\n    y = ((n - a * x) // b)\n    \n    return int(x), int(y)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/160:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "post_h2_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "post_h3_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "post_h4_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e4e2964e701da3be3a5a2a043b3b55ebc768ee73e41586a6274e131f037fe3eb",
+  "raw_source": "def find_solution(a, b, n):\n    if a == 0:\n        return None if b != 0 and n % b else (None, n // b)\n    if b == 0:\n        return None if a != 0 and n % a else (n // a, None)\n    \n    def extended_gcd(a, b):\n        if a == 0:\n            return b, 0, 1\n        gcd, x1, y1 = extended_gcd(b % a, a)\n        x = y1 - (b // a) * x1\n        y = x1\n        return gcd, x, y\n    \n    g, x0, y0 = extended_gcd(a, b)\n    \n    if n % g != 0:\n        return None\n    \n    scale = n // g\n    x = (x0 * scale) % b\n    y = ((n - a * x) // b)\n    \n    return int(x), int(y)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/160",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

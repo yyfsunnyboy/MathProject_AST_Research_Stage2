@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b6fd6bd124ab318dd39fe06862e12bc30b1486178ce1aa71621ad5c59302b0af",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "rolling_max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "final_source": "from typing import List\n\n\ndef rolling_max(numbers: List[int]) -> List[int]:\n    \"\"\" From a given list of integers, generate a list of rolling maximum element found until given moment\n    in the sequence.\n    \n    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\n    [1, 2, 3, 3, 3, 4, 4]\n    \"\"\"\n    if not numbers:\n        return []\n\n    result = []\n    current_max = float('-inf')\n\n    for num in numbers:\n        # Update the maximum seen so far\n        if num > current_max:\n            current_max = num\n        \n        # Append the rolling max to the result list\n        result.append(current_max)\n\n    return result\n\n\n# Example usage and test cases (optional, can be removed or kept for testing):\nif __name__ == \"__main__\":\n    print(rolling_max([1, 2, 3, 2, 3, 4, 2]))  \n    # Expected: [1, 2, 3, 3, 3, 4, 4]\n\n    print(rolling_max([]))                          # []\n    print(rolling_max([-5, -2, -9, -1]))           # [-5, -2, -2, -1]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/9:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "post_h2_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "post_h3_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "post_h4_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fb8ba7b2658dc3db0013787f759356e466f65719279383379d8e16854770d5c7",
+  "raw_source": "from typing import List\n\n\ndef rolling_max(numbers: List[int]) -> List[int]:\n    \"\"\" From a given list of integers, generate a list of rolling maximum element found until given moment\n    in the sequence.\n    \n    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])\n    [1, 2, 3, 3, 3, 4, 4]\n    \"\"\"\n    if not numbers:\n        return []\n\n    result = []\n    current_max = float('-inf')\n\n    for num in numbers:\n        # Update the maximum seen so far\n        if num > current_max:\n            current_max = num\n        \n        # Append the rolling max to the result list\n        result.append(current_max)\n\n    return result\n\n\n# Example usage and test cases (optional, can be removed or kept for testing):\nif __name__ == \"__main__\":\n    print(rolling_max([1, 2, 3, 2, 3, 4, 2]))  \n    # Expected: [1, 2, 3, 3, 3, 4, 4]\n\n    print(rolling_max([]))                          # []\n    print(rolling_max([-5, -2, -9, -1]))           # [-5, -2, -2, -1]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/9",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

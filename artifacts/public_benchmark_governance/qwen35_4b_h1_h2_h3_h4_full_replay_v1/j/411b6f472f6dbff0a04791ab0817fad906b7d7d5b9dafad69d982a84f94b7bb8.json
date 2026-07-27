@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "411b6f472f6dbff0a04791ab0817fad906b7d7d5b9dafad69d982a84f94b7bb8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "area_tetrahedron",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "24ec6b39e7503a8e5c295dbe9ab0463a6a3864030e47f0b5850003ac288fb09d",
+  "final_source": "def area_tetrahedron(a):\n    return (a**2 * 3 ** 0.5) / 4\n    \nif __name__ == \"__main__\":\n    assert area_tetrahedron(3)==15.588457268119894",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/742:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a0b644a8e33e8137768780d8a179364dc9fe4023aa5c63940809f43b29f4cada",
+  "post_h2_sha256": "24ec6b39e7503a8e5c295dbe9ab0463a6a3864030e47f0b5850003ac288fb09d",
+  "post_h3_sha256": "24ec6b39e7503a8e5c295dbe9ab0463a6a3864030e47f0b5850003ac288fb09d",
+  "post_h4_sha256": "24ec6b39e7503a8e5c295dbe9ab0463a6a3864030e47f0b5850003ac288fb09d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a0b644a8e33e8137768780d8a179364dc9fe4023aa5c63940809f43b29f4cada",
+  "raw_source": "def area_tetrahedron(a):\n    return (a**2 * 3 ** 0.5) / 4\n    \nassert area_tetrahedron(3)==15.588457268119894",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/742",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

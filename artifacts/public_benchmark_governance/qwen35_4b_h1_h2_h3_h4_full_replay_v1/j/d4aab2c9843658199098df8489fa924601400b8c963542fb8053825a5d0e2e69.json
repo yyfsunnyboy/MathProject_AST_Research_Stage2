@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "d4aab2c9843658199098df8489fa924601400b8c963542fb8053825a5d0e2e69",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_total_number_of_sequences",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "99810dedbc582905b1e2cc75f2af7735e15e64f3f845373837068f28144ff334",
+  "final_source": "from functools import lru_cache\n\ndef get_total_number_of_sequences(m: int, n: int) -> int:\n    \"\"\"\n    Returns the number of sequences of length n such that:\n      - each element is a positive integer <= m\n      - each element >= 2 * previous element\n    \n    Example: assert get_total_number_of_sequences(10, 4) == 4\n    Valid sequences for (m=10, n=4):\n        [3,6,12,...] -> but 12>10 invalid. Let's manually check small cases.\n\n    Actually let's trace the example: m=10, n=4.\n    We need a_1 >=1, and for i>=2: 2*a_{i-1} <= a_i <= 10.\n\n    Possible sequences of length 4 under these rules with max element ≤10:\n\n        Start at 3: \n          [3] -> next in [6..10]: say 6\n            [3,6] -> next >=12 >10 → stop (cannot extend to length 4)\n        So starting at 3 cannot reach length 4.\n\n    Try start=5?\n      [5] -> next>=10: only 10 allowed\n         [5,10] -> next>=20>10 → stuck.\n\n    What about smaller starts? \n    Start=1:\n       a1=1\n        a2 in [2..10]: many choices. But we need length 4.\n        Let's try to build backwards or simulate.\n\n    Actually, known answer for (m=10,n=4) is 4 according to problem statement.\n    So there are exactly 4 such sequences.\n\n    One possibility: \n      [3,6] -> no extension → length only 2.\n    \n    Wait — maybe I misread? The condition says \"greater than or equal to twice the previous\", so strictly increasing by at least doubling.\n\n    Let's list all possible chains of length 4 with max ≤10:\n\n        a,b,c,d such that b>=2a, c>=2b, d>=2c, and all <=10.\n\n        Then d >= 8*c? No: d >= 2c, c>=2b, b>=2a → so d >= 4*b >= 8*a.\n        Since a>=1, then d>=8. Also d<=10 ⇒ possible d in {8,9,10}.\n\n        If d=8: \n          c must be such that 2c <=8 and c>=? Actually we need to go backwards from d.\n\n        Let's do forward DP properly with memoization.\n    \"\"\"\n\n    @lru_cache(None)\n    def count_sequences(length, current):\n        # length = number of elements still needed (including the next one after 'current')\n        if length == 1:\n            return 1  # just [current] is valid as long as current <= m (which it always is by caller logic)\n\n        total = 0\n        start_next = 2 * current\n        end_next = min(m, float('inf'))  # but we know all elements must be <= m\n        if end_next < start_next:\n            return 0\n\n        for nxt in range(start_next, end_next + 1):\n            total += count_sequences(length - 1, nxt)\n\n        return total\n\n    # The first element can be any positive integer from 1 to m such that we can form a sequence of length n.\n    # But note: even if current > m/2^(n-1), it might still not allow full chain? Actually our recursion handles bounds via end_next = min(m, ...).\n    \n    total_sequences = sum(count_sequences(n - 1, i) for i in range(1, m + 1))\n\n    return total_sequences\n\n\n# Test the example\nif __name__ == \"__main__\":\n    assert get_total_number_of_sequences(10, 4) == 4\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/239:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "02a048287b061eb896ec482a79aa8286790434ca6bfc66aa49d5d3f081c2b706",
+  "post_h2_sha256": "99810dedbc582905b1e2cc75f2af7735e15e64f3f845373837068f28144ff334",
+  "post_h3_sha256": "99810dedbc582905b1e2cc75f2af7735e15e64f3f845373837068f28144ff334",
+  "post_h4_sha256": "99810dedbc582905b1e2cc75f2af7735e15e64f3f845373837068f28144ff334",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "02a048287b061eb896ec482a79aa8286790434ca6bfc66aa49d5d3f081c2b706",
+  "raw_source": "from functools import lru_cache\n\ndef get_total_number_of_sequences(m: int, n: int) -> int:\n    \"\"\"\n    Returns the number of sequences of length n such that:\n      - each element is a positive integer <= m\n      - each element >= 2 * previous element\n    \n    Example: assert get_total_number_of_sequences(10, 4) == 4\n    Valid sequences for (m=10, n=4):\n        [3,6,12,...] -> but 12>10 invalid. Let's manually check small cases.\n\n    Actually let's trace the example: m=10, n=4.\n    We need a_1 >=1, and for i>=2: 2*a_{i-1} <= a_i <= 10.\n\n    Possible sequences of length 4 under these rules with max element ≤10:\n\n        Start at 3: \n          [3] -> next in [6..10]: say 6\n            [3,6] -> next >=12 >10 → stop (cannot extend to length 4)\n        So starting at 3 cannot reach length 4.\n\n    Try start=5?\n      [5] -> next>=10: only 10 allowed\n         [5,10] -> next>=20>10 → stuck.\n\n    What about smaller starts? \n    Start=1:\n       a1=1\n        a2 in [2..10]: many choices. But we need length 4.\n        Let's try to build backwards or simulate.\n\n    Actually, known answer for (m=10,n=4) is 4 according to problem statement.\n    So there are exactly 4 such sequences.\n\n    One possibility: \n      [3,6] -> no extension → length only 2.\n    \n    Wait — maybe I misread? The condition says \"greater than or equal to twice the previous\", so strictly increasing by at least doubling.\n\n    Let's list all possible chains of length 4 with max ≤10:\n\n        a,b,c,d such that b>=2a, c>=2b, d>=2c, and all <=10.\n\n        Then d >= 8*c? No: d >= 2c, c>=2b, b>=2a → so d >= 4*b >= 8*a.\n        Since a>=1, then d>=8. Also d<=10 ⇒ possible d in {8,9,10}.\n\n        If d=8: \n          c must be such that 2c <=8 and c>=? Actually we need to go backwards from d.\n\n        Let's do forward DP properly with memoization.\n    \"\"\"\n\n    @lru_cache(None)\n    def count_sequences(length, current):\n        # length = number of elements still needed (including the next one after 'current')\n        if length == 1:\n            return 1  # just [current] is valid as long as current <= m (which it always is by caller logic)\n\n        total = 0\n        start_next = 2 * current\n        end_next = min(m, float('inf'))  # but we know all elements must be <= m\n        if end_next < start_next:\n            return 0\n\n        for nxt in range(start_next, end_next + 1):\n            total += count_sequences(length - 1, nxt)\n\n        return total\n\n    # The first element can be any positive integer from 1 to m such that we can form a sequence of length n.\n    # But note: even if current > m/2^(n-1), it might still not allow full chain? Actually our recursion handles bounds via end_next = min(m, ...).\n    \n    total_sequences = sum(count_sequences(n - 1, i) for i in range(1, m + 1))\n\n    return total_sequences\n\n\n# Test the example\nassert get_total_number_of_sequences(10, 4) == 4\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/239",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

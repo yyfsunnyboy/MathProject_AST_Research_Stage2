@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "bb4c7c57a6d13c6c964d68e960a0787af709e8e0c7f470d0571d262047f40e12",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_Index",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "final_source": "import math\n\ndef find_Index(n):\n    \"\"\"\n    Finds the 1-based index of the smallest triangular number \n    that has exactly n digits.\n    \n    Args:\n        n (int): The number of digits required.\n        \n    Returns:\n        int: The index k such that T_k is the first triangular number with n digits.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"Number of digits must be positive.\")\n\n    # Calculate the approximate starting value for k.\n    # We need k*(k+1)/2 >= 10^(n-1)\n    # Approximation: k^2/2 ~ 10^(n-1) => k ~ sqrt(2 * 10^(n-1))\n    \n    lower_bound = int(math.sqrt(2 * (10**(n - 1))))\n\n    # Start checking from the calculated bound upwards.\n    # We use a loop to ensure we find the exact first occurrence \n    # because floating point approximations might be slightly off or land on n-1 digits.\n    \n    k = lower_bound\n    \n    while True:\n        triangular_num = (k * (k + 1)) // 2\n        \n        # Check if the number has exactly n digits\n        num_digits = len(str(triangular_num))\n        \n        if num_digits == n:\n            return k\n        elif num_digits < n:\n            # If we have fewer than n digits, increment and try again.\n            # Since triangular numbers grow monotonically, this will eventually hit n digits.\n            k += 1\n        else:\n            raise ValueError(f\"No triangular number with {n} digits found for the given constraints.\")\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    # Triangular numbers sequence (k=1,2,...): \n    # 1 (1 digit), 3 (1 digit), 6 (1 digit), 10 (2 digits)...\n    # The first one with 2 digits is 10. Its index k is 4.\n    \n    assert find_Index(2) == 4, \"Test case for n=2 failed.\"\n    \n    print(f\"Index of smallest triangular number with {find_Index(3)} digit(s):\") \n    # First 3-digit: 15 (k=5), 21(k=6)... wait. \n    # k=5 -> 15 (2 digits)\n    # k=6 -> 21 (2 digits)\n    # ...\n    # Let's trace manually for n=4 to verify logic mentally:\n    # sqrt(2*10^3) = sqrt(2000) ≈ 44.7 -> start at 45? \n    # T_44 = 980 (3 digits), T_45 = 1035 (4 digits). So answer should be 45 for n=4.\n    \n    print(f\"Index of smallest triangular number with {find_Index(4)} digit(s):\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/739:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "post_h2_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "post_h3_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "post_h4_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a5c1a4ad53f3582fb2f7c4c9482c7b054260202fabe854ebf6fc51f439f6a397",
+  "raw_source": "import math\n\ndef find_Index(n):\n    \"\"\"\n    Finds the 1-based index of the smallest triangular number \n    that has exactly n digits.\n    \n    Args:\n        n (int): The number of digits required.\n        \n    Returns:\n        int: The index k such that T_k is the first triangular number with n digits.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"Number of digits must be positive.\")\n\n    # Calculate the approximate starting value for k.\n    # We need k*(k+1)/2 >= 10^(n-1)\n    # Approximation: k^2/2 ~ 10^(n-1) => k ~ sqrt(2 * 10^(n-1))\n    \n    lower_bound = int(math.sqrt(2 * (10**(n - 1))))\n\n    # Start checking from the calculated bound upwards.\n    # We use a loop to ensure we find the exact first occurrence \n    # because floating point approximations might be slightly off or land on n-1 digits.\n    \n    k = lower_bound\n    \n    while True:\n        triangular_num = (k * (k + 1)) // 2\n        \n        # Check if the number has exactly n digits\n        num_digits = len(str(triangular_num))\n        \n        if num_digits == n:\n            return k\n        elif num_digits < n:\n            # If we have fewer than n digits, increment and try again.\n            # Since triangular numbers grow monotonically, this will eventually hit n digits.\n            k += 1\n        else:\n            raise ValueError(f\"No triangular number with {n} digits found for the given constraints.\")\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    # Triangular numbers sequence (k=1,2,...): \n    # 1 (1 digit), 3 (1 digit), 6 (1 digit), 10 (2 digits)...\n    # The first one with 2 digits is 10. Its index k is 4.\n    \n    assert find_Index(2) == 4, \"Test case for n=2 failed.\"\n    \n    print(f\"Index of smallest triangular number with {find_Index(3)} digit(s):\") \n    # First 3-digit: 15 (k=5), 21(k=6)... wait. \n    # k=5 -> 15 (2 digits)\n    # k=6 -> 21 (2 digits)\n    # ...\n    # Let's trace manually for n=4 to verify logic mentally:\n    # sqrt(2*10^3) = sqrt(2000) ≈ 44.7 -> start at 45? \n    # T_44 = 980 (3 digits), T_45 = 1035 (4 digits). So answer should be 45 for n=4.\n    \n    print(f\"Index of smallest triangular number with {find_Index(4)} digit(s):\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/739",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

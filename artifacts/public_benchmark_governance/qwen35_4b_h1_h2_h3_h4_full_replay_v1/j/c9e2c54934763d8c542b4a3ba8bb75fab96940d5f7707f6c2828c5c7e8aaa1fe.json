@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c9e2c54934763d8c542b4a3ba8bb75fab96940d5f7707f6c2828c5c7e8aaa1fe",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "pairs_sum_to_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "final_source": "def pairs_sum_to_zero(l):\n    \"\"\"\n    pairs_sum_to_zero takes a list of integers as an input.\n    it returns True if there are two distinct elements in the list that\n    sum to zero, and False otherwise.\n    \n    >>> pairs_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> pairs_sum_to_zero([1, 3, -2, 1])\n    False\n    >>> pairs_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])\n    True\n    >>> pairs_sum_to_zero([1])\n    False\n    \"\"\"\n    \n    # Use a set to track numbers we've seen so far for O(n) time complexity.\n    seen = set()\n\n    for x in l:\n        if -x in seen:\n            return True  # Found two distinct elements that sum to zero\n        seen.add(x)\n\n    return False\n\n\n# Example usage / tests (uncomment to run):\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/43:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "post_h2_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "post_h3_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "post_h4_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2fa43f42ebf502ebecf8e27936a8e08986ca7d174d783efa4b04525c9feb3c84",
+  "raw_source": "def pairs_sum_to_zero(l):\n    \"\"\"\n    pairs_sum_to_zero takes a list of integers as an input.\n    it returns True if there are two distinct elements in the list that\n    sum to zero, and False otherwise.\n    \n    >>> pairs_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> pairs_sum_to_zero([1, 3, -2, 1])\n    False\n    >>> pairs_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])\n    True\n    >>> pairs_sum_to_zero([1])\n    False\n    \"\"\"\n    \n    # Use a set to track numbers we've seen so far for O(n) time complexity.\n    seen = set()\n\n    for x in l:\n        if -x in seen:\n            return True  # Found two distinct elements that sum to zero\n        seen.add(x)\n\n    return False\n\n\n# Example usage / tests (uncomment to run):\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/43",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

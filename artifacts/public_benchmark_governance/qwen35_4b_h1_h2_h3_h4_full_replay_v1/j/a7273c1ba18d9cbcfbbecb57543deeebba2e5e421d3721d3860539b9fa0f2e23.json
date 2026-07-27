@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "a7273c1ba18d9cbcfbbecb57543deeebba2e5e421d3721d3860539b9fa0f2e23",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_Occ",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "final_source": "def remove_Occ(s, char):\n    if len(s) <= 1:\n        return s\n    \n    start = None\n    end = None\n    \n    for i in range(len(s)):\n        if s[i] == char and (start is None or end is not None):\n            if start is None:\n                start = i\n            else:\n                end = i\n                break\n    \n    result_list = list(s)\n    \n    if start is not None and end is not None:\n        del result_list[start]\n        # Adjust index for deletion of last occurrence since first was removed before it\n        # Actually, we need to remove both indices from the original string logic carefully.\n        # Let's reconstruct using slicing or list manipulation properly.\n    \n    # Correct approach: find all occurrences, then slice out start and end if they exist.\n    indices = [i for i in range(len(s)) if s[i] == char]\n    \n    if len(indices) >= 2:\n        first_idx = indices[0]\n        last_idx = indices[-1]\n        \n        # Create new string excluding these two characters\n        return ''.join([c for idx, c in enumerate(s) if not (idx == first_idx or idx == last_idx)])\n    elif len(indices) == 1:\n        # If only one occurrence exists, remove it. The problem says \"first and last\", \n        # which implies two distinct occurrences usually, but handles single case by removing the char itself?\n        # Based on typical interpretation of such problems where first != last is not guaranteed in logic but behavior expected:\n        # However, if only one 'l' exists in \"hello\" -> indices=[3]. Removing it gives \"heo\". \n        # But wait, assert remove_Occ(\"hello\",\"l\") == \"heo\". In \"hello\", l is at index 2 and 4? No. h-e-l-l-o.\n        # Indices: l at 2, l at 3. So two occurrences exist in \"hello\" for 'l'. \n        # First is 2, Last is 3. Removing both -> h e o. Correct.\n        \n        return ''.join([c for idx, c in enumerate(s) if not (idx == first_idx or idx == last_idx)])\n    else:\n        return s",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/11:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "post_h2_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "post_h3_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "post_h4_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "60d71f30ac12fbb03daf6b24a9e326145b8c79c676696b294b59a1dbf96979f4",
+  "raw_source": "def remove_Occ(s, char):\n    if len(s) <= 1:\n        return s\n    \n    start = None\n    end = None\n    \n    for i in range(len(s)):\n        if s[i] == char and (start is None or end is not None):\n            if start is None:\n                start = i\n            else:\n                end = i\n                break\n    \n    result_list = list(s)\n    \n    if start is not None and end is not None:\n        del result_list[start]\n        # Adjust index for deletion of last occurrence since first was removed before it\n        # Actually, we need to remove both indices from the original string logic carefully.\n        # Let's reconstruct using slicing or list manipulation properly.\n    \n    # Correct approach: find all occurrences, then slice out start and end if they exist.\n    indices = [i for i in range(len(s)) if s[i] == char]\n    \n    if len(indices) >= 2:\n        first_idx = indices[0]\n        last_idx = indices[-1]\n        \n        # Create new string excluding these two characters\n        return ''.join([c for idx, c in enumerate(s) if not (idx == first_idx or idx == last_idx)])\n    elif len(indices) == 1:\n        # If only one occurrence exists, remove it. The problem says \"first and last\", \n        # which implies two distinct occurrences usually, but handles single case by removing the char itself?\n        # Based on typical interpretation of such problems where first != last is not guaranteed in logic but behavior expected:\n        # However, if only one 'l' exists in \"hello\" -> indices=[3]. Removing it gives \"heo\". \n        # But wait, assert remove_Occ(\"hello\",\"l\") == \"heo\". In \"hello\", l is at index 2 and 4? No. h-e-l-l-o.\n        # Indices: l at 2, l at 3. So two occurrences exist in \"hello\" for 'l'. \n        # First is 2, Last is 3. Removing both -> h e o. Correct.\n        \n        return ''.join([c for idx, c in enumerate(s) if not (idx == first_idx or idx == last_idx)])\n    else:\n        return s",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/11",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7e57083dc2fc8e7130381e088b26a91bccf401eb1519824a71c63b2098fb545f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "pluck",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "final_source": "def pluck(arr):\n    \"\"\"\n    \"Given an array representing a branch of a tree that has non-negative integer nodes\n    your task is to pluck one of the nodes and return it.\n    The plucked node should be the node with the smallest even value.\n    If multiple nodes with the same smallest even value are found return the node that has smallest index.\n\n    The plucked node should be returned in a list, [ smalest_value, its index ],\n    If there are no even values or the given array is empty, return [].\n\n    Example 1:\n        Input: [4,2,3]\n        Output: [2, 1]\n        Explanation: 2 has the smallest even value, and 2 has the smallest index.\n\n    Example 2:\n        Input: [1,2,3]\n        Output: [2, 1]\n        Explanation: 2 has the smallest even value, and 2 has the smallest index. \n\n    Example 3:\n        Input: []\n        Output: []\n    \n    Example 4:\n        Input: [5, 0, 3, 0, 4, 2]\n        Output: [0, 1]\n        Explanation: 0 is the smallest value, but  there are two zeros,\n                     so we will choose the first zero, which has the smallest index.\n\n    Constraints:\n        * 1 <= nodes.length <= 10000\n        * 0 <= node.value\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    if len(arr) == 0:\n        return []\n    \n    min_even = float('inf')\n    result_index = -1\n    \n    for i in range(len(arr)):\n        val = arr[i]\n        if val % 2 == 0 and val < min_even:\n            min_even = val\n            result_index = i\n            \n    return [min_even, result_index]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/68:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "post_h2_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "post_h3_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "post_h4_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ad0566cb1c34d6feed8d13c20c76b244b78d8d93ecb78e07d6d4052128cff3b4",
+  "raw_source": "def pluck(arr):\n    \"\"\"\n    \"Given an array representing a branch of a tree that has non-negative integer nodes\n    your task is to pluck one of the nodes and return it.\n    The plucked node should be the node with the smallest even value.\n    If multiple nodes with the same smallest even value are found return the node that has smallest index.\n\n    The plucked node should be returned in a list, [ smalest_value, its index ],\n    If there are no even values or the given array is empty, return [].\n\n    Example 1:\n        Input: [4,2,3]\n        Output: [2, 1]\n        Explanation: 2 has the smallest even value, and 2 has the smallest index.\n\n    Example 2:\n        Input: [1,2,3]\n        Output: [2, 1]\n        Explanation: 2 has the smallest even value, and 2 has the smallest index. \n\n    Example 3:\n        Input: []\n        Output: []\n    \n    Example 4:\n        Input: [5, 0, 3, 0, 4, 2]\n        Output: [0, 1]\n        Explanation: 0 is the smallest value, but  there are two zeros,\n                     so we will choose the first zero, which has the smallest index.\n\n    Constraints:\n        * 1 <= nodes.length <= 10000\n        * 0 <= node.value\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    if len(arr) == 0:\n        return []\n    \n    min_even = float('inf')\n    result_index = -1\n    \n    for i in range(len(arr)):\n        val = arr[i]\n        if val % 2 == 0 and val < min_even:\n            min_even = val\n            result_index = i\n            \n    return [min_even, result_index]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/68",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

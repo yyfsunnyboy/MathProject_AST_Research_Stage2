@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9ce52c471fd8d58cbfb4d9faa20058061a930f90dd3b855306e02873e71295f6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "index_multiplication",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "final_source": "def index_multiplication(t1, t2):\n    result = []\n    for i in range(len(t1)):\n        a, b = t1[i], t2[i]\n        if len(a) == 0 or len(b) == 0:\n            continue\n        prod_a_b = tuple(x * y for x, y in zip(a, b))\n        result.append(prod_a_b)\n    return tuple(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/445:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "post_h2_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "post_h3_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "post_h4_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3d237d5c27813b0999afd3d644f23617353a07b71196b6dc32c4cb0570622a6a",
+  "raw_source": "def index_multiplication(t1, t2):\n    result = []\n    for i in range(len(t1)):\n        a, b = t1[i], t2[i]\n        if len(a) == 0 or len(b) == 0:\n            continue\n        prod_a_b = tuple(x * y for x, y in zip(a, b))\n        result.append(prod_a_b)\n    return tuple(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/445",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

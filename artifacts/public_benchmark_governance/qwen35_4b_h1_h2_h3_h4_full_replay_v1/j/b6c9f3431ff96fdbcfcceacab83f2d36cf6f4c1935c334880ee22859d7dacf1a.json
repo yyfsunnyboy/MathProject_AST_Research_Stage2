@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b6c9f3431ff96fdbcfcceacab83f2d36cf6f4c1935c334880ee22859d7dacf1a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "shell_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "final_source": "def shell_sort(arr):\n    \"\"\"Sorts the list in-place using Shell sort.\"\"\"\n    \n    # Create a copy to avoid modifying the original input if needed later\n    arr = arr[:]\n    \n    n = len(arr)\n    \n    # Start with large gaps and reduce them until gap is 1\n    gap = n // 2\n    \n    while gap > 0:\n        # Perform insertion sort for each sub-list formed by this gap size\n        for i in range(gap, n):\n            temp = arr[i]\n            \n            j = i\n            \n            # Move elements that are greater than the current element to one position ahead\n            while j >= gap and arr[j - gap] > temp:\n                arr[j] = arr[j - gap]\n                j -= gap\n            \n            arr[j] = temp\n        \n        # Reduce the gap for next iteration\n        gap //= 2\n    \n    return arr\n\n# Test case from the prompt\nresult = shell_sort([12, 23, 4, 5, 3, 2, 12, 81, 56, 95])\nassert result == [2, 3, 4, 5, 12, 12, 23, 56, 81, 95], \"Shell sort failed!\"\n\nprint(\"Test passed:\", result)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/428:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "post_h2_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "post_h3_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "post_h4_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6c6a8520f893ff5b78aa37297c60752c00dcd254884c8953280aeddf1845e2c9",
+  "raw_source": "def shell_sort(arr):\n    \"\"\"Sorts the list in-place using Shell sort.\"\"\"\n    \n    # Create a copy to avoid modifying the original input if needed later\n    arr = arr[:]\n    \n    n = len(arr)\n    \n    # Start with large gaps and reduce them until gap is 1\n    gap = n // 2\n    \n    while gap > 0:\n        # Perform insertion sort for each sub-list formed by this gap size\n        for i in range(gap, n):\n            temp = arr[i]\n            \n            j = i\n            \n            # Move elements that are greater than the current element to one position ahead\n            while j >= gap and arr[j - gap] > temp:\n                arr[j] = arr[j - gap]\n                j -= gap\n            \n            arr[j] = temp\n        \n        # Reduce the gap for next iteration\n        gap //= 2\n    \n    return arr\n\n# Test case from the prompt\nresult = shell_sort([12, 23, 4, 5, 3, 2, 12, 81, 56, 95])\nassert result == [2, 3, 4, 5, 12, 12, 23, 56, 81, 95], \"Shell sort failed!\"\n\nprint(\"Test passed:\", result)\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/428",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

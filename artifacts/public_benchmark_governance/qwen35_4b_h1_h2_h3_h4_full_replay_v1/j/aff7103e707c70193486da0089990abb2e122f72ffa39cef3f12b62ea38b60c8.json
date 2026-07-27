@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "aff7103e707c70193486da0089990abb2e122f72ffa39cef3f12b62ea38b60c8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Pairs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "final_source": "def count_Pairs(arr, n):\n    if len(arr) < 2:\n        return 0\n    \n    unique_elements = set(arr)\n    \n    # Calculate total possible pairs (n * (n-1)) / 2\n    total_pairs = (len(arr) * (len(arr) - 1)) // 2\n    \n    # Subtract pairs where both elements are equal\n    duplicate_count = sum(1 for x in unique_elements if arr.count(x) > 0 and len([x for i, val in enumerate(arr) if val == x]) >= 2)\n    \n    # Actually, let's recalculate: we need to subtract the number of pairs (i, j) where i < j and arr[i] == arr[j]\n    equal_pairs = 0\n    unique_list = list(unique_elements)\n    for u in unique_list:\n        count_u = arr.count(u)\n        if count_u > 1:\n            # Number of pairs with same value is C(count, 2)\n            equal_pairs += (count_u * (count_u - 1)) // 2\n    \n    return total_pairs - equal_pairs",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/564:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "post_h2_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "post_h3_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "post_h4_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "06f5b5612fe0c9f1daa9dbba81a637d01fa90784e6567a916ef1d723bcf9154c",
+  "raw_source": "def count_Pairs(arr, n):\n    if len(arr) < 2:\n        return 0\n    \n    unique_elements = set(arr)\n    \n    # Calculate total possible pairs (n * (n-1)) / 2\n    total_pairs = (len(arr) * (len(arr) - 1)) // 2\n    \n    # Subtract pairs where both elements are equal\n    duplicate_count = sum(1 for x in unique_elements if arr.count(x) > 0 and len([x for i, val in enumerate(arr) if val == x]) >= 2)\n    \n    # Actually, let's recalculate: we need to subtract the number of pairs (i, j) where i < j and arr[i] == arr[j]\n    equal_pairs = 0\n    unique_list = list(unique_elements)\n    for u in unique_list:\n        count_u = arr.count(u)\n        if count_u > 1:\n            # Number of pairs with same value is C(count, 2)\n            equal_pairs += (count_u * (count_u - 1)) // 2\n    \n    return total_pairs - equal_pairs",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/564",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

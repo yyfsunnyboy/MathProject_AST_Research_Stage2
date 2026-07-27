@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8f93609c45bed4ffeada0043d784e535ad2574b50fe316500d1fa90dca5a8eba",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_lowercase",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4f445f5c9b3cd86612e9477187ee1df473df8cd117318509a728b097decdfa7a",
+  "final_source": "def remove_lowercase(s):\n    \"\"\"\n    Removes all lowercase substrings (individual lowercase letters) from a string.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        str: A new string with only non-lowercase characters.\n    \"\"\"\n    return ''.join(char for char in s if not char.islower())\n\n# Test case as provided in the prompt\nif __name__ == \"__main__\":\n    assert remove_lowercase(\"PYTHon\") == \"PYTH\"\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/478:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "051123cb3556cbb24873d93355b3e77d751c5cd8b19c28237e8757286aad4b77",
+  "post_h2_sha256": "08e677872177eaacbd1858966b224935fcbd599515149bccbab213b3465a8c91",
+  "post_h3_sha256": "08e677872177eaacbd1858966b224935fcbd599515149bccbab213b3465a8c91",
+  "post_h4_sha256": "4f445f5c9b3cd86612e9477187ee1df473df8cd117318509a728b097decdfa7a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "051123cb3556cbb24873d93355b3e77d751c5cd8b19c28237e8757286aad4b77",
+  "raw_source": "def remove_lowercase(s):\n    \"\"\"\n    Removes all lowercase substrings (individual lowercase letters) from a string.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        str: A new string with only non-lowercase characters.\n    \"\"\"\n    return ''.join(char for char in s if not char.islower())\n\n# Test case as provided in the prompt\nassert remove_lowercase(\"PYTHon\") == \"PYTH\"\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/478",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ba0724a9cda79ded66dce2759658931d74d33ef982b11654b0be8f94cb1792b2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "len_log",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d99d1ba4df4bd8b74a3cbe518b0616b03cd9d80287ebd7f0b16dd9e5379e82ea",
+  "final_source": "def log_length(words):\n    \"\"\"\n    Returns the length of the longest word in the list.\n    \n    Args:\n        words (list[str]): List of strings\n        \n    Returns:\n        int: Length of the longest string, or 0 if the list is empty\n    \n    Examples:\n        >>> assert log_length([\"python\",\"PHP\",\"bigdata\"]) == 7\n        >>> assert log_length([]) == 0\n        >>> assert log_length([\"a\", \"bb\", \"ccc\"]) == 3\n    \"\"\"\n    return max(len(word) for word in words if isinstance(word, str))\n\n\n# Run the assertion from your example\nassert len_log([\"python\",\"PHP\",\"bigdata\"]) == 7\n\nprint(\"All tests passed!\")\n\nlen_log = log_length\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/90:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d99d1ba4df4bd8b74a3cbe518b0616b03cd9d80287ebd7f0b16dd9e5379e82ea",
+  "post_h2_sha256": "d99d1ba4df4bd8b74a3cbe518b0616b03cd9d80287ebd7f0b16dd9e5379e82ea",
+  "post_h3_sha256": "d99d1ba4df4bd8b74a3cbe518b0616b03cd9d80287ebd7f0b16dd9e5379e82ea",
+  "post_h4_sha256": "d99d1ba4df4bd8b74a3cbe518b0616b03cd9d80287ebd7f0b16dd9e5379e82ea",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "daf25637f61aa19f89874e6cfc2d74a1dc42f69aec5133e6e911c5555d814022",
+  "raw_source": "def log_length(words):\n    \"\"\"\n    Returns the length of the longest word in the list.\n    \n    Args:\n        words (list[str]): List of strings\n        \n    Returns:\n        int: Length of the longest string, or 0 if the list is empty\n    \n    Examples:\n        >>> assert log_length([\"python\",\"PHP\",\"bigdata\"]) == 7\n        >>> assert log_length([]) == 0\n        >>> assert log_length([\"a\", \"bb\", \"ccc\"]) == 3\n    \"\"\"\n    return max(len(word) for word in words if isinstance(word, str))\n\n\n# Run the assertion from your example\nassert len_log([\"python\",\"PHP\",\"bigdata\"]) == 7\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/90",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

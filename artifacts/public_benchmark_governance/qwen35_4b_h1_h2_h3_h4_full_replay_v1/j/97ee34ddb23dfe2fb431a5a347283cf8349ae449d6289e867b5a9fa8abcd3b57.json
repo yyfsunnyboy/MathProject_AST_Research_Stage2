@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "97ee34ddb23dfe2fb431a5a347283cf8349ae449d6289e867b5a9fa8abcd3b57",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "test_three_equal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "605e29ac315668feb5c9a0060b707f76ffd4d79a91f121efcecdffef57618e74",
+  "final_source": "def test_three_equal(a: int, b: int, c: int) -> int:\n    \"\"\"\n    Count how many of the three numbers are equal to each other.\n    \n    Examples:\n        - If all three are equal (e.g., 1, 1, 1), returns 3.\n        - If two are equal and one is different (e.g., 2, 2, 5), returns 2.\n        - If none are equal (e.g., 1, 2, 3), returns 0.\n    \"\"\"\n    if a == b and b == c:\n        return 3\n    elif a == b or b == c or a == c:\n        return 2\n    else:\n        return 0\n\n\n# Test assertion from the problem statement\nif __name__ == \"__main__\":\n    assert test_three_equal(1, 1, 1) == 3\n\n# Additional quick tests (optional but helpful):\nprint(test_three_equal(2, 2, 5))   # Expected: 2\nprint(test_three_equal(1, 2, 3))   # Expected: 0\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/801:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "69d96d4b595b6fddf8d58c3410fdf8c34efd955e54f26cea9111266ec8cf34a7",
+  "post_h2_sha256": "605e29ac315668feb5c9a0060b707f76ffd4d79a91f121efcecdffef57618e74",
+  "post_h3_sha256": "605e29ac315668feb5c9a0060b707f76ffd4d79a91f121efcecdffef57618e74",
+  "post_h4_sha256": "605e29ac315668feb5c9a0060b707f76ffd4d79a91f121efcecdffef57618e74",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "69d96d4b595b6fddf8d58c3410fdf8c34efd955e54f26cea9111266ec8cf34a7",
+  "raw_source": "def test_three_equal(a: int, b: int, c: int) -> int:\n    \"\"\"\n    Count how many of the three numbers are equal to each other.\n    \n    Examples:\n        - If all three are equal (e.g., 1, 1, 1), returns 3.\n        - If two are equal and one is different (e.g., 2, 2, 5), returns 2.\n        - If none are equal (e.g., 1, 2, 3), returns 0.\n    \"\"\"\n    if a == b and b == c:\n        return 3\n    elif a == b or b == c or a == c:\n        return 2\n    else:\n        return 0\n\n\n# Test assertion from the problem statement\nassert test_three_equal(1, 1, 1) == 3\n\n# Additional quick tests (optional but helpful):\nprint(test_three_equal(2, 2, 5))   # Expected: 2\nprint(test_three_equal(1, 2, 3))   # Expected: 0\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/801",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

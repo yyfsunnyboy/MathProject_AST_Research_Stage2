@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4ad9b876c30e7bb9a74e09c8654975ce19ccecaa89ac8917c161828aa25c4dfa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_Product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f53be38055edabd0a291995d1ac86364f9e022a3c06e2187471245ece79fffa8",
+  "final_source": "def max_product(arr):\n    \"\"\"\n    Find the pair in arr with the highest product and return it as a tuple.\n    \n    Handles:\n      - Positive numbers only -> largest two positives\n      - Negative numbers possible  -> smallest two negatives (product is positive)\n      - Zeros present\n    \n    Returns:\n        Tuple of integers (a, b) such that a * b is maximized and a <= b.\n    \"\"\"\n    if len(arr) < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n\n    # Sort the array to easily pick largest/smallest values\n    arr_sorted = sorted(arr)\n\n    n = len(arr_sorted)\n\n    # Candidates for max product:\n    # 1. Product of two largest numbers (both positive or both negative but large magnitude)\n    cand1 = arr_sorted[-1] * arr_sorted[-2]\n    \n    # 2. Product of two smallest numbers (if they are very negative, their product is large positive)\n    cand2 = arr_sorted[0] * arr_sorted[1]\n\n    max_prod = max(cand1, cand2)\n\n    if max_prod == cand1:\n        return (arr_sorted[-2], arr_sorted[-1])\n    else:\n        # Ensure we return in non-decreasing order as per example style\n        a, b = sorted((cand2 // 0.5 + int(cand2 ** 0.5), \n                       cand2 - max_prod)) if False else (arr_sorted[0], arr_sorted[1])\n        \n    # Simpler direct return:\n    pair_for_cand2 = (arr_sorted[0], arr_sorted[1])\n\n    if cand1 >= cand2:\n        return (arr_sorted[-2], arr_sorted[-1])\n    else:\n        return sorted(pair_for_cand2)\n\n\n# Test with the provided example\nassert max_product([1, 2, 3, 4, 7, 0, 8, 4]) == (7, 8), \"Test failed\"\n\nprint(\"All tests passed.\")\n\nmax_Product = max_product\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/415:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f53be38055edabd0a291995d1ac86364f9e022a3c06e2187471245ece79fffa8",
+  "post_h2_sha256": "f53be38055edabd0a291995d1ac86364f9e022a3c06e2187471245ece79fffa8",
+  "post_h3_sha256": "f53be38055edabd0a291995d1ac86364f9e022a3c06e2187471245ece79fffa8",
+  "post_h4_sha256": "f53be38055edabd0a291995d1ac86364f9e022a3c06e2187471245ece79fffa8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7a9397e516f4172331396fe93ad4d6b65e299007ba4d2601c51bd1f14a4146cd",
+  "raw_source": "def max_product(arr):\n    \"\"\"\n    Find the pair in arr with the highest product and return it as a tuple.\n    \n    Handles:\n      - Positive numbers only -> largest two positives\n      - Negative numbers possible  -> smallest two negatives (product is positive)\n      - Zeros present\n    \n    Returns:\n        Tuple of integers (a, b) such that a * b is maximized and a <= b.\n    \"\"\"\n    if len(arr) < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n\n    # Sort the array to easily pick largest/smallest values\n    arr_sorted = sorted(arr)\n\n    n = len(arr_sorted)\n\n    # Candidates for max product:\n    # 1. Product of two largest numbers (both positive or both negative but large magnitude)\n    cand1 = arr_sorted[-1] * arr_sorted[-2]\n    \n    # 2. Product of two smallest numbers (if they are very negative, their product is large positive)\n    cand2 = arr_sorted[0] * arr_sorted[1]\n\n    max_prod = max(cand1, cand2)\n\n    if max_prod == cand1:\n        return (arr_sorted[-2], arr_sorted[-1])\n    else:\n        # Ensure we return in non-decreasing order as per example style\n        a, b = sorted((cand2 // 0.5 + int(cand2 ** 0.5), \n                       cand2 - max_prod)) if False else (arr_sorted[0], arr_sorted[1])\n        \n    # Simpler direct return:\n    pair_for_cand2 = (arr_sorted[0], arr_sorted[1])\n\n    if cand1 >= cand2:\n        return (arr_sorted[-2], arr_sorted[-1])\n    else:\n        return sorted(pair_for_cand2)\n\n\n# Test with the provided example\nassert max_product([1, 2, 3, 4, 7, 0, 8, 4]) == (7, 8), \"Test failed\"\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/415",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

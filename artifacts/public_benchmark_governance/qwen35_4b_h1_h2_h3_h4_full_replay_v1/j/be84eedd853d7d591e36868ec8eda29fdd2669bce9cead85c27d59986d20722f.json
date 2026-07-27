@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "be84eedd853d7d591e36868ec8eda29fdd2669bce9cead85c27d59986d20722f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_literals",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "final_source": "import re\n\ndef find_literals(text: str, pattern: str) -> tuple:\n    \"\"\"\n    Searches for a regex pattern in a given text.\n    \n    Args:\n        text (str): The input string to search within.\n        pattern (str): The regular expression pattern to match.\n        \n    Returns:\n        tuple: A tuple containing the matched substring, start index, and end index.\n               If no match is found, returns None or raises an exception based on preference.\n    \n    Raises:\n        re.error: If the provided pattern string contains invalid regex syntax.\n    \"\"\"\n    try:\n        # Compile the pattern to ensure it's valid before searching\n        compiled_pattern = re.compile(pattern)\n        \n        match = compiled_pattern.search(text)\n        \n        if not match:\n            return None  # Or raise ValueError(\"No match found\") depending on requirements\n        \n        matched_string = match.group()\n        start_index = match.start()\n        end_index = match.end()\n        \n        return (matched_string, start_index, end_index)\n    \n    except re.error as e:\n        raise Exception(f\"Invalid regex pattern provided: {e}\")\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    result = find_literals('The quick brown fox jumps over the lazy dog.', 'fox')\n    expected = ('fox', 16, 19)\n    \n    # Verify the output matches expectations\n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    \n    print(\"Test passed successfully!\")\n    print(f\"Matched string: '{result[0]}'\")\n    print(f\"Start index: {result[1]}\")\n    print(f\"End index: {result[2]}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/607:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "post_h2_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "post_h3_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "post_h4_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "213fb66518c96728f7ddeec4ef94221bf3613971ab7b3808772850285f6151f5",
+  "raw_source": "import re\n\ndef find_literals(text: str, pattern: str) -> tuple:\n    \"\"\"\n    Searches for a regex pattern in a given text.\n    \n    Args:\n        text (str): The input string to search within.\n        pattern (str): The regular expression pattern to match.\n        \n    Returns:\n        tuple: A tuple containing the matched substring, start index, and end index.\n               If no match is found, returns None or raises an exception based on preference.\n    \n    Raises:\n        re.error: If the provided pattern string contains invalid regex syntax.\n    \"\"\"\n    try:\n        # Compile the pattern to ensure it's valid before searching\n        compiled_pattern = re.compile(pattern)\n        \n        match = compiled_pattern.search(text)\n        \n        if not match:\n            return None  # Or raise ValueError(\"No match found\") depending on requirements\n        \n        matched_string = match.group()\n        start_index = match.start()\n        end_index = match.end()\n        \n        return (matched_string, start_index, end_index)\n    \n    except re.error as e:\n        raise Exception(f\"Invalid regex pattern provided: {e}\")\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    result = find_literals('The quick brown fox jumps over the lazy dog.', 'fox')\n    expected = ('fox', 16, 19)\n    \n    # Verify the output matches expectations\n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    \n    print(\"Test passed successfully!\")\n    print(f\"Matched string: '{result[0]}'\")\n    print(f\"Start index: {result[1]}\")\n    print(f\"End index: {result[2]}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/607",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

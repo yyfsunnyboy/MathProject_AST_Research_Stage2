@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9a01ba90e2309a8907df68dda1afcd80f3eb3b09fc95726b051eb221b6133223",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "nth_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5cf2a6b437189b14d1866e18cc436788c41c3a8681fc8385a488322f695abe6d",
+  "final_source": "def nth_nums(nums, n):\n    \"\"\"Return a new list with each number raised to the power of n.\"\"\"\n    return [num ** n for num in nums]\n\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert nth_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == \\\n           [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n    print(\"Test passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/623:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "41aeb15cb09d91549fef9549ff477c07c3c5410981f3dfc7c0cf37d13227ac0c",
+  "post_h2_sha256": "03a656f305fa3d46e11acbd8532e0c23f174e2b12e4d809fa45b66f94ab44fab",
+  "post_h3_sha256": "03a656f305fa3d46e11acbd8532e0c23f174e2b12e4d809fa45b66f94ab44fab",
+  "post_h4_sha256": "5cf2a6b437189b14d1866e18cc436788c41c3a8681fc8385a488322f695abe6d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "41aeb15cb09d91549fef9549ff477c07c3c5410981f3dfc7c0cf37d13227ac0c",
+  "raw_source": "def nth_nums(nums, n):\n    \"\"\"Return a new list with each number raised to the power of n.\"\"\"\n    return [num ** n for num in nums]\n\n\n# Example usage and assertion:\nassert nth_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == \\\n       [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/623",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

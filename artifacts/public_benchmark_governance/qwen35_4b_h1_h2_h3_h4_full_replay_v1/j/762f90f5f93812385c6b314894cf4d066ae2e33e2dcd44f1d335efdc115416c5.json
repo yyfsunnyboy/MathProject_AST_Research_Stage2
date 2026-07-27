@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "762f90f5f93812385c6b314894cf4d066ae2e33e2dcd44f1d335efdc115416c5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "final_source": "def count_nums(arr):\n    \"\"\"\n    Write a function count_nums which takes an array of integers and returns\n    the number of elements which has a sum of digits > 0.\n    If a number is negative, then its first signed digit will be negative:\n    e.g. -123 has signed digits -1, 2, and 3.\n\n    >>> count_nums([]) == 0\n    True\n    >>> count_nums([-1, 11, -11]) == 1\n    True\n    >>> count_nums([1, 1, 2]) == 3\n    True\n    \"\"\"\n    \n    def sum_signed_digits(n):\n        # Convert to string while preserving the sign for negative numbers\n        s = str(abs(n)) if n >= 0 else '-' + str(-n)\n        \n        total = 0\n        \n        # Handle the first character (sign or digit)\n        if len(s) > 1 and s[0] == '-':\n            # First signed digit is negative\n            d = int(s[1])\n            total += -d\n            \n            # Process remaining digits as positive\n            for ch in s[2:]:\n                total += int(ch)\n        else:\n            # Positive number or single-digit zero/negative handled above logic implicitly? \n            # Actually, if n is negative and has only one digit (e.g. -5), str(-n) = '5', so len(s)=1 after abs check but we need to handle sign explicitly\n            \n            # Let's restructure for clarity:\n            pass\n        \n        return total\n    \n    def sum_signed_digits_v2(n):\n        if n == 0:\n            return 0\n        \n        s = str(abs(n))\n        \n        is_negative = (n < 0)\n        \n        total = 0\n        \n        # First digit handling with sign\n        first_digit = int(s[0])\n        if is_negative:\n            total += -first_digit\n        else:\n            total += first_digit\n            \n        # Remaining digits are always positive in the \"signed\" sense per problem description\n        for ch in s[1:]:\n            d = int(ch)\n            total += d\n        \n        return total\n    \n    count = 0\n    for num in arr:\n        if sum_signed_digits_v2(num) > 0:\n            count += 1\n            \n    return count\n\n# Quick test with provided examples (uncomment to run):\nif __name__ == \"__main__\":\n    print(count_nums([]))          # Expected: 0\n    print(count_nums([-1, 11, -11]))  # Expected: 1 (-1 -> sum=-1; 11->sum=2; -11->sum=-1+1=0)\n    print(count_nums([1, 1, 2]))   # Expected: 3 (all positive sums > 0)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/108:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "post_h2_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "post_h3_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "post_h4_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2d9484228f670eb250a53c4237ec381c415c803d14c33ac4ca6cb22e7cdc992b",
+  "raw_source": "def count_nums(arr):\n    \"\"\"\n    Write a function count_nums which takes an array of integers and returns\n    the number of elements which has a sum of digits > 0.\n    If a number is negative, then its first signed digit will be negative:\n    e.g. -123 has signed digits -1, 2, and 3.\n\n    >>> count_nums([]) == 0\n    True\n    >>> count_nums([-1, 11, -11]) == 1\n    True\n    >>> count_nums([1, 1, 2]) == 3\n    True\n    \"\"\"\n    \n    def sum_signed_digits(n):\n        # Convert to string while preserving the sign for negative numbers\n        s = str(abs(n)) if n >= 0 else '-' + str(-n)\n        \n        total = 0\n        \n        # Handle the first character (sign or digit)\n        if len(s) > 1 and s[0] == '-':\n            # First signed digit is negative\n            d = int(s[1])\n            total += -d\n            \n            # Process remaining digits as positive\n            for ch in s[2:]:\n                total += int(ch)\n        else:\n            # Positive number or single-digit zero/negative handled above logic implicitly? \n            # Actually, if n is negative and has only one digit (e.g. -5), str(-n) = '5', so len(s)=1 after abs check but we need to handle sign explicitly\n            \n            # Let's restructure for clarity:\n            pass\n        \n        return total\n    \n    def sum_signed_digits_v2(n):\n        if n == 0:\n            return 0\n        \n        s = str(abs(n))\n        \n        is_negative = (n < 0)\n        \n        total = 0\n        \n        # First digit handling with sign\n        first_digit = int(s[0])\n        if is_negative:\n            total += -first_digit\n        else:\n            total += first_digit\n            \n        # Remaining digits are always positive in the \"signed\" sense per problem description\n        for ch in s[1:]:\n            d = int(ch)\n            total += d\n        \n        return total\n    \n    count = 0\n    for num in arr:\n        if sum_signed_digits_v2(num) > 0:\n            count += 1\n            \n    return count\n\n# Quick test with provided examples (uncomment to run):\nif __name__ == \"__main__\":\n    print(count_nums([]))          # Expected: 0\n    print(count_nums([-1, 11, -11]))  # Expected: 1 (-1 -> sum=-1; 11->sum=2; -11->sum=-1+1=0)\n    print(count_nums([1, 1, 2]))   # Expected: 3 (all positive sums > 0)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/108",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

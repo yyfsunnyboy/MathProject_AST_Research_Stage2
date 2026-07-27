@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b337739c45b9fff1d1e2ef6f26504b2a586ba076ecfd697aeb0ee67718da066e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "magic_square_test",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9eb774f0452b2f4811225154f042eaae072ac68a3b28ee7379008d398b3bf2ca",
+  "final_source": "def magic_square_test(matrix):\n    n = len(matrix)\n    \n    # Check if matrix is square\n    for row in matrix:\n        if len(row) != n:\n            return False\n    \n    # Flatten the matrix to check distinct numbers from 1 to N^2\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = set(range(1, n * n + 1))\n    \n    if set(flat_matrix) != expected_numbers:\n        return False\n    \n    # Calculate the magic constant (sum of first row or any valid sum)\n    magic_constant = sum(matrix[0])\n    \n    # Check rows\n    for i in range(n):\n        if sum(matrix[i]) != magic_constant:\n            return False\n    \n    # Check columns\n    for j in range(n):\n        col_sum = sum(matrix[i][j] for i in range(n))\n        if col_sum != magic_constant:\n            return False\n    \n    # Check main diagonals\n    diag1_sum = sum(matrix[i][i] for i in range(n))\n    diag2_sum = sum(matrix[i][n - 1 - i] for i in range(n))\n    \n    if diag1_sum != magic_constant or diag2_sum != magic_constant:\n        return False\n    \n    return True\n\n# Test case provided in the question\nif __name__ == \"__main__\":\n    assert magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n    print(\"All tests passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/129:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8da4316256bad2b4edabd249084e0a43fc89bf721a94387a85f5e83ed75ab64d",
+  "post_h2_sha256": "95dd11bb9809810b745fc649f69f4f4f54acfef4c869159f70b9f317dabb6f1e",
+  "post_h3_sha256": "95dd11bb9809810b745fc649f69f4f4f54acfef4c869159f70b9f317dabb6f1e",
+  "post_h4_sha256": "9eb774f0452b2f4811225154f042eaae072ac68a3b28ee7379008d398b3bf2ca",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8da4316256bad2b4edabd249084e0a43fc89bf721a94387a85f5e83ed75ab64d",
+  "raw_source": "def magic_square_test(matrix):\n    n = len(matrix)\n    \n    # Check if matrix is square\n    for row in matrix:\n        if len(row) != n:\n            return False\n    \n    # Flatten the matrix to check distinct numbers from 1 to N^2\n    flat_matrix = [num for row in matrix for num in row]\n    expected_numbers = set(range(1, n * n + 1))\n    \n    if set(flat_matrix) != expected_numbers:\n        return False\n    \n    # Calculate the magic constant (sum of first row or any valid sum)\n    magic_constant = sum(matrix[0])\n    \n    # Check rows\n    for i in range(n):\n        if sum(matrix[i]) != magic_constant:\n            return False\n    \n    # Check columns\n    for j in range(n):\n        col_sum = sum(matrix[i][j] for i in range(n))\n        if col_sum != magic_constant:\n            return False\n    \n    # Check main diagonals\n    diag1_sum = sum(matrix[i][i] for i in range(n))\n    diag2_sum = sum(matrix[i][n - 1 - i] for i in range(n))\n    \n    if diag1_sum != magic_constant or diag2_sum != magic_constant:\n        return False\n    \n    return True\n\n# Test case provided in the question\nassert magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/129",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

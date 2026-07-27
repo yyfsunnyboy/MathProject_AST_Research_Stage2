@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "efaeb360252f0d47790e3690914f11f5bf5a243b28ffa7fcd1ac126d0772a17a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_remainder",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "20b37166b5588dc234f355685db07a7a91187ed1ca9f88a837f50dc325054c88",
+  "final_source": "def find_remainder(arr, n):\n    \"\"\"\n    Calculates the product of all elements in the array modulo n.\n    \n    Args:\n        arr (list[int]): List of integers to multiply.\n        n (int): The modulus value.\n        \n    Returns:\n        int: The result of (product % n).\n    \"\"\"\n    # Initialize product as 1 (multiplicative identity)\n    product = 1\n    \n    for num in arr:\n        # Multiply current number and take modulo at each step to prevent overflow \n        # (though Python handles large integers automatically, this is good practice)\n        product = (product * num) % n\n        \n    return product\n\n# Test case from your assertion\nif __name__ == \"__main__\":\n    assert find_remainder([100, 10, 5, 25, 35, 14], 11) == 9\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/471:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d44e3c4dbfa1c23fb67840c1138571771d47d023b3e9427db33145d807b44dad",
+  "post_h2_sha256": "390589d3a644121fb7b21e4c4b799646e574d9a647240031e9323c4ce5fe669c",
+  "post_h3_sha256": "390589d3a644121fb7b21e4c4b799646e574d9a647240031e9323c4ce5fe669c",
+  "post_h4_sha256": "20b37166b5588dc234f355685db07a7a91187ed1ca9f88a837f50dc325054c88",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d44e3c4dbfa1c23fb67840c1138571771d47d023b3e9427db33145d807b44dad",
+  "raw_source": "def find_remainder(arr, n):\n    \"\"\"\n    Calculates the product of all elements in the array modulo n.\n    \n    Args:\n        arr (list[int]): List of integers to multiply.\n        n (int): The modulus value.\n        \n    Returns:\n        int: The result of (product % n).\n    \"\"\"\n    # Initialize product as 1 (multiplicative identity)\n    product = 1\n    \n    for num in arr:\n        # Multiply current number and take modulo at each step to prevent overflow \n        # (though Python handles large integers automatically, this is good practice)\n        product = (product * num) % n\n        \n    return product\n\n# Test case from your assertion\nassert find_remainder([100, 10, 5, 25, 35, 14], 11) == 9\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/471",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

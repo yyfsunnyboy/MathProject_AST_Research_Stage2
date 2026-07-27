@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "ff220bc3376524ced8e81ddc1d3796c39236230bdc5bb000d000a3ae0abc3dbc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "maximize_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "58a66686ebcba77dec2cdf7b347b41f9ec1d485337adbbb5a780ec285e422447",
+  "final_source": "def maximize_elements(tuple1, tuple2):\n    \"\"\"\n    Creates a new tuple containing the maximum value from corresponding \n    positions in the input tuples.\n    \n    Args:\n        tuple1: First tuple of integers.\n        tuple2: Second tuple of integers (must be same length as tuple1).\n        \n    Returns:\n        A tuple where each element is max(tuple1[i], tuple2[i]).\n    \"\"\"\n    if len(tuple1) != len(tuple2):\n        raise ValueError(\"Both input tuples must have the same number of elements.\")\n    \n    return tuple(max(a, b) for a, b in zip(tuple1, tuple2))\n\n# Test with the provided assertion case\nif __name__ == \"__main__\":\n    assert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), ((6, 7), (3, 9), (1, 1), (7, 3))) == ((6, 7), (4, 9), (2, 9), (7, 10))\n    print(\"Test passed successfully!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/259:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "47e97620eb5bf4dac9ea935cd03655fb98b8894eed614edefd005617539876a8",
+  "post_h2_sha256": "51e815051e4921a75563295638c871538fafa5f4099e984ceab99dbc4d48d0b6",
+  "post_h3_sha256": "51e815051e4921a75563295638c871538fafa5f4099e984ceab99dbc4d48d0b6",
+  "post_h4_sha256": "58a66686ebcba77dec2cdf7b347b41f9ec1d485337adbbb5a780ec285e422447",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "47e97620eb5bf4dac9ea935cd03655fb98b8894eed614edefd005617539876a8",
+  "raw_source": "def maximize_elements(tuple1, tuple2):\n    \"\"\"\n    Creates a new tuple containing the maximum value from corresponding \n    positions in the input tuples.\n    \n    Args:\n        tuple1: First tuple of integers.\n        tuple2: Second tuple of integers (must be same length as tuple1).\n        \n    Returns:\n        A tuple where each element is max(tuple1[i], tuple2[i]).\n    \"\"\"\n    if len(tuple1) != len(tuple2):\n        raise ValueError(\"Both input tuples must have the same number of elements.\")\n    \n    return tuple(max(a, b) for a, b in zip(tuple1, tuple2))\n\n# Test with the provided assertion case\nassert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), ((6, 7), (3, 9), (1, 1), (7, 3))) == ((6, 7), (4, 9), (2, 9), (7, 10))\n\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/259",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

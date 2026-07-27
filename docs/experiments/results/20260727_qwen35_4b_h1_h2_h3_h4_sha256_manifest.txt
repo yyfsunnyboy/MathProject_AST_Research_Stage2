@@ -1,0 +1,25 @@
+# SHA-256 manifest for the qwen3.5:4b cumulative H1->H2->H3->H4 candidate
+# replay + EvalPlus archive (development-candidate evidence; not a
+# frozen/production Healer claim). Generated at archive time from the
+# actual on-disk files (independently recomputed, not copied from a
+# self-reported summary).
+#
+# summary.json (evalplus): total_pairs=1084, total_executions=2168,
+# missing=0, duplicate=0, verified_rescue=26, regression=2,
+# blocker_removed_but_incorrect=3, modified_but_still_failed=75,
+# preserved_pass=601, abstained_unchanged=377.
+#
+36cf66a152da4f14bc191d283aa0d0936196da060417af1ec1d282389fcb0a02  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_replay_v1/summary.json
+5f5653a5a9fd2b1228e93c8a7c15f299a3370436bbf05a4a0d48e2f77d4e7031  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_replay_v1/execution_manifest.json
+eaa9d4299614577106a75f23447b82216673e2d226ee780f8c51ecb80457315a  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_replay_v1/cell_level_ledger.csv
+dbedb946d35ffb07453e841952135969e9a1666ce3c335d64ba19c1d40e8acd2  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/summary.json
+9e483c18a7e30cb62f541f689826181887be0779317a617c63ff1d2bed8a5a4c  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/execution_manifest.json
+1c334fef8abc8b637149c099db5b2cad2ce9392e9f133f497675f89db5b4636e  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/cell_level_ledger.csv
+8647bcd9bd5cac5cc91dd730ace8b78c277024eb5b2c8399c0204e55a2546bcf  scripts/run_public_benchmark_h1_h2_h3_h4_replay_v1.py
+d0ca1f02b448c7cd3a8b9841f75654f4ee6c032b498f4497e49978a5083d6c9d  scripts/run_public_benchmark_h1_h2_h3_h4_evalplus_v1.py
+408c7f8ab78cbeb1fece33826bf7074cf24fc1316beabfb1804dc57e76271519  tests/test_public_benchmark_h1_h2_h3_h4_replay_v1.py
+611d74f4566698e821fdef2c70aee010b9e479467400d2e0125874c622f11d2d  tests/test_public_benchmark_h1_h2_h3_h4_evalplus_v1.py
+
+--- per-cell journal directories (aggregate) ---
+a48d0b8abd42e7c13c1f2d5d0aa09b26435e1008a3092bcfaeafe326bb1aaf31  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_replay_v1/j/  (1084 files, combined-content digest)
+33069d2a8f70abac15dd9000a50b85820c46a33efa3de575c40a67508983791e  artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/j/  (1084 files, combined-content digest)

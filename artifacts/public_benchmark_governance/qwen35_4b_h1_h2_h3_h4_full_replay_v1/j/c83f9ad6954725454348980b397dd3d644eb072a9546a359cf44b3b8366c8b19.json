@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c83f9ad6954725454348980b397dd3d644eb072a9546a359cf44b3b8366c8b19",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "flip_case",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "final_source": "def flip_case(string: str) -> str:\n    \"\"\"For a given string, flip lowercase characters to uppercase and \n       uppercase to lowercase.\"\"\"\n    \n    result = []\n    for char in string:\n        if 'a' <= char <= 'z':  # If it's a lowercase letter\n            result.append(char.upper())\n        elif 'A' <= char <= 'Z':  # If it's an uppercase letter\n            result.append(char.lower())\n        else:  # Non-alphabetic characters remain unchanged\n            result.append(char)\n    \n    return ''.join(result)\n\n\n# Example usage and test cases\nif __name__ == \"__main__\":\n    print(flip_case('Hello'))      # 'hELLO'\n    print(flip_case('HELLO world!'))  # 'hello WORLD!'\n    print(flip_case('Python3.10'))   # 'pYTHON3.10'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/27:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "post_h2_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "post_h3_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "post_h4_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "acb0660e83f47f0030f03bc21686ba0258359635e99a1bacc2fe7fbeed51f447",
+  "raw_source": "def flip_case(string: str) -> str:\n    \"\"\"For a given string, flip lowercase characters to uppercase and \n       uppercase to lowercase.\"\"\"\n    \n    result = []\n    for char in string:\n        if 'a' <= char <= 'z':  # If it's a lowercase letter\n            result.append(char.upper())\n        elif 'A' <= char <= 'Z':  # If it's an uppercase letter\n            result.append(char.lower())\n        else:  # Non-alphabetic characters remain unchanged\n            result.append(char)\n    \n    return ''.join(result)\n\n\n# Example usage and test cases\nif __name__ == \"__main__\":\n    print(flip_case('Hello'))      # 'hELLO'\n    print(flip_case('HELLO world!'))  # 'hello WORLD!'\n    print(flip_case('Python3.10'))   # 'pYTHON3.10'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/27",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

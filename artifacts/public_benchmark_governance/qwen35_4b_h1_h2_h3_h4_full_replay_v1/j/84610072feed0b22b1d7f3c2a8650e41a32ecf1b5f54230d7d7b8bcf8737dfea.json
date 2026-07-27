@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "84610072feed0b22b1d7f3c2a8650e41a32ecf1b5f54230d7d7b8bcf8737dfea",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_row",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "final_source": "def get_row(lst, x):\n    result = []\n    for row_idx, row in enumerate(lst):\n        col_indices = [i for i, val in enumerate(row) if val == x]\n        sorted_col_indices = list(reversed(col_indices))\n        for col_idx in sorted_col_indices:\n            result.append((row_idx, col_idx))\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/87:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "post_h2_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "post_h3_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "post_h4_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "90189c705c7b1c61447290b4dea4623f36122b50c5b1e6f52f27e93c2514d473",
+  "raw_source": "def get_row(lst, x):\n    result = []\n    for row_idx, row in enumerate(lst):\n        col_indices = [i for i, val in enumerate(row) if val == x]\n        sorted_col_indices = list(reversed(col_indices))\n        for col_idx in sorted_col_indices:\n            result.append((row_idx, col_idx))\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/87",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "350d0b226de01ca75002b0c5f2a08361373c1277c87b50997305dc3d17ade49f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "first_non_repeating_character",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "final_source": "def first_non_repeating_character(s):\n    char_count = {}\n    for char in s:\n        if char in char_count:\n            char_count[char] += 1\n        else:\n            char_count[char] = 1\n    \n    for char, count in char_count.items():\n        if count == 1:\n            return char\n    return None",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/395:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "post_h2_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "post_h3_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "post_h4_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7f2048d9896fc8470ba85325664b36f03d8a0ff6a28341505b7ad6f4035126be",
+  "raw_source": "def first_non_repeating_character(s):\n    char_count = {}\n    for char in s:\n        if char in char_count:\n            char_count[char] += 1\n        else:\n            char_count[char] = 1\n    \n    for char, count in char_count.items():\n        if count == 1:\n            return char\n    return None",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/395",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

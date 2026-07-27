@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1487622602183763d512e146144c0ba22999b98bd56064250df08d55b08f672f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_undulating",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "final_source": "def is_undulating(n):\n    if n < 10:\n        return False\n    \n    digits = [int(d) for d in str(abs(n))]\n    \n    prev_diff_sign = None\n    for i in range(1, len(digits)):\n        diff = digits[i] - digits[i-1]\n        \n        # If difference is zero or same sign as previous (excluding the first step which sets initial state), it's not undulating\n        if diff == 0:\n            return False\n        \n        current_sign = 1 if diff > 0 else -1\n        \n        if prev_diff_sign is None:\n            prev_diff_sign = current_sign\n        elif current_sign != -prev_diff_sign:\n            pass # Correct alternation, continue\n        else:\n            return False\n    \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/92:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "post_h2_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "post_h3_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "post_h4_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cdfdbb7444e8805877aa5d4ae583dac565b3a555982647ea7c9121e959bc9142",
+  "raw_source": "def is_undulating(n):\n    if n < 10:\n        return False\n    \n    digits = [int(d) for d in str(abs(n))]\n    \n    prev_diff_sign = None\n    for i in range(1, len(digits)):\n        diff = digits[i] - digits[i-1]\n        \n        # If difference is zero or same sign as previous (excluding the first step which sets initial state), it's not undulating\n        if diff == 0:\n            return False\n        \n        current_sign = 1 if diff > 0 else -1\n        \n        if prev_diff_sign is None:\n            prev_diff_sign = current_sign\n        elif current_sign != -prev_diff_sign:\n            pass # Correct alternation, continue\n        else:\n            return False\n    \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/92",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

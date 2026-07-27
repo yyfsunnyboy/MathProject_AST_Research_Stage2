@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "a8445e0de9cf8270597fa3060bcf995a705ce141bca69da56a7c9ff40e7ca36a",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "list_split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "final_source": "def list_split(lst, n):\n    result = []\n    for i in range(n):\n        sublist = [lst[i + j * n] for j in range(len(lst) // n)]\n        if len(lst) % n > 0 and (i < len(lst) - ((len(lst) % n)):\n            pass\n        \n        # Correct logic to collect every nth element starting from index i\n        sublist = []\n        idx = i\n        while idx < len(lst):\n            sublist.append(lst[idx])\n            idx += n\n        result.append(sublist)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/265:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "post_h2_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "post_h3_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "post_h4_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "c8a50f13a3e4977c7be492ada146f64786cb57485531cdb4714cb4ab10d84db0",
+  "raw_source": "def list_split(lst, n):\n    result = []\n    for i in range(n):\n        sublist = [lst[i + j * n] for j in range(len(lst) // n)]\n        if len(lst) % n > 0 and (i < len(lst) - ((len(lst) % n)):\n            pass\n        \n        # Correct logic to collect every nth element starting from index i\n        sublist = []\n        idx = i\n        while idx < len(lst):\n            sublist.append(lst[idx])\n            idx += n\n        result.append(sublist)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/265",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

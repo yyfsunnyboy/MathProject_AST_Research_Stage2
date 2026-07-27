@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7cc1a6e40e4fc1da5c6bd0c3ead755ec38fb9360aadc59ab2b0dc389c0da5291",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "make_a_pile",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "final_source": "def make_a_pile(n):\n    \"\"\"\n    Given a positive integer n, you have to make a pile of n levels of stones.\n    The first level has n stones.\n    The number of stones in the next level is:\n        - the next odd number if n is odd.\n        - the next even number if n is even.\n    Return the number of stones in each level in a list, where element at index\n    i represents the number of stones in the level (i+1).\n\n    Examples:\n    >>> make_a_pile(3)\n    [3, 5, 7]\n    \"\"\"\n    \n    result = []\n    current_stones = n\n    \n    for _ in range(n):\n        result.append(current_stones)\n        \n        if n % 2 == 1:\n            # If original n is odd, next level adds an even number (next even after current)\n            # Actually the rule says \"the next odd/even number\". \n            # Let's trace example: n=3. Level 0 has 3 stones. Next should be next odd = 5. Then 7.\n            # So if we are at an odd number, add 2 to get next odd? No, that would make it even then odd again.\n            # The rule implies a sequence: \n            # If n is odd (e.g., 3): start with 3 (odd). Next must be \"next odd\" -> 5. Then 7.\n            # So the increment depends on whether we are currently at an odd or even number?\n            # Re-reading carefully: \"The number of stones in the next level is:\" \n            # \"- the next odd number if n is odd.\"\n            # This phrasing suggests that for ALL subsequent levels, if the original n was odd, we always pick the next odd.\n            # But 3 -> 5 (next odd) -> 7 (next odd). That works.\n            # What if n=4? Start with 4 (even). Next is \"next even\" -> 6. Then 8.\n            \n            current_stones += 2\n        else:\n            # If original n is even, we always pick the next even number for subsequent levels.\n            current_stones += 2\n            \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/100:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "post_h2_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "post_h3_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "post_h4_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81cdc07ae183c7b92f2f94e2de60bb8b7a831f6cfb3fe33ac810f2a849f4468e",
+  "raw_source": "def make_a_pile(n):\n    \"\"\"\n    Given a positive integer n, you have to make a pile of n levels of stones.\n    The first level has n stones.\n    The number of stones in the next level is:\n        - the next odd number if n is odd.\n        - the next even number if n is even.\n    Return the number of stones in each level in a list, where element at index\n    i represents the number of stones in the level (i+1).\n\n    Examples:\n    >>> make_a_pile(3)\n    [3, 5, 7]\n    \"\"\"\n    \n    result = []\n    current_stones = n\n    \n    for _ in range(n):\n        result.append(current_stones)\n        \n        if n % 2 == 1:\n            # If original n is odd, next level adds an even number (next even after current)\n            # Actually the rule says \"the next odd/even number\". \n            # Let's trace example: n=3. Level 0 has 3 stones. Next should be next odd = 5. Then 7.\n            # So if we are at an odd number, add 2 to get next odd? No, that would make it even then odd again.\n            # The rule implies a sequence: \n            # If n is odd (e.g., 3): start with 3 (odd). Next must be \"next odd\" -> 5. Then 7.\n            # So the increment depends on whether we are currently at an odd or even number?\n            # Re-reading carefully: \"The number of stones in the next level is:\" \n            # \"- the next odd number if n is odd.\"\n            # This phrasing suggests that for ALL subsequent levels, if the original n was odd, we always pick the next odd.\n            # But 3 -> 5 (next odd) -> 7 (next odd). That works.\n            # What if n=4? Start with 4 (even). Next is \"next even\" -> 6. Then 8.\n            \n            current_stones += 2\n        else:\n            # If original n is even, we always pick the next even number for subsequent levels.\n            current_stones += 2\n            \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/100",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

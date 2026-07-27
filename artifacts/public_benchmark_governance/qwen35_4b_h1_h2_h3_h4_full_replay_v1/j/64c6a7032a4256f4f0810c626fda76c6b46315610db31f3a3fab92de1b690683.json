@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "64c6a7032a4256f4f0810c626fda76c6b46315610db31f3a3fab92de1b690683",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "list_split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "final_source": "def list_split(lst, n):\n    \"\"\"\n    Splits the input list into sublists containing every nth element.\n    \n    Args:\n        lst (list): The input list to be split.\n        n (int): The step size for selecting elements from each sublist.\n        \n    Returns:\n        list: A list of lists, where each inner list contains elements \n              at indices 0, n, 2n, etc., relative to the start of that chunk.\n    \n    Example:\n        >>> list_split(['a', 'b', 'c', 'd', 'e', 'f'], 3)\n        [['a', 'd'], ['b', 'e']]\n    \"\"\"\n    result = []\n    \n    # Iterate through the original list with a step of n to find starting indices for new sublists\n    for i in range(0, len(lst), n):\n        # Slice from index i up to the end of the list (or until next multiple of n)\n        # We take every 'n'-th element starting at 'i' relative to the original start? \n        # Wait, re-reading the requirement based on the assertion:\n        # Input: ['a', 'b', c', ...] with n=3\n        # Output[0]: ['a', 'd', 'g', 'j', 'm'] -> Indices 0, 3, 6, 9, 12 (Step of 3)\n        # Output[1]: ['b', 'e', 'h', 'k', 'n'] -> Indices 1, 4, 7, 10, 13 (Step of 3)\n        # Output[2]: ['c', 'f', 'i', 'l']    -> Indices 2, 5, 8, 11   (Step of 3)\n        \n        # The logic is simply: create a new list starting at index i with step n.\n        sublist = lst[i::n] \n        result.append(sublist)\n\n    return result\n\n\n# Test Case from the prompt\nif __name__ == \"__main__\":\n    test_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']\n    \n    # Expected output based on the assertion in your prompt:\n    expected = [['a', 'd', 'g', 'j', 'm'], ['b', 'e', 'h', 'k', 'n'], ['c', 'f', 'i', 'l']]\n    \n    actual = list_split(test_list, 3)\n\n    # Verify the result matches the assertion logic\n    assert actual == expected, f\"Test failed! Expected {expected}, got {actual}\"\n    \n    print(\"Assertion passed successfully!\")\n    print(f\"Input: {test_list}\")\n    print(f\"n = 3\")\n    print(f\"Output: {actual}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/265:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "post_h2_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "post_h3_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "post_h4_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3fd78df7255207486d8cfb59830fbdba03801b7d91f6dd1dcfc533360686be71",
+  "raw_source": "def list_split(lst, n):\n    \"\"\"\n    Splits the input list into sublists containing every nth element.\n    \n    Args:\n        lst (list): The input list to be split.\n        n (int): The step size for selecting elements from each sublist.\n        \n    Returns:\n        list: A list of lists, where each inner list contains elements \n              at indices 0, n, 2n, etc., relative to the start of that chunk.\n    \n    Example:\n        >>> list_split(['a', 'b', 'c', 'd', 'e', 'f'], 3)\n        [['a', 'd'], ['b', 'e']]\n    \"\"\"\n    result = []\n    \n    # Iterate through the original list with a step of n to find starting indices for new sublists\n    for i in range(0, len(lst), n):\n        # Slice from index i up to the end of the list (or until next multiple of n)\n        # We take every 'n'-th element starting at 'i' relative to the original start? \n        # Wait, re-reading the requirement based on the assertion:\n        # Input: ['a', 'b', c', ...] with n=3\n        # Output[0]: ['a', 'd', 'g', 'j', 'm'] -> Indices 0, 3, 6, 9, 12 (Step of 3)\n        # Output[1]: ['b', 'e', 'h', 'k', 'n'] -> Indices 1, 4, 7, 10, 13 (Step of 3)\n        # Output[2]: ['c', 'f', 'i', 'l']    -> Indices 2, 5, 8, 11   (Step of 3)\n        \n        # The logic is simply: create a new list starting at index i with step n.\n        sublist = lst[i::n] \n        result.append(sublist)\n\n    return result\n\n\n# Test Case from the prompt\nif __name__ == \"__main__\":\n    test_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']\n    \n    # Expected output based on the assertion in your prompt:\n    expected = [['a', 'd', 'g', 'j', 'm'], ['b', 'e', 'h', 'k', 'n'], ['c', 'f', 'i', 'l']]\n    \n    actual = list_split(test_list, 3)\n\n    # Verify the result matches the assertion logic\n    assert actual == expected, f\"Test failed! Expected {expected}, got {actual}\"\n    \n    print(\"Assertion passed successfully!\")\n    print(f\"Input: {test_list}\")\n    print(f\"n = 3\")\n    print(f\"Output: {actual}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/265",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

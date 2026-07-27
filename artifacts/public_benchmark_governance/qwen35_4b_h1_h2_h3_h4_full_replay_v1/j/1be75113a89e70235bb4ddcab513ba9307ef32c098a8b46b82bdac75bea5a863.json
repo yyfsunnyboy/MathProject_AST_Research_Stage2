@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1be75113a89e70235bb4ddcab513ba9307ef32c098a8b46b82bdac75bea5a863",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dog_age",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "01eef0847a49751a824af1306cafcc3c551feb4ea33de3a7192a398e6c23a8ba",
+  "final_source": "def dog_age(human_years):\n    return human_years * 2 + 10 if human_years > 0 else 0\n\nif __name__ == \"__main__\":\n    assert dog_age(12)==61",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/264:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "51c109d5bbc2eef3de4302e8e52fa2e1b28a7efa513de608c9ac899e8fef2c56",
+  "post_h2_sha256": "01eef0847a49751a824af1306cafcc3c551feb4ea33de3a7192a398e6c23a8ba",
+  "post_h3_sha256": "01eef0847a49751a824af1306cafcc3c551feb4ea33de3a7192a398e6c23a8ba",
+  "post_h4_sha256": "01eef0847a49751a824af1306cafcc3c551feb4ea33de3a7192a398e6c23a8ba",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "51c109d5bbc2eef3de4302e8e52fa2e1b28a7efa513de608c9ac899e8fef2c56",
+  "raw_source": "def dog_age(human_years):\n    return human_years * 2 + 10 if human_years > 0 else 0\n\nassert dog_age(12)==61",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/264",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

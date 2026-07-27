@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "59f9c9bdfa0dd02df0e16e54c2fa49113c35471e57ec2ee3c59175b978d749f9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "change_base",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "final_source": "def change_base(x: int, base: int):\n    \"\"\"Change numerical base of input number x to base.\n    \n    Returns string representation after the conversion.\n    Base numbers are less than 10 (digits '0'-'9').\n    \n    Examples:\n        >>> change_base(8, 3)\n        '22'\n        >>> change_base(8, 2)\n        '1000'\n        >>> change_base(7, 2)\n        '111'\n    \"\"\"\n    if x == 0:\n        return \"0\"\n\n    digits = []\n    \n    # Convert to base using repeated modulo and division\n    while x > 0:\n        remainder = x % base\n        digits.append(str(remainder))\n        x //= base\n    \n    # Reverse the list since we built it from least significant digit first\n    return ''.join(digits[::-1])\n\n\n# Example usage tests (uncomment to run):\nif __name__ == \"__main__\":\n    print(change_base(8, 3))   # '22'\n    print(change_base(8, 2))   # '1000'\n    print(change_base(7, 2))   # '111'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/44:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "post_h2_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "post_h3_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "post_h4_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b5730e3448c8bc7e76251bfc15a0b862474cd3330a1a11c84b8b210149ee4496",
+  "raw_source": "def change_base(x: int, base: int):\n    \"\"\"Change numerical base of input number x to base.\n    \n    Returns string representation after the conversion.\n    Base numbers are less than 10 (digits '0'-'9').\n    \n    Examples:\n        >>> change_base(8, 3)\n        '22'\n        >>> change_base(8, 2)\n        '1000'\n        >>> change_base(7, 2)\n        '111'\n    \"\"\"\n    if x == 0:\n        return \"0\"\n\n    digits = []\n    \n    # Convert to base using repeated modulo and division\n    while x > 0:\n        remainder = x % base\n        digits.append(str(remainder))\n        x //= base\n    \n    # Reverse the list since we built it from least significant digit first\n    return ''.join(digits[::-1])\n\n\n# Example usage tests (uncomment to run):\nif __name__ == \"__main__\":\n    print(change_base(8, 3))   # '22'\n    print(change_base(8, 2))   # '1000'\n    print(change_base(7, 2))   # '111'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/44",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

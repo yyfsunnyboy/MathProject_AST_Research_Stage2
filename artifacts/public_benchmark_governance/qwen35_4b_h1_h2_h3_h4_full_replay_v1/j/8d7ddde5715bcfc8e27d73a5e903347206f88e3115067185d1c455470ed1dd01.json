@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8d7ddde5715bcfc8e27d73a5e903347206f88e3115067185d1c455470ed1dd01",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_not_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "final_source": "def is_not_prime(n: int) -> bool:\n    \"\"\"Return True if n is not prime, otherwise return False.\"\"\"\n    \n    # 0 and 1 are neither prime nor composite (not considered non-prime in this context for primality tests usually starting at 2)\n    # However, strictly speaking, they are \"non-primes\". \n    # Based on the test case `assert is_not_prime(2) == False`, we know:\n    # - 2 is prime -> returns False (meaning it IS a prime number).\n    \n    if n <= 1:\n        return True   # 0 and 1 are not prime numbers\n    \n    # Check divisibility from 2 up to sqrt(n)\n    i = 2\n    while i * i <= n:\n        if n % i == 0:\n            return True  # Found a divisor, so it's NOT prime (i.e., non-prime)\n        i += 1\n    \n    return False  # No divisors found, so it IS prime\n\n\n# Test cases based on your requirement and common edge cases\nassert is_not_prime(2) == False   # 2 is prime -> not a \"non-prime\" number\nassert is_not_prime(4) == True    # 4 is divisible by 2 -> non-prime\nassert is_not_prime(17) == False  # 17 is prime\nassert is_not_prime(9) == True    # 9 is divisible by 3\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/3:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "post_h2_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "post_h3_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "post_h4_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d97e6ad43e7f147a85c5d18e44d3594d29fbb6298a5367d54f1e0db4d0309ebd",
+  "raw_source": "def is_not_prime(n: int) -> bool:\n    \"\"\"Return True if n is not prime, otherwise return False.\"\"\"\n    \n    # 0 and 1 are neither prime nor composite (not considered non-prime in this context for primality tests usually starting at 2)\n    # However, strictly speaking, they are \"non-primes\". \n    # Based on the test case `assert is_not_prime(2) == False`, we know:\n    # - 2 is prime -> returns False (meaning it IS a prime number).\n    \n    if n <= 1:\n        return True   # 0 and 1 are not prime numbers\n    \n    # Check divisibility from 2 up to sqrt(n)\n    i = 2\n    while i * i <= n:\n        if n % i == 0:\n            return True  # Found a divisor, so it's NOT prime (i.e., non-prime)\n        i += 1\n    \n    return False  # No divisors found, so it IS prime\n\n\n# Test cases based on your requirement and common edge cases\nassert is_not_prime(2) == False   # 2 is prime -> not a \"non-prime\" number\nassert is_not_prime(4) == True    # 4 is divisible by 2 -> non-prime\nassert is_not_prime(17) == False  # 17 is prime\nassert is_not_prime(9) == True    # 9 is divisible by 3\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/3",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

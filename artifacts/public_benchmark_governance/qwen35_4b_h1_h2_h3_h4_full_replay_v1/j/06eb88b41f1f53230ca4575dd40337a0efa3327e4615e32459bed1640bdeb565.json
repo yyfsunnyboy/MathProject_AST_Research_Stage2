@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "06eb88b41f1f53230ca4575dd40337a0efa3327e4615e32459bed1640bdeb565",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "pluck",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "final_source": "def pluck(arr):\n    \"\"\"\n    Given an array representing a branch of a tree that has non-negative integer nodes,\n    your task is to pluck one of the nodes and return it.\n    \n    The plucked node should be the node with the smallest even value.\n    If multiple nodes have the same smallest even value, return the one with the \n    smallest index (first occurrence).\n\n    Returns: [smallest_even_value, its_index] if an even number exists, otherwise [].\n    \"\"\"\n    \n    # Initialize variables to track minimum even value and its first index\n    min_even = None  # Will store the smallest even value found so far\n    min_idx = -1      # Index of that element\n    \n    for i in range(len(arr)):\n        val = arr[i]\n        \n        # Check if current value is non-negative (constraint says it always will be) \n        # and even, and also smaller than or equal to the current minimum.\n        if val % 2 == 0:\n            if min_even is None or val < min_even:\n                min_even = val\n                min_idx = i\n            elif val == min_even:\n                # If we find another with same value, keep the first one (smallest index)\n                pass\n    \n    return [min_even, min_idx] if min_even is not None else []\n\n\n# Example usage and tests based on problem description\n\nif __name__ == \"__main__\":\n    print(pluck([4, 2, 3]))        # Output: [2, 1]\n    print(pluck([1, 2, 3]))        # Output: [2, 1]\n    print(pluck([]))               # Output: []\n    print(pluck([5, 0, 3, 0, 4, 2]))  # Output: [0, 1]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/68:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "post_h2_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "post_h3_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "post_h4_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d974f17610a2ecd68b3414614e40f9c0ff613117e2005cb0e143236a83c3e183",
+  "raw_source": "def pluck(arr):\n    \"\"\"\n    Given an array representing a branch of a tree that has non-negative integer nodes,\n    your task is to pluck one of the nodes and return it.\n    \n    The plucked node should be the node with the smallest even value.\n    If multiple nodes have the same smallest even value, return the one with the \n    smallest index (first occurrence).\n\n    Returns: [smallest_even_value, its_index] if an even number exists, otherwise [].\n    \"\"\"\n    \n    # Initialize variables to track minimum even value and its first index\n    min_even = None  # Will store the smallest even value found so far\n    min_idx = -1      # Index of that element\n    \n    for i in range(len(arr)):\n        val = arr[i]\n        \n        # Check if current value is non-negative (constraint says it always will be) \n        # and even, and also smaller than or equal to the current minimum.\n        if val % 2 == 0:\n            if min_even is None or val < min_even:\n                min_even = val\n                min_idx = i\n            elif val == min_even:\n                # If we find another with same value, keep the first one (smallest index)\n                pass\n    \n    return [min_even, min_idx] if min_even is not None else []\n\n\n# Example usage and tests based on problem description\n\nif __name__ == \"__main__\":\n    print(pluck([4, 2, 3]))        # Output: [2, 1]\n    print(pluck([1, 2, 3]))        # Output: [2, 1]\n    print(pluck([]))               # Output: []\n    print(pluck([5, 0, 3, 0, 4, 2]))  # Output: [0, 1]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/68",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

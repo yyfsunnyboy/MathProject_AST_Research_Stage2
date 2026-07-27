@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "6ea86c7eab2d8d0f94bef344b24ce3392ce19fbd515853fbd57815e105828340",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "string_xor",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "final_source": "def string_xor(a: str, b: str) -> str:\n    result = []\n    for i in range(len(a)):\n        if a[i] == '1' and b[i] == '0':\n            result.append('1')\n        elif a[i] == '0' and b[i] == '1':\n            result.append('1')\n        else:\n            result.append('0')\n    return ''.join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/11:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "post_h2_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "post_h3_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "post_h4_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6aa6c5a80f8f0bb4fd6b6d5aaa6b19ccbe93cbc9e43d8a57af09a2c592b550d0",
+  "raw_source": "def string_xor(a: str, b: str) -> str:\n    result = []\n    for i in range(len(a)):\n        if a[i] == '1' and b[i] == '0':\n            result.append('1')\n        elif a[i] == '0' and b[i] == '1':\n            result.append('1')\n        else:\n            result.append('0')\n    return ''.join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/11",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

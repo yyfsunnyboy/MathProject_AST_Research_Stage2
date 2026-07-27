@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d3ba695074995fc1c09991c83f2569e74b15f2d44a01db17431b161d8f52ebdb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_happy",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "final_source": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    \n    Examples:\n        is_happy(\"a\") => False\n        is_happy(\"aa\") => False\n        is_happy(\"abcd\") => True\n        is_happy(\"aabb\") => False\n        is_happy(\"adb\") => True\n        is_happy(\"xyy\") => False\n    \n    :param s: input string\n    :return: boolean indicating if the string is happy\n    \"\"\"\n    \n    # Condition 1: length must be at least 3\n    if len(s) < 3:\n        return False\n\n    # Check every triplet of consecutive characters for distinctness\n    for i in range(len(s) - 2):\n        c1, c2, c3 = s[i], s[i+1], s[i+2]\n        if not (c1 != c2 and c2 != c3 and c1 != c3):\n            return False\n\n    # If all triplets are distinct, the string is happy\n    return True\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"a\", False),\n        (\"aa\", False),\n        (\"abcd\", True),\n        (\"aabb\", False),\n        (\"adb\", True),\n        (\"xyy\", False)\n    ]\n\n    for s, expected in test_cases:\n        result = is_happy(s)\n        print(f\"is_happy('{s}') => {result} (expected: {expected})\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/80:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "post_h2_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "post_h3_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "post_h4_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "50d69964b7978d7c9fb377171122991a4ebd07503faa7bdea74047faf8651764",
+  "raw_source": "def is_happy(s):\n    \"\"\"You are given a string s.\n    Your task is to check if the string is happy or not.\n    A string is happy if its length is at least 3 and every 3 consecutive letters are distinct\n    \n    Examples:\n        is_happy(\"a\") => False\n        is_happy(\"aa\") => False\n        is_happy(\"abcd\") => True\n        is_happy(\"aabb\") => False\n        is_happy(\"adb\") => True\n        is_happy(\"xyy\") => False\n    \n    :param s: input string\n    :return: boolean indicating if the string is happy\n    \"\"\"\n    \n    # Condition 1: length must be at least 3\n    if len(s) < 3:\n        return False\n\n    # Check every triplet of consecutive characters for distinctness\n    for i in range(len(s) - 2):\n        c1, c2, c3 = s[i], s[i+1], s[i+2]\n        if not (c1 != c2 and c2 != c3 and c1 != c3):\n            return False\n\n    # If all triplets are distinct, the string is happy\n    return True\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"a\", False),\n        (\"aa\", False),\n        (\"abcd\", True),\n        (\"aabb\", False),\n        (\"adb\", True),\n        (\"xyy\", False)\n    ]\n\n    for s, expected in test_cases:\n        result = is_happy(s)\n        print(f\"is_happy('{s}') => {result} (expected: {expected})\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/80",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

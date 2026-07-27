@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "16ef9913c97506d1bdcafe576b2bc72e52db3aa0190a05d8f9da98c4c579a26d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "circle_circumference",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "final_source": "import math\n\ndef circle_circumference(radius):\n    \"\"\"Calculate the circumference of a circle given its radius.\"\"\"\n    return 2 * math.pi * radius\n\n# Test assertion (as provided in your example)\nassert math.isclose(circle_circumference(10), 62.830000000000005, rel_tol=0.001)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/139:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "post_h2_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "post_h3_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "post_h4_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ec68b6789fa8c5e95069f36d85e3ce82ea04e0fb2b24a44c17390138e003005d",
+  "raw_source": "import math\n\ndef circle_circumference(radius):\n    \"\"\"Calculate the circumference of a circle given its radius.\"\"\"\n    return 2 * math.pi * radius\n\n# Test assertion (as provided in your example)\nassert math.isclose(circle_circumference(10), 62.830000000000005, rel_tol=0.001)\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/139",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "5c61e2bb0ee9fc724c82326362ecc615a2f32e6318b4e80443812b4fa15ec72a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "filter_by_substring",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "final_source": "from typing import List\n\n\ndef filter_by_substring(strings: List[str], substring: str) -> List[str]:\n    \"\"\" Filter an input list of strings only for ones that contain given substring\n    \n    >>> filter_by_substring([], 'a')\n    []\n    >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')\n    ['abc', 'bacd', 'array']\n    \n    Args:\n        strings (List[str]): List of input strings.\n        substring (str): Substring to search for in each string.\n        \n    Returns:\n        List[str]: A list containing only the strings that include the given substring.\n    \"\"\"\n    return [s for s in strings if substring in s]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_list = ['abc', 'bacd', 'cde', 'array']\n    result = filter_by_substring(test_list, 'a')\n    print(result)  # Output: ['abc', 'bacd', 'array']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/7:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "post_h2_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "post_h3_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "post_h4_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1d96de364e5f690a79a5dcb9778addd76be10e2e3d0d224db006d1933fde6679",
+  "raw_source": "from typing import List\n\n\ndef filter_by_substring(strings: List[str], substring: str) -> List[str]:\n    \"\"\" Filter an input list of strings only for ones that contain given substring\n    \n    >>> filter_by_substring([], 'a')\n    []\n    >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')\n    ['abc', 'bacd', 'array']\n    \n    Args:\n        strings (List[str]): List of input strings.\n        substring (str): Substring to search for in each string.\n        \n    Returns:\n        List[str]: A list containing only the strings that include the given substring.\n    \"\"\"\n    return [s for s in strings if substring in s]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_list = ['abc', 'bacd', 'cde', 'array']\n    result = filter_by_substring(test_list, 'a')\n    print(result)  # Output: ['abc', 'bacd', 'array']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/7",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

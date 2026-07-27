@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "695cbbf1dcc9cb23a20ddf8f77853d71ec0b1a81124993c3d6414792f6c25322",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "unique_Element",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1be7118d5cde04cacbb809d3ac1f4a21ba5a38b55ec02918f3488954266292f8",
+  "final_source": "def unique_element(lst):\n    \"\"\"\n    Check if the list contains exactly one distinct element.\n    \n    Args:\n        lst (list of numbers): The input list\n        \n    Returns:\n        bool: True if all elements are the same, False otherwise\n    \"\"\"\n    # Handle empty or single-element lists as they trivially have only one distinct element\n    if len(lst) <= 1:\n        return True\n    \n    # Get unique elements and check if there's exactly one\n    unique_elements = set(lst)\n    \n    return len(unique_elements) == 1\n\n\n# Test cases\nassert unique_element([1, 1, 1]) == True\nprint(\"Test passed!\")\n\n# Additional test cases for verification\nassert unique_element([]) == True          # Empty list\nassert unique_element([5]) == True         # Single element\nassert unique_element([2, 3]) == False     # Two different elements\nassert unique_element([4, 4, 6, 6]) == False # Multiple distinct elements\nprint(\"All tests passed!\")\n\nunique_Element = unique_element\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/760:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1be7118d5cde04cacbb809d3ac1f4a21ba5a38b55ec02918f3488954266292f8",
+  "post_h2_sha256": "1be7118d5cde04cacbb809d3ac1f4a21ba5a38b55ec02918f3488954266292f8",
+  "post_h3_sha256": "1be7118d5cde04cacbb809d3ac1f4a21ba5a38b55ec02918f3488954266292f8",
+  "post_h4_sha256": "1be7118d5cde04cacbb809d3ac1f4a21ba5a38b55ec02918f3488954266292f8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "638d80f72b30eab125d9a0aa1b5c91e6bf2c6db4b649021a5b226a94bdcbced0",
+  "raw_source": "def unique_element(lst):\n    \"\"\"\n    Check if the list contains exactly one distinct element.\n    \n    Args:\n        lst (list of numbers): The input list\n        \n    Returns:\n        bool: True if all elements are the same, False otherwise\n    \"\"\"\n    # Handle empty or single-element lists as they trivially have only one distinct element\n    if len(lst) <= 1:\n        return True\n    \n    # Get unique elements and check if there's exactly one\n    unique_elements = set(lst)\n    \n    return len(unique_elements) == 1\n\n\n# Test cases\nassert unique_element([1, 1, 1]) == True\nprint(\"Test passed!\")\n\n# Additional test cases for verification\nassert unique_element([]) == True          # Empty list\nassert unique_element([5]) == True         # Single element\nassert unique_element([2, 3]) == False     # Two different elements\nassert unique_element([4, 4, 6, 6]) == False # Multiple distinct elements\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/760",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

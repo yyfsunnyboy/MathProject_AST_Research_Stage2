@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "28029e103a0db8c5b804c422f7cf0b2b96d693bcf5f2924e6baf588b944117c2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "longest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "final_source": "def longest(strings: List[str]) -> Optional[str]:\n    if not strings:\n        return None\n    \n    max_length = 0\n    for s in strings:\n        length = len(s)\n        if length > max_length:\n            max_length = length\n            \n    result = \"\"\n    for s in strings:\n        if len(s) == max_length:\n            result = s\n            break\n            \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/12:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "post_h2_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "post_h3_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "post_h4_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c41c574e3db9e789d4c25156eb8c7aa64ca307b1525ca2b917ca8d94ae21d0d0",
+  "raw_source": "def longest(strings: List[str]) -> Optional[str]:\n    if not strings:\n        return None\n    \n    max_length = 0\n    for s in strings:\n        length = len(s)\n        if length > max_length:\n            max_length = length\n            \n    result = \"\"\n    for s in strings:\n        if len(s) == max_length:\n            result = s\n            break\n            \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/12",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

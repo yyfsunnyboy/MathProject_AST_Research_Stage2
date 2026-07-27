@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b0074a73e35aa4b45c039ee1333be6ae50a5b7fabcda19b72a12fd147dfa2bb1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "final_source": "def find_max(words):\n    \"\"\"Write a function that accepts a list of strings.\n    The list contains different words. Return the word with maximum number\n    of unique characters. If multiple strings have maximum number of unique\n    characters, return the one which comes first in lexicographical order.\n\n    Examples:\n        find_max([\"name\", \"of\", \"string\"]) == \"string\"\n        find_max([\"name\", \"enam\", \"game\"]) == \"enam\"\n        find_max([\"aaaaaaa\", \"bb\" ,\"cc\"]) == \"\"aaaaaaa\"\"\n    \"\"\"\n    \n    # Initialize with the first word (assuming list is not empty)\n    if not words:\n        return None\n\n    max_word = words[0]\n    unique_count = len(set(max_word))\n\n    for i in range(1, len(words)):\n        current_word = words[i]\n        current_unique = len(set(current_word))\n\n        # If more unique characters found, update\n        if current_unique > unique_count:\n            max_word = current_word\n            unique_count = current_unique\n        elif current_unique == unique_count:\n            # Lexicographical order check (smaller string comes first)\n            if current_word < max_word:\n                max_word = current_word\n\n    return max_word\n\n\n# Example usage:\nprint(find_max([\"name\", \"of\", \"string\"]))  # Output: 'string'\nprint(find_max([\"name\", \"enam\", \"game\"])) # Output: 'enam' (all have same unique count, but 'enam' < 'game')\nprint(find_max([\"aaaaaaa\", \"bb\" ,\"cc\"]))   # Output: 'aaaaaaa' (7 vs 1 vs 2)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/158:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "post_h2_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "post_h3_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "post_h4_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ba46839d2ff001b0444dd3af4fac1112c96ad05881cdadbf2a684b81efcfbb67",
+  "raw_source": "def find_max(words):\n    \"\"\"Write a function that accepts a list of strings.\n    The list contains different words. Return the word with maximum number\n    of unique characters. If multiple strings have maximum number of unique\n    characters, return the one which comes first in lexicographical order.\n\n    Examples:\n        find_max([\"name\", \"of\", \"string\"]) == \"string\"\n        find_max([\"name\", \"enam\", \"game\"]) == \"enam\"\n        find_max([\"aaaaaaa\", \"bb\" ,\"cc\"]) == \"\"aaaaaaa\"\"\n    \"\"\"\n    \n    # Initialize with the first word (assuming list is not empty)\n    if not words:\n        return None\n\n    max_word = words[0]\n    unique_count = len(set(max_word))\n\n    for i in range(1, len(words)):\n        current_word = words[i]\n        current_unique = len(set(current_word))\n\n        # If more unique characters found, update\n        if current_unique > unique_count:\n            max_word = current_word\n            unique_count = current_unique\n        elif current_unique == unique_count:\n            # Lexicographical order check (smaller string comes first)\n            if current_word < max_word:\n                max_word = current_word\n\n    return max_word\n\n\n# Example usage:\nprint(find_max([\"name\", \"of\", \"string\"]))  # Output: 'string'\nprint(find_max([\"name\", \"enam\", \"game\"])) # Output: 'enam' (all have same unique count, but 'enam' < 'game')\nprint(find_max([\"aaaaaaa\", \"bb\" ,\"cc\"]))   # Output: 'aaaaaaa' (7 vs 1 vs 2)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/158",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

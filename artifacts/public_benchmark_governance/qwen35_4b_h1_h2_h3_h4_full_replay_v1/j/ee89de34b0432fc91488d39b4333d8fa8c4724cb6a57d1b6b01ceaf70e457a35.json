@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ee89de34b0432fc91488d39b4333d8fa8c4724cb6a57d1b6b01ceaf70e457a35",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Substrings",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "final_source": "def count_Substrings(s):\n    n = len(s)\n    total_count = 0\n    \n    # Precompute prefix sums for digit values (1-9, assuming input contains digits only)\n    # If the string might contain non-digit characters, we should handle them or assume valid input based on example.\n    # The problem implies 'digits', so let's convert char to int(digit).\n    \n    def get_digit_sum(substring):\n        return sum(int(c) for c in substring)\n    \n    length = len(s)\n    \n    # Iterate over all possible substrings\n    for i in range(length):\n        current_len = 0\n        current_sum = 0\n        \n        # Extend the substring starting at index i to j (where j >= i)\n        for j in range(i, length):\n            digit_val = int(s[j])\n            current_sum += digit_val\n            current_len += 1\n            \n            if current_sum == current_len:\n                total_count += 1\n                \n    return total_count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/61:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "post_h2_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "post_h3_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "post_h4_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "085dc8ec67bedb64b38c54754c6f3787314f5c5cf483fe0315f39d792ab30573",
+  "raw_source": "def count_Substrings(s):\n    n = len(s)\n    total_count = 0\n    \n    # Precompute prefix sums for digit values (1-9, assuming input contains digits only)\n    # If the string might contain non-digit characters, we should handle them or assume valid input based on example.\n    # The problem implies 'digits', so let's convert char to int(digit).\n    \n    def get_digit_sum(substring):\n        return sum(int(c) for c in substring)\n    \n    length = len(s)\n    \n    # Iterate over all possible substrings\n    for i in range(length):\n        current_len = 0\n        current_sum = 0\n        \n        # Extend the substring starting at index i to j (where j >= i)\n        for j in range(i, length):\n            digit_val = int(s[j])\n            current_sum += digit_val\n            current_len += 1\n            \n            if current_sum == current_len:\n                total_count += 1\n                \n    return total_count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/61",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

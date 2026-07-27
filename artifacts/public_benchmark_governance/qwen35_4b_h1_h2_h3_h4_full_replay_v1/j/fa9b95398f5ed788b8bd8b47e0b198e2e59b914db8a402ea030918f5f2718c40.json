@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "fa9b95398f5ed788b8bd8b47e0b198e2e59b914db8a402ea030918f5f2718c40",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "frequency_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0ddf1806be06833a47fdc09aa77b28266a108f465c3dc6f9bf19015ff902739b",
+  "final_source": "def frequency_lists(lst):\n    freq = {}\n    for item in lst:\n        if isinstance(item, list):\n            for element in item:\n                freq[element] = freq.get(element, 0) + 1\n        else:\n            freq[item] = freq.get(item, 0) + 1\n    return freq\n\nif __name__ == \"__main__\":\n    assert frequency_lists([[1, 2, 3, 2], [4, 5, 6, 2], [7, 8, 9, 5]])=={1: 1, 2: 3, 3: 1, 4: 1, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1}",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/97:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6692c8080570a973babf0087efb0d0779d9ee8b0ce776e1cdde89752e7fe7d1e",
+  "post_h2_sha256": "0ddf1806be06833a47fdc09aa77b28266a108f465c3dc6f9bf19015ff902739b",
+  "post_h3_sha256": "0ddf1806be06833a47fdc09aa77b28266a108f465c3dc6f9bf19015ff902739b",
+  "post_h4_sha256": "0ddf1806be06833a47fdc09aa77b28266a108f465c3dc6f9bf19015ff902739b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6692c8080570a973babf0087efb0d0779d9ee8b0ce776e1cdde89752e7fe7d1e",
+  "raw_source": "def frequency_lists(lst):\n    freq = {}\n    for item in lst:\n        if isinstance(item, list):\n            for element in item:\n                freq[element] = freq.get(element, 0) + 1\n        else:\n            freq[item] = freq.get(item, 0) + 1\n    return freq\n\nassert frequency_lists([[1, 2, 3, 2], [4, 5, 6, 2], [7, 8, 9, 5]])=={1: 1, 2: 3, 3: 1, 4: 1, 5: 2, 6: 1, 7: 1, 8: 1, 9: 1}",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/97",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

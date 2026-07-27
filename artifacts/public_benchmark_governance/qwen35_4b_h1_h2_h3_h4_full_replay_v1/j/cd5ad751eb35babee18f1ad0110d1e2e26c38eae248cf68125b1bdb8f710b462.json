@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "cd5ad751eb35babee18f1ad0110d1e2e26c38eae248cf68125b1bdb8f710b462",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "final_source": "def digits(n):\n    product = 1\n    has_odd_digit = False\n    while n > 0:\n        digit = n % 10\n        if digit % 2 == 1:\n            product *= digit\n            has_odd_digit = True\n        n //= 10\n    \n    return product if has_odd_digit else 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/131:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "post_h2_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "post_h3_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "post_h4_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c975af8535a95540c9ade27872ba7da6422d6423292734cf3078d448c426605a",
+  "raw_source": "def digits(n):\n    product = 1\n    has_odd_digit = False\n    while n > 0:\n        digit = n % 10\n        if digit % 2 == 1:\n            product *= digit\n            has_odd_digit = True\n        n //= 10\n    \n    return product if has_odd_digit else 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/131",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

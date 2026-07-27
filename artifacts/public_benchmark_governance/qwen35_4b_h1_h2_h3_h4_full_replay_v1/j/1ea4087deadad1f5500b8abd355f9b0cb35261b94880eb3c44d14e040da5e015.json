@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1ea4087deadad1f5500b8abd355f9b0cb35261b94880eb3c44d14e040da5e015",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "move_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "27ee648fd1de5101cb51ab9e462cfbd5fe1903df94f758a178ea614333970f5b",
+  "final_source": "def move_zero(nums):\n    \"\"\"\n    Move all zeroes to the end of the list in-place.\n    \n    Args:\n        nums (List[int]): The input list containing integers and zeros.\n        \n    Returns:\n        List[int]: The modified list with all zeros moved to the end.\n    \"\"\"\n    # Pointer for non-zero elements\n    write_index = 0\n    \n    # Iterate through the list, placing non-zero numbers at write_index\n    for read_index in range(len(nums)):\n        if nums[read_index] != 0:\n            nums[write_index] = nums[read_index]\n            write_index += 1\n            \n    # Fill the remaining positions with zeros\n    while write_index < len(nums):\n        nums[write_index] = 0\n        write_index += 1\n        \n    return nums\n\n# Test case from the problem statement\nif __name__ == \"__main__\":\n    assert move_zero([1, 0, 2, 0, 3, 4]) == [1, 2, 3, 4, 0, 0], \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/632:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f8cf7f9b1c178a1cecfc7a1a9c517fc595fb147d5430f901f76978b94540501b",
+  "post_h2_sha256": "27ee648fd1de5101cb51ab9e462cfbd5fe1903df94f758a178ea614333970f5b",
+  "post_h3_sha256": "27ee648fd1de5101cb51ab9e462cfbd5fe1903df94f758a178ea614333970f5b",
+  "post_h4_sha256": "27ee648fd1de5101cb51ab9e462cfbd5fe1903df94f758a178ea614333970f5b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f8cf7f9b1c178a1cecfc7a1a9c517fc595fb147d5430f901f76978b94540501b",
+  "raw_source": "def move_zero(nums):\n    \"\"\"\n    Move all zeroes to the end of the list in-place.\n    \n    Args:\n        nums (List[int]): The input list containing integers and zeros.\n        \n    Returns:\n        List[int]: The modified list with all zeros moved to the end.\n    \"\"\"\n    # Pointer for non-zero elements\n    write_index = 0\n    \n    # Iterate through the list, placing non-zero numbers at write_index\n    for read_index in range(len(nums)):\n        if nums[read_index] != 0:\n            nums[write_index] = nums[read_index]\n            write_index += 1\n            \n    # Fill the remaining positions with zeros\n    while write_index < len(nums):\n        nums[write_index] = 0\n        write_index += 1\n        \n    return nums\n\n# Test case from the problem statement\nassert move_zero([1, 0, 2, 0, 3, 4]) == [1, 2, 3, 4, 0, 0], \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/632",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

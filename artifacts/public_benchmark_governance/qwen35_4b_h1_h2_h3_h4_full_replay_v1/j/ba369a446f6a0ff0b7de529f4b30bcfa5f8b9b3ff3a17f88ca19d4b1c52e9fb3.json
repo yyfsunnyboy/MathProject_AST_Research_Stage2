@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ba369a446f6a0ff0b7de529f4b30bcfa5f8b9b3ff3a17f88ca19d4b1c52e9fb3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fibfib",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "final_source": "def fibfib(n: int):\n    \"\"\"The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n    fibfib(0) == 0\n    fibfib(1) == 0\n    fibfib(2) == 1\n    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n    Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n    \n    >>> fibfib(1)\n    0\n    >>> fibfib(5)\n    4\n    >>> fibfib(8)\n    24\n    \"\"\"\n    if n == 0 or n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    \n    # Initialize the first three terms\n    a, b, c = 0, 0, 1  # fibfib(0), fibfib(1), fibfib(2)\n    \n    for i in range(3, n + 1):\n        next_val = a + b + c\n        a, b, c = b, c, next_val\n    \n    return c\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    print(fibfib(1))   # Expected: 0\n    print(fibfib(5))   # Expected: 4\n    print(fibfib(8))   # Expected: 24\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/63:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "post_h2_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "post_h3_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "post_h4_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0c9d495c26f61aee4100ed769ad0e8737c886b70e2cfbcfc8c5c49bbd3011c15",
+  "raw_source": "def fibfib(n: int):\n    \"\"\"The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n    fibfib(0) == 0\n    fibfib(1) == 0\n    fibfib(2) == 1\n    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n    Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n    \n    >>> fibfib(1)\n    0\n    >>> fibfib(5)\n    4\n    >>> fibfib(8)\n    24\n    \"\"\"\n    if n == 0 or n == 1:\n        return 0\n    elif n == 2:\n        return 1\n    \n    # Initialize the first three terms\n    a, b, c = 0, 0, 1  # fibfib(0), fibfib(1), fibfib(2)\n    \n    for i in range(3, n + 1):\n        next_val = a + b + c\n        a, b, c = b, c, next_val\n    \n    return c\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    print(fibfib(1))   # Expected: 0\n    print(fibfib(5))   # Expected: 4\n    print(fibfib(8))   # Expected: 24\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/63",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

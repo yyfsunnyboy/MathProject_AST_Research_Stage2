@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b99b1d9ee74d89a61b1e4fa3b8984c176b1ba48fb1a5930da23eeed50e744180",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "unique_sublists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "final_source": "def unique_sublists(data_list):\n    \"\"\"\n    Counts lists within a list by converting them to tuples and counting frequencies.\n    \n    Args:\n        data_list (list of lists): The input list containing sub-lists.\n        \n    Returns:\n        dict: A dictionary where keys are the converted tuples \n              and values are their occurrence counts.\n    \"\"\"\n    count_dict = {}\n    \n    for item in data_list:\n        # Convert the inner list to a tuple so it can be used as a dictionary key\n        tuple_item = tuple(item)\n        \n        # Increment the count if the tuple already exists, otherwise initialize to 0 and add 1\n        count_dict[tuple_item] = count_dict.get(tuple_item, 0) + 1\n        \n    return count_dict\n\n# Test case based on your assertion\nresult = unique_sublists([[1, 3], [5, 7], [1, 3], [13, 15, 17], [5, 7], [9, 11]])\n\nprint(result) \n# Expected Output: {(1, 3): 2, (5, 7): 2, (13, 15, 17): 1, (9, 11): 1}\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/758:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "post_h2_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "post_h3_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "post_h4_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cb80389348b385a7394e1024493e1183145e0cd1ca3f24960b96be8c2d27399a",
+  "raw_source": "def unique_sublists(data_list):\n    \"\"\"\n    Counts lists within a list by converting them to tuples and counting frequencies.\n    \n    Args:\n        data_list (list of lists): The input list containing sub-lists.\n        \n    Returns:\n        dict: A dictionary where keys are the converted tuples \n              and values are their occurrence counts.\n    \"\"\"\n    count_dict = {}\n    \n    for item in data_list:\n        # Convert the inner list to a tuple so it can be used as a dictionary key\n        tuple_item = tuple(item)\n        \n        # Increment the count if the tuple already exists, otherwise initialize to 0 and add 1\n        count_dict[tuple_item] = count_dict.get(tuple_item, 0) + 1\n        \n    return count_dict\n\n# Test case based on your assertion\nresult = unique_sublists([[1, 3], [5, 7], [1, 3], [13, 15, 17], [5, 7], [9, 11]])\n\nprint(result) \n# Expected Output: {(1, 3): 2, (5, 7): 2, (13, 15, 17): 1, (9, 11): 1}\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/758",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

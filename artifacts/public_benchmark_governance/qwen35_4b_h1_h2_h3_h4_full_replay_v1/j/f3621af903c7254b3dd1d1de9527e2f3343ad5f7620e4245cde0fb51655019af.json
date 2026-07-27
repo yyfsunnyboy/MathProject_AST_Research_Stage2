@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f3621af903c7254b3dd1d1de9527e2f3343ad5f7620e4245cde0fb51655019af",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aff0d3e827193ebeb4cbc7132dc6f52893e3d21d4d1a76a4e5594f68bc295ecc",
+  "final_source": "def Find_Max(lst):\n    \"\"\"\n    Returns the sublist with the maximum number of elements from a list of lists.\n    \n    If there are multiple sublists with the same maximum length, \n    this function returns the first one encountered (standard behavior).\n    \n    Args:\n        lst (list of list): A list containing inner lists.\n        \n    Returns:\n        The sublist with the maximum number of elements.\n    \"\"\"\n    if not lst:  # Handle empty input safely\n        return None\n    \n    max_len = -1\n    result = []\n\n    for item in lst:\n        current_len = len(item)\n        if current_len > max_len:\n            max_len = current_len\n            result = item\n            \n    return result\n\n\n# Test assertion as provided\nif __name__ == \"__main__\":\n    assert Find_Max([['A'], ['A', 'B'], ['A', 'B', 'C']]) == ['A', 'B', 'C']\n    print(\"Test passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/418:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f4f1217f68d57e49fbd7d0ec4fdf40c3396188a75bb32f30b94572bb19431672",
+  "post_h2_sha256": "1d728a0c6fba5133b5591381efb86fbeb7f61de68ab04f6469ca8e9eda27036f",
+  "post_h3_sha256": "1d728a0c6fba5133b5591381efb86fbeb7f61de68ab04f6469ca8e9eda27036f",
+  "post_h4_sha256": "aff0d3e827193ebeb4cbc7132dc6f52893e3d21d4d1a76a4e5594f68bc295ecc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f4f1217f68d57e49fbd7d0ec4fdf40c3396188a75bb32f30b94572bb19431672",
+  "raw_source": "def Find_Max(lst):\n    \"\"\"\n    Returns the sublist with the maximum number of elements from a list of lists.\n    \n    If there are multiple sublists with the same maximum length, \n    this function returns the first one encountered (standard behavior).\n    \n    Args:\n        lst (list of list): A list containing inner lists.\n        \n    Returns:\n        The sublist with the maximum number of elements.\n    \"\"\"\n    if not lst:  # Handle empty input safely\n        return None\n    \n    max_len = -1\n    result = []\n\n    for item in lst:\n        current_len = len(item)\n        if current_len > max_len:\n            max_len = current_len\n            result = item\n            \n    return result\n\n\n# Test assertion as provided\nassert Find_Max([['A'], ['A', 'B'], ['A', 'B', 'C']]) == ['A', 'B', 'C']\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/418",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

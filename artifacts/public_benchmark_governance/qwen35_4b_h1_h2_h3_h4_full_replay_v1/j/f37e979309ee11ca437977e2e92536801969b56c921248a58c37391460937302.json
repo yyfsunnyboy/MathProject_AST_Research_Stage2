@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f37e979309ee11ca437977e2e92536801969b56c921248a58c37391460937302",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "closest_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8dd261af897cd1ea9ccb21610275e8425d59cf5eaef3c737c9b577df6daf909b",
+  "final_source": "def closest_num(n: int) -> int | None:\n    \"\"\"\n    Return the largest integer strictly less than n, if it exists within \n    the expected domain (e.g., positive integers). Otherwise return None.\n    \n    Example:\n        assert closest_num(11) == 10\n    \"\"\"\n    # If we only care about existing numbers in a known range [min_val, max_val],\n    # you can adjust this logic accordingly. Here's a simple version for all integers:\n    return n - 1\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert closest_num(11) == 10\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/89:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e66b571091bd174bb8ffbd6a582aed466798d4724960139fcc99b260528b25cc",
+  "post_h2_sha256": "8dd261af897cd1ea9ccb21610275e8425d59cf5eaef3c737c9b577df6daf909b",
+  "post_h3_sha256": "8dd261af897cd1ea9ccb21610275e8425d59cf5eaef3c737c9b577df6daf909b",
+  "post_h4_sha256": "8dd261af897cd1ea9ccb21610275e8425d59cf5eaef3c737c9b577df6daf909b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e66b571091bd174bb8ffbd6a582aed466798d4724960139fcc99b260528b25cc",
+  "raw_source": "def closest_num(n: int) -> int | None:\n    \"\"\"\n    Return the largest integer strictly less than n, if it exists within \n    the expected domain (e.g., positive integers). Otherwise return None.\n    \n    Example:\n        assert closest_num(11) == 10\n    \"\"\"\n    # If we only care about existing numbers in a known range [min_val, max_val],\n    # you can adjust this logic accordingly. Here's a simple version for all integers:\n    return n - 1\n\n# Example usage and assertion\nassert closest_num(11) == 10\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/89",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

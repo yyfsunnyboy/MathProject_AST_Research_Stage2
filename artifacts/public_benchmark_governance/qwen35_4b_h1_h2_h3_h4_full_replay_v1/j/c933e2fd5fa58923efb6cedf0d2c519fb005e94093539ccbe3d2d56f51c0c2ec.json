@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c933e2fd5fa58923efb6cedf0d2c519fb005e94093539ccbe3d2d56f51c0c2ec",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "volume_cone",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "final_source": "import math\n\ndef volume_cone(radius: float, height: float) -> float:\n    \"\"\"Calculate the volume of a cone given its radius and height.\"\"\"\n    return (math.pi * radius ** 2 * height) / 3\n\n\n# Example usage with assertion as provided in your snippet:\nassert math.isclose(volume_cone(5, 12), 314.15926535897927, rel_tol=0.001)\n\nprint(\"Volume of cone (r=5, h=12):\", volume_cone(5, 12))\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/312:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "post_h2_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "post_h3_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "post_h4_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9260d49a7209f3f6bcf43d83bdf1315954c1fe7bd6a6368da80fcd56e4d33b3c",
+  "raw_source": "import math\n\ndef volume_cone(radius: float, height: float) -> float:\n    \"\"\"Calculate the volume of a cone given its radius and height.\"\"\"\n    return (math.pi * radius ** 2 * height) / 3\n\n\n# Example usage with assertion as provided in your snippet:\nassert math.isclose(volume_cone(5, 12), 314.15926535897927, rel_tol=0.001)\n\nprint(\"Volume of cone (r=5, h=12):\", volume_cone(5, 12))\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/312",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

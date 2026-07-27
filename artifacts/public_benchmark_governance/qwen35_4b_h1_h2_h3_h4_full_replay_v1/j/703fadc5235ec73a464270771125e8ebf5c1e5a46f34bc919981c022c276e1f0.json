@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "703fadc5235ec73a464270771125e8ebf5c1e5a46f34bc919981c022c276e1f0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "make_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "final_source": "def make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n\n    def is_pal(s):\n        return s == s[::-1]\n\n    n = len(string)\n    for i in range(n, -1, -1):\n        if is_paline := (string[i:] == string[len(string)-i:]):\n            break\n    \n    prefix_len = n - i\n    suffix = string[:prefix_len][::-1]\n    \n    return string + suffix",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/10:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "post_h2_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "post_h3_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "post_h4_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3f9fe210c3bf438e4acec78e3be947f335189822ac068c2cce52c19ac7462193",
+  "raw_source": "def make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n\n    def is_pal(s):\n        return s == s[::-1]\n\n    n = len(string)\n    for i in range(n, -1, -1):\n        if is_paline := (string[i:] == string[len(string)-i:]):\n            break\n    \n    prefix_len = n - i\n    suffix = string[:prefix_len][::-1]\n    \n    return string + suffix",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/10",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "063dcc333e0a8953253cee15d36546bd7b710e92cf3c5defd80dc46f3c8e7516",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "solution",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "final_source": "def solution(lst):\n    \"\"\"Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.\"\"\"\n\n\n    total = 0\n    for i in range(len(lst)):\n        if lst[i] % 2 != 0 and i % 2 == 0:\n            total += lst[i]\n    \n    return total",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/121:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "post_h2_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "post_h3_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "post_h4_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5361317d5a9ec60ed8445e3b4f9606c3c8c9f8a60818c77b75080f7d02633aba",
+  "raw_source": "def solution(lst):\n    \"\"\"Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.\"\"\"\n\n\n    total = 0\n    for i in range(len(lst)):\n        if lst[i] % 2 != 0 and i % 2 == 0:\n            total += lst[i]\n    \n    return total",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/121",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

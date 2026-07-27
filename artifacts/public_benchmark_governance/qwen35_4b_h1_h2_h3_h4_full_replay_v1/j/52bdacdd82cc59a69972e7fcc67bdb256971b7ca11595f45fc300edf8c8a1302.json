@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "52bdacdd82cc59a69972e7fcc67bdb256971b7ca11595f45fc300edf8c8a1302",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "surfacearea_cube",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "final_source": "def surfacearea_cube(size):\n    return 6 * (size ** 2)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/441:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "post_h2_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "post_h3_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "post_h4_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6dd49f8fdc72b24cc9b7cd8f00b2f2e757afae6675f34b9366f9f4048b4fbc45",
+  "raw_source": "def surfacearea_cube(size):\n    return 6 * (size ** 2)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/441",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

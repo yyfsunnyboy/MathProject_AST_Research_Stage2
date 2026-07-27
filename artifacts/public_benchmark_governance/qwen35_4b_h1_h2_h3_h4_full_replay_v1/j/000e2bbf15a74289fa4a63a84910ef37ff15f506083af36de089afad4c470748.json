@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "000e2bbf15a74289fa4a63a84910ef37ff15f506083af36de089afad4c470748",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "flatten_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "final_source": "def flatten_list(nested_list):\n    \"\"\"\n    Flattens a nested list structure into a single-level list of integers.\n    \n    Args:\n        nested_list (list): A potentially nested list containing integers and sublists.\n        \n    Returns:\n        list: A flat list containing all the integers from the input structure.\n    \"\"\"\n    result = []\n    \n    for item in nested_list:\n        # If the item is a list, recursively flatten it; otherwise, add to result\n        if isinstance(item, list):\n            result.extend(flatten_list(item))\n        else:\n            # Assuming we only want integers based on your example. \n            # You can remove this check or change 'int' to allow other types if needed.\n            if isinstance(item, int) and not isinstance(item, bool):\n                result.append(item)\n    \n    return result\n\n# Test case from the prompt\nif __name__ == \"__main__\":\n    test_input = [0, 10, [20, 30], 40, 50, [60, 70, 80], [90, 100, 110, 120]]\n    \n    # Using assert to verify the output matches expectations\n    try:\n        result = flatten_list(test_input)\n        expected = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]\n        \n        assert result == expected, f\"Expected {expected}, but got {result}\"\n        print(\"Test passed successfully!\")\n    except AssertionError as e:\n        print(f\"Assertion failed: {e}\")\n\n# Output for verification when run directly:\nprint(flatten_list(test_input))\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/297:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "post_h2_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "post_h3_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "post_h4_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2fb5b652ce3ea8521fa1495611c1d775374815832bf95899db141428266783e5",
+  "raw_source": "def flatten_list(nested_list):\n    \"\"\"\n    Flattens a nested list structure into a single-level list of integers.\n    \n    Args:\n        nested_list (list): A potentially nested list containing integers and sublists.\n        \n    Returns:\n        list: A flat list containing all the integers from the input structure.\n    \"\"\"\n    result = []\n    \n    for item in nested_list:\n        # If the item is a list, recursively flatten it; otherwise, add to result\n        if isinstance(item, list):\n            result.extend(flatten_list(item))\n        else:\n            # Assuming we only want integers based on your example. \n            # You can remove this check or change 'int' to allow other types if needed.\n            if isinstance(item, int) and not isinstance(item, bool):\n                result.append(item)\n    \n    return result\n\n# Test case from the prompt\nif __name__ == \"__main__\":\n    test_input = [0, 10, [20, 30], 40, 50, [60, 70, 80], [90, 100, 110, 120]]\n    \n    # Using assert to verify the output matches expectations\n    try:\n        result = flatten_list(test_input)\n        expected = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]\n        \n        assert result == expected, f\"Expected {expected}, but got {result}\"\n        print(\"Test passed successfully!\")\n    except AssertionError as e:\n        print(f\"Assertion failed: {e}\")\n\n# Output for verification when run directly:\nprint(flatten_list(test_input))\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/297",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d8f1b57e58b2abf1dcfb7b003d20bcf20ea72bfa66b414d117469d6a8afa0763",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "numerical_letter_grade",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "final_source": "def numerical_letter_grade(grades):\n    \"\"\"Converts a list of GPAs into their corresponding letter grades.\"\"\"\n    \n    def get_gpa_to_letter(gpa):\n        # Handle the highest possible case first (4.0)\n        if gpa == 4.0:\n            return 'A+'\n        \n        # Check ranges in descending order to ensure correct logic flow\n        elif gpa > 3.7 and gpa <= 4.0:\n            return 'A'\n        elif gpa > 3.3 and gpa <= 3.7:\n            return 'A-'\n        elif gpa > 3.0 and gpa <= 3.3:\n            return 'B+'\n        elif gpa > 2.7 and gpa <= 3.0:\n            return 'B'\n        elif gpa > 2.3 and gpa <= 2.7:\n            return 'B-'\n        elif gpa > 2.0 and gpa <= 2.3:\n            return 'C+'\n        elif gpa > 1.7 and gpa <= 2.0:\n            return 'C'\n        elif gpa > 1.3 and gpa <= 1.7:\n            return 'C-'\n        elif gpa > 1.0 and gpa <= 1.3:\n            return 'D+'\n        elif gpa > 0.7 and gpa <= 1.0:\n            return 'D'\n        elif gpa > 0.0 and gpa <= 0.7:\n            return 'D-'\n        else: # GPA == 0.0 or effectively below the lowest threshold defined\n            return 'E'\n\n    result = []\n    \n    for grade in grades:\n        letter_grade = get_gpa_to_letter(grade)\n        result.append(letter_grade)\n        \n    return result\n\n# Example usage and test based on your prompt:\ntest_input = [4.0, 3, 1.7, 2, 3.5]\nprint(numerical_letter_grade(test_input)) \n# Expected Output: ['A+', 'B', 'C-', 'C', 'A-'] (Note order matches input)\n\n# Let's verify the specific example logic manually:\n# 4.0 -> A+\n# 3   -> >3.7? No. >3.3? Yes, <=3.7? Yes -> Wait, let's re-check your table vs standard grading.\n# Your Table says: \n#    > 3.7 is 'A' (so 4.0 fits here if we don't have a specific rule for exactly 4.0)\n#    BUT the example output shows [4.0] -> ['A+']. \n# So I added an explicit check for == 4.0 at the start to match your Example Output perfectly.\n\nprint(\"\\nDetailed breakdown of test_input:\", test_input)\nfor g in grades:\n    print(f\"GPA {g} => \", end=\"\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/81:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "post_h2_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "post_h3_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "post_h4_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4d1eb1b521bfcc195db74715611061f1db04363a558ed02aaa2da5d361ef7bc8",
+  "raw_source": "def numerical_letter_grade(grades):\n    \"\"\"Converts a list of GPAs into their corresponding letter grades.\"\"\"\n    \n    def get_gpa_to_letter(gpa):\n        # Handle the highest possible case first (4.0)\n        if gpa == 4.0:\n            return 'A+'\n        \n        # Check ranges in descending order to ensure correct logic flow\n        elif gpa > 3.7 and gpa <= 4.0:\n            return 'A'\n        elif gpa > 3.3 and gpa <= 3.7:\n            return 'A-'\n        elif gpa > 3.0 and gpa <= 3.3:\n            return 'B+'\n        elif gpa > 2.7 and gpa <= 3.0:\n            return 'B'\n        elif gpa > 2.3 and gpa <= 2.7:\n            return 'B-'\n        elif gpa > 2.0 and gpa <= 2.3:\n            return 'C+'\n        elif gpa > 1.7 and gpa <= 2.0:\n            return 'C'\n        elif gpa > 1.3 and gpa <= 1.7:\n            return 'C-'\n        elif gpa > 1.0 and gpa <= 1.3:\n            return 'D+'\n        elif gpa > 0.7 and gpa <= 1.0:\n            return 'D'\n        elif gpa > 0.0 and gpa <= 0.7:\n            return 'D-'\n        else: # GPA == 0.0 or effectively below the lowest threshold defined\n            return 'E'\n\n    result = []\n    \n    for grade in grades:\n        letter_grade = get_gpa_to_letter(grade)\n        result.append(letter_grade)\n        \n    return result\n\n# Example usage and test based on your prompt:\ntest_input = [4.0, 3, 1.7, 2, 3.5]\nprint(numerical_letter_grade(test_input)) \n# Expected Output: ['A+', 'B', 'C-', 'C', 'A-'] (Note order matches input)\n\n# Let's verify the specific example logic manually:\n# 4.0 -> A+\n# 3   -> >3.7? No. >3.3? Yes, <=3.7? Yes -> Wait, let's re-check your table vs standard grading.\n# Your Table says: \n#    > 3.7 is 'A' (so 4.0 fits here if we don't have a specific rule for exactly 4.0)\n#    BUT the example output shows [4.0] -> ['A+']. \n# So I added an explicit check for == 4.0 at the start to match your Example Output perfectly.\n\nprint(\"\\nDetailed breakdown of test_input:\", test_input)\nfor g in grades:\n    print(f\"GPA {g} => \", end=\"\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/81",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

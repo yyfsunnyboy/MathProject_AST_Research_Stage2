@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "cfa2b8f05e72d7e85aed9adf0a7ab496b07b1607a418439ab08bfc3d431979f7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sort_sublists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "56bed43230a21a356b5cb265b666ce41eeb2c4672f9bc82283c34193911b2c22",
+  "final_source": "def sort_sublists(data):\n    \"\"\"\n    Sort each sublist of strings in a given list of lists.\n\n    Parameters:\n        data (list[list[str]]): A list containing sublists of strings.\n\n    Returns:\n        list[list[str]]: The same structure with each inner list sorted alphabetically.\n    \n    Example:\n        >>> sort_sublists(([\"green\", \"orange\"], [\"black\", \"white\"], [\"white\", \"black\", \"orange\"]))\n        [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    \"\"\"\n    return [sorted(sublist) for sublist in data]\n\n\n# Test assertion as provided:\nif __name__ == \"__main__\":\n    assert sort_sublists(([\"green\", \"orange\"], [\"black\", \"white\"], [\"white\", \"black\", \"orange\"])) == \\\n           [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    print(\"All tests passed.\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/104:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "070dcf80018a266b6511228bd400f1136dea4cd9ae1623b286034f4094f51ba2",
+  "post_h2_sha256": "3f498151c3645ed8db48f7baa66bff29c38e9a27cbffe84bdafd5f82c7e6634a",
+  "post_h3_sha256": "3f498151c3645ed8db48f7baa66bff29c38e9a27cbffe84bdafd5f82c7e6634a",
+  "post_h4_sha256": "56bed43230a21a356b5cb265b666ce41eeb2c4672f9bc82283c34193911b2c22",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "070dcf80018a266b6511228bd400f1136dea4cd9ae1623b286034f4094f51ba2",
+  "raw_source": "def sort_sublists(data):\n    \"\"\"\n    Sort each sublist of strings in a given list of lists.\n\n    Parameters:\n        data (list[list[str]]): A list containing sublists of strings.\n\n    Returns:\n        list[list[str]]: The same structure with each inner list sorted alphabetically.\n    \n    Example:\n        >>> sort_sublists(([\"green\", \"orange\"], [\"black\", \"white\"], [\"white\", \"black\", \"orange\"]))\n        [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    \"\"\"\n    return [sorted(sublist) for sublist in data]\n\n\n# Test assertion as provided:\nassert sort_sublists(([\"green\", \"orange\"], [\"black\", \"white\"], [\"white\", \"black\", \"orange\"])) == \\\n       [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/104",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

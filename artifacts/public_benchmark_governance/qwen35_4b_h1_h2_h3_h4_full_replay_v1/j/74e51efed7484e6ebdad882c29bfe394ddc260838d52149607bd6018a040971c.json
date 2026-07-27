@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "74e51efed7484e6ebdad882c29bfe394ddc260838d52149607bd6018a040971c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "11fce1f8e5135cb2aa2a9b32e44f8b0aa779bf67c92a3094c1b16270b50176cb",
+  "final_source": "def remove_elements(main_list: list, elements_to_remove: list) -> list:\n    \"\"\"\n    Remove all elements from main_list that are present in elements_to_remove.\n\n    Parameters:\n        main_list (list): The original list of elements.\n        elements_to_remove (list): List containing elements to be removed.\n\n    Returns:\n        list: A new list with specified elements removed.\n    \"\"\"\n    # Convert the removal set for O(1) lookup time\n    remove_set = set(elements_to_remove)\n    \n    return [item for item in main_list if item not in remove_set]\n\n\n# Test assertion as provided\nif __name__ == \"__main__\":\n    assert remove_elements([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 4, 6, 8]) == [1, 3, 5, 7, 9, 10]\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/161:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8527ad76aa95f5141abfc7ab445a6416611ee928e7bdce8a9a00f88f4d407b3a",
+  "post_h2_sha256": "11fce1f8e5135cb2aa2a9b32e44f8b0aa779bf67c92a3094c1b16270b50176cb",
+  "post_h3_sha256": "11fce1f8e5135cb2aa2a9b32e44f8b0aa779bf67c92a3094c1b16270b50176cb",
+  "post_h4_sha256": "11fce1f8e5135cb2aa2a9b32e44f8b0aa779bf67c92a3094c1b16270b50176cb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8527ad76aa95f5141abfc7ab445a6416611ee928e7bdce8a9a00f88f4d407b3a",
+  "raw_source": "def remove_elements(main_list: list, elements_to_remove: list) -> list:\n    \"\"\"\n    Remove all elements from main_list that are present in elements_to_remove.\n\n    Parameters:\n        main_list (list): The original list of elements.\n        elements_to_remove (list): List containing elements to be removed.\n\n    Returns:\n        list: A new list with specified elements removed.\n    \"\"\"\n    # Convert the removal set for O(1) lookup time\n    remove_set = set(elements_to_remove)\n    \n    return [item for item in main_list if item not in remove_set]\n\n\n# Test assertion as provided\nassert remove_elements([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [2, 4, 6, 8]) == [1, 3, 5, 7, 9, 10]\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/161",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

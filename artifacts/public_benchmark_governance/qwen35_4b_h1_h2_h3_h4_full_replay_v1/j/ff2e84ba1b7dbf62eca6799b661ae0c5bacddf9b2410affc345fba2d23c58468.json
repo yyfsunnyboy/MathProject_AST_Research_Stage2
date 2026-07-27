@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "top_level_function_count_not_one",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ff2e84ba1b7dbf62eca6799b661ae0c5bacddf9b2410affc345fba2d23c58468",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "bell_Number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "final_source": "import math\n\ndef bell_number(n):\n    \"\"\"\n    Calculate the nth Bell number using dynamic programming.\n    \n    Args:\n        n (int): The index of the Bell number to find (non-negative integer).\n        \n    Returns:\n        int: The nth Bell number.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n\n    # Initialize list with B_0 = 1\n    bell_numbers = [1] * (n + 1)\n    \n    for i in range(1, n + 1):\n        # Bell(i+1) is the sum of C(i, k) * Bell(k) for k from 0 to i\n        current_sum = 0\n        for k in range(i + 1):\n            term = math.comb(i, k) * bell_numbers[k]\n            current_sum += term\n        \n        # Store result at index i (which corresponds to B_{i+1} relative to the loop start logic \n        # but since we initialized size n+1 and iterate up to n, let's adjust indexing for clarity):\n        \n    # Correction on recurrence mapping:\n    # Let dp[i] store Bell(i). We know dp[0] = 1.\n    # To find dp[n], we use the relation involving previous values.\n    \n    return bell_numbers[-1]\n\n# Corrected Implementation Logic inside function for clarity:\ndef calculate_bell(n):\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    \n    # Initialize array where index i holds Bell(i)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    \n    for i in range(1, n + 1):\n        # B_{i} = sum(C(i-1, k) * B_k) for k from 0 to i-1\n        total = 0\n        for k in range(i):\n            total += math.comb(i - 1, k) * dp[k]\n        dp[i] = total\n        \n    return dp[n]\n\n# Test the function with assertions\nif __name__ == \"__main__\":\n    assert calculate_bell(2) == 2, \"Test failed for n=2\"\n    \n    # Additional tests to ensure correctness of sequence: B_0=1, B_3=5, B_4=15\n    assert calculate_bell(0) == 1\n    assert calculate_bell(3) == 5\n    assert calculate_bell(4) == 15\n    \n    print(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/608:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "post_h2_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "post_h3_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "post_h4_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "848d1b652213f4621138c117dd0cb136504a86e7ffab12e49e1df65450a64827",
+  "raw_source": "import math\n\ndef bell_number(n):\n    \"\"\"\n    Calculate the nth Bell number using dynamic programming.\n    \n    Args:\n        n (int): The index of the Bell number to find (non-negative integer).\n        \n    Returns:\n        int: The nth Bell number.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n\n    # Initialize list with B_0 = 1\n    bell_numbers = [1] * (n + 1)\n    \n    for i in range(1, n + 1):\n        # Bell(i+1) is the sum of C(i, k) * Bell(k) for k from 0 to i\n        current_sum = 0\n        for k in range(i + 1):\n            term = math.comb(i, k) * bell_numbers[k]\n            current_sum += term\n        \n        # Store result at index i (which corresponds to B_{i+1} relative to the loop start logic \n        # but since we initialized size n+1 and iterate up to n, let's adjust indexing for clarity):\n        \n    # Correction on recurrence mapping:\n    # Let dp[i] store Bell(i). We know dp[0] = 1.\n    # To find dp[n], we use the relation involving previous values.\n    \n    return bell_numbers[-1]\n\n# Corrected Implementation Logic inside function for clarity:\ndef calculate_bell(n):\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n    \n    # Initialize array where index i holds Bell(i)\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    \n    for i in range(1, n + 1):\n        # B_{i} = sum(C(i-1, k) * B_k) for k from 0 to i-1\n        total = 0\n        for k in range(i):\n            total += math.comb(i - 1, k) * dp[k]\n        dp[i] = total\n        \n    return dp[n]\n\n# Test the function with assertions\nif __name__ == \"__main__\":\n    assert calculate_bell(2) == 2, \"Test failed for n=2\"\n    \n    # Additional tests to ensure correctness of sequence: B_0=1, B_3=5, B_4=15\n    assert calculate_bell(0) == 1\n    assert calculate_bell(3) == 5\n    assert calculate_bell(4) == 15\n    \n    print(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/608",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

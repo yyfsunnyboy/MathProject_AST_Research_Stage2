@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "0716a629135f29b8753957fa33fa33b9324ef75f339cf1156c4f3d1a23a57320",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_Sub_Array",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "final_source": "def is_Sub_Array(sub_array, main_array):\n    \"\"\"\n    Checks if sub_array exists as a contiguous sublist within main_array.\n    \n    Args:\n        sub_array (list): The potential sublist.\n        main_array (list): The list to search in.\n        \n    Returns:\n        bool: True if sub_array is found, False otherwise.\n    \"\"\"\n    # Edge case handling\n    len_sub = len(sub_array)\n    len_main = len(main_array)\n\n    # If the sublist is longer than or equal to the main array (and not empty), it can't be a proper sublist unless they are identical and lengths match, \n    # but based on standard \"sublist\" definition where sub must fit inside:\n    if len_sub > len_main:\n        return False\n    \n    # If both lists are empty or equal length and identical\n    if len_sub == 0:\n        return True\n        \n    if len_sub == len_main:\n        return sub_array == main_array\n\n    # Iterate through the main array to find a starting position for the sublist\n    for i in range(len_main - len_sub + 1):\n        # Create a slice of the main array with the same length as the sublist\n        current_slice = main_array[i : i + len_sub]\n        \n        # Check if this slice matches the sublist exactly\n        if current_slice == sub_array:\n            return True\n            \n    return False\n\n# Testing the function based on your assertion\nif __name__ == \"__main__\":\n    result = is_Sub_Array([1, 4, 3, 5], [1, 2])\n    \n    # The expected output for this specific case is False because \n    # [1] matches but we need the full list [1, 2]. \n    # Note: In your example input, sub=[1,4,3,5] and main=[1,2], so it's definitely False.\n    \n    assert result == False, \"Test failed!\"\n    print(\"All tests passed.\")\n\n# Additional test cases for clarity\nprint(is_Sub_Array([1, 2], [0, 1, 2]))      # True (found at index 1)\nprint(is_Sub_Array([3, 4], [1, 2, 3, 5]))   # False \nprint(is_Sub_Array([], [1, 2, 3]))          # True (empty list is a sublist of any list)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/576:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "post_h2_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "post_h3_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "post_h4_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3ab702978faf6da6bec609dfb827e03c588d911049172301331331f835650b4d",
+  "raw_source": "def is_Sub_Array(sub_array, main_array):\n    \"\"\"\n    Checks if sub_array exists as a contiguous sublist within main_array.\n    \n    Args:\n        sub_array (list): The potential sublist.\n        main_array (list): The list to search in.\n        \n    Returns:\n        bool: True if sub_array is found, False otherwise.\n    \"\"\"\n    # Edge case handling\n    len_sub = len(sub_array)\n    len_main = len(main_array)\n\n    # If the sublist is longer than or equal to the main array (and not empty), it can't be a proper sublist unless they are identical and lengths match, \n    # but based on standard \"sublist\" definition where sub must fit inside:\n    if len_sub > len_main:\n        return False\n    \n    # If both lists are empty or equal length and identical\n    if len_sub == 0:\n        return True\n        \n    if len_sub == len_main:\n        return sub_array == main_array\n\n    # Iterate through the main array to find a starting position for the sublist\n    for i in range(len_main - len_sub + 1):\n        # Create a slice of the main array with the same length as the sublist\n        current_slice = main_array[i : i + len_sub]\n        \n        # Check if this slice matches the sublist exactly\n        if current_slice == sub_array:\n            return True\n            \n    return False\n\n# Testing the function based on your assertion\nif __name__ == \"__main__\":\n    result = is_Sub_Array([1, 4, 3, 5], [1, 2])\n    \n    # The expected output for this specific case is False because \n    # [1] matches but we need the full list [1, 2]. \n    # Note: In your example input, sub=[1,4,3,5] and main=[1,2], so it's definitely False.\n    \n    assert result == False, \"Test failed!\"\n    print(\"All tests passed.\")\n\n# Additional test cases for clarity\nprint(is_Sub_Array([1, 2], [0, 1, 2]))      # True (found at index 1)\nprint(is_Sub_Array([3, 4], [1, 2, 3, 5]))   # False \nprint(is_Sub_Array([], [1, 2, 3]))          # True (empty list is a sublist of any list)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/576",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

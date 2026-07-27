@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5d7bc61fe02dfa211a48c8e325ceef29dd955535bf1f43f32fe469b3ddfdb42e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "string_to_md5",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "final_source": "import hashlib\n\ndef string_to_md5(text):\n    \"\"\"\n    Given a string 'text', return its md5 hash equivalent string.\n    If 'text' is an empty string, return None.\n\n    >>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    \"\"\"\n    if not text:  # checks for empty string (or any falsy value, but here we mean specifically \"\")\n        return None\n    \n    md5_hash = hashlib.md5(text.encode('utf-8')).hexdigest()\n    return md5_hash\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    result = string_to_md5(\"Hello world\")\n    print(result)  # Should output: '3e25960a79dbc69b674cd4ec67a72c62'\n\n    empty_result = string_to_md5(\"\")\n    print(empty_result)  # Should output: None\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/162:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "post_h2_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "post_h3_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "post_h4_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81725f0390ef744d9aaacbee1bc3c4e39a141f7b46b26fc8aee76d924d1981a1",
+  "raw_source": "import hashlib\n\ndef string_to_md5(text):\n    \"\"\"\n    Given a string 'text', return its md5 hash equivalent string.\n    If 'text' is an empty string, return None.\n\n    >>> string_to_md5('Hello world') == '3e25960a79dbc69b674cd4ec67a72c62'\n    \"\"\"\n    if not text:  # checks for empty string (or any falsy value, but here we mean specifically \"\")\n        return None\n    \n    md5_hash = hashlib.md5(text.encode('utf-8')).hexdigest()\n    return md5_hash\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    result = string_to_md5(\"Hello world\")\n    print(result)  # Should output: '3e25960a79dbc69b674cd4ec67a72c62'\n\n    empty_result = string_to_md5(\"\")\n    print(empty_result)  # Should output: None\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/162",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

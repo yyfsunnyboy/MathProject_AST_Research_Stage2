@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "53efb61a851347a238bc40967a9750d9ea156d76c6fafee5d4f6e1abc3b76131",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "all_prefixes",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "final_source": "from typing import List\n\n\ndef all_prefixes(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest to longest of the input string\n    \n    >>> all_prefixes('abc')\n    ['a', 'ab', 'abc']\n    \n    >>> all_prefixes('hello')\n    ['h', 'he', 'hel', 'hell', 'hello']\n    \"\"\"\n    return [string[:i+1] for i in range(len(string))]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(all_prefixes(\"abc\"))  # Output: ['a', 'ab', 'abc']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/14:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "post_h2_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "post_h3_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "post_h4_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "939dc557b76bfa4892b443bf72e37b7592c026892a1e23fcb7c36d0dceeed32b",
+  "raw_source": "from typing import List\n\n\ndef all_prefixes(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest to longest of the input string\n    \n    >>> all_prefixes('abc')\n    ['a', 'ab', 'abc']\n    \n    >>> all_prefixes('hello')\n    ['h', 'he', 'hel', 'hell', 'hello']\n    \"\"\"\n    return [string[:i+1] for i in range(len(string))]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(all_prefixes(\"abc\"))  # Output: ['a', 'ab', 'abc']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/14",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

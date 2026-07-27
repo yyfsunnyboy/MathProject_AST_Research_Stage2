@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b29d75ce02bb8aebf2c478f5e4e61b5ab497e3148891c3d20dea3bbb4a650a1a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "digitSum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "final_source": "def digitSum(s):\n    \"\"\"Task: Write a function that takes a string as input and returns the sum of \n       the ASCII codes of only the uppercase characters.\"\"\"\n    \n    total = 0\n    \n    # Iterate over each character in the string\n    for char in s:\n        # Check if the character is an uppercase letter (ASCII check)\n        if 'A' <= char <= 'Z':\n            total += ord(char)\n            \n    return total\n\n\n# Examples to verify:\nprint(digitSum(\"\"))              # 0\nprint(digitSum(\"abAB\"))          # A=65, B=66 -> 131\nprint(digitSum(\"abcCd\"))         # C=67 -> 67\nprint(digitSum(\"helloE\"))        # E=69 -> 69\nprint(digitSum(\"woArBld\"))       # A=65, B=66 -> 131\nprint(digitSum(\"aAaaaXa\"))      # A=65, X=88 -> 153\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/66:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "post_h2_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "post_h3_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "post_h4_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "472ab11eec67459406931506893a589f542da2ae81dc1cd7962b47eaaaf97374",
+  "raw_source": "def digitSum(s):\n    \"\"\"Task: Write a function that takes a string as input and returns the sum of \n       the ASCII codes of only the uppercase characters.\"\"\"\n    \n    total = 0\n    \n    # Iterate over each character in the string\n    for char in s:\n        # Check if the character is an uppercase letter (ASCII check)\n        if 'A' <= char <= 'Z':\n            total += ord(char)\n            \n    return total\n\n\n# Examples to verify:\nprint(digitSum(\"\"))              # 0\nprint(digitSum(\"abAB\"))          # A=65, B=66 -> 131\nprint(digitSum(\"abcCd\"))         # C=67 -> 67\nprint(digitSum(\"helloE\"))        # E=69 -> 69\nprint(digitSum(\"woArBld\"))       # A=65, B=66 -> 131\nprint(digitSum(\"aAaaaXa\"))      # A=65, X=88 -> 153\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/66",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

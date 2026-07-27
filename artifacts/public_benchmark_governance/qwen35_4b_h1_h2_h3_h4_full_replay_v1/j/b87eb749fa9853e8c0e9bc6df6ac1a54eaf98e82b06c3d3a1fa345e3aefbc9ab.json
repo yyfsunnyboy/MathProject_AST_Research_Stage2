@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b87eb749fa9853e8c0e9bc6df6ac1a54eaf98e82b06c3d3a1fa345e3aefbc9ab",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_third",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "final_source": "def sort_third(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n    to the values of the corresponding indicies of l, but sorted.\n    >>> sort_third([1, 2, 3])\n    [1, 2, 3]\n    >>> sort_third([5, 6, 3, 4, 8, 9, 2])\n    [2, 6, 3, 4, 8, 9, 5]\n    \"\"\"\n\n    result = []\n    third_elements = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            third_elements.append(l[i])\n        else:\n            result.append(l[i])\n    \n    third_elements.sort()\n    \n    j = 0\n    for k in range(0, len(result), 3):\n        result[k] = third_elements[j]\n        j += 1\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/33:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "post_h2_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "post_h3_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "post_h4_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b7da6cf87cd912886a5aab0a9185f57c4b29b686148a1261496ce9ae78f4c220",
+  "raw_source": "def sort_third(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the indicies that are not divisible by three, while its values at the indicies that are divisible by three are equal\n    to the values of the corresponding indicies of l, but sorted.\n    >>> sort_third([1, 2, 3])\n    [1, 2, 3]\n    >>> sort_third([5, 6, 3, 4, 8, 9, 2])\n    [2, 6, 3, 4, 8, 9, 5]\n    \"\"\"\n\n    result = []\n    third_elements = []\n    \n    for i in range(len(l)):\n        if i % 3 == 0:\n            third_elements.append(l[i])\n        else:\n            result.append(l[i])\n    \n    third_elements.sort()\n    \n    j = 0\n    for k in range(0, len(result), 3):\n        result[k] = third_elements[j]\n        j += 1\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/33",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3a58ddcd50409da76c8cb9a825d24faf0da53791d26b2673a5f5b28bf23a6a23",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "consecutive_duplicates",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "final_source": "def consecutive_duplicates(lst):\n    if not lst:\n        return []\n    \n    result = [lst[0]]\n    for i in range(1, len(lst)):\n        if lst[i] != lst[i-1]:\n            result.append(lst[i])\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/730:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "post_h2_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "post_h3_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "post_h4_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "176340f1d76143e9d6573c67e1a794182b2a2678697a70dbff9c4ce7c48a0dd0",
+  "raw_source": "def consecutive_duplicates(lst):\n    if not lst:\n        return []\n    \n    result = [lst[0]]\n    for i in range(1, len(lst)):\n        if lst[i] != lst[i-1]:\n            result.append(lst[i])\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/730",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

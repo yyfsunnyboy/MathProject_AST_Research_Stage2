@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "852123778b93363e7cb449121d3a060b706cf1c5090318d80fba588a177ad898",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "replace_spaces",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "final_source": "def replace_spaces(text):\n    # Replace spaces with underscores first, then vice versa.\n    return text.replace(' ', '_').replace('_', ' ')\n\n# Test cases to verify functionality\nassert replace_spaces('Jumanji The Jungle') == 'Jumanji_The_Jungle'\nprint(\"Test 1 passed!\")\n\n# Additional test: ensure it works in reverse as well\nassert replace_spaces('Hello_World_Test') == 'Hello World Test'\nprint(\"Test 2 passed!\")\n\n# Edge case with multiple spaces or underscores\nassert replace_spaces('A B C D E F G H I J K L M N O P Q R S T U V W X Y Z') == \\\n       'A_B_C_D_E_F_G_H_I_J_K_L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z'\nprint(\"Test 3 passed!\")\n\n# Edge case with no spaces or underscores\nassert replace_spaces('NoSpacesHere') == 'NoSpacesHere'\nprint(\"Test 4 passed!\")\n\nprint(\"\\nAll tests completed successfully.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/631:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "post_h2_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "post_h3_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "post_h4_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e99e23fda85afd7a9ebb031c5600f9e24213698b133a9d6bf376303c1ec056d8",
+  "raw_source": "def replace_spaces(text):\n    # Replace spaces with underscores first, then vice versa.\n    return text.replace(' ', '_').replace('_', ' ')\n\n# Test cases to verify functionality\nassert replace_spaces('Jumanji The Jungle') == 'Jumanji_The_Jungle'\nprint(\"Test 1 passed!\")\n\n# Additional test: ensure it works in reverse as well\nassert replace_spaces('Hello_World_Test') == 'Hello World Test'\nprint(\"Test 2 passed!\")\n\n# Edge case with multiple spaces or underscores\nassert replace_spaces('A B C D E F G H I J K L M N O P Q R S T U V W X Y Z') == \\\n       'A_B_C_D_E_F_G_H_I_J_K_L_M_N_O_P_Q_R_S_T_U_V_W_X_Y_Z'\nprint(\"Test 3 passed!\")\n\n# Edge case with no spaces or underscores\nassert replace_spaces('NoSpacesHere') == 'NoSpacesHere'\nprint(\"Test 4 passed!\")\n\nprint(\"\\nAll tests completed successfully.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/631",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

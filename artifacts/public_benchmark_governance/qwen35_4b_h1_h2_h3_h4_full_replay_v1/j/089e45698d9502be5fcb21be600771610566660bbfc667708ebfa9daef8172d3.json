@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "089e45698d9502be5fcb21be600771610566660bbfc667708ebfa9daef8172d3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "combinations_colors",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "final_source": "def combinations_colors(colors, n):\n    result = []\n    \n    def generate(current_combination, length_left):\n        if length_left == 0:\n            result.append(tuple(current_combination))\n            return\n        \n        for color in colors:\n            current_combination.append(color)\n            generate(current_combination, length_left - 1)\n            current_combination.pop()\n    \n    generate([], n)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/255:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "post_h2_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "post_h3_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "post_h4_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ae0f8c63980e1252083783757d82b8d41df286cbffa0c22123586c61fce3b8ef",
+  "raw_source": "def combinations_colors(colors, n):\n    result = []\n    \n    def generate(current_combination, length_left):\n        if length_left == 0:\n            result.append(tuple(current_combination))\n            return\n        \n        for color in colors:\n            current_combination.append(color)\n            generate(current_combination, length_left - 1)\n            current_combination.pop()\n    \n    generate([], n)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/255",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

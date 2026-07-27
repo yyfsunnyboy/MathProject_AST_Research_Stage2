@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "951266de3c71d9216d8992fce5697b5340be59251f35d5ca147a7f0a9b3af48a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "second_smallest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "final_source": "def second_smallest(nums):\n    \"\"\"\n    Finds the second smallest unique number in the list.\n    \n    Args:\n        nums (list[int]): A list of integers.\n        \n    Returns:\n        int or None: The second smallest integer, or None if not found.\n    \"\"\"\n    # Initialize with infinity to ensure any real number is smaller initially\n    first = float('inf')\n    second = float('inf')\n\n    for num in nums:\n        # If we find a new minimum that is strictly less than the current 'first'\n        if num < first:\n            second = first  # The old smallest becomes the candidate for second smallest\n            first = num     # Update the absolute smallest\n        \n        # If we find a number equal to or larger than 'second', check specifically \n        # against 'first'. We need strictly greater than 'first' and less than current 'second'.\n        elif num > first:\n            if num < second:\n                second = num\n\n    return None if (first == float('inf') or second == float('inf')) else second\n\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific test case\n    assert second_smallest([1, 2, -8, -2, 0, -2]) == -2\n    \n    # Additional tests to ensure robustness:\n    print(second_smallest([5]))          # None (only one element)\n    print(second_smallest([3, 3, 4]))     # 4 (duplicates of smallest ignored for 'second')\n    print(second_smallest([-10, -20, -30])) # -20\n    \n    print(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/755:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "post_h2_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "post_h3_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "post_h4_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fd3e449d4fec2fc834d011b4bcb59e8374e61df2826624bf643d44b9b156ef0a",
+  "raw_source": "def second_smallest(nums):\n    \"\"\"\n    Finds the second smallest unique number in the list.\n    \n    Args:\n        nums (list[int]): A list of integers.\n        \n    Returns:\n        int or None: The second smallest integer, or None if not found.\n    \"\"\"\n    # Initialize with infinity to ensure any real number is smaller initially\n    first = float('inf')\n    second = float('inf')\n\n    for num in nums:\n        # If we find a new minimum that is strictly less than the current 'first'\n        if num < first:\n            second = first  # The old smallest becomes the candidate for second smallest\n            first = num     # Update the absolute smallest\n        \n        # If we find a number equal to or larger than 'second', check specifically \n        # against 'first'. We need strictly greater than 'first' and less than current 'second'.\n        elif num > first:\n            if num < second:\n                second = num\n\n    return None if (first == float('inf') or second == float('inf')) else second\n\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific test case\n    assert second_smallest([1, 2, -8, -2, 0, -2]) == -2\n    \n    # Additional tests to ensure robustness:\n    print(second_smallest([5]))          # None (only one element)\n    print(second_smallest([3, 3, 4]))     # 4 (duplicates of smallest ignored for 'second')\n    print(second_smallest([-10, -20, -30])) # -20\n    \n    print(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/755",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

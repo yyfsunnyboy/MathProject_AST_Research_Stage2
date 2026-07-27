@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "other_unclassified_top_level_call_present"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ea5c9f9ceb8a2eaa80d9a9938042dc2c2500750c9a5b2fe4b56396b8861fb511",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_type",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "abb6c463746ecb283fb31015e8c599a1288fe341ce72c90215eea7c788acc9e4",
+  "final_source": "def check_type(t):\n    # Check if tuple has at least one element to avoid errors on empty tuples\n    if len(t) == 0:\n        return False\n    \n    # Get the type of the first element as a reference\n    ref_type = type(t[0])\n    \n    # Iterate through all elements and compare their types with the reference\n    for item in t:\n        if not isinstance(item, ref_type):\n            return False\n            \n    return True\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    assert check_type((5, 6, 7, 3, 5, 6)) == True   # All are int -> Passes\nprint(\"Test passed!\")\n\n# Additional test to ensure it catches different types\ntry:\n    assert check_type((1, \"2\", 3.0)) == False \nexcept AssertionError:\n    print(\"Correctly identified mixed types.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/222:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1407633eb1e75c0a0f2dd72477dcaab84675b288fff889ee4f7f7d20eb0c7ef3",
+  "post_h2_sha256": "abb6c463746ecb283fb31015e8c599a1288fe341ce72c90215eea7c788acc9e4",
+  "post_h3_sha256": "abb6c463746ecb283fb31015e8c599a1288fe341ce72c90215eea7c788acc9e4",
+  "post_h4_sha256": "abb6c463746ecb283fb31015e8c599a1288fe341ce72c90215eea7c788acc9e4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1407633eb1e75c0a0f2dd72477dcaab84675b288fff889ee4f7f7d20eb0c7ef3",
+  "raw_source": "def check_type(t):\n    # Check if tuple has at least one element to avoid errors on empty tuples\n    if len(t) == 0:\n        return False\n    \n    # Get the type of the first element as a reference\n    ref_type = type(t[0])\n    \n    # Iterate through all elements and compare their types with the reference\n    for item in t:\n        if not isinstance(item, ref_type):\n            return False\n            \n    return True\n\n# Test cases based on your requirement\nassert check_type((5, 6, 7, 3, 5, 6)) == True   # All are int -> Passes\nprint(\"Test passed!\")\n\n# Additional test to ensure it catches different types\ntry:\n    assert check_type((1, \"2\", 3.0)) == False \nexcept AssertionError:\n    print(\"Correctly identified mixed types.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/222",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

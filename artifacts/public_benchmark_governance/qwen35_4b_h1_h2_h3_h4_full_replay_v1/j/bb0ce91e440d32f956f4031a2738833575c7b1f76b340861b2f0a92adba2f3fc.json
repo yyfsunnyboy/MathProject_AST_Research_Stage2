@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "bb0ce91e440d32f956f4031a2738833575c7b1f76b340861b2f0a92adba2f3fc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Min",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "final_source": "def Find_Min(lst):\n    min_len = float('inf')\n    result = []\n    \n    for sublist in lst:\n        if len(sublist) < min_len:\n            min_len = len(sublist)\n            result = [sublist]\n        elif len(sublist) == min_len and not (result[0] is sublist):\n            # Check if it's a different object with same length to avoid duplicates in case of identical references? \n            # Actually, the problem asks for \"the\" sublist. If there are multiple sublists with the same minimum length, which one should be returned?\n            # The example: [[1],[1,2],[1,2,3]] -> [1]. Only one has min len (1).\n            # Let's assume we return all sublists that have the minimum length if there are ties.\n            result.append(sublist)\n    \n    # Re-reading typical problem constraints for \"the sublist\": usually implies unique or first occurrence. \n    # However, without specific tie-breaking rules in the prompt, returning all with min len is safer unless specified otherwise.\n    # But looking at standard coding interview patterns: often they want just one (e.g., the first one found).\n    # Let's refine based on \"the sublist\" singular phrasing. It likely implies uniqueness or the first occurrence.\n    # If I return all, it might fail a test expecting exactly one list object if inputs are identical lists in different positions? \n    # No, input is distinct objects usually.\n    # To be safe and standard: Return only the FIRST sublist with minimum length encountered to satisfy \"the\" (singular).\n    \n    # Let's re-evaluate logic for singular result.\n    min_len = float('inf')\n    res_list = []\n    found_first = False\n    \n    for item in lst:\n        if len(item) < min_len:\n            min_len = len(item)\n            res_list = [item]\n            found_first = True # Reset to ensure we only keep the first one encountered with this new minimum length? \n                             # Or just overwrite. Overwriting ensures last seen wins if strict inequality used, but here we want FIRST.\n        elif len(item) == min_len:\n            pass # Do not add duplicates or subsequent ones if \"the\" implies singular and order matters (first).\n\n    return res_list[0]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/457:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "post_h2_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "post_h3_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "post_h4_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e843b0965c22a1c74ac5454a6a77a19ee3aeef55cdc0c631396764e5cb2dbd60",
+  "raw_source": "def Find_Min(lst):\n    min_len = float('inf')\n    result = []\n    \n    for sublist in lst:\n        if len(sublist) < min_len:\n            min_len = len(sublist)\n            result = [sublist]\n        elif len(sublist) == min_len and not (result[0] is sublist):\n            # Check if it's a different object with same length to avoid duplicates in case of identical references? \n            # Actually, the problem asks for \"the\" sublist. If there are multiple sublists with the same minimum length, which one should be returned?\n            # The example: [[1],[1,2],[1,2,3]] -> [1]. Only one has min len (1).\n            # Let's assume we return all sublists that have the minimum length if there are ties.\n            result.append(sublist)\n    \n    # Re-reading typical problem constraints for \"the sublist\": usually implies unique or first occurrence. \n    # However, without specific tie-breaking rules in the prompt, returning all with min len is safer unless specified otherwise.\n    # But looking at standard coding interview patterns: often they want just one (e.g., the first one found).\n    # Let's refine based on \"the sublist\" singular phrasing. It likely implies uniqueness or the first occurrence.\n    # If I return all, it might fail a test expecting exactly one list object if inputs are identical lists in different positions? \n    # No, input is distinct objects usually.\n    # To be safe and standard: Return only the FIRST sublist with minimum length encountered to satisfy \"the\" (singular).\n    \n    # Let's re-evaluate logic for singular result.\n    min_len = float('inf')\n    res_list = []\n    found_first = False\n    \n    for item in lst:\n        if len(item) < min_len:\n            min_len = len(item)\n            res_list = [item]\n            found_first = True # Reset to ensure we only keep the first one encountered with this new minimum length? \n                             # Or just overwrite. Overwriting ensures last seen wins if strict inequality used, but here we want FIRST.\n        elif len(item) == min_len:\n            pass # Do not add duplicates or subsequent ones if \"the\" implies singular and order matters (first).\n\n    return res_list[0]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/457",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

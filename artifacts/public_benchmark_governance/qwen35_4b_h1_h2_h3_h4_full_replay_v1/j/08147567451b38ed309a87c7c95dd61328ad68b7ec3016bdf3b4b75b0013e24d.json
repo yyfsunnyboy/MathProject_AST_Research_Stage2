@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "08147567451b38ed309a87c7c95dd61328ad68b7ec3016bdf3b4b75b0013e24d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_monthnumber_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d413d386ce48116afedfc43b6db8872359a61859c442db70880f9255e827a153",
+  "final_source": "def check_month_days(month):\n    \"\"\"\n    Checks if a month has exactly 30 days.\n    \n    Args:\n        month (int): Month number from 1 to 12\n        \n    Returns:\n        bool: True if the month has 30 days, False otherwise\n    \"\"\"\n    # Months with 30 days are April(4), June(6), September(9), November(11)\n    months_with_30_days = [4, 6, 9, 11]\n    \n    if month in months_with_30_days:\n        return True\n    else:\n        return False\n\n# Test case as provided in the prompt\nassert check_month_days(6) == True\n\ncheck_monthnumber_number = check_month_days\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/762:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d413d386ce48116afedfc43b6db8872359a61859c442db70880f9255e827a153",
+  "post_h2_sha256": "d413d386ce48116afedfc43b6db8872359a61859c442db70880f9255e827a153",
+  "post_h3_sha256": "d413d386ce48116afedfc43b6db8872359a61859c442db70880f9255e827a153",
+  "post_h4_sha256": "d413d386ce48116afedfc43b6db8872359a61859c442db70880f9255e827a153",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81c3946c9d0cd5ea985fd41cd9def69d111c4048b2d2ebccb679c8cf32bff1c2",
+  "raw_source": "def check_month_days(month):\n    \"\"\"\n    Checks if a month has exactly 30 days.\n    \n    Args:\n        month (int): Month number from 1 to 12\n        \n    Returns:\n        bool: True if the month has 30 days, False otherwise\n    \"\"\"\n    # Months with 30 days are April(4), June(6), September(9), November(11)\n    months_with_30_days = [4, 6, 9, 11]\n    \n    if month in months_with_30_days:\n        return True\n    else:\n        return False\n\n# Test case as provided in the prompt\nassert check_month_days(6) == True\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/762",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "307f957867032df2f3302408214a0614f4cfc628fb6b449d37f5d2e6e8908f6a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "bf",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "final_source": "def bf(planet1, planet2):\n    planets = [\"Mercury\", \"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"]\n    \n    if planet1 not in planets or planet2 not in planets:\n        return ()\n    \n    try:\n        idx1 = planets.index(planet1)\n        idx2 = planets.index(planet2)\n        \n        start, end = min(idx1, idx2), max(idx1, idx2) + 1\n        \n        result = []\n        for i in range(start, end):\n            if i != idx1 and i != idx2:\n                result.append(planets[i])\n        \n        return tuple(result)\n    except ValueError:\n        return ()",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/148:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "post_h2_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "post_h3_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "post_h4_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "000512b447dcc7a03560b372a86154f414502da505f552dcdc5ccbecace7b9de",
+  "raw_source": "def bf(planet1, planet2):\n    planets = [\"Mercury\", \"Venus\", \"Earth\", \"Mars\", \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"]\n    \n    if planet1 not in planets or planet2 not in planets:\n        return ()\n    \n    try:\n        idx1 = planets.index(planet1)\n        idx2 = planets.index(planet2)\n        \n        start, end = min(idx1, idx2), max(idx1, idx2) + 1\n        \n        result = []\n        for i in range(start, end):\n            if i != idx1 and i != idx2:\n                result.append(planets[i])\n        \n        return tuple(result)\n    except ValueError:\n        return ()",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/148",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

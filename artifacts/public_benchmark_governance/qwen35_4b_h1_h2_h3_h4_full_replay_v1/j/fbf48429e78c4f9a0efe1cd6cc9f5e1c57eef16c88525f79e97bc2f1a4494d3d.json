@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "fbf48429e78c4f9a0efe1cd6cc9f5e1c57eef16c88525f79e97bc2f1a4494d3d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "number_ctr",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b834b816dba66ae6f77a2403bfa41ace48dbc9d74bf1dff10f87ef5772916858",
+  "final_source": "def number_ctr(s: str) -> int:\n    \"\"\"Count the number of digit characters (0-9) in the input string.\"\"\"\n    count = sum(1 for ch in s if ch.isdigit())\n    return count\n\n\n# Example usage and assertion from your prompt\nif __name__ == \"__main__\":\n    assert number_ctr('program2bedone') == 1, \"Test failed!\"\n\nprint(number_ctr(\"abc3def45ghi6\"))  # Expected output: 4\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/764:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0c7d37801aa5415fbb3e924ba999ca8471cb855a096a221d0e71ea8337bc1f8e",
+  "post_h2_sha256": "b834b816dba66ae6f77a2403bfa41ace48dbc9d74bf1dff10f87ef5772916858",
+  "post_h3_sha256": "b834b816dba66ae6f77a2403bfa41ace48dbc9d74bf1dff10f87ef5772916858",
+  "post_h4_sha256": "b834b816dba66ae6f77a2403bfa41ace48dbc9d74bf1dff10f87ef5772916858",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0c7d37801aa5415fbb3e924ba999ca8471cb855a096a221d0e71ea8337bc1f8e",
+  "raw_source": "def number_ctr(s: str) -> int:\n    \"\"\"Count the number of digit characters (0-9) in the input string.\"\"\"\n    count = sum(1 for ch in s if ch.isdigit())\n    return count\n\n\n# Example usage and assertion from your prompt\nassert number_ctr('program2bedone') == 1, \"Test failed!\"\n\nprint(number_ctr(\"abc3def45ghi6\"))  # Expected output: 4\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/764",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

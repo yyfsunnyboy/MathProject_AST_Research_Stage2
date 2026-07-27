@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "8fdc0909890e993b0fe13473880c578ada144b9532a5265a18d2e4dc36bd6608",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "divisible_by_digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "final_source": "def divisible_by_digits(startnum, endnum):\n    result = []\n    for num in range(startnum, endnum + 1):\n        digits_str = str(num)\n        is_divisible = True\n        if len(digits_str) == 0:\n            continue\n        \n        # Convert each digit to integer and check divisibility\n        try:\n            for char_digit in digits_str:\n                digit = int(char_digit)\n                if num % digit != 0:\n                    is_divisible = False\n                    break\n        except ValueError:\n            is_divisible = False\n        \n        if is_divisible:\n            result.append(num)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/745:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "post_h2_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "post_h3_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "post_h4_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1d35356acf87fca81dc00f6981592357b63b22b090a626a06c41cb1a3e5d20fd",
+  "raw_source": "def divisible_by_digits(startnum, endnum):\n    result = []\n    for num in range(startnum, endnum + 1):\n        digits_str = str(num)\n        is_divisible = True\n        if len(digits_str) == 0:\n            continue\n        \n        # Convert each digit to integer and check divisibility\n        try:\n            for char_digit in digits_str:\n                digit = int(char_digit)\n                if num % digit != 0:\n                    is_divisible = False\n                    break\n        except ValueError:\n            is_divisible = False\n        \n        if is_divisible:\n            result.append(num)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/745",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

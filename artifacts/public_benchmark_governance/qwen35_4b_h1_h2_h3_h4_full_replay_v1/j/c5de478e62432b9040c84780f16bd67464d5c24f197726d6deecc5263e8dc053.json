@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c5de478e62432b9040c84780f16bd67464d5c24f197726d6deecc5263e8dc053",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "frequency",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "417eb599c53bb17bc5182ad9f57f34c475ee6038abe8e3e94dbd96aaa0f473e5",
+  "final_source": "def frequency(lst, target):\n    \"\"\"\n    Count how many times `target` appears in `lst`.\n\n    Parameters:\n        lst (list): The list to search.\n        target: The number to count occurrences of.\n\n    Returns:\n        int: Number of occurrences.\n    \"\"\"\n    return sum(1 for x in lst if x == target)\n\n\n# Example usage and assertion from the prompt\nif __name__ == \"__main__\":\n    assert frequency([1, 2, 3], 4) == 0\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/168:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "49eb576d5a9f7233497a45666f7857e6ca29a72495bdcb13ffac5672fba733a6",
+  "post_h2_sha256": "417eb599c53bb17bc5182ad9f57f34c475ee6038abe8e3e94dbd96aaa0f473e5",
+  "post_h3_sha256": "417eb599c53bb17bc5182ad9f57f34c475ee6038abe8e3e94dbd96aaa0f473e5",
+  "post_h4_sha256": "417eb599c53bb17bc5182ad9f57f34c475ee6038abe8e3e94dbd96aaa0f473e5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "49eb576d5a9f7233497a45666f7857e6ca29a72495bdcb13ffac5672fba733a6",
+  "raw_source": "def frequency(lst, target):\n    \"\"\"\n    Count how many times `target` appears in `lst`.\n\n    Parameters:\n        lst (list): The list to search.\n        target: The number to count occurrences of.\n\n    Returns:\n        int: Number of occurrences.\n    \"\"\"\n    return sum(1 for x in lst if x == target)\n\n\n# Example usage and assertion from the prompt\nassert frequency([1, 2, 3], 4) == 0\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/168",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

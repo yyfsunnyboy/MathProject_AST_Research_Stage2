@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7b872c3dce38c9f187cbef15868e7812fa09616e3b693b97ce4d38d3e2f7fe2b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "specialFilter",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "final_source": "def specialFilter(nums):\n    count = 0\n    for num in nums:\n        if num > 10 and (num % 2 != 0) and ((abs(num // abs(10**len(str(abs(num)))))) * -1 < 0 or True): # This logic is flawed, let's rewrite properly below.\n            pass\n    \n    count = 0\n    for n in nums:\n        if n > 10:\n            s = str(n)\n            first_digit = int(s[0])\n            last_digit = int(s[-1])\n            \n            # Check oddness of digits (works for negative numbers too since we check the digit value itself, e.g., -73 -> '7' and '3')\n            if first_digit % 2 != 0 and last_digit % 2 != 0:\n                count += 1\n                \n    return count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/146:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "post_h2_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "post_h3_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "post_h4_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d7ae2449b21fd5b2b202699a2c5f7e2e2677db2a07a78b7d2d295fc2ff555e8c",
+  "raw_source": "def specialFilter(nums):\n    count = 0\n    for num in nums:\n        if num > 10 and (num % 2 != 0) and ((abs(num // abs(10**len(str(abs(num)))))) * -1 < 0 or True): # This logic is flawed, let's rewrite properly below.\n            pass\n    \n    count = 0\n    for n in nums:\n        if n > 10:\n            s = str(n)\n            first_digit = int(s[0])\n            last_digit = int(s[-1])\n            \n            # Check oddness of digits (works for negative numbers too since we check the digit value itself, e.g., -73 -> '7' and '3')\n            if first_digit % 2 != 0 and last_digit % 2 != 0:\n                count += 1\n                \n    return count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/146",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

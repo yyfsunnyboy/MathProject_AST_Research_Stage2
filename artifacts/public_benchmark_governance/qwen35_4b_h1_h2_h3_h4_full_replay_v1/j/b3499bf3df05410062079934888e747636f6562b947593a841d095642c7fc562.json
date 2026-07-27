@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "b3499bf3df05410062079934888e747636f6562b947593a841d095642c7fc562",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "test_three_equal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "final_source": "def test_three_equal(a, b, c):\n    if a == b and b == c:\n        return 3\n    elif a == b or b == c or a == c:\n        return 2\n    else:\n        return 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/801:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "post_h2_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "post_h3_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "post_h4_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "eb1fb627027faa4a4e6af1e4d73d71b4ec3a03c6a66a7e8b76ab498fb222c5ec",
+  "raw_source": "def test_three_equal(a, b, c):\n    if a == b and b == c:\n        return 3\n    elif a == b or b == c or a == c:\n        return 2\n    else:\n        return 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/801",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

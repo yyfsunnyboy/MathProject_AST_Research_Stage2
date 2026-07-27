@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "79b1928b42b765d3ced7ca8b9fb31b0f3f84dcb507042c7e73be4128fff0b0f1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "swap_numbers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cab857da74b25f9f147dc8813ba83099eb59ff4e888624f7af95cca2fa8aefbe",
+  "final_source": "def swap_numbers(a: int | float, b: int | float):\n    \"\"\"Return a tuple (b, a).\"\"\"\n    return (b, a)\n\n\n# Test assertion\nif __name__ == \"__main__\":\n    assert swap_numbers(10, 20) == (20, 10), \"Test failed!\"\n\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/257:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1592b52898f48d95741cde95cfd0fd338b667ed0ef393821f8cab606c77223d1",
+  "post_h2_sha256": "cab857da74b25f9f147dc8813ba83099eb59ff4e888624f7af95cca2fa8aefbe",
+  "post_h3_sha256": "cab857da74b25f9f147dc8813ba83099eb59ff4e888624f7af95cca2fa8aefbe",
+  "post_h4_sha256": "cab857da74b25f9f147dc8813ba83099eb59ff4e888624f7af95cca2fa8aefbe",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1592b52898f48d95741cde95cfd0fd338b667ed0ef393821f8cab606c77223d1",
+  "raw_source": "def swap_numbers(a: int | float, b: int | float):\n    \"\"\"Return a tuple (b, a).\"\"\"\n    return (b, a)\n\n\n# Test assertion\nassert swap_numbers(10, 20) == (20, 10), \"Test failed!\"\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/257",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

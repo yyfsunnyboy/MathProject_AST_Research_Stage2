@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "012dda3b86971bb426b813447221494df4948c1173ec15287a70f08c9ffb9fbb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_simple_power",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "final_source": "def is_simple_power(x, n):\n    if x <= 0:\n        return False\n    import math\n    result = round(math.log(x) / math.log(n))\n    return pow(n, int(result), x == pow(n, result)) or (x == pow(n, int(result)))",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/76:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "post_h2_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "post_h3_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "post_h4_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f1510cd21ef16e278a70b14af70eaf0984af3a773522aa483bba5a5710e7f4c1",
+  "raw_source": "def is_simple_power(x, n):\n    if x <= 0:\n        return False\n    import math\n    result = round(math.log(x) / math.log(n))\n    return pow(n, int(result), x == pow(n, result)) or (x == pow(n, int(result)))",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/76",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "cb741e533b8c776d49daee96fd4238e8dd8724bb227d34e0cabb710a61e5c0cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "words_string",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "final_source": "def words_string(s):\n    \"\"\"\n    You will be given a string of words separated by commas or spaces. Your task is\n    to split the string into words and return an array of the words.\n    \n    For example:\n    words_string(\"Hi, my name is John\") == [\"Hi\", \"my\", \"name\", \"is\", \"John\"]\n    words_string(\"One, two, three, four, five, six\") == [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]\n    \"\"\"\n    \n    # Replace commas with spaces so we can use a single split method for both separators\n    s = s.replace(',', ' ')\n    \n    # Split the string by whitespace (spaces, tabs, newlines) and filter out empty strings\n    return [word.strip() for word in s.split()]\n\n# --- Test Cases ---\nprint(words_string(\"Hi, my name is John\")) \n# Output: ['Hi', 'my', 'name', 'is', 'John']\n\nprint(words_string(\"One, two, three, four, five, six\")) \n# Output: ['One', 'two', 'three', 'four', 'five', 'six']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/101:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "post_h2_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "post_h3_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "post_h4_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4c4be9156738152151da9f3893d2927280237a287d2687fee5ac9489d871f81d",
+  "raw_source": "def words_string(s):\n    \"\"\"\n    You will be given a string of words separated by commas or spaces. Your task is\n    to split the string into words and return an array of the words.\n    \n    For example:\n    words_string(\"Hi, my name is John\") == [\"Hi\", \"my\", \"name\", \"is\", \"John\"]\n    words_string(\"One, two, three, four, five, six\") == [\"One\", \"two\", \"three\", \"four\", \"five\", \"six\"]\n    \"\"\"\n    \n    # Replace commas with spaces so we can use a single split method for both separators\n    s = s.replace(',', ' ')\n    \n    # Split the string by whitespace (spaces, tabs, newlines) and filter out empty strings\n    return [word.strip() for word in s.split()]\n\n# --- Test Cases ---\nprint(words_string(\"Hi, my name is John\")) \n# Output: ['Hi', 'my', 'name', 'is', 'John']\n\nprint(words_string(\"One, two, three, four, five, six\")) \n# Output: ['One', 'two', 'three', 'four', 'five', 'six']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/101",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

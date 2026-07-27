@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "3ef7bf61bbaa9be783478a4d22f7deacc7cb58e8f34b0c8938b5e5a9f41671e9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "split_two_parts",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "final_source": "def split_two_parts(lst: list, L: int) -> tuple[list, list]:\n    \"\"\"\n    Splits the given list into two parts where the first part has length L.\n    \n    Args:\n        lst (list): The input list to be split.\n        L (int): The desired length of the first part.\n\n    Returns:\n        tuple[list, list]: A tuple containing the two resulting lists.\n        \n    Raises:\n        ValueError: If L is negative or greater than the length of the list.\n    \"\"\"\n    if not isinstance(lst, list) or not isinstance(L, int):\n        raise TypeError(\"Input must be a list and an integer.\")\n\n    n = len(lst)\n    \n    # Validate constraints for L\n    if L < 0:\n        raise ValueError(f\"L cannot be negative. Got {L}.\")\n    if L > n:\n        raise ValueError(f\"L ({L}) is greater than the length of the list ({n}).\")\n\n    first_part = lst[:L]          # Slice from start up to (but not including) index L\n    second_part = lst[L:]         # Slice from index L to end\n    \n    return (first_part, second_part)\n\n\n# Example usage and assertion as provided in your prompt:\nif __name__ == \"__main__\":\n    assert split_two_parts([1, 1, 2, 3, 4, 4, 5, 1], 3) == ([1, 1, 2], [3, 4, 4, 5, 1])\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/262:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "post_h2_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "post_h3_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "post_h4_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6b7aa16442fb84dacdcfc471e6aebcef5a46295585ba3ef30d3b1fd892e3f20f",
+  "raw_source": "def split_two_parts(lst: list, L: int) -> tuple[list, list]:\n    \"\"\"\n    Splits the given list into two parts where the first part has length L.\n    \n    Args:\n        lst (list): The input list to be split.\n        L (int): The desired length of the first part.\n\n    Returns:\n        tuple[list, list]: A tuple containing the two resulting lists.\n        \n    Raises:\n        ValueError: If L is negative or greater than the length of the list.\n    \"\"\"\n    if not isinstance(lst, list) or not isinstance(L, int):\n        raise TypeError(\"Input must be a list and an integer.\")\n\n    n = len(lst)\n    \n    # Validate constraints for L\n    if L < 0:\n        raise ValueError(f\"L cannot be negative. Got {L}.\")\n    if L > n:\n        raise ValueError(f\"L ({L}) is greater than the length of the list ({n}).\")\n\n    first_part = lst[:L]          # Slice from start up to (but not including) index L\n    second_part = lst[L:]         # Slice from index L to end\n    \n    return (first_part, second_part)\n\n\n# Example usage and assertion as provided in your prompt:\nif __name__ == \"__main__\":\n    assert split_two_parts([1, 1, 2, 3, 4, 4, 5, 1], 3) == ([1, 1, 2], [3, 4, 4, 5, 1])\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/262",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

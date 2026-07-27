@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "3095cc873274666035ba64871cdee5830cb1333a2e7cf594d0aae86d2cc236cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "wind_chill",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8b91bb44c6c74c45e49dfb9f9f7b87f9735223d35f5c3db215244728ad00e845",
+  "final_source": "import math\n\ndef wind_chill(temp_celsius: float, wind_speed_kmh: float) -> int:\n    \"\"\"\n    Calculates the wind chill index rounded to the next integer (ceiling).\n    \n    Args:\n        temp_celsius (float): Temperature in degrees Celsius.\n        wind_speed_kmh (float): Wind velocity in km/h.\n        \n    Returns:\n        int: The calculated wind chill temperature, rounded up to the nearest integer.\n    \"\"\"\n    \n    # Standard formula parameters\n    a = 13.1\n    b = 0.6215 * temp_celsius\n    \n    # Calculate v^0.16\n    term_v = (wind_speed_kmh ** 0.16)\n    \n    c = -11.37 * term_v\n    \n    wind_chill_temp = a + b + c\n\n    # The formula is generally valid for temperatures between -4°C and 10°C.\n    # If the actual temperature is above 10°C, you cannot feel colder than the air itself.\n    if temp_celsius > 10:\n        return int(temp_celsius) \n\n    # Round to the next integer (Ceiling function logic for positive/negative numbers)\n    # math.ceil returns a float in Python 3, so we cast to int after ensuring it's an integer value\n    result = math.ceil(wind_chill_temp)\n\n    return int(result)\n\n# Test case provided by user\nif __name__ == \"__main__\":\n    assert wind_chill(120, 35) == 40\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/638:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0e939c30116677b6285c3669a89a74b3de52273fdbd416326a6a990107d0e395",
+  "post_h2_sha256": "fcc1eae34b811f841bc723d2b2b73113f2631973d60f6879a8875e1da6d0cd44",
+  "post_h3_sha256": "fcc1eae34b811f841bc723d2b2b73113f2631973d60f6879a8875e1da6d0cd44",
+  "post_h4_sha256": "8b91bb44c6c74c45e49dfb9f9f7b87f9735223d35f5c3db215244728ad00e845",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0e939c30116677b6285c3669a89a74b3de52273fdbd416326a6a990107d0e395",
+  "raw_source": "import math\n\ndef wind_chill(temp_celsius: float, wind_speed_kmh: float) -> int:\n    \"\"\"\n    Calculates the wind chill index rounded to the next integer (ceiling).\n    \n    Args:\n        temp_celsius (float): Temperature in degrees Celsius.\n        wind_speed_kmh (float): Wind velocity in km/h.\n        \n    Returns:\n        int: The calculated wind chill temperature, rounded up to the nearest integer.\n    \"\"\"\n    \n    # Standard formula parameters\n    a = 13.1\n    b = 0.6215 * temp_celsius\n    \n    # Calculate v^0.16\n    term_v = (wind_speed_kmh ** 0.16)\n    \n    c = -11.37 * term_v\n    \n    wind_chill_temp = a + b + c\n\n    # The formula is generally valid for temperatures between -4°C and 10°C.\n    # If the actual temperature is above 10°C, you cannot feel colder than the air itself.\n    if temp_celsius > 10:\n        return int(temp_celsius) \n\n    # Round to the next integer (Ceiling function logic for positive/negative numbers)\n    # math.ceil returns a float in Python 3, so we cast to int after ensuring it's an integer value\n    result = math.ceil(wind_chill_temp)\n\n    return int(result)\n\n# Test case provided by user\nassert wind_chill(120, 35) == 40\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/638",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

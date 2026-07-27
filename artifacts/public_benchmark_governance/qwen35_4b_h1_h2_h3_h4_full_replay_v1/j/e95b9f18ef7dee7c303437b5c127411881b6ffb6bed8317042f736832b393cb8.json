@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e95b9f18ef7dee7c303437b5c127411881b6ffb6bed8317042f736832b393cb8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_quotation",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "final_source": "import re\n\ndef extract_quotation(text):\n    \"\"\"\n    Extracts all substrings found between double quotation marks \" \".\n    \n    Args:\n        text (str): The input string containing quoted values.\n        \n    Returns:\n        list[str]: A list of extracted strings in the order they appear.\n    \"\"\"\n    # Use regex to find all content inside double quotes\n    # Pattern explanation: \n    # \"  - matches a literal quote character\n    # (.*?) - non-greedy match for any characters inside the quotes\n    # \"  - matches the closing quote character\n    pattern = r'\"(.*?)\"'\n    \n    return re.findall(pattern, text)\n\n# Test cases based on your requirement and additional edge cases\nif __name__ == \"__main__\":\n    assert extract_quotation('Cortex \"A53\" Based \"multi\" tasking \"Processor\"') == ['A53', 'multi', 'Processor']\n    \n    # Additional test: No quotes\n    assert extract_quotation(\"No quotes here\") == []\n    \n    # Additional test: Single quote (should be ignored as per the problem specifying \")\n    assert extract_quotation('He said \"Hello\" and \\'World\\'') == ['Hello']\n    \n    print(\"All assertions passed!\")\n\n# Run the tests to verify functionality\nextract_quotation('Cortex \"A53\" Based \"multi\" tasking \"Processor\"')\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/725:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "post_h2_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "post_h3_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "post_h4_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "91ef250b19c0f7078876ac58ff0812a86900e642f02b70845dee4e3020d706b7",
+  "raw_source": "import re\n\ndef extract_quotation(text):\n    \"\"\"\n    Extracts all substrings found between double quotation marks \" \".\n    \n    Args:\n        text (str): The input string containing quoted values.\n        \n    Returns:\n        list[str]: A list of extracted strings in the order they appear.\n    \"\"\"\n    # Use regex to find all content inside double quotes\n    # Pattern explanation: \n    # \"  - matches a literal quote character\n    # (.*?) - non-greedy match for any characters inside the quotes\n    # \"  - matches the closing quote character\n    pattern = r'\"(.*?)\"'\n    \n    return re.findall(pattern, text)\n\n# Test cases based on your requirement and additional edge cases\nif __name__ == \"__main__\":\n    assert extract_quotation('Cortex \"A53\" Based \"multi\" tasking \"Processor\"') == ['A53', 'multi', 'Processor']\n    \n    # Additional test: No quotes\n    assert extract_quotation(\"No quotes here\") == []\n    \n    # Additional test: Single quote (should be ignored as per the problem specifying \")\n    assert extract_quotation('He said \"Hello\" and \\'World\\'') == ['Hello']\n    \n    print(\"All assertions passed!\")\n\n# Run the tests to verify functionality\nextract_quotation('Cortex \"A53\" Based \"multi\" tasking \"Processor\"')\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/725",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

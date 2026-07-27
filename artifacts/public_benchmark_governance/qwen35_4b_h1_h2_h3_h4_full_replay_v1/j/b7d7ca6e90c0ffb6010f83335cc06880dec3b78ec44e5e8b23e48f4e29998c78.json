@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b7d7ca6e90c0ffb6010f83335cc06880dec3b78ec44e5e8b23e48f4e29998c78",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "jacobsthal_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5134ecd43021ecf24bb696b73bd81ad447966405b4f6c94a6a778174ffb2405d",
+  "final_source": "def jacobsthal_num(n):\n    if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    \n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, 3 * b - a\n    return b\n\nif __name__ == \"__main__\":\n    assert jacobsthal_num(5) == 11",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/752:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5cde8de10cc631c9d300e1a17a55b09eef5863f324c7386222b39490b263eb32",
+  "post_h2_sha256": "5134ecd43021ecf24bb696b73bd81ad447966405b4f6c94a6a778174ffb2405d",
+  "post_h3_sha256": "5134ecd43021ecf24bb696b73bd81ad447966405b4f6c94a6a778174ffb2405d",
+  "post_h4_sha256": "5134ecd43021ecf24bb696b73bd81ad447966405b4f6c94a6a778174ffb2405d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5cde8de10cc631c9d300e1a17a55b09eef5863f324c7386222b39490b263eb32",
+  "raw_source": "def jacobsthal_num(n):\n    if n == 0:\n        return 0\n    elif n == 1:\n        return 1\n    \n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, 3 * b - a\n    return b\n\nassert jacobsthal_num(5) == 11",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/752",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

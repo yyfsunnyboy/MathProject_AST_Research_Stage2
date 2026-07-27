@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "17467c91cb9059314559bb61bfac1acf0bb49628bf4a4064c62ed3f0bc74ee2f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "total_match",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "final_source": "def total_match(lst1, lst2):\n    '''\n    Write a function that accepts two lists of strings and returns the list that has \n    total number of chars in the all strings of the list less than the other list.\n\n    if the two lists have the same number of chars, return the first list.\n\n    Examples\n    total_match([], []) ➞ []\n    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']\n    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']\n    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']\n    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']\n    '''\n\n    def count_chars(lst):\n        return sum(len(s) for s in lst)\n\n    if count_chars(lst1) < count_chars(lst2):\n        return lst1\n    else:\n        return lst2",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/74:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "post_h2_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "post_h3_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "post_h4_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b660aaa1ea096c9755c8f79a4538672574306760926d21e183e0e6e5978ab9db",
+  "raw_source": "def total_match(lst1, lst2):\n    '''\n    Write a function that accepts two lists of strings and returns the list that has \n    total number of chars in the all strings of the list less than the other list.\n\n    if the two lists have the same number of chars, return the first list.\n\n    Examples\n    total_match([], []) ➞ []\n    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']\n    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']\n    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']\n    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']\n    '''\n\n    def count_chars(lst):\n        return sum(len(s) for s in lst)\n\n    if count_chars(lst1) < count_chars(lst2):\n        return lst1\n    else:\n        return lst2",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/74",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

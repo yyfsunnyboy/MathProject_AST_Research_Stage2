@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e0b8f91ce4abdd1c007df8e8b4ed9f94aa31852a0497ed150d7c20256c515bac",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "decimal_to_binary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "99624754a7c7c74b7446c7e5313f62f21f841cabeab59fd89bd84ec150bd976d",
+  "final_source": "def decimal_to_binary(n: int) -> str:\n    \"\"\"Convert a non-negative integer to its binary representation (no leading zeros).\"\"\"\n    \n    # Handle the edge case of 0 explicitly, since repeated division by 2 won't produce '1' for input 0.\n    if n == 0:\n        return \"0\"\n\n    bits = []\n    while n > 0:\n        remainder = n % 2\n        bits.append(str(remainder))\n        n //= 2\n    \n    # The list is built in reverse order (least significant bit first), so we join and reverse.\n    binary_str = \"\".join(reversed(bits))\n    \n    return binary_str\n\n# Test the function as per your requirement:\nif __name__ == \"__main__\":\n    assert decimal_to_binary(8) == '1000'\n    print(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/99:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9d3afbdffd456dd5364746d60223de748b02e322153cc048754466f95654c3c9",
+  "post_h2_sha256": "72cf48f85d59946cd40223fe715745c74a95f9384a0b12ebf5c2c10eaaf8a8ab",
+  "post_h3_sha256": "72cf48f85d59946cd40223fe715745c74a95f9384a0b12ebf5c2c10eaaf8a8ab",
+  "post_h4_sha256": "99624754a7c7c74b7446c7e5313f62f21f841cabeab59fd89bd84ec150bd976d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9d3afbdffd456dd5364746d60223de748b02e322153cc048754466f95654c3c9",
+  "raw_source": "def decimal_to_binary(n: int) -> str:\n    \"\"\"Convert a non-negative integer to its binary representation (no leading zeros).\"\"\"\n    \n    # Handle the edge case of 0 explicitly, since repeated division by 2 won't produce '1' for input 0.\n    if n == 0:\n        return \"0\"\n\n    bits = []\n    while n > 0:\n        remainder = n % 2\n        bits.append(str(remainder))\n        n //= 2\n    \n    # The list is built in reverse order (least significant bit first), so we join and reverse.\n    binary_str = \"\".join(reversed(bits))\n    \n    return binary_str\n\n# Test the function as per your requirement:\nassert decimal_to_binary(8) == '1000'\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/99",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "71b63f525f735732d415270bd9d42db2ac78afcd242efbbcc51e02e3385177cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "circular_shift",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "final_source": "def circular_shift(x, shift):\n    \"\"\"Circular shift the digits of the integer x, shift the digits right by shift\n    and return the result as a string.\n    If shift > number of digits, return digits reversed.\n    >>> circular_shift(12, 1)\n    \"21\"\n    >>> circular_shift(12, 2)\n    \"12\"\n    \"\"\"\n    s = str(x)\n    n = len(s)\n    if shift > n:\n        return ''.join(reversed(list(s)))\n    \n    # Shift right by 'shift' positions means the last 'shift % n' digits move to front\n    effective_shift = shift % n\n    \n    result_list = s[-effective_shift:] + s[:-effective_shift]\n    return ''.join(result_list)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/65:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "post_h2_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "post_h3_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "post_h4_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "714bcf5b086d3827422d86ef038395782587c768216b2a424820fa1950647f16",
+  "raw_source": "def circular_shift(x, shift):\n    \"\"\"Circular shift the digits of the integer x, shift the digits right by shift\n    and return the result as a string.\n    If shift > number of digits, return digits reversed.\n    >>> circular_shift(12, 1)\n    \"21\"\n    >>> circular_shift(12, 2)\n    \"12\"\n    \"\"\"\n    s = str(x)\n    n = len(s)\n    if shift > n:\n        return ''.join(reversed(list(s)))\n    \n    # Shift right by 'shift' positions means the last 'shift % n' digits move to front\n    effective_shift = shift % n\n    \n    result_list = s[-effective_shift:] + s[:-effective_shift]\n    return ''.join(result_list)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/65",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

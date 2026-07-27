@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "01674b541e77bb163a4b030d7061fd0a548644f8485ab2dbbf583780bb0e17d7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "similar_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a1c57cd031b48d4b09fa1b3d543650f3a4bc7db22dfc1baba8a05e2d5d76fb9f",
+  "final_source": "def similar_elements(list1, list2):\n    \"\"\"\n    Returns a new list containing the shared elements from two input lists.\n    \n    Parameters:\n        list1 (iterable of hashables)\n        list2 (iterable of hashables)\n        \n    Returns:\n        List of common elements (order not guaranteed).\n    \"\"\"\n    # Convert both to sets for efficient lookup, then intersect\n    set1 = set(list1)\n    set2 = set(list2)\n    \n    return [item for item in list1 if item in set2]\n\n\n# Example usage and assertion from the problem statement:\nif __name__ == \"__main__\":\n    assert similar_elements((3, 4, 5, 6), (5, 7, 4, 10)) == [4, 5]\n\nif __name__ == \"__main__\":\n    # Run the test to verify correctness\n    result = similar_elements((3, 4, 5, 6), (5, 7, 4, 10))\n    print(\"Shared elements:\", result)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/2:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "229b00f7526d4431d6c667750f8437a9ab86e748615adf4352517f9003966a56",
+  "post_h2_sha256": "a1c57cd031b48d4b09fa1b3d543650f3a4bc7db22dfc1baba8a05e2d5d76fb9f",
+  "post_h3_sha256": "a1c57cd031b48d4b09fa1b3d543650f3a4bc7db22dfc1baba8a05e2d5d76fb9f",
+  "post_h4_sha256": "a1c57cd031b48d4b09fa1b3d543650f3a4bc7db22dfc1baba8a05e2d5d76fb9f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "229b00f7526d4431d6c667750f8437a9ab86e748615adf4352517f9003966a56",
+  "raw_source": "def similar_elements(list1, list2):\n    \"\"\"\n    Returns a new list containing the shared elements from two input lists.\n    \n    Parameters:\n        list1 (iterable of hashables)\n        list2 (iterable of hashables)\n        \n    Returns:\n        List of common elements (order not guaranteed).\n    \"\"\"\n    # Convert both to sets for efficient lookup, then intersect\n    set1 = set(list1)\n    set2 = set(list2)\n    \n    return [item for item in list1 if item in set2]\n\n\n# Example usage and assertion from the problem statement:\nassert similar_elements((3, 4, 5, 6), (5, 7, 4, 10)) == [4, 5]\n\nif __name__ == \"__main__\":\n    # Run the test to verify correctness\n    result = similar_elements((3, 4, 5, 6), (5, 7, 4, 10))\n    print(\"Shared elements:\", result)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/2",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

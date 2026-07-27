@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f1e75f315efadd99e8324b6681901370a37bcbae654563e8fa589a59f8d530f9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sum_to_n",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "final_source": "def sum_to_n(n: int):\n    \"\"\"sum_to_n is a function that sums numbers from 1 to n.\n    >>> sum_to_n(30)\n    465\n    >>> sum_to_n(100)\n    5050\n    >>> sum_to_n(5)\n    15\n    >>> sum_to_n(10)\n    55\n    >>> sum_to_n(1)\n    1\n    \"\"\"\n    # Using the formula for the sum of first n natural numbers: n * (n + 1) // 2\n    return n * (n + 1) // 2\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/60:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "post_h2_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "post_h3_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "post_h4_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d15c7a8b4f933c348261c48defd21e2234bd439ac19af2772a319370a56bdddb",
+  "raw_source": "def sum_to_n(n: int):\n    \"\"\"sum_to_n is a function that sums numbers from 1 to n.\n    >>> sum_to_n(30)\n    465\n    >>> sum_to_n(100)\n    5050\n    >>> sum_to_n(5)\n    15\n    >>> sum_to_n(10)\n    55\n    >>> sum_to_n(1)\n    1\n    \"\"\"\n    # Using the formula for the sum of first n natural numbers: n * (n + 1) // 2\n    return n * (n + 1) // 2\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/60",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

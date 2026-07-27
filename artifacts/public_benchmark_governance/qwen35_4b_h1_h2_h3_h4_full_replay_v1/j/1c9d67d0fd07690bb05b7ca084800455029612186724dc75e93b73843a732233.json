@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1c9d67d0fd07690bb05b7ca084800455029612186724dc75e93b73843a732233",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dict_depth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "final_source": "def dict_depth(d):\n    \"\"\"\n    Returns the depth of a nested dictionary structure.\n    \n    Args:\n        d (dict or any): The input object. If not a dict, returns 0.\n        \n    Returns:\n        int: The maximum nesting level found in the dictionary.\n    \"\"\"\n    if not isinstance(d, dict):\n        return 0\n    \n    max_depth = 0\n    for value in d.values():\n        # Recursively calculate depth of values (handles nested dicts or lists containing dicts)\n        current_value_depth = dict_depth(value)\n        if current_value_depth > max_depth:\n            max_depth = current_value_depth\n            \n    return max_depth + 1\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific test case\n    assert dict_depth({'a': 1, 'b': {'c': {'d': {}}}}) == 4\n    \n    # Additional tests to ensure robustness\n    print(f\"Test 1 (Nested): {dict_depth({'a': 1, 'b': {'c': {'d': {}}}})}\") \n    assert dict_depth({'a': 1, 'b': {'c': {'d': {}}}}) == 4\n    \n    # Empty dictionary\n    print(f\"Test 2 (Empty): {dict_depth({})}\")\n    assert dict_depth({}) == 0\n    \n    # Single level nesting\n    print(f\"Test 3 (Single Level): {dict_depth({'a': {'b': 'c'}})}\")\n    assert dict_depth({'a': {'b': 'c'}}) == 2\n    \n    # Mixed types in list inside dict\n    data = {'x': [1, 2], 'y': [{'z': {}}, None]}\n    print(f\"Test 4 (Mixed): {dict_depth(data)}\")\n    assert dict_depth({'x': [1, 2], 'y': [{'z': {}}, None]}) == 3\n    \n    # Non-dictionary input\n    print(f\"Test 5 (Non-Dict): {dict_depth(123)}\")\n    assert dict_depth(123) == 0\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/301:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "post_h2_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "post_h3_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "post_h4_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "17b337211f78c3e223b5631b6fffcc4b222571aad4232afbfe79fc217541456f",
+  "raw_source": "def dict_depth(d):\n    \"\"\"\n    Returns the depth of a nested dictionary structure.\n    \n    Args:\n        d (dict or any): The input object. If not a dict, returns 0.\n        \n    Returns:\n        int: The maximum nesting level found in the dictionary.\n    \"\"\"\n    if not isinstance(d, dict):\n        return 0\n    \n    max_depth = 0\n    for value in d.values():\n        # Recursively calculate depth of values (handles nested dicts or lists containing dicts)\n        current_value_depth = dict_depth(value)\n        if current_value_depth > max_depth:\n            max_depth = current_value_depth\n            \n    return max_depth + 1\n\n# Test cases based on your requirement and edge scenarios\nif __name__ == \"__main__\":\n    # Your specific test case\n    assert dict_depth({'a': 1, 'b': {'c': {'d': {}}}}) == 4\n    \n    # Additional tests to ensure robustness\n    print(f\"Test 1 (Nested): {dict_depth({'a': 1, 'b': {'c': {'d': {}}}})}\") \n    assert dict_depth({'a': 1, 'b': {'c': {'d': {}}}}) == 4\n    \n    # Empty dictionary\n    print(f\"Test 2 (Empty): {dict_depth({})}\")\n    assert dict_depth({}) == 0\n    \n    # Single level nesting\n    print(f\"Test 3 (Single Level): {dict_depth({'a': {'b': 'c'}})}\")\n    assert dict_depth({'a': {'b': 'c'}}) == 2\n    \n    # Mixed types in list inside dict\n    data = {'x': [1, 2], 'y': [{'z': {}}, None]}\n    print(f\"Test 4 (Mixed): {dict_depth(data)}\")\n    assert dict_depth({'x': [1, 2], 'y': [{'z': {}}, None]}) == 3\n    \n    # Non-dictionary input\n    print(f\"Test 5 (Non-Dict): {dict_depth(123)}\")\n    assert dict_depth(123) == 0\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/301",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

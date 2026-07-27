@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f23b1fabe930f5fbf7a169eed9b79091a447eaf99da2263d46c42e06132e55b8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "big_diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "93f3454c886d52c4e2bb6f89620dc153f40b9fa4294495421a53e12648bec1e0",
+  "final_source": "def big_diff(nums):\n    \"\"\"\n    Returns the difference between the largest and smallest values \n    in a non-empty list of numbers.\n    \n    Args:\n        nums (list[int]): A list of integers or floats.\n        \n    Returns:\n        int/float: The difference between max and min value.\n    \"\"\"\n    if not nums:  # Handle empty list case gracefully\n        raise ValueError(\"List must contain at least one element.\")\n    \n    return max(nums) - min(nums)\n\n\n# Example usage / assertion from the problem statement\nif __name__ == \"__main__\":\n    assert big_diff([1, 2, 3, 4]) == 3\n\n# Additional test cases (optional but helpful):\nprint(big_diff([-5, -2, 0, 7]))   # Expected: 12\nprint(big_diff([42.5, 42.6]))     # Expected: 0.1\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/588:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6e56c929b30097e40b893910cdeb74df062c29e7f6cb0c8f79f630991115afc6",
+  "post_h2_sha256": "93f3454c886d52c4e2bb6f89620dc153f40b9fa4294495421a53e12648bec1e0",
+  "post_h3_sha256": "93f3454c886d52c4e2bb6f89620dc153f40b9fa4294495421a53e12648bec1e0",
+  "post_h4_sha256": "93f3454c886d52c4e2bb6f89620dc153f40b9fa4294495421a53e12648bec1e0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6e56c929b30097e40b893910cdeb74df062c29e7f6cb0c8f79f630991115afc6",
+  "raw_source": "def big_diff(nums):\n    \"\"\"\n    Returns the difference between the largest and smallest values \n    in a non-empty list of numbers.\n    \n    Args:\n        nums (list[int]): A list of integers or floats.\n        \n    Returns:\n        int/float: The difference between max and min value.\n    \"\"\"\n    if not nums:  # Handle empty list case gracefully\n        raise ValueError(\"List must contain at least one element.\")\n    \n    return max(nums) - min(nums)\n\n\n# Example usage / assertion from the problem statement\nassert big_diff([1, 2, 3, 4]) == 3\n\n# Additional test cases (optional but helpful):\nprint(big_diff([-5, -2, 0, 7]))   # Expected: 12\nprint(big_diff([42.5, 42.6]))     # Expected: 0.1\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/588",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

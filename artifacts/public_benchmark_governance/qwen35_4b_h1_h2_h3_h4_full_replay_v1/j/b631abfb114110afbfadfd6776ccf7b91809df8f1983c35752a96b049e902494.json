@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b631abfb114110afbfadfd6776ccf7b91809df8f1983c35752a96b049e902494",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "bell_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e05bc9b5bf279a7679e363ba4a5c0df0346a75d262de941d87c8b401500d0ebd",
+  "final_source": "def bell_number(n: int) -> int:\n    \"\"\"Return the n-th Bell number (number of partitions of a set with n elements).\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n\n    # Initialize Stirling numbers table for current and previous row\n    S = [[0] * (n + 1) for _ in range(n + 1)]\n    S[0][0] = 1\n\n    for i in range(1, n + 1):\n        for k in range(1, i + 1):\n            # S(i,k) = k*S(i-1,k) + S(i-1,k-1)\n            val = k * S[i - 1][k] + S[i - 1][k - 1]\n            S[i][k] = val\n\n    # Bell number B_n is sum of S(n, k) for k from 0 to n\n    return sum(S[n])\n\n\n# Test the assertion\nif __name__ == \"__main__\":\n    assert bell_number(2) == 2\n    print(\"Assertion passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/67:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "125ccb567f3469f656730085e3407a4d6afbd28e711fde760967302371d29607",
+  "post_h2_sha256": "6ad3c1b56a161594418c1bbc3770c69f1599976b3093a2d7c36270bf085f6bcc",
+  "post_h3_sha256": "6ad3c1b56a161594418c1bbc3770c69f1599976b3093a2d7c36270bf085f6bcc",
+  "post_h4_sha256": "e05bc9b5bf279a7679e363ba4a5c0df0346a75d262de941d87c8b401500d0ebd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "125ccb567f3469f656730085e3407a4d6afbd28e711fde760967302371d29607",
+  "raw_source": "def bell_number(n: int) -> int:\n    \"\"\"Return the n-th Bell number (number of partitions of a set with n elements).\"\"\"\n    if n < 0:\n        raise ValueError(\"n must be non-negative\")\n\n    # Initialize Stirling numbers table for current and previous row\n    S = [[0] * (n + 1) for _ in range(n + 1)]\n    S[0][0] = 1\n\n    for i in range(1, n + 1):\n        for k in range(1, i + 1):\n            # S(i,k) = k*S(i-1,k) + S(i-1,k-1)\n            val = k * S[i - 1][k] + S[i - 1][k - 1]\n            S[i][k] = val\n\n    # Bell number B_n is sum of S(n, k) for k from 0 to n\n    return sum(S[n])\n\n\n# Test the assertion\nassert bell_number(2) == 2\nprint(\"Assertion passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/67",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

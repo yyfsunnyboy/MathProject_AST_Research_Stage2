@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "302815f2829c0a6f2a7d8772f92fe3cb1712a189a0570bf879c9e1d0db01f08a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "incr_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "final_source": "def incr_list(l: list):\n    \"\"\"Return list with elements incremented by 1.\n    >>> incr_list([1, 2, 3])\n    [2, 3, 4]\n    >>> incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [6, 4, 6, 3, 4, 4, 10, 1, 124]\n    \"\"\"\n    return [x + 1 for x in l]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/42:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "post_h2_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "post_h3_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "post_h4_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "34dcc1af53cfa10fde5f147616b7f897aac501284dbe56ae72ff7f72b2c5f8ef",
+  "raw_source": "def incr_list(l: list):\n    \"\"\"Return list with elements incremented by 1.\n    >>> incr_list([1, 2, 3])\n    [2, 3, 4]\n    >>> incr_list([5, 3, 5, 2, 3, 3, 9, 0, 123])\n    [6, 4, 6, 3, 4, 4, 10, 1, 124]\n    \"\"\"\n    return [x + 1 for x in l]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/42",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "9f8c44687b4e46ba1fa16fd0da9fd1e61c1ac2069524d7d9075481a54214dc5f",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "sum_range_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "final_source": "def sum_range_list(numbers: list[int], start_index: int, end_index: int) -> int:\n    \"\"\"\n    Returns the sum of numbers in `numbers` from index `start_index` to `end_index`.\n    \n    The range is inclusive on both ends (i.e., indices start_index and end_index).\n\n    Example:\n        assert sum_range_list([2,1,5,6,8,3,4,9,10,11,8,12], 8, 10) == 29\n    \n    Explanation of the example:\n        indices:   0  1 2 3 4 5 6 7 8 9 10 11\n        values:     ?  ? 5 6 8 3 4 9 10 11 8 12\n        sum from index 8 to 10 (inclusive): numbers[8] + numbers[9] + numbers[10] = 10 + 11 + 8 = 29\n    \"\"\"\n    if not isinstance(numbers, list) or any(not isinstance(x, int) for x in numbers):\n        raise TypeError(\"numbers must be a list of integers\")\n\n    # Basic bounds checking (optional but helpful)\n    start_index < 0 and end_index >= len(numbers) and \\\n            return 0\n    \n    total = sum(numbers[i] for i in range(start_index, end_index + 1))\n    \n    return total\n\n\n# Run the assertion from the problem statement\nassert sum_range_list([2,1,5,6,8,3,4,9,10,11,8,12], 8, 10) == 29\n\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/170:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "post_h2_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "post_h3_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "post_h4_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "4f3ad1a72ddc59eb84ee653771949567571faf7d3b82cb42ea87b00f4894a207",
+  "raw_source": "def sum_range_list(numbers: list[int], start_index: int, end_index: int) -> int:\n    \"\"\"\n    Returns the sum of numbers in `numbers` from index `start_index` to `end_index`.\n    \n    The range is inclusive on both ends (i.e., indices start_index and end_index).\n\n    Example:\n        assert sum_range_list([2,1,5,6,8,3,4,9,10,11,8,12], 8, 10) == 29\n    \n    Explanation of the example:\n        indices:   0  1 2 3 4 5 6 7 8 9 10 11\n        values:     ?  ? 5 6 8 3 4 9 10 11 8 12\n        sum from index 8 to 10 (inclusive): numbers[8] + numbers[9] + numbers[10] = 10 + 11 + 8 = 29\n    \"\"\"\n    if not isinstance(numbers, list) or any(not isinstance(x, int) for x in numbers):\n        raise TypeError(\"numbers must be a list of integers\")\n\n    # Basic bounds checking (optional but helpful)\n    start_index < 0 and end_index >= len(numbers) and \\\n            return 0\n    \n    total = sum(numbers[i] for i in range(start_index, end_index + 1))\n    \n    return total\n\n\n# Run the assertion from the problem statement\nassert sum_range_list([2,1,5,6,8,3,4,9,10,11,8,12], 8, 10) == 29\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/170",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

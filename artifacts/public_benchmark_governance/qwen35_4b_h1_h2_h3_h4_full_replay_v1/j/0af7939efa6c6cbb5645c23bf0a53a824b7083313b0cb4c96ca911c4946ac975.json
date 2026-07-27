@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "0af7939efa6c6cbb5645c23bf0a53a824b7083313b0cb4c96ca911c4946ac975",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_multiply_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "final_source": "def is_multiply_prime(a):\n    \"\"\"Write a function that returns true if the given number is the multiplication of 3 prime numbers\n    and false otherwise.\n    Knowing that (a) is less then 100. \n    Example:\n    is_multiply_prime(30) == True\n    30 = 2 * 3 * 5\n    \"\"\"\n\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n ** 0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n\n    # Count prime factors with multiplicity (e.g., 8 = 2*2*2 -> count=3)\n    def get_prime_factor_count(n, primes=None):\n        \"\"\"Returns the number of times a is multiplied by its smallest prime factor.\"\"\"\n        if n == 1:\n            return 0\n\n        # Find all divisors and check primality on the fly to avoid precomputing for small range\n        count = 0\n        d = 2\n        temp = n\n        while d * d <= temp:\n            while temp % d == 0:\n                if is_prime(d):\n                    count += 1\n                else:\n                    # If a divisor isn't prime, it must be composite; \n                    # we can stop because any further factorization will still yield primes.\n                    break\n                temp //= d\n            d += 1\n        \n        # Handle remaining n > 1 (it's guaranteed to be prime)\n        if temp > 1:\n            count += 1\n\n        return count\n\n    # For numbers < 100, we can also directly check all combinations of three primes.\n    # But the factor-count method is general and efficient enough here.\n    \n    return get_prime_factor_count(a) == 3\n\n\n# Example usage:\nprint(is_multiply_prime(30))   # True (2 * 3 * 5)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/75:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "post_h2_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "post_h3_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "post_h4_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "717f762911567ca108311a256ff8b6c7328c6e419af89786d074587f77d945d7",
+  "raw_source": "def is_multiply_prime(a):\n    \"\"\"Write a function that returns true if the given number is the multiplication of 3 prime numbers\n    and false otherwise.\n    Knowing that (a) is less then 100. \n    Example:\n    is_multiply_prime(30) == True\n    30 = 2 * 3 * 5\n    \"\"\"\n\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n ** 0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n\n    # Count prime factors with multiplicity (e.g., 8 = 2*2*2 -> count=3)\n    def get_prime_factor_count(n, primes=None):\n        \"\"\"Returns the number of times a is multiplied by its smallest prime factor.\"\"\"\n        if n == 1:\n            return 0\n\n        # Find all divisors and check primality on the fly to avoid precomputing for small range\n        count = 0\n        d = 2\n        temp = n\n        while d * d <= temp:\n            while temp % d == 0:\n                if is_prime(d):\n                    count += 1\n                else:\n                    # If a divisor isn't prime, it must be composite; \n                    # we can stop because any further factorization will still yield primes.\n                    break\n                temp //= d\n            d += 1\n        \n        # Handle remaining n > 1 (it's guaranteed to be prime)\n        if temp > 1:\n            count += 1\n\n        return count\n\n    # For numbers < 100, we can also directly check all combinations of three primes.\n    # But the factor-count method is general and efficient enough here.\n    \n    return get_prime_factor_count(a) == 3\n\n\n# Example usage:\nprint(is_multiply_prime(30))   # True (2 * 3 * 5)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/75",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

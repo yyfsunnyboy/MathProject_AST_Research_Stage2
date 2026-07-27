@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f50ed37c188079ff82fdd1281a5f56973cfd21c0ea1718ba026af004b25187b0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_dissimilar",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f4bd0a5509b815ab2766f83fe0b0dc3354cd0532b6ebb575a22dd2e2492809ee",
+  "final_source": "def find_dissimilar(tup1, tup2):\n    # Convert tuples to sets for efficient set operations\n    set1 = set(tup1)\n    set2 = set(tup2)\n    \n    # Find elements in either tuple but not both (symmetric difference)\n    dissimilar_elements = sorted(list(set1.symmetric_difference(set2)))\n    \n    return tuple(dissimilar_elements)\n\n# Test the function with the provided assertion case\nif __name__ == \"__main__\":\n    assert find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\n    print(\"Test passed successfully!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/579:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d18183902b1fd4d7d140b30b5d667715a5405cf88ab86569d9cde7a57cc73198",
+  "post_h2_sha256": "1dde0dcd10a55eae851e382568bca39be94256759c3787a03c3b9fcbb13e2df2",
+  "post_h3_sha256": "1dde0dcd10a55eae851e382568bca39be94256759c3787a03c3b9fcbb13e2df2",
+  "post_h4_sha256": "f4bd0a5509b815ab2766f83fe0b0dc3354cd0532b6ebb575a22dd2e2492809ee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d18183902b1fd4d7d140b30b5d667715a5405cf88ab86569d9cde7a57cc73198",
+  "raw_source": "def find_dissimilar(tup1, tup2):\n    # Convert tuples to sets for efficient set operations\n    set1 = set(tup1)\n    set2 = set(tup2)\n    \n    # Find elements in either tuple but not both (symmetric difference)\n    dissimilar_elements = sorted(list(set1.symmetric_difference(set2)))\n    \n    return tuple(dissimilar_elements)\n\n# Test the function with the provided assertion case\nassert find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/579",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

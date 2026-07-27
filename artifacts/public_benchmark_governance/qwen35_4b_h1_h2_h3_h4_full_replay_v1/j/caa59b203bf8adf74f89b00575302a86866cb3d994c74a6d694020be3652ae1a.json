@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "caa59b203bf8adf74f89b00575302a86866cb3d994c74a6d694020be3652ae1a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "and_tuples",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fdbeff63ee454756d0a4d3c0cdb52cd1f6ce3f0bd6517abcb61390edb7bc8add",
+  "final_source": "def assert_and_tuples(t1, t2):\n    result = []\n    for a, b in zip(t1, t2):\n        if a == 0 and b == 0:\n            result.append(0)\n        elif a > b:\n            result.append(a - b)\n        else:\n            result.append(b - a)\n    return tuple(result)\n\nand_tuples = assert_and_tuples\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/429:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fdbeff63ee454756d0a4d3c0cdb52cd1f6ce3f0bd6517abcb61390edb7bc8add",
+  "post_h2_sha256": "fdbeff63ee454756d0a4d3c0cdb52cd1f6ce3f0bd6517abcb61390edb7bc8add",
+  "post_h3_sha256": "fdbeff63ee454756d0a4d3c0cdb52cd1f6ce3f0bd6517abcb61390edb7bc8add",
+  "post_h4_sha256": "fdbeff63ee454756d0a4d3c0cdb52cd1f6ce3f0bd6517abcb61390edb7bc8add",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "757bfe95766c16909ac4dc9989be5081a47079b72116ba3b86d3fdb92ea181cc",
+  "raw_source": "def assert_and_tuples(t1, t2):\n    result = []\n    for a, b in zip(t1, t2):\n        if a == 0 and b == 0:\n            result.append(0)\n        elif a > b:\n            result.append(a - b)\n        else:\n            result.append(b - a)\n    return tuple(result)",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/429",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b03aca88c342812dadd79c6b639f6976c5a6bb3427d6886f48d5fcf6a811dc8b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "ascii_value",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "22060b4900ba1b9e1d1abc06ecaf24833e176fdfbf503d7e1dea3bbb125edd34",
+  "final_source": "def ascii_value(char):\n    \"\"\"Returns the ASCII integer value of a single-character string.\"\"\"\n    return ord(char)\n\n# Test cases based on your requirement and common edge cases\nif __name__ == \"__main__\":\n    assert ascii_value('A') == 65, \"Failed for 'A'\"\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/269:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a28fcfbe605650b322b7283a3eb2a87237a8b95fc0a1a9157fabe3c961f43fba",
+  "post_h2_sha256": "22060b4900ba1b9e1d1abc06ecaf24833e176fdfbf503d7e1dea3bbb125edd34",
+  "post_h3_sha256": "22060b4900ba1b9e1d1abc06ecaf24833e176fdfbf503d7e1dea3bbb125edd34",
+  "post_h4_sha256": "22060b4900ba1b9e1d1abc06ecaf24833e176fdfbf503d7e1dea3bbb125edd34",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a28fcfbe605650b322b7283a3eb2a87237a8b95fc0a1a9157fabe3c961f43fba",
+  "raw_source": "def ascii_value(char):\n    \"\"\"Returns the ASCII integer value of a single-character string.\"\"\"\n    return ord(char)\n\n# Test cases based on your requirement and common edge cases\nassert ascii_value('A') == 65, \"Failed for 'A'\"\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/269",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

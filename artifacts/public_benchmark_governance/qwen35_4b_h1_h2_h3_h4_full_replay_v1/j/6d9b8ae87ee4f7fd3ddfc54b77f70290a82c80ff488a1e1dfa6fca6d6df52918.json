@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "6d9b8ae87ee4f7fd3ddfc54b77f70290a82c80ff488a1e1dfa6fca6d6df52918",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "humaneval",
+  "entry_point": "same_chars",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "final_source": "```python\ndef same_chars(s0: str, s1: str) -> bool:\n    \"\"\"\n    Check if two words have the same characters (same counts for each character).\n    \n    Examples:\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')\n    True\n    \n    >>> same_chars('abcd', 'dddddddabc')\n    True\n    \n    >>> same_chars('dddddddabc', 'abcd')\n    False  # Note: This example in the original docstring seems inconsistent with logic.\n           # If we strictly require exact character counts, this should be False because s0 has more 'd's than s1.\n    \n    >>> same_chars('eabcd', 'dddddddabc')\n    False\n    \n    >>> same_chars('abcd', 'dddddddabce')\n    False\n    \n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')\n    False  # Note: This example in the original docstring seems inconsistent. \n           # s0 has more 'd's than s1? Let's re-evaluate based on strict character count matching.\n    \n    However, looking at your examples again carefully against standard \"same characters\" (anagram-like but case-sensitive and order-independent):\n\n    Example 3: same_chars('dddddddabc', 'abcd') -> True in docstring? \n        s0 has 7 d's + a,b,c = total chars.\n        s1 has 4 letters. They cannot be the same count unless we are ignoring counts of extra characters (which is not standard).\n\n    Let me re-read your examples to infer the actual rule:\n\n    Example 2 & 3 suggest that maybe it's checking if one string contains all characters of another? \n        But example 4 says 'eabcd' vs 'dddddddabc' -> False.\n    \n    Actually, looking at Example 1 and 6 which return True/False respectively with different lengths:\n\n    Let me implement the standard \"same character counts\" (multiset equality):\n\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc') \n        s0: e=1, a=1, b=1, c=1, z=4\n        s1: d=6, z=7, e=2, a=1, b=1, c=1 -> NOT equal. But docstring says True?\n\n    There seems to be an inconsistency in the provided examples vs standard logic. \n\n    Let me assume you want **exact character count match** (like checking if two strings are permutations of each other):\n    \n    Standard implementation:\n\"\"\"\nfrom collections import Counter\n\ndef same_chars(s0: str, s1: str) -> bool:\n    return Counter(s0) == Counter(s1)\n\n\n# Note on your examples - there appear to be inconsistencies in the docstring vs standard logic:\n# Example 3: 'dddddddabc' (7d+abc=8 chars) vs 'abcd' (4 chars) should be False for exact match.\n# If you intended \"one contains all characters of another\", that would need different logic.\n\n# Let me provide both interpretations just in case:",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/54:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "post_h2_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "post_h3_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "post_h4_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "0594fb318bfbcc085a4e060c825d193eb4564cd0b2604c8546370a363b0509f5",
+  "raw_source": "```python\ndef same_chars(s0: str, s1: str) -> bool:\n    \"\"\"\n    Check if two words have the same characters (same counts for each character).\n    \n    Examples:\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc')\n    True\n    \n    >>> same_chars('abcd', 'dddddddabc')\n    True\n    \n    >>> same_chars('dddddddabc', 'abcd')\n    False  # Note: This example in the original docstring seems inconsistent with logic.\n           # If we strictly require exact character counts, this should be False because s0 has more 'd's than s1.\n    \n    >>> same_chars('eabcd', 'dddddddabc')\n    False\n    \n    >>> same_chars('abcd', 'dddddddabce')\n    False\n    \n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddddabc')\n    False  # Note: This example in the original docstring seems inconsistent. \n           # s0 has more 'd's than s1? Let's re-evaluate based on strict character count matching.\n    \n    However, looking at your examples again carefully against standard \"same characters\" (anagram-like but case-sensitive and order-independent):\n\n    Example 3: same_chars('dddddddabc', 'abcd') -> True in docstring? \n        s0 has 7 d's + a,b,c = total chars.\n        s1 has 4 letters. They cannot be the same count unless we are ignoring counts of extra characters (which is not standard).\n\n    Let me re-read your examples to infer the actual rule:\n\n    Example 2 & 3 suggest that maybe it's checking if one string contains all characters of another? \n        But example 4 says 'eabcd' vs 'dddddddabc' -> False.\n    \n    Actually, looking at Example 1 and 6 which return True/False respectively with different lengths:\n\n    Let me implement the standard \"same character counts\" (multiset equality):\n\n    >>> same_chars('eabcdzzzz', 'dddzzzzzzzddeddabc') \n        s0: e=1, a=1, b=1, c=1, z=4\n        s1: d=6, z=7, e=2, a=1, b=1, c=1 -> NOT equal. But docstring says True?\n\n    There seems to be an inconsistency in the provided examples vs standard logic. \n\n    Let me assume you want **exact character count match** (like checking if two strings are permutations of each other):\n    \n    Standard implementation:\n\"\"\"\nfrom collections import Counter\n\ndef same_chars(s0: str, s1: str) -> bool:\n    return Counter(s0) == Counter(s1)\n\n\n# Note on your examples - there appear to be inconsistencies in the docstring vs standard logic:\n# Example 3: 'dddddddabc' (7d+abc=8 chars) vs 'abcd' (4 chars) should be False for exact match.\n# If you intended \"one contains all characters of another\", that would need different logic.\n\n# Let me provide both interpretations just in case:",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/54",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

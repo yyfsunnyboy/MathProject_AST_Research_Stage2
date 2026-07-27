@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "99a12ec4d419014968a4ac470fd494d61b9adc892392d6b3e33dd0c759858c73",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "right_angle_triangle",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "final_source": "def right_angle_triangle(a, b, c):\n    \"\"\"\n    Given the lengths of the three sides of a triangle. Return True if the three\n    sides form a right-angled triangle, False otherwise.\n    \n    A right-angled triangle is a triangle in which one angle is 90 degrees.\n    This uses the Pythagorean theorem: a^2 + b^2 = c^2 (where c is the hypotenuse).\n\n    Examples:\n        right_angle_triangle(3, 4, 5) == True\n        right_angle_triangle(1, 2, 3) == False\n    \"\"\"\n    # Ensure we have three positive numbers that can form a triangle at all\n    if not (a > 0 and b > 0 and c > 0):\n        return False\n\n    sides = [a, b, c]\n    \n    # Sort the sides so that the largest is last (potential hypotenuse)\n    sides.sort()\n    \n    # Check Pythagorean theorem: a^2 + b^2 == c^2\n    if abs(sides[0]**2 + sides[1]**2 - sides[2]**2) < 1e-9:  # Use small epsilon for float safety\n        return True\n    \n    return False\n\n\n# Example usage:\nprint(right_angle_triangle(3, 4, 5))   # True\nprint(right_angle_triangle(1, 2, 3))   # False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/157:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "post_h2_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "post_h3_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "post_h4_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "52d42963b632765f547db1b598c829e612288967ece320a57e0ed5384cacda9f",
+  "raw_source": "def right_angle_triangle(a, b, c):\n    \"\"\"\n    Given the lengths of the three sides of a triangle. Return True if the three\n    sides form a right-angled triangle, False otherwise.\n    \n    A right-angled triangle is a triangle in which one angle is 90 degrees.\n    This uses the Pythagorean theorem: a^2 + b^2 = c^2 (where c is the hypotenuse).\n\n    Examples:\n        right_angle_triangle(3, 4, 5) == True\n        right_angle_triangle(1, 2, 3) == False\n    \"\"\"\n    # Ensure we have three positive numbers that can form a triangle at all\n    if not (a > 0 and b > 0 and c > 0):\n        return False\n\n    sides = [a, b, c]\n    \n    # Sort the sides so that the largest is last (potential hypotenuse)\n    sides.sort()\n    \n    # Check Pythagorean theorem: a^2 + b^2 == c^2\n    if abs(sides[0]**2 + sides[1]**2 - sides[2]**2) < 1e-9:  # Use small epsilon for float safety\n        return True\n    \n    return False\n\n\n# Example usage:\nprint(right_angle_triangle(3, 4, 5))   # True\nprint(right_angle_triangle(1, 2, 3))   # False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/157",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

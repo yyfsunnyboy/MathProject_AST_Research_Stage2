@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "5e55197582cde7914a7d1fda6e9775729dab12861739081f6aeaafacbf4e70f4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "f",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "final_source": "def f(n):\n    \"\"\" Implement the function f that takes n as a parameter,\n    and returns a list of size n, such that the value of the element at index i is the factorial of i if i is even\n    or the sum of numbers from 1 to i otherwise.\n    i starts from 1.\n    the factorial of i is the multiplication of the numbers from 1 to i (1 * 2 * ... * i).\n    Example:\n    f(5) == [1, 2, 6, 24, 15]\n    \"\"\"\n    \n    result = []\n    for i in range(1, n + 1):\n        if i % 2 == 0:  # even index (i is even)\n            fact = 1\n            for k in range(1, i + 1):\n                fact *= k\n            result.append(fact)\n        else:  # odd index (i is odd), sum from 1 to i\n            total = 0\n            for k in range(1, i + 1):\n                total += k\n            result.append(total)\n    \n    return result\n\n# Example usage:\nprint(f(5))  # Output: [1, 2, 6, 24, 15]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/106:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "post_h2_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "post_h3_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "post_h4_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "eaaa2f4e6fecc0c04385fc710d3bd5afb81b1a0d4371c45399731e4de217c244",
+  "raw_source": "def f(n):\n    \"\"\" Implement the function f that takes n as a parameter,\n    and returns a list of size n, such that the value of the element at index i is the factorial of i if i is even\n    or the sum of numbers from 1 to i otherwise.\n    i starts from 1.\n    the factorial of i is the multiplication of the numbers from 1 to i (1 * 2 * ... * i).\n    Example:\n    f(5) == [1, 2, 6, 24, 15]\n    \"\"\"\n    \n    result = []\n    for i in range(1, n + 1):\n        if i % 2 == 0:  # even index (i is even)\n            fact = 1\n            for k in range(1, i + 1):\n                fact *= k\n            result.append(fact)\n        else:  # odd index (i is odd), sum from 1 to i\n            total = 0\n            for k in range(1, i + 1):\n                total += k\n            result.append(total)\n    \n    return result\n\n# Example usage:\nprint(f(5))  # Output: [1, 2, 6, 24, 15]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/106",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

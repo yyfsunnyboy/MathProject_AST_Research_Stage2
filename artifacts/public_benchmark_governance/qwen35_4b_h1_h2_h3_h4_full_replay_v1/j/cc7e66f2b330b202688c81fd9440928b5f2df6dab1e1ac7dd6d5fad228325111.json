@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "cc7e66f2b330b202688c81fd9440928b5f2df6dab1e1ac7dd6d5fad228325111",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "issort_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2c25e8e8ed0030da1dd6a882b44e9b786000221823fa5c2d3adae5384f3116f",
+  "final_source": "def issort_list(lst):\n    \"\"\"Check if the list is sorted in ascending order.\"\"\"\n    # Handle empty or single-element lists (they are considered sorted)\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(1, len(lst)):\n        if lst[i] < lst[i - 1]:\n            return False\n    return True\n\n\n# Test cases\nif __name__ == \"__main__\":\n    assert issort_list([1,2,4,6,8,10,12,14,16,17]) == True\n    print(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/567:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "889f910d4da9703c681d3b43b5cab616e37d4c0484fdf33a829273342d7dd2a9",
+  "post_h2_sha256": "53f01e91f8237f84f1db9306a897902e2abe7f4f574070c3cbd6bb4b78eb676f",
+  "post_h3_sha256": "53f01e91f8237f84f1db9306a897902e2abe7f4f574070c3cbd6bb4b78eb676f",
+  "post_h4_sha256": "f2c25e8e8ed0030da1dd6a882b44e9b786000221823fa5c2d3adae5384f3116f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "889f910d4da9703c681d3b43b5cab616e37d4c0484fdf33a829273342d7dd2a9",
+  "raw_source": "def issort_list(lst):\n    \"\"\"Check if the list is sorted in ascending order.\"\"\"\n    # Handle empty or single-element lists (they are considered sorted)\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(1, len(lst)):\n        if lst[i] < lst[i - 1]:\n            return False\n    return True\n\n\n# Test cases\nassert issort_list([1,2,4,6,8,10,12,14,16,17]) == True\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/567",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

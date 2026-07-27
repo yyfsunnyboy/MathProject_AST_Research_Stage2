@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "5f393a0e544b096481979fb852bbc285b995ca3704e41d833c26e6beb068f086",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "min_k",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "final_source": "def min_k(records, k):\n    \"\"\"\n    Returns the minimum k records from a list of tuples (name, value).\n    \n    Parameters:\n        records (list[tuple]): List of (name, int) tuples.\n        k (int): Number of smallest values to return.\n        \n    Returns:\n        list[tuple]: The k records with the smallest second elements.\n    \"\"\"\n    # Sort by the value in each tuple and take the first k items\n    sorted_records = sorted(records, key=lambda x: x[1])[:k]\n    \n    # Ensure we don't return more than available if k > len(records)\n    if not records or k <= 0:\n        return []\n\n    return sorted_records\n\n\n# Test case (verbatim copy from your prompt):\nassert min_k([('Manjeet', 10), ('Akshat', 4), ('Akash', 2), ('Nikhil', 8)], 2) == [('Akash', 2), ('Akshat', 4)]\n\n# Additional test cases for robustness:\nprint(min_k([(5, 3), (10, 7), (2, 9)], 3))  \n# Output: [(5, 3), (10, 7), (2, 9)]\n\nassert min_k([('A', 1), ('B', 2), ('C', 3)], 0) == []\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/753:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "post_h2_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "post_h3_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "post_h4_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "87727b67382212bbc725a923b972cfdbb2e77be27fffa2c40f1c7343c2b3d30c",
+  "raw_source": "def min_k(records, k):\n    \"\"\"\n    Returns the minimum k records from a list of tuples (name, value).\n    \n    Parameters:\n        records (list[tuple]): List of (name, int) tuples.\n        k (int): Number of smallest values to return.\n        \n    Returns:\n        list[tuple]: The k records with the smallest second elements.\n    \"\"\"\n    # Sort by the value in each tuple and take the first k items\n    sorted_records = sorted(records, key=lambda x: x[1])[:k]\n    \n    # Ensure we don't return more than available if k > len(records)\n    if not records or k <= 0:\n        return []\n\n    return sorted_records\n\n\n# Test case (verbatim copy from your prompt):\nassert min_k([('Manjeet', 10), ('Akshat', 4), ('Akash', 2), ('Nikhil', 8)], 2) == [('Akash', 2), ('Akshat', 4)]\n\n# Additional test cases for robustness:\nprint(min_k([(5, 3), (10, 7), (2, 9)], 3))  \n# Output: [(5, 3), (10, 7), (2, 9)]\n\nassert min_k([('A', 1), ('B', 2), ('C', 3)], 0) == []\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/753",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

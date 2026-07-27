@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "top_level_function_count_not_one",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "40ad59d0b5b075719e19f588faf72cc115b671cdff35ac137fc7842c93f95ccc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_divisors",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "final_source": "import math\n\ndef count_divisors_even_check(n):\n    \"\"\"Return True if number of divisors of n is even, False otherwise.\"\"\"\n    # Count total divisors by prime factorization or direct counting for small n\n    def get_total_divisors(num):\n        cnt = 1\n        temp = num\n        d = 2\n        while d * d <= temp:\n            if temp % d == 0:\n                exponent = 0\n                while temp % d == 0:\n                    exponent += 1\n                    temp //= d\n                cnt *= (exponent + 1)\n            d += 1\n        if temp > 1:\n            cnt *= 2\n        return cnt\n\n    total_divisors = get_total_divisors(n)\n    return total_divisors % 2 == 0\n\n\n# Alternative simpler version using perfect-square check only (mathematically equivalent):\ndef is_even_divisor_count_simple(n):\n    \"\"\"Return True if number of divisors of n is even, False otherwise.\"\"\"\n    root = int(math.isqrt(n))\n    return root * root != n\n\nassert count_divisors_even_check(10)  # 10 has 4 divisors: [1,2,5,10] → True\n\n\n# Test the simple version too (optional):\n# assert is_even_divisor_count_simple(10) == True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/781:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "post_h2_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "post_h3_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "post_h4_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "657ef15d86510a21d343e26b6ab88f002247579b8dbf93b1ca55652491bcc6b9",
+  "raw_source": "import math\n\ndef count_divisors_even_check(n):\n    \"\"\"Return True if number of divisors of n is even, False otherwise.\"\"\"\n    # Count total divisors by prime factorization or direct counting for small n\n    def get_total_divisors(num):\n        cnt = 1\n        temp = num\n        d = 2\n        while d * d <= temp:\n            if temp % d == 0:\n                exponent = 0\n                while temp % d == 0:\n                    exponent += 1\n                    temp //= d\n                cnt *= (exponent + 1)\n            d += 1\n        if temp > 1:\n            cnt *= 2\n        return cnt\n\n    total_divisors = get_total_divisors(n)\n    return total_divisors % 2 == 0\n\n\n# Alternative simpler version using perfect-square check only (mathematically equivalent):\ndef is_even_divisor_count_simple(n):\n    \"\"\"Return True if number of divisors of n is even, False otherwise.\"\"\"\n    root = int(math.isqrt(n))\n    return root * root != n\n\nassert count_divisors_even_check(10)  # 10 has 4 divisors: [1,2,5,10] → True\n\n\n# Test the simple version too (optional):\n# assert is_even_divisor_count_simple(10) == True\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/781",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

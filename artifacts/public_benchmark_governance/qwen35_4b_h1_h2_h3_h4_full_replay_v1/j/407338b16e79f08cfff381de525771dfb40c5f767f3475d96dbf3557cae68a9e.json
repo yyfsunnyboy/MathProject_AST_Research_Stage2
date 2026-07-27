@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "407338b16e79f08cfff381de525771dfb40c5f767f3475d96dbf3557cae68a9e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "choose_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "final_source": "def choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n    \n    if x > y:\n        return -1\n    \n    start_even = (x // 2 + 1) * 2 if x % 2 != 0 else x\n    end_even = y if y % 2 == 0 else y - 1\n    \n    for num in range(start_even, max(end_even, start_even), -1):\n        return num\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/102:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "post_h2_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "post_h3_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "post_h4_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f2ff8de246bfded7b4fea10537e9f05bc242ed8dae4ebeb7b72465f167151af1",
+  "raw_source": "def choose_num(x, y):\n    \"\"\"This function takes two positive numbers x and y and returns the\n    biggest even integer number that is in the range [x, y] inclusive. If \n    there's no such number, then the function should return -1.\n\n    For example:\n    choose_num(12, 15) = 14\n    choose_num(13, 12) = -1\n    \"\"\"\n    \n    if x > y:\n        return -1\n    \n    start_even = (x // 2 + 1) * 2 if x % 2 != 0 else x\n    end_even = y if y % 2 == 0 else y - 1\n    \n    for num in range(start_even, max(end_even, start_even), -1):\n        return num\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/102",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

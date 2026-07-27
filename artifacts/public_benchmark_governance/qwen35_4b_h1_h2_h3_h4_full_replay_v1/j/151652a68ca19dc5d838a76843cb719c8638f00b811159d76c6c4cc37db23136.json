@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "151652a68ca19dc5d838a76843cb719c8638f00b811159d76c6c4cc37db23136",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "snake_to_camel",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "final_source": "def snake_to_camel(snake_str):\n    if not snake_str:\n        return ''\n    \n    result = []\n    parts = snake_str.split('_')\n    \n    for i, part in enumerate(parts):\n        if i == 0:\n            result.append(part.capitalize())\n        else:\n            result.append(part[0].upper() + part[1:])\n    \n    return ''.join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/102:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "post_h2_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "post_h3_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "post_h4_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "43d1a4ebf5b4fed5dad4765011e1ecaecf8a7d7caa2936d8ac182749cda1612e",
+  "raw_source": "def snake_to_camel(snake_str):\n    if not snake_str:\n        return ''\n    \n    result = []\n    parts = snake_str.split('_')\n    \n    for i, part in enumerate(parts):\n        if i == 0:\n            result.append(part.capitalize())\n        else:\n            result.append(part[0].upper() + part[1:])\n    \n    return ''.join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/102",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

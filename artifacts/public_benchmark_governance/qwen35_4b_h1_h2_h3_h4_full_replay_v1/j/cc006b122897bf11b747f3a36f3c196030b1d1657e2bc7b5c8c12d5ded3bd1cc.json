@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "cc006b122897bf11b747f3a36f3c196030b1d1657e2bc7b5c8c12d5ded3bd1cc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_up_to",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "final_source": "def is_prime(num):\n    if num < 2:\n        return False\n    for i in range(2, int(num ** 0.5) + 1):\n        if num % i == 0:\n            return False\n    return True\n\n\ndef count_up_to(n):\n    \"\"\"Return a list of the first n prime numbers that are less than n.\"\"\"\n    primes = []\n    candidate = 2\n\n    while len(primes) < n:\n        if is_prime(candidate) and candidate < n:\n            primes.append(candidate)\n        candidate += 1\n\n    return primes\n\n\n# Example usage:\n# print(count_up_to(5))   # [2, 3]\n# print(count_up_to(11))  # [2, 3, 5, 7]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/96:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "post_h2_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "post_h3_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "post_h4_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7826a019876d21250379423893a46552865804d410fd46dd650561b23d122527",
+  "raw_source": "def is_prime(num):\n    if num < 2:\n        return False\n    for i in range(2, int(num ** 0.5) + 1):\n        if num % i == 0:\n            return False\n    return True\n\n\ndef count_up_to(n):\n    \"\"\"Return a list of the first n prime numbers that are less than n.\"\"\"\n    primes = []\n    candidate = 2\n\n    while len(primes) < n:\n        if is_prime(candidate) and candidate < n:\n            primes.append(candidate)\n        candidate += 1\n\n    return primes\n\n\n# Example usage:\n# print(count_up_to(5))   # [2, 3]\n# print(count_up_to(11))  # [2, 3, 5, 7]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/96",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

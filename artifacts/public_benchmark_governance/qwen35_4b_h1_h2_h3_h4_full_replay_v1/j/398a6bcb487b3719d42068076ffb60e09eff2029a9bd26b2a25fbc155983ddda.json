@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "398a6bcb487b3719d42068076ffb60e09eff2029a9bd26b2a25fbc155983ddda",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "humaneval",
+  "entry_point": "check_dict_case",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "final_source": "```python\ndef check_dict_case(dict):\n    \"\"\"\n    Given a dictionary, return True if all keys are strings in lower \n    case or all keys are strings in upper case, else return False.\n    The function should return False is the given dictionary is empty.\n    \n    Examples:\n        check_dict_case({\"a\":\"apple\", \"b\":\"banana\"}) -> True\n        check_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B\":\"banana\"}) -> False\n        check_dict_case({\"a\":\"apple\", 8:\"banana\", \"a\":\"apple\"}) -> False\n        check_dict_case({\"Name\":\"John\", \"Age\":\"36\", \"City\":\"Houston\"}) -> False\n        check_dict_case({\"STATE\":\"NC\", \"ZIP\":\"12345\" }) -> True\n    \"\"\"\n    \n    # Return False if the dictionary is empty\n    if not dict:\n        return False\n    \n    keys = list(dict.keys())\n    \n    # Check all key types and cases\n    has_lower = any(isinstance(k, str) and k.islower() for k in keys)\n    has_upper = any(isinstance(k, str) and k.isupper() for k in keys)\n    has_mixed_case = any(isinstance(k, str) and not (k.islower() or k.isupper()) \n                         for k in keys)  # e.g., \"Name\", \"Age\"\n\n    if has_lower:\n        return all(isinstance(k, str) and k.islower() for k in keys)\n    \n    elif has_upper:\n        return all(isinstance(k, str) and k.isupper() for k in keys)\n    \n    else:\n        # If there's no purely lower or upper case string key (e.g., mixed like \"Name\"), return False.\n        return False\n\n\n# Test cases based on the problem description\nif __name__ == \"__main__\":\n    print(check_dict_case({\"a\":\"apple\", \"b\":\"banana\"}))  # True\n    print(check_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B\":\"banana\"}))  # False (mixed case keys)\n    print(check_dict_case({\"a\":\"apple\", 8:\"banana\", \"a\":\"apple\"}))     # False (non-string key)\n    print(check_dict_case({\"Name\":\"John\", \"Age\":\"36\", \"City\":\"Houston\"}))  # False (titlecase keys)\n    print(check_dict_case({\"STATE\":\"NC\", \"ZIP\":\"12345\" }))             # True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/95:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "post_h2_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "post_h3_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "post_h4_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "96aa6cd1270c29db7bb6529c686a9dff83410cbc326448bc7509ad523b4a7af9",
+  "raw_source": "```python\ndef check_dict_case(dict):\n    \"\"\"\n    Given a dictionary, return True if all keys are strings in lower \n    case or all keys are strings in upper case, else return False.\n    The function should return False is the given dictionary is empty.\n    \n    Examples:\n        check_dict_case({\"a\":\"apple\", \"b\":\"banana\"}) -> True\n        check_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B\":\"banana\"}) -> False\n        check_dict_case({\"a\":\"apple\", 8:\"banana\", \"a\":\"apple\"}) -> False\n        check_dict_case({\"Name\":\"John\", \"Age\":\"36\", \"City\":\"Houston\"}) -> False\n        check_dict_case({\"STATE\":\"NC\", \"ZIP\":\"12345\" }) -> True\n    \"\"\"\n    \n    # Return False if the dictionary is empty\n    if not dict:\n        return False\n    \n    keys = list(dict.keys())\n    \n    # Check all key types and cases\n    has_lower = any(isinstance(k, str) and k.islower() for k in keys)\n    has_upper = any(isinstance(k, str) and k.isupper() for k in keys)\n    has_mixed_case = any(isinstance(k, str) and not (k.islower() or k.isupper()) \n                         for k in keys)  # e.g., \"Name\", \"Age\"\n\n    if has_lower:\n        return all(isinstance(k, str) and k.islower() for k in keys)\n    \n    elif has_upper:\n        return all(isinstance(k, str) and k.isupper() for k in keys)\n    \n    else:\n        # If there's no purely lower or upper case string key (e.g., mixed like \"Name\"), return False.\n        return False\n\n\n# Test cases based on the problem description\nif __name__ == \"__main__\":\n    print(check_dict_case({\"a\":\"apple\", \"b\":\"banana\"}))  # True\n    print(check_dict_case({\"a\":\"apple\", \"A\":\"banana\", \"B\":\"banana\"}))  # False (mixed case keys)\n    print(check_dict_case({\"a\":\"apple\", 8:\"banana\", \"a\":\"apple\"}))     # False (non-string key)\n    print(check_dict_case({\"Name\":\"John\", \"Age\":\"36\", \"City\":\"Houston\"}))  # False (titlecase keys)\n    print(check_dict_case({\"STATE\":\"NC\", \"ZIP\":\"12345\" }))             # True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/95",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

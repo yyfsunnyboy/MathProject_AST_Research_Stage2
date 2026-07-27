@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "798bebc832a62dac6ed08bb41ba9ccdce809b5193aeabe47b62c2bda6469ffc3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_intersection",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "final_source": "def tuple_intersection(list1, list2):\n    \"\"\"\n    Finds the set of tuples common to both lists, ignoring internal order within tuples.\n    \n    Args:\n        list1 (list[tuple]): First list of tuples.\n        list2 (list[tuple]): Second list of tuples.\n        \n    Returns:\n        set(tuple): A set containing the intersecting normalized tuples.\n    \"\"\"\n    # Helper function to normalize a tuple by sorting its elements\n    def normalize(tup):\n        return tuple(sorted(list(tup)))\n\n    # Convert lists to sets for efficient lookup, using normalized keys\n    set1 = {normalize(x) for x in list1}\n    set2 = {normalize(x) for x in list2}\n    \n    # Find the intersection of the two sets\n    result_set = set1.intersection(set2)\n    \n    return result_set\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    input_list_1 = [(3, 4), (5, 6), (9, 10), (4, 5)]\n    input_list_2 = [(5, 4), (3, 4), (6, 5), (9, 11)]\n\n    # Expected output based on logic:\n    # List 1 normalized: {(3, 4), (5, 6), (9, 10), (4, 5)} -> sorted keys are same as input mostly except order inside.\n    # List 2 normalized: \n    #   (5, 4) -> (4, 5) [Matches]\n    #   (3, 4) -> (3, 4) [Matches]\n    #   (6, 5) -> (5, 6) [Matches]\n    #   (9, 11) -> (9, 11) [No match in List 1 which has (9, 10)]\n    \n    expected_output = {(4, 5), (3, 4), (5, 6)}\n\n    result = tuple_intersection(input_list_1, input_list_2)\n    \n    # Note: Sets are unordered. The assertion checks for set equality which ignores order of elements in the returned set.\n    assert result == expected_output, f\"Expected {expected_output}, got {result}\"\n    \n    print(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/473:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "post_h2_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "post_h3_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "post_h4_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "089f5b362f70c644a78c8457a509800486d1aca2b1ac1b1b3167ea7f28bb4aa9",
+  "raw_source": "def tuple_intersection(list1, list2):\n    \"\"\"\n    Finds the set of tuples common to both lists, ignoring internal order within tuples.\n    \n    Args:\n        list1 (list[tuple]): First list of tuples.\n        list2 (list[tuple]): Second list of tuples.\n        \n    Returns:\n        set(tuple): A set containing the intersecting normalized tuples.\n    \"\"\"\n    # Helper function to normalize a tuple by sorting its elements\n    def normalize(tup):\n        return tuple(sorted(list(tup)))\n\n    # Convert lists to sets for efficient lookup, using normalized keys\n    set1 = {normalize(x) for x in list1}\n    set2 = {normalize(x) for x in list2}\n    \n    # Find the intersection of the two sets\n    result_set = set1.intersection(set2)\n    \n    return result_set\n\n# Testing with the provided assertion case\nif __name__ == \"__main__\":\n    input_list_1 = [(3, 4), (5, 6), (9, 10), (4, 5)]\n    input_list_2 = [(5, 4), (3, 4), (6, 5), (9, 11)]\n\n    # Expected output based on logic:\n    # List 1 normalized: {(3, 4), (5, 6), (9, 10), (4, 5)} -> sorted keys are same as input mostly except order inside.\n    # List 2 normalized: \n    #   (5, 4) -> (4, 5) [Matches]\n    #   (3, 4) -> (3, 4) [Matches]\n    #   (6, 5) -> (5, 6) [Matches]\n    #   (9, 11) -> (9, 11) [No match in List 1 which has (9, 10)]\n    \n    expected_output = {(4, 5), (3, 4), (5, 6)}\n\n    result = tuple_intersection(input_list_1, input_list_2)\n    \n    # Note: Sets are unordered. The assertion checks for set equality which ignores order of elements in the returned set.\n    assert result == expected_output, f\"Expected {expected_output}, got {result}\"\n    \n    print(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/473",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

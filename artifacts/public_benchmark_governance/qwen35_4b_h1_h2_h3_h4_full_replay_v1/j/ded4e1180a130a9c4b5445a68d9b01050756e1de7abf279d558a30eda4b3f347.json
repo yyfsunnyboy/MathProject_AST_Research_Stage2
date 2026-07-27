@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "ded4e1180a130a9c4b5445a68d9b01050756e1de7abf279d558a30eda4b3f347",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "compare_one",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "final_source": "import re\n\ndef compare_one(a, b):\n    \"\"\"\n    Create a function that takes integers, floats, or strings representing\n    real numbers, and returns the larger variable in its given variable type.\n    Return None if the values are equal.\n    \n    Note: If a real number is represented as a string, it might use '.' (US) \n    or ',' (European/Eurozone) as decimal separators.\n    \"\"\"\n\n    def parse_number(val):\n        # Convert comma to dot for consistent parsing\n        normalized = str(val).replace(',', '.')\n        \n        try:\n            return float(normalized)\n        except ValueError:\n            raise ValueError(f\"Invalid number format: {val}\")\n\n    # Parse both inputs into floats for comparison\n    val_a_float = parse_number(a)\n    val_b_float = parse_number(b)\n\n    if val_a_float > val_b_float:\n        return a\n    elif val_b_float > val_a_float:\n        return b\n    else:\n        return None\n\n# --- Test Cases based on your description ---\nprint(compare_one(1, 2.5))          # Output: 2.5\nprint(compare_one(1, \"2,3\"))        # Output: '2,3' (Note: float value is 2.3)\nprint(compare_one(\"5,1\", \"6\"))      # Output: '6' (floats are equal? No, 5.1 vs 6 -> returns '6') \n                                    # Wait, let's re-read the example logic carefully below.\n\n# Let's trace compare_one(\"5,1\", \"6\"):\n#   a = \"5,1\" -> float(5.1)\n#   b = \"6\"    -> float(6.0)\n#   5.1 < 6.0 => returns b (\"6\")\n\nprint(compare_one(\"1\", 1))          # Output: None (floats are equal)\n\n# Additional edge case test for European format vs US format mixed\nprint(compare_one(\"3,9\", \"4\"))      # Output: '4' (3.9 < 4)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/137:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "post_h2_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "post_h3_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "post_h4_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "87c925564401b4248c3079352408d935818b488b4476ac752ebef808348659cb",
+  "raw_source": "import re\n\ndef compare_one(a, b):\n    \"\"\"\n    Create a function that takes integers, floats, or strings representing\n    real numbers, and returns the larger variable in its given variable type.\n    Return None if the values are equal.\n    \n    Note: If a real number is represented as a string, it might use '.' (US) \n    or ',' (European/Eurozone) as decimal separators.\n    \"\"\"\n\n    def parse_number(val):\n        # Convert comma to dot for consistent parsing\n        normalized = str(val).replace(',', '.')\n        \n        try:\n            return float(normalized)\n        except ValueError:\n            raise ValueError(f\"Invalid number format: {val}\")\n\n    # Parse both inputs into floats for comparison\n    val_a_float = parse_number(a)\n    val_b_float = parse_number(b)\n\n    if val_a_float > val_b_float:\n        return a\n    elif val_b_float > val_a_float:\n        return b\n    else:\n        return None\n\n# --- Test Cases based on your description ---\nprint(compare_one(1, 2.5))          # Output: 2.5\nprint(compare_one(1, \"2,3\"))        # Output: '2,3' (Note: float value is 2.3)\nprint(compare_one(\"5,1\", \"6\"))      # Output: '6' (floats are equal? No, 5.1 vs 6 -> returns '6') \n                                    # Wait, let's re-read the example logic carefully below.\n\n# Let's trace compare_one(\"5,1\", \"6\"):\n#   a = \"5,1\" -> float(5.1)\n#   b = \"6\"    -> float(6.0)\n#   5.1 < 6.0 => returns b (\"6\")\n\nprint(compare_one(\"1\", 1))          # Output: None (floats are equal)\n\n# Additional edge case test for European format vs US format mixed\nprint(compare_one(\"3,9\", \"4\"))      # Output: '4' (3.9 < 4)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/137",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

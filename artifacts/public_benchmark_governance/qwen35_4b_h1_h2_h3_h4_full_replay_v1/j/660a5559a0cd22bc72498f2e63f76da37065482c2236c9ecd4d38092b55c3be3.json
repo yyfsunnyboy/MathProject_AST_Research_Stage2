@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "660a5559a0cd22bc72498f2e63f76da37065482c2236c9ecd4d38092b55c3be3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Substrings",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fb398c768e34bba9fba1eb3859c77b2ce942ee82fb3c46346c0e9ef333e1e128",
+  "final_source": "def count_Substrings(s: str) -> int:\n    \"\"\"\n    Counts substrings where sum of digits equals length.\n    \n    Args:\n        s: Input string containing only digit characters\n        \n    Returns:\n        Integer count of such substrings\n    \"\"\"\n    # Dictionary to store the frequency of (prefix_sum - index) values\n    diff_counts = {}\n    \n    current_prefix_sum = 0\n    total_count = 0\n    \n    # Iterate through each character, treating it as the end of a substring 'j'\n    for j in range(len(s)):\n        digit = int(s[j])\n        \n        # Update prefix sum including the current digit\n        current_prefix_sum += digit\n        \n        # Calculate the value we are tracking: (P[j] - P[i]) == (j - i)\n        # This simplifies to checking if (current_prefix_sum - j) has been seen before.\n        target_diff = current_prefix_sum - j\n        \n        # If this difference has occurred k times previously, it means there are \n        # 'k' starting positions 'i' that satisfy the condition with the current end position 'j'.\n        count_for_this_j = diff_counts.get(target_diff, 0)\n        \n        total_count += count_for_this_j\n        \n        # Increment the frequency of this difference for future iterations\n        if target_diff in diff_counts:\n            diff_counts[target_diff] += 1\n        else:\n            diff_counts[target_diff] = 1\n            \n    return total_count\n\n# Test case provided in prompt\nif __name__ == \"__main__\":\n    assert count_Substrings('112112') == 6, \"Test failed for '112112'\"\n\nprint(f\"Total substrings found: {count_Substrings('112112')}\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/61:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "26dbdb7e09a8e2f8d7de5f5145fd14c9bd9cbae2a5370d2e3e18dc81d5fac8bb",
+  "post_h2_sha256": "fb398c768e34bba9fba1eb3859c77b2ce942ee82fb3c46346c0e9ef333e1e128",
+  "post_h3_sha256": "fb398c768e34bba9fba1eb3859c77b2ce942ee82fb3c46346c0e9ef333e1e128",
+  "post_h4_sha256": "fb398c768e34bba9fba1eb3859c77b2ce942ee82fb3c46346c0e9ef333e1e128",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "26dbdb7e09a8e2f8d7de5f5145fd14c9bd9cbae2a5370d2e3e18dc81d5fac8bb",
+  "raw_source": "def count_Substrings(s: str) -> int:\n    \"\"\"\n    Counts substrings where sum of digits equals length.\n    \n    Args:\n        s: Input string containing only digit characters\n        \n    Returns:\n        Integer count of such substrings\n    \"\"\"\n    # Dictionary to store the frequency of (prefix_sum - index) values\n    diff_counts = {}\n    \n    current_prefix_sum = 0\n    total_count = 0\n    \n    # Iterate through each character, treating it as the end of a substring 'j'\n    for j in range(len(s)):\n        digit = int(s[j])\n        \n        # Update prefix sum including the current digit\n        current_prefix_sum += digit\n        \n        # Calculate the value we are tracking: (P[j] - P[i]) == (j - i)\n        # This simplifies to checking if (current_prefix_sum - j) has been seen before.\n        target_diff = current_prefix_sum - j\n        \n        # If this difference has occurred k times previously, it means there are \n        # 'k' starting positions 'i' that satisfy the condition with the current end position 'j'.\n        count_for_this_j = diff_counts.get(target_diff, 0)\n        \n        total_count += count_for_this_j\n        \n        # Increment the frequency of this difference for future iterations\n        if target_diff in diff_counts:\n            diff_counts[target_diff] += 1\n        else:\n            diff_counts[target_diff] = 1\n            \n    return total_count\n\n# Test case provided in prompt\nassert count_Substrings('112112') == 6, \"Test failed for '112112'\"\n\nprint(f\"Total substrings found: {count_Substrings('112112')}\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/61",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

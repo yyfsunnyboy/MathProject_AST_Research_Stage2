@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "85bb6f644686bc0e3836e583a3906dafcf2f8863d3207f4995b5823c76f4b53b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "car_race_collision",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "final_source": "def car_race_collision(n: int) -> int:\n    \"\"\"\n    Calculates the number of collisions between n left-to-right moving cars \n    and n right-to-left moving cars on an infinite straight road.\n    \n    Since all cars move at the same speed and pass through each other without stopping,\n    every Left-to-Right car will collide with every Right-to-Left car exactly once.\n    \n    Args:\n        n (int): The number of cars in each direction.\n        \n    Returns:\n        int: The total number of collisions.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Number of cars cannot be negative.\")\n    \n    # Each LTR car collides with every RtL car.\n    # Total = (n) * (n)\n    return n ** 2\n\n# Example usage and test cases\nif __name__ == \"__main__\":\n    print(car_race_collision(1))  # Output: 1 (1 vs 1 -> 1 collision)\n    print(car_race_collision(3))  # Output: 9 (3 LTR * 3 RtL = 9 collisions)\n    print(car_race_collision(0))  # Output: 0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/41:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "post_h2_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "post_h3_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "post_h4_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6048ce69a152f4257bfef5813202b829e26697524f40fff107ee424b30ba55f4",
+  "raw_source": "def car_race_collision(n: int) -> int:\n    \"\"\"\n    Calculates the number of collisions between n left-to-right moving cars \n    and n right-to-left moving cars on an infinite straight road.\n    \n    Since all cars move at the same speed and pass through each other without stopping,\n    every Left-to-Right car will collide with every Right-to-Left car exactly once.\n    \n    Args:\n        n (int): The number of cars in each direction.\n        \n    Returns:\n        int: The total number of collisions.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Number of cars cannot be negative.\")\n    \n    # Each LTR car collides with every RtL car.\n    # Total = (n) * (n)\n    return n ** 2\n\n# Example usage and test cases\nif __name__ == \"__main__\":\n    print(car_race_collision(1))  # Output: 1 (1 vs 1 -> 1 collision)\n    print(car_race_collision(3))  # Output: 9 (3 LTR * 3 RtL = 9 collisions)\n    print(car_race_collision(0))  # Output: 0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/41",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

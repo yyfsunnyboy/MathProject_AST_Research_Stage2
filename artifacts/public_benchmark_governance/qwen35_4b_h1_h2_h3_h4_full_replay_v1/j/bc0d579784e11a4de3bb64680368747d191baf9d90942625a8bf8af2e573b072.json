@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "bc0d579784e11a4de3bb64680368747d191baf9d90942625a8bf8af2e573b072",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "differ_At_One_Bit_Pos",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f3cb1e54312d6b8003215dfb0e7e6b453312375231dbfd2dfc4dfaf6886f807c",
+  "final_source": "def differ_At_One_Bit_Pos(num1: int, num2: int) -> bool:\n    \"\"\"\n    Checks whether two numbers differ at only one bit position.\n    \n    Args:\n        num1 (int): First integer.\n        num2 (int): Second integer.\n        \n    Returns:\n        bool: True if they differ by exactly one bit, False otherwise.\n    \"\"\"\n    # Step 1: XOR the two numbers to find differing bits\n    xor_result = num1 ^ num2\n    \n    # Step 2: Check if there is only one bit set in the result\n    # If a number has only one bit set (e.g., 4 -> ...0100), \n    # then n & (n - 1) will be 0.\n    return xor_result != 0 and ((xor_result & (xor_result - 1)) == 0)\n\n# Test cases based on the prompt requirement\nif __name__ == \"__main__\":\n    assert differ_At_One_Bit_Pos(13, 9) == True   # 13: 1101, 9: 1001 -> Diff at bit index 2 only. Correct.\n    print(\"All assertions passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/6:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "21f334cb8ad97aa0034b788b87b42800e0a0819ce79464a54dc1680f71343763",
+  "post_h2_sha256": "a608865a567e7b0c31df5052d9a94ffee6b9d05097d5ca573882f42dd2c0efe1",
+  "post_h3_sha256": "a608865a567e7b0c31df5052d9a94ffee6b9d05097d5ca573882f42dd2c0efe1",
+  "post_h4_sha256": "f3cb1e54312d6b8003215dfb0e7e6b453312375231dbfd2dfc4dfaf6886f807c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "21f334cb8ad97aa0034b788b87b42800e0a0819ce79464a54dc1680f71343763",
+  "raw_source": "def differ_At_One_Bit_Pos(num1: int, num2: int) -> bool:\n    \"\"\"\n    Checks whether two numbers differ at only one bit position.\n    \n    Args:\n        num1 (int): First integer.\n        num2 (int): Second integer.\n        \n    Returns:\n        bool: True if they differ by exactly one bit, False otherwise.\n    \"\"\"\n    # Step 1: XOR the two numbers to find differing bits\n    xor_result = num1 ^ num2\n    \n    # Step 2: Check if there is only one bit set in the result\n    # If a number has only one bit set (e.g., 4 -> ...0100), \n    # then n & (n - 1) will be 0.\n    return xor_result != 0 and ((xor_result & (xor_result - 1)) == 0)\n\n# Test cases based on the prompt requirement\nassert differ_At_One_Bit_Pos(13, 9) == True   # 13: 1101, 9: 1001 -> Diff at bit index 2 only. Correct.\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/6",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

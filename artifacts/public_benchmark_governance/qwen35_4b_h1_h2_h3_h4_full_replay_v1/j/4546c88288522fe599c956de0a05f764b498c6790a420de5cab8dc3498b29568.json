@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4546c88288522fe599c956de0a05f764b498c6790a420de5cab8dc3498b29568",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "will_it_fly",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "final_source": "def will_it_fly(q, w):\n    \"\"\"\n    Returns True if:\n      - q is a palindromic list (balanced), AND\n      - sum of elements in q <= w\n    \n    Otherwise returns False.\n    \"\"\"\n    # Check balance: palindrome check\n    return q == q[::-1] and sum(q) <= w\n\n\n# Example usage:\nprint(will_it_fly([1, 2], 5))        # False (not balanced)\nprint(will_it_fly([3, 2, 3], 1))     # False (sum > w)\nprint(will_it_fly([3, 2, 3], 9))     # True\nprint(will_it_fly([3], 5))           # True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/72:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "post_h2_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "post_h3_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "post_h4_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "545b1bde68d71af2f48f1ff00fc1336322e446c844cbb4d83c06ecc52a64b425",
+  "raw_source": "def will_it_fly(q, w):\n    \"\"\"\n    Returns True if:\n      - q is a palindromic list (balanced), AND\n      - sum of elements in q <= w\n    \n    Otherwise returns False.\n    \"\"\"\n    # Check balance: palindrome check\n    return q == q[::-1] and sum(q) <= w\n\n\n# Example usage:\nprint(will_it_fly([1, 2], 5))        # False (not balanced)\nprint(will_it_fly([3, 2, 3], 1))     # False (sum > w)\nprint(will_it_fly([3, 2, 3], 9))     # True\nprint(will_it_fly([3], 5))           # True\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/72",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

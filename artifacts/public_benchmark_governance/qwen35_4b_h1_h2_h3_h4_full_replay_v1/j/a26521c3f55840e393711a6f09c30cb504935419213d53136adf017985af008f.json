@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a26521c3f55840e393711a6f09c30cb504935419213d53136adf017985af008f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_closest_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "final_source": "from typing import List, Tuple\n\n\ndef find_closest_elements(numbers: List[float]) -> Tuple[float, float]:\n    \"\"\" From a supplied list of numbers (of length at least two) select and return two that are the closest to each \n    other and return them in order (smaller number, larger number).\n\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n    (2.0, 2.2)\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n    (2.0, 2.0)\n    \"\"\"\n    if len(numbers) < 2:\n        raise ValueError(\"List must contain at least two numbers.\")\n\n    # Sort the list to make it easier to find adjacent elements with minimal difference\n    sorted_numbers = sorted(numbers)\n\n    min_diff = float('inf')\n    closest_pair = (sorted_numbers[0], sorted_numbers[1])\n\n    for i in range(1, len(sorted_numbers)):\n        diff = abs(sorted_numbers[i] - sorted_numbers[i - 1])\n        if diff < min_diff:\n            min_diff = diff\n            # Ensure we return the smaller number first (already guaranteed by sorting)\n            closest_pair = (sorted_numbers[i - 1], sorted_numbers[i])\n\n    return closest_pair\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]))  \n    # Output: (2.0, 2.2)\n\n    print(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]))  \n    # Output: (2.0, 2.0)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/20:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "post_h2_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "post_h3_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "post_h4_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "89f21a2440cb16c064ea298f9184b086d1db5558065dac4ff698de9e98542af5",
+  "raw_source": "from typing import List, Tuple\n\n\ndef find_closest_elements(numbers: List[float]) -> Tuple[float, float]:\n    \"\"\" From a supplied list of numbers (of length at least two) select and return two that are the closest to each \n    other and return them in order (smaller number, larger number).\n\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n    (2.0, 2.2)\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n    (2.0, 2.0)\n    \"\"\"\n    if len(numbers) < 2:\n        raise ValueError(\"List must contain at least two numbers.\")\n\n    # Sort the list to make it easier to find adjacent elements with minimal difference\n    sorted_numbers = sorted(numbers)\n\n    min_diff = float('inf')\n    closest_pair = (sorted_numbers[0], sorted_numbers[1])\n\n    for i in range(1, len(sorted_numbers)):\n        diff = abs(sorted_numbers[i] - sorted_numbers[i - 1])\n        if diff < min_diff:\n            min_diff = diff\n            # Ensure we return the smaller number first (already guaranteed by sorting)\n            closest_pair = (sorted_numbers[i - 1], sorted_numbers[i])\n\n    return closest_pair\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2]))  \n    # Output: (2.0, 2.2)\n\n    print(find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0]))  \n    # Output: (2.0, 2.0)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/20",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

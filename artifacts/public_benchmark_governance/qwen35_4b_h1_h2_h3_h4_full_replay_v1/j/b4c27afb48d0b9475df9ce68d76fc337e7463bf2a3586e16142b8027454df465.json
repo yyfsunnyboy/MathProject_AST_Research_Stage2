@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "target_name_already_bound",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b4c27afb48d0b9475df9ce68d76fc337e7463bf2a3586e16142b8027454df465",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "subject_marks",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "final_source": "def sort_by_second_value(tuples_list):\n    \"\"\"\n    Sorts a list of tuples based on the second value in ascending order.\n    \n    Args:\n        tuples_list (list): A list of tuples containing at least two elements.\n        \n    Returns:\n        list: A new sorted list of tuples.\n    \"\"\"\n    return sorted(tuples_list, key=lambda x: x[1])\n\n# Test the function with the provided assertion case\nsubject_marks = [('English', 88), ('Science', 90), ('Maths', 97), ('Social sciences', 82)]\nresult = sort_by_second_value(subject_marks)\n\nassert result == [('Social sciences', 82), ('English', 88), ('Science', 90), ('Maths', 97)], \"Sorting failed!\"\nprint(\"Test passed successfully.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/64:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "post_h2_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "post_h3_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "post_h4_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "53d4c2344c2ab5ed81bf41ccee0b152dce026ab1a69834102d9e764ec22986fd",
+  "raw_source": "def sort_by_second_value(tuples_list):\n    \"\"\"\n    Sorts a list of tuples based on the second value in ascending order.\n    \n    Args:\n        tuples_list (list): A list of tuples containing at least two elements.\n        \n    Returns:\n        list: A new sorted list of tuples.\n    \"\"\"\n    return sorted(tuples_list, key=lambda x: x[1])\n\n# Test the function with the provided assertion case\nsubject_marks = [('English', 88), ('Science', 90), ('Maths', 97), ('Social sciences', 82)]\nresult = sort_by_second_value(subject_marks)\n\nassert result == [('Social sciences', 82), ('English', 88), ('Science', 90), ('Maths', 97)], \"Sorting failed!\"\nprint(\"Test passed successfully.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/64",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

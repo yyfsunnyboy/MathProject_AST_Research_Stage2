@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5d5cfae41458e5e8ffd9721e28a9493df0f98b09cdc4605cef2c44f1b48b3b0e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "text_lowercase_underscore",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef2e9cee2cb70cff391a830597ddf0a0e2df5047b986ee8f2edbfd524711d415",
+  "final_source": "def text_lowercase_underscore(text):\n    \"\"\"\n    Returns True if the string contains sequences of lowercase letters joined with underscores.\n    \n    Logic check: The problem statement implies we need to verify that there exists at least one \n    valid sequence (e.g., \"abc\", \"_a_b_\", etc.) or perhaps strictly that the *entire* structure \n    follows this pattern? Given the test case `aab_cbbbc` returns True, it seems any occurrence \n    of lowercase letters separated by underscores is sufficient.\n    \n    However, a common interpretation for such problems (like LeetCode style) is often to check if \n    the string consists *only* of these patterns or contains at least one valid segment.\n    \n    Let's assume the requirement: \"Does the string contain any sequence that matches [a-z]+(_[a-z]+)*?\"\n    Actually, looking strictly at `aab_cbbbc`: it has 'aab', then '_', then 'cbbbc'. \n    This contains sequences of lowercase letters joined by an underscore.\n    \n    A safer interpretation for \"contains\": Check if there is any substring that matches the pattern \n    of one or more lowercase letters followed optionally by (underscore + one or more lowercase letters).\n    \n    Simpler approach: If we just need to detect if such a structure exists anywhere in the string,\n    we can check if the regex `[a-z]+(_[a-z]+)*` appears. But since `aab_cbbbc` is fully composed of \n    this pattern (if we ignore trailing letters), let's refine based on typical coding challenges:\n    \n    Usually, these problems ask to validate the *entire* string format OR check if a specific valid segment exists.\n    Given \"contains\", I will implement it as checking if there is at least one occurrence of \n    lowercase letters separated by underscores (i.e., not just single words without separators).\n    \n    Refined Logic: The string must contain the pattern `letter(s)_letter(s)`.\n    If we look at `aab_cbbbc`: 'a', 'b' are joined with nothing. But '_c...' implies a join happened between \n    groups? Or does it mean \"lowercase letters\" and \"_\"?\n    \n    Let's re-read carefully: \"sequences of lowercase letters joined with an underscore\".\n    This usually means the pattern `word_word` (e.g., `_a_b_`).\n    In `aab_cbbbc`, we have `ab_cbb`. That is a sequence 'ab' joined by '_' to 'cbb'. So it returns True.\n    \n    If the string was \"hello\", there are no underscores, so False? \n    Or if the requirement implies the whole string must be such sequences?\n    The test case `aab_cbbbc` -> True suggests we just need to find one instance of `_` surrounded by lowercase letters.\n    \n    Implementation using Regex for clarity:\n    Pattern: `[a-z]+_[a-z]+` (at least two groups joined) OR simply checking if the string \n    contains an underscore that is part of a valid sequence?\n    \n    Let's stick to the most robust interpretation: Does the string contain at least one substring matching `lowercase+underscore+lowercase`?\n    \"\"\"\n    import re\n    \n    # Pattern matches lowercase letters, followed by an underscore, followed by more lowercase letters.\n    pattern = r'[a-z]+_[a-z]+' \n    \n    return bool(re.search(pattern, text))\n\n# Test cases based on your prompt and common variations:\nif __name__ == \"__main__\":\n    assert text_lowercase_underscore(\"aab_cbbbc\") == True   # Contains 'ab_cbb'\nprint(text_lowercase_underscore(\"hello\"))               # False (no underscore)\nprint(text_lowercase_underscore(\"_a_b_\"))              # True ('a_b')\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/16:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eca8b8ae31240c8cd290aa8a5231414a6c64d6b7baf81f38f5f1f879b0617efb",
+  "post_h2_sha256": "ef2e9cee2cb70cff391a830597ddf0a0e2df5047b986ee8f2edbfd524711d415",
+  "post_h3_sha256": "ef2e9cee2cb70cff391a830597ddf0a0e2df5047b986ee8f2edbfd524711d415",
+  "post_h4_sha256": "ef2e9cee2cb70cff391a830597ddf0a0e2df5047b986ee8f2edbfd524711d415",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "eca8b8ae31240c8cd290aa8a5231414a6c64d6b7baf81f38f5f1f879b0617efb",
+  "raw_source": "def text_lowercase_underscore(text):\n    \"\"\"\n    Returns True if the string contains sequences of lowercase letters joined with underscores.\n    \n    Logic check: The problem statement implies we need to verify that there exists at least one \n    valid sequence (e.g., \"abc\", \"_a_b_\", etc.) or perhaps strictly that the *entire* structure \n    follows this pattern? Given the test case `aab_cbbbc` returns True, it seems any occurrence \n    of lowercase letters separated by underscores is sufficient.\n    \n    However, a common interpretation for such problems (like LeetCode style) is often to check if \n    the string consists *only* of these patterns or contains at least one valid segment.\n    \n    Let's assume the requirement: \"Does the string contain any sequence that matches [a-z]+(_[a-z]+)*?\"\n    Actually, looking strictly at `aab_cbbbc`: it has 'aab', then '_', then 'cbbbc'. \n    This contains sequences of lowercase letters joined by an underscore.\n    \n    A safer interpretation for \"contains\": Check if there is any substring that matches the pattern \n    of one or more lowercase letters followed optionally by (underscore + one or more lowercase letters).\n    \n    Simpler approach: If we just need to detect if such a structure exists anywhere in the string,\n    we can check if the regex `[a-z]+(_[a-z]+)*` appears. But since `aab_cbbbc` is fully composed of \n    this pattern (if we ignore trailing letters), let's refine based on typical coding challenges:\n    \n    Usually, these problems ask to validate the *entire* string format OR check if a specific valid segment exists.\n    Given \"contains\", I will implement it as checking if there is at least one occurrence of \n    lowercase letters separated by underscores (i.e., not just single words without separators).\n    \n    Refined Logic: The string must contain the pattern `letter(s)_letter(s)`.\n    If we look at `aab_cbbbc`: 'a', 'b' are joined with nothing. But '_c...' implies a join happened between \n    groups? Or does it mean \"lowercase letters\" and \"_\"?\n    \n    Let's re-read carefully: \"sequences of lowercase letters joined with an underscore\".\n    This usually means the pattern `word_word` (e.g., `_a_b_`).\n    In `aab_cbbbc`, we have `ab_cbb`. That is a sequence 'ab' joined by '_' to 'cbb'. So it returns True.\n    \n    If the string was \"hello\", there are no underscores, so False? \n    Or if the requirement implies the whole string must be such sequences?\n    The test case `aab_cbbbc` -> True suggests we just need to find one instance of `_` surrounded by lowercase letters.\n    \n    Implementation using Regex for clarity:\n    Pattern: `[a-z]+_[a-z]+` (at least two groups joined) OR simply checking if the string \n    contains an underscore that is part of a valid sequence?\n    \n    Let's stick to the most robust interpretation: Does the string contain at least one substring matching `lowercase+underscore+lowercase`?\n    \"\"\"\n    import re\n    \n    # Pattern matches lowercase letters, followed by an underscore, followed by more lowercase letters.\n    pattern = r'[a-z]+_[a-z]+' \n    \n    return bool(re.search(pattern, text))\n\n# Test cases based on your prompt and common variations:\nassert text_lowercase_underscore(\"aab_cbbbc\") == True   # Contains 'ab_cbb'\nprint(text_lowercase_underscore(\"hello\"))               # False (no underscore)\nprint(text_lowercase_underscore(\"_a_b_\"))              # True ('a_b')\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/16",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

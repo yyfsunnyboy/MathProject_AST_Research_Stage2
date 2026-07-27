@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "fb6928751c64f5c8a87eab03307127f6f710492d6c897ffcd53c9dac9ebd0847",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "solve",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "final_source": "def solve(s):\n    result = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':  # lowercase letter -> uppercase\n            result.append(char.upper())\n        elif 'A' <= char <= 'Z':  # uppercase letter -> lowercase\n            result.append(char.lower())\n        else:  # non-letter character or no letters at all (handled by logic below)\n            pass\n    \n    if not any('a' <= c <= 'z' for c in s):\n        return ''.join(reversed(result))\n    \n    return ''.join(result)\n\n\n# Examples:\nprint(solve(\"1234\"))      # \"4321\"\nprint(solve(\"ab\"))        # \"AB\"\nprint(solve(\"#a@C\"))      # \"#A@c\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/161:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "post_h2_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "post_h3_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "post_h4_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2c62d5ea400cb613764ec1e0dfb15ff706d8e435e726911f646bea31c4719b9d",
+  "raw_source": "def solve(s):\n    result = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':  # lowercase letter -> uppercase\n            result.append(char.upper())\n        elif 'A' <= char <= 'Z':  # uppercase letter -> lowercase\n            result.append(char.lower())\n        else:  # non-letter character or no letters at all (handled by logic below)\n            pass\n    \n    if not any('a' <= c <= 'z' for c in s):\n        return ''.join(reversed(result))\n    \n    return ''.join(result)\n\n\n# Examples:\nprint(solve(\"1234\"))      # \"4321\"\nprint(solve(\"ab\"))        # \"AB\"\nprint(solve(\"#a@C\"))      # \"#A@c\"\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/161",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

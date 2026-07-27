@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d9455cdaa57d576ae70e69ffcfeb3c715c127c41680058cac6320730bf4ee096",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "smallest_change",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "final_source": "def smallest_change(arr):\n    \"\"\"\n    Given an array arr of integers, find the minimum number of elements that\n    need to be changed to make the array palindromic. A palindromic array is an array that\n    is read the same backwards and forwards. In one change, you can change one element to any other element.\n\n    Examples:\n        smallest_change([1,2,3,5,4,7,9,6]) == 4\n        smallest_change([1, 2, 3, 4, 3, 2, 2]) == 1\n        smallest_change([1, 2, 3, 2, 1]) == 0\n    \"\"\"\n    n = len(arr)\n    left, right = 0, n - 1\n    changes = 0\n\n    while left < right:\n        if arr[left] != arr[right]:\n            # We must change one of them to match the other (cost = 1)\n            changes += 1\n        left += 1\n        right -= 1\n\n    return changes\n\n\n# Quick tests\nif __name__ == \"__main__\":\n    print(smallest_change([1,2,3,5,4,7,9,6]))   # Expected: 4\n    print(smallest_change([1, 2, 3, 4, 3, 2, 2]))  # Expected: 1\n    print(smallest_change([1, 2, 3, 2, 1]))        # Expected: 0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/73:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "post_h2_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "post_h3_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "post_h4_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a5b77d01cd18fff49490d2f046685d1a6cd07ae0043bac6553f7cc47eeaaa490",
+  "raw_source": "def smallest_change(arr):\n    \"\"\"\n    Given an array arr of integers, find the minimum number of elements that\n    need to be changed to make the array palindromic. A palindromic array is an array that\n    is read the same backwards and forwards. In one change, you can change one element to any other element.\n\n    Examples:\n        smallest_change([1,2,3,5,4,7,9,6]) == 4\n        smallest_change([1, 2, 3, 4, 3, 2, 2]) == 1\n        smallest_change([1, 2, 3, 2, 1]) == 0\n    \"\"\"\n    n = len(arr)\n    left, right = 0, n - 1\n    changes = 0\n\n    while left < right:\n        if arr[left] != arr[right]:\n            # We must change one of them to match the other (cost = 1)\n            changes += 1\n        left += 1\n        right -= 1\n\n    return changes\n\n\n# Quick tests\nif __name__ == \"__main__\":\n    print(smallest_change([1,2,3,5,4,7,9,6]))   # Expected: 4\n    print(smallest_change([1, 2, 3, 4, 3, 2, 2]))  # Expected: 1\n    print(smallest_change([1, 2, 3, 2, 1]))        # Expected: 0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/73",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

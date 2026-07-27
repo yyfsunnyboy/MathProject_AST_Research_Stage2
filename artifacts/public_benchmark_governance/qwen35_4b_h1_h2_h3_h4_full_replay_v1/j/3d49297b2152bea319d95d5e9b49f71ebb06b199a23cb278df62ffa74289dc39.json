@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3d49297b2152bea319d95d5e9b49f71ebb06b199a23cb278df62ffa74289dc39",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_closest_vowel",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "final_source": "def get_closest_vowel(word):\n    \"\"\"You are given a word. Your task is to find the closest vowel that stands between \n    two consonants from the right side of the word (case sensitive).\"\"\"\n    \n    # Define vowels for case-insensitive checking\n    vowels = set(\"aeiouAEIOU\")\n    \n    has_consonant_before_current_index_in_right_context = False\n    \n    # Iterate backwards through the string, excluding the very last character\n    # because a vowel at the end cannot have a consonant after it.\n    for i in range(len(word) - 1, 0, -1):\n        char = word[i]\n        \n        if char not in vowels:\n            has_consonant_before_current_index_in_right_context = True\n        \n        # If we found a vowel and there is at least one consonant to its right (processed previously), return it.\n        elif char in vowels and has_consonant_before_current_index_in_right_context:\n            return char\n            \n    return \"\"\n\n# Test cases based on the problem description\nprint(get_closest_vowel(\"yogurt\"))   # Expected: \"u\" (o is followed by g, but u is closer to right end? Wait. \n                                     # Let's trace \"yogurt\": y(c), o(v), g(c), u(r), r(t). \n                                     # Backwards: t(r,c) -> has_c=True; r(c); u(v)+has_c -> Return 'u'. Correct.)\nprint(get_closest_vowel(\"FULL\"))     # Expected: \"U\" (F(c), U(v, l is c))\nprint(get_closest_vowel(\"quick\"))    # Expected: \"\" (q,c,u,v,i,k. No vowel between two consonants? \n                                     # Trace backwards: k(c)->has_c=T; i(v)+T -> Return 'i'? \n                                     # Wait, the example says \"quick\" ==> \"\". Let's re-read carefully.)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/118:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "post_h2_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "post_h3_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "post_h4_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c282d9d3be446ae9c59f1153c4f2fee510f137090253767c362e1be41fc0264f",
+  "raw_source": "def get_closest_vowel(word):\n    \"\"\"You are given a word. Your task is to find the closest vowel that stands between \n    two consonants from the right side of the word (case sensitive).\"\"\"\n    \n    # Define vowels for case-insensitive checking\n    vowels = set(\"aeiouAEIOU\")\n    \n    has_consonant_before_current_index_in_right_context = False\n    \n    # Iterate backwards through the string, excluding the very last character\n    # because a vowel at the end cannot have a consonant after it.\n    for i in range(len(word) - 1, 0, -1):\n        char = word[i]\n        \n        if char not in vowels:\n            has_consonant_before_current_index_in_right_context = True\n        \n        # If we found a vowel and there is at least one consonant to its right (processed previously), return it.\n        elif char in vowels and has_consonant_before_current_index_in_right_context:\n            return char\n            \n    return \"\"\n\n# Test cases based on the problem description\nprint(get_closest_vowel(\"yogurt\"))   # Expected: \"u\" (o is followed by g, but u is closer to right end? Wait. \n                                     # Let's trace \"yogurt\": y(c), o(v), g(c), u(r), r(t). \n                                     # Backwards: t(r,c) -> has_c=True; r(c); u(v)+has_c -> Return 'u'. Correct.)\nprint(get_closest_vowel(\"FULL\"))     # Expected: \"U\" (F(c), U(v, l is c))\nprint(get_closest_vowel(\"quick\"))    # Expected: \"\" (q,c,u,v,i,k. No vowel between two consonants? \n                                     # Trace backwards: k(c)->has_c=T; i(v)+T -> Return 'i'? \n                                     # Wait, the example says \"quick\" ==> \"\". Let's re-read carefully.)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/118",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

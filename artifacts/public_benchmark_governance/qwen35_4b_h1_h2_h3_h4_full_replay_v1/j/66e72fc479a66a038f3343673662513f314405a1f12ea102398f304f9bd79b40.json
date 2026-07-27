@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "66e72fc479a66a038f3343673662513f314405a1f12ea102398f304f9bd79b40",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "divisible_by_digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "final_source": "def divisible_by_digits(startnum, endnum):\n    \"\"\"\n    Finds numbers within [startnum, endnum] where every digit of the \n    number divides that number.\n    \n    Args:\n        startnum (int): The starting integer of the range.\n        endnum (int): The ending integer of the range.\n        \n    Returns:\n        list[int]: A sorted list of numbers satisfying the condition.\n    \"\"\"\n    result = []\n\n    for num in range(startnum, endnum + 1):\n        # Convert number to string to easily access digits or use modulo/division logic\n        temp_num = str(num)\n        \n        is_divisible = True\n        \n        # Iterate through each digit character\n        for char_digit in temp_num:\n            digit = int(char_digit)\n            \n            # Skip if the digit is 0 (cannot divide by zero)\n            if digit == 0:\n                continue\n            \n            # Check divisibility\n            if num % digit != 0:\n                is_divisible = False\n                break\n        \n        if is_divisible:\n            result.append(num)\n\n    return result\n\n# Test the function as per your assertion requirement\nif __name__ == \"__main__\":\n    output = divisible_by_digits(1, 22)\n    \n    # Print to verify against expected output manually or use assert for strict checking\n    print(f\"Numbers between 1 and 22: {output}\")\n    \n    # Note: The standard mathematical definition usually excludes numbers containing '0' \n    # because division by zero is undefined. However, if your specific test case expects \n    # a number like \"10\", it implies treating the digit check differently or ignoring zeros.\n    # Based on the provided expected list [1...9, 11, 12, 15, 22], there are no numbers with '0'.\n    \n    assert output == [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 22]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/745:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "post_h2_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "post_h3_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "post_h4_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "24259866a325cf6082cc4b8da31b981b41a1dcaf4238edc0d75a5f788e3f6c60",
+  "raw_source": "def divisible_by_digits(startnum, endnum):\n    \"\"\"\n    Finds numbers within [startnum, endnum] where every digit of the \n    number divides that number.\n    \n    Args:\n        startnum (int): The starting integer of the range.\n        endnum (int): The ending integer of the range.\n        \n    Returns:\n        list[int]: A sorted list of numbers satisfying the condition.\n    \"\"\"\n    result = []\n\n    for num in range(startnum, endnum + 1):\n        # Convert number to string to easily access digits or use modulo/division logic\n        temp_num = str(num)\n        \n        is_divisible = True\n        \n        # Iterate through each digit character\n        for char_digit in temp_num:\n            digit = int(char_digit)\n            \n            # Skip if the digit is 0 (cannot divide by zero)\n            if digit == 0:\n                continue\n            \n            # Check divisibility\n            if num % digit != 0:\n                is_divisible = False\n                break\n        \n        if is_divisible:\n            result.append(num)\n\n    return result\n\n# Test the function as per your assertion requirement\nif __name__ == \"__main__\":\n    output = divisible_by_digits(1, 22)\n    \n    # Print to verify against expected output manually or use assert for strict checking\n    print(f\"Numbers between 1 and 22: {output}\")\n    \n    # Note: The standard mathematical definition usually excludes numbers containing '0' \n    # because division by zero is undefined. However, if your specific test case expects \n    # a number like \"10\", it implies treating the digit check differently or ignoring zeros.\n    # Based on the provided expected list [1...9, 11, 12, 15, 22], there are no numbers with '0'.\n    \n    assert output == [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 22]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/745",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

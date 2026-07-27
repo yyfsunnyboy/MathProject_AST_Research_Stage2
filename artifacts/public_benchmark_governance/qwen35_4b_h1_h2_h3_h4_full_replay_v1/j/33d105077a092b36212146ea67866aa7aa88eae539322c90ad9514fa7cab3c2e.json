@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "33d105077a092b36212146ea67866aa7aa88eae539322c90ad9514fa7cab3c2e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "triples_sum_to_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "final_source": "def triples_sum_to_zero(l: list):\n    \"\"\"\n    triples_sum_to_zero takes a list of integers as an input.\n    it returns True if there are three distinct elements in the list that\n    sum to zero, and False otherwise.\n\n    >>> triples_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> triples_sum_to_zero([1, 3, -2, 1])\n    True\n    >>> triples_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])\n    True\n    >>> triples_sum_to_zero([1])\n    False\n    \"\"\"\n\n    # If fewer than 3 elements, no triple can exist.\n    if len(l) < 3:\n        return False\n\n    n = len(l)\n    \n    # Try all combinations of three distinct indices (i, j, k).\n    for i in range(n):\n        a = l[i]\n        for j in range(i + 1, n):\n            b = l[j]\n            c_needed = -a - b\n            if c_needed not in l:\n                continue\n            \n            # Find index of c_needed that is different from i and j.\n            k_idx = None\n            for idx in range(n):\n                if idx == i or idx == j:\n                    continue\n                if l[idx] == c_needed:\n                    k_idx = idx\n                    break\n\n            if k_idx is not None:\n                return True\n\n    return False\n\n\n# Quick test with the provided examples (optional, can be removed in final code):\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/40:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "post_h2_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "post_h3_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "post_h4_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "76c77dcce8794f38d5301c7765f5b1431c666d3dbc7b3d8b6312212930cdb9b6",
+  "raw_source": "def triples_sum_to_zero(l: list):\n    \"\"\"\n    triples_sum_to_zero takes a list of integers as an input.\n    it returns True if there are three distinct elements in the list that\n    sum to zero, and False otherwise.\n\n    >>> triples_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> triples_sum_to_zero([1, 3, -2, 1])\n    True\n    >>> triples_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> triples_sum_to_zero([2, 4, -5, 3, 9, 7])\n    True\n    >>> triples_sum_to_zero([1])\n    False\n    \"\"\"\n\n    # If fewer than 3 elements, no triple can exist.\n    if len(l) < 3:\n        return False\n\n    n = len(l)\n    \n    # Try all combinations of three distinct indices (i, j, k).\n    for i in range(n):\n        a = l[i]\n        for j in range(i + 1, n):\n            b = l[j]\n            c_needed = -a - b\n            if c_needed not in l:\n                continue\n            \n            # Find index of c_needed that is different from i and j.\n            k_idx = None\n            for idx in range(n):\n                if idx == i or idx == j:\n                    continue\n                if l[idx] == c_needed:\n                    k_idx = idx\n                    break\n\n            if k_idx is not None:\n                return True\n\n    return False\n\n\n# Quick test with the provided examples (optional, can be removed in final code):\nif __name__ == \"__main__\":\n    import doctest\n    doctest.testmod()\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/40",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

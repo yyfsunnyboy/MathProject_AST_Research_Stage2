@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a837d963f4808586b88eef312dc46b2d52b402c6a8dc74c2d4211aa206eb4e89",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "merge",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "final_source": "def merge(list_of_pairs):\n    \"\"\"\n    Takes a list of pairs (sublists with 2 elements) \n    and returns a list containing:\n    [list of first elements, list of second elements]\n    \n    Args:\n        list_of_pairs (List[List]): A list where each inner list has exactly two elements.\n        \n    Returns:\n        List[List]: [[first_elements], [second_elements]]\n    \"\"\"\n    if not list_of_pairs:\n        return [], []\n\n    first_elements = []\n    second_elements = []\n\n    for pair in list_of_pairs:\n        # Ensure the sublist has at least two elements to avoid IndexError\n        if len(pair) >= 2:\n            first_elements.append(pair[0])\n            second_elements.append(pair[1])\n            \n    return [first_elements, second_elements]\n\n\n# Test case as provided in your prompt\nif __name__ == \"__main__\":\n    result = merge([['x', 'y'], ['a', 'b'], ['m', 'n']])\n    \n    # Check if the output matches expectations\n    expected = [['x', 'a', 'm'], ['y', 'b', 'n']]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    \n    print(\"Test passed successfully!\")\n    print(f\"Input:  {['x', 'y'], ['a', 'b'], ['m', 'n']}\")\n    print(f\"Output: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/612:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "post_h2_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "post_h3_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "post_h4_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b7d696756b273399d38cd0f8f420913c1bd1be7426adfd6de111b4814505ed51",
+  "raw_source": "def merge(list_of_pairs):\n    \"\"\"\n    Takes a list of pairs (sublists with 2 elements) \n    and returns a list containing:\n    [list of first elements, list of second elements]\n    \n    Args:\n        list_of_pairs (List[List]): A list where each inner list has exactly two elements.\n        \n    Returns:\n        List[List]: [[first_elements], [second_elements]]\n    \"\"\"\n    if not list_of_pairs:\n        return [], []\n\n    first_elements = []\n    second_elements = []\n\n    for pair in list_of_pairs:\n        # Ensure the sublist has at least two elements to avoid IndexError\n        if len(pair) >= 2:\n            first_elements.append(pair[0])\n            second_elements.append(pair[1])\n            \n    return [first_elements, second_elements]\n\n\n# Test case as provided in your prompt\nif __name__ == \"__main__\":\n    result = merge([['x', 'y'], ['a', 'b'], ['m', 'n']])\n    \n    # Check if the output matches expectations\n    expected = [['x', 'a', 'm'], ['y', 'b', 'n']]\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    \n    print(\"Test passed successfully!\")\n    print(f\"Input:  {['x', 'y'], ['a', 'b'], ['m', 'n']}\")\n    print(f\"Output: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/612",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

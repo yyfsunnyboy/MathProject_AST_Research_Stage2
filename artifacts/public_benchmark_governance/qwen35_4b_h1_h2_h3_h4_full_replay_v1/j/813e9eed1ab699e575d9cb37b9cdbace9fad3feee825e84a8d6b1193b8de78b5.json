@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "813e9eed1ab699e575d9cb37b9cdbace9fad3feee825e84a8d6b1193b8de78b5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "convert_list_dictionary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "final_source": "def convert_list_dictionary(list1, list2, list3):\n    result = []\n    for i in range(len(list1)):\n        nested_dict = {list1[i]: {list2[i]: list3[i]}}\n        result.append(nested_dict)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/391:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "post_h2_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "post_h3_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "post_h4_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "26aeb21119ca188a066c6890a88880e2b8838b9403008d13ec8b04b20a7b1a7b",
+  "raw_source": "def convert_list_dictionary(list1, list2, list3):\n    result = []\n    for i in range(len(list1)):\n        nested_dict = {list1[i]: {list2[i]: list3[i]}}\n        result.append(nested_dict)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/391",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

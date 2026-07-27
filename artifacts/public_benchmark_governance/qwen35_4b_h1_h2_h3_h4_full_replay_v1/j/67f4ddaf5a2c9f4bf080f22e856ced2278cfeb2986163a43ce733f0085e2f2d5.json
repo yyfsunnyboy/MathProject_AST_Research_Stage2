@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "67f4ddaf5a2c9f4bf080f22e856ced2278cfeb2986163a43ce733f0085e2f2d5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "prime_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4d2b903030e7d7be4c0d75a5a9514dc5ea44bff669ac141a21d7b126b46f8cb6",
+  "final_source": "def prime_num(n: int) -> bool:\n    \"\"\"Check if an integer n is a prime number.\"\"\"\n    \n    # Handle base cases\n    if n <= 1:\n        return False\n    \n    if n == 2 or n == 3:\n        return True\n    \n    # Eliminate even numbers and multiples of 3 early on\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n\n    # Check divisors from 5 up to sqrt(n) using the pattern (6k ± 1)\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    \n    return True\n\n\n# Test as requested in the prompt\nif __name__ == \"__main__\":\n    assert prime_num(13) == True, \"Test failed for input 13\"\n\n# Additional quick tests to ensure correctness\nprint(prime_num(1))   # False\nprint(prime_num(2))   # True\nprint(prime_num(4))   # False\nprint(prime_num(97))  # True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/605:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a2cc808a3c93dc9bec4cd1f102e780bcbb0d6cee6c46c0962800449a0c0a2171",
+  "post_h2_sha256": "4d2b903030e7d7be4c0d75a5a9514dc5ea44bff669ac141a21d7b126b46f8cb6",
+  "post_h3_sha256": "4d2b903030e7d7be4c0d75a5a9514dc5ea44bff669ac141a21d7b126b46f8cb6",
+  "post_h4_sha256": "4d2b903030e7d7be4c0d75a5a9514dc5ea44bff669ac141a21d7b126b46f8cb6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a2cc808a3c93dc9bec4cd1f102e780bcbb0d6cee6c46c0962800449a0c0a2171",
+  "raw_source": "def prime_num(n: int) -> bool:\n    \"\"\"Check if an integer n is a prime number.\"\"\"\n    \n    # Handle base cases\n    if n <= 1:\n        return False\n    \n    if n == 2 or n == 3:\n        return True\n    \n    # Eliminate even numbers and multiples of 3 early on\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n\n    # Check divisors from 5 up to sqrt(n) using the pattern (6k ± 1)\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    \n    return True\n\n\n# Test as requested in the prompt\nassert prime_num(13) == True, \"Test failed for input 13\"\n\n# Additional quick tests to ensure correctness\nprint(prime_num(1))   # False\nprint(prime_num(2))   # True\nprint(prime_num(4))   # False\nprint(prime_num(97))  # True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/605",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

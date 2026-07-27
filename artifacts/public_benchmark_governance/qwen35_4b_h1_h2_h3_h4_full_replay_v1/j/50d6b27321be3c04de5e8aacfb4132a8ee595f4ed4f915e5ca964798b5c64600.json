@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "50d6b27321be3c04de5e8aacfb4132a8ee595f4ed4f915e5ca964798b5c64600",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_adverb_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4ed4a86b9137da8e69d7d1d8506357e4186be407b8ce29ab64949f49904da90d",
+  "final_source": "def find_adverb_position(sentence):\n    adverbs = ['clearly', 'quickly', 'slowly', 'happily', 'sadly', 'angrily']\n    for i, word in enumerate(sentence.split()):\n        if word.lower() in [adv.lower() for adv in adverbs]:\n            return (i, len(word), word)\n    return None\n\nif __name__ == \"__main__\":\n    assert find_adverb_position(\"clearly!! we can see the sky\")==(0, 7, 'clearly')",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/440:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "223a8cb19a306a8ee3d6cf2461f2454d6afd9d28645c796304d328802a96d669",
+  "post_h2_sha256": "4ed4a86b9137da8e69d7d1d8506357e4186be407b8ce29ab64949f49904da90d",
+  "post_h3_sha256": "4ed4a86b9137da8e69d7d1d8506357e4186be407b8ce29ab64949f49904da90d",
+  "post_h4_sha256": "4ed4a86b9137da8e69d7d1d8506357e4186be407b8ce29ab64949f49904da90d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "223a8cb19a306a8ee3d6cf2461f2454d6afd9d28645c796304d328802a96d669",
+  "raw_source": "def find_adverb_position(sentence):\n    adverbs = ['clearly', 'quickly', 'slowly', 'happily', 'sadly', 'angrily']\n    for i, word in enumerate(sentence.split()):\n        if word.lower() in [adv.lower() for adv in adverbs]:\n            return (i, len(word), word)\n    return None\n\nassert find_adverb_position(\"clearly!! we can see the sky\")==(0, 7, 'clearly')",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/440",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

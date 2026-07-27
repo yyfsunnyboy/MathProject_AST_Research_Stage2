@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "083ba58b35c4ace639eef3d7f796d1012242362a38b7dbefb61236d2a7b05487",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "move_one_ball",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "final_source": "def move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n\n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n\n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n\n    \n    \"\"\"\n\n\nif len(arr) == 0 or len(arr) == 1:\n    return True\n    \nsorted_arr = sorted(arr)\ncount_diffs = 0\nfor i in range(len(arr)):\n    if arr[i] != sorted_arr[i]:\n        count_diffs += 1\n\nreturn count_diffs <= 2",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/109:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "post_h2_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "post_h3_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "post_h4_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "13130924f8d0195255d6d9d0e460b5d20fb5bf352c7601c9a431823a94dc7b10",
+  "raw_source": "def move_one_ball(arr):\n    \"\"\"We have an array 'arr' of N integers arr[1], arr[2], ..., arr[N].The\n    numbers in the array will be randomly ordered. Your task is to determine if\n    it is possible to get an array sorted in non-decreasing order by performing \n    the following operation on the given array:\n        You are allowed to perform right shift operation any number of times.\n\n    One right shift operation means shifting all elements of the array by one\n    position in the right direction. The last element of the array will be moved to\n    the starting position in the array i.e. 0th index. \n\n    If it is possible to obtain the sorted array by performing the above operation\n    then return True else return False.\n    If the given array is empty then return True.\n\n    Note: The given list is guaranteed to have unique elements.\n\n    For Example:\n\n    move_one_ball([3, 4, 5, 1, 2])==>True\n    Explanation: By performin 2 right shift operations, non-decreasing order can\n                 be achieved for the given array.\n    move_one_ball([3, 5, 4, 1, 2])==>False\n    Explanation:It is not possible to get non-decreasing order for the given\n                array by performing any number of right shift operations.\n\n    \n    \"\"\"\n\n\nif len(arr) == 0 or len(arr) == 1:\n    return True\n    \nsorted_arr = sorted(arr)\ncount_diffs = 0\nfor i in range(len(arr)):\n    if arr[i] != sorted_arr[i]:\n        count_diffs += 1\n\nreturn count_diffs <= 2",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/109",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

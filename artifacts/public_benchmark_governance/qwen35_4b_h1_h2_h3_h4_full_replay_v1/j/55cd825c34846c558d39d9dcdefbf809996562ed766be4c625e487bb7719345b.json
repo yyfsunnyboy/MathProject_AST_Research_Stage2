@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "55cd825c34846c558d39d9dcdefbf809996562ed766be4c625e487bb7719345b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b209edd54af1bcbbee279ccc69a1450d113643b2ac8ec329cb71545e71b70ef3",
+  "final_source": "def split(nums):\n    \"\"\"Return a new list containing only the odd numbers from the input list.\"\"\"\n    return [num for num in nums if num % 2 != 0]\n\n\n# Example usage and assertion:\nassert split([1, 2, 3, 4, 5, 6]) == [1, 3, 5], \"Test failed!\"\n\nprint(split([1, 2, 3, 4, 5, 6]))  # Output: [1, 3, 5]\n\nSplit = split\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/554:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b209edd54af1bcbbee279ccc69a1450d113643b2ac8ec329cb71545e71b70ef3",
+  "post_h2_sha256": "b209edd54af1bcbbee279ccc69a1450d113643b2ac8ec329cb71545e71b70ef3",
+  "post_h3_sha256": "b209edd54af1bcbbee279ccc69a1450d113643b2ac8ec329cb71545e71b70ef3",
+  "post_h4_sha256": "b209edd54af1bcbbee279ccc69a1450d113643b2ac8ec329cb71545e71b70ef3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a74e300ff13262cee59535f72283c6269b7dab9d8381ac16795d7557f632fd48",
+  "raw_source": "def split(nums):\n    \"\"\"Return a new list containing only the odd numbers from the input list.\"\"\"\n    return [num for num in nums if num % 2 != 0]\n\n\n# Example usage and assertion:\nassert split([1, 2, 3, 4, 5, 6]) == [1, 3, 5], \"Test failed!\"\n\nprint(split([1, 2, 3, 4, 5, 6]))  # Output: [1, 3, 5]\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/554",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

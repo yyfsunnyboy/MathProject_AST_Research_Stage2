@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "1559ec29cab7255116606a351be1590a676ce3be1ac3c127a86adbe1c3b8ea1b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "perfect_squares",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1cbc88ae8346784516091c9c881b64d79215d77ea216458ee6c56beab28cc9f5",
+  "final_source": "def perfect_squares(start: int, end: int) -> list[int]:\n    \"\"\"Return a sorted list of all perfect squares between start and end (inclusive).\"\"\"\n    \n    # Find the smallest integer whose square is >= start\n    if start < 1:\n        lower = 0\n    else:\n        import math\n        lower = max(0, int(math.ceil(math.sqrt(start))))\n\n    # Ensure we don't go below zero for negative inputs (though squares are non-negative)\n    if lower < 0:\n        lower = 0\n\n    result = []\n    \n    n = lower\n    while True:\n        sq = n * n\n        if sq > end:\n            break\n        # Only include perfect squares that are >= start (already handled by loop logic)\n        if sq >= start:\n            result.append(sq)\n        \n        n += 1\n    \n    return result\n\n\n# Test the function as per the requirement\nif __name__ == \"__main__\":\n    assert perfect_squares(1,30) == [1, 4, 9, 16, 25]\n    print(perfect_squares(1, 30))\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/589:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8e847cb828d8b84f62bb5c4a04c8962cae1fe437cc30f1ce6d62515dbe9b964e",
+  "post_h2_sha256": "18e571162589f85431c2999917b9e97ac54f40a04e644ff01fcffcb6a6a4697c",
+  "post_h3_sha256": "18e571162589f85431c2999917b9e97ac54f40a04e644ff01fcffcb6a6a4697c",
+  "post_h4_sha256": "1cbc88ae8346784516091c9c881b64d79215d77ea216458ee6c56beab28cc9f5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8e847cb828d8b84f62bb5c4a04c8962cae1fe437cc30f1ce6d62515dbe9b964e",
+  "raw_source": "def perfect_squares(start: int, end: int) -> list[int]:\n    \"\"\"Return a sorted list of all perfect squares between start and end (inclusive).\"\"\"\n    \n    # Find the smallest integer whose square is >= start\n    if start < 1:\n        lower = 0\n    else:\n        import math\n        lower = max(0, int(math.ceil(math.sqrt(start))))\n\n    # Ensure we don't go below zero for negative inputs (though squares are non-negative)\n    if lower < 0:\n        lower = 0\n\n    result = []\n    \n    n = lower\n    while True:\n        sq = n * n\n        if sq > end:\n            break\n        # Only include perfect squares that are >= start (already handled by loop logic)\n        if sq >= start:\n            result.append(sq)\n        \n        n += 1\n    \n    return result\n\n\n# Test the function as per the requirement\nassert perfect_squares(1,30) == [1, 4, 9, 16, 25]\n\nprint(perfect_squares(1, 30))\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/589",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

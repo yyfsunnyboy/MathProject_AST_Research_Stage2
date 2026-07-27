@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "25a7b65c4665ad988a33c8edb6677ffdad7ee4bfae07d9574fcf53d757846e75",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "greatest_common_divisor",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "final_source": "def greatest_common_divisor(a: int, b: int) -> int:\n    \"\"\" Return the greatest common divisor of two integers a and b.\n    \n    >>> greatest_common_divisor(3, 5)\n    1\n    >>> greatest_common_divisor(25, 15)\n    5\n    \n    Uses Euclid's algorithm for efficiency.\n    \"\"\"\n    # Ensure non-negative inputs (optional but safe)\n    a = abs(a)\n    b = abs(b)\n\n    while b != 0:\n        a, b = b, a % b\n    return a\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/13:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "post_h2_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "post_h3_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "post_h4_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d630604c7ce8469c84b131a2cc0340877d448022deacedb5f6d7df1882bd8b3a",
+  "raw_source": "def greatest_common_divisor(a: int, b: int) -> int:\n    \"\"\" Return the greatest common divisor of two integers a and b.\n    \n    >>> greatest_common_divisor(3, 5)\n    1\n    >>> greatest_common_divisor(25, 15)\n    5\n    \n    Uses Euclid's algorithm for efficiency.\n    \"\"\"\n    # Ensure non-negative inputs (optional but safe)\n    a = abs(a)\n    b = abs(b)\n\n    while b != 0:\n        a, b = b, a % b\n    return a\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/13",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

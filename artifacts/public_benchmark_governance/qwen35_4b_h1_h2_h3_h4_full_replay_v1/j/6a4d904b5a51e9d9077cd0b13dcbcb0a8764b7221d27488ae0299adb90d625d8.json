@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6a4d904b5a51e9d9077cd0b13dcbcb0a8764b7221d27488ae0299adb90d625d8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "23cd428628ff79dd270527cb9080feccc54dd23290bb404dabfe918f07fa9223",
+  "final_source": "def check(n: int) -> bool:\n    \"\"\"\n    Check if n is one less than twice its reverse.\n    \n    Condition: n == 2 * rev(n) - 1\n    \n    Examples (for testing):\n        check(70) -> False because 2*rev(70)-1 = 2*7-1 = 13 != 70\n        check(98) -> True because 2*rev(98)-1 = 2*89-1 = 177 (False actually, let's verify logic below)\n    \"\"\"\n    # Reverse the number as an integer\n    rev_n = int(str(n)[::-1])\n    \n    # Check condition: n == 2 * reverse - 1\n    return n == 2 * rev_n - 1\n\n\n# Test cases based on your requirement and a few examples to verify logic\n\nif __name__ == \"__main__\":\n    assert check(70) == False, \"Expected False for input 70\"\n\n# Let's find an actual number that satisfies the condition:\n# We need n = 2*rev(n)-1. Try small numbers manually or via brute force if needed.\n# Example manual check: \n#   If rev(n)=5 => n=9, then 2*5-1=9 -> True for input 9? Let's verify:\n#       rev(9) = 9, 2*9 - 1 = 17 != 9 → False. So my manual guess was wrong.\n\n# Actually let's brute-force a few to find one that works (optional helper):\ndef find_valid_numbers(limit=1000):\n    valid = []\n    for n in range(2, limit+1):\n        rev_n = int(str(n)[::-1])\n        if 2 * rev_n - 1 == n:\n            valid.append((n, rev_n))\n    return valid\n\n# print(find_valid_numbers()) # Uncomment to see examples like (987? Let's compute)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/56:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "321e30bb395d4166caf9329a595518171e30565558c24785fd16afc2eae89331",
+  "post_h2_sha256": "23cd428628ff79dd270527cb9080feccc54dd23290bb404dabfe918f07fa9223",
+  "post_h3_sha256": "23cd428628ff79dd270527cb9080feccc54dd23290bb404dabfe918f07fa9223",
+  "post_h4_sha256": "23cd428628ff79dd270527cb9080feccc54dd23290bb404dabfe918f07fa9223",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "321e30bb395d4166caf9329a595518171e30565558c24785fd16afc2eae89331",
+  "raw_source": "def check(n: int) -> bool:\n    \"\"\"\n    Check if n is one less than twice its reverse.\n    \n    Condition: n == 2 * rev(n) - 1\n    \n    Examples (for testing):\n        check(70) -> False because 2*rev(70)-1 = 2*7-1 = 13 != 70\n        check(98) -> True because 2*rev(98)-1 = 2*89-1 = 177 (False actually, let's verify logic below)\n    \"\"\"\n    # Reverse the number as an integer\n    rev_n = int(str(n)[::-1])\n    \n    # Check condition: n == 2 * reverse - 1\n    return n == 2 * rev_n - 1\n\n\n# Test cases based on your requirement and a few examples to verify logic\n\nassert check(70) == False, \"Expected False for input 70\"\n\n# Let's find an actual number that satisfies the condition:\n# We need n = 2*rev(n)-1. Try small numbers manually or via brute force if needed.\n# Example manual check: \n#   If rev(n)=5 => n=9, then 2*5-1=9 -> True for input 9? Let's verify:\n#       rev(9) = 9, 2*9 - 1 = 17 != 9 → False. So my manual guess was wrong.\n\n# Actually let's brute-force a few to find one that works (optional helper):\ndef find_valid_numbers(limit=1000):\n    valid = []\n    for n in range(2, limit+1):\n        rev_n = int(str(n)[::-1])\n        if 2 * rev_n - 1 == n:\n            valid.append((n, rev_n))\n    return valid\n\n# print(find_valid_numbers()) # Uncomment to see examples like (987? Let's compute)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/56",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

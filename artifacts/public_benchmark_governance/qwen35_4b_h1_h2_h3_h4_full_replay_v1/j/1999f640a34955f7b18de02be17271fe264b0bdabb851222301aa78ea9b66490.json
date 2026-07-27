@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "print_arguments_not_literal_or_entrypoint_literal_call"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1999f640a34955f7b18de02be17271fe264b0bdabb851222301aa78ea9b66490",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_octagonal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1d19536381a2ba2e5ecf7cf19ba1b8d8011ae21cee7f4b04be8c40071b72f2db",
+  "final_source": "def is_octagonal(n):\n    \"\"\"\n    Calculates and returns the nth octagonal number.\n    \n    Formula derived from polygonal numbers (k=8): P_8(n) = 3n^2 - 2n\n    \n    Args:\n        n (int): The position of the octagonal number to find\n        \n    Returns:\n        int: The value of the nth octagonal number\n    \"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"Input must be a positive integer\")\n    \n    return 3 * (n ** 2) - 2 * n\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    assert is_octagonal(5) == 65\nprint(f\"The 5th octagonal number is {is_octagonal(5)}\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/59:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2cbbbb4275c8f554f1850b1214cc8fbfca9492bede1da25c7797d26061072104",
+  "post_h2_sha256": "1d19536381a2ba2e5ecf7cf19ba1b8d8011ae21cee7f4b04be8c40071b72f2db",
+  "post_h3_sha256": "1d19536381a2ba2e5ecf7cf19ba1b8d8011ae21cee7f4b04be8c40071b72f2db",
+  "post_h4_sha256": "1d19536381a2ba2e5ecf7cf19ba1b8d8011ae21cee7f4b04be8c40071b72f2db",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2cbbbb4275c8f554f1850b1214cc8fbfca9492bede1da25c7797d26061072104",
+  "raw_source": "def is_octagonal(n):\n    \"\"\"\n    Calculates and returns the nth octagonal number.\n    \n    Formula derived from polygonal numbers (k=8): P_8(n) = 3n^2 - 2n\n    \n    Args:\n        n (int): The position of the octagonal number to find\n        \n    Returns:\n        int: The value of the nth octagonal number\n    \"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"Input must be a positive integer\")\n    \n    return 3 * (n ** 2) - 2 * n\n\n# Verification based on your requirement\nassert is_octagonal(5) == 65\nprint(f\"The 5th octagonal number is {is_octagonal(5)}\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/59",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

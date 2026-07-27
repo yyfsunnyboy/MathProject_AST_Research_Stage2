@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2b13fae32b18d8b3d9a33aa40039a26f369a0df6315767cec51508d709478bf7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_aggregate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "final_source": "def max_aggregate(data):\n    # Dictionary to store cumulative scores for each person\n    totals = {}\n    \n    # Iterate over the list of (name, score) tuples\n    for name, score in data:\n        if name not in totals:\n            totals[name] = 0\n        \n        totals[name] += score\n    \n    # Find the maximum aggregate from the dictionary values and corresponding names\n    max_name = None\n    max_score = float('-inf')\n    \n    for person, total in totals.items():\n        if total > max_score:\n            max_score = total\n            max_name = person\n            \n    return (max_name, max_score)\n\n# Test the function with the provided assertion case\nresult = max_aggregate([('Juan Whelan',90),('Sabah Colley',88),('Peter Nichols',7),('Juan Whelan',122),('Sabah Colley',84)])\n\nassert result == ('Juan Whelan', 212)\nprint(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/299:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "post_h2_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "post_h3_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "post_h4_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fd8a03fcab23f7954dbeff5986a3a3518c148b9d3cb6a47e1bccdd14989a3174",
+  "raw_source": "def max_aggregate(data):\n    # Dictionary to store cumulative scores for each person\n    totals = {}\n    \n    # Iterate over the list of (name, score) tuples\n    for name, score in data:\n        if name not in totals:\n            totals[name] = 0\n        \n        totals[name] += score\n    \n    # Find the maximum aggregate from the dictionary values and corresponding names\n    max_name = None\n    max_score = float('-inf')\n    \n    for person, total in totals.items():\n        if total > max_score:\n            max_score = total\n            max_name = person\n            \n    return (max_name, max_score)\n\n# Test the function with the provided assertion case\nresult = max_aggregate([('Juan Whelan',90),('Sabah Colley',88),('Peter Nichols',7),('Juan Whelan',122),('Sabah Colley',84)])\n\nassert result == ('Juan Whelan', 212)\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/299",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

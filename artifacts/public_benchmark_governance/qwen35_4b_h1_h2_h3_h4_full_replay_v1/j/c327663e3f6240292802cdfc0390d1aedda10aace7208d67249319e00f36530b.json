@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c327663e3f6240292802cdfc0390d1aedda10aace7208d67249319e00f36530b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "return_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9d2a1c940d4ac39d3e646cecee73ebd268ff1e9c29fb2bb50915659516be6d3b",
+  "final_source": "def return_sum(d):\n    \"\"\"\n    Returns the sum of all items (values) in the given dictionary.\n    \n    Args:\n        d (dict): The input dictionary containing numeric or integer-like values.\n        \n    Returns:\n        int/float: The total sum of the dictionary's values.\n    \"\"\"\n    return sum(d.values())\n\n# Test case as provided in your example\nif __name__ == \"__main__\":\n    assert return_sum({'a': 100, 'b': 200, 'c': 300}) == 600\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/796:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7acad4f4a9cd332df4dd30f71541fef2e3a032f3c85583a03cc5e23d5951c672",
+  "post_h2_sha256": "ef3be387a4eb8c96cd74432c98d87e19c48ae3dadae870e02e02b9f66f8bb18a",
+  "post_h3_sha256": "ef3be387a4eb8c96cd74432c98d87e19c48ae3dadae870e02e02b9f66f8bb18a",
+  "post_h4_sha256": "9d2a1c940d4ac39d3e646cecee73ebd268ff1e9c29fb2bb50915659516be6d3b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7acad4f4a9cd332df4dd30f71541fef2e3a032f3c85583a03cc5e23d5951c672",
+  "raw_source": "def return_sum(d):\n    \"\"\"\n    Returns the sum of all items (values) in the given dictionary.\n    \n    Args:\n        d (dict): The input dictionary containing numeric or integer-like values.\n        \n    Returns:\n        int/float: The total sum of the dictionary's values.\n    \"\"\"\n    return sum(d.values())\n\n# Test case as provided in your example\nassert return_sum({'a': 100, 'b': 200, 'c': 300}) == 600\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/796",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

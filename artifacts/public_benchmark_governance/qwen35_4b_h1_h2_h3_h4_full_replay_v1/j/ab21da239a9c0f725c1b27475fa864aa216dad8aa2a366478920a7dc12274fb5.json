@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ab21da239a9c0f725c1b27475fa864aa216dad8aa2a366478920a7dc12274fb5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "lps",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "final_source": "def lps(s):\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    dp = [[0] * (n + 1) for _ in range(n + 1)]\n    \n    for i in range(1, n + 1):\n        for j in range(i - 1, -1, -1):\n            if s[i - 1] == s[j]:\n                dp[i][j] = dp[i - 1][j + 1] + 2\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j + 1])\n    \n    return dp[n][0]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/247:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "post_h2_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "post_h3_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "post_h4_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0e1b36499c143a556a061db8f6fc44f55a27f80ffdc8239265239ba510d6b547",
+  "raw_source": "def lps(s):\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    dp = [[0] * (n + 1) for _ in range(n + 1)]\n    \n    for i in range(1, n + 1):\n        for j in range(i - 1, -1, -1):\n            if s[i - 1] == s[j]:\n                dp[i][j] = dp[i - 1][j + 1] + 2\n            else:\n                dp[i][j] = max(dp[i - 1][j], dp[i][j + 1])\n    \n    return dp[n][0]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/247",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f542e6f29a23c91c2615f7d8242e031a06e676a01b4bcb44c82fb8ea37f8719b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_num_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "final_source": "def odd_num_sum(n):\n    \"\"\"\n    Calculates the sum of the fourth powers of the first n odd natural numbers.\n    \n    Args:\n        n (int): The number of odd natural terms to include.\n        \n    Returns:\n        int or float: The calculated sum.\n    \"\"\"\n    total = 0\n    \n    # Generate the first 'n' odd numbers and add their fourth powers\n    for i in range(1, n + 1):\n        # Formula for the i-th odd number is (2 * i - 1)\n        odd_num = 2 * i - 1\n        \n        total += odd_num ** 4\n\n    return total\n\n# Verification based on your assertion: assert odd_num_sum(2) == 82\nif __name__ == \"__main__\":\n    # Test case provided in the prompt\n    result_2 = odd_num_sum(2)\n    \n    # Let's trace manually for n=2 to verify logic:\n    # i=1 -> Odd number = 1. Fourth power = 1^4 = 1\n    # i=2 -> Odd number = 3. Fourth power = 3^4 = 81\n    # Sum = 1 + 81 = 82\n    \n    print(f\"Sum of fourth powers for first {result_2} numbers: {result_2}\")\n\n    assert odd_num_sum(2) == 82, \"Test failed!\"\n    \n    # Additional test cases to ensure robustness\n    assert odd_num_sum(3) == 1 + 81 + (5**4), f\"Expected 679 for n=3, got {odd_num_sum(3)}\" \n    print(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/770:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "post_h2_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "post_h3_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "post_h4_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c30a3edef2caa0b57c4df7508b83143b3ad6b8f264abe0139905c4709ed2dc44",
+  "raw_source": "def odd_num_sum(n):\n    \"\"\"\n    Calculates the sum of the fourth powers of the first n odd natural numbers.\n    \n    Args:\n        n (int): The number of odd natural terms to include.\n        \n    Returns:\n        int or float: The calculated sum.\n    \"\"\"\n    total = 0\n    \n    # Generate the first 'n' odd numbers and add their fourth powers\n    for i in range(1, n + 1):\n        # Formula for the i-th odd number is (2 * i - 1)\n        odd_num = 2 * i - 1\n        \n        total += odd_num ** 4\n\n    return total\n\n# Verification based on your assertion: assert odd_num_sum(2) == 82\nif __name__ == \"__main__\":\n    # Test case provided in the prompt\n    result_2 = odd_num_sum(2)\n    \n    # Let's trace manually for n=2 to verify logic:\n    # i=1 -> Odd number = 1. Fourth power = 1^4 = 1\n    # i=2 -> Odd number = 3. Fourth power = 3^4 = 81\n    # Sum = 1 + 81 = 82\n    \n    print(f\"Sum of fourth powers for first {result_2} numbers: {result_2}\")\n\n    assert odd_num_sum(2) == 82, \"Test failed!\"\n    \n    # Additional test cases to ensure robustness\n    assert odd_num_sum(3) == 1 + 81 + (5**4), f\"Expected 679 for n=3, got {odd_num_sum(3)}\" \n    print(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/770",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

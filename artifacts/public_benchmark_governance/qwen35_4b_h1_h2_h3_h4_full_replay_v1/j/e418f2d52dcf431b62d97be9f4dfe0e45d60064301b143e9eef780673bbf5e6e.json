@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e418f2d52dcf431b62d97be9f4dfe0e45d60064301b143e9eef780673bbf5e6e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "correct_bracketing",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "final_source": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_brating(\"()\")\n    True\n    >>> correct_brating(\"(()())\")\n    True\n    >>> correct_brating(\")(()\")\n    False\n    \"\"\"\n    \n    stack = []\n    for char in brackets:\n        if char == '(':\n            stack.append(char)\n        elif char == ')':\n            if not stack or stack[-1] != '(':\n                return False\n            else:\n                stack.pop()\n        else:\n            raise ValueError(f\"Invalid character '{char}'\")\n\n    return len(stack) == 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/61:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "post_h2_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "post_h3_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "post_h4_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "595a16af9434f9f2e302e9024cc2d117c1ddf2144d2c54655714dd03cafcf240",
+  "raw_source": "def correct_bracketing(brackets: str):\n    \"\"\" brackets is a string of \"(\" and \")\".\n    return True if every opening bracket has a corresponding closing bracket.\n\n    >>> correct_bracketing(\"(\")\n    False\n    >>> correct_brating(\"()\")\n    True\n    >>> correct_brating(\"(()())\")\n    True\n    >>> correct_brating(\")(()\")\n    False\n    \"\"\"\n    \n    stack = []\n    for char in brackets:\n        if char == '(':\n            stack.append(char)\n        elif char == ')':\n            if not stack or stack[-1] != '(':\n                return False\n            else:\n                stack.pop()\n        else:\n            raise ValueError(f\"Invalid character '{char}'\")\n\n    return len(stack) == 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/61",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

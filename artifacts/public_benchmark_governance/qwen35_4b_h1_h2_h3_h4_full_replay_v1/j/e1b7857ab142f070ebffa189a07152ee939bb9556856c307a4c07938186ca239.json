@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e1b7857ab142f070ebffa189a07152ee939bb9556856c307a4c07938186ca239",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "even_Power_Sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9a43023ab35bd5c40d840ad8ff4c33e5177a2bf29f231a1d0b937f0897356c47",
+  "final_source": "def even_Power_Sum(n):\n    \"\"\"\n    Calculates the sum of the first n even natural numbers raised to the fifth power.\n    \n    Args:\n        n (int): The number of terms in the sequence.\n        \n    Returns:\n        int: The calculated sum.\n    \"\"\"\n    total_sum = 0\n    \n    # Iterate through the first n even numbers starting from 2, 4, 6...\n    for i in range(1, n + 1):\n        current_even_number = 2 * i\n        \n        # Raise to the fifth power and add to sum\n        term_value = current_even_number ** 5\n        total_sum += term_value\n        \n    return total_sum\n\n# Verification based on the provided assertion:\n# For n=2, we need (2^5) + (4^5)\n# 2^5 = 32\n# 4^5 = 1024\n# Sum = 32 + 1024 = 1056\n\nif __name__ == \"__main__\":\n    assert even_Power_Sum(2) == 1056, \"Assertion failed for n=2\"\n\nprint(\"Function verified successfully.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/271:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bb234c781c7338c7fdcb72320860a536f276be661b785306c4e1b8d24f62d981",
+  "post_h2_sha256": "9a43023ab35bd5c40d840ad8ff4c33e5177a2bf29f231a1d0b937f0897356c47",
+  "post_h3_sha256": "9a43023ab35bd5c40d840ad8ff4c33e5177a2bf29f231a1d0b937f0897356c47",
+  "post_h4_sha256": "9a43023ab35bd5c40d840ad8ff4c33e5177a2bf29f231a1d0b937f0897356c47",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bb234c781c7338c7fdcb72320860a536f276be661b785306c4e1b8d24f62d981",
+  "raw_source": "def even_Power_Sum(n):\n    \"\"\"\n    Calculates the sum of the first n even natural numbers raised to the fifth power.\n    \n    Args:\n        n (int): The number of terms in the sequence.\n        \n    Returns:\n        int: The calculated sum.\n    \"\"\"\n    total_sum = 0\n    \n    # Iterate through the first n even numbers starting from 2, 4, 6...\n    for i in range(1, n + 1):\n        current_even_number = 2 * i\n        \n        # Raise to the fifth power and add to sum\n        term_value = current_even_number ** 5\n        total_sum += term_value\n        \n    return total_sum\n\n# Verification based on the provided assertion:\n# For n=2, we need (2^5) + (4^5)\n# 2^5 = 32\n# 4^5 = 1024\n# Sum = 32 + 1024 = 1056\n\nassert even_Power_Sum(2) == 1056, \"Assertion failed for n=2\"\n\nprint(\"Function verified successfully.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/271",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

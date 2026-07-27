@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d1a10a524bd151b4bc2f323c921ec338ab98ee837853ef54dc7eede063fb6bcf",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_length_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "final_source": "def odd_length_sum(arr):\n    total = 0\n    n = len(arr)\n    \n    # Iterate over all possible subarrays with odd lengths\n    for start in range(n):\n        for end in range(start + 1, n + 1):\n            length = end - start\n            \n            # Check if the current subarray has an odd length\n            if length % 2 == 1:\n                # Calculate sum of elements from index 'start' to 'end-1'\n                for i in range(start, end):\n                    total += arr[i]\n    \n    return total",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/782:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "post_h2_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "post_h3_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "post_h4_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6d92931fa333ca1ce3f9a92ed81041b3f7a2ac9267dde14ae2e1eac8ebc15898",
+  "raw_source": "def odd_length_sum(arr):\n    total = 0\n    n = len(arr)\n    \n    # Iterate over all possible subarrays with odd lengths\n    for start in range(n):\n        for end in range(start + 1, n + 1):\n            length = end - start\n            \n            # Check if the current subarray has an odd length\n            if length % 2 == 1:\n                # Calculate sum of elements from index 'start' to 'end-1'\n                for i in range(start, end):\n                    total += arr[i]\n    \n    return total",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/782",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

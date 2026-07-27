@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d7f9367f41ac0aae32de28a34c37ebd0028132d8562bc0f12e632726f32cc47c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sort_sublists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2721c61ffcf6bc26cd0e641d3c7e18fb415875e282eb636527b9784b157f281",
+  "final_source": "def sort_sublists(list_of_lists):\n    \"\"\"\n    Sort each sublist of strings in the given list of lists.\n    \n    Args:\n        list_of_lists (list[list[str]]): A list containing multiple sub-lists of strings.\n        \n    Returns:\n        list[list[str]]: The same structure with each inner list sorted alphabetically.\n    \"\"\"\n    return [sorted(sublist) for sublist in list_of_lists]\n\n\n# Test case from the problem statement\nif __name__ == \"__main__\":\n    assert sort_sublists([['green', 'orange'], ['black', 'white'], ['white', 'black', 'orange']]) == \\\n           [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n    print(\"All tests passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/569:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "987e607b933746b15e523ea803d0c35884f905a997b6da24d2126bb0ab50c2c4",
+  "post_h2_sha256": "175b98d99864f35916c0126deb7c7bd163e048cf71a17890624b76b28581875c",
+  "post_h3_sha256": "175b98d99864f35916c0126deb7c7bd163e048cf71a17890624b76b28581875c",
+  "post_h4_sha256": "f2721c61ffcf6bc26cd0e641d3c7e18fb415875e282eb636527b9784b157f281",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "987e607b933746b15e523ea803d0c35884f905a997b6da24d2126bb0ab50c2c4",
+  "raw_source": "def sort_sublists(list_of_lists):\n    \"\"\"\n    Sort each sublist of strings in the given list of lists.\n    \n    Args:\n        list_of_lists (list[list[str]]): A list containing multiple sub-lists of strings.\n        \n    Returns:\n        list[list[str]]: The same structure with each inner list sorted alphabetically.\n    \"\"\"\n    return [sorted(sublist) for sublist in list_of_lists]\n\n\n# Test case from the problem statement\nassert sort_sublists([['green', 'orange'], ['black', 'white'], ['white', 'black', 'orange']]) == \\\n       [['green', 'orange'], ['black', 'white'], ['black', 'orange', 'white']]\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/569",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

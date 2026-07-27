@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4873f89d1e58b7b7e7a4c9975f1a3b7598e9374d3075b643629b31a6b8fec801",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "hex_key",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "final_source": "def hex_key(num):\n    \"\"\"You have been tasked to write a function that receives \n    a hexadecimal number as a string and counts the number of hexadecimal \n    digits that are primes (prime number, or a prime, is a natural number \n    greater than 1 that is not a product of two smaller natural numbers).\n    Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.\n    Prime numbers are 2, 3, 5, 7, 11, 13, 17,...\n    So you have to determine a number of the following digits: 2, 3, 5, 7, \n    B (=decimal 11), D (=decimal 13).\n    Note: you may assume the input is always correct or empty string, \n    and symbols A,B,C,D,E,F are always uppercase.\n    Examples:\n    For num = \"AB\" the output should be 1.\n    For num = \"1077E\" the output should be 2.\n    For num = \"ABED1A33\" the output should be 4.\n    For num = \"123456789ABCDEF0\" the output should be 6.\n    For num = \"2020\" the output should be 2.\n    \"\"\"\n\n    prime_hex_digits = {'2', '3', '5', '7', 'B'}\n    \n    count = 0\n    \n    for char in num:\n        if char in prime_hex_digits:\n            count += 1\n            \n    return count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/78:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "post_h2_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "post_h3_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "post_h4_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7443f0916b96adbcff377a174eec6f3150d3ec9f93f411f97a6723fb9fc2ba3c",
+  "raw_source": "def hex_key(num):\n    \"\"\"You have been tasked to write a function that receives \n    a hexadecimal number as a string and counts the number of hexadecimal \n    digits that are primes (prime number, or a prime, is a natural number \n    greater than 1 that is not a product of two smaller natural numbers).\n    Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.\n    Prime numbers are 2, 3, 5, 7, 11, 13, 17,...\n    So you have to determine a number of the following digits: 2, 3, 5, 7, \n    B (=decimal 11), D (=decimal 13).\n    Note: you may assume the input is always correct or empty string, \n    and symbols A,B,C,D,E,F are always uppercase.\n    Examples:\n    For num = \"AB\" the output should be 1.\n    For num = \"1077E\" the output should be 2.\n    For num = \"ABED1A33\" the output should be 4.\n    For num = \"123456789ABCDEF0\" the output should be 6.\n    For num = \"2020\" the output should be 2.\n    \"\"\"\n\n    prime_hex_digits = {'2', '3', '5', '7', 'B'}\n    \n    count = 0\n    \n    for char in num:\n        if char in prime_hex_digits:\n            count += 1\n            \n    return count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/78",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

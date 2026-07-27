@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b1ae59f3f63f74e7884c31a4e33f09e30de12348d16c593f6cac9747ae350964",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "even_odd_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "final_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n\n    Example 1:\n\n        Input: 3\n        Output: (1, 2)\n        Explanation:\n        Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.\n\n    Example 2:\n\n        Input: 12\n        Output: (4, 6)\n        Explanation:\n        Integer palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.\n\n    Note:\n        1. 1 <= n <= 10^3\n        2. returned tuple has the number of even and odd integer palindromes respectively.\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        s_i = str(i)\n        if s_i == s_i[::-1]:\n            num_val = int(s_i)\n            if num_val % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/107:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "post_h2_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "post_h3_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "post_h4_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5f121eeee29ff36a969e08c3493a0e22def24969391172a3f624e77c44388102",
+  "raw_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n\n    Example 1:\n\n        Input: 3\n        Output: (1, 2)\n        Explanation:\n        Integer palindrome are 1, 2, 3. one of them is even, and two of them are odd.\n\n    Example 2:\n\n        Input: 12\n        Output: (4, 6)\n        Explanation:\n        Integer palindrome are 1, 2, 3, 4, 5, 6, 7, 8, 9, 11. four of them are even, and 6 of them are odd.\n\n    Note:\n        1. 1 <= n <= 10^3\n        2. returned tuple has the number of even and odd integer palindromes respectively.\n    \"\"\"\n\n\n# Additional requirements:\n# - Return only executable Python code that completes the function above.\n# - Do not wrap the code in Markdown code fences (no ``` or ```python).\n# - Do not output any explanation or commentary outside the code.\n# - Preserve the given function name and signature exactly as provided.\n# - Do not change the intended meaning/behavior of the task.\n# - Do not add hints or solution guidance specific to this task.\n\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        s_i = str(i)\n        if s_i == s_i[::-1]:\n            num_val = int(s_i)\n            if num_val % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/107",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

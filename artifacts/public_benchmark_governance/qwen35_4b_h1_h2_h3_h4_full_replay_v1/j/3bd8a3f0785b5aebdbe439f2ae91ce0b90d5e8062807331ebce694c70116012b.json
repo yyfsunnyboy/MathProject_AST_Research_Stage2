@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3bd8a3f0785b5aebdbe439f2ae91ce0b90d5e8062807331ebce694c70116012b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "factorize",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "final_source": "from typing import List\n\n\ndef factorize(n: int) -> List[int]:\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    Each of the factors should be listed number of times corresponding to how many times it appeares in factorization.\n    Input number should be equal to the product of all factors\n\n    >>> factorize(8)\n    [2, 2, 2]\n    >>> factorize(25)\n    [5, 5]\n    >>> factorize(70)\n    [2, 5, 7]\n    \"\"\"\n    if n <= 1:\n        return []\n\n    factors = []\n    d = 2\n\n    # Handle the even part first to reduce number of iterations later\n    while n % d == 0:\n        factors.append(d)\n        n //= d\n\n    # Check odd divisors from 3 upwards up to sqrt(n)\n    i = 3\n    import math\n    limit = int(math.isqrt(n)) + 1\n    while i <= limit and n > 1:\n        if n % i == 0:\n            factors.append(i)\n            n //= i\n            # Update limit because n has changed\n            limit = int(math.isqrt(n)) + 1\n        else:\n            i += 2\n\n    # If there's any remaining factor greater than 2 (and > sqrt(original_n)), it is prime itself.\n    if n > 1:\n        factors.append(n)\n\n    return factors\n\n\n# Example usage tests can be added here, but the docstring already provides them.\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/25:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "post_h2_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "post_h3_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "post_h4_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5832193f4119f0e99dbd46f9d709045a178e42edc1e7164d31dd7ce7281e821f",
+  "raw_source": "from typing import List\n\n\ndef factorize(n: int) -> List[int]:\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    Each of the factors should be listed number of times corresponding to how many times it appeares in factorization.\n    Input number should be equal to the product of all factors\n\n    >>> factorize(8)\n    [2, 2, 2]\n    >>> factorize(25)\n    [5, 5]\n    >>> factorize(70)\n    [2, 5, 7]\n    \"\"\"\n    if n <= 1:\n        return []\n\n    factors = []\n    d = 2\n\n    # Handle the even part first to reduce number of iterations later\n    while n % d == 0:\n        factors.append(d)\n        n //= d\n\n    # Check odd divisors from 3 upwards up to sqrt(n)\n    i = 3\n    import math\n    limit = int(math.isqrt(n)) + 1\n    while i <= limit and n > 1:\n        if n % i == 0:\n            factors.append(i)\n            n //= i\n            # Update limit because n has changed\n            limit = int(math.isqrt(n)) + 1\n        else:\n            i += 2\n\n    # If there's any remaining factor greater than 2 (and > sqrt(original_n)), it is prime itself.\n    if n > 1:\n        factors.append(n)\n\n    return factors\n\n\n# Example usage tests can be added here, but the docstring already provides them.\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/25",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

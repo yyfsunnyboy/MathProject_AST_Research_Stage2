@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f7e0867802ecd8c8b29d833c0768e70b56205bf65666f57e475d587b32bc22a0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "flip_case",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "final_source": "def flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n    return ''.join(\n        char.swapcase() if char.isalpha() else char for char in string\n    )",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/27:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "post_h2_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "post_h3_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "post_h4_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "185a90842bc3a90f906985a56f82237c3474c41af8a142714cb06175ec099801",
+  "raw_source": "def flip_case(string: str) -> str:\n    \"\"\" For a given string, flip lowercase characters to uppercase and uppercase to lowercase.\n    >>> flip_case('Hello')\n    'hELLO'\n    \"\"\"\n    return ''.join(\n        char.swapcase() if char.isalpha() else char for char in string\n    )",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/27",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

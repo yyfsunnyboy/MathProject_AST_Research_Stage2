@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7cd958fe738aae17ab8b04885fc3ed154c9aa39f774cf0d589bec9698b7ca02a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_even",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "final_source": "def sort_even(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the odd indicies, while its values at the even indicies are equal\n    to the values of the even indicies of l, but sorted.\n    >>> sort_even([1, 2, 3])\n    [1, 2, 3]\n    >>> sort_even([5, 6, 3, 4])\n    [3, 6, 5, 4]\n    \"\"\"\n\n    even_indices = []\n    for i in range(0, len(l), 2):\n        even_indices.append((i, l[i]))\n    \n    sorted_even_values = sorted([val for _, val in even_indices])\n    \n    result = [None] * len(l)\n    idx = 0\n    \n    # Fill odd indices with original values (preserving order and content at odd positions)\n    for i in range(1, len(l), 2):\n        result[i] = l[i]\n    \n    # Fill even indices with sorted values\n    for j in range(len(even_indices)):\n        if idx < len(result):\n            result[idx] = sorted_even_values[j]\n        \n        idx += 1\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/37:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "post_h2_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "post_h3_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "post_h4_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3f969e33852425846283995d181782b3c854532f22d38b52dfc153618c3379db",
+  "raw_source": "def sort_even(l: list):\n    \"\"\"This function takes a list l and returns a list l' such that\n    l' is identical to l in the odd indicies, while its values at the even indicies are equal\n    to the values of the even indicies of l, but sorted.\n    >>> sort_even([1, 2, 3])\n    [1, 2, 3]\n    >>> sort_even([5, 6, 3, 4])\n    [3, 6, 5, 4]\n    \"\"\"\n\n    even_indices = []\n    for i in range(0, len(l), 2):\n        even_indices.append((i, l[i]))\n    \n    sorted_even_values = sorted([val for _, val in even_indices])\n    \n    result = [None] * len(l)\n    idx = 0\n    \n    # Fill odd indices with original values (preserving order and content at odd positions)\n    for i in range(1, len(l), 2):\n        result[i] = l[i]\n    \n    # Fill even indices with sorted values\n    for j in range(len(even_indices)):\n        if idx < len(result):\n            result[idx] = sorted_even_values[j]\n        \n        idx += 1\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/37",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

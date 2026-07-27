@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "addccbe5aff10262ea0cce824ee951a1002ddc38bfd0409b145cbca171186fa4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_max_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "final_source": "def get_max_sum(n):\n    memo = {}\n\n    def helper(num):\n        if num in memo:\n            return memo[num]\n        \n        # Base case for small numbers where n is better than recursive calls\n        # For example, f(1) should be 1 since dividing results in fractions or smaller values that don't grow.\n        # The problem implies integer division usually, but let's handle the logic carefully.\n        # If num <= 4: max(num, sum of parts). \n        # Actually, for n=60, result is 106. Let's trace manually to understand base cases.\n        # f(5) = max(f(2)+f(3)+f(4), 5)? No, the equation says (f(n/2)+...+f(n/5)) or n.\n        # If we use integer division: \n        # Let's assume standard behavior where if all recursive calls are smaller than n, return n?\n        # Actually, for small numbers like 1, f(0) is undefined so base case needed.\n        \n        parts = [num // i for i in range(2, 6)]\n        sum_parts = helper(parts[0]) + helper(parts[1]) + helper(parts[2]) + helper(parts[3]) if len(parts) == 4 else num\n        \n        # Wait, the equation is f(n/2) + f(n/3) + f(n/4) + f(n/5).\n        # If n < 60, say n=1. \n        # Let's re-evaluate base cases based on typical solutions for this specific problem (often found in coding challenges like LeetCode or similar dynamic programming tasks involving max sum with division).\n        \n        # Correct logic:\n        if num <= 4:\n            return num\n        \n        res = helper(num // 2) + helper(num // 3) + helper(num // 4) + helper(num // 5)\n        final_val = n if res < n else res\n        memo[num] = final_val\n        return final_val\n\n    # However, the equation is f(n/2)+f(n/3)+f(n/4)+f(n/5). \n    # Let's re-read carefully: max( (sum of recursive calls), n )\n    # If we start with 60.\n    # We need to ensure integer division behavior matches expected output 106 for input 60.\n    \n    return helper(n)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/392:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "post_h2_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "post_h3_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "post_h4_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "15f995cfa2ab49de8897e8a516b2f5c1b3ffea42d0ff4c92e82225948d7ee8d4",
+  "raw_source": "def get_max_sum(n):\n    memo = {}\n\n    def helper(num):\n        if num in memo:\n            return memo[num]\n        \n        # Base case for small numbers where n is better than recursive calls\n        # For example, f(1) should be 1 since dividing results in fractions or smaller values that don't grow.\n        # The problem implies integer division usually, but let's handle the logic carefully.\n        # If num <= 4: max(num, sum of parts). \n        # Actually, for n=60, result is 106. Let's trace manually to understand base cases.\n        # f(5) = max(f(2)+f(3)+f(4), 5)? No, the equation says (f(n/2)+...+f(n/5)) or n.\n        # If we use integer division: \n        # Let's assume standard behavior where if all recursive calls are smaller than n, return n?\n        # Actually, for small numbers like 1, f(0) is undefined so base case needed.\n        \n        parts = [num // i for i in range(2, 6)]\n        sum_parts = helper(parts[0]) + helper(parts[1]) + helper(parts[2]) + helper(parts[3]) if len(parts) == 4 else num\n        \n        # Wait, the equation is f(n/2) + f(n/3) + f(n/4) + f(n/5).\n        # If n < 60, say n=1. \n        # Let's re-evaluate base cases based on typical solutions for this specific problem (often found in coding challenges like LeetCode or similar dynamic programming tasks involving max sum with division).\n        \n        # Correct logic:\n        if num <= 4:\n            return num\n        \n        res = helper(num // 2) + helper(num // 3) + helper(num // 4) + helper(num // 5)\n        final_val = n if res < n else res\n        memo[num] = final_val\n        return final_val\n\n    # However, the equation is f(n/2)+f(n/3)+f(n/4)+f(n/5). \n    # Let's re-read carefully: max( (sum of recursive calls), n )\n    # If we start with 60.\n    # We need to ensure integer division behavior matches expected output 106 for input 60.\n    \n    return helper(n)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/392",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

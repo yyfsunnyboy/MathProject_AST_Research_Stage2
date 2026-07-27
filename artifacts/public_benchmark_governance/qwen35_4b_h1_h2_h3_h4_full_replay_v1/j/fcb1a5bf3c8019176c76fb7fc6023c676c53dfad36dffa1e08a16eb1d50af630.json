@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "fcb1a5bf3c8019176c76fb7fc6023c676c53dfad36dffa1e08a16eb1d50af630",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "expensive_items",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "final_source": "def expensive_items(dataset, n):\n    sorted_dataset = sorted(dataset, key=lambda item: item['price'], reverse=True)\n    return [item for item in sorted_dataset[:n]]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/585:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "post_h2_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "post_h3_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "post_h4_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7d637c27aa496aeccadf8317cb3000b1a8279e063bac0556c0c529a0ef93251a",
+  "raw_source": "def expensive_items(dataset, n):\n    sorted_dataset = sorted(dataset, key=lambda item: item['price'], reverse=True)\n    return [item for item in sorted_dataset[:n]]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/585",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

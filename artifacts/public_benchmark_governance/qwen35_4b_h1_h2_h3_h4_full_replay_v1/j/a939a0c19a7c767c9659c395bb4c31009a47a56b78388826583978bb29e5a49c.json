@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a939a0c19a7c767c9659c395bb4c31009a47a56b78388826583978bb29e5a49c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sum_Of_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ee0ded1609872a9ea44577b5f379eb358373765c0cc7b1470500ed37dd4fd7c4",
+  "final_source": "import math\n\ndef combinations(n, k):\n    \"\"\"Calculate nCk\"\"\"\n    if k < 0 or k > n:\n        return 0\n    # Using iterative approach to keep it efficient and avoid large intermediate factorials \n    # though Python handles big ints automatically.\n    res = 1\n    for i in range(k):\n        res *= (n - i) // (i + 1)\n    return res\n\ndef sum_Of_product(n):\n    \"\"\"\n    Finds the sum of the product of consecutive binomial coefficients \n    for a given n: Sum(C(n, k) * C(n, k+1)) for k from 0 to n-1.\n    \n    Example n=3: Coeffs [1, 3, 3, 1] -> (1*3 + 3*3 + 3*1) = 15\n    \"\"\"\n    if n < 2:\n        return 0 # No consecutive pairs possible\n    \n    coeffs = []\n    for k in range(n + 1):\n        coeffs.append(combinations(n, k))\n    \n    total_sum = 0\n    for i in range(len(coeffs) - 1):\n        product = coeffs[i] * coeffs[i+1]\n        total_sum += product\n        \n    return total_sum\n\n# Test assertion\nif __name__ == \"__main__\":\n    assert sum_Of_product(3) == 15\n    print(\"All tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/592:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "613b750b7f2f6ca9d64d8d276de2df8afe669cb1c0ccfacf8d8261ec2b4791dc",
+  "post_h2_sha256": "e4378ea1e9e45de487d8731efb21a2153a4ff08cdfb3ed960a1210e7d952916d",
+  "post_h3_sha256": "e4378ea1e9e45de487d8731efb21a2153a4ff08cdfb3ed960a1210e7d952916d",
+  "post_h4_sha256": "ee0ded1609872a9ea44577b5f379eb358373765c0cc7b1470500ed37dd4fd7c4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "613b750b7f2f6ca9d64d8d276de2df8afe669cb1c0ccfacf8d8261ec2b4791dc",
+  "raw_source": "import math\n\ndef combinations(n, k):\n    \"\"\"Calculate nCk\"\"\"\n    if k < 0 or k > n:\n        return 0\n    # Using iterative approach to keep it efficient and avoid large intermediate factorials \n    # though Python handles big ints automatically.\n    res = 1\n    for i in range(k):\n        res *= (n - i) // (i + 1)\n    return res\n\ndef sum_Of_product(n):\n    \"\"\"\n    Finds the sum of the product of consecutive binomial coefficients \n    for a given n: Sum(C(n, k) * C(n, k+1)) for k from 0 to n-1.\n    \n    Example n=3: Coeffs [1, 3, 3, 1] -> (1*3 + 3*3 + 3*1) = 15\n    \"\"\"\n    if n < 2:\n        return 0 # No consecutive pairs possible\n    \n    coeffs = []\n    for k in range(n + 1):\n        coeffs.append(combinations(n, k))\n    \n    total_sum = 0\n    for i in range(len(coeffs) - 1):\n        product = coeffs[i] * coeffs[i+1]\n        total_sum += product\n        \n    return total_sum\n\n# Test assertion\nassert sum_Of_product(3) == 15\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/592",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

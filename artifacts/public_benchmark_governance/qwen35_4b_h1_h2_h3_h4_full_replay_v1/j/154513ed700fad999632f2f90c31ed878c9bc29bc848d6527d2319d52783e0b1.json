@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "154513ed700fad999632f2f90c31ed878c9bc29bc848d6527d2319d52783e0b1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encrypt",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "final_source": "def encrypt(s):\n    alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n    shifted_alphabet = alphabet[2:] + alphabet[:2]\n    \n    result = \"\"\n    for char in s:\n        if 'a' <= char.lower() <= 'z':\n            index = alphabet.index(char)\n            new_index = (index - 10) % 26\n            shifted_char = shifted_alphabet[new_index]\n            \n            # Preserve case\n            result += shifted_char.upper() if char.isupper() else shifted_char\n            \n        elif char == ' ':\n            result += \" \"\n        else:\n            result += char\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/89:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "post_h2_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "post_h3_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "post_h4_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aca1d61db8adaf548033d9102e36c8a073fccd46144dd1a9eed7232b2265af0e",
+  "raw_source": "def encrypt(s):\n    alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n    shifted_alphabet = alphabet[2:] + alphabet[:2]\n    \n    result = \"\"\n    for char in s:\n        if 'a' <= char.lower() <= 'z':\n            index = alphabet.index(char)\n            new_index = (index - 10) % 26\n            shifted_char = shifted_alphabet[new_index]\n            \n            # Preserve case\n            result += shifted_char.upper() if char.isupper() else shifted_char\n            \n        elif char == ' ':\n            result += \" \"\n        else:\n            result += char\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/89",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

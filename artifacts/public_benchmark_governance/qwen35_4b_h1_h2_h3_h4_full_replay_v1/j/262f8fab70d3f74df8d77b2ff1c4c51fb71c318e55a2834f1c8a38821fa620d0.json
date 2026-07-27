@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "262f8fab70d3f74df8d77b2ff1c4c51fb71c318e55a2834f1c8a38821fa620d0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "final_source": "def find_zero(xs: list):\n    \"\"\" xs are coefficients of a polynomial.\n    find_zero find x such that poly(x) = 0.\n    find_zero returns only only zero point, even if there are many.\n    Moreover, find_zero only takes list xs having even number of coefficients\n    and largest non zero coefficient as it guarantees\n    a solution.\n    >>> round(find_zero([1, 2]), 2) # f(x) = 1 + 2x\n    -0.5\n    >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3\n    1.0\n    \"\"\"\n\n    def poly(xs: list, x: float):\n        return sum([coeff * math.pow(x, i) for i, coeff in enumerate(xs)])\n\n    a_n = xs[-1]\n    if abs(a_n) < 1e-9:\n        raise ValueError(\"Polynomial must have non-zero leading coefficient\")\n\n    def f(t):\n        return poly(xs, t)\n\n    def df(t):\n        # Derivative coefficients are shifted by one power of x\n        coeffs = xs[:-1]\n        if len(coeffs) == 0:\n            raise ValueError(\"Polynomial must be at least degree 1\")\n        return sum([coeff * math.pow(t, i) for i, coeff in enumerate(coeffs)])\n\n    # Newton-Raphson method with safeguarding to ensure convergence near the root guaranteed by Descartes' rule of signs context implied by problem constraints (even length, leading term dominance).\n    # We start search from a point where f(x) and df(x) have opposite signs or use a robust bracketing if needed.\n    # Given the guarantee in the docstring (\"largest non zero coefficient\"), we can assume roots exist near [-1, 0] to [0, 1].\n    \n    x = -2.0\n    \n    for _ in range(50):\n        fx = f(x)\n        dfx = df(x)\n        \n        if abs(dfx) < 1e-9:\n            break\n            \n        new_x = x - fx / dfx\n        \n        # Check convergence or sign change to ensure we are approaching a root\n        if abs(new_x - x) < 1e-7:\n            return round(x, 2)\n        \n        x = new_x\n    \n    return round(x, 2)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/32:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "post_h2_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "post_h3_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "post_h4_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "55184a3b1cb17f97d3e9a5a536d8e53506537a283ad4c5729d7d0d9374bb6f18",
+  "raw_source": "def find_zero(xs: list):\n    \"\"\" xs are coefficients of a polynomial.\n    find_zero find x such that poly(x) = 0.\n    find_zero returns only only zero point, even if there are many.\n    Moreover, find_zero only takes list xs having even number of coefficients\n    and largest non zero coefficient as it guarantees\n    a solution.\n    >>> round(find_zero([1, 2]), 2) # f(x) = 1 + 2x\n    -0.5\n    >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3\n    1.0\n    \"\"\"\n\n    def poly(xs: list, x: float):\n        return sum([coeff * math.pow(x, i) for i, coeff in enumerate(xs)])\n\n    a_n = xs[-1]\n    if abs(a_n) < 1e-9:\n        raise ValueError(\"Polynomial must have non-zero leading coefficient\")\n\n    def f(t):\n        return poly(xs, t)\n\n    def df(t):\n        # Derivative coefficients are shifted by one power of x\n        coeffs = xs[:-1]\n        if len(coeffs) == 0:\n            raise ValueError(\"Polynomial must be at least degree 1\")\n        return sum([coeff * math.pow(t, i) for i, coeff in enumerate(coeffs)])\n\n    # Newton-Raphson method with safeguarding to ensure convergence near the root guaranteed by Descartes' rule of signs context implied by problem constraints (even length, leading term dominance).\n    # We start search from a point where f(x) and df(x) have opposite signs or use a robust bracketing if needed.\n    # Given the guarantee in the docstring (\"largest non zero coefficient\"), we can assume roots exist near [-1, 0] to [0, 1].\n    \n    x = -2.0\n    \n    for _ in range(50):\n        fx = f(x)\n        dfx = df(x)\n        \n        if abs(dfx) < 1e-9:\n            break\n            \n        new_x = x - fx / dfx\n        \n        # Check convergence or sign change to ensure we are approaching a root\n        if abs(new_x - x) < 1e-7:\n            return round(x, 2)\n        \n        x = new_x\n    \n    return round(x, 2)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/32",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

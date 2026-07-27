@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "465489d6462456f7aa81615edefbfb2b461e5aa3f9b2ea332a8eb81b4a34d99c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Min",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0e5a8b9f67b0374a23d240243aa13e9d7df9f6c086b6387c387abe3a04f158da",
+  "final_source": "def Find_Min(sublists):\n    \"\"\"\n    Returns the sublist with the minimum length from a list of sublists.\n    \n    If there are multiple sublists with the same minimal length, \n    returns the first one encountered (standard behavior unless specified otherwise).\n    \n    Args:\n        sublists (list[list]): A non-empty list of lists\n        \n    Returns:\n        list: The sublist with minimum length\n        \n    Raises:\n        ValueError: If input is empty or not a list of lists\n    \"\"\"\n    if not isinstance(sublists, list) or len(sublists) == 0:\n        raise ValueError(\"Input must be a non-empty list\")\n    \n    min_len = float('inf')\n    result_sublist = None\n    \n    for sublist in sublists:\n        # Ensure each element is actually a list (basic validation)\n        if not isinstance(sublist, list):\n            continue\n            \n        current_len = len(sublist)\n        \n        # Update minimum length and store the first occurrence of that length\n        if current_len < min_len:\n            min_len = current_len\n            result_sublist = sublist\n    \n    return result_sublist\n\n\n# Test case from your example\nif __name__ == \"__main__\":\n    assert Find_Min([[1],[1,2],[1,2,3]]) == [1]\n    print(\"Test passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/457:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d3958633c8ed47b89506f8bacb4796e99818fcf048bad9ec1187ac98eb027c7d",
+  "post_h2_sha256": "212aa619c55db376e6d15aec58454b1fda0a981625e3ae379e9d6ae0e5e3ebbb",
+  "post_h3_sha256": "212aa619c55db376e6d15aec58454b1fda0a981625e3ae379e9d6ae0e5e3ebbb",
+  "post_h4_sha256": "0e5a8b9f67b0374a23d240243aa13e9d7df9f6c086b6387c387abe3a04f158da",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d3958633c8ed47b89506f8bacb4796e99818fcf048bad9ec1187ac98eb027c7d",
+  "raw_source": "def Find_Min(sublists):\n    \"\"\"\n    Returns the sublist with the minimum length from a list of sublists.\n    \n    If there are multiple sublists with the same minimal length, \n    returns the first one encountered (standard behavior unless specified otherwise).\n    \n    Args:\n        sublists (list[list]): A non-empty list of lists\n        \n    Returns:\n        list: The sublist with minimum length\n        \n    Raises:\n        ValueError: If input is empty or not a list of lists\n    \"\"\"\n    if not isinstance(sublists, list) or len(sublists) == 0:\n        raise ValueError(\"Input must be a non-empty list\")\n    \n    min_len = float('inf')\n    result_sublist = None\n    \n    for sublist in sublists:\n        # Ensure each element is actually a list (basic validation)\n        if not isinstance(sublist, list):\n            continue\n            \n        current_len = len(sublist)\n        \n        # Update minimum length and store the first occurrence of that length\n        if current_len < min_len:\n            min_len = current_len\n            result_sublist = sublist\n    \n    return result_sublist\n\n\n# Test case from your example\nassert Find_Min([[1],[1,2],[1,2,3]]) == [1]\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/457",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "8fd0d0dc59fc021229d4c311e482491c853fb7df5d8c939948cfefd723417f6f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_Occ",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "41969625b19806c13e07ed5bc3e1e797768e4df1198869b070e72737bfc47375",
+  "final_source": "def remove_occ(s: str, char: str) -> str:\n    \"\"\"\n    Remove the first and last occurrences of `char` in string `s`.\n    \n    Examples:\n        remove_occ(\"hello\", \"l\")  # returns \"heo\"\n        remove_occ(\"banana\", \"a\") # returns \"bnna\" (first 'a' at index 1, last at 5)\n        remove_occ(\"aaa\", \"a\")   # returns \"\" (all removed if first == last and only one char left? \n                                 # Actually: indices of all 'a': [0,1,2]. First=0, Last=2. Remove both -> middle is index 1 ('a') kept?\n                                 # Let's clarify logic below.)\n    \"\"\"\n\n    # Find the first occurrence\n    try:\n        start = s.index(char)\n    except ValueError:\n        return s  # Character not found; return original string\n    \n    # Find the last occurrence (from end or using rfind)\n    try:\n        end = s.rindex(char)\n    except ValueError:\n        return s  # Shouldn't happen if start exists, but safe fallback\n\n    # If first and last are the same index, it means only one character matches.\n    # We remove that single occurrence (since both \"first\" and \"last\" refer to the same).\n    if start == end:\n        return s[:start] + s[start+1:]\n    \n    # Remove characters from first_occurrence_index up to last_occurrence_index inclusive? \n    # The problem says \"remove first AND last occurrence\". Usually this means remove those two specific indices.\n    # But sometimes it might mean the substring between them is removed too depending on interpretation.\n    # Based on example: \"hello\", 'l' -> indices of 'l': 1, 2 (0-based). \n    # First=1 ('h','e','**l**'), Last=3? Wait let's index properly:\n    # h e l l o\n    # 0 1 2 3 4\n    # 'l' is at indices 2 and 3.\n    # Remove first (index 2) AND last (index 3). Result should be \"heo\". Correct.\n\n    if start == end:\n        return s[:start] + s[start+1:]\n    \n    # We need to remove the character at `start` and the character at `end`.\n    # If they are adjacent, we can just slice out both indices.\n    # Example: \"banana\", 'a' -> b(0) a(1) n(2) a(3) n(4) a(5). \n    # First=1, Last=5. Remove index 1 and 5. Result: bnna (indices 0,2,3,4 kept).\n    \n    if end == start + 1:\n        return s[:start] + s[start+2:]\n    else:\n        return s[:start] + s[start+1:end] + s[end+1:]\n\n\n# Test cases based on the prompt and logic\nassert remove_occ(\"hello\", \"l\") == \"heo\"\nprint(remove_occ(\"banana\", \"a\"))  # Expected: 'bnna'\n\nremove_Occ = remove_occ\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/11:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "41969625b19806c13e07ed5bc3e1e797768e4df1198869b070e72737bfc47375",
+  "post_h2_sha256": "41969625b19806c13e07ed5bc3e1e797768e4df1198869b070e72737bfc47375",
+  "post_h3_sha256": "41969625b19806c13e07ed5bc3e1e797768e4df1198869b070e72737bfc47375",
+  "post_h4_sha256": "41969625b19806c13e07ed5bc3e1e797768e4df1198869b070e72737bfc47375",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1a4dfafdd0aa8ed50523243f95e6829de7cf5aef7483552cebbdec57d862f98b",
+  "raw_source": "def remove_occ(s: str, char: str) -> str:\n    \"\"\"\n    Remove the first and last occurrences of `char` in string `s`.\n    \n    Examples:\n        remove_occ(\"hello\", \"l\")  # returns \"heo\"\n        remove_occ(\"banana\", \"a\") # returns \"bnna\" (first 'a' at index 1, last at 5)\n        remove_occ(\"aaa\", \"a\")   # returns \"\" (all removed if first == last and only one char left? \n                                 # Actually: indices of all 'a': [0,1,2]. First=0, Last=2. Remove both -> middle is index 1 ('a') kept?\n                                 # Let's clarify logic below.)\n    \"\"\"\n\n    # Find the first occurrence\n    try:\n        start = s.index(char)\n    except ValueError:\n        return s  # Character not found; return original string\n    \n    # Find the last occurrence (from end or using rfind)\n    try:\n        end = s.rindex(char)\n    except ValueError:\n        return s  # Shouldn't happen if start exists, but safe fallback\n\n    # If first and last are the same index, it means only one character matches.\n    # We remove that single occurrence (since both \"first\" and \"last\" refer to the same).\n    if start == end:\n        return s[:start] + s[start+1:]\n    \n    # Remove characters from first_occurrence_index up to last_occurrence_index inclusive? \n    # The problem says \"remove first AND last occurrence\". Usually this means remove those two specific indices.\n    # But sometimes it might mean the substring between them is removed too depending on interpretation.\n    # Based on example: \"hello\", 'l' -> indices of 'l': 1, 2 (0-based). \n    # First=1 ('h','e','**l**'), Last=3? Wait let's index properly:\n    # h e l l o\n    # 0 1 2 3 4\n    # 'l' is at indices 2 and 3.\n    # Remove first (index 2) AND last (index 3). Result should be \"heo\". Correct.\n\n    if start == end:\n        return s[:start] + s[start+1:]\n    \n    # We need to remove the character at `start` and the character at `end`.\n    # If they are adjacent, we can just slice out both indices.\n    # Example: \"banana\", 'a' -> b(0) a(1) n(2) a(3) n(4) a(5). \n    # First=1, Last=5. Remove index 1 and 5. Result: bnna (indices 0,2,3,4 kept).\n    \n    if end == start + 1:\n        return s[:start] + s[start+2:]\n    else:\n        return s[:start] + s[start+1:end] + s[end+1:]\n\n\n# Test cases based on the prompt and logic\nassert remove_occ(\"hello\", \"l\") == \"heo\"\nprint(remove_occ(\"banana\", \"a\"))  # Expected: 'bnna'\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/11",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

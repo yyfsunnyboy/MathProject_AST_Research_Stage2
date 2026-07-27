@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6fe97dc825cb4741c346a327ab14d0b4c36f06b1f5c250d8b7b6814c8e172afc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_sum_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7812bc7301bc4a09c28f332fd958dc6328b23607107766ac071ef39c6356efb1",
+  "final_source": "def max_sum_list(list_of_lists):\n    # Handle edge case: empty input list\n    if not list_of_lists:\n        return []\n\n    # Initialize with the first element's sum and value\n    current_max = 0\n    result_index = -1\n    \n    for i, sublist in enumerate(list_of_lists):\n        s = sum(sublist)\n        \n        # Update max_sum and index if we find a higher sum\n        if s > current_max:\n            current_max = s\n            result_index = i\n            \n    return list_of_lists[result_index]\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    assert max_sum_list([[1,2,3], [4,5,6], [10,11,12], [7,8,9]]) == [10, 11, 12]\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/805:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b6b0acc39cad5f06bab6a52971a039c2e971ffdf99b9caf76ab1afda690dd648",
+  "post_h2_sha256": "d3d5e3e7121bd248053a6a1cb13cec800c281f7da8c3096739017dbbe08da923",
+  "post_h3_sha256": "d3d5e3e7121bd248053a6a1cb13cec800c281f7da8c3096739017dbbe08da923",
+  "post_h4_sha256": "7812bc7301bc4a09c28f332fd958dc6328b23607107766ac071ef39c6356efb1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b6b0acc39cad5f06bab6a52971a039c2e971ffdf99b9caf76ab1afda690dd648",
+  "raw_source": "def max_sum_list(list_of_lists):\n    # Handle edge case: empty input list\n    if not list_of_lists:\n        return []\n\n    # Initialize with the first element's sum and value\n    current_max = 0\n    result_index = -1\n    \n    for i, sublist in enumerate(list_of_lists):\n        s = sum(sublist)\n        \n        # Update max_sum and index if we find a higher sum\n        if s > current_max:\n            current_max = s\n            result_index = i\n            \n    return list_of_lists[result_index]\n\n# Test cases based on your requirement\nassert max_sum_list([[1,2,3], [4,5,6], [10,11,12], [7,8,9]]) == [10, 11, 12]\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/805",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

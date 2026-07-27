@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c8e2b05de57b3da3226c09da1c556e4e14ff601e6cb158d090defc907959f6a5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_even_pair",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "final_source": "def find_even_pair(nums):\n    count = 0\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if (nums[i] ^ nums[j]) % 2 == 0:\n                count += 1\n    return count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/166:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "post_h2_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "post_h3_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "post_h4_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cd02bfb88c57866dace0daf4b560f6e77bfd67fa6aa5f1f1af38692d3e3800fc",
+  "raw_source": "def find_even_pair(nums):\n    count = 0\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if (nums[i] ^ nums[j]) % 2 == 0:\n                count += 1\n    return count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/166",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

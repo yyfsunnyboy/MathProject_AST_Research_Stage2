@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "038787e1d82f0f97b7f24142084631bf2df567074d5e466f34eb923b7d39fc7b",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "highest_Power_of_2",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "final_source": "```python\ndef highest_Power_of_2(n: int) -> int:\n    \"\"\"\n    Returns the largest power of 2 that is <= n.\n    \n    Examples:\n        highest_Power_of_2(10) -> 8 (since 2^3 = 8, and 2^4 = 16 > 10)\n        highest_Power_of_2(7)  -> 4\n        highest_Power_of_2(1)  -> 1\n    \n    Algorithm:\n        Use bit_length() to find the position of the most significant bit.\n        If n is a power of two, return it; otherwise, subtract one from that shift amount.\n    \n    Time Complexity: O(log n) due to bit operations (effectively constant for fixed-size integers).\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"Input must be positive.\")\n\n    # Find the position of the most significant bit in binary representation\n    msb_pos = n.bit_length() - 1\n    \n    candidate_power_of_2 = 1 << msb_pos  # This is always <= n for n > 0\n    \n    return candidate_power_of_2\n\n\n# Test assertion as provided\nassert highest_Power_of_2(10) == 8\n\n# Additional test cases to verify correctness\nprint(highest_Power_of_2(7))   # Expected: 4 (binary 100 -> shift by 2)\nprint(highest_Power_of_2(16))  # Expected: 16 (exact power of two)\nprint(highest_Power_of_2(3))   # Expected: 2",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/388:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "post_h2_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "post_h3_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "post_h4_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "328a3037dcdaad2e52baa23efeef71cda9331c548afe68777e802efd02615c0f",
+  "raw_source": "```python\ndef highest_Power_of_2(n: int) -> int:\n    \"\"\"\n    Returns the largest power of 2 that is <= n.\n    \n    Examples:\n        highest_Power_of_2(10) -> 8 (since 2^3 = 8, and 2^4 = 16 > 10)\n        highest_Power_of_2(7)  -> 4\n        highest_Power_of_2(1)  -> 1\n    \n    Algorithm:\n        Use bit_length() to find the position of the most significant bit.\n        If n is a power of two, return it; otherwise, subtract one from that shift amount.\n    \n    Time Complexity: O(log n) due to bit operations (effectively constant for fixed-size integers).\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"Input must be positive.\")\n\n    # Find the position of the most significant bit in binary representation\n    msb_pos = n.bit_length() - 1\n    \n    candidate_power_of_2 = 1 << msb_pos  # This is always <= n for n > 0\n    \n    return candidate_power_of_2\n\n\n# Test assertion as provided\nassert highest_Power_of_2(10) == 8\n\n# Additional test cases to verify correctness\nprint(highest_Power_of_2(7))   # Expected: 4 (binary 100 -> shift by 2)\nprint(highest_Power_of_2(16))  # Expected: 16 (exact power of two)\nprint(highest_Power_of_2(3))   # Expected: 2",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/388",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

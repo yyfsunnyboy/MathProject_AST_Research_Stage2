@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "96a1f6e385db3fe1a710c2d3e5afe5ff3c4d126aa0c09a009aec7a61397bf002",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Extract",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "adda1962ec6f7d179042dc1c7e35447a29c18a7afe56d61995b1a4daa57fc42f",
+  "final_source": "def extract_first_elements(sublist_list):\n    \"\"\"\n    Returns a list containing the first element of each sublist.\n    \n    Args:\n        sublist_list (List[List]): A list of lists\n        \n    Returns:\n        List: A list with the first element from each inner list\n    \n    Example:\n        >>> extract_first_elements([[1, 2], [3, 4, 5], [6, 7, 8, 9]])\n        [1, 3, 6]\n    \"\"\"\n    return [sublist[0] for sublist in sublist_list if len(sublist) > 0]\n\n\n# Test assertion as provided\nassert extract_first_elements([[1, 2], [3, 4, 5], [6, 7, 8, 9]]) == [1, 3, 6]\n\nprint(\"Test passed!\")\n\nExtract = extract_first_elements\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/460:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "adda1962ec6f7d179042dc1c7e35447a29c18a7afe56d61995b1a4daa57fc42f",
+  "post_h2_sha256": "adda1962ec6f7d179042dc1c7e35447a29c18a7afe56d61995b1a4daa57fc42f",
+  "post_h3_sha256": "adda1962ec6f7d179042dc1c7e35447a29c18a7afe56d61995b1a4daa57fc42f",
+  "post_h4_sha256": "adda1962ec6f7d179042dc1c7e35447a29c18a7afe56d61995b1a4daa57fc42f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8d7054ec58a28b9eda87dc4ffed3208ea57c271b6ac1e6f5da062fd73979af71",
+  "raw_source": "def extract_first_elements(sublist_list):\n    \"\"\"\n    Returns a list containing the first element of each sublist.\n    \n    Args:\n        sublist_list (List[List]): A list of lists\n        \n    Returns:\n        List: A list with the first element from each inner list\n    \n    Example:\n        >>> extract_first_elements([[1, 2], [3, 4, 5], [6, 7, 8, 9]])\n        [1, 3, 6]\n    \"\"\"\n    return [sublist[0] for sublist in sublist_list if len(sublist) > 0]\n\n\n# Test assertion as provided\nassert extract_first_elements([[1, 2], [3, 4, 5], [6, 7, 8, 9]]) == [1, 3, 6]\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/460",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "394565bac19ea0f994fb9a1200452515ed6c582919b7831a5db9e20231adad1f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_tuplex",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0cdb6511d2efb79fdd7780d1321c11eabc71c8b44cb178f57c31c094459a517b",
+  "final_source": "def check_tuplex(t, elem):\n    \"\"\"\n    Checks whether an element exists within a tuple.\n    \n    Args:\n        t (tuple): The input tuple to search in.\n        elem: The element to look for.\n        \n    Returns:\n        bool: True if the element is found, False otherwise.\n    \"\"\"\n    return elem in t\n\n# Test case as provided in your request\nif __name__ == \"__main__\":\n    assert check_tuplex((\"w\", 3, \"r\", \"e\", \"s\", \"o\", \"u\", \"r\", \"c\", \"e\"), 'r') == True\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/405:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3780e025e60cb02d1e64036c359901addfb942b5f022818dcbee6358df9c9eda",
+  "post_h2_sha256": "2558342e53e3c8099238e7b6ec55a8c93e4e300f020f8e0fda36e18891cf8fd9",
+  "post_h3_sha256": "2558342e53e3c8099238e7b6ec55a8c93e4e300f020f8e0fda36e18891cf8fd9",
+  "post_h4_sha256": "0cdb6511d2efb79fdd7780d1321c11eabc71c8b44cb178f57c31c094459a517b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3780e025e60cb02d1e64036c359901addfb942b5f022818dcbee6358df9c9eda",
+  "raw_source": "def check_tuplex(t, elem):\n    \"\"\"\n    Checks whether an element exists within a tuple.\n    \n    Args:\n        t (tuple): The input tuple to search in.\n        elem: The element to look for.\n        \n    Returns:\n        bool: True if the element is found, False otherwise.\n    \"\"\"\n    return elem in t\n\n# Test case as provided in your request\nassert check_tuplex((\"w\", 3, \"r\", \"e\", \"s\", \"o\", \"u\", \"r\", \"c\", \"e\"), 'r') == True\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/405",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "other_unclassified_top_level_call_present"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "10d9de95098284c26d5e2bb538a089d526adacd5757fcd0bdd3120e6c9f815a6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_equal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f699f54f24df44f86479ef74b162b843d7684d3f44aff181639f3b903d15ff7e",
+  "final_source": "def get_equal(tuples):\n    \"\"\"\n    Checks if all tuples in a list have equal length.\n    \n    Args:\n        tuples (list of tuple): A list containing multiple tuples.\n        \n    Returns:\n        bool: True if all tuples have the same length, False otherwise.\n    \"\"\"\n    # Handle edge case where input is empty or None\n    if not tuples:\n        return True\n    \n    # Get the length of the first tuple as reference\n    ref_length = len(tuples[0])\n    \n    # Iterate through each tuple and compare its length to the reference\n    for t in tuples:\n        if len(t) != ref_length:\n            return False\n            \n    return True\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    assert get_equal([(11, 22, 33), (44, 55, 66)]) == True\nprint(\"Test passed!\")\n\n# Additional test case for failure scenario\ntry:\n    assert get_equal([(1, 2), (3, 4, 5)]) == False\n    print(\"Additional test passed!\")\nexcept AssertionError:\n    print(\"Error in logic.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/70:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e3422af2c81f49f38e80ce6b0a8477118eeadec79d5c6d3df5bf2ec82c98b98b",
+  "post_h2_sha256": "f699f54f24df44f86479ef74b162b843d7684d3f44aff181639f3b903d15ff7e",
+  "post_h3_sha256": "f699f54f24df44f86479ef74b162b843d7684d3f44aff181639f3b903d15ff7e",
+  "post_h4_sha256": "f699f54f24df44f86479ef74b162b843d7684d3f44aff181639f3b903d15ff7e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e3422af2c81f49f38e80ce6b0a8477118eeadec79d5c6d3df5bf2ec82c98b98b",
+  "raw_source": "def get_equal(tuples):\n    \"\"\"\n    Checks if all tuples in a list have equal length.\n    \n    Args:\n        tuples (list of tuple): A list containing multiple tuples.\n        \n    Returns:\n        bool: True if all tuples have the same length, False otherwise.\n    \"\"\"\n    # Handle edge case where input is empty or None\n    if not tuples:\n        return True\n    \n    # Get the length of the first tuple as reference\n    ref_length = len(tuples[0])\n    \n    # Iterate through each tuple and compare its length to the reference\n    for t in tuples:\n        if len(t) != ref_length:\n            return False\n            \n    return True\n\n# Test cases based on your requirement\nassert get_equal([(11, 22, 33), (44, 55, 66)]) == True\nprint(\"Test passed!\")\n\n# Additional test case for failure scenario\ntry:\n    assert get_equal([(1, 2), (3, 4, 5)]) == False\n    print(\"Additional test passed!\")\nexcept AssertionError:\n    print(\"Error in logic.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/70",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "11dc9a9e639f414c38a50b3b966ec55dc87319f5b63f0831e451562251039e59",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "string_to_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bd0763248988b39d07e9025c98bad47b6fc259df260a8c61408fd1f9013fd683",
+  "final_source": "def string_to_list(text):\n    \"\"\"Converts a string into a list of strings split by spaces.\"\"\"\n    return text.split()  # .split() handles multiple spaces automatically if needed, \n                       # but for single space it works exactly as required.\n\n# Test cases based on your requirement and edge cases\nif __name__ == \"__main__\":\n    assert string_to_list(\"python programming\") == ['python', 'programming']\n    print(\"All assertions passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/118:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "05572b7c909f5a9a32cb204bf4def6080892bb984d203c8067e49079b6877edc",
+  "post_h2_sha256": "1b4ed1272b4dc8f386a2bee753eefc430eb48989d1d908e86480db2cbbde4a5a",
+  "post_h3_sha256": "1b4ed1272b4dc8f386a2bee753eefc430eb48989d1d908e86480db2cbbde4a5a",
+  "post_h4_sha256": "bd0763248988b39d07e9025c98bad47b6fc259df260a8c61408fd1f9013fd683",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "05572b7c909f5a9a32cb204bf4def6080892bb984d203c8067e49079b6877edc",
+  "raw_source": "def string_to_list(text):\n    \"\"\"Converts a string into a list of strings split by spaces.\"\"\"\n    return text.split()  # .split() handles multiple spaces automatically if needed, \n                       # but for single space it works exactly as required.\n\n# Test cases based on your requirement and edge cases\nassert string_to_list(\"python programming\") == ['python', 'programming']\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/118",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8689f92cf5a438301df13920c87b9bbb58f3526a6bf81266eb7fac076447894d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "convert",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "final_source": "import math\n\ndef convert(x):\n    \"\"\"\n    Convert a real number x into its polar representation:\n        r = |x|\n        theta = atan2(y, x) with y = 0\n    \n    For positive x: (x, 0.0)\n    For negative x: (-x, math.pi or -math.pi depending on sign convention; \n                     here we use the principal value from atan2(0, x), which is pi for x < 0).\n    \n    The test case convert(1) == (1.0, 0.0) works directly.\n    \"\"\"\n    r = abs(x)\n    theta = math.atan2(0.0, float(x))  # returns 0 if x > 0, pi if x < 0\n    \n    return r, theta\n\n# Example usage:\nprint(convert(1))   # (1.0, 0.0)\nprint(convert(-5))  # (5.0, 3.141592653589793)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/252:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "post_h2_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "post_h3_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "post_h4_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7fa395841d4f4d225ca8ae2f0436ced0d4b6a64ecfe0b90fec93d5f48cb90594",
+  "raw_source": "import math\n\ndef convert(x):\n    \"\"\"\n    Convert a real number x into its polar representation:\n        r = |x|\n        theta = atan2(y, x) with y = 0\n    \n    For positive x: (x, 0.0)\n    For negative x: (-x, math.pi or -math.pi depending on sign convention; \n                     here we use the principal value from atan2(0, x), which is pi for x < 0).\n    \n    The test case convert(1) == (1.0, 0.0) works directly.\n    \"\"\"\n    r = abs(x)\n    theta = math.atan2(0.0, float(x))  # returns 0 if x > 0, pi if x < 0\n    \n    return r, theta\n\n# Example usage:\nprint(convert(1))   # (1.0, 0.0)\nprint(convert(-5))  # (5.0, 3.141592653589793)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/252",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

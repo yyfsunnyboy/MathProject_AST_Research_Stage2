@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "29e9f01a70015b0fec66be286122a3a9a81c59180c427370c980a6c1a443fa79",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "move_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "final_source": "def move_num(s: str) -> str:\n    \"\"\"\n    Moves all numeric characters to the end of the input string.\n    \n    Args:\n        s (str): The input string containing letters, symbols, and numbers.\n        \n    Returns:\n        str: A new string with all digits moved to the end.\n    \"\"\"\n    chars = []  # List for non-digit characters\n    nums = []   # List for digit characters\n    \n    for char in s:\n        if char.isdigit():\n            nums.append(char)\n        else:\n            chars.append(char)\n            \n    return ''.join(chars + nums)\n\n# Test cases based on the requirement and additional edge cases\nassert move_num('I1love143you55three3000thousand') == 'Iloveyouthreethousand1143553000'\nprint(\"Test 1 passed: Basic case with mixed content\")\n\n# Edge case: String with only numbers\nassert move_num('123abc') == 'abc123'\nprint(\"Test 2 passed: Numbers at start\")\n\n# Edge case: String with no numbers\nassert move_num('HelloWorld!') == 'HelloWorld!'\nprint(\"Test 3 passed: No numbers present\")\n\n# Edge case: Empty string\nassert move_num('') == ''\nprint(\"Test 4 passed: Empty string\")\n\n# Edge case: Only numbers\nassert move_num('12345') == '12345'\nprint(\"Test 5 passed: All numbers (order preserved)\")\n\nprint(\"\\nAll tests passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/619:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "post_h2_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "post_h3_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "post_h4_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1f4c75eaacb5ee4956fc6923e03419115ecddda394882707283a9ab22fac498e",
+  "raw_source": "def move_num(s: str) -> str:\n    \"\"\"\n    Moves all numeric characters to the end of the input string.\n    \n    Args:\n        s (str): The input string containing letters, symbols, and numbers.\n        \n    Returns:\n        str: A new string with all digits moved to the end.\n    \"\"\"\n    chars = []  # List for non-digit characters\n    nums = []   # List for digit characters\n    \n    for char in s:\n        if char.isdigit():\n            nums.append(char)\n        else:\n            chars.append(char)\n            \n    return ''.join(chars + nums)\n\n# Test cases based on the requirement and additional edge cases\nassert move_num('I1love143you55three3000thousand') == 'Iloveyouthreethousand1143553000'\nprint(\"Test 1 passed: Basic case with mixed content\")\n\n# Edge case: String with only numbers\nassert move_num('123abc') == 'abc123'\nprint(\"Test 2 passed: Numbers at start\")\n\n# Edge case: String with no numbers\nassert move_num('HelloWorld!') == 'HelloWorld!'\nprint(\"Test 3 passed: No numbers present\")\n\n# Edge case: Empty string\nassert move_num('') == ''\nprint(\"Test 4 passed: Empty string\")\n\n# Edge case: Only numbers\nassert move_num('12345') == '12345'\nprint(\"Test 5 passed: All numbers (order preserved)\")\n\nprint(\"\\nAll tests passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/619",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

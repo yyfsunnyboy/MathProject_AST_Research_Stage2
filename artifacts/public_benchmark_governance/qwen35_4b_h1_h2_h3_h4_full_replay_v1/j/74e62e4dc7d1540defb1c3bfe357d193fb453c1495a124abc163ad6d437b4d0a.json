@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "74e62e4dc7d1540defb1c3bfe357d193fb453c1495a124abc163ad6d437b4d0a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "special_factorial",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "final_source": "def special_factorial(n):\n    \"\"\"The Brazilian factorial is defined as:\n    brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!\n    where n > 0\n\n    For example:\n    >>> special_factorial(4)\n    288\n\n    The function will receive an integer as input and should return the special\n    factorial of this integer.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    if n < 0:\n        raise ValueError(\"n must be greater than or equal to 0.\")\n\n    # Helper function for regular factorial\n    def fact(k):\n        result = 1\n        for i in range(2, k + 1):\n            result *= i\n        return result\n\n    total = 1\n    for i in range(n, 0, -1):\n        total *= fact(i)\n\n    return total\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(special_factorial(4))  # Output: 288\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/139:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "post_h2_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "post_h3_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "post_h4_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e518ffd72a63d9ab7ad71b2a5a71caef7d9d4df9e1ebf11a594ae7eedb290b0d",
+  "raw_source": "def special_factorial(n):\n    \"\"\"The Brazilian factorial is defined as:\n    brazilian_factorial(n) = n! * (n-1)! * (n-2)! * ... * 1!\n    where n > 0\n\n    For example:\n    >>> special_factorial(4)\n    288\n\n    The function will receive an integer as input and should return the special\n    factorial of this integer.\n    \"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    if n < 0:\n        raise ValueError(\"n must be greater than or equal to 0.\")\n\n    # Helper function for regular factorial\n    def fact(k):\n        result = 1\n        for i in range(2, k + 1):\n            result *= i\n        return result\n\n    total = 1\n    for i in range(n, 0, -1):\n        total *= fact(i)\n\n    return total\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(special_factorial(4))  # Output: 288\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/139",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

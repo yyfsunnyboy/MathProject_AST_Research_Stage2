@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7258215e54e77ffd1a6989afdff5903de6730218434b117a3364a9df3e7ba29f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "drop_empty",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6f5d8dc9d706845ae095946611e11c6f6e36769d9c35a81e834b305bd961216e",
+  "final_source": "def drop_empty(d):\n    \"\"\"\n    Returns a new dictionary with all empty items (values that are None, \n    False, 0, '', or other falsy values) removed.\n    \n    Note: Based on your test case where 'None' was dropped but the logic \n    for \"empty\" usually implies checking if value is None specifically in this context,\n    OR it could mean all falsy values. The provided assertion only tests None.\n    However, to be robust against typical interview questions about \"empty items\",\n    we will check strictly for 'None' as per the specific test case provided,\n    but you can easily extend it if other empty types (like '') are needed later.\n\n    If your definition of \"empty\" includes False or 0:\n        return {k: v for k, v in d.items() if v is not None} \n    \"\"\"\n    \n    # Strictly dropping only 'None' based on the test case provided\n    result = {}\n    for key, value in d.items():\n        if value is not None:\n            result[key] = value\n            \n    return result\n\n# Test assertion from your prompt\nif __name__ == \"__main__\":\n    assert drop_empty({'c1': 'Red', 'c2': 'Green', 'c3':None}) == {'c1': 'Red', 'c2': 'Green'}\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/465:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "40bc98756bc826e6183820dcfe98f7a2b1a51f85c8960c83bc42fe3fea4b11cf",
+  "post_h2_sha256": "e47753c20f36dcb93a6828d4dc12133cab1b16ef1edb2a9c837b5802ead087b8",
+  "post_h3_sha256": "e47753c20f36dcb93a6828d4dc12133cab1b16ef1edb2a9c837b5802ead087b8",
+  "post_h4_sha256": "6f5d8dc9d706845ae095946611e11c6f6e36769d9c35a81e834b305bd961216e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "40bc98756bc826e6183820dcfe98f7a2b1a51f85c8960c83bc42fe3fea4b11cf",
+  "raw_source": "def drop_empty(d):\n    \"\"\"\n    Returns a new dictionary with all empty items (values that are None, \n    False, 0, '', or other falsy values) removed.\n    \n    Note: Based on your test case where 'None' was dropped but the logic \n    for \"empty\" usually implies checking if value is None specifically in this context,\n    OR it could mean all falsy values. The provided assertion only tests None.\n    However, to be robust against typical interview questions about \"empty items\",\n    we will check strictly for 'None' as per the specific test case provided,\n    but you can easily extend it if other empty types (like '') are needed later.\n\n    If your definition of \"empty\" includes False or 0:\n        return {k: v for k, v in d.items() if v is not None} \n    \"\"\"\n    \n    # Strictly dropping only 'None' based on the test case provided\n    result = {}\n    for key, value in d.items():\n        if value is not None:\n            result[key] = value\n            \n    return result\n\n# Test assertion from your prompt\nassert drop_empty({'c1': 'Red', 'c2': 'Green', 'c3':None}) == {'c1': 'Red', 'c2': 'Green'}\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/465",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

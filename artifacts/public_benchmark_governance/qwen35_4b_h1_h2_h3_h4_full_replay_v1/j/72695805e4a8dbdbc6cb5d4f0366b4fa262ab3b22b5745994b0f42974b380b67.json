@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "72695805e4a8dbdbc6cb5d4f0366b4fa262ab3b22b5745994b0f42974b380b67",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "prime_fib",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "final_source": "def is_prime(num: int) -> bool:\n    if num < 2:\n        return False\n    if num == 2 or num % 2 == 0:\n        return True, False  # (is_even, not_prime_flag) for optimization later\n    \n    i = 3\n    while i * i <= num:\n        if num % i == 0:\n            return False\n        i += 2\n    return True\n\ndef prime_fib(n: int):\n    \"\"\"\n    Returns the n-th Fibonacci number that is also prime.\n    \n    Examples:\n    >>> prime_fib(1)\n    2\n    >>> prime_fib(2)\n    3\n    >>> prime_fib(3)\n    5\n    >>> prime_fib(4)\n    13\n    >>> prime_fib(5)\n    89\n    \"\"\"\n    if n < 1:\n        raise ValueError(\"n must be a positive integer\")\n\n    count = 0      # number of primes found so far\n    fib_prev, fib_curr = 0, 1  # F_0=0, F_1=1\n    \n    while True:\n        if is_prime(fib_curr):\n            count += 1\n            if count == n:\n                return fib_curr\n        \n        fib_next = fib_prev + fib_curr\n        fib_prev = fib_curr\n        fib_curr = fib_next\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(prime_fib(1))   # 2\n    print(prime_fib(2))   # 3\n    print(prime_fib(3))   # 5\n    print(prime_fib(4))   # 13\n    print(prime_fib(5))   # 89\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/39:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "post_h2_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "post_h3_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "post_h4_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d05f7f208cdd5d8141419efdb80803c43f2c20b486e2fe977328c131e434bb86",
+  "raw_source": "def is_prime(num: int) -> bool:\n    if num < 2:\n        return False\n    if num == 2 or num % 2 == 0:\n        return True, False  # (is_even, not_prime_flag) for optimization later\n    \n    i = 3\n    while i * i <= num:\n        if num % i == 0:\n            return False\n        i += 2\n    return True\n\ndef prime_fib(n: int):\n    \"\"\"\n    Returns the n-th Fibonacci number that is also prime.\n    \n    Examples:\n    >>> prime_fib(1)\n    2\n    >>> prime_fib(2)\n    3\n    >>> prime_fib(3)\n    5\n    >>> prime_fib(4)\n    13\n    >>> prime_fib(5)\n    89\n    \"\"\"\n    if n < 1:\n        raise ValueError(\"n must be a positive integer\")\n\n    count = 0      # number of primes found so far\n    fib_prev, fib_curr = 0, 1  # F_0=0, F_1=1\n    \n    while True:\n        if is_prime(fib_curr):\n            count += 1\n            if count == n:\n                return fib_curr\n        \n        fib_next = fib_prev + fib_curr\n        fib_prev = fib_curr\n        fib_curr = fib_next\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(prime_fib(1))   # 2\n    print(prime_fib(2))   # 3\n    print(prime_fib(3))   # 5\n    print(prime_fib(4))   # 13\n    print(prime_fib(5))   # 89\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/39",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

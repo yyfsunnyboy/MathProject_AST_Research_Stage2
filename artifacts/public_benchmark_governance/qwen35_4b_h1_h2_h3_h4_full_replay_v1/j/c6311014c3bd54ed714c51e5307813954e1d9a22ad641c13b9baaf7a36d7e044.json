@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c6311014c3bd54ed714c51e5307813954e1d9a22ad641c13b9baaf7a36d7e044",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "max_element",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "final_source": "def max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    \n    >>> max_element([1, 2, 3])\n    3\n    \n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n    if not l:          # Handle empty list case (optional)\n        raise ValueError(\"List is empty\")\n    \n    max_val = l[0]     # Initialize with first element\n    \n    for x in l[1:]:   # Iterate from the second element onward\n        if x > max_val:\n            max_val = x\n            \n    return max_val\n\n# Alternatively, using Python's built-in function (more concise):\ndef max_element_builtin(l: list) -> int | float:\n    \"\"\"Return maximum element in the list.\"\"\"\n    if not l:\n        raise ValueError(\"List is empty\")\n    \n    return max(l)  # Built-in max() handles iteration internally\n\n# Example usage with built-in version:\n# print(max_element_builtin([1, 2, 3]))      # Output: 3\n# print(max_element_builtin([-5, -2, -9]))   # Output: -2\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/35:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "post_h2_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "post_h3_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "post_h4_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1434e376e87aed0effbfceae94d3668736124cbaef740c318dc9a26bf4f5bc95",
+  "raw_source": "def max_element(l: list):\n    \"\"\"Return maximum element in the list.\n    \n    >>> max_element([1, 2, 3])\n    3\n    \n    >>> max_element([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])\n    123\n    \"\"\"\n    if not l:          # Handle empty list case (optional)\n        raise ValueError(\"List is empty\")\n    \n    max_val = l[0]     # Initialize with first element\n    \n    for x in l[1:]:   # Iterate from the second element onward\n        if x > max_val:\n            max_val = x\n            \n    return max_val\n\n# Alternatively, using Python's built-in function (more concise):\ndef max_element_builtin(l: list) -> int | float:\n    \"\"\"Return maximum element in the list.\"\"\"\n    if not l:\n        raise ValueError(\"List is empty\")\n    \n    return max(l)  # Built-in max() handles iteration internally\n\n# Example usage with built-in version:\n# print(max_element_builtin([1, 2, 3]))      # Output: 3\n# print(max_element_builtin([-5, -2, -9]))   # Output: -2\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/35",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

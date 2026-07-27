@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "c2fbd9c9d9a783729821146b2a22aff9f387dc717fa603fdb844bc1b75d63c8e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fruit_distribution",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "final_source": "import re\n\ndef fruit_distribution(s, n):\n    \"\"\"\n    Calculates the number of mango fruits by subtracting apples and oranges \n    from the total count.\n    \n    Args:\n        s (str): A string describing the number of apples and oranges.\n                 Format expected: \"X apples and Y oranges\" or similar variations.\n        n (int): The total number of fruits in the basket.\n        \n    Returns:\n        int: The calculated number of mango fruits.\n    \"\"\"\n    \n    # Use regex to find all integers in the string\n    numbers = re.findall(r'\\d+', s)\n    \n    if len(numbers) < 2:\n        raise ValueError(\"The input string must contain at least two numbers (apples and oranges).\")\n\n    apples = int(numbers[0])\n    oranges = int(numbers[1])\n    \n    # Calculate mango count: Total - Apples - Oranges\n    mangos = n - apples - oranges\n    \n    return mangos\n\n# --- Example Usage & Testing ---\nif __name__ == \"__main__\":\n    print(fruit_distribution(\"5 apples and 6 oranges\", 19))   # Output: 8\n    print(fruit_distribution(\"0 apples and 1 oranges\", 3))     # Output: 2\n    print(fruit_distribution(\"2 apples and 3 oranges\", 100))  # Output: 95\n    print(fruit_distribution(\"100 apples and 1 oranges\", 120))# Output: 19\n    \n    # Additional edge case test with different spacing/hyphens if needed later\n    # e.g., fruit_distribution(\"3 - apples, 4 - oranges\", 15) \n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/67:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "post_h2_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "post_h3_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "post_h4_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5bb02739cd647744b429574514e3dc8930eafba84750bb9556b4a97a00a982fd",
+  "raw_source": "import re\n\ndef fruit_distribution(s, n):\n    \"\"\"\n    Calculates the number of mango fruits by subtracting apples and oranges \n    from the total count.\n    \n    Args:\n        s (str): A string describing the number of apples and oranges.\n                 Format expected: \"X apples and Y oranges\" or similar variations.\n        n (int): The total number of fruits in the basket.\n        \n    Returns:\n        int: The calculated number of mango fruits.\n    \"\"\"\n    \n    # Use regex to find all integers in the string\n    numbers = re.findall(r'\\d+', s)\n    \n    if len(numbers) < 2:\n        raise ValueError(\"The input string must contain at least two numbers (apples and oranges).\")\n\n    apples = int(numbers[0])\n    oranges = int(numbers[1])\n    \n    # Calculate mango count: Total - Apples - Oranges\n    mangos = n - apples - oranges\n    \n    return mangos\n\n# --- Example Usage & Testing ---\nif __name__ == \"__main__\":\n    print(fruit_distribution(\"5 apples and 6 oranges\", 19))   # Output: 8\n    print(fruit_distribution(\"0 apples and 1 oranges\", 3))     # Output: 2\n    print(fruit_distribution(\"2 apples and 3 oranges\", 100))  # Output: 95\n    print(fruit_distribution(\"100 apples and 1 oranges\", 120))# Output: 19\n    \n    # Additional edge case test with different spacing/hyphens if needed later\n    # e.g., fruit_distribution(\"3 - apples, 4 - oranges\", 15) \n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/67",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

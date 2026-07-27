@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "93570a772fccb9a29c90d0763c720bbbdf6fa5d0e143316adf297f560853dd1f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "by_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "final_source": "def by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n\n    digit_names = [\"\", \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\"]\n    \n    filtered_arr = []\n    for num in arr:\n        if 1 <= num <= 9:\n            filtered_arr.append(num)\n    \n    sorted_arr = sorted(filtered_arr)\n    reversed_arr = list(reversed(sorted_arr))\n    \n    result = [digit_names[num] for num in reversed_arr]\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/105:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "post_h2_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "post_h3_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "post_h4_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c9369c46d4df02f29b27556ccd3a1b55e1a182c2cda0c81c02c64f6006d5a0ab",
+  "raw_source": "def by_length(arr):\n    \"\"\"\n    Given an array of integers, sort the integers that are between 1 and 9 inclusive,\n    reverse the resulting array, and then replace each digit by its corresponding name from\n    \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\".\n\n    For example:\n      arr = [2, 1, 1, 4, 5, 8, 2, 3]   \n            -> sort arr -> [1, 1, 2, 2, 3, 4, 5, 8] \n            -> reverse arr -> [8, 5, 4, 3, 2, 2, 1, 1]\n      return [\"Eight\", \"Five\", \"Four\", \"Three\", \"Two\", \"Two\", \"One\", \"One\"]\n    \n      If the array is empty, return an empty array:\n      arr = []\n      return []\n    \n      If the array has any strange number ignore it:\n      arr = [1, -1 , 55] \n            -> sort arr -> [-1, 1, 55]\n            -> reverse arr -> [55, 1, -1]\n      return = ['One']\n    \"\"\"\n\n    digit_names = [\"\", \"One\", \"Two\", \"Three\", \"Four\", \"Five\", \"Six\", \"Seven\", \"Eight\", \"Nine\"]\n    \n    filtered_arr = []\n    for num in arr:\n        if 1 <= num <= 9:\n            filtered_arr.append(num)\n    \n    sorted_arr = sorted(filtered_arr)\n    reversed_arr = list(reversed(sorted_arr))\n    \n    result = [digit_names[num] for num in reversed_arr]\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/105",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

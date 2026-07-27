@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "ddda033717680ad92888adb44d846d1e752528b989a5239de7108bfd655b8fce",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "division_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "final_source": "def division_elements(t1, t2):\n    \"\"\"\n    Performs mathematical division operation element-wise across two tuples.\n    \n    Args:\n        t1 (tuple): The first tuple of numeric values.\n        t2 (tuple): The second tuple of numeric values.\n        \n    Returns:\n        tuple: A new tuple containing the results of dividing corresponding elements.\n        \n    Raises:\n        ValueError: If tuples are not equal in length or contain non-numeric types.\n    \"\"\"\n    \n    # Check if lengths match\n    if len(t1) != len(t2):\n        raise ValueError(\"Tuples must be of equal length.\")\n\n    result = []\n    \n    for a, b in zip(t1, t2):\n        try:\n            num_a = float(a)\n            num_b = float(b)\n            \n            if num_b == 0:\n                raise ZeroDivisionError(\"Cannot divide by zero.\")\n                \n            quotient = num_a / num_b\n            \n            # If inputs were integers and result is whole number, keep it as int for cleaner output\n            if isinstance(a, (int, float)) and isinstance(b, (int, float)):\n                if quotient == int(quotient):\n                    result.append(int(quotient))\n                else:\n                    result.append(float(quotient))\n            else:\n                # Fallback to standard division logic for mixed types or floats\n                result.append(quotient)\n                \n        except (TypeError, ValueError) as e:\n            raise TypeError(f\"Elements must be numeric. Error occurred at index {t1.index(a)}\") from e\n\n    return tuple(result)\n\n\n# Test cases based on your requirement and edge cases\nif __name__ == \"__main__\":\n    # Standard test case provided in prompt\n    assert division_elements((10, 4, 6, 9), (5, 2, 3, 3)) == (2, 2, 2, 3)\n\n    # Additional tests to ensure robustness\n    \n    # Test with floats resulting in decimals\n    result_floats = division_elements((7.0, 14.0), (2.0, 5.0))\n    assert result_floats == (3.5, 2.8)\n\n    # Test where integer inputs yield an exact integer result\n    result_ints = division_elements((6, 9), (2, 3))\n    assert result_ints == (3, 3)\n\n    print(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/261:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "post_h2_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "post_h3_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "post_h4_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fc20c4fceca4b492c7880dd9a3b7942d18da71e765376530c56d647d6ee0c41d",
+  "raw_source": "def division_elements(t1, t2):\n    \"\"\"\n    Performs mathematical division operation element-wise across two tuples.\n    \n    Args:\n        t1 (tuple): The first tuple of numeric values.\n        t2 (tuple): The second tuple of numeric values.\n        \n    Returns:\n        tuple: A new tuple containing the results of dividing corresponding elements.\n        \n    Raises:\n        ValueError: If tuples are not equal in length or contain non-numeric types.\n    \"\"\"\n    \n    # Check if lengths match\n    if len(t1) != len(t2):\n        raise ValueError(\"Tuples must be of equal length.\")\n\n    result = []\n    \n    for a, b in zip(t1, t2):\n        try:\n            num_a = float(a)\n            num_b = float(b)\n            \n            if num_b == 0:\n                raise ZeroDivisionError(\"Cannot divide by zero.\")\n                \n            quotient = num_a / num_b\n            \n            # If inputs were integers and result is whole number, keep it as int for cleaner output\n            if isinstance(a, (int, float)) and isinstance(b, (int, float)):\n                if quotient == int(quotient):\n                    result.append(int(quotient))\n                else:\n                    result.append(float(quotient))\n            else:\n                # Fallback to standard division logic for mixed types or floats\n                result.append(quotient)\n                \n        except (TypeError, ValueError) as e:\n            raise TypeError(f\"Elements must be numeric. Error occurred at index {t1.index(a)}\") from e\n\n    return tuple(result)\n\n\n# Test cases based on your requirement and edge cases\nif __name__ == \"__main__\":\n    # Standard test case provided in prompt\n    assert division_elements((10, 4, 6, 9), (5, 2, 3, 3)) == (2, 2, 2, 3)\n\n    # Additional tests to ensure robustness\n    \n    # Test with floats resulting in decimals\n    result_floats = division_elements((7.0, 14.0), (2.0, 5.0))\n    assert result_floats == (3.5, 2.8)\n\n    # Test where integer inputs yield an exact integer result\n    result_ints = division_elements((6, 9), (2, 3))\n    assert result_ints == (3, 3)\n\n    print(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/261",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

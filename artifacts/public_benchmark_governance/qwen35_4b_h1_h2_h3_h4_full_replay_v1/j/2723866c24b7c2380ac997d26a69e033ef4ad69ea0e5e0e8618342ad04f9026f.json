@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "2723866c24b7c2380ac997d26a69e033ef4ad69ea0e5e0e8618342ad04f9026f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encrypt",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "final_source": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be shifted by 4 positions forward based on the examples provided.\n    \n    Examples:\n        encrypt('hi') -> 'lm'\n        encrypt('asdfghjkl') -> 'ewhjklnop'\n    \"\"\"\n    \n    # Define standard alphabets\n    lower_alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n    upper_alphabet = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n    \n    # Calculate the shift amount based on examples (e.g., h->l is +4)\n    # The docstring mentions \"two multiplied to two places\", which equals 2 * 2 = 4.\n    shift_amount = 4\n    \n    # Create rotated alphabets\n    rot_lower = lower_alphabet[shift_amount:] + lower_alphabet[:shift_amount]\n    rot_upper = upper_alphabet[shift_amount:] + upper_alphabet[:shift_amount]\n    \n    result = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':\n            # Find index and map to rotated alphabet\n            idx = lower_alphabet.index(char)\n            new_char = rot_lower[idx]\n            result.append(new_char)\n        elif 'A' <= char <= 'Z':\n            # Find index and map to rotated alphabet\n            idx = upper_alphabet.index(char)\n            new_char = rot_upper[idx]\n            result.append(new_char)\n        else:\n            # Keep non-alphabetic characters as is (optional, but good practice)\n            result.append(char)\n            \n    return \"\".join(result)\n\n# Testing the function with provided examples\nif __name__ == \"__main__\":\n    print(encrypt('hi'))      # Expected: 'lm'\n    print(encrypt('asdfghjkl'))  # Expected: 'ewhjklnop'\n    print(encrypt('gf'))       # Expected: 'kj'\n    print(encrypt('et'))       # Expected: 'ix'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/89:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "post_h2_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "post_h3_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "post_h4_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f3312b921dd8c8e6ab1850ff7a8c78e035bc1f91c9a99cb69ca0786c14dbd6f2",
+  "raw_source": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be shifted by 4 positions forward based on the examples provided.\n    \n    Examples:\n        encrypt('hi') -> 'lm'\n        encrypt('asdfghjkl') -> 'ewhjklnop'\n    \"\"\"\n    \n    # Define standard alphabets\n    lower_alphabet = \"abcdefghijklmnopqrstuvwxyz\"\n    upper_alphabet = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n    \n    # Calculate the shift amount based on examples (e.g., h->l is +4)\n    # The docstring mentions \"two multiplied to two places\", which equals 2 * 2 = 4.\n    shift_amount = 4\n    \n    # Create rotated alphabets\n    rot_lower = lower_alphabet[shift_amount:] + lower_alphabet[:shift_amount]\n    rot_upper = upper_alphabet[shift_amount:] + upper_alphabet[:shift_amount]\n    \n    result = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':\n            # Find index and map to rotated alphabet\n            idx = lower_alphabet.index(char)\n            new_char = rot_lower[idx]\n            result.append(new_char)\n        elif 'A' <= char <= 'Z':\n            # Find index and map to rotated alphabet\n            idx = upper_alphabet.index(char)\n            new_char = rot_upper[idx]\n            result.append(new_char)\n        else:\n            # Keep non-alphabetic characters as is (optional, but good practice)\n            result.append(char)\n            \n    return \"\".join(result)\n\n# Testing the function with provided examples\nif __name__ == \"__main__\":\n    print(encrypt('hi'))      # Expected: 'lm'\n    print(encrypt('asdfghjkl'))  # Expected: 'ewhjklnop'\n    print(encrypt('gf'))       # Expected: 'kj'\n    print(encrypt('et'))       # Expected: 'ix'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/89",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

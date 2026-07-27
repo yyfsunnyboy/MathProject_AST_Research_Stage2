@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "db2f3409cb87a2f7b0186a1a642ce80e54821f2a0a4f15e9edf804123742f834",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_decimal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "final_source": "def is_decimal(s):\n    try:\n        float(s)\n    except ValueError:\n        return False\n    \n    parts = s.split('.')\n    \n    if len(parts) != 2:\n        return False\n    \n    integer_part, decimal_part = parts[0], parts[1]\n    \n    if not integer_part or not decimal_part:\n        return False\n    \n    for char in integer_part + decimal_part:\n        if not (char.isdigit() or char == '.'):\n            return False\n    \n    if len(decimal_part) != 2:\n        return False\n    \n    try:\n        float(s)\n    except ValueError:\n        return False\n        \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/759:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "post_h2_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "post_h3_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "post_h4_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6a32009adcadcf0ae7faabd5d8a09a6973dfa430789123ff7f7eca47c3a37a3a",
+  "raw_source": "def is_decimal(s):\n    try:\n        float(s)\n    except ValueError:\n        return False\n    \n    parts = s.split('.')\n    \n    if len(parts) != 2:\n        return False\n    \n    integer_part, decimal_part = parts[0], parts[1]\n    \n    if not integer_part or not decimal_part:\n        return False\n    \n    for char in integer_part + decimal_part:\n        if not (char.isdigit() or char == '.'):\n            return False\n    \n    if len(decimal_part) != 2:\n        return False\n    \n    try:\n        float(s)\n    except ValueError:\n        return False\n        \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/759",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

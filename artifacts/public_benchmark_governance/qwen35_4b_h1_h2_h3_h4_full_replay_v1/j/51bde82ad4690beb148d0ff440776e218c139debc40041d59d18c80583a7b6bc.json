@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "51bde82ad4690beb148d0ff440776e218c139debc40041d59d18c80583a7b6bc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "median_numbers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "54b9df2828263c136d1472b0765a0ddc199aee76efe2fd87a843d03e64ef382b",
+  "final_source": "def median_numbers(a: float, b: float, c: float) -> float:\n    \"\"\"Return the median of three numbers.\"\"\"\n    # Sort and return the middle element\n    sorted_nums = sorted([a, b, c])\n    return sorted_nums[1]\n\n\n# Test assertion\nif __name__ == \"__main__\":\n    assert median_numbers(25, 55, 65) == 55.0\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/397:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7ae692c059d6a606bd95c2b023ceb3c5723cacd6a20ecf73ecbe17a07844636d",
+  "post_h2_sha256": "54b9df2828263c136d1472b0765a0ddc199aee76efe2fd87a843d03e64ef382b",
+  "post_h3_sha256": "54b9df2828263c136d1472b0765a0ddc199aee76efe2fd87a843d03e64ef382b",
+  "post_h4_sha256": "54b9df2828263c136d1472b0765a0ddc199aee76efe2fd87a843d03e64ef382b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7ae692c059d6a606bd95c2b023ceb3c5723cacd6a20ecf73ecbe17a07844636d",
+  "raw_source": "def median_numbers(a: float, b: float, c: float) -> float:\n    \"\"\"Return the median of three numbers.\"\"\"\n    # Sort and return the middle element\n    sorted_nums = sorted([a, b, c])\n    return sorted_nums[1]\n\n\n# Test assertion\nassert median_numbers(25, 55, 65) == 55.0\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/397",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

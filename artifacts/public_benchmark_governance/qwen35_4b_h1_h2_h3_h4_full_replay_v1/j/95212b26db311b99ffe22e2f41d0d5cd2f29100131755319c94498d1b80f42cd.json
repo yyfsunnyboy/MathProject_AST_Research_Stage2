@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "95212b26db311b99ffe22e2f41d0d5cd2f29100131755319c94498d1b80f42cd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "recursive_list_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1d981eea4a72803989ff2a615ab4a1807a844ae30a7976d37952fc8ea82aef7a",
+  "final_source": "def recursive_list_sum(lst):\n    \"\"\"\n    Recursively flattens a list and sums all its elements.\n    \n    Args:\n        lst (list): A nested list containing integers or sublists.\n        \n    Returns:\n        int: The sum of all integer elements in the flattened structure.\n    \"\"\"\n    total = 0\n    \n    for item in lst:\n        # If the item is a list, recursively call this function on it\n        if isinstance(item, list):\n            total += recursive_list_sum(item)\n        else:\n            # Otherwise, add the integer value to the sum\n            total += item\n            \n    return total\n\n# Test case from your prompt\nif __name__ == \"__main__\":\n    assert recursive_list_sum([1, 2, [3,4],[5,6]]) == 21\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/65:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fa9bf0848732dceb97b8f921f81092640526f4d7a7d1b045f17b20ba28b77a8e",
+  "post_h2_sha256": "74863c9f7ae675f85897dd009e3cd5fdba2018ca4fdfbdb7ee7b11d003e2c355",
+  "post_h3_sha256": "74863c9f7ae675f85897dd009e3cd5fdba2018ca4fdfbdb7ee7b11d003e2c355",
+  "post_h4_sha256": "1d981eea4a72803989ff2a615ab4a1807a844ae30a7976d37952fc8ea82aef7a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fa9bf0848732dceb97b8f921f81092640526f4d7a7d1b045f17b20ba28b77a8e",
+  "raw_source": "def recursive_list_sum(lst):\n    \"\"\"\n    Recursively flattens a list and sums all its elements.\n    \n    Args:\n        lst (list): A nested list containing integers or sublists.\n        \n    Returns:\n        int: The sum of all integer elements in the flattened structure.\n    \"\"\"\n    total = 0\n    \n    for item in lst:\n        # If the item is a list, recursively call this function on it\n        if isinstance(item, list):\n            total += recursive_list_sum(item)\n        else:\n            # Otherwise, add the integer value to the sum\n            total += item\n            \n    return total\n\n# Test case from your prompt\nassert recursive_list_sum([1, 2, [3,4],[5,6]]) == 21\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/65",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

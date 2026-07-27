@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "762d37d51a074ec409240417437cbf70fa338792dabba52b891a33c3e72b4d30",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "big_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d2cacd299bbe79f31ab0793bba9c1704244cfd1dc64636f73db9313cf4598d36",
+  "final_source": "def big_sum(arr):\n    \"\"\"\n    Returns the sum of the maximum and minimum values in the list.\n    \n    Args:\n        arr (list[int]): A non-empty list of integers\n        \n    Returns:\n        int: Sum of max and min elements\n    \n    Raises:\n        ValueError: If the input list is empty or has only one element (since we need two distinct indices)\n                   Or if there are duplicate values that make it ambiguous which \"largest\" and \"smallest\" to pick.\n                   However, per typical interpretation for such problems, duplicates don't prevent finding max/min;\n                   but the problem statement implies picking two *distinct* elements by index.\n    \"\"\"\n    # Ensure we have at least 2 distinct indices (even if values are same)\n    n = len(arr)\n    \n    min_val = arr[0]\n    max_val = arr[0]\n\n    for i in range(1, n):\n        val = arr[i]\n        if val < min_val:\n            min_val = val\n        elif val > max_val:\n            max_val = val\n    \n    # If all elements are the same and we need two distinct indices (e.g., [5, 5]), \n    # then largest + smallest still makes sense as picking any two.\n    return min_val + max_val\n\n\n# Test cases based on typical interpretation where duplicates don't block finding max/min:\n\nif __name__ == \"__main__\":\n    assert big_sum([1, 2, 3]) == 4   # min=1, max=3 -> sum=4\n    print(\"All basic tests passed.\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/476:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "15cbcb52f472d1e018d4cc5b9c3ccbb053ab576e80ca56a788b6b796a4de327a",
+  "post_h2_sha256": "dacb8d172f5749451723b0f19ddd27e716a08fd2627c5e63a5dc01b13d8ddedf",
+  "post_h3_sha256": "dacb8d172f5749451723b0f19ddd27e716a08fd2627c5e63a5dc01b13d8ddedf",
+  "post_h4_sha256": "d2cacd299bbe79f31ab0793bba9c1704244cfd1dc64636f73db9313cf4598d36",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "15cbcb52f472d1e018d4cc5b9c3ccbb053ab576e80ca56a788b6b796a4de327a",
+  "raw_source": "def big_sum(arr):\n    \"\"\"\n    Returns the sum of the maximum and minimum values in the list.\n    \n    Args:\n        arr (list[int]): A non-empty list of integers\n        \n    Returns:\n        int: Sum of max and min elements\n    \n    Raises:\n        ValueError: If the input list is empty or has only one element (since we need two distinct indices)\n                   Or if there are duplicate values that make it ambiguous which \"largest\" and \"smallest\" to pick.\n                   However, per typical interpretation for such problems, duplicates don't prevent finding max/min;\n                   but the problem statement implies picking two *distinct* elements by index.\n    \"\"\"\n    # Ensure we have at least 2 distinct indices (even if values are same)\n    n = len(arr)\n    \n    min_val = arr[0]\n    max_val = arr[0]\n\n    for i in range(1, n):\n        val = arr[i]\n        if val < min_val:\n            min_val = val\n        elif val > max_val:\n            max_val = val\n    \n    # If all elements are the same and we need two distinct indices (e.g., [5, 5]), \n    # then largest + smallest still makes sense as picking any two.\n    return min_val + max_val\n\n\n# Test cases based on typical interpretation where duplicates don't block finding max/min:\n\nassert big_sum([1, 2, 3]) == 4   # min=1, max=3 -> sum=4\nprint(\"All basic tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/476",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

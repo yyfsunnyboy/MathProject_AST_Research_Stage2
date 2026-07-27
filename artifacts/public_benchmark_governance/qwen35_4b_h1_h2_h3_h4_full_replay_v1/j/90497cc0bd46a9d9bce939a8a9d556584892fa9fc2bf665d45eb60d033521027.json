@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "90497cc0bd46a9d9bce939a8a9d556584892fa9fc2bf665d45eb60d033521027",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "double_the_difference",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "final_source": "def double_the_difference(lst):\n    \"\"\"\n    Given a list of numbers, return the sum of squares of the numbers\n    in the list that are odd. Ignore numbers that are negative or not integers.\n    \n    Examples:\n        double_the_difference([1, 3, 2, 0]) == 1 + 9 + 0 = 10\n        double_the_difference([-1, -2, 0]) == 0\n        double_the_difference([9, -2]) == 81\n        double_the_difference([0]) == 0\n    \n    If the input list is empty, return 0.\n    \"\"\"\n    total = 0\n\n    for num in lst:\n        # Check if it's an integer (int or float that equals its int form) and non-negative\n        try:\n            n_int = int(num)\n        except (ValueError, TypeError):\n            continue\n        \n        if not isinstance(n_int, int) or n_int < 0:\n            continue\n\n        # Check if the number is odd\n        if n_int % 2 == 1:\n            total += n_int ** 2\n\n    return total\n\n\n# Example usage:\nprint(double_the_difference([1, 3, 2, 0]))      # Output: 10 (only 1 and 3 are positive odds)\nprint(double_the_difference([-1, -2, 0]))       # Output: 0 (no non-negative odd integers)\nprint(double_the_difference([9, -2]))            # Output: 81 (only 9 is a positive odd integer)\nprint(double_the_difference([0]))                # Output: 0 (0 is even)\nprint(double_the_difference([]))                 # Output: 0 (empty list)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/151:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "post_h2_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "post_h3_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "post_h4_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "639b8cfe6b58d67ad10a277e0853032863d239a7dfc14754461aeeb1aa0ea0ec",
+  "raw_source": "def double_the_difference(lst):\n    \"\"\"\n    Given a list of numbers, return the sum of squares of the numbers\n    in the list that are odd. Ignore numbers that are negative or not integers.\n    \n    Examples:\n        double_the_difference([1, 3, 2, 0]) == 1 + 9 + 0 = 10\n        double_the_difference([-1, -2, 0]) == 0\n        double_the_difference([9, -2]) == 81\n        double_the_difference([0]) == 0\n    \n    If the input list is empty, return 0.\n    \"\"\"\n    total = 0\n\n    for num in lst:\n        # Check if it's an integer (int or float that equals its int form) and non-negative\n        try:\n            n_int = int(num)\n        except (ValueError, TypeError):\n            continue\n        \n        if not isinstance(n_int, int) or n_int < 0:\n            continue\n\n        # Check if the number is odd\n        if n_int % 2 == 1:\n            total += n_int ** 2\n\n    return total\n\n\n# Example usage:\nprint(double_the_difference([1, 3, 2, 0]))      # Output: 10 (only 1 and 3 are positive odds)\nprint(double_the_difference([-1, -2, 0]))       # Output: 0 (no non-negative odd integers)\nprint(double_the_difference([9, -2]))            # Output: 81 (only 9 is a positive odd integer)\nprint(double_the_difference([0]))                # Output: 0 (0 is even)\nprint(double_the_difference([]))                 # Output: 0 (empty list)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/151",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

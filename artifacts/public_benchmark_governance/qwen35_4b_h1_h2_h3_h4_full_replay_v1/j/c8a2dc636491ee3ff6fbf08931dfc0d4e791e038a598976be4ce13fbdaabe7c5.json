@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c8a2dc636491ee3ff6fbf08931dfc0d4e791e038a598976be4ce13fbdaabe7c5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "power_base_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "25ef75c784334fbfe41c77d0150170075124c76bfed08ae4626a8f9363048fa4",
+  "final_source": "import math\n\ndef power_base_sum(base, power):\n    \"\"\"\n    Calculates the sum of all digits of base raised to the specified power.\n    \n    Args:\n        base (int): The base number.\n        power (int): The exponent.\n        \n    Returns:\n        int: Sum of the digits of base^power.\n    \"\"\"\n    # Calculate base ^ power using math.pow for floating point precision, \n    # then convert to integer. For extremely large numbers, Python handles big ints automatically.\n    result = int(math.pow(base, power))\n    \n    # Convert the number to a string to easily iterate over digits\n    digit_sum = sum(int(digit) for digit in str(result))\n    \n    return digit_sum\n\n# Test case as provided in your request\nif __name__ == \"__main__\":\n    assert power_base_sum(2, 100) == 115\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/724:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5a87cbe9fc240580f5626e04811bde08f2122c74ecc3112d836d09f14746b9fe",
+  "post_h2_sha256": "1b4c3b55c4b90b0b9fc7b7cc466c0bdb239049d8f3b3d2d1c19c9874629d3438",
+  "post_h3_sha256": "1b4c3b55c4b90b0b9fc7b7cc466c0bdb239049d8f3b3d2d1c19c9874629d3438",
+  "post_h4_sha256": "25ef75c784334fbfe41c77d0150170075124c76bfed08ae4626a8f9363048fa4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5a87cbe9fc240580f5626e04811bde08f2122c74ecc3112d836d09f14746b9fe",
+  "raw_source": "import math\n\ndef power_base_sum(base, power):\n    \"\"\"\n    Calculates the sum of all digits of base raised to the specified power.\n    \n    Args:\n        base (int): The base number.\n        power (int): The exponent.\n        \n    Returns:\n        int: Sum of the digits of base^power.\n    \"\"\"\n    # Calculate base ^ power using math.pow for floating point precision, \n    # then convert to integer. For extremely large numbers, Python handles big ints automatically.\n    result = int(math.pow(base, power))\n    \n    # Convert the number to a string to easily iterate over digits\n    digit_sum = sum(int(digit) for digit in str(result))\n    \n    return digit_sum\n\n# Test case as provided in your request\nassert power_base_sum(2, 100) == 115\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/724",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f863df4073584e99355aa3df8239ffd4501bed35e7c70a04c2b94e893f1ba85d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_tuples",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "final_source": "def find_tuples(tuples_list: list, k: int):\n    \"\"\"\n    Returns a new list containing only those tuples where all elements are divisible by k.\n    \n    Parameters:\n        tuples_list (list of tuple): List of integer tuples to check.\n        k (int): Divisor value.\n        \n    Returns:\n        list: Filtered list of tuples with all elements divisible by k.\n    \"\"\"\n    result = []\n    for t in tuples_list:\n        if all(x % k == 0 for x in t):\n            result.append(t)\n    return result\n\n\n# Example usage and assertion from the problem statement\nif __name__ == \"__main__\":\n    assert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/75:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "post_h2_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "post_h3_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "post_h4_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fb14977869ecba6cb59f30ecaec5ade9c372eac7398397530230fa5ef633ac4d",
+  "raw_source": "def find_tuples(tuples_list: list, k: int):\n    \"\"\"\n    Returns a new list containing only those tuples where all elements are divisible by k.\n    \n    Parameters:\n        tuples_list (list of tuple): List of integer tuples to check.\n        k (int): Divisor value.\n        \n    Returns:\n        list: Filtered list of tuples with all elements divisible by k.\n    \"\"\"\n    result = []\n    for t in tuples_list:\n        if all(x % k == 0 for x in t):\n            result.append(t)\n    return result\n\n\n# Example usage and assertion from the problem statement\nif __name__ == \"__main__\":\n    assert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/75",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

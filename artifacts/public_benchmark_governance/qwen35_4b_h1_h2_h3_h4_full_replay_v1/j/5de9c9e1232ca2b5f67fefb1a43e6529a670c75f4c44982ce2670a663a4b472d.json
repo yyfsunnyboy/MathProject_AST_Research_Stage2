@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5de9c9e1232ca2b5f67fefb1a43e6529a670c75f4c44982ce2670a663a4b472d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_size",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "final_source": "import sys\n\ndef tuple_size(t):\n    \"\"\"\n    Calculates the approximate memory size in bytes of a tuple \n    by summing its elements' sizes and adding the tuple's base overhead.\n    \n    This mimics how sys.getsizeof works for tuples: \n    Base Size + Sum(Size(item) for item in t).\n    \"\"\"\n    # The base size of an empty tuple on standard CPython is typically 48 bytes.\n    # We add this to the sum of all element sizes.\n    return sys.getsizeof(()) + sum(sys.getsizeof(x) for x in t)\n\n# Test case provided in the prompt\nassert tuple_size((\"A\", 1, \"B\", 2, \"C\", 3)) == sys.getsizeof((\"A\", 1, \"B\", 2, \"C\", 3))\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/596:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "post_h2_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "post_h3_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "post_h4_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fe6b73db25061ba651c8e9ae62158a78247e06474385688d2804937a62c56aae",
+  "raw_source": "import sys\n\ndef tuple_size(t):\n    \"\"\"\n    Calculates the approximate memory size in bytes of a tuple \n    by summing its elements' sizes and adding the tuple's base overhead.\n    \n    This mimics how sys.getsizeof works for tuples: \n    Base Size + Sum(Size(item) for item in t).\n    \"\"\"\n    # The base size of an empty tuple on standard CPython is typically 48 bytes.\n    # We add this to the sum of all element sizes.\n    return sys.getsizeof(()) + sum(sys.getsizeof(x) for x in t)\n\n# Test case provided in the prompt\nassert tuple_size((\"A\", 1, \"B\", 2, \"C\", 3)) == sys.getsizeof((\"A\", 1, \"B\", 2, \"C\", 3))\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/596",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

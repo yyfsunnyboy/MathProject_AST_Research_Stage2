@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "6be51b5e66e70c9cbb43af981cb6f070d4eae032d4b3b9d308335654c45a6a4e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Pairs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "dbd90423873b2f7eb7d26799268ee64717a23e210814bd6ca09929a1c425c16b",
+  "final_source": "def count_Pairs(nums):\n    \"\"\"\n    Count the number of unordered pairs (i, j) such that:\n      - i < j\n      - nums[i] != nums[j]\n\n    Parameters:\n        nums (list[int]): List of integers.\n\n    Returns:\n        int: Number of valid unequal pairs.\n    \"\"\"\n    n = len(nums)\n    count = 0\n    \n    # Iterate over all unique unordered pairs (i, j) with i < j\n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[i] != nums[j]:\n                count += 1\n                \n    return count\n\n\n# Example usage and assertion from the problem statement:\nif __name__ == \"__main__\":\n    assert count_Pairs([1, 2, 1], 3) == 2\n    print(\"All tests passed.\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/564:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5de7a8a9e6d4f4d1a68b72ee6d9256857838585e4d3d57caddeda650d4960fe3",
+  "post_h2_sha256": "6eb41804e56b78aea3cf1abce76251a9cde4e2d81bcfb95f16e7282527d12aee",
+  "post_h3_sha256": "6eb41804e56b78aea3cf1abce76251a9cde4e2d81bcfb95f16e7282527d12aee",
+  "post_h4_sha256": "dbd90423873b2f7eb7d26799268ee64717a23e210814bd6ca09929a1c425c16b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5de7a8a9e6d4f4d1a68b72ee6d9256857838585e4d3d57caddeda650d4960fe3",
+  "raw_source": "def count_Pairs(nums):\n    \"\"\"\n    Count the number of unordered pairs (i, j) such that:\n      - i < j\n      - nums[i] != nums[j]\n\n    Parameters:\n        nums (list[int]): List of integers.\n\n    Returns:\n        int: Number of valid unequal pairs.\n    \"\"\"\n    n = len(nums)\n    count = 0\n    \n    # Iterate over all unique unordered pairs (i, j) with i < j\n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[i] != nums[j]:\n                count += 1\n                \n    return count\n\n\n# Example usage and assertion from the problem statement:\nassert count_Pairs([1, 2, 1], 3) == 2\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/564",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

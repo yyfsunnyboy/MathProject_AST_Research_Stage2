@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4cccea94c697a6793ad38c830254ef435fbab1d107dc49fb4bce046fd0d27675",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "cal_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "final_source": "def cal_sum(n):\n    if n <= 0:\n        return 0\n    p = [1, 3]\n    total = sum(p[:n])\n    for i in range(2, n):\n        next_val = p[i-1] + p[i-2] - p[i-3]\n        p.append(next_val)\n        total += next_val\n    return total",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/448:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "post_h2_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "post_h3_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "post_h4_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a08b73641e60c3c8ec4a4d782926f87ae88b7874c800e24fa90aeadd1854123a",
+  "raw_source": "def cal_sum(n):\n    if n <= 0:\n        return 0\n    p = [1, 3]\n    total = sum(p[:n])\n    for i in range(2, n):\n        next_val = p[i-1] + p[i-2] - p[i-3]\n        p.append(next_val)\n        total += next_val\n    return total",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/448",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

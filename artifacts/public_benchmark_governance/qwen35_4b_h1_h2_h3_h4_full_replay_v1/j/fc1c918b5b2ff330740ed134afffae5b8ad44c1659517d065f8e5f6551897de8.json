@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "fc1c918b5b2ff330740ed134afffae5b8ad44c1659517d065f8e5f6551897de8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "closest_integer",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "final_source": "def closest_integer(value):\n    \"\"\"\n    Create a function that takes a value (string) representing a number\n    and returns the closest integer to it. If the number is equidistant\n    from two integers, round it away from zero.\n    \n    Examples:\n        >>> closest_integer(\"10\")\n        10\n        >>> closest_integer(\"15.3\")\n        15\n        \n        Rounding rules (away from zero on ties):\n            \"14.5\" -> 15\n            \"-14.5\" -> -15\n    \"\"\"\n    # Convert the string to a float first\n    num = float(value)\n    \n    # Get the integer part and fractional part\n    int_part = int(num)\n    frac = abs(num - int_part)\n    \n    # If fractional part is exactly 0.5, round away from zero\n    if frac == 0.5:\n        return int_part + (1 if num >= 0 else -1)\n    elif frac > 0.5:\n        return int_part + 1 if num >= 0 else int_part - 1\n    else:\n        # Otherwise, standard rounding toward the nearest integer\n        return int_part\n\n\n# Example usage tests (optional):\nif __name__ == \"__main__\":\n    print(closest_integer(\"10\"))      # 10\n    print(closest_integer(\"15.3\"))    # 15\n    print(closest_integer(\"-14.5\"))   # -15\n    print(closest_integer(\"14.5\"))    # 15\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/99:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "post_h2_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "post_h3_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "post_h4_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4729b9f8453eb4613d3f2634d2156b777cab0f5840042b1452c83cdf3f684184",
+  "raw_source": "def closest_integer(value):\n    \"\"\"\n    Create a function that takes a value (string) representing a number\n    and returns the closest integer to it. If the number is equidistant\n    from two integers, round it away from zero.\n    \n    Examples:\n        >>> closest_integer(\"10\")\n        10\n        >>> closest_integer(\"15.3\")\n        15\n        \n        Rounding rules (away from zero on ties):\n            \"14.5\" -> 15\n            \"-14.5\" -> -15\n    \"\"\"\n    # Convert the string to a float first\n    num = float(value)\n    \n    # Get the integer part and fractional part\n    int_part = int(num)\n    frac = abs(num - int_part)\n    \n    # If fractional part is exactly 0.5, round away from zero\n    if frac == 0.5:\n        return int_part + (1 if num >= 0 else -1)\n    elif frac > 0.5:\n        return int_part + 1 if num >= 0 else int_part - 1\n    else:\n        # Otherwise, standard rounding toward the nearest integer\n        return int_part\n\n\n# Example usage tests (optional):\nif __name__ == \"__main__\":\n    print(closest_integer(\"10\"))      # 10\n    print(closest_integer(\"15.3\"))    # 15\n    print(closest_integer(\"-14.5\"))   # -15\n    print(closest_integer(\"14.5\"))    # 15\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/99",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

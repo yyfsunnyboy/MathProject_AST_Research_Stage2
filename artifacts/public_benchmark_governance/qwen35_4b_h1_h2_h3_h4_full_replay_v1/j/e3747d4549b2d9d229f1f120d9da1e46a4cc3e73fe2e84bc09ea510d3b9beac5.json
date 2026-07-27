@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e3747d4549b2d9d229f1f120d9da1e46a4cc3e73fe2e84bc09ea510d3b9beac5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "remove_duplicates",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "final_source": "from typing import List\n\n\ndef remove_duplicates(numbers: List[int]) -> List[int]:\n    \"\"\" From a list of integers, remove all elements that occur more than once.\n    Keep order of elements left the same as in the input.\n    \n    >>> remove_duplicates([1, 2, 3, 2, 4])\n    [1, 3, 4]\n    \"\"\"\n    seen = set()\n    result = []\n\n    for num in numbers:\n        if num not in seen:\n            # Add to both the set and the list on first encounter\n            seen.add(num)\n            result.append(num)\n    \n    return result\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/26:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "post_h2_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "post_h3_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "post_h4_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "42c58c025821f005c63fe7009e7cc4d754f4cfae85e4a4fc904e67606900290b",
+  "raw_source": "from typing import List\n\n\ndef remove_duplicates(numbers: List[int]) -> List[int]:\n    \"\"\" From a list of integers, remove all elements that occur more than once.\n    Keep order of elements left the same as in the input.\n    \n    >>> remove_duplicates([1, 2, 3, 2, 4])\n    [1, 3, 4]\n    \"\"\"\n    seen = set()\n    result = []\n\n    for num in numbers:\n        if num not in seen:\n            # Add to both the set and the list on first encounter\n            seen.add(num)\n            result.append(num)\n    \n    return result\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/26",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

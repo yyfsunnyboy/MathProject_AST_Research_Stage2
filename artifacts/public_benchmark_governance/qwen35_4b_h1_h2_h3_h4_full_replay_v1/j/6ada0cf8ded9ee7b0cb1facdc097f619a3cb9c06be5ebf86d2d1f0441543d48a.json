@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6ada0cf8ded9ee7b0cb1facdc097f619a3cb9c06be5ebf86d2d1f0441543d48a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "separate_paren_groups",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "final_source": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n    \n    # Remove all spaces from the input string\n    cleaned = paren_string.replace(\" \", \"\")\n    \n    result: List[str] = []\n    current_group: str = \"\"\n    balance = 0\n    \n    for char in cleaned:\n        if char == \"(\":\n            current_group += char\n            balance += 1\n        elif char == \")\":\n            current_group += char\n            balance -= 1\n        \n        # When we close a group (balance returns to 0), save it and start a new one\n        if balance == 0:\n            result.append(current_group)\n            current_group = \"\"\n    \n    return result\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/1:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "post_h2_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "post_h3_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "post_h4_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a315bf281d0c1845636c575320add3242f399cb6ed49bf8f25c48ce8891a6dde",
+  "raw_source": "from typing import List\n\n\ndef separate_paren_groups(paren_string: str) -> List[str]:\n    \"\"\" Input to this function is a string containing multiple groups of nested parentheses. Your goal is to\n    separate those group into separate strings and return the list of those.\n    Separate groups are balanced (each open brace is properly closed) and not nested within each other\n    Ignore any spaces in the input string.\n\n    >>> separate_paren_groups('( ) (( )) (( )( ))')\n    ['()', '(())', '(()())']\n    \"\"\"\n    \n    # Remove all spaces from the input string\n    cleaned = paren_string.replace(\" \", \"\")\n    \n    result: List[str] = []\n    current_group: str = \"\"\n    balance = 0\n    \n    for char in cleaned:\n        if char == \"(\":\n            current_group += char\n            balance += 1\n        elif char == \")\":\n            current_group += char\n            balance -= 1\n        \n        # When we close a group (balance returns to 0), save it and start a new one\n        if balance == 0:\n            result.append(current_group)\n            current_group = \"\"\n    \n    return result\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/1",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

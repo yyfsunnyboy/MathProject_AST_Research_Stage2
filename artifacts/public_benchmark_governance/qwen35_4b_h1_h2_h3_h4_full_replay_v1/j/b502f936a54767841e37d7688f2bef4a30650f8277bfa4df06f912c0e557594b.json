@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b502f936a54767841e37d7688f2bef4a30650f8277bfa4df06f912c0e557594b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "even_odd_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "final_source": "def even_odd_count(num):\n    \"\"\"Given an integer. return a tuple that has the number of even and odd digits respectively.\n\n     Example:\n        even_odd_count(-12) ==> (1, 1)\n        even_odd_count(123) ==> (1, 2)\n    \"\"\"\n    # Convert to string to iterate over each digit character\n    num_str = str(abs(num))  # Use absolute value to ignore negative sign\n    \n    even_cnt = 0\n    odd_cnt = 0\n\n    for ch in num_str:\n        d = int(ch)\n        if d % 2 == 0:\n            even_cnt += 1\n        else:\n            odd_cnt += 1\n\n    return (even_cnt, odd_cnt)\n\n\n# Examples:\nprint(even_odd_count(-12))   # Output: (1, 1)\nprint(even_odd_count(123))   # Output: (1, 2)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/155:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "post_h2_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "post_h3_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "post_h4_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a9867e967372942424d0e248e5b015134714929db99fdc6de38cdd4a2f44c8cf",
+  "raw_source": "def even_odd_count(num):\n    \"\"\"Given an integer. return a tuple that has the number of even and odd digits respectively.\n\n     Example:\n        even_odd_count(-12) ==> (1, 1)\n        even_odd_count(123) ==> (1, 2)\n    \"\"\"\n    # Convert to string to iterate over each digit character\n    num_str = str(abs(num))  # Use absolute value to ignore negative sign\n    \n    even_cnt = 0\n    odd_cnt = 0\n\n    for ch in num_str:\n        d = int(ch)\n        if d % 2 == 0:\n            even_cnt += 1\n        else:\n            odd_cnt += 1\n\n    return (even_cnt, odd_cnt)\n\n\n# Examples:\nprint(even_odd_count(-12))   # Output: (1, 1)\nprint(even_odd_count(123))   # Output: (1, 2)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/155",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

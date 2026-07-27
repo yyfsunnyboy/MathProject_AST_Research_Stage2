@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f14b9945abd729fc40be4cbcbd2a3edea69c32535109ced916e25dcb2abff981",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "filter_by_prefix",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "final_source": "from typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    \"\"\" Filter an input list of strings only for ones that start with a given prefix.\n    \n    >>> filter_by_prefix([], 'a')\n    []\n    >>> filter_by_prefix(['abc', 'bcd', 'cde', 'array'], 'a')\n    ['abc', 'array']\n    \"\"\"\n    return [s for s in strings if s.startswith(prefix)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_list = [\"apple\", \"banana\", \"apricot\", \"cherry\"]\n    result = filter_by_prefix(test_list, \"a\")\n    print(result)  # Output: ['apple', 'apricot']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/29:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "post_h2_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "post_h3_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "post_h4_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5608521f9821f317d5180556c92ac3b42ff2964fc1d5d4db3cec0128f3ad6996",
+  "raw_source": "from typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    \"\"\" Filter an input list of strings only for ones that start with a given prefix.\n    \n    >>> filter_by_prefix([], 'a')\n    []\n    >>> filter_by_prefix(['abc', 'bcd', 'cde', 'array'], 'a')\n    ['abc', 'array']\n    \"\"\"\n    return [s for s in strings if s.startswith(prefix)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    test_list = [\"apple\", \"banana\", \"apricot\", \"cherry\"]\n    result = filter_by_prefix(test_list, \"a\")\n    print(result)  # Output: ['apple', 'apricot']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/29",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

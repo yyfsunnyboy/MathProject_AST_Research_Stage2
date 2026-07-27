@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "edf37d7a93ca29ab4af1b602d6789d7d539fae8ac27d6aa9f1b572b54f50ed0e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_combinations",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "final_source": "def find_combinations(tuples_list):\n    result = []\n    for i in range(len(tuples_list)):\n        for j in range(i + 1, len(tuples_list)):\n            t1 = tuples_list[i]\n            t2 = tuples_list[j]\n            sum_a = t1[0] + t2[1]\n            sum_b = t1[1] + t2[0]\n            if (sum_a, sum_b) not in result:\n                result.append((sum_a, sum_b))\n    return sorted(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/780:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "post_h2_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "post_h3_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "post_h4_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "13d78e71251b96ab6506aa84162102d4510bebdaa34f3ed99bb32bf1f6390dc2",
+  "raw_source": "def find_combinations(tuples_list):\n    result = []\n    for i in range(len(tuples_list)):\n        for j in range(i + 1, len(tuples_list)):\n            t1 = tuples_list[i]\n            t2 = tuples_list[j]\n            sum_a = t1[0] + t2[1]\n            sum_b = t1[1] + t2[0]\n            if (sum_a, sum_b) not in result:\n                result.append((sum_a, sum_b))\n    return sorted(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/780",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "374f2719ac042b1ea8907c6a8becaae91c3588972ba23a5cc5aed0098420a09e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dif_Square",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "final_source": "def dif_Square(n):\n    \"\"\"\n    Check if a number can be represented as the difference of two squares.\n    \n    Logic: \n    n = (a-b)(a+b) => factors must have same parity.\n    This works for all odd numbers and multiples of 4.\n    Fails only for numbers congruent to 2 mod 4.\n    \"\"\"\n    if n <= 0:\n        return False\n    \n    # Check if n is divisible by 4 or if it is odd\n    remainder = n % 4\n    return (remainder == 0) or (n % 2 != 0)\n\n# Test cases based on the prompt and logic\nassert dif_Square(5) == True   # Odd number: 3^2 - 1^2 = 9-1=8? No, 4^2-3^2=7. Wait, let's recheck math for 5. \n                               # Factors of 5 are (1, 5). a-b=1, a+b=5 => 2a=6 -> a=3, b=2. 9-4=5. Correct.\nassert dif_Square(8) == True   # Divisible by 4: 3^2 - 1^2 = 9-1=8. \nassert dif_Square(7) == True   # Odd number.\nassert dif_Square(6) == False  # Even but not divisible by 4 (6 % 4 != 0). Factors of 6: (1,6)->diff parity; (2,3)->diff parity.\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/72:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "post_h2_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "post_h3_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "post_h4_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c2bb734aeacd4a71025edf6bbfbf5f923ab4e066bb57c6847a7c4f1cfb4c4f86",
+  "raw_source": "def dif_Square(n):\n    \"\"\"\n    Check if a number can be represented as the difference of two squares.\n    \n    Logic: \n    n = (a-b)(a+b) => factors must have same parity.\n    This works for all odd numbers and multiples of 4.\n    Fails only for numbers congruent to 2 mod 4.\n    \"\"\"\n    if n <= 0:\n        return False\n    \n    # Check if n is divisible by 4 or if it is odd\n    remainder = n % 4\n    return (remainder == 0) or (n % 2 != 0)\n\n# Test cases based on the prompt and logic\nassert dif_Square(5) == True   # Odd number: 3^2 - 1^2 = 9-1=8? No, 4^2-3^2=7. Wait, let's recheck math for 5. \n                               # Factors of 5 are (1, 5). a-b=1, a+b=5 => 2a=6 -> a=3, b=2. 9-4=5. Correct.\nassert dif_Square(8) == True   # Divisible by 4: 3^2 - 1^2 = 9-1=8. \nassert dif_Square(7) == True   # Odd number.\nassert dif_Square(6) == False  # Even but not divisible by 4 (6 % 4 != 0). Factors of 6: (1,6)->diff parity; (2,3)->diff parity.\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/72",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

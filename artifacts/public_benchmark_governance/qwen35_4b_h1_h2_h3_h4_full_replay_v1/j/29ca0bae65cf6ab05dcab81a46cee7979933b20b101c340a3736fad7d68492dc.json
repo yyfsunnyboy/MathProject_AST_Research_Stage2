@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "29ca0bae65cf6ab05dcab81a46cee7979933b20b101c340a3736fad7d68492dc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "multiply_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1188f47baff7b9f8e69c530c6c804eca56740cf3ced2b09523bc888933ff95a7",
+  "final_source": "def multiply_int(a: int, b: int) -> int:\n    \"\"\"Multiply two integers and return the result.\"\"\"\n    return a * b\n\n\n# Test assertion as provided in your example\nif __name__ == \"__main__\":\n    assert multiply_int(10, 20) == 200\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/127:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f9de62c53dbe6d73e33ca1ef0c09da399ddf3fed747cbdccb6c145c576f604e7",
+  "post_h2_sha256": "874dfcfa260e903c94d5f34191cefc28d9321e0ab2547bd03871044f0110e94a",
+  "post_h3_sha256": "874dfcfa260e903c94d5f34191cefc28d9321e0ab2547bd03871044f0110e94a",
+  "post_h4_sha256": "1188f47baff7b9f8e69c530c6c804eca56740cf3ced2b09523bc888933ff95a7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f9de62c53dbe6d73e33ca1ef0c09da399ddf3fed747cbdccb6c145c576f604e7",
+  "raw_source": "def multiply_int(a: int, b: int) -> int:\n    \"\"\"Multiply two integers and return the result.\"\"\"\n    return a * b\n\n\n# Test assertion as provided in your example\nassert multiply_int(10, 20) == 200\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/127",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

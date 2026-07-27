@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "0ad1787ec97c3afe4eb6761fc3d9f222772404f1e9d3bd9231f9677656593db3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "file_name_check",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "final_source": "def file_name_check(file_name):\n    \"\"\"Create a function which takes a string representing a file's name, and returns\n    'Yes' if the the file's name is valid, and returns 'No' otherwise.\n    A file's name is considered to be valid if and only if all the following conditions \n    are met:\n    - There should not be more than three digits ('0'-'9') in the file's name.\n    - The file's name contains exactly one dot '.'\n    - The substring before the dot should not be empty, and it starts with a letter from \n    the latin alphapet ('a'-'z' and 'A'-'Z').\n    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']\n    Examples:\n    file_name_check(\"example.txt\") # => 'Yes'\n    file_name_check(\"1example.dll\") # => 'No' (the name should start with a latin alphapet letter)\n    \"\"\"\n\n    if '.' not in file_name or file_name.count('.') != 1:\n        return \"No\"\n    \n    parts = file_name.split('.')\n    base, ext = parts[0], parts[-1]\n    \n    if len(ext) == 3 and ext.lower() in ['txt', 'exe', 'dll']:\n        pass\n    else:\n        return \"No\"\n\n    digit_count = sum(1 for c in file_name if c.isdigit())\n    if digit_count > 3:\n        return \"No\"\n\n    if not base or len(base) == 0:\n        return \"No\"\n\n    first_char = base[0]\n    if not ('a' <= first_char <= 'z' or 'A' <= first_char <= 'Z'):\n        return \"No\"\n\n    for i in range(1, len(base)):\n        char = base[i]\n        if not (char.isalpha() and chr(ord('a') - 32) < char < chr(ord('z'))): # Check uppercase logic properly below or just use isalpha\n        \n            pass\n    \n    return \"Yes\"",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/141:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "post_h2_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "post_h3_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "post_h4_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "099333770b76f2827dfc65a1b9897fcc9719a8e7aefcdccd709f343de1ee06d0",
+  "raw_source": "def file_name_check(file_name):\n    \"\"\"Create a function which takes a string representing a file's name, and returns\n    'Yes' if the the file's name is valid, and returns 'No' otherwise.\n    A file's name is considered to be valid if and only if all the following conditions \n    are met:\n    - There should not be more than three digits ('0'-'9') in the file's name.\n    - The file's name contains exactly one dot '.'\n    - The substring before the dot should not be empty, and it starts with a letter from \n    the latin alphapet ('a'-'z' and 'A'-'Z').\n    - The substring after the dot should be one of these: ['txt', 'exe', 'dll']\n    Examples:\n    file_name_check(\"example.txt\") # => 'Yes'\n    file_name_check(\"1example.dll\") # => 'No' (the name should start with a latin alphapet letter)\n    \"\"\"\n\n    if '.' not in file_name or file_name.count('.') != 1:\n        return \"No\"\n    \n    parts = file_name.split('.')\n    base, ext = parts[0], parts[-1]\n    \n    if len(ext) == 3 and ext.lower() in ['txt', 'exe', 'dll']:\n        pass\n    else:\n        return \"No\"\n\n    digit_count = sum(1 for c in file_name if c.isdigit())\n    if digit_count > 3:\n        return \"No\"\n\n    if not base or len(base) == 0:\n        return \"No\"\n\n    first_char = base[0]\n    if not ('a' <= first_char <= 'z' or 'A' <= first_char <= 'Z'):\n        return \"No\"\n\n    for i in range(1, len(base)):\n        char = base[i]\n        if not (char.isalpha() and chr(ord('a') - 32) < char < chr(ord('z'))): # Check uppercase logic properly below or just use isalpha\n        \n            pass\n    \n    return \"Yes\"",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/141",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

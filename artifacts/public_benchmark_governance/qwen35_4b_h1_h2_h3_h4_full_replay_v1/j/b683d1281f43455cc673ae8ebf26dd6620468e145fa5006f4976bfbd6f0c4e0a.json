@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b683d1281f43455cc673ae8ebf26dd6620468e145fa5006f4976bfbd6f0c4e0a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "catalan_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7bc3b5198afe2ef1484e4281a7a3d20cac14bc7c762407cd2d996dd2cc549dac",
+  "final_source": "def catalan_number(n):\n    \"\"\"\n    Returns the nth Catalan number.\n    \n    Args:\n        n (int): The index of the Catalan number to calculate (0-indexed).\n        \n    Returns:\n        int: The nth Catalan number.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n\n    # Base case for C_0 is always 1\n    c = 1\n    \n    # Iteratively calculate from i=1 to n using the recurrence relation:\n    # C_i = C_{i-1} * (4*i - 2) / (i + 1)\n    for i in range(1, n + 1):\n        numerator = 4 * i - 2\n        denominator = i + 1\n        \n        # Since the result is guaranteed to be an integer at every step \n        # of this specific recurrence relation, we can perform division directly.\n        c = (c * numerator) // denominator\n\n    return c\n\n# Test assertion as requested in your prompt\nif __name__ == \"__main__\":\n    assert catalan_number(10) == 16796\n    print(\"Assertion passed successfully!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/583:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0da4b33dab9b290de5f090b11bc50da8400e4a899e1b739b3f56c1a832ae57d6",
+  "post_h2_sha256": "064e4fdd31141a01e382774f2e757f7674e9a05f71ce9e3b1aac5f8b4a88aebf",
+  "post_h3_sha256": "064e4fdd31141a01e382774f2e757f7674e9a05f71ce9e3b1aac5f8b4a88aebf",
+  "post_h4_sha256": "7bc3b5198afe2ef1484e4281a7a3d20cac14bc7c762407cd2d996dd2cc549dac",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0da4b33dab9b290de5f090b11bc50da8400e4a899e1b739b3f56c1a832ae57d6",
+  "raw_source": "def catalan_number(n):\n    \"\"\"\n    Returns the nth Catalan number.\n    \n    Args:\n        n (int): The index of the Catalan number to calculate (0-indexed).\n        \n    Returns:\n        int: The nth Catalan number.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer\")\n\n    # Base case for C_0 is always 1\n    c = 1\n    \n    # Iteratively calculate from i=1 to n using the recurrence relation:\n    # C_i = C_{i-1} * (4*i - 2) / (i + 1)\n    for i in range(1, n + 1):\n        numerator = 4 * i - 2\n        denominator = i + 1\n        \n        # Since the result is guaranteed to be an integer at every step \n        # of this specific recurrence relation, we can perform division directly.\n        c = (c * numerator) // denominator\n\n    return c\n\n# Test assertion as requested in your prompt\nassert catalan_number(10) == 16796\nprint(\"Assertion passed successfully!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/583",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

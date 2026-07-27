@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7bd0ef69cc39ec0f2edf54a5bb424ccd67158b84f76fbd0980442d6e208fc884",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "hex_key",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "final_source": "def hex_key(num):\n    \"\"\"\n    Counts the number of hexadecimal digits that are prime numbers.\n    \n    Prime Hex Digits: 2, 3, 5, 7 (decimal < 10) and B (11), D (13).\n    Note: Numbers like 17+ cannot be represented as single hex characters.\n    \"\"\"\n    \n    # Set of prime hexadecimal digits based on the problem description\n    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}\n    \n    count = 0\n    \n    for char in num:\n        if char in prime_hex_digits:\n            count += 1\n            \n    return count\n\n# --- Testing with provided examples ---\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"AB\", 1),           # B is prime (11) -> Count: 1\n        (\"1077E\", 2),       # 7, 7 are prime -> Count: 2\n        (\"ABED1A33\", 4),    # A(no),B(yes),E(no),D(yes),1(no),A(no),3(yes),3(yes) -> Count: 4\n        (\"123456789ABCDEF0\", 6), # 2,3,5,7,B,D are prime. Total 6 unique primes in this string? \n                                  # Let's trace: 2,y; 3,y; 5,y; 7,y; A,n; B,y; C,n; D,y; E,n; F,n; 0,n -> Count: 6\n        (\"2020\", 2)         # 2, 2 are prime -> Count: 2\n    ]\n\n    for test_input, expected in test_cases:\n        result = hex_key(test_input)\n        status = \"✓\" if result == expected else \"✗\"\n        print(f\"{status} Input: '{test_input}' | Output: {result} (Expected: {expected})\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:HumanEval/78:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "post_h2_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "post_h3_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "post_h4_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "55f95357fcf15913493b226dcf8decd8ab7c8deec72ef7d7fab827df66c69af3",
+  "raw_source": "def hex_key(num):\n    \"\"\"\n    Counts the number of hexadecimal digits that are prime numbers.\n    \n    Prime Hex Digits: 2, 3, 5, 7 (decimal < 10) and B (11), D (13).\n    Note: Numbers like 17+ cannot be represented as single hex characters.\n    \"\"\"\n    \n    # Set of prime hexadecimal digits based on the problem description\n    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}\n    \n    count = 0\n    \n    for char in num:\n        if char in prime_hex_digits:\n            count += 1\n            \n    return count\n\n# --- Testing with provided examples ---\nif __name__ == \"__main__\":\n    test_cases = [\n        (\"AB\", 1),           # B is prime (11) -> Count: 1\n        (\"1077E\", 2),       # 7, 7 are prime -> Count: 2\n        (\"ABED1A33\", 4),    # A(no),B(yes),E(no),D(yes),1(no),A(no),3(yes),3(yes) -> Count: 4\n        (\"123456789ABCDEF0\", 6), # 2,3,5,7,B,D are prime. Total 6 unique primes in this string? \n                                  # Let's trace: 2,y; 3,y; 5,y; 7,y; A,n; B,y; C,n; D,y; E,n; F,n; 0,n -> Count: 6\n        (\"2020\", 2)         # 2, 2 are prime -> Count: 2\n    ]\n\n    for test_input, expected in test_cases:\n        result = hex_key(test_input)\n        status = \"✓\" if result == expected else \"✗\"\n        print(f\"{status} Input: '{test_input}' | Output: {result} (Expected: {expected})\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/78",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

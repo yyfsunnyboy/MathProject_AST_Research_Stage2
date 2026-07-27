@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "cf55c8ebc5fbfbc994fb8683ebfba3775e07dae59e9c5c18edc9f4049029fb34",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_modulo",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "final_source": "def tuple_modulo(tup1, tup2):\n    \"\"\"\n    Performs element-wise modulo on two tuples.\n    \n    Args:\n        tup1 (tuple): First input tuple.\n        tup2 (tuple): Second input tuple (must be the same length as tup1).\n        \n    Returns:\n        tuple: A new tuple containing the result of a % b for each corresponding pair.\n        \n    Raises:\n        ValueError: If the tuples are not of equal length.\n    \"\"\"\n    if len(tup1) != len(tup2):\n        raise ValueError(\"Both input tuples must have the same length.\")\n    \n    return tuple(a % b for a, b in zip(tup1, tup2))\n\n# Test case from your example:\nresult = tuple_modulo((10, 4, 5, 6), (5, 6, 7, 5))\nassert result == (0, 4, 5, 1)\nprint(\"Test passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/616:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "post_h2_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "post_h3_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "post_h4_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "70e670b71e84ecff0d9ab73c5c0fe5c483921b65b746d753412a153d479d10de",
+  "raw_source": "def tuple_modulo(tup1, tup2):\n    \"\"\"\n    Performs element-wise modulo on two tuples.\n    \n    Args:\n        tup1 (tuple): First input tuple.\n        tup2 (tuple): Second input tuple (must be the same length as tup1).\n        \n    Returns:\n        tuple: A new tuple containing the result of a % b for each corresponding pair.\n        \n    Raises:\n        ValueError: If the tuples are not of equal length.\n    \"\"\"\n    if len(tup1) != len(tup2):\n        raise ValueError(\"Both input tuples must have the same length.\")\n    \n    return tuple(a % b for a, b in zip(tup1, tup2))\n\n# Test case from your example:\nresult = tuple_modulo((10, 4, 5, 6), (5, 6, 7, 5))\nassert result == (0, 4, 5, 1)\nprint(\"Test passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/616",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

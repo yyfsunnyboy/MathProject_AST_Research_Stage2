@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "95a62a88b3e2e17de1e75dc1fb5a6e5b36212efa3212ad750f72ec51f49d5f83",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_product_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "final_source": "def max_product_tuple(tuples_list):\n    \"\"\"\n    Finds the maximum absolute product between numbers in pairs of tuples within a given list.\n    \n    Args:\n        tuples_list (list of tuple): A list containing integer tuples, e.g., [(2, 7), ...]\n        \n    Returns:\n        int or float: The maximum absolute product found among all pair products.\n    \"\"\"\n    if not tuples_list:\n        return None # Handle empty input gracefully\n\n    max_abs_product = -float('inf')\n\n    for a, b in tuples_list:\n        current_product = abs(a * b)\n        \n        # Update the maximum if we find a larger absolute product\n        if current_product > max_abs_product:\n            max_abs_product = current_product\n            \n    return max_abs_product\n\n# Testing with the provided assertion case\ntest_input = [(2, 7), (2, 6), (1, 8), (4, 9)]\nresult = max_product_tuple(test_input)\n\nprint(f\"Input: {test_input}\")\nprint(f\"Products calculated:\")\nfor a, b in test_input:\n    print(f\"{a} * {b} = {abs(a*b)}\")\n    \nassert result == 36, f\"Expected 36 but got {result}\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/120:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "post_h2_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "post_h3_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "post_h4_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a9a38c8bc670017dbd87097d6943fb867f7a4f5fbe0f2dc766d970f72ae35bee",
+  "raw_source": "def max_product_tuple(tuples_list):\n    \"\"\"\n    Finds the maximum absolute product between numbers in pairs of tuples within a given list.\n    \n    Args:\n        tuples_list (list of tuple): A list containing integer tuples, e.g., [(2, 7), ...]\n        \n    Returns:\n        int or float: The maximum absolute product found among all pair products.\n    \"\"\"\n    if not tuples_list:\n        return None # Handle empty input gracefully\n\n    max_abs_product = -float('inf')\n\n    for a, b in tuples_list:\n        current_product = abs(a * b)\n        \n        # Update the maximum if we find a larger absolute product\n        if current_product > max_abs_product:\n            max_abs_product = current_product\n            \n    return max_abs_product\n\n# Testing with the provided assertion case\ntest_input = [(2, 7), (2, 6), (1, 8), (4, 9)]\nresult = max_product_tuple(test_input)\n\nprint(f\"Input: {test_input}\")\nprint(f\"Products calculated:\")\nfor a, b in test_input:\n    print(f\"{a} * {b} = {abs(a*b)}\")\n    \nassert result == 36, f\"Expected 36 but got {result}\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/120",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

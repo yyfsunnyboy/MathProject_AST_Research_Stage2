@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_depends_on_external_state",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "35db30aab773b63580dfe7ed72d10c882fc6ea7b547a9e1ff6090084c947b697",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "pack_consecutive_duplicates",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "final_source": "def pack_consecutive_duplicates(lst):\n    \"\"\"\n    Packs consecutive duplicates of a given list's elements into sublists.\n    \n    Args:\n        lst (list): The input list containing any hashable elements.\n        \n    Returns:\n        list: A new list where each sublist contains only the value \n              that was repeated consecutively in the original list.\n    \"\"\"\n    if not lst:  # Handle empty list case\n        return []\n\n    result = []\n    current_group = [lst[0]]\n\n    for i in range(1, len(lst)):\n        if lst[i] == lst[i - 1]:\n            # If the current element is same as previous, add to current group\n            current_group.append(lst[i])\n        else:\n            # Otherwise, finalize the current group and start a new one\n            result.append(current_group)\n            current_group = [lst[i]]\n\n    # Append the last group after the loop finishes\n    result.append(current_group)\n    \n    return result\n\n# Test with the provided assertion case\ntest_list = [0, 0, 1, 2, 3, 4, 4, 5, 6, 6, 6, 7, 8, 9, 4, 4]\nexpected_output = [[0, 0], [1], [2], [3], [4, 4], [5], [6, 6, 6], [7], [8], [9], [4, 4]]\n\nassert pack_consecutive_duplicates(test_list) == expected_output, \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/778:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "post_h2_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "post_h3_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "post_h4_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "05913be584c5290b8b0c5c20b77903be08553629b7574d30d6974b3767ffee4f",
+  "raw_source": "def pack_consecutive_duplicates(lst):\n    \"\"\"\n    Packs consecutive duplicates of a given list's elements into sublists.\n    \n    Args:\n        lst (list): The input list containing any hashable elements.\n        \n    Returns:\n        list: A new list where each sublist contains only the value \n              that was repeated consecutively in the original list.\n    \"\"\"\n    if not lst:  # Handle empty list case\n        return []\n\n    result = []\n    current_group = [lst[0]]\n\n    for i in range(1, len(lst)):\n        if lst[i] == lst[i - 1]:\n            # If the current element is same as previous, add to current group\n            current_group.append(lst[i])\n        else:\n            # Otherwise, finalize the current group and start a new one\n            result.append(current_group)\n            current_group = [lst[i]]\n\n    # Append the last group after the loop finishes\n    result.append(current_group)\n    \n    return result\n\n# Test with the provided assertion case\ntest_list = [0, 0, 1, 2, 3, 4, 4, 5, 6, 6, 6, 7, 8, 9, 4, 4]\nexpected_output = [[0, 0], [1], [2], [3], [4, 4], [5], [6, 6, 6], [7], [8], [9], [4, 4]]\n\nassert pack_consecutive_duplicates(test_list) == expected_output, \"Test failed!\"\nprint(\"All tests passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/778",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

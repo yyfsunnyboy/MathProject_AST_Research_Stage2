@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7c51963db7cd427c81462e6593c3943ee3b6f497104f445ad31faae5ce3882fa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "common_in_nested_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "final_source": "def common_in_nested_lists(nested_list):\n    all_elements = set()\n    for sublist in nested_list:\n        if isinstance(sublist, list):\n            all_elements.update(sublist)\n    \n    return sorted(list(all_elements))",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/111:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "post_h2_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "post_h3_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "post_h4_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e405253304cc9cbf5e9f3e2e1a84139bc5f0aa1559d3925326e35261233f0f3a",
+  "raw_source": "def common_in_nested_lists(nested_list):\n    all_elements = set()\n    for sublist in nested_list:\n        if isinstance(sublist, list):\n            all_elements.update(sublist)\n    \n    return sorted(list(all_elements))",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

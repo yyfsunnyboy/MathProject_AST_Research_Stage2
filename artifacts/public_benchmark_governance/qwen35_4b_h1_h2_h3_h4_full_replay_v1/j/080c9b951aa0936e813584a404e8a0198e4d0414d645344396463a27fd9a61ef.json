@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "080c9b951aa0936e813584a404e8a0198e4d0414d645344396463a27fd9a61ef",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_kth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "final_source": "def find_kth(arr_a, arr_b, k):\n    \"\"\"\n    Finds the k-th smallest element in two sorted arrays using binary search.\n    \n    Args:\n        arr_a (List[int]): First sorted array.\n        arr_b (List[int]): Second sorted array.\n        k (int): The 1-based index of the element to find.\n        \n    Returns:\n        int: The value of the k-th smallest element.\n    \"\"\"\n    \n    # Ensure arr_a is always the shorter one for efficiency O(log(min(m, n)))\n    if len(arr_a) > len(arr_b):\n        return find_kth(arr_b, arr_a, k)\n\n    m = len(arr_a)  # Length of smaller array (arr_a)\n    n = len(arr_b)  # Length of larger array (arr_b)\n    \n    low = 0\n    high = m\n    \n    while low <= high:\n        midA = (low + high) // 2\n        \n        # Calculate corresponding index in arr_b such that elements before split match k-1 count\n        # We are looking for indices i and j where i + j == k - 1\n        midB = k - 1 - midA\n\n        # Handle boundary conditions (indices can be out of bounds)\n        if midA < 0: \n            midA = 0\n        elif midA >= m: \n            midA = m - 1\n            \n        if midB < 0: \n            midB = 0\n        elif midB >= n: \n            midB = n - 1\n\n        # Elements to compare (the ones immediately after the split)\n        L_A = arr_a[midA]      # Left element of A's partition\n        R_B = arr_b[midB + 1] if midB < n else float('inf') # Right element of B's partition\n        \n        L_B = arr_b[midB]      # Left element of B's partition (if exists)\n        R_A = arr_a[midA + 1] if midA < m else float('inf')    # Right element of A's partition\n\n        # Logic to determine direction:\n        # If L_A > R_B, then the k-th element must be in the right part of B and left part of A.\n        # We need more elements from A (increase midA).\n        if L_A > R_B:\n            low = midA + 1\n        elif L_B < R_A:\n            high = midA - 1\n        else:\n            # Found the correct split point where all left parts are <= k-th element \n            # and all right parts are >= k-th element.\n            return max(L_A, L_B)\n\n    raise ValueError(\"k is out of bounds for the given arrays.\")\n\n# Test Case from prompt\nif __name__ == \"__main__\":\n    result = find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5)\n    assert result == 6, f\"Expected 6 but got {result}\"\n    print(f\"The 5th element is: {result}\") # Output: The 5th element is: 6\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:4b:Mbpp/597:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "post_h2_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "post_h3_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "post_h4_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "08c910539772a78263884211d5c5dea5060851a70793ce0a71f22e8c32a749ac",
+  "raw_source": "def find_kth(arr_a, arr_b, k):\n    \"\"\"\n    Finds the k-th smallest element in two sorted arrays using binary search.\n    \n    Args:\n        arr_a (List[int]): First sorted array.\n        arr_b (List[int]): Second sorted array.\n        k (int): The 1-based index of the element to find.\n        \n    Returns:\n        int: The value of the k-th smallest element.\n    \"\"\"\n    \n    # Ensure arr_a is always the shorter one for efficiency O(log(min(m, n)))\n    if len(arr_a) > len(arr_b):\n        return find_kth(arr_b, arr_a, k)\n\n    m = len(arr_a)  # Length of smaller array (arr_a)\n    n = len(arr_b)  # Length of larger array (arr_b)\n    \n    low = 0\n    high = m\n    \n    while low <= high:\n        midA = (low + high) // 2\n        \n        # Calculate corresponding index in arr_b such that elements before split match k-1 count\n        # We are looking for indices i and j where i + j == k - 1\n        midB = k - 1 - midA\n\n        # Handle boundary conditions (indices can be out of bounds)\n        if midA < 0: \n            midA = 0\n        elif midA >= m: \n            midA = m - 1\n            \n        if midB < 0: \n            midB = 0\n        elif midB >= n: \n            midB = n - 1\n\n        # Elements to compare (the ones immediately after the split)\n        L_A = arr_a[midA]      # Left element of A's partition\n        R_B = arr_b[midB + 1] if midB < n else float('inf') # Right element of B's partition\n        \n        L_B = arr_b[midB]      # Left element of B's partition (if exists)\n        R_A = arr_a[midA + 1] if midA < m else float('inf')    # Right element of A's partition\n\n        # Logic to determine direction:\n        # If L_A > R_B, then the k-th element must be in the right part of B and left part of A.\n        # We need more elements from A (increase midA).\n        if L_A > R_B:\n            low = midA + 1\n        elif L_B < R_A:\n            high = midA - 1\n        else:\n            # Found the correct split point where all left parts are <= k-th element \n            # and all right parts are >= k-th element.\n            return max(L_A, L_B)\n\n    raise ValueError(\"k is out of bounds for the given arrays.\")\n\n# Test Case from prompt\nif __name__ == \"__main__\":\n    result = find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5)\n    assert result == 6, f\"Expected 6 but got {result}\"\n    print(f\"The 5th element is: {result}\") # Output: The 5th element is: 6\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/597",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

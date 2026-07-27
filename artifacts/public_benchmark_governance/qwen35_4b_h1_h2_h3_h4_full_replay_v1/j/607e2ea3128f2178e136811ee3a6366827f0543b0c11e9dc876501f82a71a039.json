@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "607e2ea3128f2178e136811ee3a6366827f0543b0c11e9dc876501f82a71a039",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "union_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "684dcd6ec64c2ec2e40e30d8d13b8b84bd54451e4348e0f45ea89a7f8394a59d",
+  "final_source": "def union_elements(tup1: tuple, tup2: tuple):\n    \"\"\"\n    Returns the sorted union of elements from two tuples.\n    \n    Example:\n        assert union_elements((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 4, 5, 6, 7, 10)\n    \"\"\"\n    # Convert to sets for efficient unique combination, then sort and convert back to tuple\n    return tuple(sorted(set(tup1).union(set(tup2))))\n\n\n# Test the function as per the requirement\nif __name__ == \"__main__\":\n    assert union_elements((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 4, 5, 6, 7, 10)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:4b:Mbpp/560:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:4b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d8d39f307d5f8d0cef08652142ae4b4aa9a44f44d1b154f82eca430232293867",
+  "post_h2_sha256": "684dcd6ec64c2ec2e40e30d8d13b8b84bd54451e4348e0f45ea89a7f8394a59d",
+  "post_h3_sha256": "684dcd6ec64c2ec2e40e30d8d13b8b84bd54451e4348e0f45ea89a7f8394a59d",
+  "post_h4_sha256": "684dcd6ec64c2ec2e40e30d8d13b8b84bd54451e4348e0f45ea89a7f8394a59d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d8d39f307d5f8d0cef08652142ae4b4aa9a44f44d1b154f82eca430232293867",
+  "raw_source": "def union_elements(tup1: tuple, tup2: tuple):\n    \"\"\"\n    Returns the sorted union of elements from two tuples.\n    \n    Example:\n        assert union_elements((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 4, 5, 6, 7, 10)\n    \"\"\"\n    # Convert to sets for efficient unique combination, then sort and convert back to tuple\n    return tuple(sorted(set(tup1).union(set(tup2))))\n\n\n# Test the function as per the requirement\nassert union_elements((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 4, 5, 6, 7, 10)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/560",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}
