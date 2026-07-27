@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8fa9a3ee874438952755d07303de78d793966b6371a48bd2f920c262010d3e12",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "concatenate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "final_source": "from typing import List\n\n\ndef concatenate(strings: List[str]) -> str:\n    \"\"\" Concatenate list of strings into a single string\n    \n    >>> concatenate([])\n    ''\n    >>> concatenate(['a', 'b', 'c'])\n    'abc'\n    \"\"\"\n    return \"\".join(strings)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/28:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "post_h2_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "post_h3_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "post_h4_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e1f937cbc8aaa385f85bc62e087749871fd602828d734e4b879b6e3f07bf247a",
+  "raw_source": "from typing import List\n\n\ndef concatenate(strings: List[str]) -> str:\n    \"\"\" Concatenate list of strings into a single string\n    \n    >>> concatenate([])\n    ''\n    >>> concatenate(['a', 'b', 'c'])\n    'abc'\n    \"\"\"\n    return \"\".join(strings)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/28",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

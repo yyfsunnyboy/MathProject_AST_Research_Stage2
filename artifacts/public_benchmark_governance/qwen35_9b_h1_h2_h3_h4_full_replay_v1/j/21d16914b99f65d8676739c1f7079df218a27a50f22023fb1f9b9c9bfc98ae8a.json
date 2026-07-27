@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "21d16914b99f65d8676739c1f7079df218a27a50f22023fb1f9b9c9bfc98ae8a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "words_in_sentence",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "final_source": "def words_in_sentence(sentence):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n    \n    result = []\n    words = sentence.split()\n    \n    for word in words:\n        length = len(word)\n        if is_prime(length):\n            result.append(word)\n            \n    return \" \".join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/143:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "post_h2_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "post_h3_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "post_h4_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6f2395f27a86f379795460675db83d4e4ac7d57c93b488eabc1b8f890a2e2aee",
+  "raw_source": "def words_in_sentence(sentence):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n    \n    result = []\n    words = sentence.split()\n    \n    for word in words:\n        length = len(word)\n        if is_prime(length):\n            result.append(word)\n            \n    return \" \".join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/143",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

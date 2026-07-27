@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "17ce848c0e17de2fd8b62bf4248ded28c9bc81d6d6f42ed784b2d60c210275f9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cd4b3b970fdfd9f2f9eff8d2e2f94528ab819ac1025a63f1bef7918e45f6ab71",
+  "final_source": "def find(a: int, b: int) -> int:\n    \"\"\"Return floor division of a by b.\"\"\"\n    if b == 0:\n        raise ZeroDivisionError(\"division by zero\")\n    return a // b\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert find(10, 3) == 3\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/292:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d880291b1590b553b09e38f4d7d023fe66f4f79d2c55622f0aef171c7050853e",
+  "post_h2_sha256": "cd4b3b970fdfd9f2f9eff8d2e2f94528ab819ac1025a63f1bef7918e45f6ab71",
+  "post_h3_sha256": "cd4b3b970fdfd9f2f9eff8d2e2f94528ab819ac1025a63f1bef7918e45f6ab71",
+  "post_h4_sha256": "cd4b3b970fdfd9f2f9eff8d2e2f94528ab819ac1025a63f1bef7918e45f6ab71",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d880291b1590b553b09e38f4d7d023fe66f4f79d2c55622f0aef171c7050853e",
+  "raw_source": "def find(a: int, b: int) -> int:\n    \"\"\"Return floor division of a by b.\"\"\"\n    if b == 0:\n        raise ZeroDivisionError(\"division by zero\")\n    return a // b\n\n\n# Example usage and assertion\nassert find(10, 3) == 3\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/292",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "95e62726d9cb42b73a71cf22b879cec0ed1f870e9471e643e1ff01b416b61d26",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_quotation",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "final_source": "import re\n\ndef extract_quotation(text):\n    \"\"\"\n    Extracts values between double quotation marks from a given string.\n    \n    Args:\n        text (str): The input string containing quoted sections.\n        \n    Returns:\n        list[str]: A list of strings found inside the quotes.\n    \"\"\"\n    # Pattern explanation:\n    # \\\"  : Matches a literal double quote character.\n    # (   : Starts a capturing group to extract only the content inside.\n    # .*? : Non-greedy match for any characters (stops at the first closing quote).\n    # )   : Ends the capturing group.\n    # \\\"  : Matches the closing double quote.\n    \n    pattern = r'\"(.*?)\"'\n    matches = re.findall(pattern, text)\n    \n    return matches\n\n# Test cases based on your requirement and edge cases\ntest_string = 'Cortex \"A53\" Based \"multi\" tasking \"Processor\"'\nresult = extract_quotation(test_string)\n\nassert result == ['A53', 'multi', 'Processor'], f\"Test failed: {result}\"\nprint(f\"Success! Extracted values: {result}\")\n\n# Additional edge case tests to ensure robustness\nassert extract_quotation('He said \"Hello World\".') == [\"Hello World\"]\nassert extract_quotation('\"Start\" and \"End\" are quoted.') == ['Start', 'End']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/725:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "post_h2_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "post_h3_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "post_h4_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4859ee6066a478e082ffd3a13f7937e27107b8a381f921c54cd3c6034525ab20",
+  "raw_source": "import re\n\ndef extract_quotation(text):\n    \"\"\"\n    Extracts values between double quotation marks from a given string.\n    \n    Args:\n        text (str): The input string containing quoted sections.\n        \n    Returns:\n        list[str]: A list of strings found inside the quotes.\n    \"\"\"\n    # Pattern explanation:\n    # \\\"  : Matches a literal double quote character.\n    # (   : Starts a capturing group to extract only the content inside.\n    # .*? : Non-greedy match for any characters (stops at the first closing quote).\n    # )   : Ends the capturing group.\n    # \\\"  : Matches the closing double quote.\n    \n    pattern = r'\"(.*?)\"'\n    matches = re.findall(pattern, text)\n    \n    return matches\n\n# Test cases based on your requirement and edge cases\ntest_string = 'Cortex \"A53\" Based \"multi\" tasking \"Processor\"'\nresult = extract_quotation(test_string)\n\nassert result == ['A53', 'multi', 'Processor'], f\"Test failed: {result}\"\nprint(f\"Success! Extracted values: {result}\")\n\n# Additional edge case tests to ensure robustness\nassert extract_quotation('He said \"Hello World\".') == [\"Hello World\"]\nassert extract_quotation('\"Start\" and \"End\" are quoted.') == ['Start', 'End']\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/725",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

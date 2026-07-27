@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5faffcd2a5438be7b92d55cf71ddd9100a0e50ce7eb42cd47f742cff68c9d5bf",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "max_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "final_source": "def max_length(lst):\n    if not lst:\n        return (0, [])\n    \n    lengths = [len(sublist) for sublist in lst]\n    max_len = max(lengths)\n    result_sublists = [sublist for sublist in lst if len(sublist) == max_len]\n    \n    # If there are multiple sublists with the same maximum length, return one of them. \n    # The problem example implies returning just one such list (the last one found or first? \n    # In Python's stable sort/filter context without explicit instruction, usually any is fine, \n    but let's pick the first occurrence to be deterministic and simple).\n    \n    for sublist in lst:\n        if len(sublist) == max_len:\n            return (max_len, sublist)\n            \n    return (0, [])",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/290:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "post_h2_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "post_h3_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "post_h4_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "075769280995185c1ab16e64d5fc2f4a78504da0ebff31bb59bb2bf4cca85c18",
+  "raw_source": "def max_length(lst):\n    if not lst:\n        return (0, [])\n    \n    lengths = [len(sublist) for sublist in lst]\n    max_len = max(lengths)\n    result_sublists = [sublist for sublist in lst if len(sublist) == max_len]\n    \n    # If there are multiple sublists with the same maximum length, return one of them. \n    # The problem example implies returning just one such list (the last one found or first? \n    # In Python's stable sort/filter context without explicit instruction, usually any is fine, \n    but let's pick the first occurrence to be deterministic and simple).\n    \n    for sublist in lst:\n        if len(sublist) == max_len:\n            return (max_len, sublist)\n            \n    return (0, [])",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/290",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

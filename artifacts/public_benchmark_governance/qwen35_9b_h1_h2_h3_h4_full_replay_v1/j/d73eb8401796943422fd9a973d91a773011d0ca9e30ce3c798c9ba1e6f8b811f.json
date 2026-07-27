@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d73eb8401796943422fd9a973d91a773011d0ca9e30ce3c798c9ba1e6f8b811f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_distinct_characters",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "final_source": "def count_distinct_characters(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n    \n    >>> count_distinct_characters('xyzXYZ')\n    3\n    >>> count_distinct_characters('Jerry')\n    4\n    \"\"\"\n    # Convert the entire string to lowercase so that 'A' and 'a' are treated as the same character.\n    normalized_string = string.lower()\n    \n    # Use a set to store unique characters (sets automatically handle duplicates).\n    distinct_chars = set(normalized_string)\n    \n    return len(distinct_chars)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/16:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "post_h2_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "post_h3_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "post_h4_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9608da064576ea2de66309f92945d371168828bb656168a2a5ad401051013470",
+  "raw_source": "def count_distinct_characters(string: str) -> int:\n    \"\"\" Given a string, find out how many distinct characters (regardless of case) does it consist of\n    \n    >>> count_distinct_characters('xyzXYZ')\n    3\n    >>> count_distinct_characters('Jerry')\n    4\n    \"\"\"\n    # Convert the entire string to lowercase so that 'A' and 'a' are treated as the same character.\n    normalized_string = string.lower()\n    \n    # Use a set to store unique characters (sets automatically handle duplicates).\n    distinct_chars = set(normalized_string)\n    \n    return len(distinct_chars)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/16",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

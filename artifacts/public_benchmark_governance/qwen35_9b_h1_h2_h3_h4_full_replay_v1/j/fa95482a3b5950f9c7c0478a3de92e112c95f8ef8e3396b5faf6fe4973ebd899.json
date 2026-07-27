@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "fa95482a3b5950f9c7c0478a3de92e112c95f8ef8e3396b5faf6fe4973ebd899",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "zero_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "final_source": "import math\n\ndef zero_count(arr):\n    if len(arr) == 0:\n        return 1.0\n    \n    total = len(arr)\n    non_zeroes = sum(1 for x in arr if x != 0)\n    \n    ratio = (total - non_zeroes) / total\n    assert math.isclose(ratio, 0.181818, rel_tol=0.001), f\"Expected ~0.181818 but got {ratio}\"\n    return ratio",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/137:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "post_h2_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "post_h3_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "post_h4_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ac1939daf2bdee1029d2c257f92d92ecaef4d717711f068a4c440b77c44fc248",
+  "raw_source": "import math\n\ndef zero_count(arr):\n    if len(arr) == 0:\n        return 1.0\n    \n    total = len(arr)\n    non_zeroes = sum(1 for x in arr if x != 0)\n    \n    ratio = (total - non_zeroes) / total\n    assert math.isclose(ratio, 0.181818, rel_tol=0.001), f\"Expected ~0.181818 but got {ratio}\"\n    return ratio",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/137",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

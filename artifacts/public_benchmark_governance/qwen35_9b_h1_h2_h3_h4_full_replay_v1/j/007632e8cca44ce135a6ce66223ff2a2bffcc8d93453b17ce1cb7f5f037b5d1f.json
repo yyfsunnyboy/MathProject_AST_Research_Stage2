@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "007632e8cca44ce135a6ce66223ff2a2bffcc8d93453b17ce1cb7f5f037b5d1f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "order_by_points",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "final_source": "def sum_of_digits(n):\n    # Handle negative numbers by working with absolute value for digit sum\n    s = abs(n)\n    total = 0\n    while s > 0:\n        total += s % 10\n        s //= 10\n    return total\n\ndef order_by_points(nums):\n    \"\"\"\n    Sorts the given list of integers in ascending order according to the sum of their digits.\n    If sums are equal, preserves original relative order (stable sort).\n    \n    Examples:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n    # Python's sort is stable by default, so we only need to provide the key.\n    return sorted(nums, key=lambda x: sum_of_digits(x))\n\n# Quick test (optional):\nif __name__ == \"__main__\":\n    print(order_by_points([1, 11, -1, -11, -12]))   # [-1, -11, 1, -12, 11]\n    print(order_by_points([]))                       # []\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/145:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "post_h2_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "post_h3_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "post_h4_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "585f31b320a2eb50c01f13a4ab7244fd5e4a69be8c9613054991900456d555f0",
+  "raw_source": "def sum_of_digits(n):\n    # Handle negative numbers by working with absolute value for digit sum\n    s = abs(n)\n    total = 0\n    while s > 0:\n        total += s % 10\n        s //= 10\n    return total\n\ndef order_by_points(nums):\n    \"\"\"\n    Sorts the given list of integers in ascending order according to the sum of their digits.\n    If sums are equal, preserves original relative order (stable sort).\n    \n    Examples:\n    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]\n    >>> order_by_points([]) == []\n    \"\"\"\n    # Python's sort is stable by default, so we only need to provide the key.\n    return sorted(nums, key=lambda x: sum_of_digits(x))\n\n# Quick test (optional):\nif __name__ == \"__main__\":\n    print(order_by_points([1, 11, -1, -11, -12]))   # [-1, -11, 1, -12, 11]\n    print(order_by_points([]))                       # []\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/145",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

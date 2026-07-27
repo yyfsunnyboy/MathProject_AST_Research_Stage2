@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "d4a29b0d657e161a34e18d6e409dc7fe12ebe6e5b148f8750dcd7bc24db52250",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "substract_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3383f90dc3b1c2f51510ca783a234bd97a2bd445e0493404d255e0237e83a67b",
+  "final_source": "def subtract_elements(tup1, tup2):\n    \"\"\"\n    Subtracts elements of the second tuple from the first tuple at each index.\n    \n    Args:\n        tup1 (tuple): The minuend tuple.\n        tup2 (tuple): The subtrahend tuple.\n        \n    Returns:\n        tuple: A new tuple containing the results of the subtraction.\n        \n    Raises:\n        ValueError: If the tuples are not of equal length.\n    \"\"\"\n    if len(tup1) != len(tup2):\n        raise ValueError(\"Tuples must be of the same length.\")\n    \n    return tuple(x - y for x, y in zip(tup1, tup2))\n\n# Example usage and assertion from your request:\nresult = subtract_elements((10, 4, 5), (2, 5, 18))\nassert result == (8, -1, -13)\nprint(f\"Result: {result}\") # Output: Result: (8, -1, -13)\n\nsubstract_elements = subtract_elements\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/273:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3383f90dc3b1c2f51510ca783a234bd97a2bd445e0493404d255e0237e83a67b",
+  "post_h2_sha256": "3383f90dc3b1c2f51510ca783a234bd97a2bd445e0493404d255e0237e83a67b",
+  "post_h3_sha256": "3383f90dc3b1c2f51510ca783a234bd97a2bd445e0493404d255e0237e83a67b",
+  "post_h4_sha256": "3383f90dc3b1c2f51510ca783a234bd97a2bd445e0493404d255e0237e83a67b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f38ba6a7b36bcd354f34d28dcfba13ff44c8a70a4f07939db7e4107dbf014743",
+  "raw_source": "def subtract_elements(tup1, tup2):\n    \"\"\"\n    Subtracts elements of the second tuple from the first tuple at each index.\n    \n    Args:\n        tup1 (tuple): The minuend tuple.\n        tup2 (tuple): The subtrahend tuple.\n        \n    Returns:\n        tuple: A new tuple containing the results of the subtraction.\n        \n    Raises:\n        ValueError: If the tuples are not of equal length.\n    \"\"\"\n    if len(tup1) != len(tup2):\n        raise ValueError(\"Tuples must be of the same length.\")\n    \n    return tuple(x - y for x, y in zip(tup1, tup2))\n\n# Example usage and assertion from your request:\nresult = subtract_elements((10, 4, 5), (2, 5, 18))\nassert result == (8, -1, -13)\nprint(f\"Result: {result}\") # Output: Result: (8, -1, -13)\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/273",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c1f7f12dc8470d962b2deb1d4500f681b6ebc70f7976aeeb49696aa6cd373196",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "final_source": "import math\n\ndef poly(xs, x):\n    \"\"\"Evaluates polynomial with coefficients xs at point x.\"\"\"\n    return sum(coeff * math.pow(x, i) for i, coeff in enumerate(xs))\n\n\ndef find_zero(xs):\n    \"\"\"Find a real root of the polynomial defined by coefficients xs.\n    \n    Assumes:\n      - len(xs) is even (odd degree polynomial), guaranteeing at least one real root.\n      - Leading coefficient non-zero.\n      \n    Returns one real root using Newton-Raphson method with safeguards.\n    \"\"\"\n    n = len(xs)  # number of coefficients → degree = n-1\n    \n    def derivative(x):\n        return sum(i * xs[i] * math.pow(x, i-1) for i in range(1, n))\n\n    x = 0.0\n    tolerance = 1e-7\n    max_iter = 100\n    \n    # Newton-Raphson iterations with safeguard against division by near-zero derivative\n    for _ in range(max_iter):\n        fx = poly(xs, x)\n        dfx = derivative(x)\n        \n        if abs(dfx) < 1e-9:\n            break\n        \n        next_x = x - fx / dfx\n        \n        # Check convergence\n        if abs(next_x - x) < tolerance:\n            return round(next_x, 2)  # Round to match example output format\n        \n        x = next_x\n    \n    # If no convergence found (shouldn't happen for odd-degree with real coeffs in practice),\n    # fallback to bisection over a wide range if needed — but per problem guarantee, we assume success.\n    \n    return round(x, 2)\n\n\n# Test cases from docstring:\nprint(round(find_zero([1, 2]), 2))           # Expected: -0.5\nprint(round(find_zero([-6, 11, -6, 1]), 2))  # Expected: 1.0 (or another root like 2 or 3)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/32:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "post_h2_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "post_h3_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "post_h4_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e2586032c1852eb450fe8f721503f30687250ae6825dceb98b499cfd340f6d1e",
+  "raw_source": "import math\n\ndef poly(xs, x):\n    \"\"\"Evaluates polynomial with coefficients xs at point x.\"\"\"\n    return sum(coeff * math.pow(x, i) for i, coeff in enumerate(xs))\n\n\ndef find_zero(xs):\n    \"\"\"Find a real root of the polynomial defined by coefficients xs.\n    \n    Assumes:\n      - len(xs) is even (odd degree polynomial), guaranteeing at least one real root.\n      - Leading coefficient non-zero.\n      \n    Returns one real root using Newton-Raphson method with safeguards.\n    \"\"\"\n    n = len(xs)  # number of coefficients → degree = n-1\n    \n    def derivative(x):\n        return sum(i * xs[i] * math.pow(x, i-1) for i in range(1, n))\n\n    x = 0.0\n    tolerance = 1e-7\n    max_iter = 100\n    \n    # Newton-Raphson iterations with safeguard against division by near-zero derivative\n    for _ in range(max_iter):\n        fx = poly(xs, x)\n        dfx = derivative(x)\n        \n        if abs(dfx) < 1e-9:\n            break\n        \n        next_x = x - fx / dfx\n        \n        # Check convergence\n        if abs(next_x - x) < tolerance:\n            return round(next_x, 2)  # Round to match example output format\n        \n        x = next_x\n    \n    # If no convergence found (shouldn't happen for odd-degree with real coeffs in practice),\n    # fallback to bisection over a wide range if needed — but per problem guarantee, we assume success.\n    \n    return round(x, 2)\n\n\n# Test cases from docstring:\nprint(round(find_zero([1, 2]), 2))           # Expected: -0.5\nprint(round(find_zero([-6, 11, -6, 1]), 2))  # Expected: 1.0 (or another root like 2 or 3)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/32",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

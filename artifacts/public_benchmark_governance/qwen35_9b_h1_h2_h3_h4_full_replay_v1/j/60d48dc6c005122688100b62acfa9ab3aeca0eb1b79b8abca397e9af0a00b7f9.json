@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "60d48dc6c005122688100b62acfa9ab3aeca0eb1b79b8abca397e9af0a00b7f9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_length_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3c13997a5007711571d430750eefa4e40409597f57d6d51bfbd865a634bc3ea4",
+  "final_source": "def odd_length_sum(arr):\n    total = 0\n    n = len(arr)\n    \n    for i in range(n):\n        left_count = i + 1\n        right_count = n - i\n        \n        # Calculate number of subarrays starting at index i with odd length\n        # Length can be: (left_count), (left_count-2), ..., down to minimum possible odd length >= max(1, right_count) if we consider symmetry but simpler approach:\n        \n        # For a fixed start index i and end index j (inclusive), length = j - i + 1\n        # We want only lengths that are odd.\n        # Instead of iterating all subarrays, let's iterate over possible odd lengths L starting from each position? \n        # Actually simpler: iterate over all valid subarrays [i:j+1] where len is odd\n        \n        for j in range(i, n):\n            length = j - i + 1\n            if length % 2 == 1:\n                current_sum = sum(arr[i : j+1])\n                total += current_sum\n                \n    return total\n\n# Test case provided\nif __name__ == \"__main__\":\n    assert odd_length_sum([1,2,4]) == 14",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/782:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1fb3a5986080afff3e483e6d193dd4d0ab05d3942c246e805c5824bf1a0f8bf3",
+  "post_h2_sha256": "3c13997a5007711571d430750eefa4e40409597f57d6d51bfbd865a634bc3ea4",
+  "post_h3_sha256": "3c13997a5007711571d430750eefa4e40409597f57d6d51bfbd865a634bc3ea4",
+  "post_h4_sha256": "3c13997a5007711571d430750eefa4e40409597f57d6d51bfbd865a634bc3ea4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1fb3a5986080afff3e483e6d193dd4d0ab05d3942c246e805c5824bf1a0f8bf3",
+  "raw_source": "def odd_length_sum(arr):\n    total = 0\n    n = len(arr)\n    \n    for i in range(n):\n        left_count = i + 1\n        right_count = n - i\n        \n        # Calculate number of subarrays starting at index i with odd length\n        # Length can be: (left_count), (left_count-2), ..., down to minimum possible odd length >= max(1, right_count) if we consider symmetry but simpler approach:\n        \n        # For a fixed start index i and end index j (inclusive), length = j - i + 1\n        # We want only lengths that are odd.\n        # Instead of iterating all subarrays, let's iterate over possible odd lengths L starting from each position? \n        # Actually simpler: iterate over all valid subarrays [i:j+1] where len is odd\n        \n        for j in range(i, n):\n            length = j - i + 1\n            if length % 2 == 1:\n                current_sum = sum(arr[i : j+1])\n                total += current_sum\n                \n    return total\n\n# Test case provided\nassert odd_length_sum([1,2,4]) == 14",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/782",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

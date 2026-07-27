@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a0474adef4b29ad58a6da563c97e0af7c3c1944b21bbb2f7b8aa66e754c9fb54",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "move_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "final_source": "def move_num(s):\n    letters = []\n    numbers = []\n    \n    for char in s:\n        if char.isdigit():\n            numbers.append(char)\n        else:\n            letters.append(char)\n            \n    return ''.join(letters) + ''.join(numbers)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/619:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "post_h2_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "post_h3_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "post_h4_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "976c9e127f318455bb566160f9586a4b8d69b2e5b53e10404b8d80af1d150be6",
+  "raw_source": "def move_num(s):\n    letters = []\n    numbers = []\n    \n    for char in s:\n        if char.isdigit():\n            numbers.append(char)\n        else:\n            letters.append(char)\n            \n    return ''.join(letters) + ''.join(numbers)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/619",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

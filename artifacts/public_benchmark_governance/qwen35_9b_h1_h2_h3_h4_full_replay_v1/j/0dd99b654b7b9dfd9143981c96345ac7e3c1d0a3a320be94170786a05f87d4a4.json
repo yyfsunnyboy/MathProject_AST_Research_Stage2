@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "0dd99b654b7b9dfd9143981c96345ac7e3c1d0a3a320be94170786a05f87d4a4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "cycpattern_check",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "final_source": "def cycpattern_check(a , b):\n    if len(b) > len(a):\n        return False\n    \n    for i in range(len(a)):\n        rotated_a = a[i:] + a[:i]\n        if b in rotated_a:\n            return True\n            \n    # Check original string as well (rotation by 0 is covered, but let's be explicit about non-rotated case)\n    # Actually the loop covers all rotations including i=0 which is the original string.\n    \n    return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/154:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "post_h2_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "post_h3_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "post_h4_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aabd6323a8e9b88f3fdbb099378dde198f5d207bb7c1da77ed7602263b5f553c",
+  "raw_source": "def cycpattern_check(a , b):\n    if len(b) > len(a):\n        return False\n    \n    for i in range(len(a)):\n        rotated_a = a[i:] + a[:i]\n        if b in rotated_a:\n            return True\n            \n    # Check original string as well (rotation by 0 is covered, but let's be explicit about non-rotated case)\n    # Actually the loop covers all rotations including i=0 which is the original string.\n    \n    return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/154",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

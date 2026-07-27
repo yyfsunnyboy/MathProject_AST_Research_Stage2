@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2f8851ca2046b1a2441e8094233f8687252a64fb45a19083021285ff9f027252",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sum_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "final_source": "from typing import List, Tuple\n\n\ndef sum_product(numbers: List[int]) -> Tuple[int, int]:\n    \"\"\" For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.\n    Empty sum should be equal to 0 and empty product should be equal to 1.\n    >>> sum_product([])\n    (0, 1)\n    >>> sum_product([1, 2, 3, 4])\n    (10, 24)\n    \"\"\"\n    total_sum = 0\n    running_product = 1\n\n    for num in numbers:\n        total_sum += num\n        running_product *= num\n\n    return total_sum, running_product\n\n\n# Example usage and tests if desired:\nif __name__ == \"__main__\":\n    print(sum_product([]))          # (0, 1)\n    print(sum_product([1, 2, 3, 4])) # (10, 24)\n    print(sum_product([-1, -2]))     # (-3, 2)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/8:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "post_h2_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "post_h3_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "post_h4_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "97dda0c439cc3a6c17fae17f3ce1c0791391c13eecbe7472e193f4c565c8487e",
+  "raw_source": "from typing import List, Tuple\n\n\ndef sum_product(numbers: List[int]) -> Tuple[int, int]:\n    \"\"\" For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.\n    Empty sum should be equal to 0 and empty product should be equal to 1.\n    >>> sum_product([])\n    (0, 1)\n    >>> sum_product([1, 2, 3, 4])\n    (10, 24)\n    \"\"\"\n    total_sum = 0\n    running_product = 1\n\n    for num in numbers:\n        total_sum += num\n        running_product *= num\n\n    return total_sum, running_product\n\n\n# Example usage and tests if desired:\nif __name__ == \"__main__\":\n    print(sum_product([]))          # (0, 1)\n    print(sum_product([1, 2, 3, 4])) # (10, 24)\n    print(sum_product([-1, -2]))     # (-3, 2)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/8",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

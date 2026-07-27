@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "f06e570ff53ad6d1bff6054721d4ce43e01a675f639e47a5b4e3afa2ae772868",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "double_the_difference",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "final_source": "def double_the_difference(lst):\n    \"\"\"\n    Given a list of numbers, return the sum of squares of the odd integers in the list.\n    \n    Rules:\n      - Only consider elements that are integers and non-negative (>= 0).\n      - Among those, only include odd numbers.\n      - Return the sum of their squares.\n      \n    Examples:\n        double_the_difference([1, 3, 2, 0]) == 1^2 + 3^2 = 1 + 9 = 10\n        double_the_difference([-1, -2, 0]) == 0          (no non-negative odd integers)\n        double_the_difference([9, -2])   == 81           (only 9 qualifies)\n        double_the_difference([0])       == 0            (0 is even)\n    \"\"\"\n    \n    total = 0\n    \n    for x in lst:\n        # Check if it's an integer and non-negative\n        if isinstance(x, int):          # In Python, bools are ints; we'll exclude them explicitly\n            if not isinstance(x, bool): \n                if x >= 0 and (x % 2 != 0):   # odd and non-negative\n                    total += x * x\n    \n    return total\n\n\n# Quick tests:\nprint(double_the_difference([1, 3, 2, 0]))      # 10\nprint(double_the_difference([-1, -2, 0]))       # 0\nprint(double_the_difference([9, -2]))           # 81\nprint(double_the_difference([0]))               # 0\nprint(double_the_difference([]))                # 0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/151:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "post_h2_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "post_h3_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "post_h4_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6c36d862be1f7a5c252d7814020bd77917a0fa0dd654f654619a5b804f8ed9ba",
+  "raw_source": "def double_the_difference(lst):\n    \"\"\"\n    Given a list of numbers, return the sum of squares of the odd integers in the list.\n    \n    Rules:\n      - Only consider elements that are integers and non-negative (>= 0).\n      - Among those, only include odd numbers.\n      - Return the sum of their squares.\n      \n    Examples:\n        double_the_difference([1, 3, 2, 0]) == 1^2 + 3^2 = 1 + 9 = 10\n        double_the_difference([-1, -2, 0]) == 0          (no non-negative odd integers)\n        double_the_difference([9, -2])   == 81           (only 9 qualifies)\n        double_the_difference([0])       == 0            (0 is even)\n    \"\"\"\n    \n    total = 0\n    \n    for x in lst:\n        # Check if it's an integer and non-negative\n        if isinstance(x, int):          # In Python, bools are ints; we'll exclude them explicitly\n            if not isinstance(x, bool): \n                if x >= 0 and (x % 2 != 0):   # odd and non-negative\n                    total += x * x\n    \n    return total\n\n\n# Quick tests:\nprint(double_the_difference([1, 3, 2, 0]))      # 10\nprint(double_the_difference([-1, -2, 0]))       # 0\nprint(double_the_difference([9, -2]))           # 81\nprint(double_the_difference([0]))               # 0\nprint(double_the_difference([]))                # 0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/151",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

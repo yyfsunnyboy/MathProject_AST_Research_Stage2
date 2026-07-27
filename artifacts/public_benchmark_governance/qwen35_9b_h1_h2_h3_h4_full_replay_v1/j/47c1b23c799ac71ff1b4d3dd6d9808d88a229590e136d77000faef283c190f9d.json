@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "47c1b23c799ac71ff1b4d3dd6d9808d88a229590e136d77000faef283c190f9d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Extract",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "final_source": "def Extract(lst):\n    return [sublist[0] for sublist in lst]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/460:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "post_h2_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "post_h3_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "post_h4_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "499107e2356ba68711416645a34b8f4877afab37d6a5dde1619ee76e6f6cf978",
+  "raw_source": "def Extract(lst):\n    return [sublist[0] for sublist in lst]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/460",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

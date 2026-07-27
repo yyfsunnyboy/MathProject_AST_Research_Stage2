@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4613b302b280b14c92de37c1cedc9fd11114bb1b65a6f182c453938ad69219db",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "average_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "final_source": "def average_tuple(tuple_of_tuples):\n    \"\"\"\n    Takes a tuple of tuples and returns a list containing the average value \n    for each inner tuple.\n    \n    Args:\n        tuple_of_tuples (tuple[tuple[int, ...], ...]): A tuple where each element is also a tuple of numbers.\n        \n    Returns:\n        List[float]: A list of averages corresponding to each inner tuple.\n    \"\"\"\n    return [sum(inner_tuple) / len(inner_tuple) for inner_tuple in tuple_of_tuples]\n\n# Verification based on your assertion\nresult = average_tuple(((10, 10, 10, 12), (30, 45, 56, 45), (81, 80, 39, 32), (1, 2, 3, 4)))\nexpected = [30.5, 34.25, 27.0, 23.25]\n\nassert result == expected, f\"Expected {expected}, but got {result}\"\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/615:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "post_h2_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "post_h3_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "post_h4_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aaf2b6d2a2250d814ef6a287dd0e9f6e7939a3c5eb09e2e41dfeaa713e6d8d5e",
+  "raw_source": "def average_tuple(tuple_of_tuples):\n    \"\"\"\n    Takes a tuple of tuples and returns a list containing the average value \n    for each inner tuple.\n    \n    Args:\n        tuple_of_tuples (tuple[tuple[int, ...], ...]): A tuple where each element is also a tuple of numbers.\n        \n    Returns:\n        List[float]: A list of averages corresponding to each inner tuple.\n    \"\"\"\n    return [sum(inner_tuple) / len(inner_tuple) for inner_tuple in tuple_of_tuples]\n\n# Verification based on your assertion\nresult = average_tuple(((10, 10, 10, 12), (30, 45, 56, 45), (81, 80, 39, 32), (1, 2, 3, 4)))\nexpected = [30.5, 34.25, 27.0, 23.25]\n\nassert result == expected, f\"Expected {expected}, but got {result}\"\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/615",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

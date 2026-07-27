@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ad3cbedda81df809c7b272a1ef8dc084fb6fa4c738f34ad79299c1e81a5fa9c7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "divisor",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "final_source": "def divisor(n):\n    count = 0\n    for i in range(1, int(abs(n)**0.5) + 1):\n        if n % i == 0:\n            count += 2 if i * i != abs(n) else 1\n    return count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/96:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "post_h2_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "post_h3_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "post_h4_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0a228bf9103b4f83d05a8a98c4e07e0c25a47cf67d2ea907dd359f94cfd1363b",
+  "raw_source": "def divisor(n):\n    count = 0\n    for i in range(1, int(abs(n)**0.5) + 1):\n        if n % i == 0:\n            count += 2 if i * i != abs(n) else 1\n    return count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/96",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

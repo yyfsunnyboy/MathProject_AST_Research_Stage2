@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "6837c63eb3db2b35bf3ec05c07e395e36a4c58cd9b1c84b530bf12c50ec7c109",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_smaller",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "final_source": "def check_smaller(tup1: tuple, tup2: tuple) -> bool:\n    \"\"\"\n    Check if each element of the second tuple is smaller than its corresponding \n    element in the first tuple. Returns True only if ALL elements satisfy this condition; otherwise False.\n    \n    Assumes both tuples have equal length (as implied by \"corresponding\").\n    \"\"\"\n    # Optional: assert len(tup1) == len(tup2), but we'll handle it gracefully or let Python raise an error naturally\n    \n    for a, b in zip(tup1, tup2):\n        if not (b < a):  # i.e., if b >= a\n            return False\n    return True\n\n\n# Example test cases:\nassert check_smaller((1, 2, 3), (2, 3, 4)) == False   # because 2 is NOT smaller than 1 → returns False immediately\nassert check_smaller((5, 6, 7), (4, 5, 6)) == True    # all elements in second are strictly less\nassert check_smaller((10,), (9,)) == True              # single element case\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/809:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "post_h2_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "post_h3_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "post_h4_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5478536a5c64ef66e3672b35bf96ca04c6741b7e4f4aa33ba442eb34d9ec16b7",
+  "raw_source": "def check_smaller(tup1: tuple, tup2: tuple) -> bool:\n    \"\"\"\n    Check if each element of the second tuple is smaller than its corresponding \n    element in the first tuple. Returns True only if ALL elements satisfy this condition; otherwise False.\n    \n    Assumes both tuples have equal length (as implied by \"corresponding\").\n    \"\"\"\n    # Optional: assert len(tup1) == len(tup2), but we'll handle it gracefully or let Python raise an error naturally\n    \n    for a, b in zip(tup1, tup2):\n        if not (b < a):  # i.e., if b >= a\n            return False\n    return True\n\n\n# Example test cases:\nassert check_smaller((1, 2, 3), (2, 3, 4)) == False   # because 2 is NOT smaller than 1 → returns False immediately\nassert check_smaller((5, 6, 7), (4, 5, 6)) == True    # all elements in second are strictly less\nassert check_smaller((10,), (9,)) == True              # single element case\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/809",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

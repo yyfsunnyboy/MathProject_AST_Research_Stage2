@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8416e8a39473b651fc17388697ddc65b1037c9138bca3f8a25ec010264716d0f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "start_withp",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "954050ad33b0e46f6e26dadbd54b83b9600016e1104e97bf864400ab8918f532",
+  "final_source": "def start_with_p(words):\n    \"\"\"\n    Returns the first two words from a list that start with letter 'p' (case-insensitive).\n    \n    Args:\n        words (list of str): List where each element is either \"word1 word2\" or just one word.\n        \n    Returns:\n        tuple: ('first_p_word', 'second_p_word') if at least two exist, else raises ValueError.\n    \"\"\"\n    p_words = []\n\n    for item in words:\n        # Split the string into individual tokens (words)\n        parts = item.split()\n        for part in parts:\n            # Check if it starts with 'p' or 'P'\n            if part.lower().startswith('p'):\n                p_words.append(part)\n\n    if len(p_words) < 2:\n        raise ValueError(f\"Found only {len(p_words)} word(s) starting with 'p', need at least two.\")\n\n    return (p_words[0], p_words[1])\n\n\n# Example usage and assertion from your prompt:\nif __name__ == \"__main__\":\n    result = start_with_p([\"Python PHP\", \"Java JavaScript\", \"c c++\"])\n    assert result == ('Python', 'PHP'), f\"Expected ('Python', 'PHP') but got {result}\"\n    print(\"Assertion passed!\")\n\nstart_withp = start_with_p\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/305:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "954050ad33b0e46f6e26dadbd54b83b9600016e1104e97bf864400ab8918f532",
+  "post_h2_sha256": "954050ad33b0e46f6e26dadbd54b83b9600016e1104e97bf864400ab8918f532",
+  "post_h3_sha256": "954050ad33b0e46f6e26dadbd54b83b9600016e1104e97bf864400ab8918f532",
+  "post_h4_sha256": "954050ad33b0e46f6e26dadbd54b83b9600016e1104e97bf864400ab8918f532",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "498ce250aaf57a31b017718f77f3b4a1e51ce4f6e436c8558dda5958cd020aee",
+  "raw_source": "def start_with_p(words):\n    \"\"\"\n    Returns the first two words from a list that start with letter 'p' (case-insensitive).\n    \n    Args:\n        words (list of str): List where each element is either \"word1 word2\" or just one word.\n        \n    Returns:\n        tuple: ('first_p_word', 'second_p_word') if at least two exist, else raises ValueError.\n    \"\"\"\n    p_words = []\n\n    for item in words:\n        # Split the string into individual tokens (words)\n        parts = item.split()\n        for part in parts:\n            # Check if it starts with 'p' or 'P'\n            if part.lower().startswith('p'):\n                p_words.append(part)\n\n    if len(p_words) < 2:\n        raise ValueError(f\"Found only {len(p_words)} word(s) starting with 'p', need at least two.\")\n\n    return (p_words[0], p_words[1])\n\n\n# Example usage and assertion from your prompt:\nif __name__ == \"__main__\":\n    result = start_with_p([\"Python PHP\", \"Java JavaScript\", \"c c++\"])\n    assert result == ('Python', 'PHP'), f\"Expected ('Python', 'PHP') but got {result}\"\n    print(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/305",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "476aa756ce9bb664c3568b1c28b449b1e5f1319f1c6621c6ac74f3695d60ec06",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "filter_integers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "final_source": "from typing import List, Any\n\n\ndef filter_integers(values: List[Any]) -> List[int]:\n    \"\"\" Filter given list of any python values only for integers\n    \n    >>> filter_integers(['a', 3.14, 5])\n    [5]\n    >>> filter_integers([1, 2, 3, 'abc', {}, []])\n    [1, 2, 3]\n    \"\"\"\n    return [value for value in values if isinstance(value, int)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(filter_integers(['a', 3.14, 5]))          # Output: [5]\n    print(filter_integers([1, 2, 3, 'abc', {}, []])) # Output: [1, 2, 3]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/22:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "post_h2_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "post_h3_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "post_h4_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a4dcced4bf1a2f8d102db28740a3229902ada260192ba1570efcfda8968651bc",
+  "raw_source": "from typing import List, Any\n\n\ndef filter_integers(values: List[Any]) -> List[int]:\n    \"\"\" Filter given list of any python values only for integers\n    \n    >>> filter_integers(['a', 3.14, 5])\n    [5]\n    >>> filter_integers([1, 2, 3, 'abc', {}, []])\n    [1, 2, 3]\n    \"\"\"\n    return [value for value in values if isinstance(value, int)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(filter_integers(['a', 3.14, 5]))          # Output: [5]\n    print(filter_integers([1, 2, 3, 'abc', {}, []])) # Output: [1, 2, 3]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/22",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

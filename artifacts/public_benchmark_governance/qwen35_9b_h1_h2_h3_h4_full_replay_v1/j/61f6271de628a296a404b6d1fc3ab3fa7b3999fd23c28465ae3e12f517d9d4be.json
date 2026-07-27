@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "61f6271de628a296a404b6d1fc3ab3fa7b3999fd23c28465ae3e12f517d9d4be",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_monthnumb_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "64bb57e4898c5540b2517b9567bdf5b97bef67377cf624b2da24fd85175441d0",
+  "final_source": "def check_monthnumber(month_num):\n    \"\"\"\n    Returns True if the given month number has 31 days, False otherwise.\n    \n    Valid months: 1–12\n    \n    Months with 31 days: January (1), March (3), May (5), July (7), \n                         August (8), October (10), December (12)\n    \"\"\"\n    if not isinstance(month_num, int):\n        raise TypeError(\"month number must be an integer\")\n    \n    # Normalize to 1–12 range in case of input like 13 or -1 (optional; here we assume valid input)\n    month = ((month_num - 1) % 12) + 1\n    \n    return month in [1, 3, 5, 7, 8, 10, 12]\n\n\n# Example usage and assertion:\nassert check_monthnumber(5) == True   # May has 31 days → True\n\nprint(check_monthnumber(5))  # Output: True\n\ncheck_monthnumb_number = check_monthnumber\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/455:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "64bb57e4898c5540b2517b9567bdf5b97bef67377cf624b2da24fd85175441d0",
+  "post_h2_sha256": "64bb57e4898c5540b2517b9567bdf5b97bef67377cf624b2da24fd85175441d0",
+  "post_h3_sha256": "64bb57e4898c5540b2517b9567bdf5b97bef67377cf624b2da24fd85175441d0",
+  "post_h4_sha256": "64bb57e4898c5540b2517b9567bdf5b97bef67377cf624b2da24fd85175441d0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b3327f2b98ca3432a6ca3cfc013837908f219f15252c8b191bec0d411658e9d0",
+  "raw_source": "def check_monthnumber(month_num):\n    \"\"\"\n    Returns True if the given month number has 31 days, False otherwise.\n    \n    Valid months: 1–12\n    \n    Months with 31 days: January (1), March (3), May (5), July (7), \n                         August (8), October (10), December (12)\n    \"\"\"\n    if not isinstance(month_num, int):\n        raise TypeError(\"month number must be an integer\")\n    \n    # Normalize to 1–12 range in case of input like 13 or -1 (optional; here we assume valid input)\n    month = ((month_num - 1) % 12) + 1\n    \n    return month in [1, 3, 5, 7, 8, 10, 12]\n\n\n# Example usage and assertion:\nassert check_monthnumber(5) == True   # May has 31 days → True\n\nprint(check_monthnumber(5))  # Output: True\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/455",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

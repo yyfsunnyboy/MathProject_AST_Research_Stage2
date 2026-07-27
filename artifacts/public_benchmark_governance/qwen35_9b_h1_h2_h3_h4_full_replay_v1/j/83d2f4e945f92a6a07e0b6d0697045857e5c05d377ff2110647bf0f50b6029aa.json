@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "83d2f4e945f92a6a07e0b6d0697045857e5c05d377ff2110647bf0f50b6029aa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "minSubArraySum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "final_source": "def minSubArraySum(nums):\n    \"\"\"\n    Given an array of integers nums, find the minimum sum of any non-empty sub-array\n    of nums.\n    Example\n    minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n    minSubArraySum([-1, -2, -3]) == -6\n    \"\"\"\n    \n    if not nums:\n        return float('inf')\n        \n    current_sum = nums[0]\n    min_sum = nums[0]\n    \n    for i in range(1, len(nums)):\n        # If adding the current number increases the sum beyond what we've seen before (or makes it less negative), \n        # start a new subarray from here. Otherwise, extend the existing one.\n        if current_sum > 0:\n            current_sum = nums[i]\n        else:\n            current_sum += nums[i]\n            \n        min_sum = min(min_sum, current_sum)\n        \n    return min_sum",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/114:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "post_h2_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "post_h3_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "post_h4_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "664f5e671c949320b949d3f0c3f876e4d1e276e2822a677e7aab17fc036711ba",
+  "raw_source": "def minSubArraySum(nums):\n    \"\"\"\n    Given an array of integers nums, find the minimum sum of any non-empty sub-array\n    of nums.\n    Example\n    minSubArraySum([2, 3, 4, 1, 2, 4]) == 1\n    minSubArraySum([-1, -2, -3]) == -6\n    \"\"\"\n    \n    if not nums:\n        return float('inf')\n        \n    current_sum = nums[0]\n    min_sum = nums[0]\n    \n    for i in range(1, len(nums)):\n        # If adding the current number increases the sum beyond what we've seen before (or makes it less negative), \n        # start a new subarray from here. Otherwise, extend the existing one.\n        if current_sum > 0:\n            current_sum = nums[i]\n        else:\n            current_sum += nums[i]\n            \n        min_sum = min(min_sum, current_sum)\n        \n    return min_sum",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/114",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

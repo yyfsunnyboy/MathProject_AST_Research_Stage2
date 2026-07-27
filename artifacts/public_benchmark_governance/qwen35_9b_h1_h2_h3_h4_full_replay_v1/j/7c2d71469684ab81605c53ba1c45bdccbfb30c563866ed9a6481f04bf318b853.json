@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "7c2d71469684ab81605c53ba1c45bdccbfb30c563866ed9a6481f04bf318b853",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "has_close_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "final_source": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    \n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n    \n    # Sort the list to bring close numbers next to each other\n    sorted_numbers = sorted(numbers)\n    \n    # Iterate through adjacent pairs in the sorted list\n    for i in range(len(sorted_numbers) - 1):\n        if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:\n            return True\n            \n    return False\n\n\n# Example usage and tests\nif __name__ == \"__main__\":\n    print(has_close_elements([1.0, 2.0, 3.0], 0.5))        # Expected: False\n    print(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # Expected: True (2.8 and 3.0)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/0:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "post_h2_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "post_h3_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "post_h4_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "18a1541b1778762b74cf343c45c0da6ca92fb3cb966d92380f2c9f363dac62d7",
+  "raw_source": "from typing import List\n\n\ndef has_close_elements(numbers: List[float], threshold: float) -> bool:\n    \"\"\" Check if in given list of numbers, are any two numbers closer to each other than\n    given threshold.\n    \n    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)\n    False\n    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)\n    True\n    \"\"\"\n    \n    # Sort the list to bring close numbers next to each other\n    sorted_numbers = sorted(numbers)\n    \n    # Iterate through adjacent pairs in the sorted list\n    for i in range(len(sorted_numbers) - 1):\n        if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:\n            return True\n            \n    return False\n\n\n# Example usage and tests\nif __name__ == \"__main__\":\n    print(has_close_elements([1.0, 2.0, 3.0], 0.5))        # Expected: False\n    print(has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3))  # Expected: True (2.8 and 3.0)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/0",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

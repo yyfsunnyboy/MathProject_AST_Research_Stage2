@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "a76efd81593ee67db7629d6d92f7a2be9f35cdc3b34976a092871c0b29f80d17",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "histogram",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "final_source": "def histogram(test):\n    if test == '':\n        return {}\n    \n    words = test.split()\n    counts = {}\n    \n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    \n    max_count = max(counts.values())\n    result = {letter: count for letter, count in counts.items() if count == max_count}\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/111:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "post_h2_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "post_h3_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "post_h4_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8657b7de21a7b57396ac1c96a8ac9a5ccdf2939b749bf14c3b1174fad559c6e6",
+  "raw_source": "def histogram(test):\n    if test == '':\n        return {}\n    \n    words = test.split()\n    counts = {}\n    \n    for word in words:\n        counts[word] = counts.get(word, 0) + 1\n    \n    max_count = max(counts.values())\n    result = {letter: count for letter, count in counts.items() if count == max_count}\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

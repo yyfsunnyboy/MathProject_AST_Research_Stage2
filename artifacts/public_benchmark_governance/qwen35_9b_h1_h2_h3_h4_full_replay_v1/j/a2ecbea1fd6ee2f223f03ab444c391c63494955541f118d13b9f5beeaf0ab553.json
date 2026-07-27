@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a2ecbea1fd6ee2f223f03ab444c391c63494955541f118d13b9f5beeaf0ab553",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_values_string",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "final_source": "def odd_values_string(s: str) -> str:\n    \"\"\"\n    Returns a new string containing only the characters at even indices (0, 2, 4, ...)\n    of the input string. This effectively removes characters that were originally \n    at odd index values (1, 3, 5, ...).\n\n    Note: The problem statement says \"remove characters which have odd index\",\n    so we keep those with even indices.\n\n    Examples:\n        'abcdef' -> indices: a(0), b(1), c(2), d(3), e(4), f(5)\n                  remove 1,3,5 -> result: 'ace'\n    \"\"\"\n    return s[::2]\n\n\n# Test cases\nassert odd_values_string('abcdef') == 'ace', \"Test failed for abcdef\"\nassert odd_values_string('hello') == 'hl', \"Test failed for hello\"\nassert odd_values_string('abc') == 'ac', \"Test failed for abc\"\nassert odd_values_string('a') == 'a', \"Test failed for single char\"\nassert odd_values_string(''), '' , \"Test passed for empty string\"\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/226:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "post_h2_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "post_h3_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "post_h4_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "49ba9b3dc101c87d0d43e898c20aecb2738fcefb985230cd9ca5eaf948903982",
+  "raw_source": "def odd_values_string(s: str) -> str:\n    \"\"\"\n    Returns a new string containing only the characters at even indices (0, 2, 4, ...)\n    of the input string. This effectively removes characters that were originally \n    at odd index values (1, 3, 5, ...).\n\n    Note: The problem statement says \"remove characters which have odd index\",\n    so we keep those with even indices.\n\n    Examples:\n        'abcdef' -> indices: a(0), b(1), c(2), d(3), e(4), f(5)\n                  remove 1,3,5 -> result: 'ace'\n    \"\"\"\n    return s[::2]\n\n\n# Test cases\nassert odd_values_string('abcdef') == 'ace', \"Test failed for abcdef\"\nassert odd_values_string('hello') == 'hl', \"Test failed for hello\"\nassert odd_values_string('abc') == 'ac', \"Test failed for abc\"\nassert odd_values_string('a') == 'a', \"Test failed for single char\"\nassert odd_values_string(''), '' , \"Test passed for empty string\"\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/226",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

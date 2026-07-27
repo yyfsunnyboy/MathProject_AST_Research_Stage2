@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "6f41444bd614f6119c518e2ae139760902e1ee021c0eb44dcacbf78a84ca7e94",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "modp",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "final_source": "def modp(n: int, p: int):\n    \"\"\"Return 2^n modulo p (be aware of numerics).\n    \n    Uses binary exponentiation to compute powers efficiently.\n    \n    >>> modp(3, 5)\n    3\n    >>> modp(1101, 101)\n    2\n    >>> modp(0, 101)\n    1\n    >>> modp(3, 11)\n    8\n    >>> modp(100, 101)\n    1\n    \"\"\"\n    \n    # Base case: any number to the power of 0 is 1. \n    # Note: If p=1, result should be 0 mathematically (x % 1 == 0), \n    # but standard modular exponentiation usually returns 1 for n=0 regardless of modulus\n    # unless specifically handling mod 1 edge cases differently. \n    # Based on the docstring example `modp(0, 101) -> 1`, we follow standard behavior:\n    if n == 0:\n        return 1 % p\n    \n    result = 1\n    base = 2 % p\n    \n    while n > 0:\n        # If the current bit of exponent is set (n is odd), multiply result by base\n        if n & 1:\n            result = (result * base) % p\n        \n        # Square the base for the next bit position\n        base = (base * base) % p\n        \n        # Shift to process the next bit\n        n >>= 1\n        \n    return result\n\n# Verification of provided examples:\nif __name__ == \"__main__\":\n    print(modp(3, 5))      # Expected: 3 (2^3 = 8; 8 % 5 = 3)\n    print(modp(1101, 101)) # Expected: 2 \n    print(modp(0, 101))    # Expected: 1\n    print(modp(3, 11))     # Expected: 8 (2^3 = 8; 8 % 11 = 8)\n    print(modp(100, 101))  # Expected: 1 (By Fermat's Little Theorem or direct calc)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/49:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "post_h2_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "post_h3_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "post_h4_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "19e84c7bc563c1dea4e084dc584acfcd7a276b7ae50b3ebb50956eebda91fd63",
+  "raw_source": "def modp(n: int, p: int):\n    \"\"\"Return 2^n modulo p (be aware of numerics).\n    \n    Uses binary exponentiation to compute powers efficiently.\n    \n    >>> modp(3, 5)\n    3\n    >>> modp(1101, 101)\n    2\n    >>> modp(0, 101)\n    1\n    >>> modp(3, 11)\n    8\n    >>> modp(100, 101)\n    1\n    \"\"\"\n    \n    # Base case: any number to the power of 0 is 1. \n    # Note: If p=1, result should be 0 mathematically (x % 1 == 0), \n    # but standard modular exponentiation usually returns 1 for n=0 regardless of modulus\n    # unless specifically handling mod 1 edge cases differently. \n    # Based on the docstring example `modp(0, 101) -> 1`, we follow standard behavior:\n    if n == 0:\n        return 1 % p\n    \n    result = 1\n    base = 2 % p\n    \n    while n > 0:\n        # If the current bit of exponent is set (n is odd), multiply result by base\n        if n & 1:\n            result = (result * base) % p\n        \n        # Square the base for the next bit position\n        base = (base * base) % p\n        \n        # Shift to process the next bit\n        n >>= 1\n        \n    return result\n\n# Verification of provided examples:\nif __name__ == \"__main__\":\n    print(modp(3, 5))      # Expected: 3 (2^3 = 8; 8 % 5 = 3)\n    print(modp(1101, 101)) # Expected: 2 \n    print(modp(0, 101))    # Expected: 1\n    print(modp(3, 11))     # Expected: 8 (2^3 = 8; 8 % 11 = 8)\n    print(modp(100, 101))  # Expected: 1 (By Fermat's Little Theorem or direct calc)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/49",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

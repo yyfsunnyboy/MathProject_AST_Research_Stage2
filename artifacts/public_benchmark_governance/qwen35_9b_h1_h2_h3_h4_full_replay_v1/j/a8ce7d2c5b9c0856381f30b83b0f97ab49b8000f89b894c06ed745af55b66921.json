@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a8ce7d2c5b9c0856381f30b83b0f97ab49b8000f89b894c06ed745af55b66921",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "zero_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "final_source": "import math\n\ndef zero_count(arr):\n    \"\"\"\n    Returns the ratio of zeroes to non-zeroes in an array of integers.\n    \n    Ratio = count(0) / (len(arr) - count(0)) if there is at least one non-zero element.\n    If all elements are zero, returns 1.0 (or you could choose another convention).\n    \"\"\"\n    zeros = sum(1 for x in arr if x == 0)\n    total_non_zero = len(arr) - zeros\n    \n    # Avoid division by zero when there are no non-zero elements\n    if total_non_zero == 0:\n        return 1.0  # or raise an exception, depending on desired behavior\n    \n    ratio = zeros / total_non_zero\n    return ratio\n\n# Example usage and assertion from the prompt\nassert math.isclose(zero_count([0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]), \n                    0.181818, rel_tol=0.001)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/137:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "post_h2_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "post_h3_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "post_h4_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b629a12185068f56fbc8086fa56ce636033281af0af747f0558e0dfedd6583c8",
+  "raw_source": "import math\n\ndef zero_count(arr):\n    \"\"\"\n    Returns the ratio of zeroes to non-zeroes in an array of integers.\n    \n    Ratio = count(0) / (len(arr) - count(0)) if there is at least one non-zero element.\n    If all elements are zero, returns 1.0 (or you could choose another convention).\n    \"\"\"\n    zeros = sum(1 for x in arr if x == 0)\n    total_non_zero = len(arr) - zeros\n    \n    # Avoid division by zero when there are no non-zero elements\n    if total_non_zero == 0:\n        return 1.0  # or raise an exception, depending on desired behavior\n    \n    ratio = zeros / total_non_zero\n    return ratio\n\n# Example usage and assertion from the prompt\nassert math.isclose(zero_count([0, 1, 2, -1, -5, 6, 0, -3, -2, 3, 4, 6, 8]), \n                    0.181818, rel_tol=0.001)\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/137",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

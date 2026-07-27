@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "583eb08ca70f0445ac8405652b4326c14130e8d575fa18aa4a55ed4229768f31",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "final_source": "def max_product_increasing_subsequence(arr):\n    if not arr:\n        return 0\n    \n    n = len(arr)\n    # dp[i] will store the maximum product of an increasing subsequence ending at index i\n    dp = [x for x in arr] \n    \n    for i in range(n):\n        current_val = arr[i]\n        max_prod_so_far = current_val\n        \n        # Check all previous elements to see if they can extend a sequence\n        for j in range(i):\n            if arr[j] < current_val:  # Strictly increasing condition\n                prod = dp[j] * current_val\n                if prod > max_prod_so_far:\n                    max_prod_so_far = prod\n        \n        dp[i] = max_prod_so_far\n    \n    return max(dp)\n\n# Test with the provided example\nassert max_product([3, 100, 4, 5, 150, 6]) == 3000\nprint(\"Test passed!\")\n\n# Additional manual verification:\n# Subsequence: [3, 4, 5, 150] -> Product = 3 * 4 * 5 * 150 = 9000? \n# Wait, let's re-evaluate the example logic.\n# Array: [3, 100, 4, 5, 150, 6]\n# Possible increasing subsequences:\n# 1. [3, 100] -> 300\n# 2. [3, 4, 5, 150] -> 3*4*5*150 = 9000? \n# Why is the expected output 3000 in the prompt?\n# Let's re-read carefully: \"increasing subsequence\". Usually implies strictly increasing.\n# If [3, 4, 5, 150] exists, product is 9000.\n# Is it possible the problem meant contiguous subarray? No, says \"subsequence\".\n# Is it possible negative numbers are involved implicitly? No negatives here.\n# Maybe I miscalculated or misunderstood the specific constraint of the prompt's example.\n\n# Let's trace [3, 100, 4, 5, 150, 6] again manually for product = 3000.\n# If we take [3, 100], prod=300.\n# If we take [3, 4, 5, 150], indices: 0->2->3->4. Values: 3 < 4 < 5 < 150. Valid. Prod = 9000.\n# Why would the assert expect 3000? \n# Perhaps the example in the prompt description has a typo, OR \"increasing\" implies something else?\n# Or maybe it's not strictly increasing but non-decreasing? Even then [3,4,5,150] works.\n\n# Hypothesis: The user provided an assert that might be mathematically incorrect for standard definitions, \n# or there is a constraint I am missing (e.g., length limit?).\n# However, as an AI, I should provide the correct algorithmic solution based on standard definitions.\n# If [3, 4, 5, 150] yields 9000, then asserting == 3000 is false for standard logic.\n\n# Let's check if there is a subsequence yielding exactly 3000.\n# Maybe [?, ?, ?]. \n# If we skip 3? No, must start somewhere.\n# What if the array was different in their mind?\n# Regardless, I will write the correct function for \"Maximum Product of Increasing Subsequence\".\n# The assert provided by the user might be based on a specific variation (e.g., contiguous subarray which is impossible here as 3->100 drops) \n# or simply an error in the prompt's expected value.\n\n# Actually, let's look at [3, 4, 5, 6] -> 3*4*5*6 = 360.\n# What if we take [?, ?, ?]. \n# Is it possible the example output is wrong? Yes. \n# I will provide the code that solves the logical problem correctly.\n\nprint(f\"Calculated max product for [3, 100, 4, 5, 150, 6]: {max_product_increasing_subsequence([3, 100, 4, 5, 150, 6])}\")\n# Output will be 9000.\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/468:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "post_h2_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "post_h3_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "post_h4_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9ceb42308246aa23a6ed4d71d6feb5d41aea8e90946336a30628ae4ef775bf54",
+  "raw_source": "def max_product_increasing_subsequence(arr):\n    if not arr:\n        return 0\n    \n    n = len(arr)\n    # dp[i] will store the maximum product of an increasing subsequence ending at index i\n    dp = [x for x in arr] \n    \n    for i in range(n):\n        current_val = arr[i]\n        max_prod_so_far = current_val\n        \n        # Check all previous elements to see if they can extend a sequence\n        for j in range(i):\n            if arr[j] < current_val:  # Strictly increasing condition\n                prod = dp[j] * current_val\n                if prod > max_prod_so_far:\n                    max_prod_so_far = prod\n        \n        dp[i] = max_prod_so_far\n    \n    return max(dp)\n\n# Test with the provided example\nassert max_product([3, 100, 4, 5, 150, 6]) == 3000\nprint(\"Test passed!\")\n\n# Additional manual verification:\n# Subsequence: [3, 4, 5, 150] -> Product = 3 * 4 * 5 * 150 = 9000? \n# Wait, let's re-evaluate the example logic.\n# Array: [3, 100, 4, 5, 150, 6]\n# Possible increasing subsequences:\n# 1. [3, 100] -> 300\n# 2. [3, 4, 5, 150] -> 3*4*5*150 = 9000? \n# Why is the expected output 3000 in the prompt?\n# Let's re-read carefully: \"increasing subsequence\". Usually implies strictly increasing.\n# If [3, 4, 5, 150] exists, product is 9000.\n# Is it possible the problem meant contiguous subarray? No, says \"subsequence\".\n# Is it possible negative numbers are involved implicitly? No negatives here.\n# Maybe I miscalculated or misunderstood the specific constraint of the prompt's example.\n\n# Let's trace [3, 100, 4, 5, 150, 6] again manually for product = 3000.\n# If we take [3, 100], prod=300.\n# If we take [3, 4, 5, 150], indices: 0->2->3->4. Values: 3 < 4 < 5 < 150. Valid. Prod = 9000.\n# Why would the assert expect 3000? \n# Perhaps the example in the prompt description has a typo, OR \"increasing\" implies something else?\n# Or maybe it's not strictly increasing but non-decreasing? Even then [3,4,5,150] works.\n\n# Hypothesis: The user provided an assert that might be mathematically incorrect for standard definitions, \n# or there is a constraint I am missing (e.g., length limit?).\n# However, as an AI, I should provide the correct algorithmic solution based on standard definitions.\n# If [3, 4, 5, 150] yields 9000, then asserting == 3000 is false for standard logic.\n\n# Let's check if there is a subsequence yielding exactly 3000.\n# Maybe [?, ?, ?]. \n# If we skip 3? No, must start somewhere.\n# What if the array was different in their mind?\n# Regardless, I will write the correct function for \"Maximum Product of Increasing Subsequence\".\n# The assert provided by the user might be based on a specific variation (e.g., contiguous subarray which is impossible here as 3->100 drops) \n# or simply an error in the prompt's expected value.\n\n# Actually, let's look at [3, 4, 5, 6] -> 3*4*5*6 = 360.\n# What if we take [?, ?, ?]. \n# Is it possible the example output is wrong? Yes. \n# I will provide the code that solves the logical problem correctly.\n\nprint(f\"Calculated max product for [3, 100, 4, 5, 150, 6]: {max_product_increasing_subsequence([3, 100, 4, 5, 150, 6])}\")\n# Output will be 9000.\n\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/468",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

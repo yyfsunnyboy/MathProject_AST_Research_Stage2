@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3b404f24be999a6ba0775e582dc433be8389669d0a408bf10f044f55a34e4312",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "exchange",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "final_source": "def exchange(lst1, lst2):\n    \"\"\"In this problem, you will implement a function that takes two lists of numbers,\n    and determines whether it is possible to perform an exchange of elements\n    between them to make lst1 a list of only even numbers.\n    \n    Returns \"YES\" if possible, otherwise \"NO\".\n    \"\"\"\n    \n    # Count evens in both lists combined\n    total_evens = 0\n    \n    for num in lst1:\n        if num % 2 == 0:\n            total_evens += 1\n            \n    for num in lst2:\n        if num % 2 == 0:\n            total_evens += 1\n            \n    # Check if we have enough even numbers to fill lst1 completely\n    return \"YES\" if len(lst1) <= total_evens else \"NO\"\n\n# Test cases based on the problem description\nprint(exchange([1, 2, 3, 4], [1, 2, 3, 4])) # Expected: YES (Total evens = 4, lst1 length = 4)\nprint(exchange([1, 2, 3, 4], [1, 5, 3, 4])) # Expected: NO (lst1 has one even '2', lst2 has zero. Total=1 < len(lst1)=4)\n\n# Additional edge case tests\nprint(exchange([1, 3, 5], [6, 8, 10]))      # Expected: YES (All evens in lst2 can fill lst1)\nprint(exchange([2, 4, 6], []))              # Expected: YES (lst1 already all even, no need to swap)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/110:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "post_h2_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "post_h3_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "post_h4_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b9ac4f2cb129927c8f241242e4c4bfa007da1d19d0b74d51da00985ed77a6a96",
+  "raw_source": "def exchange(lst1, lst2):\n    \"\"\"In this problem, you will implement a function that takes two lists of numbers,\n    and determines whether it is possible to perform an exchange of elements\n    between them to make lst1 a list of only even numbers.\n    \n    Returns \"YES\" if possible, otherwise \"NO\".\n    \"\"\"\n    \n    # Count evens in both lists combined\n    total_evens = 0\n    \n    for num in lst1:\n        if num % 2 == 0:\n            total_evens += 1\n            \n    for num in lst2:\n        if num % 2 == 0:\n            total_evens += 1\n            \n    # Check if we have enough even numbers to fill lst1 completely\n    return \"YES\" if len(lst1) <= total_evens else \"NO\"\n\n# Test cases based on the problem description\nprint(exchange([1, 2, 3, 4], [1, 2, 3, 4])) # Expected: YES (Total evens = 4, lst1 length = 4)\nprint(exchange([1, 2, 3, 4], [1, 5, 3, 4])) # Expected: NO (lst1 has one even '2', lst2 has zero. Total=1 < len(lst1)=4)\n\n# Additional edge case tests\nprint(exchange([1, 3, 5], [6, 8, 10]))      # Expected: YES (All evens in lst2 can fill lst1)\nprint(exchange([2, 4, 6], []))              # Expected: YES (lst1 already all even, no need to swap)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/110",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

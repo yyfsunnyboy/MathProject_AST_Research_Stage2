@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "1cc76fe5a67f355883489a5afeed45976431e77bde4b2a0c393dfdce8dc1efb8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "final_source": "def find_max(words):\n    if not words:\n        return \"\"\n    \n    max_unique_count = 0\n    result_word = None\n    \n    for word in words:\n        unique_chars = len(set(word))\n        \n        # Check if current word has more unique characters than the best found so far\n        if unique_chars > max_unique_count or (unique_chars == max_unique_count and (result_word is None or word < result_word)):\n            max_unique_count = unique_chars\n            result_word = word\n            \n    return result_word",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/158:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "post_h2_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "post_h3_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "post_h4_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3cce34db6feed931481e36d3ccbc5af053f8a131c8495f64128d68facc2531ee",
+  "raw_source": "def find_max(words):\n    if not words:\n        return \"\"\n    \n    max_unique_count = 0\n    result_word = None\n    \n    for word in words:\n        unique_chars = len(set(word))\n        \n        # Check if current word has more unique characters than the best found so far\n        if unique_chars > max_unique_count or (unique_chars == max_unique_count and (result_word is None or word < result_word)):\n            max_unique_count = unique_chars\n            result_word = word\n            \n    return result_word",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/158",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

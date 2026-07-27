@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "6ef1a42754813faa49c8943fbce001d58a787bf9badb8eb4cea1fadf818b7ebe",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "skjkasdkd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "final_source": "def skjkasdkd(lst):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n\n    max_prime = -1\n    \n    for num in lst:\n        if is_prime(num):\n            if num > max_prime:\n                max_prime = num\n                \n    if max_prime != -1:\n        digit_sum = sum(int(d) for d in str(max_prime))\n        return digit_sum\n    else:\n        return 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/94:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "post_h2_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "post_h3_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "post_h4_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4f245920ee1bfb3a3437282ce6a6bb5433f10ba37d6f13798cf98f86110c7b69",
+  "raw_source": "def skjkasdkd(lst):\n    def is_prime(n):\n        if n < 2:\n            return False\n        for i in range(2, int(n**0.5) + 1):\n            if n % i == 0:\n                return False\n        return True\n\n    max_prime = -1\n    \n    for num in lst:\n        if is_prime(num):\n            if num > max_prime:\n                max_prime = num\n                \n    if max_prime != -1:\n        digit_sum = sum(int(d) for d in str(max_prime))\n        return digit_sum\n    else:\n        return 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/94",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

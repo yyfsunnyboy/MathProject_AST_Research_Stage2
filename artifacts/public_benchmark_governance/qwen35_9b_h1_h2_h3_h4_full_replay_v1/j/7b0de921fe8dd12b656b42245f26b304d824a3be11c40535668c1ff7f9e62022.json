@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7b0de921fe8dd12b656b42245f26b304d824a3be11c40535668c1ff7f9e62022",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "text_starta_endb",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "final_source": "import re\n\ndef text_starta_endb(text):\n    # ^ asserts start of string\n    # 'a' matches literal 'a'\n    # .* matches anything (zero or more times)\n    # 'b$' matches literal 'b' at the end of the string\n    pattern = r\"^a.*b$\"\n    \n    return bool(re.match(pattern, text))\n\n# Test cases\nassert text_starta_endb(\"aabbbb\") == True\nassert text_starta_endb(\"ab\") == True\nassert text_starta_endb(\"axxbxzb\") == True\nassert text_starta_endb(\"baaa\") == False  # Starts with 'b'\nassert text_starta_endb(\"aaaa\") == False   # Ends with 'a', not 'b'\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/794:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "post_h2_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "post_h3_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "post_h4_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "010ed27f2737a3542f928b0778d536e8c1b06d7dde0038cd1e26b1ee6027c5a3",
+  "raw_source": "import re\n\ndef text_starta_endb(text):\n    # ^ asserts start of string\n    # 'a' matches literal 'a'\n    # .* matches anything (zero or more times)\n    # 'b$' matches literal 'b' at the end of the string\n    pattern = r\"^a.*b$\"\n    \n    return bool(re.match(pattern, text))\n\n# Test cases\nassert text_starta_endb(\"aabbbb\") == True\nassert text_starta_endb(\"ab\") == True\nassert text_starta_endb(\"axxbxzb\") == True\nassert text_starta_endb(\"baaa\") == False  # Starts with 'b'\nassert text_starta_endb(\"aaaa\") == False   # Ends with 'a', not 'b'\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/794",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

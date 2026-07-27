@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4ccd8f14803bb8d79691aff6b8ff421a70f0bfca8b0d996cd9b7c9154ba31ba4",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "make_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "final_source": "def make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if not string:\n        return string\n    \n    # Iterate through all possible split points where the suffix is a palindrome\n    for i in range(len(string)):\n        suffix = string[i:]\n        prefix = string[:i]\n        \n        # Check if the current suffix is a palindrome using the helper function logic inline or via existing check\n        # Since we can't call is_palindrome directly without defining it first, and the prompt implies completing make_palindrome\n        # but doesn't forbid adding helpers inside. However, to keep it self-contained in one block:\n        \n        if suffix == suffix[::-1]:\n            return prefix + suffix + prefix[::-1]\n    \n    # Fallback (should not be reached given loop covers i=0 which makes whole string palindrome check)\n    return string",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/10:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "post_h2_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "post_h3_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "post_h4_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "00d6b697e019aae2536eb5145ecf2daa27ced4bebf545c9dfc739dabc5c06095",
+  "raw_source": "def make_palindrome(string: str) -> str:\n    \"\"\" Find the shortest palindrome that begins with a supplied string.\n    Algorithm idea is simple:\n    - Find the longest postfix of supplied string that is a palindrome.\n    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.\n    >>> make_palindrome('')\n    ''\n    >>> make_palindrome('cat')\n    'catac'\n    >>> make_palindrome('cata')\n    'catac'\n    \"\"\"\n    if not string:\n        return string\n    \n    # Iterate through all possible split points where the suffix is a palindrome\n    for i in range(len(string)):\n        suffix = string[i:]\n        prefix = string[:i]\n        \n        # Check if the current suffix is a palindrome using the helper function logic inline or via existing check\n        # Since we can't call is_palindrome directly without defining it first, and the prompt implies completing make_palindrome\n        # but doesn't forbid adding helpers inside. However, to keep it self-contained in one block:\n        \n        if suffix == suffix[::-1]:\n            return prefix + suffix + prefix[::-1]\n    \n    # Fallback (should not be reached given loop covers i=0 which makes whole string palindrome check)\n    return string",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/10",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

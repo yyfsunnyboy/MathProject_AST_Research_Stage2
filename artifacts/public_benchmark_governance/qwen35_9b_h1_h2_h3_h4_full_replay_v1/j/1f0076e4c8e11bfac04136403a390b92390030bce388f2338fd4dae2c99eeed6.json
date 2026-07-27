@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1f0076e4c8e11bfac04136403a390b92390030bce388f2338fd4dae2c99eeed6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_first_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "final_source": "def count_first_elements(data):\n    \"\"\"\n    Finds the number of elements occurring before the first tuple element in the given list.\n    \n    Args:\n        data (list): A list containing various elements, including exactly one tuple at some position.\n        \n    Returns:\n        int: The index of the first tuple found (which equals the count of preceding elements).\n             If no tuple is found, returns -1.\n    \"\"\"\n    for i in range(len(data)):\n        if isinstance(data[i], tuple):\n            return i\n            \n    # Optional: Handle case where no tuple exists\n    return -1\n\n# Test cases based on the requirement and additional scenarios\nassert count_first_elements((1, 5, 7, (4, 6), 10)) == 3\nprint(\"Test passed for:\", count_first_elements((1, 5, 7, (4, 6), 10)))\n\n# Additional test: Tuple at the beginning\nassert count_first_elements(((2, 3), 'a', 'b')) == 0\nprint(\"Test passed for tuple at start\")\n\n# Additional test: Only one element which is a tuple\nassert count_first_elements((('x'),)) == 0\nprint(\"Test passed for single tuple\")\n\n# Additional test: No tuple (edge case)\nresult = count_first_elements([1, 'a', [2]])\nassert result == -1\nprint(f\"Test passed for no tuple found: {result}\")\n\nprint(\"\\nAll tests passed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/278:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "post_h2_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "post_h3_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "post_h4_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "35878d94769fc88c43f3d85311344a59ec33d9961e8dde69e1121a80065cd02d",
+  "raw_source": "def count_first_elements(data):\n    \"\"\"\n    Finds the number of elements occurring before the first tuple element in the given list.\n    \n    Args:\n        data (list): A list containing various elements, including exactly one tuple at some position.\n        \n    Returns:\n        int: The index of the first tuple found (which equals the count of preceding elements).\n             If no tuple is found, returns -1.\n    \"\"\"\n    for i in range(len(data)):\n        if isinstance(data[i], tuple):\n            return i\n            \n    # Optional: Handle case where no tuple exists\n    return -1\n\n# Test cases based on the requirement and additional scenarios\nassert count_first_elements((1, 5, 7, (4, 6), 10)) == 3\nprint(\"Test passed for:\", count_first_elements((1, 5, 7, (4, 6), 10)))\n\n# Additional test: Tuple at the beginning\nassert count_first_elements(((2, 3), 'a', 'b')) == 0\nprint(\"Test passed for tuple at start\")\n\n# Additional test: Only one element which is a tuple\nassert count_first_elements((('x'),)) == 0\nprint(\"Test passed for single tuple\")\n\n# Additional test: No tuple (edge case)\nresult = count_first_elements([1, 'a', [2]])\nassert result == -1\nprint(f\"Test passed for no tuple found: {result}\")\n\nprint(\"\\nAll tests passed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/278",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

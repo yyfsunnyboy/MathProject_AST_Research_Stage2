@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "339f86ea79f4b1d3efaa7312f2a518db24221bdda3f95ac9549f68c35da774d6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "text_lowercase_underscore",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "final_source": "import re\n\ndef text_lowercase_underscore(text):\n    \"\"\"\n    Returns True if the input string contains sequences of lowercase letters \n    joined with an underscore and false otherwise.\n    \n    Pattern logic: ^[a-z]+(_[a-z]+)*$\n    - ^ : Start of string\n    - [a-z]+ : One or more lowercase letters (first sequence)\n    - (_[a-z]+)* : Zero or more repetitions of (underscore followed by one+ lowercase letters)\n    - $ : End of string\n    \"\"\"\n    \n    # Compile the regex pattern for efficiency if called multiple times, \n    # though not strictly necessary for a single call.\n    pattern = re.compile(r'^[a-z]+(_[a-z]+)*$')\n    \n    return bool(pattern.match(text))\n\n# Test cases based on your request and edge cases\nassert text_lowercase_underscore(\"aab_cbbbc\") == True, \"Test 1 failed\"\nprint(f\"'aab_cbbbc': {text_lowercase_underscore('aab_cbbbc')}\") # Expected: True\n\nassert text_lowercase_underscore(\"abc_def\") == True, \"Test 2 failed\"\nprint(f\"'abc_def': {text_lowercase_underscore('abc_def')}\")       # Expected: True\n\nassert text_lowercase_underscore(\"a_b_c_d\") == True, \"Test 3 failed\"\nprint(f\"'a_b_c_d': {text_lowercase_underscore('a_b_c_d')}\")       # Expected: True\n\n# Edge cases that should return False\nassert text_lowercase_underscore(\"\") == False, \"Empty string test failed\"\nprint(f\"'' (empty): {text_lowercase_underscore('')}\")               # Expected: False\n\nassert text_lowercase_underscore(\"abc123_def\") == False, \"Contains numbers test failed\"\nprint(f\"'abc123_def': {text_lowercase_underscore('abc123_def')}\")  # Expected: False\n\nassert text_lowercase_underscore(\"_abc\") == False, \"Starts with underscore test failed\"\nprint(f\"'_abc': {text_lowercase_underscore('_abc')}\")              # Expected: False (needs letters first)\n\nassert text_lowercase_underscore(\"ABC_def\") == False, \"Contains uppercase test failed\"\nprint(f\"'ABC_def': {text_lowercase_underscore('ABC_def')}\")        # Expected: False\n\nassert text_lowercase_underscore(\"ab_cde_fgh_i\") == True, \"Longer chain test failed\"\nprint(f\"'ab_cde_fgh_i': {text_lowercase_underscore('ab_cde_fgh_i')}\") \n\nprint(\"\\nAll assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/16:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "post_h2_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "post_h3_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "post_h4_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ef22cfa39f75b1d2a39d15fd036fa7de2552fc1ac1e0bccbcde4ed73eca5f42a",
+  "raw_source": "import re\n\ndef text_lowercase_underscore(text):\n    \"\"\"\n    Returns True if the input string contains sequences of lowercase letters \n    joined with an underscore and false otherwise.\n    \n    Pattern logic: ^[a-z]+(_[a-z]+)*$\n    - ^ : Start of string\n    - [a-z]+ : One or more lowercase letters (first sequence)\n    - (_[a-z]+)* : Zero or more repetitions of (underscore followed by one+ lowercase letters)\n    - $ : End of string\n    \"\"\"\n    \n    # Compile the regex pattern for efficiency if called multiple times, \n    # though not strictly necessary for a single call.\n    pattern = re.compile(r'^[a-z]+(_[a-z]+)*$')\n    \n    return bool(pattern.match(text))\n\n# Test cases based on your request and edge cases\nassert text_lowercase_underscore(\"aab_cbbbc\") == True, \"Test 1 failed\"\nprint(f\"'aab_cbbbc': {text_lowercase_underscore('aab_cbbbc')}\") # Expected: True\n\nassert text_lowercase_underscore(\"abc_def\") == True, \"Test 2 failed\"\nprint(f\"'abc_def': {text_lowercase_underscore('abc_def')}\")       # Expected: True\n\nassert text_lowercase_underscore(\"a_b_c_d\") == True, \"Test 3 failed\"\nprint(f\"'a_b_c_d': {text_lowercase_underscore('a_b_c_d')}\")       # Expected: True\n\n# Edge cases that should return False\nassert text_lowercase_underscore(\"\") == False, \"Empty string test failed\"\nprint(f\"'' (empty): {text_lowercase_underscore('')}\")               # Expected: False\n\nassert text_lowercase_underscore(\"abc123_def\") == False, \"Contains numbers test failed\"\nprint(f\"'abc123_def': {text_lowercase_underscore('abc123_def')}\")  # Expected: False\n\nassert text_lowercase_underscore(\"_abc\") == False, \"Starts with underscore test failed\"\nprint(f\"'_abc': {text_lowercase_underscore('_abc')}\")              # Expected: False (needs letters first)\n\nassert text_lowercase_underscore(\"ABC_def\") == False, \"Contains uppercase test failed\"\nprint(f\"'ABC_def': {text_lowercase_underscore('ABC_def')}\")        # Expected: False\n\nassert text_lowercase_underscore(\"ab_cde_fgh_i\") == True, \"Longer chain test failed\"\nprint(f\"'ab_cde_fgh_i': {text_lowercase_underscore('ab_cde_fgh_i')}\") \n\nprint(\"\\nAll assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/16",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

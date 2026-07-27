@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_depends_on_external_state",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "bbd7fc8c1053a221748d49b0a801ff944413b5eb105ed1fbbc0321c767aa858a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_singly",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "final_source": "def extract_singly(list_of_lists):\n    \"\"\"\n    Flattens a list of lists/tuples into a set containing unique numbers.\n    \n    Args:\n        list_of_lists (list): A list where each element is an iterable of numbers.\n        \n    Returns:\n        set: A set containing all unique numbers from the input structure.\n    \"\"\"\n    result_set = set()\n    \n    for sublist in list_of_lists:\n        # Add elements directly to the set; duplicates are ignored automatically\n        result_set.update(sublist)\n        \n    return result_set\n\n# Verification based on your requirement\ntest_input = [(3, 4, 5), (4, 5, 7), (1, 4)]\nexpected_output = {1, 3, 4, 5, 7} # Sets are unordered, so order doesn't matter for equality\n\nassert extract_singly(test_input) == expected_output\nprint(\"Assertion passed! The function works correctly.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/140:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "post_h2_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "post_h3_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "post_h4_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d8d7a15ae498e48d58719d6a01dd133f772c9d5efee235cb36348a2ad7d2898f",
+  "raw_source": "def extract_singly(list_of_lists):\n    \"\"\"\n    Flattens a list of lists/tuples into a set containing unique numbers.\n    \n    Args:\n        list_of_lists (list): A list where each element is an iterable of numbers.\n        \n    Returns:\n        set: A set containing all unique numbers from the input structure.\n    \"\"\"\n    result_set = set()\n    \n    for sublist in list_of_lists:\n        # Add elements directly to the set; duplicates are ignored automatically\n        result_set.update(sublist)\n        \n    return result_set\n\n# Verification based on your requirement\ntest_input = [(3, 4, 5), (4, 5, 7), (1, 4)]\nexpected_output = {1, 3, 4, 5, 7} # Sets are unordered, so order doesn't matter for equality\n\nassert extract_singly(test_input) == expected_output\nprint(\"Assertion passed! The function works correctly.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/140",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

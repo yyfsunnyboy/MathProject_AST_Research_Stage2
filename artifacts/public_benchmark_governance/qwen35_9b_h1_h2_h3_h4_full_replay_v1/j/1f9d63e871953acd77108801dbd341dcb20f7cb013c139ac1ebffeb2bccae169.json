@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "1f9d63e871953acd77108801dbd341dcb20f7cb013c139ac1ebffeb2bccae169",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "largest_smallest_integers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "final_source": "def largest_smallest_integers(lst):\n    \"\"\"\n    Returns a tuple (a, b), where:\n      - a is the largest negative integer in lst (or None if none exist)\n      - b is the smallest positive integer in lst (or None if none exist)\n    \n    Zero is neither negative nor positive and is ignored.\n\n    Examples:\n        largest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)\n        largest_smallest_integers([]) == (None, None)\n        largest_smallest_integers([0]) == (None, None)\n    \"\"\"\n    \n    # Initialize with sentinel values that won't be chosen unless needed\n    max_negative = None   # will hold the \"largest\" negative integer\n    min_positive = None   # will hold the \"smallest\" positive integer\n\n    for x in lst:\n        if x < 0 and (max_negative is None or x > max_negative):\n            max_negative = x\n        elif x > 0 and (min_positive is None or x < min_positive):\n            min_positive = x\n\n    return (max_negative, min_positive)\n\n\n# Quick tests:\nprint(largest_smallest_integers([2, 4, 1, 3, 5, 7]))        # (None, 1)\nprint(largest_smallest_integers([]))                         # (None, None)\nprint(largest_smallest_integers([0]))                        # (None, None)\nprint(largest_smallest_integers([-5, -2, -9, 3, 7]))         # (-2, 3)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/136:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "post_h2_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "post_h3_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "post_h4_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "313d0a32765aa52e4a608739d2c0e990dc8389711e6a67c20254321c5e8c1836",
+  "raw_source": "def largest_smallest_integers(lst):\n    \"\"\"\n    Returns a tuple (a, b), where:\n      - a is the largest negative integer in lst (or None if none exist)\n      - b is the smallest positive integer in lst (or None if none exist)\n    \n    Zero is neither negative nor positive and is ignored.\n\n    Examples:\n        largest_smallest_integers([2, 4, 1, 3, 5, 7]) == (None, 1)\n        largest_smallest_integers([]) == (None, None)\n        largest_smallest_integers([0]) == (None, None)\n    \"\"\"\n    \n    # Initialize with sentinel values that won't be chosen unless needed\n    max_negative = None   # will hold the \"largest\" negative integer\n    min_positive = None   # will hold the \"smallest\" positive integer\n\n    for x in lst:\n        if x < 0 and (max_negative is None or x > max_negative):\n            max_negative = x\n        elif x > 0 and (min_positive is None or x < min_positive):\n            min_positive = x\n\n    return (max_negative, min_positive)\n\n\n# Quick tests:\nprint(largest_smallest_integers([2, 4, 1, 3, 5, 7]))        # (None, 1)\nprint(largest_smallest_integers([]))                         # (None, None)\nprint(largest_smallest_integers([0]))                        # (None, None)\nprint(largest_smallest_integers([-5, -2, -9, 3, 7]))         # (-2, 3)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/136",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

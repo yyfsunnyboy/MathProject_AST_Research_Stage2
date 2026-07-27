@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "123ed6f2e3ed8f2f9d9a57115f002bbd8aece3ecdacd24590236dd96eafb231e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sumofFactors",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0ad498ff4c5104bb430a7ae91ab8cf69bec5535395effa6585a2eb1737580d75",
+  "final_source": "def sum_of_even_factors(n: int) -> int:\n    \"\"\"\n    Returns the sum of all even positive divisors (factors) of n.\n    \n    Examples:\n        sum_of_even_factors(18) == 26   # Even factors: 2, 6, 18 → 2+6+18 = 26\n        sum_of_even_factors(7) == 0     # No even factors for a prime odd number\n    \"\"\"\n    total = 0\n    \n    # Iterate from 2 up to n (inclusive). \n    # We can stop at int(n**0.5)+1 and handle the pair, but since we only care about evens,\n    # checking every number is simple and efficient enough for typical inputs.\n    \n    for i in range(2, n + 1):\n        if n % i == 0:          # i is a factor of n\n            if i % 2 == 0:      # check if it's even\n                total += i\n    \n    return total\n\n\n# Example usage and assertion\nassert sum_of_even_factors(18) == 26\nprint(\"Assertion passed!\")\n\n# Additional tests for clarity\nassert sum_of_even_factors(7) == 0\nassert sum_of_even_factors(4) == 6   # factors: 1,2,4 → even: 2+4=6\nassert sum_of_even_factors(30) == 58 # Even factors of 30: 2,6,10,30 → 2+6+10+30=48? Wait recalc.\n# Let's verify manually for 30:\n# Factors of 30: 1,2,3,5,6,10,15,30\n# Even factors: 2,6,10,30 → sum = 48\nassert sum_of_even_factors(30) == 48\n\nprint(\"All tests passed!\")\n\nsumofFactors = sum_of_even_factors\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/453:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0ad498ff4c5104bb430a7ae91ab8cf69bec5535395effa6585a2eb1737580d75",
+  "post_h2_sha256": "0ad498ff4c5104bb430a7ae91ab8cf69bec5535395effa6585a2eb1737580d75",
+  "post_h3_sha256": "0ad498ff4c5104bb430a7ae91ab8cf69bec5535395effa6585a2eb1737580d75",
+  "post_h4_sha256": "0ad498ff4c5104bb430a7ae91ab8cf69bec5535395effa6585a2eb1737580d75",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "018eab894b909b896e4c353113fadab02fb1d0036f9d2980abea9b03aec5c1ef",
+  "raw_source": "def sum_of_even_factors(n: int) -> int:\n    \"\"\"\n    Returns the sum of all even positive divisors (factors) of n.\n    \n    Examples:\n        sum_of_even_factors(18) == 26   # Even factors: 2, 6, 18 → 2+6+18 = 26\n        sum_of_even_factors(7) == 0     # No even factors for a prime odd number\n    \"\"\"\n    total = 0\n    \n    # Iterate from 2 up to n (inclusive). \n    # We can stop at int(n**0.5)+1 and handle the pair, but since we only care about evens,\n    # checking every number is simple and efficient enough for typical inputs.\n    \n    for i in range(2, n + 1):\n        if n % i == 0:          # i is a factor of n\n            if i % 2 == 0:      # check if it's even\n                total += i\n    \n    return total\n\n\n# Example usage and assertion\nassert sum_of_even_factors(18) == 26\nprint(\"Assertion passed!\")\n\n# Additional tests for clarity\nassert sum_of_even_factors(7) == 0\nassert sum_of_even_factors(4) == 6   # factors: 1,2,4 → even: 2+4=6\nassert sum_of_even_factors(30) == 58 # Even factors of 30: 2,6,10,30 → 2+6+10+30=48? Wait recalc.\n# Let's verify manually for 30:\n# Factors of 30: 1,2,3,5,6,10,15,30\n# Even factors: 2,6,10,30 → sum = 48\nassert sum_of_even_factors(30) == 48\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/453",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

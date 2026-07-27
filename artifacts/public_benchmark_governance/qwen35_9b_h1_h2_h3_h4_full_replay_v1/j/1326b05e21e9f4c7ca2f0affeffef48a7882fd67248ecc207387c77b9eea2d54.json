@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1326b05e21e9f4c7ca2f0affeffef48a7882fd67248ecc207387c77b9eea2d54",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "two_unique_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "final_source": "def two_unique_nums(nums):\n    \"\"\"\n    Removes duplicate numbers from a given list, returning \n    only those elements that appear exactly once.\n    \n    Args:\n        nums (list[int]): The input list of integers.\n        \n    Returns:\n        list[int]: A new list containing unique numbers in their original order.\n    \"\"\"\n    # Count occurrences of each number\n    counts = {}\n    for num in nums:\n        counts[num] = counts.get(num, 0) + 1\n    \n    # Filter to keep only numbers that appear exactly once\n    result = [num for num in nums if counts[num] == 1]\n    \n    return result\n\n# Test cases based on your assertion and additional edge cases\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5], \"Test case failed\"\nprint(\"All assertions passed!\")\n\n# Additional verification for clarity:\ninput_list = [10, 20, 30, 20, 10]\noutput_list = two_unique_nums(input_list)\nassert output_list == [], f\"Expected empty list, got {output_list}\"\nprint(f\"Input: {input_list} -> Output: {output_list}\")\n\n# Case with all unique numbers\nunique_input = [5, 6, 7]\nassert two_unique_nums(unique_input) == [5, 6, 7], \"Unique case failed\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/572:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "post_h2_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "post_h3_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "post_h4_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2841f35f319aeb69c9f7ba527e26c25cb63a84fb53f2226c80fca8f163ee9302",
+  "raw_source": "def two_unique_nums(nums):\n    \"\"\"\n    Removes duplicate numbers from a given list, returning \n    only those elements that appear exactly once.\n    \n    Args:\n        nums (list[int]): The input list of integers.\n        \n    Returns:\n        list[int]: A new list containing unique numbers in their original order.\n    \"\"\"\n    # Count occurrences of each number\n    counts = {}\n    for num in nums:\n        counts[num] = counts.get(num, 0) + 1\n    \n    # Filter to keep only numbers that appear exactly once\n    result = [num for num in nums if counts[num] == 1]\n    \n    return result\n\n# Test cases based on your assertion and additional edge cases\nassert two_unique_nums([1,2,3,2,3,4,5]) == [1, 4, 5], \"Test case failed\"\nprint(\"All assertions passed!\")\n\n# Additional verification for clarity:\ninput_list = [10, 20, 30, 20, 10]\noutput_list = two_unique_nums(input_list)\nassert output_list == [], f\"Expected empty list, got {output_list}\"\nprint(f\"Input: {input_list} -> Output: {output_list}\")\n\n# Case with all unique numbers\nunique_input = [5, 6, 7]\nassert two_unique_nums(unique_input) == [5, 6, 7], \"Unique case failed\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/572",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

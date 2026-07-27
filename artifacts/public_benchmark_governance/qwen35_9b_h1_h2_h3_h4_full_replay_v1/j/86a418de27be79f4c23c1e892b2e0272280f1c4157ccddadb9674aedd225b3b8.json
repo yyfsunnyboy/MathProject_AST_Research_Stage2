@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "86a418de27be79f4c23c1e892b2e0272280f1c4157ccddadb9674aedd225b3b8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_Sum_Of_Powers_Of_Two",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "final_source": "def is_Sum_Of_Powers_Of_Two(n):\n    if n <= 0:\n        return False\n    while n > 1:\n        if (n & 1) == 1 and (n - 1) % 2 != 0:\n            break\n        n >>= 1\n    else:\n        return True\n    return False",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/138:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "post_h2_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "post_h3_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "post_h4_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "077a904dcdf4a2c6b35d43f33866b541127c7048e1175215de09b6d1b854018d",
+  "raw_source": "def is_Sum_Of_Powers_Of_Two(n):\n    if n <= 0:\n        return False\n    while n > 1:\n        if (n & 1) == 1 and (n - 1) % 2 != 0:\n            break\n        n >>= 1\n    else:\n        return True\n    return False",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/138",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

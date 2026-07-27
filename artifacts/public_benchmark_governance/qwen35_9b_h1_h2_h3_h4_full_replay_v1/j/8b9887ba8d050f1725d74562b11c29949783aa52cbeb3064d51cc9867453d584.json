@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "8b9887ba8d050f1725d74562b11c29949783aa52cbeb3064d51cc9867453d584",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "numerical_letter_grade",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "final_source": "def numerical_letter_grade(grades):\n    \"\"\"It is the last week of the semester and the teacher has to give the grades\n    to students. The teacher has been making her own algorithm for grading.\n    The only problem is, she has lost the code she used for grading.\n    She has given you a list of GPAs for some students and you have to write \n    a function that can output a list of letter grades using the following table:\n             GPA       |    Letter grade\n              4.0                A+\n            > 3.7                A \n            > 3.3                A- \n            > 3.0                B+\n            > 2.7                B \n            > 2.3                B-\n            > 2.0                C+\n            > 1.7                C\n            > 1.3                C-\n            > 1.0                D+ \n            > 0.7                D \n            > 0.0                D-\n              0.0                E\n    \n\n    Example:\n    grade_equation([4.0, 3, 1.7, 2, 3.5]) ==> ['A+', 'B', 'C-', 'C', 'A-']\n    \"\"\"\n\n    def get_letter_grade(gpa):\n        if gpa == 4.0:\n            return \"A+\"\n        elif gpa > 3.7:\n            return \"A\"\n        elif gpa > 3.3:\n            return \"A-\"\n        elif gpa > 3.0:\n            return \"B+\"\n        elif gpa > 2.7:\n            return \"B\"\n        elif gpa > 2.3:\n            return \"B-\"\n        elif gpa > 2.0:\n            return \"C+\"\n        elif gpa > 1.7:\n            return \"C\"\n        elif gpa > 1.3:\n            return \"C-\"\n        elif gpa > 1.0:\n            return \"D+\"\n        elif gpa > 0.7:\n            return \"D\"\n        else:\n            return \"E\"\n\n    letter_grades = [get_letter_grade(g) for g in grades]\n    return letter_grades",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/81:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "post_h2_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "post_h3_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "post_h4_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "021382a37b79a8e45df8f2c637c2a5f94b640d88685d6d3068167fae4eb9667a",
+  "raw_source": "def numerical_letter_grade(grades):\n    \"\"\"It is the last week of the semester and the teacher has to give the grades\n    to students. The teacher has been making her own algorithm for grading.\n    The only problem is, she has lost the code she used for grading.\n    She has given you a list of GPAs for some students and you have to write \n    a function that can output a list of letter grades using the following table:\n             GPA       |    Letter grade\n              4.0                A+\n            > 3.7                A \n            > 3.3                A- \n            > 3.0                B+\n            > 2.7                B \n            > 2.3                B-\n            > 2.0                C+\n            > 1.7                C\n            > 1.3                C-\n            > 1.0                D+ \n            > 0.7                D \n            > 0.0                D-\n              0.0                E\n    \n\n    Example:\n    grade_equation([4.0, 3, 1.7, 2, 3.5]) ==> ['A+', 'B', 'C-', 'C', 'A-']\n    \"\"\"\n\n    def get_letter_grade(gpa):\n        if gpa == 4.0:\n            return \"A+\"\n        elif gpa > 3.7:\n            return \"A\"\n        elif gpa > 3.3:\n            return \"A-\"\n        elif gpa > 3.0:\n            return \"B+\"\n        elif gpa > 2.7:\n            return \"B\"\n        elif gpa > 2.3:\n            return \"B-\"\n        elif gpa > 2.0:\n            return \"C+\"\n        elif gpa > 1.7:\n            return \"C\"\n        elif gpa > 1.3:\n            return \"C-\"\n        elif gpa > 1.0:\n            return \"D+\"\n        elif gpa > 0.7:\n            return \"D\"\n        else:\n            return \"E\"\n\n    letter_grades = [get_letter_grade(g) for g in grades]\n    return letter_grades",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/81",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

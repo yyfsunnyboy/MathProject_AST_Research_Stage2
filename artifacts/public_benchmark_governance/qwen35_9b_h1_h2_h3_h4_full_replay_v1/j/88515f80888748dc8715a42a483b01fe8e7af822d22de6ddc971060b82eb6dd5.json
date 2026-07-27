@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "88515f80888748dc8715a42a483b01fe8e7af822d22de6ddc971060b82eb6dd5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_first_occurrence",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "final_source": "def find_first_occurrence(arr, target):\n    left = 0\n    right = len(arr) - 1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] < target:\n            left = mid + 1\n        elif arr[mid] > target:\n            right = mid - 1\n        else:\n            # Found the target, but check if there's an earlier occurrence to the left\n            if mid == 0 or arr[mid - 1] != target:\n                return mid\n            else:\n                right = mid - 1\n    \n    return -1",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/733:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "post_h2_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "post_h3_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "post_h4_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "013b952407b0955881d82f457f28f4ec23d23080b533b71000c9d74a90cd7249",
+  "raw_source": "def find_first_occurrence(arr, target):\n    left = 0\n    right = len(arr) - 1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] < target:\n            left = mid + 1\n        elif arr[mid] > target:\n            right = mid - 1\n        else:\n            # Found the target, but check if there's an earlier occurrence to the left\n            if mid == 0 or arr[mid - 1] != target:\n                return mid\n            else:\n                right = mid - 1\n    \n    return -1",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/733",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0142f4ad69afd7597874f8bb5dc4c9df35d8428b268b3b02858816af1dde880e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "comb_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "final_source": "def comb_sort(arr):\n    gap = len(arr)\n    shrink_factor = 1.3\n    swapped = True\n    \n    while gap > 0:\n        new_gap = int(gap / shrink_factor)\n        if new_gap == 0 and not swapped:\n            break\n        \n        gap = new_gap or 1\n        swapped = False\n        \n        for i in range(len(arr) - gap):\n            if arr[i] > arr[i + gap]:\n                arr[i], arr[i + gap] = arr[i + gap], arr[i]\n                swapped = True\n    \n    return arr",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/71:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "post_h2_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "post_h3_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "post_h4_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "628a593581e0beebdc85656d791daed7f076b01f98966e8dd2646781964f83e6",
+  "raw_source": "def comb_sort(arr):\n    gap = len(arr)\n    shrink_factor = 1.3\n    swapped = True\n    \n    while gap > 0:\n        new_gap = int(gap / shrink_factor)\n        if new_gap == 0 and not swapped:\n            break\n        \n        gap = new_gap or 1\n        swapped = False\n        \n        for i in range(len(arr) - gap):\n            if arr[i] > arr[i + gap]:\n                arr[i], arr[i + gap] = arr[i + gap], arr[i]\n                swapped = True\n    \n    return arr",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/71",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

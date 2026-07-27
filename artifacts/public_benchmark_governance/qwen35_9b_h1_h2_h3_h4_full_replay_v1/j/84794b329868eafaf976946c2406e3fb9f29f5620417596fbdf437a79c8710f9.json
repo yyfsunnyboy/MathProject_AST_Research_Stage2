@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "84794b329868eafaf976946c2406e3fb9f29f5620417596fbdf437a79c8710f9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "generate_integers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "final_source": "def generate_integers(a, b):\n    \"\"\"\n    Given two positive integers a and b, return the even digits between a\n    and b (inclusive), in ascending order.\n\n    Note: The function considers single-digit numbers only for \"even digits\".\n    For example:\n        generate_integers(2, 8) => [2, 4, 6, 8]\n        generate_integers(8, 2) => [2, 4, 6, 8]\n        generate_integers(10, 14) => []   (no single-digit even numbers in range)\n\n    If you intended to return all *even integers* between a and b instead of just digits,\n    let me know and I can adjust the implementation.\n    \"\"\"\n    \n    # Ensure we work with an ordered range from min(a,b) to max(a,b) inclusive\n    start = min(a, b)\n    end = max(a, b)\n\n    result = []\n    for n in range(start, end + 1):\n        if n < 0:\n            continue  # skip negative numbers if needed; problem says positive integers\n        s_n = str(n)\n        # Check each digit of the number\n        for ch in s_n:\n            d = int(ch)\n            if d % 2 == 0 and d not in result:  # avoid duplicates (e.g., from multi-digit numbers)\n                result.append(d)\n\n    return sorted(result)\n\n\n# If you actually want all even *integers* between a and b, use this simpler version instead:\ndef generate_even_integers(a, b):\n    \"\"\"Return all even integers in the inclusive range [a, b], ascending.\"\"\"\n    start = min(a, b)\n    end = max(a, b)\n\n    # First even integer >= start\n    if start % 2 != 0:\n        first_even = start + 1\n    else:\n        first_even = start\n\n    result = list(range(first_even, end + 1, 2))\n    return result\n\n\n# Example usage (for digits version):\nprint(generate_integers(2, 8))      # [2, 4, 6, 8]\nprint(generate_integers(8, 2))      # [2, 4, 6, 8]\nprint(generate_integers(10, 14))    # []\n\n# Example usage (for even integers version):\nprint(generate_even_integers(2, 8))   # [2, 4, 6, 8]\nprint(generate_even_integers(10, 14)) # [10, 12, 14]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/163:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "post_h2_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "post_h3_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "post_h4_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9b9ca642af819d9ad9b91b233fb87a9f245a4e5af4d47db5e2878cfd99eeb4e7",
+  "raw_source": "def generate_integers(a, b):\n    \"\"\"\n    Given two positive integers a and b, return the even digits between a\n    and b (inclusive), in ascending order.\n\n    Note: The function considers single-digit numbers only for \"even digits\".\n    For example:\n        generate_integers(2, 8) => [2, 4, 6, 8]\n        generate_integers(8, 2) => [2, 4, 6, 8]\n        generate_integers(10, 14) => []   (no single-digit even numbers in range)\n\n    If you intended to return all *even integers* between a and b instead of just digits,\n    let me know and I can adjust the implementation.\n    \"\"\"\n    \n    # Ensure we work with an ordered range from min(a,b) to max(a,b) inclusive\n    start = min(a, b)\n    end = max(a, b)\n\n    result = []\n    for n in range(start, end + 1):\n        if n < 0:\n            continue  # skip negative numbers if needed; problem says positive integers\n        s_n = str(n)\n        # Check each digit of the number\n        for ch in s_n:\n            d = int(ch)\n            if d % 2 == 0 and d not in result:  # avoid duplicates (e.g., from multi-digit numbers)\n                result.append(d)\n\n    return sorted(result)\n\n\n# If you actually want all even *integers* between a and b, use this simpler version instead:\ndef generate_even_integers(a, b):\n    \"\"\"Return all even integers in the inclusive range [a, b], ascending.\"\"\"\n    start = min(a, b)\n    end = max(a, b)\n\n    # First even integer >= start\n    if start % 2 != 0:\n        first_even = start + 1\n    else:\n        first_even = start\n\n    result = list(range(first_even, end + 1, 2))\n    return result\n\n\n# Example usage (for digits version):\nprint(generate_integers(2, 8))      # [2, 4, 6, 8]\nprint(generate_integers(8, 2))      # [2, 4, 6, 8]\nprint(generate_integers(10, 14))    # []\n\n# Example usage (for even integers version):\nprint(generate_even_integers(2, 8))   # [2, 4, 6, 8]\nprint(generate_even_integers(10, 14)) # [10, 12, 14]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/163",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

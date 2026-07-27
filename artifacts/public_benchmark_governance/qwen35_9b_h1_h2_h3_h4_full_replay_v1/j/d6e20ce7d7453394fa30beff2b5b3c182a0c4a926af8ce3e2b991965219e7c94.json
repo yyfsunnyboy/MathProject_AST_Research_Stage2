@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d6e20ce7d7453394fa30beff2b5b3c182a0c4a926af8ce3e2b991965219e7c94",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "factorize",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "final_source": "from typing import List\n\n\ndef factorize(n: int) -> List[int]:\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    Each of the factors should be listed number of times corresponding to how many times it appears in factorization.\n    Input number should be equal to the product of all factors\n    \n    >>> factorize(8)\n    [2, 2, 2]\n    >>> factorize(25)\n    [5, 5]\n    >>> factorize(70)\n    [2, 5, 7]\n    \"\"\"\n    if n <= 1:\n        return []\n\n    factors = []\n    \n    # Handle the even number case first (factor of 2)\n    while n % 2 == 0:\n        factors.append(2)\n        n //= 2\n    \n    # Check for odd factors starting from 3 up to sqrt(n)\n    i = 3\n    while i * i <= n:\n        while n % i == 0:\n            factors.append(i)\n            n //= i\n        i += 2\n    \n    # If n is still greater than 1, then it's a prime factor itself\n    if n > 1:\n        factors.append(n)\n    \n    return factors\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/25:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "post_h2_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "post_h3_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "post_h4_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6b296cc27db753d84621a6471fa2b1d62b5727497213e00b024974a82994b70b",
+  "raw_source": "from typing import List\n\n\ndef factorize(n: int) -> List[int]:\n    \"\"\" Return list of prime factors of given integer in the order from smallest to largest.\n    Each of the factors should be listed number of times corresponding to how many times it appears in factorization.\n    Input number should be equal to the product of all factors\n    \n    >>> factorize(8)\n    [2, 2, 2]\n    >>> factorize(25)\n    [5, 5]\n    >>> factorize(70)\n    [2, 5, 7]\n    \"\"\"\n    if n <= 1:\n        return []\n\n    factors = []\n    \n    # Handle the even number case first (factor of 2)\n    while n % 2 == 0:\n        factors.append(2)\n        n //= 2\n    \n    # Check for odd factors starting from 3 up to sqrt(n)\n    i = 3\n    while i * i <= n:\n        while n % i == 0:\n            factors.append(i)\n            n //= i\n        i += 2\n    \n    # If n is still greater than 1, then it's a prime factor itself\n    if n > 1:\n        factors.append(n)\n    \n    return factors\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/25",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

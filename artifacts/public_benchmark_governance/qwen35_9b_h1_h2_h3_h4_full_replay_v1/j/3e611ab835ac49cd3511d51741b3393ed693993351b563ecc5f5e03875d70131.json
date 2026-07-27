@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3e611ab835ac49cd3511d51741b3393ed693993351b563ecc5f5e03875d70131",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "strange_sort_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "final_source": "def strange_sort_list(lst):\n    \"\"\"\n    Given list of integers, return list in strange order.\n    Strange sorting starts with the minimum value, then maximum of remaining,\n    then next minimum, etc., alternating until all elements are used.\n\n    Examples:\n        strange_sort_list([1, 2, 3, 4]) == [1, 4, 2, 3]\n        strange_sort_list([5, 5, 5, 5]) == [5, 5, 5, 5]\n        strange_sort_list([]) == []\n    \"\"\"\n    if not lst:\n        return []\n\n    result = []\n    left, right = sorted(lst)[0], sorted(lst)[-1]\n    \n    # We'll work with indices on the sorted copy to avoid repeated sorting.\n    s = sorted(lst)\n    l_idx, r_idx = 0, len(s) - 1\n    \n    while l_idx <= r_idx:\n        if l_idx == r_idx:\n            result.append(s[l_idx])\n            break\n        \n        # Take minimum from the left side\n        result.append(s[l_idx])\n        l_idx += 1\n        \n        # Then take maximum from the right side (if still available)\n        if l_idx <= r_idx:\n            result.append(s[r_idx])\n            r_idx -= 1\n\n    return result\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/70:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "post_h2_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "post_h3_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "post_h4_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f6e72a787c91005d9956c2c2d35dfaa10e96fff275c766f351138756ed22a2d7",
+  "raw_source": "def strange_sort_list(lst):\n    \"\"\"\n    Given list of integers, return list in strange order.\n    Strange sorting starts with the minimum value, then maximum of remaining,\n    then next minimum, etc., alternating until all elements are used.\n\n    Examples:\n        strange_sort_list([1, 2, 3, 4]) == [1, 4, 2, 3]\n        strange_sort_list([5, 5, 5, 5]) == [5, 5, 5, 5]\n        strange_sort_list([]) == []\n    \"\"\"\n    if not lst:\n        return []\n\n    result = []\n    left, right = sorted(lst)[0], sorted(lst)[-1]\n    \n    # We'll work with indices on the sorted copy to avoid repeated sorting.\n    s = sorted(lst)\n    l_idx, r_idx = 0, len(s) - 1\n    \n    while l_idx <= r_idx:\n        if l_idx == r_idx:\n            result.append(s[l_idx])\n            break\n        \n        # Take minimum from the left side\n        result.append(s[l_idx])\n        l_idx += 1\n        \n        # Then take maximum from the right side (if still available)\n        if l_idx <= r_idx:\n            result.append(s[r_idx])\n            r_idx -= 1\n\n    return result\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/70",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

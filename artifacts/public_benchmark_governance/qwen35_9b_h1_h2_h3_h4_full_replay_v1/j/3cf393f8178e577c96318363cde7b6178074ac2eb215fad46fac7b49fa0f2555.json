@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3cf393f8178e577c96318363cde7b6178074ac2eb215fad46fac7b49fa0f2555",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2fb7da36daa113dde67005c2bba845a4e665b980c86222b95b6f6195051df3d1",
+  "final_source": "def split(s):\n    return list(s)\n\nif __name__ == \"__main__\":\n    assert split('python') == ['p','y','t','h','o','n']",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/565:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "85a24c8a41b33327c2a69879a9faa278b9eaa9b67dc4cb5c7172f07301a90e23",
+  "post_h2_sha256": "2fb7da36daa113dde67005c2bba845a4e665b980c86222b95b6f6195051df3d1",
+  "post_h3_sha256": "2fb7da36daa113dde67005c2bba845a4e665b980c86222b95b6f6195051df3d1",
+  "post_h4_sha256": "2fb7da36daa113dde67005c2bba845a4e665b980c86222b95b6f6195051df3d1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "85a24c8a41b33327c2a69879a9faa278b9eaa9b67dc4cb5c7172f07301a90e23",
+  "raw_source": "def split(s):\n    return list(s)\n\nassert split('python') == ['p','y','t','h','o','n']",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/565",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

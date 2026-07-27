@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "58df405228916a1dc0fd399a226d7d2e4635de827b6b8fe8a7f17f335275f3b6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "multiple_to_single",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "final_source": "def multiple_to_single(numbers):\n    \"\"\"\n    Joins a list of integers into a single integer by concatenating their string representations.\n    \n    Args:\n        numbers (list[int]): A list of non-negative integers.\n        \n    Returns:\n        int: The resulting concatenated number.\n        \n    Raises:\n        ValueError: If the input is not a list or contains non-integer elements.\n    \"\"\"\n    if not isinstance(numbers, list):\n        raise TypeError(\"Input must be a list.\")\n    \n    # Convert each integer to string and join them\n    joined_str = \"\".join(str(num) for num in numbers)\n    \n    return int(joined_str)\n\n# Test cases based on your requirement\nassert multiple_to_single([11, 33, 50]) == 113350\nprint(\"Test passed!\")\n\n# Additional test case with single digit numbers\nassert multiple_to_single([1, 2, 3]) == 123\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/439:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "post_h2_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "post_h3_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "post_h4_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f2d570ef87f740f3074ee02fa748104003c6c6895a6afab268ae96fa175f3219",
+  "raw_source": "def multiple_to_single(numbers):\n    \"\"\"\n    Joins a list of integers into a single integer by concatenating their string representations.\n    \n    Args:\n        numbers (list[int]): A list of non-negative integers.\n        \n    Returns:\n        int: The resulting concatenated number.\n        \n    Raises:\n        ValueError: If the input is not a list or contains non-integer elements.\n    \"\"\"\n    if not isinstance(numbers, list):\n        raise TypeError(\"Input must be a list.\")\n    \n    # Convert each integer to string and join them\n    joined_str = \"\".join(str(num) for num in numbers)\n    \n    return int(joined_str)\n\n# Test cases based on your requirement\nassert multiple_to_single([11, 33, 50]) == 113350\nprint(\"Test passed!\")\n\n# Additional test case with single digit numbers\nassert multiple_to_single([1, 2, 3]) == 123\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/439",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

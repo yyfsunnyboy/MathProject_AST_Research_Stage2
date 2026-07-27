@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "13ab25ce16a611f95806995d9ff386518e8e87217f4872b20fcfcbcfaedf4bb5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "final_source": "def max_bitonic_subsequence_sum(arr):\n    if not arr:\n        return 0\n    \n    n = len(arr)\n    \n    # Step 1: Calculate Maximum Sum Increasing Subsequence ending at each index i\n    lis = [arr[0]] * n\n    for i in range(1, n):\n        current_max = -float('inf')\n        for j in range(i):\n            if arr[j] < arr[i]:\n                # We want the max sum of an increasing subsequence ending at j + arr[i]\n                candidate_sum = lis[j] + arr[i]\n                if candidate_sum > current_max:\n                    current_max = candidate_sum\n        \n        # If no smaller element found before, just take arr[i] itself (start new seq)\n        if current_max == -float('inf'):\n            lis[i] = arr[i]\n        else:\n            lis[i] = max(lis[i], current_max)\n\n    # Step 2: Calculate Maximum Sum Decreasing Subsequence starting at each index i\n    # We do this by reversing the array, finding LIS on reversed, then mapping back.\n    \n    rev_arr = arr[::-1]\n    lds_rev = [rev_arr[0]] * n\n    \n    for i in range(1, len(rev_arr)):\n        current_max = -float('inf')\n        for j in range(i):\n            if rev_arr[j] < rev_arr[i]: # In reversed array logic: looking backwards from peak means smaller elements come \"after\" (higher index) in original? \n                # Wait, let's rephrase strictly to avoid confusion.\n                pass\n        \n    # Let's rewrite Step 2 more clearly without reversing indices mentally first\n    \n    lds = [arr[0]] * n\n    for i in range(n - 1, -1, -1):\n        current_max = arr[i] # At least the element itself\n        for j in range(i + 1, n):\n            if arr[j] < arr[i]:\n                candidate_sum = lds[j] + arr[i]\n                if candidate_sum > current_max:\n                    current_max = candidate_sum\n        lds[i] = max(arr[i], current_max)\n\n    # Step 3: Find the maximum combined sum\n    max_total = -float('inf')\n    \n    for i in range(n):\n        total = lis[i] + lds[i] - arr[i]\n        if total > max_total:\n            max_total = total\n            \n    return max_total\n\n# Test with provided assertion\nresult = max_bitonic_subsequence_sum([1, 15, 51, 45, 33, 100, 12, 18, 9])\nprint(f\"Result: {result}\") # Expected: 194\n\nassert result == 194, f\"Expected 194 but got {result}\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/245:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "post_h2_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "post_h3_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "post_h4_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2ec4eaae1ba5854b15301ca3b02379bb577546144ae564f3115790fef95df636",
+  "raw_source": "def max_bitonic_subsequence_sum(arr):\n    if not arr:\n        return 0\n    \n    n = len(arr)\n    \n    # Step 1: Calculate Maximum Sum Increasing Subsequence ending at each index i\n    lis = [arr[0]] * n\n    for i in range(1, n):\n        current_max = -float('inf')\n        for j in range(i):\n            if arr[j] < arr[i]:\n                # We want the max sum of an increasing subsequence ending at j + arr[i]\n                candidate_sum = lis[j] + arr[i]\n                if candidate_sum > current_max:\n                    current_max = candidate_sum\n        \n        # If no smaller element found before, just take arr[i] itself (start new seq)\n        if current_max == -float('inf'):\n            lis[i] = arr[i]\n        else:\n            lis[i] = max(lis[i], current_max)\n\n    # Step 2: Calculate Maximum Sum Decreasing Subsequence starting at each index i\n    # We do this by reversing the array, finding LIS on reversed, then mapping back.\n    \n    rev_arr = arr[::-1]\n    lds_rev = [rev_arr[0]] * n\n    \n    for i in range(1, len(rev_arr)):\n        current_max = -float('inf')\n        for j in range(i):\n            if rev_arr[j] < rev_arr[i]: # In reversed array logic: looking backwards from peak means smaller elements come \"after\" (higher index) in original? \n                # Wait, let's rephrase strictly to avoid confusion.\n                pass\n        \n    # Let's rewrite Step 2 more clearly without reversing indices mentally first\n    \n    lds = [arr[0]] * n\n    for i in range(n - 1, -1, -1):\n        current_max = arr[i] # At least the element itself\n        for j in range(i + 1, n):\n            if arr[j] < arr[i]:\n                candidate_sum = lds[j] + arr[i]\n                if candidate_sum > current_max:\n                    current_max = candidate_sum\n        lds[i] = max(arr[i], current_max)\n\n    # Step 3: Find the maximum combined sum\n    max_total = -float('inf')\n    \n    for i in range(n):\n        total = lis[i] + lds[i] - arr[i]\n        if total > max_total:\n            max_total = total\n            \n    return max_total\n\n# Test with provided assertion\nresult = max_bitonic_subsequence_sum([1, 15, 51, 45, 33, 100, 12, 18, 9])\nprint(f\"Result: {result}\") # Expected: 194\n\nassert result == 194, f\"Expected 194 but got {result}\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/245",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

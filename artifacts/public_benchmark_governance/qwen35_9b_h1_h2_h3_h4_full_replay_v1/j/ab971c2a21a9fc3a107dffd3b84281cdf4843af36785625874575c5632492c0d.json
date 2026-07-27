@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ab971c2a21a9fc3a107dffd3b84281cdf4843af36785625874575c5632492c0d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "remove_odd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0a0059d751047f2a9477652ffb604525abfc416adcb3eb5ecce51ad27123b001",
+  "final_source": "def remove_odd(s: str) -> str:\n    \"\"\"Return the input string with all characters at even indices removed.\"\"\"\n    return s[1::2]  # Start from index 1, step by 2 to keep odd-indexed characters (0-based)\n\n\n# Example usage and assertion check\nif __name__ == \"__main__\":\n    assert remove_odd(\"python\") == \"yhn\"\n    print(remove_odd(\"python\"))  # Output: yhn\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/437:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d02d91d42b989b44bdd954450b4451f6c4e31d6deff6abdf866bf8595aab7bfb",
+  "post_h2_sha256": "625313df48b41847eedb3d7924fb914cf7f9aacfcff369d184dd1168f31b7e58",
+  "post_h3_sha256": "625313df48b41847eedb3d7924fb914cf7f9aacfcff369d184dd1168f31b7e58",
+  "post_h4_sha256": "0a0059d751047f2a9477652ffb604525abfc416adcb3eb5ecce51ad27123b001",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d02d91d42b989b44bdd954450b4451f6c4e31d6deff6abdf866bf8595aab7bfb",
+  "raw_source": "def remove_odd(s: str) -> str:\n    \"\"\"Return the input string with all characters at even indices removed.\"\"\"\n    return s[1::2]  # Start from index 1, step by 2 to keep odd-indexed characters (0-based)\n\n\n# Example usage and assertion check\nassert remove_odd(\"python\") == \"yhn\"\n\nprint(remove_odd(\"python\"))  # Output: yhn\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/437",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

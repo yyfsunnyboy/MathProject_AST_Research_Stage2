@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "00a39368b225733adafd80ba5aee848b7de6b1810d3f3516b7f0485cb1405b9a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_remainder",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "final_source": "def find_remainder(arr, n):\n    \"\"\"\n    Calculates the product of all elements in arr modulo n.\n    \n    Args:\n        arr (list[int]): List of integers to multiply.\n        n (int): The modulus value.\n        \n    Returns:\n        int: The result of (product of arr) % n.\n    \"\"\"\n    if not arr or n <= 0:\n        return None # Handle edge cases appropriately\n    \n    product = 1\n    for num in arr:\n        product = (product * num) % n\n        \n    return product\n\n# Verification based on your requirement\nresult = find_remainder([100, 10, 5, 25, 35, 14], 11)\nassert result == 9, f\"Expected 9 but got {result}\"\n\nprint(f\"The calculated remainder is: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/471:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "post_h2_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "post_h3_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "post_h4_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4b5a50647b26ad8bf4f46f23d1bfb68cb03012755a855586fa753f83f4876220",
+  "raw_source": "def find_remainder(arr, n):\n    \"\"\"\n    Calculates the product of all elements in arr modulo n.\n    \n    Args:\n        arr (list[int]): List of integers to multiply.\n        n (int): The modulus value.\n        \n    Returns:\n        int: The result of (product of arr) % n.\n    \"\"\"\n    if not arr or n <= 0:\n        return None # Handle edge cases appropriately\n    \n    product = 1\n    for num in arr:\n        product = (product * num) % n\n        \n    return product\n\n# Verification based on your requirement\nresult = find_remainder([100, 10, 5, 25, 35, 14], 11)\nassert result == 9, f\"Expected 9 but got {result}\"\n\nprint(f\"The calculated remainder is: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/471",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

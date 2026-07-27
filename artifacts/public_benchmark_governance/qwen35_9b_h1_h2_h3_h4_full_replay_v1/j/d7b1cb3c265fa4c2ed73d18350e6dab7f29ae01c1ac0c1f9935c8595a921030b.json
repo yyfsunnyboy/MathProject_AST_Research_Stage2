@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d7b1cb3c265fa4c2ed73d18350e6dab7f29ae01c1ac0c1f9935c8595a921030b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_sorted",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "final_source": "def is_sorted(lst):\n    \"\"\"\n    Given a list of numbers, return whether or not they are sorted\n    in ascending order. If list has more than 1 duplicate of the same\n    number, return False. Assume no negative numbers and only integers.\n\n    Examples:\n        is_sorted([5]) ➞ True\n        is_sorted([1, 2, 3, 4, 5]) ➞ True\n        is_sorted([1, 3, 2, 4, 5]) ➞ False\n        is_sorted([1, 2, 3, 4, 5, 6]) ➞ True\n        is_sorted([1, 2, 3, 4, 5, 6, 7]) ➞ True\n        is_sorted([1, 3, 2, 4, 5, 6, 7]) ➞ False\n        is_sorted([1, 2, 2, 3, 3, 4]) ➞ True\n        is_sorted([1, 2, 2, 2, 3, 4]) ➞ False\n    \"\"\"\n\n    # Check for duplicates that appear more than once\n    from collections import Counter\n    counts = Counter(lst)\n    if any(c > 1 for c in counts.values()):\n        return False\n\n    # Check ascending order (allowing single repeats only, which are already filtered above)\n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n\n    return True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/126:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "post_h2_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "post_h3_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "post_h4_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "678d0f5057fdfb7a0ccb0c8f12f1745172b0b75ed08b40584ee03b0075e048c8",
+  "raw_source": "def is_sorted(lst):\n    \"\"\"\n    Given a list of numbers, return whether or not they are sorted\n    in ascending order. If list has more than 1 duplicate of the same\n    number, return False. Assume no negative numbers and only integers.\n\n    Examples:\n        is_sorted([5]) ➞ True\n        is_sorted([1, 2, 3, 4, 5]) ➞ True\n        is_sorted([1, 3, 2, 4, 5]) ➞ False\n        is_sorted([1, 2, 3, 4, 5, 6]) ➞ True\n        is_sorted([1, 2, 3, 4, 5, 6, 7]) ➞ True\n        is_sorted([1, 3, 2, 4, 5, 6, 7]) ➞ False\n        is_sorted([1, 2, 2, 3, 3, 4]) ➞ True\n        is_sorted([1, 2, 2, 2, 3, 4]) ➞ False\n    \"\"\"\n\n    # Check for duplicates that appear more than once\n    from collections import Counter\n    counts = Counter(lst)\n    if any(c > 1 for c in counts.values()):\n        return False\n\n    # Check ascending order (allowing single repeats only, which are already filtered above)\n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n\n    return True\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/126",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

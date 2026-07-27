@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9aa4957837ff74efa66e0b9912b59d5052b3f90864d71fba3dfe7d4f8dae9c74",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "rectangle_area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ec27f5a5ce3234fbe96143ce63a90a89b7f8738ef19794f9e3c201dcd61406ef",
+  "final_source": "def rectangle_area(length: int, width: int) -> int:\n    \"\"\"Calculate and return the area of a rectangle.\"\"\"\n    if length < 0 or width < 0:\n        raise ValueError(\"Length and width must be non-negative.\")\n    return length * width\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert rectangle_area(10, 20) == 200\n    print(rectangle_area(10, 20))  # Output: 200\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/458:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "94109af585feb6401c280088ec40fe7e81ba8236c9f43740ad5fbe7bc6d49e3e",
+  "post_h2_sha256": "66fea317f16511e0b71d23a2814cb07e9041efca9e4a6f949730102456f4dbf3",
+  "post_h3_sha256": "66fea317f16511e0b71d23a2814cb07e9041efca9e4a6f949730102456f4dbf3",
+  "post_h4_sha256": "ec27f5a5ce3234fbe96143ce63a90a89b7f8738ef19794f9e3c201dcd61406ef",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "94109af585feb6401c280088ec40fe7e81ba8236c9f43740ad5fbe7bc6d49e3e",
+  "raw_source": "def rectangle_area(length: int, width: int) -> int:\n    \"\"\"Calculate and return the area of a rectangle.\"\"\"\n    if length < 0 or width < 0:\n        raise ValueError(\"Length and width must be non-negative.\")\n    return length * width\n\n\n# Example usage and assertion\nassert rectangle_area(10, 20) == 200\nprint(rectangle_area(10, 20))  # Output: 200\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/458",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

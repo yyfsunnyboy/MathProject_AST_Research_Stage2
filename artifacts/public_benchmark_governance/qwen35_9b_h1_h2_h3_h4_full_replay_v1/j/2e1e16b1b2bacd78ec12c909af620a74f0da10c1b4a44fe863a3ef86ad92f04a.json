@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2e1e16b1b2bacd78ec12c909af620a74f0da10c1b4a44fe863a3ef86ad92f04a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "surfacearea_cube",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4df317f9d7d4b2812d1ee7ea1bd7e695bdab23ed1c28ab3f096500ed6c49dea6",
+  "final_source": "def surface_area_cube(size):\n    \"\"\"\n    Calculate the total surface area of a cube with side length `size`.\n    \n    A cube has 6 faces, each being a square with area = size * size.\n    Therefore: Surface Area = 6 * (side^2)\n    \n    Parameters:\n        size (int or float): The length of one edge of the cube. Must be non-negative.\n        \n    Returns:\n        int or float: Total surface area of the cube.\n        \n    Raises:\n        ValueError: If `size` is negative.\n    \"\"\"\n    if size < 0:\n        raise ValueError(\"Cube side length cannot be negative.\")\n    \n    return 6 * (size ** 2)\n\n\n# Example usage and assertion test\nif __name__ == \"__main__\":\n    assert surface_area_cube(5) == 150, \"Test failed for size=5\"\n    print(f\"Surface area of a cube with side length 5 is: {surface_area_cube(5)}\")\n\n    # Additional tests (optional)\n    assert surface_area_cube(3) == 54\n    assert surface_area_cube(1.0) == 6.0\n\nsurfacearea_cube = surface_area_cube\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/441:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4df317f9d7d4b2812d1ee7ea1bd7e695bdab23ed1c28ab3f096500ed6c49dea6",
+  "post_h2_sha256": "4df317f9d7d4b2812d1ee7ea1bd7e695bdab23ed1c28ab3f096500ed6c49dea6",
+  "post_h3_sha256": "4df317f9d7d4b2812d1ee7ea1bd7e695bdab23ed1c28ab3f096500ed6c49dea6",
+  "post_h4_sha256": "4df317f9d7d4b2812d1ee7ea1bd7e695bdab23ed1c28ab3f096500ed6c49dea6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "11b098b6ed463a8dd6ec2cf249458a19fc03c4f8460b2caa4b3ece825eb2bcc1",
+  "raw_source": "def surface_area_cube(size):\n    \"\"\"\n    Calculate the total surface area of a cube with side length `size`.\n    \n    A cube has 6 faces, each being a square with area = size * size.\n    Therefore: Surface Area = 6 * (side^2)\n    \n    Parameters:\n        size (int or float): The length of one edge of the cube. Must be non-negative.\n        \n    Returns:\n        int or float: Total surface area of the cube.\n        \n    Raises:\n        ValueError: If `size` is negative.\n    \"\"\"\n    if size < 0:\n        raise ValueError(\"Cube side length cannot be negative.\")\n    \n    return 6 * (size ** 2)\n\n\n# Example usage and assertion test\nif __name__ == \"__main__\":\n    assert surface_area_cube(5) == 150, \"Test failed for size=5\"\n    print(f\"Surface area of a cube with side length 5 is: {surface_area_cube(5)}\")\n\n    # Additional tests (optional)\n    assert surface_area_cube(3) == 54\n    assert surface_area_cube(1.0) == 6.0\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/441",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

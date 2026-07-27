@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "526ac9c6c55b235245856054cd7b3707218ec58480f397c415df730d6cbb6e92",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Substrings",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "final_source": "def count_Substrings(s: str) -> int:\n    \"\"\"\n    Counts substrings where sum(digits) == length(substring).\n    This is equivalent to counting substrings composed entirely of '1's.\n    \n    Args:\n        s (str): Input string containing digits.\n        \n    Returns:\n        int: The count of valid substrings.\n    \"\"\"\n    total_count = 0\n    current_ones_length = 0\n    \n    for char in s:\n        if char == '1':\n            # Extend the current sequence of ones\n            current_ones_length += 1\n        else:\n            # Sequence broken, add count from previous group and reset\n            total_count += (current_ones_length * (current_ones_length + 1)) // 2\n            current_ones_length = 0\n            \n    # Add the last sequence if it ended with '1's\n    total_count += (current_ones_length * (current_ones_length + 1)) // 2\n    \n    return total_count\n\n# Verification against your assertion\nresult = count_Substrings('112112')\nprint(f\"Result for '112112': {result}\")\nassert result == 6, f\"Expected 6 but got {result}\"\n\n# Let's manually verify the logic with a breakdown:\n# String: \"112112\"\n# Groups of ones: \n#   Index 0-1 (\"11\"): Length 2. Substrings: \"1\"(idx0), \"1\"(idx1), \"11\". Count = 3.\n#   Index 3-4 (\"11\"): Length 2. Substrings: \"1\"(idx3), \"1\"(idx4), \"11\". Count = 3.\n# Total = 3 + 3 = 6.\n\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/61:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "post_h2_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "post_h3_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "post_h4_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "584e97f9408b42b0a89050305a162029b7d6310de784c9e80630bff2ffa9831a",
+  "raw_source": "def count_Substrings(s: str) -> int:\n    \"\"\"\n    Counts substrings where sum(digits) == length(substring).\n    This is equivalent to counting substrings composed entirely of '1's.\n    \n    Args:\n        s (str): Input string containing digits.\n        \n    Returns:\n        int: The count of valid substrings.\n    \"\"\"\n    total_count = 0\n    current_ones_length = 0\n    \n    for char in s:\n        if char == '1':\n            # Extend the current sequence of ones\n            current_ones_length += 1\n        else:\n            # Sequence broken, add count from previous group and reset\n            total_count += (current_ones_length * (current_ones_length + 1)) // 2\n            current_ones_length = 0\n            \n    # Add the last sequence if it ended with '1's\n    total_count += (current_ones_length * (current_ones_length + 1)) // 2\n    \n    return total_count\n\n# Verification against your assertion\nresult = count_Substrings('112112')\nprint(f\"Result for '112112': {result}\")\nassert result == 6, f\"Expected 6 but got {result}\"\n\n# Let's manually verify the logic with a breakdown:\n# String: \"112112\"\n# Groups of ones: \n#   Index 0-1 (\"11\"): Length 2. Substrings: \"1\"(idx0), \"1\"(idx1), \"11\". Count = 3.\n#   Index 3-4 (\"11\"): Length 2. Substrings: \"1\"(idx3), \"1\"(idx4), \"11\". Count = 3.\n# Total = 3 + 3 = 6.\n\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/61",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

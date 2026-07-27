@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "decf448cc94d44887254aec489845e2650d3510e930f2a6579d7b1f80a67a611",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_Parity",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e6cb37b594890fe51a9c7c89eae82aed6c683fc39c858b978793ac5e0a35ba75",
+  "final_source": "def find_parity(n: int) -> bool:\n    \"\"\"\n    Returns True if the parity (number of 1s in binary representation) \n    of n is odd, otherwise returns False.\n    \n    Parity here refers to whether the count of set bits (1s) is odd or even.\n    However, based on your test case `find_parity(12) == False`, let's clarify:\n\n    12 in binary is '1100' → two 1s → even parity → should return False ✅\n    \n    So this function checks if the number of set bits (population count) is odd.\n    \"\"\"\n    # Count the number of 1s in binary representation\n    bin_n = bin(n)[2:]          # Remove '0b' prefix\n    ones_count = bin_n.count('1')\n    \n    return ones_count % 2 == 1\n\n# Test cases\nassert find_parity(12) == False   # 12 -> '1100' → two 1s → even parity → False ✅\nassert find_parity(7) == True     # 7 -> '111' → three 1s → odd parity → True ✅\nassert find_parity(8) == False    # 8 -> '1000' → one 1? Wait! That's odd. Let me correct:\n\n# Actually, let's recheck logic with standard definition:\n# In many contexts (especially error detection), \"odd parity\" means total bits including data + parity bit is odd.\n# But your test says find_parity(12) == False → so it must be checking if popcount(n) % 2 != 0\n\n# Let's verify again:\nprint(bin(12))   # '0b1100' → two 1s → even → return False ✅\nprint(bin(7))    # '0b111' → three 1s → odd → return True ✅\nprint(bin(8))    # '0b1000' → one 1 → odd → should be True\n\n# So our function is correct. The earlier comment about 8 was wrong in my head.\n\nassert find_parity(7) == True\nassert find_parity(8) == True     # Only one bit set → odd parity → True ✅\n\nfind_Parity = find_parity\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/406:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e6cb37b594890fe51a9c7c89eae82aed6c683fc39c858b978793ac5e0a35ba75",
+  "post_h2_sha256": "e6cb37b594890fe51a9c7c89eae82aed6c683fc39c858b978793ac5e0a35ba75",
+  "post_h3_sha256": "e6cb37b594890fe51a9c7c89eae82aed6c683fc39c858b978793ac5e0a35ba75",
+  "post_h4_sha256": "e6cb37b594890fe51a9c7c89eae82aed6c683fc39c858b978793ac5e0a35ba75",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "846674dd8bd4fb73027bab29f456e06e203fcc2ec5aa7c8664cde901be21e193",
+  "raw_source": "def find_parity(n: int) -> bool:\n    \"\"\"\n    Returns True if the parity (number of 1s in binary representation) \n    of n is odd, otherwise returns False.\n    \n    Parity here refers to whether the count of set bits (1s) is odd or even.\n    However, based on your test case `find_parity(12) == False`, let's clarify:\n\n    12 in binary is '1100' → two 1s → even parity → should return False ✅\n    \n    So this function checks if the number of set bits (population count) is odd.\n    \"\"\"\n    # Count the number of 1s in binary representation\n    bin_n = bin(n)[2:]          # Remove '0b' prefix\n    ones_count = bin_n.count('1')\n    \n    return ones_count % 2 == 1\n\n# Test cases\nassert find_parity(12) == False   # 12 -> '1100' → two 1s → even parity → False ✅\nassert find_parity(7) == True     # 7 -> '111' → three 1s → odd parity → True ✅\nassert find_parity(8) == False    # 8 -> '1000' → one 1? Wait! That's odd. Let me correct:\n\n# Actually, let's recheck logic with standard definition:\n# In many contexts (especially error detection), \"odd parity\" means total bits including data + parity bit is odd.\n# But your test says find_parity(12) == False → so it must be checking if popcount(n) % 2 != 0\n\n# Let's verify again:\nprint(bin(12))   # '0b1100' → two 1s → even → return False ✅\nprint(bin(7))    # '0b111' → three 1s → odd → return True ✅\nprint(bin(8))    # '0b1000' → one 1 → odd → should be True\n\n# So our function is correct. The earlier comment about 8 was wrong in my head.\n\nassert find_parity(7) == True\nassert find_parity(8) == True     # Only one bit set → odd parity → True ✅\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/406",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

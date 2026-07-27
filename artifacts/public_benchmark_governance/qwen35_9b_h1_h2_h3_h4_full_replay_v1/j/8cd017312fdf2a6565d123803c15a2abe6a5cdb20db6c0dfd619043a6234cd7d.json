@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8cd017312fdf2a6565d123803c15a2abe6a5cdb20db6c0dfd619043a6234cd7d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "median",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "final_source": "def median(l: list):\n    \"\"\"Return median of elements in the list l.\n    >>> median([3, 1, 2, 4, 5])\n    3\n    >>> median([-10, 4, 6, 1000, 10, 20])\n    15.0\n    \"\"\"\n    if not l:\n        raise ValueError(\"median() arg is an empty sequence\")\n\n    sorted_l = sorted(l)\n    n = len(sorted_l)\n    \n    mid = (n - 1) // 2\n    \n    # If odd number of elements, return the middle one as int/float depending on input\n    if n % 2 == 1:\n        return float(sorted_l[mid])\n\n    # Even number of elements: average of two middle ones\n    else:\n        left = sorted_l[mid]\n        right = sorted_l[mid + 1]\n        return (left + right) / 2.0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/47:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "post_h2_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "post_h3_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "post_h4_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fa5f76daa2b83ec95c80642cd137f49be85fcdf4b7dfbed8602eafda2865d416",
+  "raw_source": "def median(l: list):\n    \"\"\"Return median of elements in the list l.\n    >>> median([3, 1, 2, 4, 5])\n    3\n    >>> median([-10, 4, 6, 1000, 10, 20])\n    15.0\n    \"\"\"\n    if not l:\n        raise ValueError(\"median() arg is an empty sequence\")\n\n    sorted_l = sorted(l)\n    n = len(sorted_l)\n    \n    mid = (n - 1) // 2\n    \n    # If odd number of elements, return the middle one as int/float depending on input\n    if n % 2 == 1:\n        return float(sorted_l[mid])\n\n    # Even number of elements: average of two middle ones\n    else:\n        left = sorted_l[mid]\n        right = sorted_l[mid + 1]\n        return (left + right) / 2.0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/47",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c7c6af4f9ed84f7e53b96d6a9c1e83202100883a753a00676e5dc1a35d6baf73",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_samepatterns",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "final_source": "def is_samepatterns(patterns, words):\n    if len(patterns) != len(words):\n        return False\n    \n    pattern_to_word = {}\n    \n    for p, w in zip(patterns, words):\n        if p not in pattern_to_word:\n            # Check if the word has already been mapped to a different pattern\n            if any(v == w and k != p for k, v in pattern_to_word.items()):\n                return False\n            pattern_to_word[p] = w\n    \n    # Verify that all words are consistent with their patterns (reverse check)\n    for i, (p, w) in enumerate(zip(patterns, words)):\n        if any(v == w and j != i for j, v in zip(range(len(words)), [words[j]])) or \\\n           pattern_to_word[p] != w:\n            return False\n            \n    # Simpler reverse consistency check\n    word_set = set()\n    for p, w in zip(patterns, words):\n        if patterns.index(p) == len([x for x in patterns[:patterns.index(p)] if x == p]):\n            pass\n        \n    # Correct and simple approach: ensure unique pattern maps to unique word consistently\n    mapping1 = {}  # pattern -> word\n    mapping2 = {}  # word -> pattern\n    \n    for p, w in zip(patterns, words):\n        if (p not in mapping1 or mapping1[p] == w) and \\\n           (w not in mapping2 or mapping2[w] == p):\n            mapping1[p] = w\n            mapping2[w] = p\n        else:\n            return False\n            \n    # Ensure no extra mappings exist that break the bijection logic implicitly handled above\n    # The above loop ensures consistency. We just need to make sure we didn't miss a case where \n    # two different patterns map to same word (handled by mapping2 check) or vice versa.\n    \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/74:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "post_h2_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "post_h3_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "post_h4_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "edb91e58b51a8c98a4b2ebca56cad98d5df409e17c09dd39673d1f4563912871",
+  "raw_source": "def is_samepatterns(patterns, words):\n    if len(patterns) != len(words):\n        return False\n    \n    pattern_to_word = {}\n    \n    for p, w in zip(patterns, words):\n        if p not in pattern_to_word:\n            # Check if the word has already been mapped to a different pattern\n            if any(v == w and k != p for k, v in pattern_to_word.items()):\n                return False\n            pattern_to_word[p] = w\n    \n    # Verify that all words are consistent with their patterns (reverse check)\n    for i, (p, w) in enumerate(zip(patterns, words)):\n        if any(v == w and j != i for j, v in zip(range(len(words)), [words[j]])) or \\\n           pattern_to_word[p] != w:\n            return False\n            \n    # Simpler reverse consistency check\n    word_set = set()\n    for p, w in zip(patterns, words):\n        if patterns.index(p) == len([x for x in patterns[:patterns.index(p)] if x == p]):\n            pass\n        \n    # Correct and simple approach: ensure unique pattern maps to unique word consistently\n    mapping1 = {}  # pattern -> word\n    mapping2 = {}  # word -> pattern\n    \n    for p, w in zip(patterns, words):\n        if (p not in mapping1 or mapping1[p] == w) and \\\n           (w not in mapping2 or mapping2[w] == p):\n            mapping1[p] = w\n            mapping2[w] = p\n        else:\n            return False\n            \n    # Ensure no extra mappings exist that break the bijection logic implicitly handled above\n    # The above loop ensures consistency. We just need to make sure we didn't miss a case where \n    # two different patterns map to same word (handled by mapping2 check) or vice versa.\n    \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/74",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

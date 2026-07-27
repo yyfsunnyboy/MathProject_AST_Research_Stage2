@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "aef5dc8a357f9ce6c04ec1d0a130b1939caa6b73287e38bb618eac03d0a72b60",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_not_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "final_source": "def is_not_prime(n: int) -> bool:\n    \"\"\"Return True if n is NOT prime, otherwise return False.\"\"\"\n    # 0 and 1 are not prime by definition\n    if n <= 1:\n        return True\n    \n    # Check divisibility from 2 up to sqrt(n)\n    limit = int(n ** 0.5) + 1\n    for i in range(2, limit):\n        if n % i == 0:\n            return True  # Found a divisor -> not prime\n    \n    return False  # No divisors found -> it is prime\n\n\n# Example assertions to verify correctness\nassert is_not_prime(2) == False   # 2 is prime → function returns False (correct)\nassert is_not_prime(3) == False   # 3 is prime\nassert is_not_prime(4) == True    # 4 is not prime\nassert is_not_prime(1) == True    # 1 is not prime\nassert is_not_prime(0) == True    # 0 is not prime\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/3:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "post_h2_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "post_h3_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "post_h4_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2ed1d3f8dffd8f6598c8aba9f45492cf9d826eeeb198b692bd1d65c63e86852a",
+  "raw_source": "def is_not_prime(n: int) -> bool:\n    \"\"\"Return True if n is NOT prime, otherwise return False.\"\"\"\n    # 0 and 1 are not prime by definition\n    if n <= 1:\n        return True\n    \n    # Check divisibility from 2 up to sqrt(n)\n    limit = int(n ** 0.5) + 1\n    for i in range(2, limit):\n        if n % i == 0:\n            return True  # Found a divisor -> not prime\n    \n    return False  # No divisors found -> it is prime\n\n\n# Example assertions to verify correctness\nassert is_not_prime(2) == False   # 2 is prime → function returns False (correct)\nassert is_not_prime(3) == False   # 3 is prime\nassert is_not_prime(4) == True    # 4 is not prime\nassert is_not_prime(1) == True    # 1 is not prime\nassert is_not_prime(0) == True    # 0 is not prime\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/3",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8ecdf8b4e8a7a2f89a2a3abbb485be3818e0709eb17295e9b86520c25a84e704",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_Consecutive",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "final_source": "def check_Consecutive(nums):\n    \"\"\"\n    Check if a list of integers consists of consecutive numbers (in any order).\n    \n    The function returns:\n      - True  if the numbers form an unbroken sequence with no gaps.\n      - False otherwise, or if fewer than two elements are provided.\n\n    Examples:\n        check_Consecutive([1,2,3,4,5]) -> True\n        check_Consecutive([5,4,3,2,1]) -> True   (order doesn't matter)\n        check_Consecutive([1,3,4,5])  -> False   (missing 2)\n        check_Consecutive([])         -> False\n    \"\"\"\n    if len(nums) < 2:\n        return False\n\n    # Sort the list to handle any order\n    sorted_nums = sorted(nums)\n\n    # Check for consecutive difference of exactly 1 between adjacent elements\n    for i in range(1, len(sorted_nums)):\n        if sorted_nums[i] - sorted_nums[i-1] != 1:\n            return False\n\n    return True\n\n\n# Example assertions\nassert check_Consecutive([1,2,3,4,5]) == True\nassert check_Consecutive([5,4,3,2,1]) == True\nassert check_Consecutive([1,3,4,5])  == False\nassert check_Consecutive([])         == False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/472:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "post_h2_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "post_h3_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "post_h4_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f7b0906f8de9b4721b10adb7eb4049824f553d4b6b878b8f0f12b4bb9090511c",
+  "raw_source": "def check_Consecutive(nums):\n    \"\"\"\n    Check if a list of integers consists of consecutive numbers (in any order).\n    \n    The function returns:\n      - True  if the numbers form an unbroken sequence with no gaps.\n      - False otherwise, or if fewer than two elements are provided.\n\n    Examples:\n        check_Consecutive([1,2,3,4,5]) -> True\n        check_Consecutive([5,4,3,2,1]) -> True   (order doesn't matter)\n        check_Consecutive([1,3,4,5])  -> False   (missing 2)\n        check_Consecutive([])         -> False\n    \"\"\"\n    if len(nums) < 2:\n        return False\n\n    # Sort the list to handle any order\n    sorted_nums = sorted(nums)\n\n    # Check for consecutive difference of exactly 1 between adjacent elements\n    for i in range(1, len(sorted_nums)):\n        if sorted_nums[i] - sorted_nums[i-1] != 1:\n            return False\n\n    return True\n\n\n# Example assertions\nassert check_Consecutive([1,2,3,4,5]) == True\nassert check_Consecutive([5,4,3,2,1]) == True\nassert check_Consecutive([1,3,4,5])  == False\nassert check_Consecutive([])         == False\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/472",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

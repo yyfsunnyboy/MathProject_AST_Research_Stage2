@@ -222,3 +222,10 @@ artifacts/public_benchmark_governance/validation20_scaffold_healer_v3/evalplus_r
 !artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/
 !artifacts/public_benchmark_governance/qwen35_4b_h1_h2_h3_h4_full_evalplus_v1/**
 
+# Keep the qwen3.5:9b cumulative H1->H2->H3->H4 candidate replay + EvalPlus
+# results tracked (development-candidate evidence, not frozen/production).
+!artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/
+!artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/**
+!artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/
+!artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/**
+

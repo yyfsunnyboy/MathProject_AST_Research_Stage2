@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "2d08cd807fb27179fbf69f50056608d446c4674e7ac069aed0f1eb9cbaaff64f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "choose_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "final_source": "def choose_num(x, y):\n    if x > y:\n        return -1\n    \n    # Start from the largest number in range and go down by 2 until we find an even number\n    start = y if y % 2 == 0 else y - 1\n    for num in range(start, max(x-1, -float('inf')), -2):\n        if x <= num:\n            return num\n    \n    # If no even number is found (shouldn't happen with the logic above unless start < x)\n    return -1",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/102:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "post_h2_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "post_h3_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "post_h4_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "81b49e2c1fe6a7d5eeeca5432811c9ece4c2c8e9a271d0edc267f6468a0f13ec",
+  "raw_source": "def choose_num(x, y):\n    if x > y:\n        return -1\n    \n    # Start from the largest number in range and go down by 2 until we find an even number\n    start = y if y % 2 == 0 else y - 1\n    for num in range(start, max(x-1, -float('inf')), -2):\n        if x <= num:\n            return num\n    \n    # If no even number is found (shouldn't happen with the logic above unless start < x)\n    return -1",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/102",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

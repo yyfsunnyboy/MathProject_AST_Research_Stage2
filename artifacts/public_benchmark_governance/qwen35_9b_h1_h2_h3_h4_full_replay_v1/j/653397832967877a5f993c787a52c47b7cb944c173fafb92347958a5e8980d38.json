@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "653397832967877a5f993c787a52c47b7cb944c173fafb92347958a5e8980d38",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "next_power_of_2",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "final_source": "def next_power_of_2(n):\n    \"\"\"\n    Find the smallest power of 2 greater than or equal to n.\n    \n    Args:\n        n (int): A non-negative integer.\n        \n    Returns:\n        int: The smallest power of 2 >= n.\n    \"\"\"\n    if n <= 0:\n        return 1\n    \n    # Subtract 1 from n, then set all bits to the right of the highest set bit to 1\n    # This transforms a number like 6 (110) into 7 (111), or 8 (1000) into 7 (0111)\n    m = n - 1\n    \n    # Propagate the leftmost set bit to all lower bits\n    m |= m >> 1\n    m |= m >> 2\n    m |= m >> 4\n    m |= m >> 8\n    m |= m >> 16\n    m |= m >> 32  # Handles large integers beyond 64-bit if needed\n    \n    return m + 1\n\n# Verification with the provided assertion and additional test cases\nassert next_power_of_2(0) == 1, \"Failed for n=0\"\nassert next_power_of_2(1) == 1, \"Failed for n=1\"\nassert next_power_of_2(5) == 8, \"Failed for n=5\"\nassert next_power_of_2(8) == 8, \"Failed for n=8 (exact power)\"\nassert next_power_of_2(-4) == 1, \"Failed for negative input\"\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/167:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "post_h2_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "post_h3_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "post_h4_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "92e7afcfc3ebe26dfeedc94c6e3e41d888c1f8646d7eecb0947527ee821c4cd9",
+  "raw_source": "def next_power_of_2(n):\n    \"\"\"\n    Find the smallest power of 2 greater than or equal to n.\n    \n    Args:\n        n (int): A non-negative integer.\n        \n    Returns:\n        int: The smallest power of 2 >= n.\n    \"\"\"\n    if n <= 0:\n        return 1\n    \n    # Subtract 1 from n, then set all bits to the right of the highest set bit to 1\n    # This transforms a number like 6 (110) into 7 (111), or 8 (1000) into 7 (0111)\n    m = n - 1\n    \n    # Propagate the leftmost set bit to all lower bits\n    m |= m >> 1\n    m |= m >> 2\n    m |= m >> 4\n    m |= m >> 8\n    m |= m >> 16\n    m |= m >> 32  # Handles large integers beyond 64-bit if needed\n    \n    return m + 1\n\n# Verification with the provided assertion and additional test cases\nassert next_power_of_2(0) == 1, \"Failed for n=0\"\nassert next_power_of_2(1) == 1, \"Failed for n=1\"\nassert next_power_of_2(5) == 8, \"Failed for n=5\"\nassert next_power_of_2(8) == 8, \"Failed for n=8 (exact power)\"\nassert next_power_of_2(-4) == 1, \"Failed for negative input\"\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/167",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

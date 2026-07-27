@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "74f5eb3733274fa957c313dc45a7704be63a3fb7560a1a29aaf6294251cd9365",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "all_prefixes",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "final_source": "from typing import List\n\n\ndef all_prefixes(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest to longest of the input string\n    \n    >>> all_prefixes('abc')\n    ['a', 'ab', 'abc']\n    \n    Note: The empty prefix '' is typically excluded unless explicitly requested.\n          If you need it included, see the alternative implementation below.\n    \"\"\"\n    return [string[:i] for i in range(1, len(string) + 1)]\n\n\n# Alternative version including the empty string as the first element:\ndef all_prefixes_including_empty(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest (empty) to longest.\n    \n    >>> all_prefixes_including_empty('abc')\n    ['', 'a', 'ab', 'abc']\n    \"\"\"\n    return [string[:i] for i in range(len(string) + 1)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(all_prefixes(\"hello\"))        # ['h', 'he', 'hel', 'hell', 'hello']\n    print(all_prefixes_including_empty(\"hi\"))  # ['', 'h', 'hi']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/14:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "post_h2_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "post_h3_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "post_h4_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c388115e94dadcb8872f8decbddc07955a1137900ad7e2112c1a237c8d9b4287",
+  "raw_source": "from typing import List\n\n\ndef all_prefixes(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest to longest of the input string\n    \n    >>> all_prefixes('abc')\n    ['a', 'ab', 'abc']\n    \n    Note: The empty prefix '' is typically excluded unless explicitly requested.\n          If you need it included, see the alternative implementation below.\n    \"\"\"\n    return [string[:i] for i in range(1, len(string) + 1)]\n\n\n# Alternative version including the empty string as the first element:\ndef all_prefixes_including_empty(string: str) -> List[str]:\n    \"\"\" Return list of all prefixes from shortest (empty) to longest.\n    \n    >>> all_prefixes_including_empty('abc')\n    ['', 'a', 'ab', 'abc']\n    \"\"\"\n    return [string[:i] for i in range(len(string) + 1)]\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(all_prefixes(\"hello\"))        # ['h', 'he', 'hel', 'hell', 'hello']\n    print(all_prefixes_including_empty(\"hi\"))  # ['', 'h', 'hi']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/14",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ac2556703f1d1279a853cce8b044a8fd4c53df4dd86b49ae42b048d32089e615",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "text_match_three",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "final_source": "import re\n\ndef text_match_three(text):\n    \"\"\"\n    Matches a string that has an 'a' followed by exactly three 'b's.\n    \n    Args:\n        text (str): The input string to check.\n        \n    Returns:\n        bool: True if the pattern is found, False otherwise.\n    \"\"\"\n    # Pattern explanation:\n    # ^     : Start of string anchor (optional depending on requirements)\n    # a     : Matches literal 'a'\n    # b{3}  : Matches exactly three occurrences of 'b'\n    # $     : End of string anchor\n    \n    pattern = r\"^abbb$\" \n    return re.search(pattern, text) is not None\n\n# Test cases based on your request and common scenarios:\n\nassert not text_match_three(\"ac\")      # Should be False (no 'a' followed by 3 'b's)\nassert text_match_three(\"abbba\")       # True if partial match is allowed without anchors\nassert not text_match_three(\"abbbbc\")  # Depends on whether you want exact or substring\n\n# If the requirement implies \"anywhere in the string\" (substring):\ndef text_match_three_any(text):\n    pattern = r\"a\\b{3}\" \n    return re.search(pattern, text) is not None\n\nassert not text_match_three_any(\"ac\")   # False\nassert text_match_three_any(\"abbba\")    # True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/787:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "post_h2_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "post_h3_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "post_h4_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "40edb4f78e5481efbe01b1268ce7cc1ebdba250263c8f61c20b75ce365190777",
+  "raw_source": "import re\n\ndef text_match_three(text):\n    \"\"\"\n    Matches a string that has an 'a' followed by exactly three 'b's.\n    \n    Args:\n        text (str): The input string to check.\n        \n    Returns:\n        bool: True if the pattern is found, False otherwise.\n    \"\"\"\n    # Pattern explanation:\n    # ^     : Start of string anchor (optional depending on requirements)\n    # a     : Matches literal 'a'\n    # b{3}  : Matches exactly three occurrences of 'b'\n    # $     : End of string anchor\n    \n    pattern = r\"^abbb$\" \n    return re.search(pattern, text) is not None\n\n# Test cases based on your request and common scenarios:\n\nassert not text_match_three(\"ac\")      # Should be False (no 'a' followed by 3 'b's)\nassert text_match_three(\"abbba\")       # True if partial match is allowed without anchors\nassert not text_match_three(\"abbbbc\")  # Depends on whether you want exact or substring\n\n# If the requirement implies \"anywhere in the string\" (substring):\ndef text_match_three_any(text):\n    pattern = r\"a\\b{3}\" \n    return re.search(pattern, text) is not None\n\nassert not text_match_three_any(\"ac\")   # False\nassert text_match_three_any(\"abbba\")    # True\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/787",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

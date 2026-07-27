@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "525dc27ae4ef62b99d4fc6f5bbbca89fb64a12310a0bbfc639402d7f57bb6418",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "digit_distance_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "59cd36c9e17e2092cb043fb369f5c2f5e07cec61247b74ec4ce3d0e1463e5ad9",
+  "final_source": "def digit_distance_nums(num1, num2):\n    \"\"\"\n    Calculates the sum of absolute differences between corresponding digits \n    of two integers. Shorter numbers are treated as having leading zeros.\n    \n    Examples:\n        digit_distance_nums(1, 2) -> |0-0| + ... wait, let's re-evaluate based on simple zip vs padding.\n        \n        If num1=1 (str \"1\") and num2=2 (str \"2\"): \n        Lengths are equal. Diff = |1-2| = 1. Matches assert.\n        \n        Let's implement with string conversion to handle digits easily.\n    \"\"\"\n    \n    # Convert numbers to strings to access individual digits\n    s1 = str(num1)\n    s2 = str(num2)\n    \n    # Determine the maximum length between the two numbers\n    max_len = max(len(s1), len(s2))\n    \n    total_distance = 0\n    \n    # Iterate up to the maximum length\n    for i in range(max_len):\n        digit1 = int(s1[i]) if i < len(s1) else 0\n        digit2 = int(s2[i]) if i < len(s2) else 0\n        \n        total_distance += abs(digit1 - digit2)\n        \n    return total_distance\n\n# Verification with the provided assertion\nif __name__ == \"__main__\":\n    assert digit_distance_nums(1, 2) == 1\nprint(\"Assertion passed!\")\n\n# Additional test cases to ensure robustness\nprint(f\"digits_distance_nums(10, 5): {digit_distance_nums(10, 5)}\") \n# Logic: \"10\" vs \"05\" -> |1-0| + |0-5| = 1 + 5 = 6\n\nprint(f\"digits_distance_nums(987, 432): {digit_distance_nums(987, 432)}\")\n# Logic: |9-4| + |8-3| + |7-2| = 5 + 5 + 5 = 15\n\nprint(f\"digits_distance_nums(0, 0): {digit_distance_nums(0, 0)}\") # Should be 0\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/558:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eac76c4cdd6ed3765779701c36875917766f849ffc7286022fce58764459a25a",
+  "post_h2_sha256": "59cd36c9e17e2092cb043fb369f5c2f5e07cec61247b74ec4ce3d0e1463e5ad9",
+  "post_h3_sha256": "59cd36c9e17e2092cb043fb369f5c2f5e07cec61247b74ec4ce3d0e1463e5ad9",
+  "post_h4_sha256": "59cd36c9e17e2092cb043fb369f5c2f5e07cec61247b74ec4ce3d0e1463e5ad9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "eac76c4cdd6ed3765779701c36875917766f849ffc7286022fce58764459a25a",
+  "raw_source": "def digit_distance_nums(num1, num2):\n    \"\"\"\n    Calculates the sum of absolute differences between corresponding digits \n    of two integers. Shorter numbers are treated as having leading zeros.\n    \n    Examples:\n        digit_distance_nums(1, 2) -> |0-0| + ... wait, let's re-evaluate based on simple zip vs padding.\n        \n        If num1=1 (str \"1\") and num2=2 (str \"2\"): \n        Lengths are equal. Diff = |1-2| = 1. Matches assert.\n        \n        Let's implement with string conversion to handle digits easily.\n    \"\"\"\n    \n    # Convert numbers to strings to access individual digits\n    s1 = str(num1)\n    s2 = str(num2)\n    \n    # Determine the maximum length between the two numbers\n    max_len = max(len(s1), len(s2))\n    \n    total_distance = 0\n    \n    # Iterate up to the maximum length\n    for i in range(max_len):\n        digit1 = int(s1[i]) if i < len(s1) else 0\n        digit2 = int(s2[i]) if i < len(s2) else 0\n        \n        total_distance += abs(digit1 - digit2)\n        \n    return total_distance\n\n# Verification with the provided assertion\nassert digit_distance_nums(1, 2) == 1\nprint(\"Assertion passed!\")\n\n# Additional test cases to ensure robustness\nprint(f\"digits_distance_nums(10, 5): {digit_distance_nums(10, 5)}\") \n# Logic: \"10\" vs \"05\" -> |1-0| + |0-5| = 1 + 5 = 6\n\nprint(f\"digits_distance_nums(987, 432): {digit_distance_nums(987, 432)}\")\n# Logic: |9-4| + |8-3| + |7-2| = 5 + 5 + 5 = 15\n\nprint(f\"digits_distance_nums(0, 0): {digit_distance_nums(0, 0)}\") # Should be 0\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/558",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

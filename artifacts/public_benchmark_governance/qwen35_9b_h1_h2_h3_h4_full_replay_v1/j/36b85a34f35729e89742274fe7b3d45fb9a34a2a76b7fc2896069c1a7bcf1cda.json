@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "36b85a34f35729e89742274fe7b3d45fb9a34a2a76b7fc2896069c1a7bcf1cda",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "unique_digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "final_source": "def unique_digits(x):\n    \"\"\"Given a list of positive integers x. return a sorted list of all \n    elements that hasn't any even digit.\n\n    Note: Returned list should be sorted in increasing order.\n    \n    For example:\n    >>> unique_digits([15, 33, 1422, 1])\n    [1, 15, 33]\n    >>> unique_digits([152, 323, 1422, 10])\n    []\n    \"\"\"\n    def has_only_odd_digit(n):\n        for digit in str(abs(n)):\n            if int(digit) % 2 == 0:\n                return False\n        return True\n\n    result = [num for num in x if has_only_odd_digit(num)]\n    return sorted(result)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/104:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "post_h2_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "post_h3_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "post_h4_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "44782d03cd558fe898b099ded27b06b724feb68a35395057cd6431b551342cd7",
+  "raw_source": "def unique_digits(x):\n    \"\"\"Given a list of positive integers x. return a sorted list of all \n    elements that hasn't any even digit.\n\n    Note: Returned list should be sorted in increasing order.\n    \n    For example:\n    >>> unique_digits([15, 33, 1422, 1])\n    [1, 15, 33]\n    >>> unique_digits([152, 323, 1422, 10])\n    []\n    \"\"\"\n    def has_only_odd_digit(n):\n        for digit in str(abs(n)):\n            if int(digit) % 2 == 0:\n                return False\n        return True\n\n    result = [num for num in x if has_only_odd_digit(num)]\n    return sorted(result)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/104",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

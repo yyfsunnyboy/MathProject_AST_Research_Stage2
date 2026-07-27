@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "67a8ae072022671ddeaafe497b8cebd7c9722042a35b7701d46f4de61c6074af",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "pluck",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "final_source": "def pluck(arr):\n    \"\"\"\n    Given an array representing a branch of a tree that has non-negative integer nodes,\n    your task is to pluck one of the nodes and return it.\n    \n    The plucked node should be:\n      - The smallest even value in the array.\n      - If multiple such values exist (same minimal even number), choose the one with the smallest index.\n      \n    Return format: [smallest_even_value, its_index] as a list.\n    If there are no even numbers or the input is empty, return [].\n\n    Examples:\n        pluck([4,2,3]) -> [2, 1]\n        pluck([1,2,3]) -> [2, 1]\n        pluck([])      -> []\n        pluck([5,0,3,0,4,2]) -> [0, 1]\n    \"\"\"\n\n    if not arr:\n        return []\n\n    min_even = None   # will store the smallest even value found so far\n    index_of_min_even = -1\n\n    for i, val in enumerate(arr):\n        if val % 2 == 0:          # check if it's even\n            if min_even is None or val < min_even:\n                min_even = val\n                index_of_min_even = i\n\n    if min_even is not None:\n        return [min_even, index_of_min_even]\n    \n    return []\n\n\n# Quick tests (optional)\nif __name__ == \"__main__\":\n    print(pluck([4, 2, 3]))          # [2, 1]\n    print(pluck([1, 2, 3]))          # [2, 1]\n    print(pluck([]))                 # []\n    print(pluck([5, 0, 3, 0, 4, 2])) # [0, 1]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/68:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "post_h2_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "post_h3_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "post_h4_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "48b626ea218dc630a09fa9df13a5a4e1af5a765a14ac5478863db021a2b3369b",
+  "raw_source": "def pluck(arr):\n    \"\"\"\n    Given an array representing a branch of a tree that has non-negative integer nodes,\n    your task is to pluck one of the nodes and return it.\n    \n    The plucked node should be:\n      - The smallest even value in the array.\n      - If multiple such values exist (same minimal even number), choose the one with the smallest index.\n      \n    Return format: [smallest_even_value, its_index] as a list.\n    If there are no even numbers or the input is empty, return [].\n\n    Examples:\n        pluck([4,2,3]) -> [2, 1]\n        pluck([1,2,3]) -> [2, 1]\n        pluck([])      -> []\n        pluck([5,0,3,0,4,2]) -> [0, 1]\n    \"\"\"\n\n    if not arr:\n        return []\n\n    min_even = None   # will store the smallest even value found so far\n    index_of_min_even = -1\n\n    for i, val in enumerate(arr):\n        if val % 2 == 0:          # check if it's even\n            if min_even is None or val < min_even:\n                min_even = val\n                index_of_min_even = i\n\n    if min_even is not None:\n        return [min_even, index_of_min_even]\n    \n    return []\n\n\n# Quick tests (optional)\nif __name__ == \"__main__\":\n    print(pluck([4, 2, 3]))          # [2, 1]\n    print(pluck([1, 2, 3]))          # [2, 1]\n    print(pluck([]))                 # []\n    print(pluck([5, 0, 3, 0, 4, 2])) # [0, 1]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/68",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

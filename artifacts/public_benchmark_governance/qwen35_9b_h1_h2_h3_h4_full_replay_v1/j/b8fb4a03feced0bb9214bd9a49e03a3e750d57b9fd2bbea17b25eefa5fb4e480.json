@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b8fb4a03feced0bb9214bd9a49e03a3e750d57b9fd2bbea17b25eefa5fb4e480",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Set_Bits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b1edd925467f593112b299c1bd1f47d89b2914184ce3510212b031df7ce08754",
+  "final_source": "def count_set_bits(n):\n    \"\"\"\n    Counts the number of set bits (1s) in the binary representation of n.\n    \n    Args:\n        n (int): A non-negative integer\n    \n    Returns:\n        int: The count of set bits\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n        \n    count = 0\n    while n > 0:\n        n &= (n - 1)  # Clears the least significant bit set to 1\n        count += 1\n    return count\n\n# Example usage and assertion\nassert count_set_bits(2) == 1   # Binary of 2 is '10', which has one '1'\nprint(\"All assertions passed!\")\n\ncount_Set_Bits = count_set_bits\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/224:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b1edd925467f593112b299c1bd1f47d89b2914184ce3510212b031df7ce08754",
+  "post_h2_sha256": "b1edd925467f593112b299c1bd1f47d89b2914184ce3510212b031df7ce08754",
+  "post_h3_sha256": "b1edd925467f593112b299c1bd1f47d89b2914184ce3510212b031df7ce08754",
+  "post_h4_sha256": "b1edd925467f593112b299c1bd1f47d89b2914184ce3510212b031df7ce08754",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fa17279338f58624bd5cb75b35d431f5e8e9164747165efcfa8734dae92c7f05",
+  "raw_source": "def count_set_bits(n):\n    \"\"\"\n    Counts the number of set bits (1s) in the binary representation of n.\n    \n    Args:\n        n (int): A non-negative integer\n    \n    Returns:\n        int: The count of set bits\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n        \n    count = 0\n    while n > 0:\n        n &= (n - 1)  # Clears the least significant bit set to 1\n        count += 1\n    return count\n\n# Example usage and assertion\nassert count_set_bits(2) == 1   # Binary of 2 is '10', which has one '1'\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/224",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

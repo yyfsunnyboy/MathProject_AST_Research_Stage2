@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c97d3d0f292f3ffb7c25e815817fe201a15620f7aef7f7e9955d4ac7f90fe46e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tetrahedral_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b24c4c25ccb06ee0659c33cb5c08ee295a36f96dc35c031b01272efa5c2e441b",
+  "final_source": "def tetrahedral_number(n):\n    \"\"\"Return the nth tetrahedral number.\"\"\"\n    if n < 1:\n        raise ValueError(\"n must be a positive integer\")\n    return n * (n + 1) * (n + 2) // 6\n\n# Test case\nif __name__ == \"__main__\":\n    assert tetrahedral_number(5) == 35\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/80:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "326621bf2d602f25abadec403a9e4ecc1eb721cdbc8bf9c78728356609199852",
+  "post_h2_sha256": "b24c4c25ccb06ee0659c33cb5c08ee295a36f96dc35c031b01272efa5c2e441b",
+  "post_h3_sha256": "b24c4c25ccb06ee0659c33cb5c08ee295a36f96dc35c031b01272efa5c2e441b",
+  "post_h4_sha256": "b24c4c25ccb06ee0659c33cb5c08ee295a36f96dc35c031b01272efa5c2e441b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "326621bf2d602f25abadec403a9e4ecc1eb721cdbc8bf9c78728356609199852",
+  "raw_source": "def tetrahedral_number(n):\n    \"\"\"Return the nth tetrahedral number.\"\"\"\n    if n < 1:\n        raise ValueError(\"n must be a positive integer\")\n    return n * (n + 1) * (n + 2) // 6\n\n# Test case\nassert tetrahedral_number(5) == 35\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/80",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

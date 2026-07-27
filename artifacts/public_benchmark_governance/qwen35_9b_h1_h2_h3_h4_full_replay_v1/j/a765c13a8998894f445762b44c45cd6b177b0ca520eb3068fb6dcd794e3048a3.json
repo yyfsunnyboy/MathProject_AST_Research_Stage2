@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a765c13a8998894f445762b44c45cd6b177b0ca520eb3068fb6dcd794e3048a3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sort_matrix",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "final_source": "def sort_matrix(matrix):\n    # Compute sum for each row and pair it with the original row\n    indexed = [(sum(row), row) for row in matrix]\n    \n    # Sort by the computed sum (first element of the tuple)\n    indexed.sort(key=lambda x: x[0])\n    \n    # Extract just the rows, preserving their order after sorting\n    return [row for _, row in indexed]\n\n\n# Example usage and assertion\nmatrix = [[1, 2, 3], [2, 4, 5], [1, 1, 1]]\nresult = sort_matrix(matrix)\n\nassert result == [[1, 1, 1], [1, 2, 3], [2, 4, 5]], f\"Got {result}\"\nprint(\"Assertion passed:\", result)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/12:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "post_h2_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "post_h3_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "post_h4_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3b973be5b89768249557c2575974ee990ef9e6ee78c72898c37157251accde50",
+  "raw_source": "def sort_matrix(matrix):\n    # Compute sum for each row and pair it with the original row\n    indexed = [(sum(row), row) for row in matrix]\n    \n    # Sort by the computed sum (first element of the tuple)\n    indexed.sort(key=lambda x: x[0])\n    \n    # Extract just the rows, preserving their order after sorting\n    return [row for _, row in indexed]\n\n\n# Example usage and assertion\nmatrix = [[1, 2, 3], [2, 4, 5], [1, 1, 1]]\nresult = sort_matrix(matrix)\n\nassert result == [[1, 1, 1], [1, 2, 3], [2, 4, 5]], f\"Got {result}\"\nprint(\"Assertion passed:\", result)\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/12",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

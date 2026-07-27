@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "13892011425d4e64b4b17788fb24cab3194360be4f73b8bc0fced6cb23481601",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "f",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "final_source": "def f(n):\n    result = []\n    factorial = 1\n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            # Even index (but note: problem says \"index i\", and example shows position-based logic)\n            # However, looking at the example f(5) == [1, 2, 6, 24, 15]\n            # Let's map indices carefully. The docstring says \"element at index i\" but lists start from 0 in Python? \n            # But it also says \"i starts from 1\". This is ambiguous.\n            # Example: f(5) returns a list of size 5. Indices 0 to 4? Or values for i=1..5?\n            # The example output [1, 2, 6, 24, 15] corresponds to:\n            # If we assume the loop variable `i` in the docstring refers to the mathematical index starting at 1,\n            # then for a list of size n, we are computing values for i = 1, 2, ..., n.\n            # But how do these map to the list positions? Typically position j corresponds to i=j+1 if using 0-based indexing,\n            # OR the problem intends that the first element is for i=1, second for i=2, etc., stored in order.\n            # Let's check: \n            # If we store value for i=1 at index 0, i=2 at index 1, ..., i=n at index n-1.\n            # Then for f(5):\n            #   i=1 (odd) -> sum from 1 to 1 = 1\n            #   i=2 (even) -> factorial of 2 = 2\n            #   i=3 (odd) -> sum from 1 to 3 = 6\n            #   i=4 (even) -> factorial of 4 = 24\n            #   i=5 (odd) -> sum from 1 to 5 = 15\n            # Result: [1, 2, 6, 24, 15] which matches the example.\n            # So \"index i\" in the docstring actually means the mathematical counter starting at 1, \n            # and we are building a list where position k (0-based) holds the value for i = k+1.\n            \n            factorial *= i\n        else:\n            current_sum = sum(range(1, i + 1))\n        \n        result.append(current_sum if not (i % 2 == 0) else factorial)\n\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/106:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "post_h2_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "post_h3_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "post_h4_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5a7487d17c08265ad951ba8171a8b92ee4b102a0554269f0fd53e39be2fb083d",
+  "raw_source": "def f(n):\n    result = []\n    factorial = 1\n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            # Even index (but note: problem says \"index i\", and example shows position-based logic)\n            # However, looking at the example f(5) == [1, 2, 6, 24, 15]\n            # Let's map indices carefully. The docstring says \"element at index i\" but lists start from 0 in Python? \n            # But it also says \"i starts from 1\". This is ambiguous.\n            # Example: f(5) returns a list of size 5. Indices 0 to 4? Or values for i=1..5?\n            # The example output [1, 2, 6, 24, 15] corresponds to:\n            # If we assume the loop variable `i` in the docstring refers to the mathematical index starting at 1,\n            # then for a list of size n, we are computing values for i = 1, 2, ..., n.\n            # But how do these map to the list positions? Typically position j corresponds to i=j+1 if using 0-based indexing,\n            # OR the problem intends that the first element is for i=1, second for i=2, etc., stored in order.\n            # Let's check: \n            # If we store value for i=1 at index 0, i=2 at index 1, ..., i=n at index n-1.\n            # Then for f(5):\n            #   i=1 (odd) -> sum from 1 to 1 = 1\n            #   i=2 (even) -> factorial of 2 = 2\n            #   i=3 (odd) -> sum from 1 to 3 = 6\n            #   i=4 (even) -> factorial of 4 = 24\n            #   i=5 (odd) -> sum from 1 to 5 = 15\n            # Result: [1, 2, 6, 24, 15] which matches the example.\n            # So \"index i\" in the docstring actually means the mathematical counter starting at 1, \n            # and we are building a list where position k (0-based) holds the value for i = k+1.\n            \n            factorial *= i\n        else:\n            current_sum = sum(range(1, i + 1))\n        \n        result.append(current_sum if not (i % 2 == 0) else factorial)\n\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/106",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

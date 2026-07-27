@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "eb805b6bb8659dad228c6fb9206ece00f73a6e051834c5bc8942065192f26f77",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "check_dict_case",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "final_source": "def check_dict_case(dict):\n    if len(dict) == 0:\n        return False\n    \n    keys = list(dict.keys())\n    \n    # Check if all keys are strings\n    for key in keys:\n        if not isinstance(key, str):\n            return False\n            \n    first_key_type = None\n    \n    for key in keys:\n        is_lower = key == key.lower() and len(key) > 0\n        \n        if first_key_type is None:\n            # Determine the case type of the first valid string key\n            if key.islower():\n                first_key_type = 'lower'\n            elif key.isupper():\n                first_key_type = 'upper'\n        \n        current_is_lower = key == key.lower() and len(key) > 0\n        \n        if not (current_is_lower): # Not lower case, so must be upper or mixed? \n             pass\n            \n    # Let's re-evaluate the logic more simply\n    \n    all_keys_are_strings = True\n    for k in dict.keys():\n        if not isinstance(k, str):\n            return False\n            \n    has_mixed_case = False\n    first_is_lower = None\n    \n    for k in dict.keys():\n        is_all_upper = k.isupper() and len(k) > 0\n        is_all_lower = k.islower() and len(k) > 0\n        \n        if not (is_all_upper or is_all_lower): # Mixed case like \"Name\"\n            return False\n            \n    first_is_lower = None\n    \n    for k in dict.keys():\n        if k == k.lower() and len(k) > 0:\n            current_type = 'lower'\n        elif k == k.upper() and len(k) > 0:\n            current_type = 'upper'\n            \n        if first_is_lower is None:\n            first_is_lower = (current_type == 'lower')\n        \n        # If we have established a type, check consistency\n        if first_is_lower is not None:\n            if current_type != ('lower' if first_is_lower else 'upper'):\n                return False\n                \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/95:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "post_h2_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "post_h3_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "post_h4_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "db7deb5a401395ee81807cdc0f41acfa2da1d073b16959ae8aa8a52d9684db93",
+  "raw_source": "def check_dict_case(dict):\n    if len(dict) == 0:\n        return False\n    \n    keys = list(dict.keys())\n    \n    # Check if all keys are strings\n    for key in keys:\n        if not isinstance(key, str):\n            return False\n            \n    first_key_type = None\n    \n    for key in keys:\n        is_lower = key == key.lower() and len(key) > 0\n        \n        if first_key_type is None:\n            # Determine the case type of the first valid string key\n            if key.islower():\n                first_key_type = 'lower'\n            elif key.isupper():\n                first_key_type = 'upper'\n        \n        current_is_lower = key == key.lower() and len(key) > 0\n        \n        if not (current_is_lower): # Not lower case, so must be upper or mixed? \n             pass\n            \n    # Let's re-evaluate the logic more simply\n    \n    all_keys_are_strings = True\n    for k in dict.keys():\n        if not isinstance(k, str):\n            return False\n            \n    has_mixed_case = False\n    first_is_lower = None\n    \n    for k in dict.keys():\n        is_all_upper = k.isupper() and len(k) > 0\n        is_all_lower = k.islower() and len(k) > 0\n        \n        if not (is_all_upper or is_all_lower): # Mixed case like \"Name\"\n            return False\n            \n    first_is_lower = None\n    \n    for k in dict.keys():\n        if k == k.lower() and len(k) > 0:\n            current_type = 'lower'\n        elif k == k.upper() and len(k) > 0:\n            current_type = 'upper'\n            \n        if first_is_lower is None:\n            first_is_lower = (current_type == 'lower')\n        \n        # If we have established a type, check consistency\n        if first_is_lower is not None:\n            if current_type != ('lower' if first_is_lower else 'upper'):\n                return False\n                \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/95",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

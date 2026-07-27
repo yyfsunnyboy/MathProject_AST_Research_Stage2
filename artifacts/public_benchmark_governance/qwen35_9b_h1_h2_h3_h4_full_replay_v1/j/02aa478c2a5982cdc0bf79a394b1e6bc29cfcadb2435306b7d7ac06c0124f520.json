@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "02aa478c2a5982cdc0bf79a394b1e6bc29cfcadb2435306b7d7ac06c0124f520",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "maximize_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4e834bf6a4132e60f55cf71883433de2893e0bab299db2f9e7bf8f00e7a79b2c",
+  "final_source": "def maximize_elements(tuples1, tuples2):\n    \"\"\"\n    Given two lists of tuples, return a new list where for each position i (0..n-1),\n    result[i] is formed by taking the maximum element-wise from all input tuples.\n    \n    Example:\n        maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), \n                          ((6, 7), (3, 9), (1, 1), (7, 3)))\n        == ((6, 7), (4, 9), (2, 9), (7, 10))\n    \"\"\"\n    # Ensure both lists have the same number of tuples; if not, handle as needed.\n    n = min(len(tuples1), len(tuples2))\n\n    result = []\n    for i in range(n):\n        t1 = tuples1[i]\n        t2 = tuples2[i]\n        \n        # Compute element-wise max up to the shorter tuple length at this position\n        m_len = min(len(t1), len(t2))\n        row_max = [max(a, b) for a, b in zip(t1[:m_len], t2[:m_len])]\n\n        # If one tuple is longer than the other, extend with its extra elements.\n        if len(t1) > m_len:\n            row_max.extend(t1[m_len:])\n        elif len(t2) > m_len:\n            row_max.extend(t2[m_len:])\n\n        result.append(tuple(row_max))\n\n    return tuple(result)\n\n\n# Test the example from the prompt\nif __name__ == \"__main__\":\n    assert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), \n                             ((6, 7), (3, 9), (1, 1), (7, 3))) == \\\n           ((6, 7), (4, 9), (2, 9), (7, 10))\n    print(\"Assertion passed.\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/259:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "df9cc507d3ef35a3bd541b8ec3e7ad31eedfc1746d84211528afc832cba7f271",
+  "post_h2_sha256": "dcfca5f6b5b3a0a6908280a25261f1c5e5d41e93bb41614470ea7d69a5bcf804",
+  "post_h3_sha256": "dcfca5f6b5b3a0a6908280a25261f1c5e5d41e93bb41614470ea7d69a5bcf804",
+  "post_h4_sha256": "4e834bf6a4132e60f55cf71883433de2893e0bab299db2f9e7bf8f00e7a79b2c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "df9cc507d3ef35a3bd541b8ec3e7ad31eedfc1746d84211528afc832cba7f271",
+  "raw_source": "def maximize_elements(tuples1, tuples2):\n    \"\"\"\n    Given two lists of tuples, return a new list where for each position i (0..n-1),\n    result[i] is formed by taking the maximum element-wise from all input tuples.\n    \n    Example:\n        maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), \n                          ((6, 7), (3, 9), (1, 1), (7, 3)))\n        == ((6, 7), (4, 9), (2, 9), (7, 10))\n    \"\"\"\n    # Ensure both lists have the same number of tuples; if not, handle as needed.\n    n = min(len(tuples1), len(tuples2))\n\n    result = []\n    for i in range(n):\n        t1 = tuples1[i]\n        t2 = tuples2[i]\n        \n        # Compute element-wise max up to the shorter tuple length at this position\n        m_len = min(len(t1), len(t2))\n        row_max = [max(a, b) for a, b in zip(t1[:m_len], t2[:m_len])]\n\n        # If one tuple is longer than the other, extend with its extra elements.\n        if len(t1) > m_len:\n            row_max.extend(t1[m_len:])\n        elif len(t2) > m_len:\n            row_max.extend(t2[m_len:])\n\n        result.append(tuple(row_max))\n\n    return tuple(result)\n\n\n# Test the example from the prompt\nassert maximize_elements(((1, 3), (4, 5), (2, 9), (1, 10)), \n                         ((6, 7), (3, 9), (1, 1), (7, 3))) == \\\n       ((6, 7), (4, 9), (2, 9), (7, 10))\n\nprint(\"Assertion passed.\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/259",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "print_arguments_not_literal_or_entrypoint_literal_call"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "05d103f1d846fb96bf272aa77dd825dc5874520d7690170fd89474df55f34e5d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "power_base_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "da31c930815bc370c4ba4d3c861802d4e67ad99cc87f5116d698706f163da391",
+  "final_source": "def power_base_sum(base: int, power: int) -> int:\n    \"\"\"\n    Calculates base^power and returns the sum of all digits in the result.\n    \n    Args:\n        base (int): The base number.\n        power (int): The exponent to raise the base to.\n        \n    Returns:\n        int: Sum of the digits of base**power.\n    \"\"\"\n    # Calculate the large number\n    result = pow(base, power)\n    \n    # Convert to string and sum each digit character converted back to integer\n    return sum(int(digit) for digit in str(result))\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    assert power_base_sum(2, 100) == 115\nprint(f\"Result: {power_base_sum(2, 100)}\") # Output should be 115\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/724:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4b808c00ccb581129ea83e74634e431bd47ac49829958b3c02c676f73d73f8e4",
+  "post_h2_sha256": "da31c930815bc370c4ba4d3c861802d4e67ad99cc87f5116d698706f163da391",
+  "post_h3_sha256": "da31c930815bc370c4ba4d3c861802d4e67ad99cc87f5116d698706f163da391",
+  "post_h4_sha256": "da31c930815bc370c4ba4d3c861802d4e67ad99cc87f5116d698706f163da391",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4b808c00ccb581129ea83e74634e431bd47ac49829958b3c02c676f73d73f8e4",
+  "raw_source": "def power_base_sum(base: int, power: int) -> int:\n    \"\"\"\n    Calculates base^power and returns the sum of all digits in the result.\n    \n    Args:\n        base (int): The base number.\n        power (int): The exponent to raise the base to.\n        \n    Returns:\n        int: Sum of the digits of base**power.\n    \"\"\"\n    # Calculate the large number\n    result = pow(base, power)\n    \n    # Convert to string and sum each digit character converted back to integer\n    return sum(int(digit) for digit in str(result))\n\n# Verification based on your requirement\nassert power_base_sum(2, 100) == 115\nprint(f\"Result: {power_base_sum(2, 100)}\") # Output should be 115\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/724",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "036e2b0f42c70972aadcc01fa57378e1509e592280b1648d29f0194372fbfdcb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "split_words",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "final_source": "def split_words(txt):\n    # Step 1: Try to split on whitespace first\n    words = txt.split()\n    \n    if len(words) > 1:\n        # If there were whitespaces, return the list of words\n        return words\n    \n    # Step 2: Check for commas if no whitespaces existed\n    elif ',' in txt:\n        # Split on comma. \n        # Note: The examples imply we just split by ','. \n        # Depending on strictness, you might want to strip spaces from parts like \"Hello , world\",\n        # but based on the provided example \"Hello,world!\" -> [\"Hello\", \"world!\"], \n        # a direct split is sufficient.\n        return txt.split(',')\n    \n    else:\n        # Step 3: No whitespaces and no commas -> Count odd-order lowercase letters\n        count = 0\n        for char in txt.lower():\n            if 'a' <= char <= 'z':\n                # Calculate order: a=0, b=1, ... z=25\n                index = ord(char) - ord('a')\n                \n                # Check if the order is odd (e.g., 1, 3, 5...)\n                if index % 2 != 0:\n                    count += 1\n        \n        return count\n\n# --- Test Cases based on examples ---\nprint(split_words(\"Hello world!\"))      # Expected: [\"Hello\", \"world!\"]\nprint(split_words(\"Hello,world!\"))      # Expected: [\"Hello\", \"world!\"]\nprint(split_words(\"abcdef\"))            # 'a'(0), 'b'(1-odd), 'c'(2), 'd'(3-odd), 'e'(4), 'f'(5-odd) -> 3\n\n# Additional edge case tests\nprint(split_words(\"\"))                  # Empty string, no commas/whitespace. Count = 0\nprint(split_words(\"A\"))                 # 'a' is index 0 (even). Count = 0\nprint(split_words(\"B\"))                 # 'b' is index 1 (odd). Count = 1\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/125:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "post_h2_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "post_h3_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "post_h4_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f88dbdd930ba85583f254c9f904d061e984ce812448fbac406b598b165bbe3eb",
+  "raw_source": "def split_words(txt):\n    # Step 1: Try to split on whitespace first\n    words = txt.split()\n    \n    if len(words) > 1:\n        # If there were whitespaces, return the list of words\n        return words\n    \n    # Step 2: Check for commas if no whitespaces existed\n    elif ',' in txt:\n        # Split on comma. \n        # Note: The examples imply we just split by ','. \n        # Depending on strictness, you might want to strip spaces from parts like \"Hello , world\",\n        # but based on the provided example \"Hello,world!\" -> [\"Hello\", \"world!\"], \n        # a direct split is sufficient.\n        return txt.split(',')\n    \n    else:\n        # Step 3: No whitespaces and no commas -> Count odd-order lowercase letters\n        count = 0\n        for char in txt.lower():\n            if 'a' <= char <= 'z':\n                # Calculate order: a=0, b=1, ... z=25\n                index = ord(char) - ord('a')\n                \n                # Check if the order is odd (e.g., 1, 3, 5...)\n                if index % 2 != 0:\n                    count += 1\n        \n        return count\n\n# --- Test Cases based on examples ---\nprint(split_words(\"Hello world!\"))      # Expected: [\"Hello\", \"world!\"]\nprint(split_words(\"Hello,world!\"))      # Expected: [\"Hello\", \"world!\"]\nprint(split_words(\"abcdef\"))            # 'a'(0), 'b'(1-odd), 'c'(2), 'd'(3-odd), 'e'(4), 'f'(5-odd) -> 3\n\n# Additional edge case tests\nprint(split_words(\"\"))                  # Empty string, no commas/whitespace. Count = 0\nprint(split_words(\"A\"))                 # 'a' is index 0 (even). Count = 0\nprint(split_words(\"B\"))                 # 'b' is index 1 (odd). Count = 1\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/125",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

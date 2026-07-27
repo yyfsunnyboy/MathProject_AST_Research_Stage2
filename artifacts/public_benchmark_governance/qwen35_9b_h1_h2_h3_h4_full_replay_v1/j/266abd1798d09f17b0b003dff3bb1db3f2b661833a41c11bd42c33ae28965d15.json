@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "266abd1798d09f17b0b003dff3bb1db3f2b661833a41c11bd42c33ae28965d15",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "removezero_ip",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "final_source": "def removezero_ip(ip_address: str) -> str:\n    \"\"\"\n    Removes leading zeroes from each octet in an IPv4 address string.\n    \n    Args:\n        ip_address (str): A standard dotted-decimal IP address string.\n        \n    Returns:\n        str: The cleaned IP address with no leading zeros.\n    \"\"\"\n    try:\n        # Split the IP into parts, convert each to int (removes leading zeros), \n        # then back to str and join them.\n        octets = [str(int(part)) for part in ip_address.split('.')]\n        \n        return '.'.join(octets)\n    \n    except ValueError:\n        # Handles cases where the input is not a valid integer format (e.g., \"abc\")\n        raise ValueError(f\"Invalid IP address format: {ip_address}\")\n\n# --- Test Cases ---\n\n# Original requirement\nassert removezero_ip(\"216.08.094.196\") == (\"216.8.94.196\"), \"Test 1 Failed\"\n\nprint(f\"Input : '216.08.094.196' -> Output: '{removezero_ip('216.08.094.196')}'\")\nassert removezero_ip(\"216.08.094.196\") == \"216.8.94.196\"\n\n# Additional edge cases to ensure robustness\nprint(f\"\\nInput : '192.168.001.000' -> Output: '{removezero_ip('192.168.001.000')}'\")\nassert removezero_ip(\"192.168.001.000\") == \"192.168.1.0\"\n\nprint(f\"\\nInput : '10.0.0.1' -> Output: '{removezero_ip('10.0.0.1')}'\")\nassert removezero_ip(\"10.0.0.1\") == \"10.0.0.1\" # No change if no leading zeros\n\nprint(\"\\nAll tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/593:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "post_h2_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "post_h3_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "post_h4_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "34af8d78445b660e4f096aaaa735f87fef4afb77709e293853b290c9131f98b1",
+  "raw_source": "def removezero_ip(ip_address: str) -> str:\n    \"\"\"\n    Removes leading zeroes from each octet in an IPv4 address string.\n    \n    Args:\n        ip_address (str): A standard dotted-decimal IP address string.\n        \n    Returns:\n        str: The cleaned IP address with no leading zeros.\n    \"\"\"\n    try:\n        # Split the IP into parts, convert each to int (removes leading zeros), \n        # then back to str and join them.\n        octets = [str(int(part)) for part in ip_address.split('.')]\n        \n        return '.'.join(octets)\n    \n    except ValueError:\n        # Handles cases where the input is not a valid integer format (e.g., \"abc\")\n        raise ValueError(f\"Invalid IP address format: {ip_address}\")\n\n# --- Test Cases ---\n\n# Original requirement\nassert removezero_ip(\"216.08.094.196\") == (\"216.8.94.196\"), \"Test 1 Failed\"\n\nprint(f\"Input : '216.08.094.196' -> Output: '{removezero_ip('216.08.094.196')}'\")\nassert removezero_ip(\"216.08.094.196\") == \"216.8.94.196\"\n\n# Additional edge cases to ensure robustness\nprint(f\"\\nInput : '192.168.001.000' -> Output: '{removezero_ip('192.168.001.000')}'\")\nassert removezero_ip(\"192.168.001.000\") == \"192.168.1.0\"\n\nprint(f\"\\nInput : '10.0.0.1' -> Output: '{removezero_ip('10.0.0.1')}'\")\nassert removezero_ip(\"10.0.0.1\") == \"10.0.0.1\" # No change if no leading zeros\n\nprint(\"\\nAll tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/593",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

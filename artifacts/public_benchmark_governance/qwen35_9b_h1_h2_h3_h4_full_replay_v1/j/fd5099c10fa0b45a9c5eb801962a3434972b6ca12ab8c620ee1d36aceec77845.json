@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "fd5099c10fa0b45a9c5eb801962a3434972b6ca12ab8c620ee1d36aceec77845",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_tuples",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8474125f2f94d90e1e4f91516b83942c9cbc0724ae80320e629a3b380fb2fd74",
+  "final_source": "def find_tuples(tuples_list, k):\n    \"\"\"\n    Return all tuples from `tuples_list` where every element is divisible by `k`.\n    \n    Example:\n        assert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n    \"\"\"\n    return [t for t in tuples_list if all(x % k == 0 for x in t)]\n\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n    print(find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6))\n\n# Output: [(6, 24, 12)]\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/75:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cdb66c71ad2409baa80d89157062925d717f542ab63f6788f9a6414f4fca8b01",
+  "post_h2_sha256": "4968d35397357af1dfd6ff3030489164ba998548aef135ed0a8cdb9ac23068ac",
+  "post_h3_sha256": "4968d35397357af1dfd6ff3030489164ba998548aef135ed0a8cdb9ac23068ac",
+  "post_h4_sha256": "8474125f2f94d90e1e4f91516b83942c9cbc0724ae80320e629a3b380fb2fd74",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cdb66c71ad2409baa80d89157062925d717f542ab63f6788f9a6414f4fca8b01",
+  "raw_source": "def find_tuples(tuples_list, k):\n    \"\"\"\n    Return all tuples from `tuples_list` where every element is divisible by `k`.\n    \n    Example:\n        assert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n    \"\"\"\n    return [t for t in tuples_list if all(x % k == 0 for x in t)]\n\n\n# Example usage and assertion:\nassert find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6) == [(6, 24, 12)]\n\nprint(find_tuples([(6, 24, 12), (7, 9, 6), (12, 18, 21)], 6))\n# Output: [(6, 24, 12)]\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/75",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

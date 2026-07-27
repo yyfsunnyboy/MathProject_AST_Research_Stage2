@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b8b2e3fa9218908803721b217c30db20a7c490b683b1b9803af6c2f1aa552ab9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_str_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "final_source": "def tuple_str_int(tuple_str):\n    \"\"\"\n    Converts a string representation of a tuple (e.g., \"(7, 8, 9)\") \n    into an actual Python tuple of integers.\n    \n    Args:\n        tuple_str (str): The input string representing the tuple.\n        \n    Returns:\n        tuple[int]: A tuple containing integer values.\n        \n    Raises:\n        ValueError: If the format is invalid or cannot be parsed as a simple tuple.\n    \"\"\"\n    if not isinstance(tuple_str, str):\n        raise TypeError(\"Input must be a string.\")\n\n    # Clean up whitespace around parentheses and inside\n    s = tuple_str.strip()\n    \n    # Basic validation to ensure it starts with '(' and ends with ')'\n    if len(s) < 2 or (s[0] != '(' or s[-1] != ')'):\n        raise ValueError(f\"Invalid format. Expected string starting with '(', ending with ')'. Got: {tuple_str}\")\n\n    # Remove the outer parentheses\n    inner = s[1:-1].strip()\n    \n    if not inner:\n        return ()  # Handle empty tuple case \"()\"\n\n    # Split by comma and convert each part to int\n    try:\n        items = [int(x.strip()) for x in inner.split(',')]\n        return tuple(items)\n    except ValueError as e:\n        raise ValueError(f\"Could not parse numbers from string. Error details may be hidden.\") from e\n\n# --- Tests ---\nassert tuple_str_int(\"(7, 8, 9)\") == (7, 8, 9), \"Basic test failed\"\nassert tuple_str_int(\"(-1, -2, -3)\") == (-1, -2, -3), \"Negative numbers failed\"\nassert tuple_str_int(\"( 1 , 2 )\") == (1, 2), \"Extra spaces failed\"\nassert tuple_str_int(\"()\") == (), \"Empty tuple failed\"\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/785:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "post_h2_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "post_h3_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "post_h4_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fb00a1ec91033e4c3ed4846be16d51890c62ff02ddc0b43f3254f7e8523dab6d",
+  "raw_source": "def tuple_str_int(tuple_str):\n    \"\"\"\n    Converts a string representation of a tuple (e.g., \"(7, 8, 9)\") \n    into an actual Python tuple of integers.\n    \n    Args:\n        tuple_str (str): The input string representing the tuple.\n        \n    Returns:\n        tuple[int]: A tuple containing integer values.\n        \n    Raises:\n        ValueError: If the format is invalid or cannot be parsed as a simple tuple.\n    \"\"\"\n    if not isinstance(tuple_str, str):\n        raise TypeError(\"Input must be a string.\")\n\n    # Clean up whitespace around parentheses and inside\n    s = tuple_str.strip()\n    \n    # Basic validation to ensure it starts with '(' and ends with ')'\n    if len(s) < 2 or (s[0] != '(' or s[-1] != ')'):\n        raise ValueError(f\"Invalid format. Expected string starting with '(', ending with ')'. Got: {tuple_str}\")\n\n    # Remove the outer parentheses\n    inner = s[1:-1].strip()\n    \n    if not inner:\n        return ()  # Handle empty tuple case \"()\"\n\n    # Split by comma and convert each part to int\n    try:\n        items = [int(x.strip()) for x in inner.split(',')]\n        return tuple(items)\n    except ValueError as e:\n        raise ValueError(f\"Could not parse numbers from string. Error details may be hidden.\") from e\n\n# --- Tests ---\nassert tuple_str_int(\"(7, 8, 9)\") == (7, 8, 9), \"Basic test failed\"\nassert tuple_str_int(\"(-1, -2, -3)\") == (-1, -2, -3), \"Negative numbers failed\"\nassert tuple_str_int(\"( 1 , 2 )\") == (1, 2), \"Extra spaces failed\"\nassert tuple_str_int(\"()\") == (), \"Empty tuple failed\"\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/785",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

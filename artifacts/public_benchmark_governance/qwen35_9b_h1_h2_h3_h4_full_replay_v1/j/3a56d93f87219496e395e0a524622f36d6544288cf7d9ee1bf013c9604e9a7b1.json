@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3a56d93f87219496e395e0a524622f36d6544288cf7d9ee1bf013c9604e9a7b1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fizz_buzz",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "final_source": "def fizz_buzz(n: int):\n    \"\"\"Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n    >>> fizz_buzz(50)\n    0\n    >>> fizz_buzz(78)\n    2\n    >>> fizz_buzz(79)\n    3\n    \"\"\"\n    count = 0\n    for i in range(n):\n        if (i % 11 == 0) or (i % 13 == 0):\n            s = str(i)\n            count += s.count('7')\n    return count\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/36:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "post_h2_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "post_h3_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "post_h4_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f39f2c8dde9249f90ed2f1d93278a372c8df0d8e4bd16ea16715e1e273e9c0d1",
+  "raw_source": "def fizz_buzz(n: int):\n    \"\"\"Return the number of times the digit 7 appears in integers less than n which are divisible by 11 or 13.\n    >>> fizz_buzz(50)\n    0\n    >>> fizz_buzz(78)\n    2\n    >>> fizz_buzz(79)\n    3\n    \"\"\"\n    count = 0\n    for i in range(n):\n        if (i % 11 == 0) or (i % 13 == 0):\n            s = str(i)\n            count += s.count('7')\n    return count\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/36",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

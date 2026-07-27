@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "e7317a84f44ea77b22cf6754f51d04eaa87806e0ff4afa49d6783a3225ac72e8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "divisible_by_digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "final_source": "def divisible_by_digits(startnum, endnum):\n    result = []\n    for num in range(startnum, endnum + 1):\n        if num == 0:\n            continue\n        s_num = str(num)\n        is_valid = True\n        for digit_char in s_num:\n            d = int(digit_char)\n            if d != 0 and num % d != 0:\n                is_valid = False\n                break\n        if is_valid:\n            result.append(num)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/745:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "post_h2_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "post_h3_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "post_h4_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a3a9bb7697c8b358c934b49aea3b5c299c4190edadf98b6db752d2361260b376",
+  "raw_source": "def divisible_by_digits(startnum, endnum):\n    result = []\n    for num in range(startnum, endnum + 1):\n        if num == 0:\n            continue\n        s_num = str(num)\n        is_valid = True\n        for digit_char in s_num:\n            d = int(digit_char)\n            if d != 0 and num % d != 0:\n                is_valid = False\n                break\n        if is_valid:\n            result.append(num)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/745",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

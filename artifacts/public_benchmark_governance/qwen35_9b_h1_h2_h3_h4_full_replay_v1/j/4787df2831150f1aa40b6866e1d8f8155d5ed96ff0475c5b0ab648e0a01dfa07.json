@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4787df2831150f1aa40b6866e1d8f8155d5ed96ff0475c5b0ab648e0a01dfa07",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "by_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "final_source": "def by_length(arr):\n    # Define the mapping from digit to word\n    name_map = {\n        1: \"One\",\n        2: \"Two\",\n        3: \"Three\",\n        4: \"Four\",\n        5: \"Five\",\n        6: \"Six\",\n        7: \"Seven\",\n        8: \"Eight\",\n        9: \"Nine\"\n    }\n\n    # Filter the array to keep only integers between 1 and 9 inclusive, then sort them\n    filtered_sorted = sorted([x for x in arr if 1 <= x <= 9])\n    \n    # Reverse the resulting list\n    reversed_list = filtered_sorted[::-1]\n    \n    # Replace each digit with its corresponding name\n    result = [name_map[digit] for digit in reversed_list]\n    \n    return result\n\n# Test cases based on your description:\nprint(by_length([2, 1, 1, 4, 5, 8, 2, 3])) \n# Output: ['Eight', 'Five', 'Four', 'Three', 'Two', 'Two', 'One', 'One']\n\nprint(by_length([])) \n# Output: []\n\nprint(by_length([1, -1, 55])) \n# Output: ['One']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/105:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "post_h2_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "post_h3_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "post_h4_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e7a17d03cfbc1280aeb1069dacf6980b2cefbc8721782b5da152fdf8dce060d2",
+  "raw_source": "def by_length(arr):\n    # Define the mapping from digit to word\n    name_map = {\n        1: \"One\",\n        2: \"Two\",\n        3: \"Three\",\n        4: \"Four\",\n        5: \"Five\",\n        6: \"Six\",\n        7: \"Seven\",\n        8: \"Eight\",\n        9: \"Nine\"\n    }\n\n    # Filter the array to keep only integers between 1 and 9 inclusive, then sort them\n    filtered_sorted = sorted([x for x in arr if 1 <= x <= 9])\n    \n    # Reverse the resulting list\n    reversed_list = filtered_sorted[::-1]\n    \n    # Replace each digit with its corresponding name\n    result = [name_map[digit] for digit in reversed_list]\n    \n    return result\n\n# Test cases based on your description:\nprint(by_length([2, 1, 1, 4, 5, 8, 2, 3])) \n# Output: ['Eight', 'Five', 'Four', 'Three', 'Two', 'Two', 'One', 'One']\n\nprint(by_length([])) \n# Output: []\n\nprint(by_length([1, -1, 55])) \n# Output: ['One']\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/105",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

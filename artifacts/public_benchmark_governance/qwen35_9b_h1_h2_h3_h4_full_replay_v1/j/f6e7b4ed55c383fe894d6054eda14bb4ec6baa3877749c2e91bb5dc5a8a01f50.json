@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "f6e7b4ed55c383fe894d6054eda14bb4ec6baa3877749c2e91bb5dc5a8a01f50",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "merge_sorted_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "final_source": "def merge_sorted_list(list1, list2, list3):\n    merged = []\n    \n    i, j, k = 0, 0, 0\n    \n    while i < len(list1) and j < len(list2) and k < len(list3):\n        if list1[i] <= list2[j]:\n            if list1[i] <= list3[k]:\n                merged.append(list1[i])\n                i += 1\n            else:\n                merged.append(list3[k])\n                k += 1\n        elif list2[j] <= list3[k]:\n            merged.append(list2[j])\n            j += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n            \n    while i < len(list1) and k < len(list3):\n        if list1[i] <= list3[k]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while j < len(list2) and k < len(list3):\n        if list2[j] <= list3[k]:\n            merged.append(list2[j])\n            j += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while i < len(list1):\n        merged.append(list1[i])\n        i += 1\n        \n    while j < len(list2):\n        merged.append(list2[j])\n        j += 1\n        \n    while k < len(list3):\n        merged.append(list3[k])\n        k += 1\n        \n    return merged",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/108:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "post_h2_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "post_h3_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "post_h4_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a6151bd4671cc050e6e14aaebe5e071fb90a4fde53ddc73191a2d44a5b430519",
+  "raw_source": "def merge_sorted_list(list1, list2, list3):\n    merged = []\n    \n    i, j, k = 0, 0, 0\n    \n    while i < len(list1) and j < len(list2) and k < len(list3):\n        if list1[i] <= list2[j]:\n            if list1[i] <= list3[k]:\n                merged.append(list1[i])\n                i += 1\n            else:\n                merged.append(list3[k])\n                k += 1\n        elif list2[j] <= list3[k]:\n            merged.append(list2[j])\n            j += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list2[j])\n            j += 1\n            \n    while i < len(list1) and k < len(list3):\n        if list1[i] <= list3[k]:\n            merged.append(list1[i])\n            i += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while j < len(list2) and k < len(list3):\n        if list2[j] <= list3[k]:\n            merged.append(list2[j])\n            j += 1\n        else:\n            merged.append(list3[k])\n            k += 1\n            \n    while i < len(list1):\n        merged.append(list1[i])\n        i += 1\n        \n    while j < len(list2):\n        merged.append(list2[j])\n        j += 1\n        \n    while k < len(list3):\n        merged.append(list3[k])\n        k += 1\n        \n    return merged",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/108",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

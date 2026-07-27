@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "90505143a32ec630c82a953d57b761eec2e2dc46db814f3931b70f29d56aa8d0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_str_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "final_source": "def tuple_str_int(s):\n    s = s.strip()\n    if not (s.startswith('(') and s.endswith(')')):\n        raise ValueError(\"Invalid format\")\n    inner = s[1:-1]\n    parts = [int(x.strip()) for x in inner.split(',')]\n    return tuple(parts)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/785:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "post_h2_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "post_h3_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "post_h4_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cd5fa4b198cd6195cdc52a3a25c3700c79ef7ceff21516cdfde0cfd001f50809",
+  "raw_source": "def tuple_str_int(s):\n    s = s.strip()\n    if not (s.startswith('(') and s.endswith(')')):\n        raise ValueError(\"Invalid format\")\n    inner = s[1:-1]\n    parts = [int(x.strip()) for x in inner.split(',')]\n    return tuple(parts)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/785",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

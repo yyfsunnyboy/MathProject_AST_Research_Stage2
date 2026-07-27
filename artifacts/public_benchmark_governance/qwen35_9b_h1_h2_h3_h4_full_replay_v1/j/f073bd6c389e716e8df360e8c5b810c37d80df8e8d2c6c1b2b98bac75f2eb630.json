@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f073bd6c389e716e8df360e8c5b810c37d80df8e8d2c6c1b2b98bac75f2eb630",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "list_split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "final_source": "def list_split(lst, n):\n    \"\"\"\n    Splits a list into chunks based on stepping by 'n'.\n    \n    Args:\n        lst (list): The input list.\n        n (int): The step size for splitting columns.\n        \n    Returns:\n        List[List]: A list of lists containing the split elements.\n    \"\"\"\n    if not lst or n <= 0:\n        return []\n\n    # Calculate how many sub-lists we need based on the length and step\n    num_sublists = (len(lst) + n - 1) // n\n    \n    result = [[] for _ in range(num_sublists)]\n    \n    for index, item in enumerate(lst):\n        sublist_index = index % n\n        result[sublist_index].append(item)\n        \n    return result\n\n# Test with the provided assertion\ntest_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']\nexpected_output = [['a', 'd', 'g', 'j', 'm'], ['b', 'e', 'h', 'k', 'n'], ['c', 'f', 'i', 'l']]\n\nactual_output = list_split(test_list, 3)\n\nprint(f\"Input: {test_list}\")\nprint(f\"N: 3\")\nprint(f\"Result: {actual_output}\")\nprint(f\"Expected: {expected_output}\")\nassert actual_output == expected_output, \"Test failed!\"\nprint(\"Assertion passed successfully.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/265:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "post_h2_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "post_h3_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "post_h4_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3424e143bfe86754cc65dc20a7cc3e93e89b42ab01518d5e02a3be38a44275cd",
+  "raw_source": "def list_split(lst, n):\n    \"\"\"\n    Splits a list into chunks based on stepping by 'n'.\n    \n    Args:\n        lst (list): The input list.\n        n (int): The step size for splitting columns.\n        \n    Returns:\n        List[List]: A list of lists containing the split elements.\n    \"\"\"\n    if not lst or n <= 0:\n        return []\n\n    # Calculate how many sub-lists we need based on the length and step\n    num_sublists = (len(lst) + n - 1) // n\n    \n    result = [[] for _ in range(num_sublists)]\n    \n    for index, item in enumerate(lst):\n        sublist_index = index % n\n        result[sublist_index].append(item)\n        \n    return result\n\n# Test with the provided assertion\ntest_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n']\nexpected_output = [['a', 'd', 'g', 'j', 'm'], ['b', 'e', 'h', 'k', 'n'], ['c', 'f', 'i', 'l']]\n\nactual_output = list_split(test_list, 3)\n\nprint(f\"Input: {test_list}\")\nprint(f\"N: 3\")\nprint(f\"Result: {actual_output}\")\nprint(f\"Expected: {expected_output}\")\nassert actual_output == expected_output, \"Test failed!\"\nprint(\"Assertion passed successfully.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/265",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

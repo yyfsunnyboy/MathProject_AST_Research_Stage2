@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "628aa625688aeace047098c38206d89f1edd32e8d3794a3b955fce297488243c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "final_source": "def find_length(s):\n    max_diff = 0\n    current_sum = 0\n    \n    # Treat '1' as +1 and '0' as -1 for difference calculation\n    # We want to maximize (count_ones - count_zeros) or (count_zeros - count_ones)\n    # This is equivalent to finding the max subarray sum where:\n    #   val = 1 if char == '1' else -1\n    # But we need absolute difference, so we track both directions implicitly by taking abs\n    \n    for i in range(len(s)):\n        current_sum += (1 if s[i] == '1' else -1)\n        \n        # Check max positive diff ending at i\n        if current_sum > 0:\n            max_diff = max(max_diff, current_sum)\n            \n        # Reset to handle negative runs for the next potential peak\n        if current_sum < 0:\n            current_sum = 0\n            \n    return max_diff",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/125:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "post_h2_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "post_h3_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "post_h4_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ac9dfe0ac7875041043349f5be87886ccc67f706b9fb9692a968a8bb368f5479",
+  "raw_source": "def find_length(s):\n    max_diff = 0\n    current_sum = 0\n    \n    # Treat '1' as +1 and '0' as -1 for difference calculation\n    # We want to maximize (count_ones - count_zeros) or (count_zeros - count_ones)\n    # This is equivalent to finding the max subarray sum where:\n    #   val = 1 if char == '1' else -1\n    # But we need absolute difference, so we track both directions implicitly by taking abs\n    \n    for i in range(len(s)):\n        current_sum += (1 if s[i] == '1' else -1)\n        \n        # Check max positive diff ending at i\n        if current_sum > 0:\n            max_diff = max(max_diff, current_sum)\n            \n        # Reset to handle negative runs for the next potential peak\n        if current_sum < 0:\n            current_sum = 0\n            \n    return max_diff",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/125",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

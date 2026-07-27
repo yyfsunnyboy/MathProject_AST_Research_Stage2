@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "77a7e8c97d8a699115d5bbe016d639bdb4e750595e17c74f43d15678b5e2f174",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_integer",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "final_source": "def check_integer(s: str) -> bool:\n    \"\"\"\n    Check if the given string represents a valid integer (including negative numbers).\n    \n    Returns True if s is a valid integer representation, False otherwise.\n    Handles optional leading '+' or '-', and allows whitespace stripping for robustness.\n    Does not accept floats like \"3.14\" unless they are exactly integers in disguise (\"5\").\n    \"\"\"\n    # Strip whitespace (optional but common practice)\n    s = s.strip()\n\n    if not s:  # empty string after strip is invalid\n        return False\n\n    # Optional sign at the beginning\n    start_index = 0\n    if s[0] in ('+', '-'):\n        start_index = 1\n\n    rest = s[start_index:]\n\n    # Must have some digits left after optional sign\n    if not rest:\n        return False\n\n    # Check that all remaining characters are digits\n    for ch in rest:\n        if not ch.isdigit():\n            return False\n\n    return True\n\n\n# Example assertions\nassert check_integer(\"python\") == False\nassert check_integer(\"-42\") == True\nassert check_integer(\"+10\") == True\nassert check_integer(\"  -5 \") == True   # with whitespace\nassert check_integer(\"\") == False       # empty string\nassert check_integer(\"3.14\") == False   # float-like is not an integer representation here\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/113:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "post_h2_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "post_h3_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "post_h4_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7587dfceea0a9add86810b88ff057aa6c9d5fb34479a66daebae4cbeec3fe6d6",
+  "raw_source": "def check_integer(s: str) -> bool:\n    \"\"\"\n    Check if the given string represents a valid integer (including negative numbers).\n    \n    Returns True if s is a valid integer representation, False otherwise.\n    Handles optional leading '+' or '-', and allows whitespace stripping for robustness.\n    Does not accept floats like \"3.14\" unless they are exactly integers in disguise (\"5\").\n    \"\"\"\n    # Strip whitespace (optional but common practice)\n    s = s.strip()\n\n    if not s:  # empty string after strip is invalid\n        return False\n\n    # Optional sign at the beginning\n    start_index = 0\n    if s[0] in ('+', '-'):\n        start_index = 1\n\n    rest = s[start_index:]\n\n    # Must have some digits left after optional sign\n    if not rest:\n        return False\n\n    # Check that all remaining characters are digits\n    for ch in rest:\n        if not ch.isdigit():\n            return False\n\n    return True\n\n\n# Example assertions\nassert check_integer(\"python\") == False\nassert check_integer(\"-42\") == True\nassert check_integer(\"+10\") == True\nassert check_integer(\"  -5 \") == True   # with whitespace\nassert check_integer(\"\") == False       # empty string\nassert check_integer(\"3.14\") == False   # float-like is not an integer representation here\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/113",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "92f9f9c33dbd2fc025adb0301e49b076eccdb427ec2d3135a82c72510f54e193",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_multiply_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "final_source": "def is_multiply_prime(a):\n    def get_primes(n):\n        primes = []\n        for i in range(2, n + 1):\n            if all(i % j != 0 for j in range(2, int(i ** 0.5) + 1)):\n                primes.append(i)\n        return primes\n    \n    primes = get_primes(a)\n    \n    count = 0\n    temp_a = a\n    \n    while temp_a > 1:\n        found_prime = False\n        for p in primes:\n            if temp_a % p == 0 and temp_a // p < temp_a:\n                temp_a //= p\n                count += 1\n                found_prime = True\n                break\n        \n        if not found_prime:\n            return False\n    \n    return count == 3",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/75:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "post_h2_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "post_h3_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "post_h4_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bbef402ef5965bf8f902e20c06c3739c453af7aec20022d746e144c2f0daaf3b",
+  "raw_source": "def is_multiply_prime(a):\n    def get_primes(n):\n        primes = []\n        for i in range(2, n + 1):\n            if all(i % j != 0 for j in range(2, int(i ** 0.5) + 1)):\n                primes.append(i)\n        return primes\n    \n    primes = get_primes(a)\n    \n    count = 0\n    temp_a = a\n    \n    while temp_a > 1:\n        found_prime = False\n        for p in primes:\n            if temp_a % p == 0 and temp_a // p < temp_a:\n                temp_a //= p\n                count += 1\n                found_prime = True\n                break\n        \n        if not found_prime:\n            return False\n    \n    return count == 3",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/75",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "954b4c8ff957a11ccad67b8dcb2f93d224b63f324ff754e02e921bbf0e0c3ccc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "car_race_collision",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "final_source": "def car_race_collision(n: int):\n    \"\"\"\n    Imagine a road that's a perfectly straight infinitely long line.\n    n cars are driving left to right;  simultaneously, a different set of n cars\n    are driving right to left.   The two sets of cars start out being very far from\n    each other.  All cars move in the same speed.  Two cars are said to collide\n    when a car that's moving left to right hits a car that's moving right to left.\n    However, the cars are infinitely sturdy and strong; as a result, they continue moving\n    in their trajectory as if they did not collide.\n\n    This function outputs the number of such collisions.\n    \"\"\"\n    return n * n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/41:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "post_h2_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "post_h3_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "post_h4_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "867cf7caebfea7432791a0b23995a1aeaee5307ef800c854fa86eccdcc45630a",
+  "raw_source": "def car_race_collision(n: int):\n    \"\"\"\n    Imagine a road that's a perfectly straight infinitely long line.\n    n cars are driving left to right;  simultaneously, a different set of n cars\n    are driving right to left.   The two sets of cars start out being very far from\n    each other.  All cars move in the same speed.  Two cars are said to collide\n    when a car that's moving left to right hits a car that's moving right to left.\n    However, the cars are infinitely sturdy and strong; as a result, they continue moving\n    in their trajectory as if they did not collide.\n\n    This function outputs the number of such collisions.\n    \"\"\"\n    return n * n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/41",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

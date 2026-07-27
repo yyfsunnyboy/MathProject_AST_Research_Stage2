@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "e73eba701da68f63315c8e41074377910f5ef7d926db0363b7af1be4065bdf7b",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "find_Volume",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "final_source": "To calculate the volume of a triangular prism, we use the formula:  \n**Volume = (Area of Triangular Base) × Height of Prism**  \n\nThe area of a triangle is given by:  \n**Area = (base × height_of_triangle) / 2**  \n\nAssuming the function arguments represent:\n- `b`: base of the triangular face\n- `h_tri`: height of the triangular face\n- `H_prism`: length/height of the prism\n\nHere's the implementation with a docstring and type hints for clarity, followed by your assertion test.\n\n```python\ndef find_Volume(b: float, h_tri: float, H_prism: float) -> float:\n    \"\"\"\n    Calculate the volume of a triangular prism.\n    \n    Parameters:\n        b (float): Base length of the triangle.\n        h_tri (float): Height of the triangle corresponding to base `b`.\n        H_prism (float): Length/height of the prism perpendicular to the triangular face.\n        \n    Returns:\n        float: Volume of the triangular prism.\n    \n    Example:\n        >>> find_Volume(10, 8, 6)\n        240.0\n    \"\"\"\n    area_base = (b * h_tri) / 2\n    volume = area_base * H_prism\n    return volume\n\n# Test assertion as requested\nassert find_Volume(10, 8, 6) == 240",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/14:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "post_h2_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "post_h3_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "post_h4_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "07e895a07800a653fd4587ecdf23d3075c2ff4623613eb04b17d1efb0bad8d79",
+  "raw_source": "To calculate the volume of a triangular prism, we use the formula:  \n**Volume = (Area of Triangular Base) × Height of Prism**  \n\nThe area of a triangle is given by:  \n**Area = (base × height_of_triangle) / 2**  \n\nAssuming the function arguments represent:\n- `b`: base of the triangular face\n- `h_tri`: height of the triangular face\n- `H_prism`: length/height of the prism\n\nHere's the implementation with a docstring and type hints for clarity, followed by your assertion test.\n\n```python\ndef find_Volume(b: float, h_tri: float, H_prism: float) -> float:\n    \"\"\"\n    Calculate the volume of a triangular prism.\n    \n    Parameters:\n        b (float): Base length of the triangle.\n        h_tri (float): Height of the triangle corresponding to base `b`.\n        H_prism (float): Length/height of the prism perpendicular to the triangular face.\n        \n    Returns:\n        float: Volume of the triangular prism.\n    \n    Example:\n        >>> find_Volume(10, 8, 6)\n        240.0\n    \"\"\"\n    area_base = (b * h_tri) / 2\n    volume = area_base * H_prism\n    return volume\n\n# Test assertion as requested\nassert find_Volume(10, 8, 6) == 240",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/14",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

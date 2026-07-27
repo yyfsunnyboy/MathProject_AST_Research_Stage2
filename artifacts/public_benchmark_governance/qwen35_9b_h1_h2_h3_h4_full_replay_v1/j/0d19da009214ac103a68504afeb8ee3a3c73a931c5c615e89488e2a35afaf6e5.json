@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "0d19da009214ac103a68504afeb8ee3a3c73a931c5c615e89488e2a35afaf6e5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "starts_one_ends",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "final_source": "def starts_one_ends(n):\n    if n == 1:\n        return 2\n    total = (9 * (10 ** (n - 1))) + (8 * (10 ** (n - 1))) + 4\n    return int(total)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/83:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "post_h2_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "post_h3_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "post_h4_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "044a9eb5e32c684add9d9a4c551567d336a3f671eaaafc91f906d0de5ddc524d",
+  "raw_source": "def starts_one_ends(n):\n    if n == 1:\n        return 2\n    total = (9 * (10 ** (n - 1))) + (8 * (10 ** (n - 1))) + 4\n    return int(total)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/83",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

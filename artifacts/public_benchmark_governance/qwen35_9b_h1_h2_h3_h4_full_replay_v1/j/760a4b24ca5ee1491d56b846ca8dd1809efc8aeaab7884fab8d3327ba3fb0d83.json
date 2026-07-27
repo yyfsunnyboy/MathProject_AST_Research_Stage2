@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "760a4b24ca5ee1491d56b846ca8dd1809efc8aeaab7884fab8d3327ba3fb0d83",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "hex_key",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "final_source": "def hex_key(num: str) -> int:\n    # Hexadecimal digits that correspond to prime numbers in decimal:\n    # 2, 3, 5, 7 (digits themselves are primes)\n    # A=10 (not prime), B=11 (prime), C=12 (not prime), D=13 (prime), E=14 (not prime), F=15 (not prime)\n    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}\n\n    count = 0\n    for digit in num:\n        if digit in prime_hex_digits:\n            count += 1\n    \n    return count\n\n\n# Example tests:\nprint(hex_key(\"AB\"))          # Expected: 1 (only B is prime)\nprint(hex_key(\"1077E\"))       # Expected: 2 (two '7's)\nprint(hex_key(\"ABED1A33\"))    # Expected: 4 (B, D, two 3s? Wait: digits are A,B,E,D,1,A,3,3 -> primes: B(11), D(13), 3,3 => total 4)\nprint(hex_key(\"123456789ABCDEF0\")) # Expected: 6 (2,3,5,7,B,D)\nprint(hex_key(\"2020\"))        # Expected: 2 (two '2's)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/78:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "post_h2_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "post_h3_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "post_h4_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "79834ae6bc3157eb5ba090e2951895b87059ec8edf244c31e42ba49b02edd65d",
+  "raw_source": "def hex_key(num: str) -> int:\n    # Hexadecimal digits that correspond to prime numbers in decimal:\n    # 2, 3, 5, 7 (digits themselves are primes)\n    # A=10 (not prime), B=11 (prime), C=12 (not prime), D=13 (prime), E=14 (not prime), F=15 (not prime)\n    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}\n\n    count = 0\n    for digit in num:\n        if digit in prime_hex_digits:\n            count += 1\n    \n    return count\n\n\n# Example tests:\nprint(hex_key(\"AB\"))          # Expected: 1 (only B is prime)\nprint(hex_key(\"1077E\"))       # Expected: 2 (two '7's)\nprint(hex_key(\"ABED1A33\"))    # Expected: 4 (B, D, two 3s? Wait: digits are A,B,E,D,1,A,3,3 -> primes: B(11), D(13), 3,3 => total 4)\nprint(hex_key(\"123456789ABCDEF0\")) # Expected: 6 (2,3,5,7,B,D)\nprint(hex_key(\"2020\"))        # Expected: 2 (two '2's)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/78",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

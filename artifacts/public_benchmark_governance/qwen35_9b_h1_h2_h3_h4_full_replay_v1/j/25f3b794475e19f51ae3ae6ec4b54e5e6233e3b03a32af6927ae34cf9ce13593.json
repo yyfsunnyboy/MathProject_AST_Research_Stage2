@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "25f3b794475e19f51ae3ae6ec4b54e5e6233e3b03a32af6927ae34cf9ce13593",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encrypt",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "final_source": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be rotated in a manner such that the letters \n    shift down by two multiplied to two places (i.e., 4 positions).\n    \n    For example:\n        encrypt('hi') -> 'lm'   ('h'+4='l', 'i'+4='m')\n        encrypt('asdfghjkl') -> 'ewhjklnop'\n        encrypt('gf') -> 'kj'\n        encrypt('et') -> 'ix'\n    \"\"\"\n    \n    # Shift amount: 2 * 2 = 4\n    shift = 4\n    \n    result_chars = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':\n            # Convert to 0-25 range, apply shift, wrap around with modulo, convert back\n            offset = ord(char) - ord('a')\n            new_offset = (offset + shift) % 26\n            encrypted_char = chr(new_offset + ord('a'))\n        elif 'A' <= char <= 'Z':\n            # Handle uppercase letters similarly if needed; currently examples are lowercase.\n            offset = ord(char) - ord('A')\n            new_offset = (offset + shift) % 26\n            encrypted_char = chr(new_offset + ord('A'))\n        else:\n            # Non-alphabetic characters remain unchanged\n            encrypted_char = char\n        \n        result_chars.append(encrypted_char)\n    \n    return ''.join(result_chars)\n\n# Example usage and tests:\nprint(encrypt(\"hi\"))      # Expected: 'lm'\nprint(encrypt(\"asdfghjkl\"))  # Expected: 'ewhjklnop'\nprint(encrypt(\"gf\"))     # Expected: 'kj'\nprint(encrypt(\"et\"))     # Expected: 'ix'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/89:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "post_h2_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "post_h3_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "post_h4_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9f133e791d4405bd76bfa6f8c2d3739541cfcf313b0164904743a5da458bb5c3",
+  "raw_source": "def encrypt(s):\n    \"\"\"Create a function encrypt that takes a string as an argument and\n    returns a string encrypted with the alphabet being rotated. \n    The alphabet should be rotated in a manner such that the letters \n    shift down by two multiplied to two places (i.e., 4 positions).\n    \n    For example:\n        encrypt('hi') -> 'lm'   ('h'+4='l', 'i'+4='m')\n        encrypt('asdfghjkl') -> 'ewhjklnop'\n        encrypt('gf') -> 'kj'\n        encrypt('et') -> 'ix'\n    \"\"\"\n    \n    # Shift amount: 2 * 2 = 4\n    shift = 4\n    \n    result_chars = []\n    \n    for char in s:\n        if 'a' <= char <= 'z':\n            # Convert to 0-25 range, apply shift, wrap around with modulo, convert back\n            offset = ord(char) - ord('a')\n            new_offset = (offset + shift) % 26\n            encrypted_char = chr(new_offset + ord('a'))\n        elif 'A' <= char <= 'Z':\n            # Handle uppercase letters similarly if needed; currently examples are lowercase.\n            offset = ord(char) - ord('A')\n            new_offset = (offset + shift) % 26\n            encrypted_char = chr(new_offset + ord('A'))\n        else:\n            # Non-alphabetic characters remain unchanged\n            encrypted_char = char\n        \n        result_chars.append(encrypted_char)\n    \n    return ''.join(result_chars)\n\n# Example usage and tests:\nprint(encrypt(\"hi\"))      # Expected: 'lm'\nprint(encrypt(\"asdfghjkl\"))  # Expected: 'ewhjklnop'\nprint(encrypt(\"gf\"))     # Expected: 'kj'\nprint(encrypt(\"et\"))     # Expected: 'ix'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/89",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

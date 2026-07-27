@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b6bf870cf3b0f656571fa55230cfcc048dd4ee8ca54b7d244dbc5e7e38ab328e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "string_to_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d260e79be6fcf79daf658dd82f229f5e06e7b7674c379cc5f70c98f3c15b3da1",
+  "final_source": "def string_to_list(s):\n    \"\"\"Converts a string into a list of substrings split by spaces.\"\"\"\n    return s.split(' ')\n\n# Test cases to verify correctness\nif __name__ == \"__main__\":\n    assert string_to_list(\"python programming\") == ['python', 'programming']\n    print(string_to_list(\"python programming\"))  # Output: ['python', 'programming']\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/118:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0a70cfb26cbe50c06a9c551d3c9696e109a56da506a98c4a40ae43804e23430e",
+  "post_h2_sha256": "b6a210b5ad8c6b43ab7be4fb3bb147ec5c1855217808669eeea4762f0f5b1217",
+  "post_h3_sha256": "b6a210b5ad8c6b43ab7be4fb3bb147ec5c1855217808669eeea4762f0f5b1217",
+  "post_h4_sha256": "d260e79be6fcf79daf658dd82f229f5e06e7b7674c379cc5f70c98f3c15b3da1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0a70cfb26cbe50c06a9c551d3c9696e109a56da506a98c4a40ae43804e23430e",
+  "raw_source": "def string_to_list(s):\n    \"\"\"Converts a string into a list of substrings split by spaces.\"\"\"\n    return s.split(' ')\n\n# Test cases to verify correctness\nassert string_to_list(\"python programming\") == ['python', 'programming']\nprint(string_to_list(\"python programming\"))  # Output: ['python', 'programming']\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/118",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

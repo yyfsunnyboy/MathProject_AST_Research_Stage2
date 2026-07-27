@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e670a2e6073c43e1a5b15a79b47890ff7d91a4f135938f5aaeedc460389edaf5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_numbers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "final_source": "def sort_numbers(numbers: str) -> str:\n    mapping = {\n        'zero': 0,\n        'one': 1,\n        'two': 2,\n        'three': 3,\n        'four': 4,\n        'five': 5,\n        'six': 6,\n        'seven': 7,\n        'eight': 8,\n        'nine': 9\n    }\n    \n    words = numbers.split()\n    sorted_words = sorted(words, key=lambda x: mapping[x])\n    \n    return \" \".join(sorted_words)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/19:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "post_h2_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "post_h3_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "post_h4_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "664869f694635991d78c160337918face26c7d2dbe193640911c1e1139ab54fc",
+  "raw_source": "def sort_numbers(numbers: str) -> str:\n    mapping = {\n        'zero': 0,\n        'one': 1,\n        'two': 2,\n        'three': 3,\n        'four': 4,\n        'five': 5,\n        'six': 6,\n        'seven': 7,\n        'eight': 8,\n        'nine': 9\n    }\n    \n    words = numbers.split()\n    sorted_words = sorted(words, key=lambda x: mapping[x])\n    \n    return \" \".join(sorted_words)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/19",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

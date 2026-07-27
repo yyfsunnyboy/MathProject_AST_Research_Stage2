@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "904a9eef4242d3bd27ab0ef2405d0f240ffb12138392725988298e06108d971b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_kth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c05132288e060598ebe1889fd5c52eee2e0a14b471604b2bf7588ae02b2a2a15",
+  "final_source": "def find_kth(nums1, nums2, k):\n    \"\"\"\n    Find the k-th smallest element (1-based index) in two sorted arrays.\n    \n    :param nums1: First sorted list of integers\n    :param nums2: Second sorted list of integers\n    :param k: 1-based rank to find\n    :return: The k-th smallest integer\n    \n    Example:\n        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6\n    \"\"\"\n\n    # Ensure nums1 is the shorter array for binary search optimization\n    if len(nums1) > len(nums2):\n        return find_kth(nums2, nums1, k)\n\n    n1, n2 = len(nums1), len(nums2)\n    \n    left, right = 0, n1\n    \n    while left <= right:\n        i = (left + right) // 2          # split point in nums1\n        j = k - i                         # corresponding split in nums2\n        \n        if j < 0:\n            # Need more elements from nums1\n            left = i + 1\n            continue\n        elif j > n2:\n            # Too many needed from nums2; move to fewer from nums2 (more from nums1)\n            right = i - 1\n            continue\n        \n        x_left = nums1[i] if i < n1 else float('-inf')\n        y_right = nums2[j-1] if j > 0 else float('-inf')\n        \n        # Check if this split gives the k-th element\n        if (x_left <= y_right) and (y_right >= x_left):\n            return max(x_left, y_right)\n        \n        elif x_left < y_right:\n            # Need more elements from nums2 side → increase i\n            left = i + 1\n        else:\n            # Need fewer elements from nums2 side → decrease i\n            right = i - 1\n\n    raise ValueError(\"k is out of bounds\")\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6\n    print(find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5))  # prints: 6\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/597:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2f33cb4ea4dc1be23ee70c3d4c7cf566333f760900d144c33019f0598fece6c9",
+  "post_h2_sha256": "6e5698c541b4aa2cd214aa4732f32cfe779aa0fea74b855feccdef4927d5e404",
+  "post_h3_sha256": "6e5698c541b4aa2cd214aa4732f32cfe779aa0fea74b855feccdef4927d5e404",
+  "post_h4_sha256": "c05132288e060598ebe1889fd5c52eee2e0a14b471604b2bf7588ae02b2a2a15",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2f33cb4ea4dc1be23ee70c3d4c7cf566333f760900d144c33019f0598fece6c9",
+  "raw_source": "def find_kth(nums1, nums2, k):\n    \"\"\"\n    Find the k-th smallest element (1-based index) in two sorted arrays.\n    \n    :param nums1: First sorted list of integers\n    :param nums2: Second sorted list of integers\n    :param k: 1-based rank to find\n    :return: The k-th smallest integer\n    \n    Example:\n        assert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6\n    \"\"\"\n\n    # Ensure nums1 is the shorter array for binary search optimization\n    if len(nums1) > len(nums2):\n        return find_kth(nums2, nums1, k)\n\n    n1, n2 = len(nums1), len(nums2)\n    \n    left, right = 0, n1\n    \n    while left <= right:\n        i = (left + right) // 2          # split point in nums1\n        j = k - i                         # corresponding split in nums2\n        \n        if j < 0:\n            # Need more elements from nums1\n            left = i + 1\n            continue\n        elif j > n2:\n            # Too many needed from nums2; move to fewer from nums2 (more from nums1)\n            right = i - 1\n            continue\n        \n        x_left = nums1[i] if i < n1 else float('-inf')\n        y_right = nums2[j-1] if j > 0 else float('-inf')\n        \n        # Check if this split gives the k-th element\n        if (x_left <= y_right) and (y_right >= x_left):\n            return max(x_left, y_right)\n        \n        elif x_left < y_right:\n            # Need more elements from nums2 side → increase i\n            left = i + 1\n        else:\n            # Need fewer elements from nums2 side → decrease i\n            right = i - 1\n\n    raise ValueError(\"k is out of bounds\")\n\n\n# Example usage and assertion\nassert find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5) == 6\nprint(find_kth([2, 3, 6, 7, 9], [1, 4, 8, 10], 5))  # prints: 6\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/597",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "877bd134d99ce4828769cd5170dd3f65a7560a31a573b97fef875a969f70e971",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "move_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "final_source": "def move_zero(nums):\n    \"\"\"\n    Moves all zeroes to the end of the given list, preserving \n    the relative order of other numbers. Modifies the list in-place.\n    \n    Args:\n        nums (List[int]): The input list containing integers.\n        \n    Returns:\n        List[int]: The modified list with zeros moved to the end.\n    \"\"\"\n    if not nums:\n        return nums\n\n    # 'insertion_index' tracks where the next non-zero element should go\n    insertion_index = 0\n    \n    for i in range(len(nums)):\n        if nums[i] != 0:\n            # Place current non-zero number at 'insertion_index'\n            nums[insertion_index], nums[i] = nums[i], nums[insertion_index]\n            # Move the pointer forward to find the next spot for a non-zero element\n            insertion_index += 1\n            \n    return nums\n\n# Test cases based on your requirement and additional edge cases\nassert move_zero([1,0,2,0,3,4]) == [1,2,3,4,0,0]\nprint(\"Test passed: assert move_zero([1,0,2,0,3,4]) == [1,2,3,4,0,0]\")\n\n# Additional tests to ensure robustness\nassert move_zero([]) == []\nassert move_zero([0, 0, 0]) == [0, 0, 0]\nassert move_zero([9]) == [9]\nassert move_zero([1, -2, 3, 4, 5]) == [1, -2, 3, 4, 5]\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/632:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "post_h2_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "post_h3_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "post_h4_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "af11868728f5762f513b43eea43407cc57e5aba808982bb2f53da31ed3866a1f",
+  "raw_source": "def move_zero(nums):\n    \"\"\"\n    Moves all zeroes to the end of the given list, preserving \n    the relative order of other numbers. Modifies the list in-place.\n    \n    Args:\n        nums (List[int]): The input list containing integers.\n        \n    Returns:\n        List[int]: The modified list with zeros moved to the end.\n    \"\"\"\n    if not nums:\n        return nums\n\n    # 'insertion_index' tracks where the next non-zero element should go\n    insertion_index = 0\n    \n    for i in range(len(nums)):\n        if nums[i] != 0:\n            # Place current non-zero number at 'insertion_index'\n            nums[insertion_index], nums[i] = nums[i], nums[insertion_index]\n            # Move the pointer forward to find the next spot for a non-zero element\n            insertion_index += 1\n            \n    return nums\n\n# Test cases based on your requirement and additional edge cases\nassert move_zero([1,0,2,0,3,4]) == [1,2,3,4,0,0]\nprint(\"Test passed: assert move_zero([1,0,2,0,3,4]) == [1,2,3,4,0,0]\")\n\n# Additional tests to ensure robustness\nassert move_zero([]) == []\nassert move_zero([0, 0, 0]) == [0, 0, 0]\nassert move_zero([9]) == [9]\nassert move_zero([1, -2, 3, 4, 5]) == [1, -2, 3, 4, 5]\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/632",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

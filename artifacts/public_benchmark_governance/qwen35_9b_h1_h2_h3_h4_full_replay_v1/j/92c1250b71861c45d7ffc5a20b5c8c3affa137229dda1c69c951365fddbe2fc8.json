@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "92c1250b71861c45d7ffc5a20b5c8c3affa137229dda1c69c951365fddbe2fc8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_adverb_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "final_source": "def find_adverb_position(sentence):\n    import re\n    pattern = r'\\b\\w+ly\\b'\n    match = re.search(pattern, sentence)\n    if match:\n        return (match.start(), match.end() - 1, match.group())\n    else:\n        raise ValueError(\"No adverb found in the given sentence.\")",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/440:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "post_h2_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "post_h3_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "post_h4_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5fb1dcf890732f12d840080b7ab5389367647ecf694755ce1339ad2fbcec35ce",
+  "raw_source": "def find_adverb_position(sentence):\n    import re\n    pattern = r'\\b\\w+ly\\b'\n    match = re.search(pattern, sentence)\n    if match:\n        return (match.start(), match.end() - 1, match.group())\n    else:\n        raise ValueError(\"No adverb found in the given sentence.\")",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/440",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

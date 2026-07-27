@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ee6dff45efd17053452ade9ec6a8bae1c7fbcdaf7d5555e02a9f7c422f4c05b3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "len_log",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bb619eec377659f40f8297b0f2c48b439df3eff6051dc119fb40682d81e47a10",
+  "final_source": "def len_long(words):\n    \"\"\"Return the length of the longest string in the given list.\"\"\"\n    return max(len(word) for word in words)\n\n\n# Example usage and assertion:\nassert len_log([\"python\", \"PHP\", \"bigdata\"]) == 7\nprint(\"Assertion passed!\")\n\nlen_log = len_long\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/90:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bb619eec377659f40f8297b0f2c48b439df3eff6051dc119fb40682d81e47a10",
+  "post_h2_sha256": "bb619eec377659f40f8297b0f2c48b439df3eff6051dc119fb40682d81e47a10",
+  "post_h3_sha256": "bb619eec377659f40f8297b0f2c48b439df3eff6051dc119fb40682d81e47a10",
+  "post_h4_sha256": "bb619eec377659f40f8297b0f2c48b439df3eff6051dc119fb40682d81e47a10",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8598e930ea699ebd5799a60e3330cd8d057f7ee89cc216a42d90fe642bbb98b6",
+  "raw_source": "def len_long(words):\n    \"\"\"Return the length of the longest string in the given list.\"\"\"\n    return max(len(word) for word in words)\n\n\n# Example usage and assertion:\nassert len_log([\"python\", \"PHP\", \"bigdata\"]) == 7\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/90",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

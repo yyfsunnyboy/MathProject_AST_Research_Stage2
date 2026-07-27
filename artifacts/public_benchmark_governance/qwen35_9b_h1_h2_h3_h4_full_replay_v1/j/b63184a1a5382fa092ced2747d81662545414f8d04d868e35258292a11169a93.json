@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "b63184a1a5382fa092ced2747d81662545414f8d04d868e35258292a11169a93",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "merge_dictionaries_three",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "final_source": "def merge_dictionaries_three(dict1, dict2, dict3):\n    merged = {}\n    for key in set(list(dict1.keys()) + list(dict2.keys()) + list(dict3.keys())):\n        if key in dict1 and key not in dict2 and key not in dict3:\n            merged[key] = dict1[key]\n        elif key in dict2 and key not in dict1 and key not in dict3:\n            merged[key] = dict2[key]\n        elif key in dict3 and key not in dict1 and key not in dict2:\n            merged[key] = dict3[key]\n        else:\n            if key in dict1 or key in dict2 or key in dict3:\n                merged[key] = (dict1.get(key) or dict2.get(key) or dict3.get(key))\n    return merged",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/87:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "post_h2_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "post_h3_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "post_h4_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5114bed966d072437025f483e54954c16f18b7e21e4fb84dd3d6149461f784da",
+  "raw_source": "def merge_dictionaries_three(dict1, dict2, dict3):\n    merged = {}\n    for key in set(list(dict1.keys()) + list(dict2.keys()) + list(dict3.keys())):\n        if key in dict1 and key not in dict2 and key not in dict3:\n            merged[key] = dict1[key]\n        elif key in dict2 and key not in dict1 and key not in dict3:\n            merged[key] = dict2[key]\n        elif key in dict3 and key not in dict1 and key not in dict2:\n            merged[key] = dict3[key]\n        else:\n            if key in dict1 or key in dict2 or key in dict3:\n                merged[key] = (dict1.get(key) or dict2.get(key) or dict3.get(key))\n    return merged",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/87",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

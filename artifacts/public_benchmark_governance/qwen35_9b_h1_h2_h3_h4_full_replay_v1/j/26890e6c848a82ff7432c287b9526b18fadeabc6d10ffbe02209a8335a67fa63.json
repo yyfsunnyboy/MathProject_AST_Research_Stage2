@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "26890e6c848a82ff7432c287b9526b18fadeabc6d10ffbe02209a8335a67fa63",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_sublist",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "final_source": "def is_sublist(main_list, sub_list):\n    # Edge case: empty sublist should be considered present\n    if not sub_list:\n        return True\n    \n    m = len(main_list)\n    n = len(sub_list)\n    \n    for i in range(m - n + 1):\n        match = all(main_list[i + j] == sub_list[j] for j in range(n))\n        if match:\n            return True\n    return False\n\n# Example usage and assertions\nassert is_sublist([2,4,3,5,7], [3,7]) == False   # 3 and 7 are not consecutive\nassert is_sublist([2,4,3,5,7], [3,5]) == True    # 3,5 appear consecutively\nassert is_sublist([1,2,3], []) == True           # empty sublist\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/69:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "post_h2_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "post_h3_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "post_h4_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4596b8cbfe0d70574528be3488f9a83e5c99e9d5d13e14fbf7da753812ccb635",
+  "raw_source": "def is_sublist(main_list, sub_list):\n    # Edge case: empty sublist should be considered present\n    if not sub_list:\n        return True\n    \n    m = len(main_list)\n    n = len(sub_list)\n    \n    for i in range(m - n + 1):\n        match = all(main_list[i + j] == sub_list[j] for j in range(n))\n        if match:\n            return True\n    return False\n\n# Example usage and assertions\nassert is_sublist([2,4,3,5,7], [3,7]) == False   # 3 and 7 are not consecutive\nassert is_sublist([2,4,3,5,7], [3,5]) == True    # 3,5 appear consecutively\nassert is_sublist([1,2,3], []) == True           # empty sublist\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/69",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

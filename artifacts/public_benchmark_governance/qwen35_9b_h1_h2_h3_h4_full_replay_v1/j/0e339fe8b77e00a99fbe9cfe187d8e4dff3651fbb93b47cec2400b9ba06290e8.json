@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "0e339fe8b77e00a99fbe9cfe187d8e4dff3651fbb93b47cec2400b9ba06290e8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "add_dict_to_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "final_source": "def add_dict_to_tuple(tup, d):\n    \"\"\"\n    Adds a dictionary to the end of a tuple.\n    \n    Args:\n        tup (tuple): The original tuple containing elements.\n        d (dict): The dictionary to be added.\n        \n    Returns:\n        tuple: A new tuple with the dictionary appended at the end.\n    \"\"\"\n    return (*tup, d)\n\n# Test case from your request\nresult = add_dict_to_tuple((4, 5, 6), {\"MSAM\" : 1, \"is\" : 2, \"best\" : 3})\nassert result == (4, 5, 6, {'MSAM': 1, 'is': 2, 'best': 3}), f\"Test failed: {result}\"\n\nprint(\"Function works correctly!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/720:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "post_h2_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "post_h3_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "post_h4_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "084ca0130a5899671f6e91d73ef20aec1458dbb80dcd9d1fcbba2982ed3b3a66",
+  "raw_source": "def add_dict_to_tuple(tup, d):\n    \"\"\"\n    Adds a dictionary to the end of a tuple.\n    \n    Args:\n        tup (tuple): The original tuple containing elements.\n        d (dict): The dictionary to be added.\n        \n    Returns:\n        tuple: A new tuple with the dictionary appended at the end.\n    \"\"\"\n    return (*tup, d)\n\n# Test case from your request\nresult = add_dict_to_tuple((4, 5, 6), {\"MSAM\" : 1, \"is\" : 2, \"best\" : 3})\nassert result == (4, 5, 6, {'MSAM': 1, 'is': 2, 'best': 3}), f\"Test failed: {result}\"\n\nprint(\"Function works correctly!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/720",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

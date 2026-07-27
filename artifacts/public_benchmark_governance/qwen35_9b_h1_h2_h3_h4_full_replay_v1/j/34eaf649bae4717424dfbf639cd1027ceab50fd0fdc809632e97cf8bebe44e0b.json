@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "34eaf649bae4717424dfbf639cd1027ceab50fd0fdc809632e97cf8bebe44e0b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_total_number_of_sequences",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "final_source": "def get_total_number_of_sequences(m, n):\n    if m < 1:\n        return 0\n    \n    # dp[i][j] = number of sequences of length i ending with value j\n    # We can optimize space by only keeping the previous row.\n    \n    # Initialize for sequence length 1: any value from 1 to m is valid as a start\n    prev_counts = [0] * (m + 2)  # index up to m+1 to avoid boundary checks, though we use <= m\n    for v in range(1, m + 1):\n        prev_counts[v] = 1\n    \n    total_sequences = 0\n    \n    if n == 1:\n        return sum(prev_counts[1:])\n    \n    # Iterate from length 2 to n\n    for _ in range(n - 1):\n        curr_counts = [0] * (m + 2)\n        current_total_for_length = 0\n        \n        # For each possible ending value j at this step, it must be >= 2 * previous_value\n        # So we iterate over all valid previous values i and update counts for j in [2*i, m]\n        # To optimize: instead of iterating j then checking min(2*i, ...), \n        # we can say: for each i (previous value count > 0), add prev_counts[i] to curr_counts[j] for all j from 2*i to m.\n        \n        # However, a direct double loop is O(m^2) per step which might be slow if m is large.\n        # But given the constraint \"positive integers\" and typical CP limits, let's assume m isn't huge (e.g., <= 100).\n        # If m can be very large, we need a smarter way using prefix sums or math properties.\n        \n        # Let's stick to O(m^2) for clarity unless constraints suggest otherwise. \n        # But wait: the problem says \"positive integers\", no explicit bound on m other than input type.\n        # However, if m is large (e.g., 10^5), O(n*m^2) will TLE. We need an optimized approach.\n\n        # Optimized Approach using cumulative sums:\n        # For a fixed previous value i with count c = prev_counts[i], \n        # it contributes to all j in [2*i, m]. So we add c to curr_counts[j] for j from 2*i to m.\n        # This is equivalent to adding c to the range sum starting at 2*i.\n        # Instead of updating each index, we can use a difference array or just realize:\n        # The number of sequences ending with value >= X in current step = \n        #   sum over i (prev_counts[i] * max(0, m - 2*i + 1)) ??? Not exactly.\n\n        # Actually, let's reverse the thinking for optimization:\n        # Let dp[k][v] be number of sequences of length k ending with value v.\n        # Then dp[k+1][j] = sum(dp[k][i]) for all i such that j <= m and 2*i <= j => i <= floor(j/2)\n        # So: dp[k+1][j] = prefix_sum_dp_k[floor(j/2)]\n        \n        # This is O(m) per step! Total time O(n*m).\n\n        current_prefix_sums = [0] * (m + 2)\n        running_total = 0\n        \n        for j in range(1, m + 1):\n            if prev_counts[j] > 0:\n                running_total += prev_counts[j]\n            \n            # For next step, any sequence ending at value v_next must have previous <= floor(v_next / 2)\n            # So the number of ways to extend a sequence to end with j is sum(prev_counts[i]) for i in [1, floor(j/2)]\n            idx = j // 2\n            if idx >= 0:\n                current_prefix_sums[j] = running_total\n        \n        prev_counts = current_prefix_sums\n\n    # Sum all sequences of length n ending at any value from 1 to m\n    return sum(prev_counts[1:])",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/239:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "post_h2_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "post_h3_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "post_h4_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "19ac63ae1e177c3eb1a2b31fa748880282abf37b03707d9ccefa4c2f2211973d",
+  "raw_source": "def get_total_number_of_sequences(m, n):\n    if m < 1:\n        return 0\n    \n    # dp[i][j] = number of sequences of length i ending with value j\n    # We can optimize space by only keeping the previous row.\n    \n    # Initialize for sequence length 1: any value from 1 to m is valid as a start\n    prev_counts = [0] * (m + 2)  # index up to m+1 to avoid boundary checks, though we use <= m\n    for v in range(1, m + 1):\n        prev_counts[v] = 1\n    \n    total_sequences = 0\n    \n    if n == 1:\n        return sum(prev_counts[1:])\n    \n    # Iterate from length 2 to n\n    for _ in range(n - 1):\n        curr_counts = [0] * (m + 2)\n        current_total_for_length = 0\n        \n        # For each possible ending value j at this step, it must be >= 2 * previous_value\n        # So we iterate over all valid previous values i and update counts for j in [2*i, m]\n        # To optimize: instead of iterating j then checking min(2*i, ...), \n        # we can say: for each i (previous value count > 0), add prev_counts[i] to curr_counts[j] for all j from 2*i to m.\n        \n        # However, a direct double loop is O(m^2) per step which might be slow if m is large.\n        # But given the constraint \"positive integers\" and typical CP limits, let's assume m isn't huge (e.g., <= 100).\n        # If m can be very large, we need a smarter way using prefix sums or math properties.\n        \n        # Let's stick to O(m^2) for clarity unless constraints suggest otherwise. \n        # But wait: the problem says \"positive integers\", no explicit bound on m other than input type.\n        # However, if m is large (e.g., 10^5), O(n*m^2) will TLE. We need an optimized approach.\n\n        # Optimized Approach using cumulative sums:\n        # For a fixed previous value i with count c = prev_counts[i], \n        # it contributes to all j in [2*i, m]. So we add c to curr_counts[j] for j from 2*i to m.\n        # This is equivalent to adding c to the range sum starting at 2*i.\n        # Instead of updating each index, we can use a difference array or just realize:\n        # The number of sequences ending with value >= X in current step = \n        #   sum over i (prev_counts[i] * max(0, m - 2*i + 1)) ??? Not exactly.\n\n        # Actually, let's reverse the thinking for optimization:\n        # Let dp[k][v] be number of sequences of length k ending with value v.\n        # Then dp[k+1][j] = sum(dp[k][i]) for all i such that j <= m and 2*i <= j => i <= floor(j/2)\n        # So: dp[k+1][j] = prefix_sum_dp_k[floor(j/2)]\n        \n        # This is O(m) per step! Total time O(n*m).\n\n        current_prefix_sums = [0] * (m + 2)\n        running_total = 0\n        \n        for j in range(1, m + 1):\n            if prev_counts[j] > 0:\n                running_total += prev_counts[j]\n            \n            # For next step, any sequence ending at value v_next must have previous <= floor(v_next / 2)\n            # So the number of ways to extend a sequence to end with j is sum(prev_counts[i]) for i in [1, floor(j/2)]\n            idx = j // 2\n            if idx >= 0:\n                current_prefix_sums[j] = running_total\n        \n        prev_counts = current_prefix_sums\n\n    # Sum all sequences of length n ending at any value from 1 to m\n    return sum(prev_counts[1:])",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/239",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

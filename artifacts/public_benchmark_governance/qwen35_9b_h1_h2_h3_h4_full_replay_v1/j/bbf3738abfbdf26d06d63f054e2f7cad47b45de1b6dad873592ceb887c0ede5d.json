@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "bbf3738abfbdf26d06d63f054e2f7cad47b45de1b6dad873592ceb887c0ede5d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "left_insertion",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7450c5e996dccba81ac494092efe7188391ab9637ba597862b0ec8e347df372c",
+  "final_source": "def left_insertion(arr, value):\n    low = 0\n    high = len(arr)\n    \n    while low < high:\n        mid = (low + high) // 2\n        \n        if arr[mid] < value:\n            low = mid + 1\n        else:\n            high = mid\n            \n    return low\n\nif __name__ == \"__main__\":\n    assert left_insertion([1,2,4,5],6)==4",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/736:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9c1e0ab1aebe679a41c42e36f5779af3f50618fea8dd21ae9ea31c3513aa5129",
+  "post_h2_sha256": "7450c5e996dccba81ac494092efe7188391ab9637ba597862b0ec8e347df372c",
+  "post_h3_sha256": "7450c5e996dccba81ac494092efe7188391ab9637ba597862b0ec8e347df372c",
+  "post_h4_sha256": "7450c5e996dccba81ac494092efe7188391ab9637ba597862b0ec8e347df372c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9c1e0ab1aebe679a41c42e36f5779af3f50618fea8dd21ae9ea31c3513aa5129",
+  "raw_source": "def left_insertion(arr, value):\n    low = 0\n    high = len(arr)\n    \n    while low < high:\n        mid = (low + high) // 2\n        \n        if arr[mid] < value:\n            low = mid + 1\n        else:\n            high = mid\n            \n    return low\n\nassert left_insertion([1,2,4,5],6)==4",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/736",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "74b86273ea19418a043fa6490feb0a31cee444e8823cc78c60c149811c35488d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "armstrong_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "final_source": "def armstrong_number(n):\n    if n < 0:\n        return False\n    \n    digits = str(abs(n))\n    power = len(digits)\n    \n    sum_of_powers = sum(int(digit)**power for digit in digits)\n    \n    return sum_of_powers == abs(n)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/598:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "post_h2_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "post_h3_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "post_h4_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "805bfdfb826152416d388b7c80f057e7a5b13ed8ba13b9e8db3716110948956e",
+  "raw_source": "def armstrong_number(n):\n    if n < 0:\n        return False\n    \n    digits = str(abs(n))\n    power = len(digits)\n    \n    sum_of_powers = sum(int(digit)**power for digit in digits)\n    \n    return sum_of_powers == abs(n)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/598",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

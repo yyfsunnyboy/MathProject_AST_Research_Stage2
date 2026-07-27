@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1a9dcd4aa2de0e4008fe711381f967156abffd174634a5c0b5bea3d9888ee974",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_to_dict",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7559394b40d4720a49c0721a34176ce8699bcc02aacf270f05a6a110c7496180",
+  "final_source": "def tuple_to_dict(t):\n    \"\"\"Convert a tuple of even length into a dict using adjacent elements as key-value pairs.\"\"\"\n    if len(t) % 2 != 0:\n        raise ValueError(\"Tuple must contain an even number of elements.\")\n    \n    return {t[i]: t[i + 1] for i in range(0, len(t), 2)}\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert tuple_to_dict((1, 5, 7, 10, 13, 5)) == {1: 5, 7: 10, 13: 5}\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/740:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a8effb05e27d98314aafeab5e966fb8982ce734b7639c02bce320757086e5098",
+  "post_h2_sha256": "22b1159134cdee47a12b5e322f31c32fa01708093d1970120692f2f8416fa7fa",
+  "post_h3_sha256": "22b1159134cdee47a12b5e322f31c32fa01708093d1970120692f2f8416fa7fa",
+  "post_h4_sha256": "7559394b40d4720a49c0721a34176ce8699bcc02aacf270f05a6a110c7496180",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a8effb05e27d98314aafeab5e966fb8982ce734b7639c02bce320757086e5098",
+  "raw_source": "def tuple_to_dict(t):\n    \"\"\"Convert a tuple of even length into a dict using adjacent elements as key-value pairs.\"\"\"\n    if len(t) % 2 != 0:\n        raise ValueError(\"Tuple must contain an even number of elements.\")\n    \n    return {t[i]: t[i + 1] for i in range(0, len(t), 2)}\n\n\n# Example usage and assertion\nassert tuple_to_dict((1, 5, 7, 10, 13, 5)) == {1: 5, 7: 10, 13: 5}\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/740",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

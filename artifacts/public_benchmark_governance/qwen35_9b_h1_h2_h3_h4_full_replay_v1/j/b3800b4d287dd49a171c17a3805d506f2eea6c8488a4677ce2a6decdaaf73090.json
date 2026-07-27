@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b3800b4d287dd49a171c17a3805d506f2eea6c8488a4677ce2a6decdaaf73090",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "issort_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "final_source": "def issort_list(lst):\n    \"\"\"Return True if lst is sorted in non-decreasing order.\"\"\"\n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n    return True\n\n\n# Example usage and assertion:\nassert issort_list([1,2,4,6,8,10,12,14,16,17]) == True\n\n# Additional tests (optional):\nassert not issort_list([3, 5, 2, 9])      # False because of the drop from 5 to 2\nassert issort_list([])                    # Empty list is considered sorted\nassert issort_list([-5, -1, 0, 7])        # Sorted with negatives and positives\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/567:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "post_h2_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "post_h3_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "post_h4_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cb4ecaabce1d7ae6ce7a97e355d7f6098af757a871bb946df504db7c3585cf43",
+  "raw_source": "def issort_list(lst):\n    \"\"\"Return True if lst is sorted in non-decreasing order.\"\"\"\n    for i in range(len(lst) - 1):\n        if lst[i] > lst[i + 1]:\n            return False\n    return True\n\n\n# Example usage and assertion:\nassert issort_list([1,2,4,6,8,10,12,14,16,17]) == True\n\n# Additional tests (optional):\nassert not issort_list([3, 5, 2, 9])      # False because of the drop from 5 to 2\nassert issort_list([])                    # Empty list is considered sorted\nassert issort_list([-5, -1, 0, 7])        # Sorted with negatives and positives\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/567",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

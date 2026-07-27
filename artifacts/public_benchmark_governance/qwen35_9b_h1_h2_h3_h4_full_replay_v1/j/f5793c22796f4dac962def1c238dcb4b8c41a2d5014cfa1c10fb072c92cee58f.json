@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f5793c22796f4dac962def1c238dcb4b8c41a2d5014cfa1c10fb072c92cee58f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "validate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "final_source": "def validate(n: int) -> bool:\n    \"\"\"\n    Check whether the frequency of each digit in the integer is \n    less than or equal to the digit itself.\n    \n    For example, if a number contains three 2s, then 3 <= 2 must be True (which it isn't), so return False.\n    If a number has two 1s, then 2 <= 1 must be True -> False, so invalid.\n    \"\"\"\n    # Handle negative numbers by taking absolute value\n    n = abs(n)\n    \n    if n == 0:\n        # Special case: digit is 0, frequency of 0 in \"0\" is 1. \n        # Condition: freq(0) <= 0 => 1 <= 0 -> False\n        return False\n\n    from collections import Counter\n    \n    digits = str(n)\n    counts = Counter(digits)\n    \n    for digit_char, count in counts.items():\n        d = int(digit_char)\n        if count > d:\n            return False\n            \n    return True\n\n\n# Example tests\nassert validate(1234) == True   # each digit appears once; 1<=1, 2>=1, etc. -> all OK\nassert validate(112) == False   # '1' appears twice but 2 > 1? No: freq=2, digit=1 => 2>1 → invalid\nassert validate(0) == False     # freq of 0 is 1, but 1 <= 0 is false\nassert validate(5556789) == True   # '5' appears 3 times; 3 > 5? No -> OK. Others appear once.\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/283:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "post_h2_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "post_h3_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "post_h4_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c5295ef38b4f123194b2e5bebe10925501abe232dc7e9fa03b13a1e85b4b5bda",
+  "raw_source": "def validate(n: int) -> bool:\n    \"\"\"\n    Check whether the frequency of each digit in the integer is \n    less than or equal to the digit itself.\n    \n    For example, if a number contains three 2s, then 3 <= 2 must be True (which it isn't), so return False.\n    If a number has two 1s, then 2 <= 1 must be True -> False, so invalid.\n    \"\"\"\n    # Handle negative numbers by taking absolute value\n    n = abs(n)\n    \n    if n == 0:\n        # Special case: digit is 0, frequency of 0 in \"0\" is 1. \n        # Condition: freq(0) <= 0 => 1 <= 0 -> False\n        return False\n\n    from collections import Counter\n    \n    digits = str(n)\n    counts = Counter(digits)\n    \n    for digit_char, count in counts.items():\n        d = int(digit_char)\n        if count > d:\n            return False\n            \n    return True\n\n\n# Example tests\nassert validate(1234) == True   # each digit appears once; 1<=1, 2>=1, etc. -> all OK\nassert validate(112) == False   # '1' appears twice but 2 > 1? No: freq=2, digit=1 => 2>1 → invalid\nassert validate(0) == False     # freq of 0 is 1, but 1 <= 0 is false\nassert validate(5556789) == True   # '5' appears 3 times; 3 > 5? No -> OK. Others appear once.\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/283",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

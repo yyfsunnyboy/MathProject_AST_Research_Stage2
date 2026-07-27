@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5a5f3ba68bd18c7e8ffe9e6f057adaf1df6a6aad1dd6d955d396a0c7576d654e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2d0a6e0a2891a44b0ae33e00829fae99de6460a443575e4d8c07fe1e8665690e",
+  "final_source": "def _sum(arr):\n    \"\"\"Return the sum of all elements in the list.\"\"\"\n    total = 0\n    for num in arr:\n        total += num\n    return total\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert _sum([1, 2, 3]) == 6\n    print(_sum([1, 2, 3]))  # Output: 6\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/798:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aa469306775e794540060a9cf2b5ed4948e2ddb84b6c0aef63a16fc9d29371b7",
+  "post_h2_sha256": "f8e5335e1af1223ef151db30a9631cc76d0c13b5f7eae977b888fa09046dad9b",
+  "post_h3_sha256": "f8e5335e1af1223ef151db30a9631cc76d0c13b5f7eae977b888fa09046dad9b",
+  "post_h4_sha256": "2d0a6e0a2891a44b0ae33e00829fae99de6460a443575e4d8c07fe1e8665690e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aa469306775e794540060a9cf2b5ed4948e2ddb84b6c0aef63a16fc9d29371b7",
+  "raw_source": "def _sum(arr):\n    \"\"\"Return the sum of all elements in the list.\"\"\"\n    total = 0\n    for num in arr:\n        total += num\n    return total\n\n# Example usage and assertion\nassert _sum([1, 2, 3]) == 6\nprint(_sum([1, 2, 3]))  # Output: 6\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/798",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

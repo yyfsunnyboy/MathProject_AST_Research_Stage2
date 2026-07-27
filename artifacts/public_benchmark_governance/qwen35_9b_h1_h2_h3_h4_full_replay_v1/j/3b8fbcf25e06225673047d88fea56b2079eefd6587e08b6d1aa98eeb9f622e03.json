@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3b8fbcf25e06225673047d88fea56b2079eefd6587e08b6d1aa98eeb9f622e03",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "bf",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "final_source": "def bf(planet1, planet2):\n    # Define the order of planets from closest to farthest from the Sun\n    planets = [\n        \"Mercury\", \"Venus\", \"Earth\", \"Mars\", \n        \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"\n    ]\n\n    # Check if both planet names are valid\n    if planet1 not in planets or planet2 not in planets:\n        return ()\n\n    try:\n        index1 = planets.index(planet1)\n        index2 = planets.index(planet2)\n    except ValueError:\n        return ()  # Should already be covered by the check above, but kept for safety\n\n    # Determine which planet is closer to the Sun (smaller index) and which is farther\n    if index1 < index2:\n        start_index = index1 + 1\n        end_index = index2\n    else:\n        start_index = index2 + 1\n        end_index = index1\n\n    # Slice the list to get planets between them, sorted by proximity to Sun (already in order)\n    return tuple(planets[start_index:end_index])\n\n\n# Example tests:\nprint(bf(\"Jupiter\", \"Neptune\"))   # ('Saturn', 'Uranus')\nprint(bf(\"Earth\", \"Mercury\"))     # ('Venus',)\nprint(bf(\"Mercury\", \"Uranus\"))    # ('Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn')\nprint(bf(\"Pluto\", \"Neptune\"))     # ()  (invalid planet name)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/148:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "post_h2_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "post_h3_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "post_h4_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4391e8c4cf1cb02f4d22e76a629a1d206b6f6ae69b4bbee1f2fe62e188a2c0da",
+  "raw_source": "def bf(planet1, planet2):\n    # Define the order of planets from closest to farthest from the Sun\n    planets = [\n        \"Mercury\", \"Venus\", \"Earth\", \"Mars\", \n        \"Jupiter\", \"Saturn\", \"Uranus\", \"Neptune\"\n    ]\n\n    # Check if both planet names are valid\n    if planet1 not in planets or planet2 not in planets:\n        return ()\n\n    try:\n        index1 = planets.index(planet1)\n        index2 = planets.index(planet2)\n    except ValueError:\n        return ()  # Should already be covered by the check above, but kept for safety\n\n    # Determine which planet is closer to the Sun (smaller index) and which is farther\n    if index1 < index2:\n        start_index = index1 + 1\n        end_index = index2\n    else:\n        start_index = index2 + 1\n        end_index = index1\n\n    # Slice the list to get planets between them, sorted by proximity to Sun (already in order)\n    return tuple(planets[start_index:end_index])\n\n\n# Example tests:\nprint(bf(\"Jupiter\", \"Neptune\"))   # ('Saturn', 'Uranus')\nprint(bf(\"Earth\", \"Mercury\"))     # ('Venus',)\nprint(bf(\"Mercury\", \"Uranus\"))    # ('Venus', 'Earth', 'Mars', 'Jupiter', 'Saturn')\nprint(bf(\"Pluto\", \"Neptune\"))     # ()  (invalid planet name)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/148",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

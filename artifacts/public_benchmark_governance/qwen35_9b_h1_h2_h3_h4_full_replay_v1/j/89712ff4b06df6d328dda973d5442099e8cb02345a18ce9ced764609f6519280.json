@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "89712ff4b06df6d328dda973d5442099e8cb02345a18ce9ced764609f6519280",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_decimal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "final_source": "import re\n\ndef is_decimal(s: str) -> bool:\n    \"\"\"Check whether s represents a decimal number with at most 2 fractional digits.\"\"\"\n    if not isinstance(s, str):\n        return False\n    \n    # Strip whitespace and optional sign\n    s = s.strip()\n    if not s or (s[0] in '+-' and len(s) == 1):\n        return False\n\n    # Pattern: optional sign, then digits, optionally a dot followed by up to two digits\n    pattern = r'^[-+]?(\\d+(\\.\\d{1,2})?|\\.\\d{1,2})([eE][-+]?\\d+)?$'\n    \n    if not re.fullmatch(pattern, s):\n        return False\n\n    # Additional check: ensure that after stripping sign and exponent part (if any),\n    # the fractional part has at most 2 digits. The regex already enforces this,\n    # but we can also validate by converting to float and formatting back.\n    \n    try:\n        val = float(s)\n        formatted = f\"{val:.10f}\".rstrip('0').rstrip('.')\n        if '.' in s or (s.count('.') > 0):\n            parts = s.split('.')[1] if '.' in s else \"\"\n            # Remove exponent part for comparison of fractional digits only\n            base_part = re.sub(r'[eE][-+]?\\d+$', '', formatted)\n            frac_digits = len(base_part.split('.')[1]) if '.' in base_part else 0\n            return frac_digits <= 2\n        return True\n    except ValueError:\n        return False\n\n# Examples\nassert is_decimal('123.11') == True\nassert is_decimal('-45.678') == False   # more than 2 decimal places\nassert is_decimal('+0.9') == True       # one decimal place\nassert is_decimal('.5') == True         # no leading digit, but valid with <=2 decimals\nassert is_decimal('1e3') == False       # scientific notation not allowed by our pattern (optional)\n\n# If you want to allow scientific notation as long as the mantissa has ≤2 fractional digits:\ndef is_decimal_with_exp(s: str) -> bool:\n    if not isinstance(s, str):\n        return False\n    s = s.strip()\n    \n    # Allow optional sign and exponent part; check only the mantissa's decimal places\n    match = re.match(r'^[-+]?\\d+(\\.\\d{1,2})?[eE][-+]?\\d+$', s) or \\\n            re.match(r'^[-+]?\\.(\\d{1,2})([eE][-+]?\\d+)?$', s)\n    \n    if not match:\n        return False\n    \n    # Extract mantissa part (before 'e'/'E')\n    parts = s.split('e')[0].split('E')[0]  # remove exponent for checking decimal places\n    if '.' in parts:\n        frac_len = len(parts.split('.')[1])\n        return frac_len <= 2\n    \n    return True\n\n# Now this version allows scientific notation too, e.g.:\nassert is_decimal_with_exp('1.23e4') == True   # mantissa has 2 decimals\nassert is_decimal_with_exp('1.234e-5') == False  # more than 2 decimals in mantissa\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/759:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "post_h2_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "post_h3_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "post_h4_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "478c622d1939794605a5acb667008126d96657dd853cebab21ee27b56ccff5d4",
+  "raw_source": "import re\n\ndef is_decimal(s: str) -> bool:\n    \"\"\"Check whether s represents a decimal number with at most 2 fractional digits.\"\"\"\n    if not isinstance(s, str):\n        return False\n    \n    # Strip whitespace and optional sign\n    s = s.strip()\n    if not s or (s[0] in '+-' and len(s) == 1):\n        return False\n\n    # Pattern: optional sign, then digits, optionally a dot followed by up to two digits\n    pattern = r'^[-+]?(\\d+(\\.\\d{1,2})?|\\.\\d{1,2})([eE][-+]?\\d+)?$'\n    \n    if not re.fullmatch(pattern, s):\n        return False\n\n    # Additional check: ensure that after stripping sign and exponent part (if any),\n    # the fractional part has at most 2 digits. The regex already enforces this,\n    # but we can also validate by converting to float and formatting back.\n    \n    try:\n        val = float(s)\n        formatted = f\"{val:.10f}\".rstrip('0').rstrip('.')\n        if '.' in s or (s.count('.') > 0):\n            parts = s.split('.')[1] if '.' in s else \"\"\n            # Remove exponent part for comparison of fractional digits only\n            base_part = re.sub(r'[eE][-+]?\\d+$', '', formatted)\n            frac_digits = len(base_part.split('.')[1]) if '.' in base_part else 0\n            return frac_digits <= 2\n        return True\n    except ValueError:\n        return False\n\n# Examples\nassert is_decimal('123.11') == True\nassert is_decimal('-45.678') == False   # more than 2 decimal places\nassert is_decimal('+0.9') == True       # one decimal place\nassert is_decimal('.5') == True         # no leading digit, but valid with <=2 decimals\nassert is_decimal('1e3') == False       # scientific notation not allowed by our pattern (optional)\n\n# If you want to allow scientific notation as long as the mantissa has ≤2 fractional digits:\ndef is_decimal_with_exp(s: str) -> bool:\n    if not isinstance(s, str):\n        return False\n    s = s.strip()\n    \n    # Allow optional sign and exponent part; check only the mantissa's decimal places\n    match = re.match(r'^[-+]?\\d+(\\.\\d{1,2})?[eE][-+]?\\d+$', s) or \\\n            re.match(r'^[-+]?\\.(\\d{1,2})([eE][-+]?\\d+)?$', s)\n    \n    if not match:\n        return False\n    \n    # Extract mantissa part (before 'e'/'E')\n    parts = s.split('e')[0].split('E')[0]  # remove exponent for checking decimal places\n    if '.' in parts:\n        frac_len = len(parts.split('.')[1])\n        return frac_len <= 2\n    \n    return True\n\n# Now this version allows scientific notation too, e.g.:\nassert is_decimal_with_exp('1.23e4') == True   # mantissa has 2 decimals\nassert is_decimal_with_exp('1.234e-5') == False  # more than 2 decimals in mantissa\n\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/759",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

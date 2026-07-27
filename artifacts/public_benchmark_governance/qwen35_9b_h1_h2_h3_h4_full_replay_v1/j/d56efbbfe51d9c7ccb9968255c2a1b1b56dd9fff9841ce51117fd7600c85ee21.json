@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d56efbbfe51d9c7ccb9968255c2a1b1b56dd9fff9841ce51117fd7600c85ee21",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "square_Sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a6f494a79d2291b62bac70237d7a140540b4e4c1bcc3f8c443b703126b5b6ae2",
+  "final_source": "def square_sum(n: int) -> int:\n    \"\"\"\n    Returns the sum of the squares of the first n odd natural numbers.\n    \n    The k-th odd number is (2*k - 1).\n    We need to compute: sum_{k=1}^{n} (2*k - 1)^2\n    \n    Example:\n        For n = 2, we have odds: 1 and 3.\n        Sum of squares = 1^2 + 3^2 = 1 + 9 = 10.\n    \n    Args:\n        n (int): Number of first odd natural numbers to consider. Must be >= 0.\n        \n    Returns:\n        int: The sum of the squares of those odds.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n    \n    total = 0\n    for k in range(1, n + 1):\n        odd_num = 2 * k - 1\n        total += odd_num ** 2\n    \n    return total\n\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert square_sum(2) == 10\n    print(square_sum(2))  # Output: 10\n\nsquare_Sum = square_sum\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/267:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a6f494a79d2291b62bac70237d7a140540b4e4c1bcc3f8c443b703126b5b6ae2",
+  "post_h2_sha256": "a6f494a79d2291b62bac70237d7a140540b4e4c1bcc3f8c443b703126b5b6ae2",
+  "post_h3_sha256": "a6f494a79d2291b62bac70237d7a140540b4e4c1bcc3f8c443b703126b5b6ae2",
+  "post_h4_sha256": "a6f494a79d2291b62bac70237d7a140540b4e4c1bcc3f8c443b703126b5b6ae2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "da7e67b1b49fd9859b2fbf08959d5bd0190fdd3e111dab74dd9f5ed43495d2e2",
+  "raw_source": "def square_sum(n: int) -> int:\n    \"\"\"\n    Returns the sum of the squares of the first n odd natural numbers.\n    \n    The k-th odd number is (2*k - 1).\n    We need to compute: sum_{k=1}^{n} (2*k - 1)^2\n    \n    Example:\n        For n = 2, we have odds: 1 and 3.\n        Sum of squares = 1^2 + 3^2 = 1 + 9 = 10.\n    \n    Args:\n        n (int): Number of first odd natural numbers to consider. Must be >= 0.\n        \n    Returns:\n        int: The sum of the squares of those odds.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n    \n    total = 0\n    for k in range(1, n + 1):\n        odd_num = 2 * k - 1\n        total += odd_num ** 2\n    \n    return total\n\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert square_sum(2) == 10\n    print(square_sum(2))  # Output: 10\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/267",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

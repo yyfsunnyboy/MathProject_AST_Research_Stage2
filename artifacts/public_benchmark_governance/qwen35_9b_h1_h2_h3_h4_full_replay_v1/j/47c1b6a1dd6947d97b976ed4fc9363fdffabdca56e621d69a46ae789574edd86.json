@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "47c1b6a1dd6947d97b976ed4fc9363fdffabdca56e621d69a46ae789574edd86",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_lower",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "final_source": "def is_lower(s: str) -> str:\n    \"\"\"Converts the input string to lowercase.\"\"\"\n    return s.lower()\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert is_lower(\"InValid\") == \"invalid\"\n    print(is_lower(\"InValid\"))  # Output: invalid\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/477:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "post_h2_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "post_h3_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "post_h4_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "92a9b293ff9798b007342c4bb7dd1d99001b0f311e09db8a83771a948f85a42d",
+  "raw_source": "def is_lower(s: str) -> str:\n    \"\"\"Converts the input string to lowercase.\"\"\"\n    return s.lower()\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert is_lower(\"InValid\") == \"invalid\"\n    print(is_lower(\"InValid\"))  # Output: invalid\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/477",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

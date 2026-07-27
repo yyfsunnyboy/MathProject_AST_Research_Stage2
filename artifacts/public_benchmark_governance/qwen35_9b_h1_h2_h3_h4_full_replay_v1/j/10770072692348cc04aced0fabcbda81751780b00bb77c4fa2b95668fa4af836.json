@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "10770072692348cc04aced0fabcbda81751780b00bb77c4fa2b95668fa4af836",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "nth_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "final_source": "def nth_nums(numbers, n):\n    \"\"\"\n    Computes the n-th power of each number in the input list.\n    \n    Args:\n        numbers (list[int]): List of integers to raise to the power n.\n        n (int): The exponent to apply.\n        \n    Returns:\n        list[int]: A new list containing each element raised to the power n.\n    \"\"\"\n    return [num ** n for num in numbers]\n\n# Example usage and assertion from your request\nassert nth_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nprint(\"Assertion passed!\")\n\n# Additional test cases to ensure robustness\nassert nth_nums([2, 3], 3) == [8, 27]\nassert nth_nums([-2, -1, 0, 1, 2], 4) == [16, 1, 0, 1, 16]\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/623:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "post_h2_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "post_h3_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "post_h4_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "14b0145979bd827c800a5c3df57b57b1cfa48c67b4d99fc3295417cc9587337c",
+  "raw_source": "def nth_nums(numbers, n):\n    \"\"\"\n    Computes the n-th power of each number in the input list.\n    \n    Args:\n        numbers (list[int]): List of integers to raise to the power n.\n        n (int): The exponent to apply.\n        \n    Returns:\n        list[int]: A new list containing each element raised to the power n.\n    \"\"\"\n    return [num ** n for num in numbers]\n\n# Example usage and assertion from your request\nassert nth_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2) == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nprint(\"Assertion passed!\")\n\n# Additional test cases to ensure robustness\nassert nth_nums([2, 3], 3) == [8, 27]\nassert nth_nums([-2, -1, 0, 1, 2], 4) == [16, 1, 0, 1, 16]\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/623",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

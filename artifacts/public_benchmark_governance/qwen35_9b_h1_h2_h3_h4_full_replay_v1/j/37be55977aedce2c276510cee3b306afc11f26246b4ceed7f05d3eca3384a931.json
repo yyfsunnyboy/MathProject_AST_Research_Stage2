@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "37be55977aedce2c276510cee3b306afc11f26246b4ceed7f05d3eca3384a931",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "big_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4792d1dff369ab651fe34eaee0da4bd1f73eb68d533198c6414f47f364ce0ac3",
+  "final_source": "def big_sum(arr):\n    \"\"\"\n    Returns the sum of the largest and smallest values in the list `arr`.\n    \n    Args:\n        arr (list[int]): A non-empty list of integers.\n        \n    Returns:\n        int: Sum of max and min elements.\n    \"\"\"\n    if not arr:  # Handle empty input gracefully, though problem implies non-empty\n        raise ValueError(\"Array must contain at least one element.\")\n    \n    return sum([max(arr), min(arr)])\n\n\n# Example usage and assertion from the prompt\nif __name__ == \"__main__\":\n    assert big_sum([1, 2, 3]) == 4   # max=3, min=1 -> 3+1 = 4\n    print(big_sum([5, -2, 0]))       # Output: 3 (max=5, min=-2)\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/476:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7cd76e022138ab410d0daa5f7bd4368b82bf865645a161b55f8d540f04673a03",
+  "post_h2_sha256": "ce8a54c7736108cf56b32870b0bb7e27e690941c6bbb0334f3ebb606497bb4ad",
+  "post_h3_sha256": "ce8a54c7736108cf56b32870b0bb7e27e690941c6bbb0334f3ebb606497bb4ad",
+  "post_h4_sha256": "4792d1dff369ab651fe34eaee0da4bd1f73eb68d533198c6414f47f364ce0ac3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7cd76e022138ab410d0daa5f7bd4368b82bf865645a161b55f8d540f04673a03",
+  "raw_source": "def big_sum(arr):\n    \"\"\"\n    Returns the sum of the largest and smallest values in the list `arr`.\n    \n    Args:\n        arr (list[int]): A non-empty list of integers.\n        \n    Returns:\n        int: Sum of max and min elements.\n    \"\"\"\n    if not arr:  # Handle empty input gracefully, though problem implies non-empty\n        raise ValueError(\"Array must contain at least one element.\")\n    \n    return sum([max(arr), min(arr)])\n\n\n# Example usage and assertion from the prompt\nassert big_sum([1, 2, 3]) == 4   # max=3, min=1 -> 3+1 = 4\n\nprint(big_sum([5, -2, 0]))       # Output: 3 (max=5, min=-2)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/476",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

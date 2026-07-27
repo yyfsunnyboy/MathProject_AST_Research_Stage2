@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "efeb6a936a508de62509917c1c1cb7968e240ac27565fb21705e430a3ca482bf",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "first_repeated_char",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "final_source": "def first_repeated_char(s: str) -> str | None:\n    \"\"\"\n    Returns the first character that appears more than once in the string,\n    or None if no such character exists.\n    \n    Examples:\n        first_repeated_char(\"abcabc\") -> 'a'\n        first_repeated_char(\"abca\")   -> 'c'? No, actually 'b' is not repeated yet? \n                                        Wait: \"abca\" -> a appears at 0 and 3 => return 'a'.\n        first_repeated_char(\"abcd\")   -> None\n    \n    Note: The function returns the character itself (not its index).\n          If multiple characters repeat, it returns the one whose second occurrence\n          comes earliest in the string.\n    \"\"\"\n    seen = set()\n    \n    for ch in s:\n        if ch in seen:\n            return ch\n        seen.add(ch)\n    \n    return None\n\n\n# Example assertions\nassert first_repeated_char(\"abcabc\") == \"a\"\nassert first_repeated_char(\"abca\")   == \"a\"\nassert first_repeated_char(\"abcd\")   is None\nassert first_repeated_char(\"\")       is None\n\nprint(\"All tests passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/602:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "post_h2_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "post_h3_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "post_h4_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "df586378a60f653f972a5f92ddcadf214a74c83eb661b4fb2ff1d12021ab494a",
+  "raw_source": "def first_repeated_char(s: str) -> str | None:\n    \"\"\"\n    Returns the first character that appears more than once in the string,\n    or None if no such character exists.\n    \n    Examples:\n        first_repeated_char(\"abcabc\") -> 'a'\n        first_repeated_char(\"abca\")   -> 'c'? No, actually 'b' is not repeated yet? \n                                        Wait: \"abca\" -> a appears at 0 and 3 => return 'a'.\n        first_repeated_char(\"abcd\")   -> None\n    \n    Note: The function returns the character itself (not its index).\n          If multiple characters repeat, it returns the one whose second occurrence\n          comes earliest in the string.\n    \"\"\"\n    seen = set()\n    \n    for ch in s:\n        if ch in seen:\n            return ch\n        seen.add(ch)\n    \n    return None\n\n\n# Example assertions\nassert first_repeated_char(\"abcabc\") == \"a\"\nassert first_repeated_char(\"abca\")   == \"a\"\nassert first_repeated_char(\"abcd\")   is None\nassert first_repeated_char(\"\")       is None\n\nprint(\"All tests passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/602",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

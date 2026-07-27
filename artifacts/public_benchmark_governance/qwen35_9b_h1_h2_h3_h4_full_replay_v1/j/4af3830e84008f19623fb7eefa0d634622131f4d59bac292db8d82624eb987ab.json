@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4af3830e84008f19623fb7eefa0d634622131f4d59bac292db8d82624eb987ab",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "prime_length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "final_source": "def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\n\ndef prime_length(string):\n    \"\"\"Write a function that takes a string and returns True if the string\n    length is a prime number or False otherwise\n    \n    Examples:\n    prime_length('Hello') == True   # len = 5 (prime)\n    prime_length('abcdcba') == True # len = 7 (prime)\n    prime_length('kittens') == True # len = 7 (prime)\n    prime_length('orange') == False # len = 6 (not prime)\n    \"\"\"\n    return is_prime(len(string))\n\n\n# Quick test with the provided examples:\nif __name__ == \"__main__\":\n    print(prime_length(\"Hello\"))      # True\n    print(prime_length(\"abcdcba\"))    # True\n    print(prime_length(\"kittens\"))    # True\n    print(prime_length(\"orange\"))     # False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/82:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "post_h2_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "post_h3_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "post_h4_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d0210c778dd47e5c360fef466834e5563e98001487e8205c19dc6aa23caef8fc",
+  "raw_source": "def is_prime(n):\n    if n < 2:\n        return False\n    for i in range(2, int(n ** 0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\n\ndef prime_length(string):\n    \"\"\"Write a function that takes a string and returns True if the string\n    length is a prime number or False otherwise\n    \n    Examples:\n    prime_length('Hello') == True   # len = 5 (prime)\n    prime_length('abcdcba') == True # len = 7 (prime)\n    prime_length('kittens') == True # len = 7 (prime)\n    prime_length('orange') == False # len = 6 (not prime)\n    \"\"\"\n    return is_prime(len(string))\n\n\n# Quick test with the provided examples:\nif __name__ == \"__main__\":\n    print(prime_length(\"Hello\"))      # True\n    print(prime_length(\"abcdcba\"))    # True\n    print(prime_length(\"kittens\"))    # True\n    print(prime_length(\"orange\"))     # False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/82",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

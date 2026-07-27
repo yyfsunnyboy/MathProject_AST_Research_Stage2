@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "903f206775d6270fbf04b0c16b26c436aeaa4def0ff9f0f3a1da0487d844e539",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "triangle_area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "final_source": "import math\n\ndef triangle_area(a, b, c):\n    \"\"\"\n    Given the lengths of the three sides of a triangle. Return the area of\n    the triangle rounded to 2 decimal points if the three sides form a valid triangle. \n    Otherwise return -1\n    \n    Three sides make a valid triangle when the sum of any two sides is greater \n    than the third side (triangle inequality).\n    \n    Uses Heron's formula: Area = sqrt(s * (s-a) * (s-b) * (s-c))\n    where s = (a + b + c) / 2\n    \n    Examples:\n        triangle_area(3, 4, 5) == 6.00\n        triangle_area(1, 2, 10) == -1\n    \"\"\"\n    \n    # Check for valid sides (must be positive numbers)\n    if a <= 0 or b <= 0 or c <= 0:\n        return -1\n    \n    # Triangle inequality theorem checks\n    if not ((a + b > c) and (a + c > b) and (b + c > a)):\n        return -1\n    \n    # Calculate semi-perimeter\n    s = (a + b + c) / 2\n    \n    # Heron's formula\n    area_squared = s * (s - a) * (s - b) * (s - c)\n    \n    # If due to floating point issues, this could be slightly negative for valid triangles\n    if area_squared < 0:\n        return -1\n        \n    area = math.sqrt(area_squared)\n    \n    return round(area, 2)\n\n# Test cases\nprint(triangle_area(3, 4, 5))   # Expected: 6.0\nprint(triangle_area(1, 2, 10))  # Expected: -1\nprint(triangle_area(5, 5, 5))   # Expected: ~21.65 (equilateral triangle)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/71:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "post_h2_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "post_h3_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "post_h4_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "78027a5c3e349ca2c406a6f56b456461e364d3d46dba5a47605006190b50e4d4",
+  "raw_source": "import math\n\ndef triangle_area(a, b, c):\n    \"\"\"\n    Given the lengths of the three sides of a triangle. Return the area of\n    the triangle rounded to 2 decimal points if the three sides form a valid triangle. \n    Otherwise return -1\n    \n    Three sides make a valid triangle when the sum of any two sides is greater \n    than the third side (triangle inequality).\n    \n    Uses Heron's formula: Area = sqrt(s * (s-a) * (s-b) * (s-c))\n    where s = (a + b + c) / 2\n    \n    Examples:\n        triangle_area(3, 4, 5) == 6.00\n        triangle_area(1, 2, 10) == -1\n    \"\"\"\n    \n    # Check for valid sides (must be positive numbers)\n    if a <= 0 or b <= 0 or c <= 0:\n        return -1\n    \n    # Triangle inequality theorem checks\n    if not ((a + b > c) and (a + c > b) and (b + c > a)):\n        return -1\n    \n    # Calculate semi-perimeter\n    s = (a + b + c) / 2\n    \n    # Heron's formula\n    area_squared = s * (s - a) * (s - b) * (s - c)\n    \n    # If due to floating point issues, this could be slightly negative for valid triangles\n    if area_squared < 0:\n        return -1\n        \n    area = math.sqrt(area_squared)\n    \n    return round(area, 2)\n\n# Test cases\nprint(triangle_area(3, 4, 5))   # Expected: 6.0\nprint(triangle_area(1, 2, 10))  # Expected: -1\nprint(triangle_area(5, 5, 5))   # Expected: ~21.65 (equilateral triangle)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/71",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8ea09dc7bb0d9678392f9cc4200cfc3b6c9ceb7f2b8ce17a8c466d17461597ab",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "strlen",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "final_source": "def strlen(string: str) -> int:\n    \"\"\"Return the length of a given string.\n    \n    Examples:\n        >>> strlen('')\n        0\n        >>> strlen('abc')\n        3\n        >>> strlen('hello world!')\n        12\n    \"\"\"\n    return len(string)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/23:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "post_h2_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "post_h3_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "post_h4_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cc75c4dd50306d1b27447c1fb1931499e138f75aaafd0e26650c170ec8da1807",
+  "raw_source": "def strlen(string: str) -> int:\n    \"\"\"Return the length of a given string.\n    \n    Examples:\n        >>> strlen('')\n        0\n        >>> strlen('abc')\n        3\n        >>> strlen('hello world!')\n        12\n    \"\"\"\n    return len(string)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/23",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

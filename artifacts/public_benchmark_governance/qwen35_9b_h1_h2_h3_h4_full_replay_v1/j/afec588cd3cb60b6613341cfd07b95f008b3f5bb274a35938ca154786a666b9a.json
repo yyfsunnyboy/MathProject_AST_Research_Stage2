@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "afec588cd3cb60b6613341cfd07b95f008b3f5bb274a35938ca154786a666b9a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_solution",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "final_source": "def find_solution(a, b, n):\n    if a == 0:\n        return None if b != 0 and n % b != 0 else (None, n // b) if b == 0 else None\n    \n    def extended_gcd(x, y):\n        if x == 0:\n            return y, 0, 1\n        gcd_x, u, v = extended_gcd(y % x, x)\n        return gcd_x, v - (y // x) * u, u\n\n    g, p, q = extended_gcd(a, b)\n    \n    if n % g != 0:\n        return None\n    \n    factor = n // g\n    x0 = p * factor\n    y0 = q * factor\n    \n    # Find a particular solution within bounds to ensure integer results (though any works mathematically)\n    # We can adjust by adding/subtracting multiples of b/g and a/g respectively\n    # Since we just need one valid pair, the direct calculation is sufficient.\n    \n    return x0, y0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/160:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "post_h2_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "post_h3_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "post_h4_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2b4c9d8ae39022b0a1cf3d3d1fc937e2e1335dd7c9a229df10ac5f8faa0fccee",
+  "raw_source": "def find_solution(a, b, n):\n    if a == 0:\n        return None if b != 0 and n % b != 0 else (None, n // b) if b == 0 else None\n    \n    def extended_gcd(x, y):\n        if x == 0:\n            return y, 0, 1\n        gcd_x, u, v = extended_gcd(y % x, x)\n        return gcd_x, v - (y // x) * u, u\n\n    g, p, q = extended_gcd(a, b)\n    \n    if n % g != 0:\n        return None\n    \n    factor = n // g\n    x0 = p * factor\n    y0 = q * factor\n    \n    # Find a particular solution within bounds to ensure integer results (though any works mathematically)\n    # We can adjust by adding/subtracting multiples of b/g and a/g respectively\n    # Since we just need one valid pair, the direct calculation is sufficient.\n    \n    return x0, y0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/160",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

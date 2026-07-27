@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "db2cf4da8d96194ba332e97370067a723896eba0fb29c3f8c91401611cd4cc60",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "rotate_right",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e587b8b5e8085d1e21c06c412be7ab6c0e11533eb821479b0536c8cdbd861c7d",
+  "final_source": "def rotate_right(lst, k):\n    if not lst or k == 0:\n        return lst[:]  # avoid mutating original; handle empty/list unchanged\n    \n    n = len(lst)\n    effective_k = k % n  # in case k >= n\n    \n    # Right rotation by k is equivalent to slicing from -k to end, then start to -k\n    rotated = lst[-effective_k:] + lst[:-effective_k] if effective_k else lst[:]\n    \n    return rotated\n\n# Example usage and assertion:\nif __name__ == \"__main__\":\n    assert rotate_right([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3) == [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/743:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0b4ffb928749b88bf114a8cb9977fc163e643112ba8bea6e3ced38ad1055b8f0",
+  "post_h2_sha256": "e587b8b5e8085d1e21c06c412be7ab6c0e11533eb821479b0536c8cdbd861c7d",
+  "post_h3_sha256": "e587b8b5e8085d1e21c06c412be7ab6c0e11533eb821479b0536c8cdbd861c7d",
+  "post_h4_sha256": "e587b8b5e8085d1e21c06c412be7ab6c0e11533eb821479b0536c8cdbd861c7d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0b4ffb928749b88bf114a8cb9977fc163e643112ba8bea6e3ced38ad1055b8f0",
+  "raw_source": "def rotate_right(lst, k):\n    if not lst or k == 0:\n        return lst[:]  # avoid mutating original; handle empty/list unchanged\n    \n    n = len(lst)\n    effective_k = k % n  # in case k >= n\n    \n    # Right rotation by k is equivalent to slicing from -k to end, then start to -k\n    rotated = lst[-effective_k:] + lst[:-effective_k] if effective_k else lst[:]\n    \n    return rotated\n\n# Example usage and assertion:\nassert rotate_right([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 3) == [8, 9, 10, 1, 2, 3, 4, 5, 6, 7]\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/743",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

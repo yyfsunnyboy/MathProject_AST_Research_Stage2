@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0176179d3dc7a99c3c35f2c35e18d8eec41587ba10125e1bc12e8f2469442969",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "next_Perfect_Square",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c784acf246484c3989bf7b2699396711ae12ea3ba064c4275383264e29bed759",
+  "final_source": "import math\n\ndef next_perfect_square(n: int) -> int:\n    \"\"\"\n    Return the smallest perfect square strictly greater than n.\n    \n    Examples:\n        next_perfect_square(35) -> 36   (because 6^2 = 36 > 35)\n        next_perfect_square(0)   -> 1   (smallest positive perfect square)\n        next_perfect_square(-4)  -> 1   \n    \"\"\"\n    if n < 0:\n        # For negative numbers, the smallest perfect square greater than them is still 1.\n        return 1\n\n    root = int(math.isqrt(n)) + 1\n    return root * root\n\n\n# Example assertion from your request\nassert next_perfect_square(35) == 36\n\nnext_Perfect_Square = next_perfect_square\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/244:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c784acf246484c3989bf7b2699396711ae12ea3ba064c4275383264e29bed759",
+  "post_h2_sha256": "c784acf246484c3989bf7b2699396711ae12ea3ba064c4275383264e29bed759",
+  "post_h3_sha256": "c784acf246484c3989bf7b2699396711ae12ea3ba064c4275383264e29bed759",
+  "post_h4_sha256": "c784acf246484c3989bf7b2699396711ae12ea3ba064c4275383264e29bed759",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5b5a3937cf1f151163998982840fdda422e73312972a7f6b4a90824e05ee5824",
+  "raw_source": "import math\n\ndef next_perfect_square(n: int) -> int:\n    \"\"\"\n    Return the smallest perfect square strictly greater than n.\n    \n    Examples:\n        next_perfect_square(35) -> 36   (because 6^2 = 36 > 35)\n        next_perfect_square(0)   -> 1   (smallest positive perfect square)\n        next_perfect_square(-4)  -> 1   \n    \"\"\"\n    if n < 0:\n        # For negative numbers, the smallest perfect square greater than them is still 1.\n        return 1\n\n    root = int(math.isqrt(n)) + 1\n    return root * root\n\n\n# Example assertion from your request\nassert next_perfect_square(35) == 36\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/244",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

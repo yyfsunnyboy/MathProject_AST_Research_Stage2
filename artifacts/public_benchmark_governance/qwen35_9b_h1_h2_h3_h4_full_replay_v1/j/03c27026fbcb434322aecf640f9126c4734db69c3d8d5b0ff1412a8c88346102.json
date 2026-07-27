@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "03c27026fbcb434322aecf640f9126c4734db69c3d8d5b0ff1412a8c88346102",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "unique_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6e03a653f4a941ef6bd758fbf27b27b1f4f47bfef5dd909596d85d421bc5f4e5",
+  "final_source": "def unique_product(nums):\n    \"\"\"\n    Calculate the product of all unique numbers in a given list.\n    \n    Args:\n        nums (list[int]): List of integers, possibly containing duplicates.\n        \n    Returns:\n        int: Product of the unique elements.\n    \"\"\"\n    # Use set to get only unique values\n    unique_nums = set(nums)\n    \n    product = 1\n    for num in unique_nums:\n        product *= num\n        \n    return product\n\n\n# Example usage and assertion from your request\nif __name__ == \"__main__\":\n    assert unique_product([10, 20, 30, 40, 20, 50, 60, 40]) == 720000000\n    print(\"Assertion passed!\")\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/573:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e32f49e8fd6dc87dead0256451d850089e93ef2b117b527f3169b18f9b569a7e",
+  "post_h2_sha256": "7042406e25ecd0c410278f92cb42e8a2a6fa1e679351c77cd384de52cd8a9f93",
+  "post_h3_sha256": "7042406e25ecd0c410278f92cb42e8a2a6fa1e679351c77cd384de52cd8a9f93",
+  "post_h4_sha256": "6e03a653f4a941ef6bd758fbf27b27b1f4f47bfef5dd909596d85d421bc5f4e5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e32f49e8fd6dc87dead0256451d850089e93ef2b117b527f3169b18f9b569a7e",
+  "raw_source": "def unique_product(nums):\n    \"\"\"\n    Calculate the product of all unique numbers in a given list.\n    \n    Args:\n        nums (list[int]): List of integers, possibly containing duplicates.\n        \n    Returns:\n        int: Product of the unique elements.\n    \"\"\"\n    # Use set to get only unique values\n    unique_nums = set(nums)\n    \n    product = 1\n    for num in unique_nums:\n        product *= num\n        \n    return product\n\n\n# Example usage and assertion from your request\nassert unique_product([10, 20, 30, 40, 20, 50, 60, 40]) == 720000000\n\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/573",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6f16191b2900e90a8ddd48751ee7a437f471b9fafd8aab65e75d37b66f284542",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "make_a_pile",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "final_source": "def make_a_pile(n):\n    \"\"\"\n    Given a positive integer n, you have to make a pile of n levels of stones.\n    The first level has n stones.\n    The number of stones in the next level is:\n        - the next odd number if n is odd.\n        - the next even number if n is even.\n    Return the number of stones in each level in a list, where element at index\n    i represents the number of stones in the level (i+1).\n\n    Examples:\n    >>> make_a_pile(3)\n    [3, 5, 7]\n    \"\"\"\n    \n    # Start with n as the first level's stone count\n    pile = []\n    current_stones = n\n    \n    for _ in range(n):\n        pile.append(current_stones)\n        # Add 2 to preserve parity (odd->next odd, even->next even)\n        current_stones += 2\n        \n    return pile\n\n# Verification tests:\nprint(make_a_pile(3))   # Expected: [3, 5, 7]\nprint(make_a_pile(4))   # Expected: [4, 6, 8, 10]\nprint(make_a_pile(1))   # Expected: [2]? No, start is n=1. -> [1]\n# Wait, if n=1, loop runs once. \n# current_stones = 1. Append 1. Loop ends. Result [1]. Correct.\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/100:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "post_h2_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "post_h3_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "post_h4_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aebdd8b21e804ef426ea165ee74cc7077b4a60fbf243d4eaf1d568c0d0779ba6",
+  "raw_source": "def make_a_pile(n):\n    \"\"\"\n    Given a positive integer n, you have to make a pile of n levels of stones.\n    The first level has n stones.\n    The number of stones in the next level is:\n        - the next odd number if n is odd.\n        - the next even number if n is even.\n    Return the number of stones in each level in a list, where element at index\n    i represents the number of stones in the level (i+1).\n\n    Examples:\n    >>> make_a_pile(3)\n    [3, 5, 7]\n    \"\"\"\n    \n    # Start with n as the first level's stone count\n    pile = []\n    current_stones = n\n    \n    for _ in range(n):\n        pile.append(current_stones)\n        # Add 2 to preserve parity (odd->next odd, even->next even)\n        current_stones += 2\n        \n    return pile\n\n# Verification tests:\nprint(make_a_pile(3))   # Expected: [3, 5, 7]\nprint(make_a_pile(4))   # Expected: [4, 6, 8, 10]\nprint(make_a_pile(1))   # Expected: [2]? No, start is n=1. -> [1]\n# Wait, if n=1, loop runs once. \n# current_stones = 1. Append 1. Loop ends. Result [1]. Correct.\n\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/100",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "2bfd419643b5db17fad5c0838732c7bbcf9a7b7260b63fc2421bce414523c6c9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "convert_list_dictionary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "final_source": "def convert_list_dictionary(id_list, name_list, score_list):\n    \"\"\"\n    Converts three parallel lists into a nested dictionary structure as specified.\n    \n    Args:\n        id_list: List of IDs (e.g., [\"S001\", ...])\n        name_list: List of Names (e.g., [\"Adina Park\", ...])\n        score_list: List of Scores (e.g., [85, 98, ...])\n        \n    Returns:\n        A list containing dictionaries in the format: \n        [{'ID': {'Name': Score}}, ...]\n    \"\"\"\n    result = []\n    \n    # Iterate through all three lists simultaneously using zip\n    for student_id, name, score in zip(id_list, name_list, score_list):\n        # Create a nested dictionary for each entry\n        inner_dict = {name: score}\n        \n        # Wrap it with the ID as the outer key\n        result.append({student_id: inner_dict})\n    \n    return result\n\n# Test case from your request\ntest_ids = [\"S001\", \"S002\", \"S003\", \"S004\"]\ntest_names = [\"Adina Park\", \"Leyton Marsh\", \"Duncan Boyle\", \"Saim Richards\"]\ntest_scores = [85, 98, 89, 92]\n\noutput = convert_list_dictionary(test_ids, test_names, test_scores)\n\n# Verification assertion\nassert output == [{'S001': {'Adina Park': 85}}, {'S002': {'Leyton Marsh': 98}}, {'S003': {'Duncan Boyle': 89}}, {'S004': {'Saim Richards': 92}}]\n\nprint(\"Function executed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/391:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "post_h2_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "post_h3_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "post_h4_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "28a13d712949f10c2840f3bff0864fac6efae541476396548e59c2bcd437d052",
+  "raw_source": "def convert_list_dictionary(id_list, name_list, score_list):\n    \"\"\"\n    Converts three parallel lists into a nested dictionary structure as specified.\n    \n    Args:\n        id_list: List of IDs (e.g., [\"S001\", ...])\n        name_list: List of Names (e.g., [\"Adina Park\", ...])\n        score_list: List of Scores (e.g., [85, 98, ...])\n        \n    Returns:\n        A list containing dictionaries in the format: \n        [{'ID': {'Name': Score}}, ...]\n    \"\"\"\n    result = []\n    \n    # Iterate through all three lists simultaneously using zip\n    for student_id, name, score in zip(id_list, name_list, score_list):\n        # Create a nested dictionary for each entry\n        inner_dict = {name: score}\n        \n        # Wrap it with the ID as the outer key\n        result.append({student_id: inner_dict})\n    \n    return result\n\n# Test case from your request\ntest_ids = [\"S001\", \"S002\", \"S003\", \"S004\"]\ntest_names = [\"Adina Park\", \"Leyton Marsh\", \"Duncan Boyle\", \"Saim Richards\"]\ntest_scores = [85, 98, 89, 92]\n\noutput = convert_list_dictionary(test_ids, test_names, test_scores)\n\n# Verification assertion\nassert output == [{'S001': {'Adina Park': 85}}, {'S002': {'Leyton Marsh': 98}}, {'S003': {'Duncan Boyle': 89}}, {'S004': {'Saim Richards': 92}}]\n\nprint(\"Function executed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/391",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

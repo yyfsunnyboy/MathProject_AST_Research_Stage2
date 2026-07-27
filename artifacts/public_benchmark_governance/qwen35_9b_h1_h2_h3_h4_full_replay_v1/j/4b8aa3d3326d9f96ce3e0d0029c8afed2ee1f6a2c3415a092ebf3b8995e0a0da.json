@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4b8aa3d3326d9f96ce3e0d0029c8afed2ee1f6a2c3415a092ebf3b8995e0a0da",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "f",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "final_source": "def f(n):\n    \"\"\" Implement the function f that takes n as a parameter,\n    and returns a list of size n, such that the value of the element at index i is \n    the factorial of i if i is even or the sum of numbers from 1 to i otherwise.\n    \n    Note: The problem description uses 1-based indexing for logic (i starts from 1),\n    but Python lists are 0-indexed. We'll interpret \"index i\" in the docstring as \n    referring to position i+1 when using a list of length n, where positions correspond to values 1..n.\n\n    Example: f(5) == [1, 2, 6, 24, 15]\n        Position (value):   1   2   3   4   5\n        Even?               No  Yes No  Yes No\n        Rule for odd pos i: sum from 1 to i -> 1=1, 3=(1+2)=6? Wait example says [1,2,6,24,15]\n\n    Let's reconcile with the given example f(5) == [1, 2, 6, 24, 15]:\n        Index in list (0-based): 0 -> value for i=1: odd → sum(1..1)=1 ✓\n                                  1 -> value for i=2: even → factorial(2)=2 ✓\n                                  2 -> value for i=3: odd → sum(1..3)=6? But example has 6 at index 2 (i=3) → yes, 1+2+3=6 ✓\n                                  3 -> value for i=4: even → factorial(4)=24 ✓\n                                  4 -> value for i=5: odd → sum(1..5)=15? But example has 15 at index 4 (i=5) → yes, 1+2+3+4+5=15 ✓\n\n    So the rule is:\n        For position k in list (0-based), let i = k + 1.\n        If i is even → return factorial(i)\n        If i is odd → return sum(1..i)\n\n    Example matches this interpretation.\n    \"\"\"\n\n    result = []\n    \n    # Precompute factorials and sums as we go to avoid recomputation\n    fact = 1   # will hold factorial of current even number when needed\n    total_sum = 0\n    \n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            # Even index (in problem's 1-based sense) -> factorial(i)\n            fact *= i   # update factorial up to i\n            result.append(fact)\n        else:\n            # Odd index -> sum from 1 to i\n            total_sum += i\n            result.append(total_sum)\n    \n    return result\n\n# Example usage:\nprint(f(5))  # Output: [1, 2, 6, 24, 15]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/106:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "post_h2_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "post_h3_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "post_h4_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3ed69ee6e46961b8fb05fc2eedcad0d994db5f1b0a91610cc21b009af9709836",
+  "raw_source": "def f(n):\n    \"\"\" Implement the function f that takes n as a parameter,\n    and returns a list of size n, such that the value of the element at index i is \n    the factorial of i if i is even or the sum of numbers from 1 to i otherwise.\n    \n    Note: The problem description uses 1-based indexing for logic (i starts from 1),\n    but Python lists are 0-indexed. We'll interpret \"index i\" in the docstring as \n    referring to position i+1 when using a list of length n, where positions correspond to values 1..n.\n\n    Example: f(5) == [1, 2, 6, 24, 15]\n        Position (value):   1   2   3   4   5\n        Even?               No  Yes No  Yes No\n        Rule for odd pos i: sum from 1 to i -> 1=1, 3=(1+2)=6? Wait example says [1,2,6,24,15]\n\n    Let's reconcile with the given example f(5) == [1, 2, 6, 24, 15]:\n        Index in list (0-based): 0 -> value for i=1: odd → sum(1..1)=1 ✓\n                                  1 -> value for i=2: even → factorial(2)=2 ✓\n                                  2 -> value for i=3: odd → sum(1..3)=6? But example has 6 at index 2 (i=3) → yes, 1+2+3=6 ✓\n                                  3 -> value for i=4: even → factorial(4)=24 ✓\n                                  4 -> value for i=5: odd → sum(1..5)=15? But example has 15 at index 4 (i=5) → yes, 1+2+3+4+5=15 ✓\n\n    So the rule is:\n        For position k in list (0-based), let i = k + 1.\n        If i is even → return factorial(i)\n        If i is odd → return sum(1..i)\n\n    Example matches this interpretation.\n    \"\"\"\n\n    result = []\n    \n    # Precompute factorials and sums as we go to avoid recomputation\n    fact = 1   # will hold factorial of current even number when needed\n    total_sum = 0\n    \n    for i in range(1, n + 1):\n        if i % 2 == 0:\n            # Even index (in problem's 1-based sense) -> factorial(i)\n            fact *= i   # update factorial up to i\n            result.append(fact)\n        else:\n            # Odd index -> sum from 1 to i\n            total_sum += i\n            result.append(total_sum)\n    \n    return result\n\n# Example usage:\nprint(f(5))  # Output: [1, 2, 6, 24, 15]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/106",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

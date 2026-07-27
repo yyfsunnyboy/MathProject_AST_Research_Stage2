@@ -1,0 +1,39 @@
+# SHA-256 manifest for the qwen3.5:9b cumulative H1->H2->H3->H4 candidate
+# replay + EvalPlus archive (development-candidate evidence; not a
+# frozen/production Healer claim). Generated at archive time from the
+# actual on-disk files, independently recomputed from the per-cell journals
+# -- not copied from a self-reported summary. Recomputation from all 1084
+# journal files in each `j/` directory reproduced exactly:
+#   replay:   1084 cells, 0 missing, 0 duplicate, 542 tasks each with a
+#             complete {ab1, ab2g} pair, raw_source/final_source present
+#             (not hash-only) in every journal.
+#   evalplus: 1084 pairs / 2168 executions, 0 missing, 0 duplicate,
+#             transition_counts = verified_rescue=25, regression=3,
+#             blocker_removed_but_incorrect=9, modified_but_still_failed=43,
+#             preserved_pass=656, abstained_unchanged=348, unchanged_failure=0.
+#
+# Runner/test code (scripts/run_public_benchmark_h1_h2_h3_h4_replay_v1.py,
+# scripts/run_public_benchmark_h1_h2_h3_h4_evalplus_v1.py,
+# tests/test_public_benchmark_h1_h2_h3_h4_replay_v1.py,
+# tests/test_public_benchmark_h1_h2_h3_h4_evalplus_v1.py) is unchanged from
+# the qwen3.5:4b archive (commit 30172a51) -- listed here by reference hash
+# only, not re-committed:
+#   8647bcd9bd5cac5cc91dd730ace8b78c277024eb5b2c8399c0204e55a2546bcf  scripts/run_public_benchmark_h1_h2_h3_h4_replay_v1.py
+#   d0ca1f02b448c7cd3a8b9841f75654f4ee6c032b498f4497e49978a5083d6c9d  scripts/run_public_benchmark_h1_h2_h3_h4_evalplus_v1.py
+#   408c7f8ab78cbeb1fece33826bf7074cf24fc1316beabfb1804dc57e76271519  tests/test_public_benchmark_h1_h2_h3_h4_replay_v1.py
+#   611d74f4566698e821fdef2c70aee010b9e479467400d2e0125874c622f11d2d  tests/test_public_benchmark_h1_h2_h3_h4_evalplus_v1.py
+#
+# No separate formal cumulative-H1-H4 analysis report exists yet for 9B (or
+# 4B) at this point -- only the replay/EvalPlus artifacts below are archived
+# this round.
+#
+a57fc0532c675993b793a184197c105cde09b6dca857925a7d37b27f71171266  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/summary.json
+4e94b7788f756541056f7418a271ce366e4168ddf4f4439f1abcb5d095847137  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/execution_manifest.json
+69a5d64e89338f6da7ce5cd83c4f4c6d5789f1b06e7164b932c64437bc7c0dee  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/cell_level_ledger.csv
+9066c7616201719b02ffde95cbd1ceb4a5d4d7fbe3e83d646e325e7deba7d05e  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/summary.json
+53a3becfdd81a46d72c5932923360aaf38173856bc9208ebd905097834be6258  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/execution_manifest.json
+848703c47787c162073ed7f6dcfa4636b61480513ea61b939d9195c7878c3523  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/cell_level_ledger.csv
+
+--- per-cell journal directories (aggregate) ---
+fab9d0b6b5b69bbd2d461b10f39eb51f41f0f978b2f35c8ac386b92ed171496e  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/j/  (1084 files, combined-content digest)
+168471226eaf674c1b28afee93733d2138070411784038a55e9a318d03ee1535  artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_evalplus_v1/j/  (1084 files, combined-content digest)

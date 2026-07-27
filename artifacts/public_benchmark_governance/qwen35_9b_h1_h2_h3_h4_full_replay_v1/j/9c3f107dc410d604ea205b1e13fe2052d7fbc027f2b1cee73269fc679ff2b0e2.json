@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9c3f107dc410d604ea205b1e13fe2052d7fbc027f2b1cee73269fc679ff2b0e2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_literals",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "final_source": "import re\n\ndef find_literals(text, pattern):\n    \"\"\"\n    Searches for the first occurrence of 'pattern' in 'text'.\n    \n    Args:\n        text (str): The string to search within.\n        pattern (str): The regex pattern to search for.\n        \n    Returns:\n        tuple: A tuple containing (matched_string, start_index, end_index).\n               If no match is found, returns None or raises an exception depending on preference.\n    \n    Raises:\n        re.error: If the provided 'pattern' is not a valid regex.\n    \"\"\"\n    try:\n        # Compile the pattern for efficiency and to handle potential flags if needed later\n        compiled_pattern = re.compile(pattern)\n        \n        match = compiled_pattern.search(text)\n        \n        if match:\n            return (match.group(), match.start(), match.end())\n        else:\n            return None\n            \n    except re.error as e:\n        raise ValueError(f\"Invalid regular expression pattern: {e}\")\n\n# Test cases based on your request and edge cases\nif __name__ == \"__main__\":\n    \n    # Your specific test case (Note: 'fox' is a substring, but in regex it matches literally)\n    result = find_literals('The quick brown fox jumps over the lazy dog.', 'fox')\n    assert result == ('fox', 16, 19), f\"Test failed. Got {result}\"\n    print(f\"✓ Test passed: {result}\")\n\n    # Additional test cases to ensure robustness\n    \n    # Case insensitive search (if needed) - standard regex is case sensitive by default unless flag used\n    result2 = find_literals('The Quick Brown Fox', 'fox') \n    assert result2 == None, \"Should return None for exact match failure\"\n    \n    # Pattern with special characters (escaped automatically if passed as string literal in some contexts, \n    # but here we pass raw regex. Let's search for a digit)\n    text_digits = \"abc123def456ghi789\"\n    result3 = find_literals(text_digits, r'\\d+')  # Match one or more digits\n    assert result3 == ('1', 3, 4), f\"Digits test failed. Got {result3}\"\n\n    print(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/607:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "post_h2_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "post_h3_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "post_h4_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "43fe546ff26a7e189450959acc076671857f7bd28794bab089f9bcd1baef03ea",
+  "raw_source": "import re\n\ndef find_literals(text, pattern):\n    \"\"\"\n    Searches for the first occurrence of 'pattern' in 'text'.\n    \n    Args:\n        text (str): The string to search within.\n        pattern (str): The regex pattern to search for.\n        \n    Returns:\n        tuple: A tuple containing (matched_string, start_index, end_index).\n               If no match is found, returns None or raises an exception depending on preference.\n    \n    Raises:\n        re.error: If the provided 'pattern' is not a valid regex.\n    \"\"\"\n    try:\n        # Compile the pattern for efficiency and to handle potential flags if needed later\n        compiled_pattern = re.compile(pattern)\n        \n        match = compiled_pattern.search(text)\n        \n        if match:\n            return (match.group(), match.start(), match.end())\n        else:\n            return None\n            \n    except re.error as e:\n        raise ValueError(f\"Invalid regular expression pattern: {e}\")\n\n# Test cases based on your request and edge cases\nif __name__ == \"__main__\":\n    \n    # Your specific test case (Note: 'fox' is a substring, but in regex it matches literally)\n    result = find_literals('The quick brown fox jumps over the lazy dog.', 'fox')\n    assert result == ('fox', 16, 19), f\"Test failed. Got {result}\"\n    print(f\"✓ Test passed: {result}\")\n\n    # Additional test cases to ensure robustness\n    \n    # Case insensitive search (if needed) - standard regex is case sensitive by default unless flag used\n    result2 = find_literals('The Quick Brown Fox', 'fox') \n    assert result2 == None, \"Should return None for exact match failure\"\n    \n    # Pattern with special characters (escaped automatically if passed as string literal in some contexts, \n    # but here we pass raw regex. Let's search for a digit)\n    text_digits = \"abc123def456ghi789\"\n    result3 = find_literals(text_digits, r'\\d+')  # Match one or more digits\n    assert result3 == ('1', 3, 4), f\"Digits test failed. Got {result3}\"\n\n    print(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/607",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

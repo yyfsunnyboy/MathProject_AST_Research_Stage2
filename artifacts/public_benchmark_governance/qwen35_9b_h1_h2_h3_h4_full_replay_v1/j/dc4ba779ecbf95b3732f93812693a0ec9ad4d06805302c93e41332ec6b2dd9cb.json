@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "dc4ba779ecbf95b3732f93812693a0ec9ad4d06805302c93e41332ec6b2dd9cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "heap_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "final_source": "def heap_sort(arr):\n    def sift_down(heap, startpos, end):\n        newitem = heap[startpos]\n        # Bubble up the smaller child until hitting a leaf\n        right_child = 2 * (startpos + 1) + 1\n        while right_child < end:\n            left_child = right_child - 1\n            # If there's a larger value on the left, use it for comparison\n            if newitem > heap[left_child]:\n                startpos = left_child\n\n            else:\n                # Otherwise, switch to the smaller child (right)\n                newitem = heap[right_child]\n            \n            right_child += 2\n        \n        end -= 1\n    \n    def sift_down_v2(heap, pos):\n        \"\"\"Sift down a node in a max-heap.\"\"\"\n        n = len(heap) - 1\n        while True:\n            child = 2 * pos + 1\n            if child > n:\n                break\n            \n            right_child = child + 1\n            if right_child <= n and heap[child] < heap[right_child]:\n                child += 1\n                \n            # If the parent is smaller than the largest of its children, swap them.\n            if heap[pos] < heap[child]:\n                heap[pos], heap[child] = heap[child], heap[pos]\n                \n                pos = child\n            else:\n                break\n    \n    def build_max_heap(arr):\n        n = len(arr) - 1\n        for i in range(n // 2, -1, -1):\n            sift_down_v2(arr, i)\n\n    # Build a max-heap from the input list\n    if not arr:\n        return []\n    \n    build_max_heap(arr)\n    \n    # Extract elements one by one and place them at the end of the array (sorted order)\n    for i in range(len(arr), 0, -1):\n        arr[0], arr[i-1] = arr[i-1], arr[0]\n        \n        sift_down_v2(arr, 0)\n\nreturn arr",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/635:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "post_h2_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "post_h3_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "post_h4_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1b353ad6dadc51e75d00e03c0c798c618878b1550ebb0fd198731c8bb2ffc7f6",
+  "raw_source": "def heap_sort(arr):\n    def sift_down(heap, startpos, end):\n        newitem = heap[startpos]\n        # Bubble up the smaller child until hitting a leaf\n        right_child = 2 * (startpos + 1) + 1\n        while right_child < end:\n            left_child = right_child - 1\n            # If there's a larger value on the left, use it for comparison\n            if newitem > heap[left_child]:\n                startpos = left_child\n\n            else:\n                # Otherwise, switch to the smaller child (right)\n                newitem = heap[right_child]\n            \n            right_child += 2\n        \n        end -= 1\n    \n    def sift_down_v2(heap, pos):\n        \"\"\"Sift down a node in a max-heap.\"\"\"\n        n = len(heap) - 1\n        while True:\n            child = 2 * pos + 1\n            if child > n:\n                break\n            \n            right_child = child + 1\n            if right_child <= n and heap[child] < heap[right_child]:\n                child += 1\n                \n            # If the parent is smaller than the largest of its children, swap them.\n            if heap[pos] < heap[child]:\n                heap[pos], heap[child] = heap[child], heap[pos]\n                \n                pos = child\n            else:\n                break\n    \n    def build_max_heap(arr):\n        n = len(arr) - 1\n        for i in range(n // 2, -1, -1):\n            sift_down_v2(arr, i)\n\n    # Build a max-heap from the input list\n    if not arr:\n        return []\n    \n    build_max_heap(arr)\n    \n    # Extract elements one by one and place them at the end of the array (sorted order)\n    for i in range(len(arr), 0, -1):\n        arr[0], arr[i-1] = arr[i-1], arr[0]\n        \n        sift_down_v2(arr, 0)\n\nreturn arr",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/635",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

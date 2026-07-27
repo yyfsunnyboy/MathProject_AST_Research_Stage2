@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f8b80d6fbb9138cb43923ba86745de2ffd0254869fa28ebd302b09a84f18a7de",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_polite",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "final_source": "def get_nth_polite_number(n):\n    \"\"\"\n    Finds the nth polite number.\n    A polite number is any positive integer that can be written as sum \n    of two or more consecutive positive integers. These are all numbers \n    except powers of 2 (1, 2, 4, 8...).\n    \n    Args:\n        n (int): The index of the polite number to find (1-based).\n        \n    Returns:\n        int: The nth polite number.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    count = 0\n    num = 1\n    \n    while True:\n        # Check if num is a power of 2\n        # (num & (num - 1)) == 0 checks for powers of 2. \n        # Since we start at 1, and 1 is 2^0, it correctly identifies 1 as impolite.\n        if not ((num & (num - 1) == 0)):\n            count += 1\n            if count == n:\n                return num\n        \n        num += 1\n\n# Verification based on the prompt's assertion\nassert get_nth_polite_number(7) == 11\nprint(f\"The 7th polite number is {get_nth_polite_number(7)}\") # Should print 11\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/765:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "post_h2_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "post_h3_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "post_h4_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "593479ab9ace0a9f933dc33c55a8361c25bef916f7c1397ef616cbab67447a7b",
+  "raw_source": "def get_nth_polite_number(n):\n    \"\"\"\n    Finds the nth polite number.\n    A polite number is any positive integer that can be written as sum \n    of two or more consecutive positive integers. These are all numbers \n    except powers of 2 (1, 2, 4, 8...).\n    \n    Args:\n        n (int): The index of the polite number to find (1-based).\n        \n    Returns:\n        int: The nth polite number.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    count = 0\n    num = 1\n    \n    while True:\n        # Check if num is a power of 2\n        # (num & (num - 1)) == 0 checks for powers of 2. \n        # Since we start at 1, and 1 is 2^0, it correctly identifies 1 as impolite.\n        if not ((num & (num - 1) == 0)):\n            count += 1\n            if count == n:\n                return num\n        \n        num += 1\n\n# Verification based on the prompt's assertion\nassert get_nth_polite_number(7) == 11\nprint(f\"The 7th polite number is {get_nth_polite_number(7)}\") # Should print 11\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/765",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

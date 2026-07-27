@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5e6253c28a5ba0b93214d4c3c400b2e88078f7e26a13dbb85db298ea56162919",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sample_nam",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4a7bfc13d0b1d8ccd3832f9dda5483a030aec6adbe333cc4ab8ab22ed930634c",
+  "final_source": "def sum_name_lengths(names):\n    \"\"\"\n    Sums the lengths of names that start with an uppercase letter.\n    \n    :param names: List of name strings\n    :return: Integer total length of qualifying names\n    \"\"\"\n    return sum(len(name) for name in names if name and name[0].isupper())\n\n# Example usage and assertion from your prompt\nsample_names = ['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']\nresult = sum_name_lengths(sample_names)  # Dylan(5) + Diana(5) + Joanne(6) = 16\n\nassert result == 16, f\"Expected 16 but got {result}\"\nprint(\"Assertion passed!\")\n\nsample_nam = sum_name_lengths\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/639:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4a7bfc13d0b1d8ccd3832f9dda5483a030aec6adbe333cc4ab8ab22ed930634c",
+  "post_h2_sha256": "4a7bfc13d0b1d8ccd3832f9dda5483a030aec6adbe333cc4ab8ab22ed930634c",
+  "post_h3_sha256": "4a7bfc13d0b1d8ccd3832f9dda5483a030aec6adbe333cc4ab8ab22ed930634c",
+  "post_h4_sha256": "4a7bfc13d0b1d8ccd3832f9dda5483a030aec6adbe333cc4ab8ab22ed930634c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6d73f583f10fd60564b6294f40d97200b53d74e9ece4102dd4a6cf30ce6aa654",
+  "raw_source": "def sum_name_lengths(names):\n    \"\"\"\n    Sums the lengths of names that start with an uppercase letter.\n    \n    :param names: List of name strings\n    :return: Integer total length of qualifying names\n    \"\"\"\n    return sum(len(name) for name in names if name and name[0].isupper())\n\n# Example usage and assertion from your prompt\nsample_names = ['sally', 'Dylan', 'rebecca', 'Diana', 'Joanne', 'keith']\nresult = sum_name_lengths(sample_names)  # Dylan(5) + Diana(5) + Joanne(6) = 16\n\nassert result == 16, f\"Expected 16 but got {result}\"\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/639",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d186e6338e84d91787f8c35dd4000c96d13862f37d8f85507030ef3b9242067f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "search",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "final_source": "def search(lst):\n    from collections import Counter\n    \n    # Count frequencies of each number\n    counts = Counter(lst)\n    \n    best = -1\n    \n    for num, freq in counts.items():\n        if num > 0 and freq >= num:\n            if num > best:\n                best = num\n                \n    return best\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/69:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "post_h2_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "post_h3_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "post_h4_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "51199454110670af252e7a2ea59d305f050d0f775de70ef0e81fd6262ec8316f",
+  "raw_source": "def search(lst):\n    from collections import Counter\n    \n    # Count frequencies of each number\n    counts = Counter(lst)\n    \n    best = -1\n    \n    for num, freq in counts.items():\n        if num > 0 and freq >= num:\n            if num > best:\n                best = num\n                \n    return best\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/69",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "d5368d02e625ce334ee8ab8058ab721aabb3e75f8aa1413a917c72d5e34c9fb1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "match_parens",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "final_source": "def match_parens(lst):\n    def is_good(s):\n        balance = 0\n        for char in s:\n            if char == '(':\n                balance += 1\n            else:\n                balance -= 1\n            if balance < 0:\n                return False\n        return balance == 0\n\n    s1, s2 = lst[0], lst[1]\n    \n    # Check both concatenation orders\n    if is_good(s1 + s2) or is_good(s2 + s1):\n        return 'Yes'\n    else:\n        return 'No'",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/119:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "post_h2_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "post_h3_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "post_h4_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "43b80af5b5d29ff5392c4e54a4c3f750218c08262fe1928eacbae45b150d6611",
+  "raw_source": "def match_parens(lst):\n    def is_good(s):\n        balance = 0\n        for char in s:\n            if char == '(':\n                balance += 1\n            else:\n                balance -= 1\n            if balance < 0:\n                return False\n        return balance == 0\n\n    s1, s2 = lst[0], lst[1]\n    \n    # Check both concatenation orders\n    if is_good(s1 + s2) or is_good(s2 + s1):\n        return 'Yes'\n    else:\n        return 'No'",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/119",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

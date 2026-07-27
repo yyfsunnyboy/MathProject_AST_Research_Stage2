@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "57fdfe1af7bfcf0ea81fca674d325ad1e45cf29369cfe767b299ca6490aa65d2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "next_smallest_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "final_source": "def next_smallest_palindrome(n):\n    s = str(n)\n    length = len(s)\n    \n    # Try to construct a palindrome by mirroring the left half of n\n    def make_mirror(left_part, is_odd=False):\n        if is_odd:\n            return int(left_part + left_part[-2::-1])\n        else:\n            return int(left_part + left_part[::-1])\n    \n    # Case 1: Try to form a palindrome with the same length by mirroring current prefix\n    half_len = (length + 1) // 2\n    left_half = s[:half_len]\n    candidate = make_mirror(left_half, is_odd=(length % 2 == 1))\n    \n    if int(candidate) > n:\n        return candidate\n    \n    # Case 2: If the mirrored number is not greater than n (e.g., n itself is a palindrome or smaller),\n    # we need to increment the left half and then mirror it.\n    try:\n        incremented_left = str(int(left_half) + 1)\n        \n        if len(incremented_left) > length // 2 + (length % 2):\n            # Overflow occurred in the middle digit, e.g., 99 -> next is 101\n            return int('1' + '0' * (length - 1))\n            \n        new_candidate = make_mirror(incremented_left, is_odd=(length % 2 == 1))\n        \n        # Check if the incremented left half caused a carry that increased length beyond original? \n        # Actually handled above. But we must ensure it's still same length unless overflow to next power of 10 pattern.\n        # The logic '9' -> '10' for odd/even needs careful check against total digits.\n        \n        if len(new_candidate) == length:\n            return new_candidate\n            \n    except ValueError:\n        pass\n        \n    # Case 3: If we couldn't find a same-length palindrome greater than n (e.g., 9, 99), \n    # the next smallest is usually of form 10...01 with one more digit.\n    if length == 2 and s[0] == '9':\n        return int('1' + '0' * (length - 1))\n        \n    # General fallback for cases like 89 -> 91? No, 89 next is 91 which is not palindrome. \n    # Wait: Next smallest PALINDROME of 89 is 91? NO. Palindromes near 89 are ...77, 88, 99...\n    # So for 89, next is 99. My logic above handles this via incrementing left half.\n    \n    return int('1' + '0' * (length - 1))",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/100:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "post_h2_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "post_h3_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "post_h4_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c63361b6d3b2773b15479500e222cfb805c0f5d9ccb46befd4313b6b268ec7f3",
+  "raw_source": "def next_smallest_palindrome(n):\n    s = str(n)\n    length = len(s)\n    \n    # Try to construct a palindrome by mirroring the left half of n\n    def make_mirror(left_part, is_odd=False):\n        if is_odd:\n            return int(left_part + left_part[-2::-1])\n        else:\n            return int(left_part + left_part[::-1])\n    \n    # Case 1: Try to form a palindrome with the same length by mirroring current prefix\n    half_len = (length + 1) // 2\n    left_half = s[:half_len]\n    candidate = make_mirror(left_half, is_odd=(length % 2 == 1))\n    \n    if int(candidate) > n:\n        return candidate\n    \n    # Case 2: If the mirrored number is not greater than n (e.g., n itself is a palindrome or smaller),\n    # we need to increment the left half and then mirror it.\n    try:\n        incremented_left = str(int(left_half) + 1)\n        \n        if len(incremented_left) > length // 2 + (length % 2):\n            # Overflow occurred in the middle digit, e.g., 99 -> next is 101\n            return int('1' + '0' * (length - 1))\n            \n        new_candidate = make_mirror(incremented_left, is_odd=(length % 2 == 1))\n        \n        # Check if the incremented left half caused a carry that increased length beyond original? \n        # Actually handled above. But we must ensure it's still same length unless overflow to next power of 10 pattern.\n        # The logic '9' -> '10' for odd/even needs careful check against total digits.\n        \n        if len(new_candidate) == length:\n            return new_candidate\n            \n    except ValueError:\n        pass\n        \n    # Case 3: If we couldn't find a same-length palindrome greater than n (e.g., 9, 99), \n    # the next smallest is usually of form 10...01 with one more digit.\n    if length == 2 and s[0] == '9':\n        return int('1' + '0' * (length - 1))\n        \n    # General fallback for cases like 89 -> 91? No, 89 next is 91 which is not palindrome. \n    # Wait: Next smallest PALINDROME of 89 is 91? NO. Palindromes near 89 are ...77, 88, 99...\n    # So for 89, next is 99. My logic above handles this via incrementing left half.\n    \n    return int('1' + '0' * (length - 1))",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/100",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

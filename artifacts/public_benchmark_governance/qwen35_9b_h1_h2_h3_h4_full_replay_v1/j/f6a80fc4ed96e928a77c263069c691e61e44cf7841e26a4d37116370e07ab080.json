@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f6a80fc4ed96e928a77c263069c691e61e44cf7841e26a4d37116370e07ab080",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "min_val",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "521038d38a7417235a8ab78371d88e01230107c03a388f94321724876447f8fd",
+  "final_source": "def min_val(lst):\n    if not lst:\n        return None\n    \n    # Convert all items to strings to enable comparison across types\n    # This handles the heterogeneous nature by using ASCII ordering rules.\n    # Digits (48-57) < Uppercase (65-90) < Lowercase (97-122).\n    \n    min_str = None\n    original_min_val = None\n    \n    for item in lst:\n        str_item = str(item)\n        \n        if min_str is None or str_item < min_str:\n            min_str = str_item\n            original_min_val = item\n            \n    return original_min_val\n\n# Test the assertion\nif __name__ == \"__main__\":\n    assert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/410:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e5a1012251ac733a24f4b355fc1b1b84aad8f91e71199de7fc580e20461c449a",
+  "post_h2_sha256": "8733cfd5bdd9de00201f77f930d542d26758bd7433ae14ed77ed772baaad3fda",
+  "post_h3_sha256": "8733cfd5bdd9de00201f77f930d542d26758bd7433ae14ed77ed772baaad3fda",
+  "post_h4_sha256": "521038d38a7417235a8ab78371d88e01230107c03a388f94321724876447f8fd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e5a1012251ac733a24f4b355fc1b1b84aad8f91e71199de7fc580e20461c449a",
+  "raw_source": "def min_val(lst):\n    if not lst:\n        return None\n    \n    # Convert all items to strings to enable comparison across types\n    # This handles the heterogeneous nature by using ASCII ordering rules.\n    # Digits (48-57) < Uppercase (65-90) < Lowercase (97-122).\n    \n    min_str = None\n    original_min_val = None\n    \n    for item in lst:\n        str_item = str(item)\n        \n        if min_str is None or str_item < min_str:\n            min_str = str_item\n            original_min_val = item\n            \n    return original_min_val\n\n# Test the assertion\nassert min_val(['Python', 3, 2, 4, 5, 'version']) == 2\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/410",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

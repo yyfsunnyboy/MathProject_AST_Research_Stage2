@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "92cf8cfed5b1dc62ab0e84415b3651595afc5d5bc8d070004a02cbd9826feb40",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sum_of_digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "final_source": "def sum_of_digits(numbers):\n    \"\"\"\n    Computes the sum of all digits found in every number within the given list.\n    \n    Args:\n        numbers (list[int]): A list of integers.\n        \n    Returns:\n        int: The total sum of all individual digits from all numbers in the list.\n    \"\"\"\n    total_sum = 0\n    \n    for num in numbers:\n        # Convert number to string and iterate over each character digit\n        current_digit_sum = sum(int(digit) for digit in str(abs(num)))\n        \n        # Add this specific number's digit sum to the total\n        total_sum += current_digit_sum\n        \n    return total_sum\n\n# Verification based on your requirement:\n# List: [10, 2, 56]\n# Digits of 10 -> 1 + 0 = 1\n# Digits of 2   -> 2\n# Digits of 56  -> 5 + 6 = 11\n# Total Sum     -> 1 + 2 + 11 = 14\n\nresult = sum_of_digits([10, 2, 56])\nassert result == 14, f\"Expected 14 but got {result}\"\n\nprint(f\"The calculated sum is: {result}\") # Output: The calculated sum is: 14\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/398:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "post_h2_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "post_h3_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "post_h4_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "84f6c7f48370bf396befe9ec989b3009bd6b987ff258c4b32ec0dc33c0227d09",
+  "raw_source": "def sum_of_digits(numbers):\n    \"\"\"\n    Computes the sum of all digits found in every number within the given list.\n    \n    Args:\n        numbers (list[int]): A list of integers.\n        \n    Returns:\n        int: The total sum of all individual digits from all numbers in the list.\n    \"\"\"\n    total_sum = 0\n    \n    for num in numbers:\n        # Convert number to string and iterate over each character digit\n        current_digit_sum = sum(int(digit) for digit in str(abs(num)))\n        \n        # Add this specific number's digit sum to the total\n        total_sum += current_digit_sum\n        \n    return total_sum\n\n# Verification based on your requirement:\n# List: [10, 2, 56]\n# Digits of 10 -> 1 + 0 = 1\n# Digits of 2   -> 2\n# Digits of 56  -> 5 + 6 = 11\n# Total Sum     -> 1 + 2 + 11 = 14\n\nresult = sum_of_digits([10, 2, 56])\nassert result == 14, f\"Expected 14 but got {result}\"\n\nprint(f\"The calculated sum is: {result}\") # Output: The calculated sum is: 14\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/398",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

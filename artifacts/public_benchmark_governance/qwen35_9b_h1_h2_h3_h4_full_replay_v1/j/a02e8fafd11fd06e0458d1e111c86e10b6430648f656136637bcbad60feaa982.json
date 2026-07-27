@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "print_arguments_not_literal_or_entrypoint_literal_call"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a02e8fafd11fd06e0458d1e111c86e10b6430648f656136637bcbad60feaa982",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "magic_square_test",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4ab78b30d4e90e75354d18e49210f1f31d29ac3d1dea70a65f23615e980724d2",
+  "final_source": "def magic_square_test(matrix):\n    # Check if the matrix is square (rows == cols) and non-empty\n    rows = len(matrix)\n    if not matrix or any(len(row) != rows for row in matrix):\n        return False\n    \n    n = rows\n    \n    # Calculate the expected sum of a standard magic square containing 1 to n^2\n    # Magic Constant formula: M = n * (n^2 + 1) / 2\n    target_sum = n * (n**2 + 1) // 2\n\n    # Flatten matrix to check for unique numbers from 1 to n*n\n    all_numbers = []\n    for row in matrix:\n        all_numbers.extend(row)\n    \n    if sorted(all_numbers) != list(range(1, n**2 + 1)):\n        return False\n        \n    # Check rows sum\n    for row in matrix:\n        if sum(row) != target_sum:\n            return False\n            \n    # Check columns sum\n    for col_idx in range(n):\n        current_col_sum = sum(matrix[row][col_idx] for row in range(n))\n        if current_col_sum != target_sum:\n            return False\n\n    return True\n\n# Test case provided in the prompt\nresult = magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]])\nprint(result) # Output: True\n\n# Additional test for assertion style usage\nif __name__ == \"__main__\":\n    assert magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/129:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2d21cbdbfb98f065b1a866bf3674088716e9acb5f30c2bdcaa9e06e90c26b8f8",
+  "post_h2_sha256": "4ab78b30d4e90e75354d18e49210f1f31d29ac3d1dea70a65f23615e980724d2",
+  "post_h3_sha256": "4ab78b30d4e90e75354d18e49210f1f31d29ac3d1dea70a65f23615e980724d2",
+  "post_h4_sha256": "4ab78b30d4e90e75354d18e49210f1f31d29ac3d1dea70a65f23615e980724d2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2d21cbdbfb98f065b1a866bf3674088716e9acb5f30c2bdcaa9e06e90c26b8f8",
+  "raw_source": "def magic_square_test(matrix):\n    # Check if the matrix is square (rows == cols) and non-empty\n    rows = len(matrix)\n    if not matrix or any(len(row) != rows for row in matrix):\n        return False\n    \n    n = rows\n    \n    # Calculate the expected sum of a standard magic square containing 1 to n^2\n    # Magic Constant formula: M = n * (n^2 + 1) / 2\n    target_sum = n * (n**2 + 1) // 2\n\n    # Flatten matrix to check for unique numbers from 1 to n*n\n    all_numbers = []\n    for row in matrix:\n        all_numbers.extend(row)\n    \n    if sorted(all_numbers) != list(range(1, n**2 + 1)):\n        return False\n        \n    # Check rows sum\n    for row in matrix:\n        if sum(row) != target_sum:\n            return False\n            \n    # Check columns sum\n    for col_idx in range(n):\n        current_col_sum = sum(matrix[row][col_idx] for row in range(n))\n        if current_col_sum != target_sum:\n            return False\n\n    return True\n\n# Test case provided in the prompt\nresult = magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]])\nprint(result) # Output: True\n\n# Additional test for assertion style usage\nassert magic_square_test([[7, 12, 1, 14], [2, 13, 8, 11], [16, 3, 10, 5], [9, 6, 15, 4]]) == True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/129",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

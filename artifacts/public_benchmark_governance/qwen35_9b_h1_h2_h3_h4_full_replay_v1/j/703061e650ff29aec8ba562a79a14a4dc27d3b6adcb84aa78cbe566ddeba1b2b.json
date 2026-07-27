@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "703061e650ff29aec8ba562a79a14a4dc27d3b6adcb84aa78cbe566ddeba1b2b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "decode_shift",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "final_source": "def decode_shift(s: str):\n    \"\"\"\n    takes as input string encoded with encode_shift function. Returns decoded string.\n    Shifts every character backwards by 5 in the alphabet.\n    \"\"\"\n    return \"\".join([chr(((ord(ch) - ord(\"a\") - 5) % 26) + ord(\"a\")) for ch in s])\n\n# Example usage:\noriginal = \"hello\"\nencoded = encode_shift(original)\ndecoded = decode_shift(encoded)\n\nprint(f\"Original: {original}\")      # hello\nprint(f\"Encoded : {encoded}\")       # mjqtq (h->m, e->j, l->q...)\nprint(f\"Decoded : {decoded}\")       # hello\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/50:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "post_h2_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "post_h3_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "post_h4_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ffbd477461456c46ffcb6869301af1cce23ff712ba2630bae1f1a91ef1cba158",
+  "raw_source": "def decode_shift(s: str):\n    \"\"\"\n    takes as input string encoded with encode_shift function. Returns decoded string.\n    Shifts every character backwards by 5 in the alphabet.\n    \"\"\"\n    return \"\".join([chr(((ord(ch) - ord(\"a\") - 5) % 26) + ord(\"a\")) for ch in s])\n\n# Example usage:\noriginal = \"hello\"\nencoded = encode_shift(original)\ndecoded = decode_shift(encoded)\n\nprint(f\"Original: {original}\")      # hello\nprint(f\"Encoded : {encoded}\")       # mjqtq (h->m, e->j, l->q...)\nprint(f\"Decoded : {decoded}\")       # hello\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/50",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

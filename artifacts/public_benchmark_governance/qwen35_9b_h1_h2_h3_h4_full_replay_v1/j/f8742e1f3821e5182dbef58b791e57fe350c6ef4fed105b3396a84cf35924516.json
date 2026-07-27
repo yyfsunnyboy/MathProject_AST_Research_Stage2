@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_message_depends_on_external_state",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f8742e1f3821e5182dbef58b791e57fe350c6ef4fed105b3396a84cf35924516",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "lps",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "final_source": "def lps(s):\n    \"\"\"\n    Finds the length of the longest palindromic subsequence in string s.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        int: Length of the LPS.\n    \"\"\"\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    # Create a DP table initialized with zeros\n    dp = [[0] * n for _ in range(n)]\n\n    # Fill diagonals (single characters are palindromes of length 1)\n    for i in range(n):\n        dp[i][i] = 1\n        \n    # Build the table from bottom up, considering substrings of increasing lengths\n    for cl in range(2, n + 1):  # Length of substring (cl stands for current length)\n        for i in range(n - cl + 1):\n            j = i + cl - 1\n            \n            if s[i] == s[j]:\n                dp[i][j] = dp[i+1][j-1] + 2\n            else:\n                dp[i][j] = max(dp[i+1][j], dp[i][j-1])\n\n    return dp[0][n - 1]\n\n\n# Test case provided in the prompt\nassert lps(\"TENS FOR TENS\") == 5, f\"Expected 5 but got {lps('TENS FOR TENS')}\"\n\nprint(f\"LPS length for 'TENS FOR TENS': {lps('TENS FOR TENS')}\") \n# Output: LPS length for 'TENS FOR TENS': 5\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/247:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "post_h2_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "post_h3_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "post_h4_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e3d31b3e049c9a559642a4caa79a144c860ede93d3cc7d8a3627e815d1edb313",
+  "raw_source": "def lps(s):\n    \"\"\"\n    Finds the length of the longest palindromic subsequence in string s.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        int: Length of the LPS.\n    \"\"\"\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    # Create a DP table initialized with zeros\n    dp = [[0] * n for _ in range(n)]\n\n    # Fill diagonals (single characters are palindromes of length 1)\n    for i in range(n):\n        dp[i][i] = 1\n        \n    # Build the table from bottom up, considering substrings of increasing lengths\n    for cl in range(2, n + 1):  # Length of substring (cl stands for current length)\n        for i in range(n - cl + 1):\n            j = i + cl - 1\n            \n            if s[i] == s[j]:\n                dp[i][j] = dp[i+1][j-1] + 2\n            else:\n                dp[i][j] = max(dp[i+1][j], dp[i][j-1])\n\n    return dp[0][n - 1]\n\n\n# Test case provided in the prompt\nassert lps(\"TENS FOR TENS\") == 5, f\"Expected 5 but got {lps('TENS FOR TENS')}\"\n\nprint(f\"LPS length for 'TENS FOR TENS': {lps('TENS FOR TENS')}\") \n# Output: LPS length for 'TENS FOR TENS': 5\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/247",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

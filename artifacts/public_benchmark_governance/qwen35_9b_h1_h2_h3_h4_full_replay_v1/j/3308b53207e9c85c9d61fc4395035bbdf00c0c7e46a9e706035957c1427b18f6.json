@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3308b53207e9c85c9d61fc4395035bbdf00c0c7e46a9e706035957c1427b18f6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_binary_seq",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "final_source": "import math\n\ndef count_binary_seq(n):\n    \"\"\"\n    Calculates the number of binary sequences of length 2n such that \n    the sum of the first n bits equals the sum of the last n bits.\n    \n    Formula: Sum_{k=0}^{n} (C(n, k))^2 = C(2n, n)\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Length parameter 'n' must be non-negative.\")\n        \n    # Using the combinatorial identity sum(C(n,k)^2) = C(2n, n)\n    result = math.comb(2 * n, n)\n    \n    return float(result)\n\n# Verification based on the prompt's assertion\nif __name__ == \"__main__\":\n    print(f\"Count for n=1: {count_binary_seq(1)}\")\n    # Expected logic check: \n    # Sequences of length 2 (n=1). Half-length = 1.\n    # Possible sequences: 00, 01, 10, 11\n    # Sums: \n    #   [0], [0] -> Equal (Count)\n    #   [0], [1] -> Not equal\n    #   [1], [0] -> Not equal\n    #   [1], [1] -> Equal (Count)\n    # Total = 2.\n    \n    assert math.isclose(count_binary_seq(1), 2.0, rel_tol=0.001)\n    print(\"Assertion passed!\")\n\n    # Additional test for n=2 to ensure robustness\n    # Length 4. Half length 2.\n    # k can be 0, 1, 2.\n    # C(2,0)^2 + C(2,1)^2 + C(2,2)^2 = 1^2 + 2^2 + 1^2 = 6\n    assert count_binary_seq(2) == 6.0\n    print(f\"Count for n=2: {count_binary_seq(2)}\")\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/300:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "post_h2_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "post_h3_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "post_h4_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ca3559d38897ca4bccb740d5eec3f3dfd4ae48dccb4468099a624aeac63220ac",
+  "raw_source": "import math\n\ndef count_binary_seq(n):\n    \"\"\"\n    Calculates the number of binary sequences of length 2n such that \n    the sum of the first n bits equals the sum of the last n bits.\n    \n    Formula: Sum_{k=0}^{n} (C(n, k))^2 = C(2n, n)\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Length parameter 'n' must be non-negative.\")\n        \n    # Using the combinatorial identity sum(C(n,k)^2) = C(2n, n)\n    result = math.comb(2 * n, n)\n    \n    return float(result)\n\n# Verification based on the prompt's assertion\nif __name__ == \"__main__\":\n    print(f\"Count for n=1: {count_binary_seq(1)}\")\n    # Expected logic check: \n    # Sequences of length 2 (n=1). Half-length = 1.\n    # Possible sequences: 00, 01, 10, 11\n    # Sums: \n    #   [0], [0] -> Equal (Count)\n    #   [0], [1] -> Not equal\n    #   [1], [0] -> Not equal\n    #   [1], [1] -> Equal (Count)\n    # Total = 2.\n    \n    assert math.isclose(count_binary_seq(1), 2.0, rel_tol=0.001)\n    print(\"Assertion passed!\")\n\n    # Additional test for n=2 to ensure robustness\n    # Length 4. Half length 2.\n    # k can be 0, 1, 2.\n    # C(2,0)^2 + C(2,1)^2 + C(2,2)^2 = 1^2 + 2^2 + 1^2 = 6\n    assert count_binary_seq(2) == 6.0\n    print(f\"Count for n=2: {count_binary_seq(2)}\")\n\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/300",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

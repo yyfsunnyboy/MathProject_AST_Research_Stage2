@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "121aa2cfff5d5e5bcb71ab13b8b45ad57cf159bab1fefea36e5981ef9c399abf",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_num_decagonal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "final_source": "def is_num_decagonal(n):\n    \"\"\"\n    Calculates the nth decagonal number using the formula D_n = 4n^2 - 3n.\n    \n    Args:\n        n (int): The position in the sequence of decagonal numbers (1-indexed).\n        \n    Returns:\n        int: The nth decagonal number.\n    \"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"n must be a positive integer.\")\n    \n    return 4 * n**2 - 3 * n\n\n# Test cases including the specific assertion from your request\nassert is_num_decagonal(3) == 27\nprint(f\"Test passed for n=3. Result: {is_num_decagonal(3)}\") # Output: 27\n\n# Additional verification tests\nassert is_num_decagonal(1) == 1\nassert is_num_decagonal(4) == (4 * 4**2 - 3 * 4) # Should be 56\nprint(f\"Test passed for n=4. Result: {is_num_decagonal(4)}\")\n\n# Test with a larger number to ensure efficiency and correctness\nn = 10\nexpected = 4 * (10**2) - 3 * 10 # 400 - 30 = 370\nassert is_num_decagonal(n) == expected\nprint(f\"Test passed for n={n}. Result: {is_num_decagonal(n)}\")\n\nprint(\"All assertions passed successfully.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/279:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "post_h2_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "post_h3_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "post_h4_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "91a2b94b6b414bbe74f022381729713227c8ea2fe114afc210290dd1bc752477",
+  "raw_source": "def is_num_decagonal(n):\n    \"\"\"\n    Calculates the nth decagonal number using the formula D_n = 4n^2 - 3n.\n    \n    Args:\n        n (int): The position in the sequence of decagonal numbers (1-indexed).\n        \n    Returns:\n        int: The nth decagonal number.\n    \"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"n must be a positive integer.\")\n    \n    return 4 * n**2 - 3 * n\n\n# Test cases including the specific assertion from your request\nassert is_num_decagonal(3) == 27\nprint(f\"Test passed for n=3. Result: {is_num_decagonal(3)}\") # Output: 27\n\n# Additional verification tests\nassert is_num_decagonal(1) == 1\nassert is_num_decagonal(4) == (4 * 4**2 - 3 * 4) # Should be 56\nprint(f\"Test passed for n=4. Result: {is_num_decagonal(4)}\")\n\n# Test with a larger number to ensure efficiency and correctness\nn = 10\nexpected = 4 * (10**2) - 3 * 10 # 400 - 30 = 370\nassert is_num_decagonal(n) == expected\nprint(f\"Test passed for n={n}. Result: {is_num_decagonal(n)}\")\n\nprint(\"All assertions passed successfully.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/279",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

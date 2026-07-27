@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "49f2fba086ce1ee85998462ae1088492748f7be9575050adaf9f0f171c968450",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_difference",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "34e793ba729a7ea5e6aff97ec09bdc088238038384ef941c30a8981570eb5952",
+  "final_source": "def max_difference(pairs):\n    if len(pairs) < 2:\n        return None\n    \n    min_val = float('inf')\n    max_diff = 0\n    \n    for a, b in pairs:\n        diff = abs(a - b)\n        if diff > max_diff:\n            max_diff = diff\n        \n        if a < min_val:\n            min_val = a\n            \n    return max_diff\n\nif __name__ == \"__main__\":\n    assert max_difference([(3, 5), (1, 7), (10, 3), (1, 2)]) == 6",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/63:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "2de6d9174ec7c2fbcc42204c942ba146bda6367c07aada2b0d9da169786249c4",
+  "post_h2_sha256": "34e793ba729a7ea5e6aff97ec09bdc088238038384ef941c30a8981570eb5952",
+  "post_h3_sha256": "34e793ba729a7ea5e6aff97ec09bdc088238038384ef941c30a8981570eb5952",
+  "post_h4_sha256": "34e793ba729a7ea5e6aff97ec09bdc088238038384ef941c30a8981570eb5952",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "2de6d9174ec7c2fbcc42204c942ba146bda6367c07aada2b0d9da169786249c4",
+  "raw_source": "def max_difference(pairs):\n    if len(pairs) < 2:\n        return None\n    \n    min_val = float('inf')\n    max_diff = 0\n    \n    for a, b in pairs:\n        diff = abs(a - b)\n        if diff > max_diff:\n            max_diff = diff\n        \n        if a < min_val:\n            min_val = a\n            \n    return max_diff\n\nassert max_difference([(3, 5), (1, 7), (10, 3), (1, 2)]) == 6",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/63",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

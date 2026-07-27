@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0a1ae8b205abdc697b5f868d3b9df2e695d7d600937011a8b40132da2a24976f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_Abs_Diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "final_source": "def max_Abs_Diff(arr):\n    if len(arr) < 2:\n        return 0\n    min_val = arr[0]\n    max_val = arr[0]\n    for num in arr:\n        if num < min_val:\n            min_val = num\n        elif num > max_val:\n            max_val = num\n    return abs(max_val - min_val)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/145:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "post_h2_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "post_h3_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "post_h4_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9d75c17d96fab7cee6b3cb76c7c45d7df3a983f7e3dcbd4cb35c76f542fc4fe9",
+  "raw_source": "def max_Abs_Diff(arr):\n    if len(arr) < 2:\n        return 0\n    min_val = arr[0]\n    max_val = arr[0]\n    for num in arr:\n        if num < min_val:\n            min_val = num\n        elif num > max_val:\n            max_val = num\n    return abs(max_val - min_val)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/145",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

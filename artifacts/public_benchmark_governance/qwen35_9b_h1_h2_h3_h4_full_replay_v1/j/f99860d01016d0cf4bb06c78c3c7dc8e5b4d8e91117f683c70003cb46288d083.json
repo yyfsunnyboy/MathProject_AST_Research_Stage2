@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f99860d01016d0cf4bb06c78c3c7dc8e5b4d8e91117f683c70003cb46288d083",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "last_Digit_Factorial",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "final_source": "def last_Digit_Factorial(n):\n    if n <= 1:\n        return 1\n    \n    # For any number >= 5, the factorial ends in 0 because it includes factors 2 and 5 (and more)\n    # So we only need to check for numbers less than 5 manually or use modulo logic.\n    \n    fact = 1\n    for i in range(2, n + 1):\n        fact *= i\n    \n    return fact % 10",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/577:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "post_h2_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "post_h3_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "post_h4_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "620855cecd6438f97468414eead36812c579f3377bda4eb3be392ad0223d902b",
+  "raw_source": "def last_Digit_Factorial(n):\n    if n <= 1:\n        return 1\n    \n    # For any number >= 5, the factorial ends in 0 because it includes factors 2 and 5 (and more)\n    # So we only need to check for numbers less than 5 manually or use modulo logic.\n    \n    fact = 1\n    for i in range(2, n + 1):\n        fact *= i\n    \n    return fact % 10",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/577",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

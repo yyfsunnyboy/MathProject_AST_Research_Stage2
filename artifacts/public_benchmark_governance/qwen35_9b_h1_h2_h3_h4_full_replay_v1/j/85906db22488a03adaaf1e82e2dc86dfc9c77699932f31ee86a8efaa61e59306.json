@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "85906db22488a03adaaf1e82e2dc86dfc9c77699932f31ee86a8efaa61e59306",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "heap_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "final_source": "def heap_sort(arr):\n    n = len(arr)\n    \n    # Step 1: Build a Max Heap\n    def build_max_heap(heap_arr):\n        start_idx = (n - 2) // 2\n        \n        while start_idx >= 0:\n            max_heapify(heap_arr, start_idx)\n            start_idx -= 1\n            \n    # Helper function to maintain the heap property\n    def max_heapify(arr, i):\n        largest = i\n        left_child = 2 * i + 1\n        right_child = 2 * i + 2\n        \n        if left_child < n and arr[left_child] > arr[largest]:\n            largest = left_child\n            \n        if right_child < n and arr[right_child] > arr[largest]:\n            largest = right_child\n            \n        # If the root is not the largest, swap with the largest child\n        if largest != i:\n            arr[i], arr[largest] = arr[largest], arr[i]\n            max_heapify(arr, largest)\n\n    build_max_heap(arr)\n    \n    # Step 2: Extract elements from heap one by one\n    end_idx = n - 1\n    \n    while end_idx > 0:\n        # Swap the root (maximum value) with the last element\n        arr[end_idx], arr[0] = arr[0], arr[end_idx]\n        \n        # Decrease the size of the heap by one\n        end_idx -= 1\n        \n        # Heapify the reduced heap to restore property\n        max_heapify(arr, 0)\n\n    return arr\n\n# Test case provided in requirements\nresult = heap_sort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0])\nexpected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n\nassert result == expected, f\"Test failed: {result} != {expected}\"\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/635:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "post_h2_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "post_h3_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "post_h4_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "076a93e368ca828eedb7be5b1f39ecf5741f8a57b0d962fa6c69860cabbf89df",
+  "raw_source": "def heap_sort(arr):\n    n = len(arr)\n    \n    # Step 1: Build a Max Heap\n    def build_max_heap(heap_arr):\n        start_idx = (n - 2) // 2\n        \n        while start_idx >= 0:\n            max_heapify(heap_arr, start_idx)\n            start_idx -= 1\n            \n    # Helper function to maintain the heap property\n    def max_heapify(arr, i):\n        largest = i\n        left_child = 2 * i + 1\n        right_child = 2 * i + 2\n        \n        if left_child < n and arr[left_child] > arr[largest]:\n            largest = left_child\n            \n        if right_child < n and arr[right_child] > arr[largest]:\n            largest = right_child\n            \n        # If the root is not the largest, swap with the largest child\n        if largest != i:\n            arr[i], arr[largest] = arr[largest], arr[i]\n            max_heapify(arr, largest)\n\n    build_max_heap(arr)\n    \n    # Step 2: Extract elements from heap one by one\n    end_idx = n - 1\n    \n    while end_idx > 0:\n        # Swap the root (maximum value) with the last element\n        arr[end_idx], arr[0] = arr[0], arr[end_idx]\n        \n        # Decrease the size of the heap by one\n        end_idx -= 1\n        \n        # Heapify the reduced heap to restore property\n        max_heapify(arr, 0)\n\n    return arr\n\n# Test case provided in requirements\nresult = heap_sort([1, 3, 5, 7, 9, 2, 4, 6, 8, 0])\nexpected = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n\nassert result == expected, f\"Test failed: {result} != {expected}\"\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/635",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

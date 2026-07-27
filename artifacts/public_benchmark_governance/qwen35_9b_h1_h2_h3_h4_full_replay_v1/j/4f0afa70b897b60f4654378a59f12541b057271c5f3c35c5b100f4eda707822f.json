@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4f0afa70b897b60f4654378a59f12541b057271c5f3c35c5b100f4eda707822f",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "mbpp",
+  "entry_point": "reverse_vowels",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "final_source": "def reverse_vowels(s: str) -> str:\n    \"\"\"\n    Reverse only the vowels in the input string. \n    Vowels are defined as 'a', 'e', 'i', 'o', 'u' (case-insensitive).\n    'y' is not considered a vowel.\n\n    Examples:\n        reverse_vowels(\"Python\") -> \"Pythno\"  # Wait, let's check logic carefully below.\n    \n    Actually, for \"Python\": vowels are 'o'. Reversing one vowel keeps it same? \n    But the example says assert reverse_vowels(\"Python\") == \"Python\".\n    Let me re-examine: In \"Python\", only 'o' is a vowel. If we collect all vowels and reverse them,\n    with just one vowel, reversing doesn't change anything. So result should be same as input? \n    Wait no - let's trace properly:\n\n    Input: \"Python\"\n    Vowels found at indices: 4 ('o')\n    Reversed list of vowels is still ['o']\n    Replace back -> 'Python' remains unchanged. That matches the assertion!\n\n    Another example would be \"hello\": \n        h e l l o -> vowels: e, o -> reversed: o, e -> result: holle? No wait positions matter.\n        Actually we collect all vowel characters in order, reverse that list, then put them back into original vowel positions.\n\n    Let's implement correctly.\n    \"\"\"\n    \n    # Define vowels (both cases)\n    vowels = set(\"aeiouAEIOU\")\n    \n    # Extract indices and values of vowels from the string\n    n = len(s)\n    vowel_indices = [i for i, char in enumerate(s) if char in vowels]\n    vowel_chars = [char for char in s if char in vowels]\n    \n    # Reverse the list of vowel characters\n    reversed_vowels = vowel_chars[::-1]\n    \n    # Build result string by replacing original vowels with reversed ones\n    result_list = list(s)\n    for i, idx in enumerate(vowel_indices):\n        result_list[idx] = reversed_vowels[i]\n        \n    return \"\".join(result_list)\n\n\n# Test cases including the provided assertion\nassert reverse_vowels(\"Python\") == \"Pythno\"  # Wait this contradicts my earlier thought...\n\nLet me re-trace carefully for \"Python\":\n- Characters: P(0), y(1), t(2), h(3), o(4), n(5)\n- Vowels in set(\"aeiouAEIOU\"): only 'o' at index 4\n- vowel_indices = [4]\n- vowel_chars = ['o']\n- reversed_vowels = ['o'][::-1] = ['o'] (single element reversal stays same)\n- Replace result_list[4] with 'o' -> no change\n- Result: \"Python\"\n\nSo my function should return \"Python\", not \"Pythno\". The assertion in the problem is correct.\n\nBut wait - I made an error above when typing test case. Let me fix that mental model and provide clean code without confusion.\n\nFinal corrected understanding for \"hello\":\n- h(0), e(1), l(2), l(3), o(4)\n- vowel_indices = [1, 4]\n- vowel_chars = ['e', 'o']\n- reversed_vowels = ['o', 'e']\n- result: replace index 1 with 'o', index 4 with 'e' -> \"holle\"\n\nLet me write the clean final solution now.\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/131:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "post_h2_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "post_h3_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "post_h4_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "60d4037296ceebe5edab7a4483d94ab089a08574665bb51281c1ff446f5a7c10",
+  "raw_source": "def reverse_vowels(s: str) -> str:\n    \"\"\"\n    Reverse only the vowels in the input string. \n    Vowels are defined as 'a', 'e', 'i', 'o', 'u' (case-insensitive).\n    'y' is not considered a vowel.\n\n    Examples:\n        reverse_vowels(\"Python\") -> \"Pythno\"  # Wait, let's check logic carefully below.\n    \n    Actually, for \"Python\": vowels are 'o'. Reversing one vowel keeps it same? \n    But the example says assert reverse_vowels(\"Python\") == \"Python\".\n    Let me re-examine: In \"Python\", only 'o' is a vowel. If we collect all vowels and reverse them,\n    with just one vowel, reversing doesn't change anything. So result should be same as input? \n    Wait no - let's trace properly:\n\n    Input: \"Python\"\n    Vowels found at indices: 4 ('o')\n    Reversed list of vowels is still ['o']\n    Replace back -> 'Python' remains unchanged. That matches the assertion!\n\n    Another example would be \"hello\": \n        h e l l o -> vowels: e, o -> reversed: o, e -> result: holle? No wait positions matter.\n        Actually we collect all vowel characters in order, reverse that list, then put them back into original vowel positions.\n\n    Let's implement correctly.\n    \"\"\"\n    \n    # Define vowels (both cases)\n    vowels = set(\"aeiouAEIOU\")\n    \n    # Extract indices and values of vowels from the string\n    n = len(s)\n    vowel_indices = [i for i, char in enumerate(s) if char in vowels]\n    vowel_chars = [char for char in s if char in vowels]\n    \n    # Reverse the list of vowel characters\n    reversed_vowels = vowel_chars[::-1]\n    \n    # Build result string by replacing original vowels with reversed ones\n    result_list = list(s)\n    for i, idx in enumerate(vowel_indices):\n        result_list[idx] = reversed_vowels[i]\n        \n    return \"\".join(result_list)\n\n\n# Test cases including the provided assertion\nassert reverse_vowels(\"Python\") == \"Pythno\"  # Wait this contradicts my earlier thought...\n\nLet me re-trace carefully for \"Python\":\n- Characters: P(0), y(1), t(2), h(3), o(4), n(5)\n- Vowels in set(\"aeiouAEIOU\"): only 'o' at index 4\n- vowel_indices = [4]\n- vowel_chars = ['o']\n- reversed_vowels = ['o'][::-1] = ['o'] (single element reversal stays same)\n- Replace result_list[4] with 'o' -> no change\n- Result: \"Python\"\n\nSo my function should return \"Python\", not \"Pythno\". The assertion in the problem is correct.\n\nBut wait - I made an error above when typing test case. Let me fix that mental model and provide clean code without confusion.\n\nFinal corrected understanding for \"hello\":\n- h(0), e(1), l(2), l(3), o(4)\n- vowel_indices = [1, 4]\n- vowel_chars = ['e', 'o']\n- reversed_vowels = ['o', 'e']\n- result: replace index 1 with 'o', index 4 with 'e' -> \"holle\"\n\nLet me write the clean final solution now.\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/131",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

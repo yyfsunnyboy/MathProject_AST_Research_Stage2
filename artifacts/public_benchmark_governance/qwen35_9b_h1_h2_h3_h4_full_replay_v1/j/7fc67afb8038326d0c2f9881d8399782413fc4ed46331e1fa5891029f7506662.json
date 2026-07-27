@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7fc67afb8038326d0c2f9881d8399782413fc4ed46331e1fa5891029f7506662",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "tuple_to_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "971c9b4df62c6a009b98af660fd802f3f8c38fe45c76e10830706ed900f922ee",
+  "final_source": "def tuple_to_int(t):\n    \"\"\"Convert a tuple of digits (positive integers 0–9) into an integer.\"\"\"\n    result = 0\n    for digit in t:\n        # Ensure each element is treated as its numeric value\n        result = result * 10 + int(digit)\n    return result\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert tuple_to_int((1, 2, 3)) == 123\n    print(tuple_to_int((1, 2, 3)))  # Output: 123\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/116:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "213defaece525a03d084888c0e1914e30f3f3b34fe56433c7c7d57422969bdcc",
+  "post_h2_sha256": "0bfcfd3f8d4d19c14d00f15b587a5c3578897b7ddba11876b59be56c7964ce8c",
+  "post_h3_sha256": "0bfcfd3f8d4d19c14d00f15b587a5c3578897b7ddba11876b59be56c7964ce8c",
+  "post_h4_sha256": "971c9b4df62c6a009b98af660fd802f3f8c38fe45c76e10830706ed900f922ee",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "213defaece525a03d084888c0e1914e30f3f3b34fe56433c7c7d57422969bdcc",
+  "raw_source": "def tuple_to_int(t):\n    \"\"\"Convert a tuple of digits (positive integers 0–9) into an integer.\"\"\"\n    result = 0\n    for digit in t:\n        # Ensure each element is treated as its numeric value\n        result = result * 10 + int(digit)\n    return result\n\n# Example usage and assertion\nassert tuple_to_int((1, 2, 3)) == 123\nprint(tuple_to_int((1, 2, 3)))  # Output: 123\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/116",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

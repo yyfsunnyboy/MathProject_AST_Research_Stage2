@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "4db604bf6ac5c75fb55b0350fa975d8eabb74f3cace3ae4840130b58bc5b5cd7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "lateralsuface_cylinder",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6e61d220f24fc9de791effd85868038f2e8275145481dcba31bb601daceae642",
+  "final_source": "import math\n\ndef lateralsurface_cylinder(radius: float, height: float) -> float:\n    \"\"\"\n    Calculate the lateral surface area of a cylinder.\n    \n    Formula: Lateral Area = 2 * π * radius * height\n    \n    Parameters:\n        radius (float): The radius of the base circle.\n        height (float): The height of the cylinder.\n        \n    Returns:\n        float: The calculated lateral surface area.\n    \"\"\"\n    return 2 * math.pi * radius * height\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    # Test case from prompt: r=10, h=5 -> Expected ~314.15...\n    result = lateralsurface_cylinder(10, 5)\n    \n    assert math.isclose(result, 314.15000000000003, rel_tol=0.001), f\"Test failed: {result}\"\n    print(f\"Lateral surface area for r=10, h=5 is: {result}\")\n\nlateralsuface_cylinder = lateralsurface_cylinder\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/233:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6e61d220f24fc9de791effd85868038f2e8275145481dcba31bb601daceae642",
+  "post_h2_sha256": "6e61d220f24fc9de791effd85868038f2e8275145481dcba31bb601daceae642",
+  "post_h3_sha256": "6e61d220f24fc9de791effd85868038f2e8275145481dcba31bb601daceae642",
+  "post_h4_sha256": "6e61d220f24fc9de791effd85868038f2e8275145481dcba31bb601daceae642",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a64b57cfd7af236be3f027f101a867ca4ee748e012cdd925c45c36e32bd89e24",
+  "raw_source": "import math\n\ndef lateralsurface_cylinder(radius: float, height: float) -> float:\n    \"\"\"\n    Calculate the lateral surface area of a cylinder.\n    \n    Formula: Lateral Area = 2 * π * radius * height\n    \n    Parameters:\n        radius (float): The radius of the base circle.\n        height (float): The height of the cylinder.\n        \n    Returns:\n        float: The calculated lateral surface area.\n    \"\"\"\n    return 2 * math.pi * radius * height\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    # Test case from prompt: r=10, h=5 -> Expected ~314.15...\n    result = lateralsurface_cylinder(10, 5)\n    \n    assert math.isclose(result, 314.15000000000003, rel_tol=0.001), f\"Test failed: {result}\"\n    print(f\"Lateral surface area for r=10, h=5 is: {result}\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/233",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

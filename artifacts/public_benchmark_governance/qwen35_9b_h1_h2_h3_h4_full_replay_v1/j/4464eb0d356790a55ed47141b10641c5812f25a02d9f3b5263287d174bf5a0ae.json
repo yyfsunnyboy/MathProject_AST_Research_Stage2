@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4464eb0d356790a55ed47141b10641c5812f25a02d9f3b5263287d174bf5a0ae",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "closest_integer",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "final_source": "def closest_integer(value):\n    '''\n    Create a function that takes a value (string) representing a number\n    and returns the closest integer to it. If the number is equidistant\n    from two integers, round it away from zero.\n\n    Examples\n    >>> closest_integer(\"10\")\n    10\n    >>> closest_integer(\"15.3\")\n    15\n\n    Note:\n    Rounding away from zero means that if the given number is equidistant\n    from two integers, the one you should return is the one that is the\n    farthest from zero. For example closest_integer(\"14.5\") should\n    return 15 and closest_integer(\"-14.5\") should return -15.\n    '''\n\n    num = float(value)\n    \n    if abs(num % 1) < 0.5:\n        # Closer to the lower integer (floor for positive, ceil for negative logic handled by int truncation towards zero isn't enough here directly but let's use round half away from zero logic explicitly)\n        pass\n    \n    # Calculate distance to floor and ceiling candidates\n    import math\n    if num >= 0:\n        lower = math.floor(num)\n        upper = lower + 1\n    else:\n        lower = math.ceil(num) - 1\n        upper = math.ceil(num)\n\n    dist_lower = abs(num - lower)\n    dist_upper = abs(upper - num)\n\n    if dist_lower < dist_upper:\n        return int(lower)\n    elif dist_upper < dist_lower:\n        return int(upper)\n    else:\n        # Equidistant, round away from zero\n        if num > 0:\n            return upper\n        else:\n            return lower",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/99:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "post_h2_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "post_h3_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "post_h4_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d6f8af0043a462c65db3e35af77a1a609bbbafef4406d36518de13b85d5f1818",
+  "raw_source": "def closest_integer(value):\n    '''\n    Create a function that takes a value (string) representing a number\n    and returns the closest integer to it. If the number is equidistant\n    from two integers, round it away from zero.\n\n    Examples\n    >>> closest_integer(\"10\")\n    10\n    >>> closest_integer(\"15.3\")\n    15\n\n    Note:\n    Rounding away from zero means that if the given number is equidistant\n    from two integers, the one you should return is the one that is the\n    farthest from zero. For example closest_integer(\"14.5\") should\n    return 15 and closest_integer(\"-14.5\") should return -15.\n    '''\n\n    num = float(value)\n    \n    if abs(num % 1) < 0.5:\n        # Closer to the lower integer (floor for positive, ceil for negative logic handled by int truncation towards zero isn't enough here directly but let's use round half away from zero logic explicitly)\n        pass\n    \n    # Calculate distance to floor and ceiling candidates\n    import math\n    if num >= 0:\n        lower = math.floor(num)\n        upper = lower + 1\n    else:\n        lower = math.ceil(num) - 1\n        upper = math.ceil(num)\n\n    dist_lower = abs(num - lower)\n    dist_upper = abs(upper - num)\n\n    if dist_lower < dist_upper:\n        return int(lower)\n    elif dist_upper < dist_lower:\n        return int(upper)\n    else:\n        # Equidistant, round away from zero\n        if num > 0:\n            return upper\n        else:\n            return lower",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/99",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

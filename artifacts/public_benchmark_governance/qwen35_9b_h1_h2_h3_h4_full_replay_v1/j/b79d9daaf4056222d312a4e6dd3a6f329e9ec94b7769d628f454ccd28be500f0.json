@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b79d9daaf4056222d312a4e6dd3a6f329e9ec94b7769d628f454ccd28be500f0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "specialFilter",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "final_source": "def specialFilter(nums):\n    \"\"\"Write a function that takes an array of numbers as input and returns \n    the number of elements in the array that are greater than 10 and both \n    first and last digits of a number are odd (1, 3, 5, 7, 9).\n    \n    For example:\n    specialFilter([15, -73, 14, -15]) => 1 \n        Explanation: Only 15 qualifies (>10, first digit '1' is odd, last digit '5' is odd)\n                   -73 and -15 are negative (not >10), 14 has even digits.\n    specialFilter([33, -2, -3, 45, 21, 109]) => 2\n        Explanation: \n          33 -> valid (>10, first=3 odd, last=3 odd)\n          45 -> valid (>10, first=4 even? Wait! First digit of 45 is '4' which is EVEN → invalid!)\n          Actually let's re-check examples carefully.\n\n    Let me trace the second example again: [33, -2, -3, 45, 21, 109] => 2\n    \n    Candidates > 10: 33, 45, 21, 109\n    Check each:\n      33 → first='3'(odd), last='3'(odd) ✅\n      45 → first='4'(even) ❌\n      21 → first='2'(even) ❌\n      109→ first='1'(odd), last='9'(odd) ✅\n\n    So count = 2 (only 33 and 109). That matches.\n\n    Therefore, we consider the absolute value of digits? No — because -73 is excluded due to being negative,\n    but what about positive numbers with even first digit like 45 or 21? They are correctly rejected.\n\n    Important: We must treat each number as-is for sign check (>10), then extract its decimal representation \n    without the minus sign (since we only care about digits of magnitude). But note: negative numbers are already excluded by >10,\n    so we can safely convert to string after ensuring it's positive.\n\n    Steps:\n      1. Filter nums where n > 10\n      2. For each such n, get its absolute value as a string (to ignore any possible sign issues, though already filtered)\n         Actually since n>10 implies n is positive, we can just do str(n).\n      3. Check first and last characters of that string are in {'1','3','5','7','9'}\n\n    Let's code accordingly.\n    \"\"\"\n    \n    odd_digits = set(\"13579\")\n    count = 0\n    \n    for n in nums:\n        if n > 10:\n            s = str(n)          # since n>10, it's positive; no need to abs()\n            first_digit = s[0]\n            last_digit = s[-1]\n            \n            if first_digit in odd_digits and last_digit in odd_digits:\n                count += 1\n                \n    return count\n\n# Test with provided examples\nprint(specialFilter([15, -73, 14, -15]))   # Expected: 1\nprint(specialFilter([33, -2, -3, 45, 21, 109]))  # Expected: 2\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/146:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "post_h2_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "post_h3_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "post_h4_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b15f9efcd7ec9964edcc79a02b83784fe8bae3ee8dcfc1bb39dec6bd69f7b48a",
+  "raw_source": "def specialFilter(nums):\n    \"\"\"Write a function that takes an array of numbers as input and returns \n    the number of elements in the array that are greater than 10 and both \n    first and last digits of a number are odd (1, 3, 5, 7, 9).\n    \n    For example:\n    specialFilter([15, -73, 14, -15]) => 1 \n        Explanation: Only 15 qualifies (>10, first digit '1' is odd, last digit '5' is odd)\n                   -73 and -15 are negative (not >10), 14 has even digits.\n    specialFilter([33, -2, -3, 45, 21, 109]) => 2\n        Explanation: \n          33 -> valid (>10, first=3 odd, last=3 odd)\n          45 -> valid (>10, first=4 even? Wait! First digit of 45 is '4' which is EVEN → invalid!)\n          Actually let's re-check examples carefully.\n\n    Let me trace the second example again: [33, -2, -3, 45, 21, 109] => 2\n    \n    Candidates > 10: 33, 45, 21, 109\n    Check each:\n      33 → first='3'(odd), last='3'(odd) ✅\n      45 → first='4'(even) ❌\n      21 → first='2'(even) ❌\n      109→ first='1'(odd), last='9'(odd) ✅\n\n    So count = 2 (only 33 and 109). That matches.\n\n    Therefore, we consider the absolute value of digits? No — because -73 is excluded due to being negative,\n    but what about positive numbers with even first digit like 45 or 21? They are correctly rejected.\n\n    Important: We must treat each number as-is for sign check (>10), then extract its decimal representation \n    without the minus sign (since we only care about digits of magnitude). But note: negative numbers are already excluded by >10,\n    so we can safely convert to string after ensuring it's positive.\n\n    Steps:\n      1. Filter nums where n > 10\n      2. For each such n, get its absolute value as a string (to ignore any possible sign issues, though already filtered)\n         Actually since n>10 implies n is positive, we can just do str(n).\n      3. Check first and last characters of that string are in {'1','3','5','7','9'}\n\n    Let's code accordingly.\n    \"\"\"\n    \n    odd_digits = set(\"13579\")\n    count = 0\n    \n    for n in nums:\n        if n > 10:\n            s = str(n)          # since n>10, it's positive; no need to abs()\n            first_digit = s[0]\n            last_digit = s[-1]\n            \n            if first_digit in odd_digits and last_digit in odd_digits:\n                count += 1\n                \n    return count\n\n# Test with provided examples\nprint(specialFilter([15, -73, 14, -15]))   # Expected: 1\nprint(specialFilter([33, -2, -3, 45, 21, 109]))  # Expected: 2\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/146",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

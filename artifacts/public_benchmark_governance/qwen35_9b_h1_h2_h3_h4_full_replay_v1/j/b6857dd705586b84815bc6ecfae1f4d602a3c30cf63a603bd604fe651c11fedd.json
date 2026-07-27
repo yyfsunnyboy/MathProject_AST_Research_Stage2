@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b6857dd705586b84815bc6ecfae1f4d602a3c30cf63a603bd604fe651c11fedd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_array",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "final_source": "def sort_array(array):\n    if len(array) == 0:\n        return array.copy()\n    \n    first_val = array[0]\n    last_val = array[-1]\n    \n    total_sum = first_val + last_val\n    \n    sorted_arr = array.copy()\n    \n    if total_sum % 2 != 0:\n        sorted_arr.sort()\n    else:\n        sorted_arr.sort(reverse=True)\n        \n    return sorted_arr",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/88:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "post_h2_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "post_h3_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "post_h4_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "256af113eaf353b5cea1a7253a33e3e34c78f87c812cd65f2ed203d1fd3967bc",
+  "raw_source": "def sort_array(array):\n    if len(array) == 0:\n        return array.copy()\n    \n    first_val = array[0]\n    last_val = array[-1]\n    \n    total_sum = first_val + last_val\n    \n    sorted_arr = array.copy()\n    \n    if total_sum % 2 != 0:\n        sorted_arr.sort()\n    else:\n        sorted_arr.sort(reverse=True)\n        \n    return sorted_arr",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/88",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

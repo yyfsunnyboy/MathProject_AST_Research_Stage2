@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "90b936772108e6da55b81328be07d0feec9876783856dfd184947ff1e274b9ce",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "add_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "final_source": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n\n    Example:\n\n        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4\n        Output: 24 # sum of 21 + 3\n\n    Constraints:\n        1. 1 <= len(arr) <= 100\n        2. 1 <= k <= len(arr)\n    \"\"\"\n    \n    total_sum = 0\n    \n    for i in range(k):\n        if abs(arr[i]) < 100:\n            total_sum += arr[i]\n            \n    return total_sum",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/122:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "post_h2_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "post_h3_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "post_h4_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a4601d41ac83a22bec941bb20a6c01c14704e1874e1641d62cfe5debbada9ba0",
+  "raw_source": "def add_elements(arr, k):\n    \"\"\"\n    Given a non-empty array of integers arr and an integer k, return\n    the sum of the elements with at most two digits from the first k elements of arr.\n\n    Example:\n\n        Input: arr = [111,21,3,4000,5,6,7,8,9], k = 4\n        Output: 24 # sum of 21 + 3\n\n    Constraints:\n        1. 1 <= len(arr) <= 100\n        2. 1 <= k <= len(arr)\n    \"\"\"\n    \n    total_sum = 0\n    \n    for i in range(k):\n        if abs(arr[i]) < 100:\n            total_sum += arr[i]\n            \n    return total_sum",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/122",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c0a4b6046fc2138a29bcea5b303e62882af85226cb8f0ed35a230919359e46cb",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_occurance",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "final_source": "def count_occurance(text: str) -> int:\n    \"\"\"\n    Counts the number of occurrences of the substring 'std' in the given text.\n    \n    Args:\n        text (str): The input string to search within.\n        \n    Returns:\n        int: The number of times 'std' appears in the text.\n    \"\"\"\n    return text.count('std')\n\n# Test cases based on your requirement and additional edge cases\nassert count_occurance(\"letstdlenstdporstd\") == 3, \"Test case failed\"\nprint(f\"'letstdlenstdporstd': {count_occurance('letstdlenstdporstd')} occurrences\") # Output: 3\n\n# Additional test for no occurrence\nassert count_occurance(\"hello world\") == 0, \"No occurrence test failed\"\nprint(f\"'hello world': {count_occurance('hello world')} occurrences\") # Output: 0\n\n# Additional test for overlapping (though 'std' can't overlap with itself)\nassert count_occurance(\"stddstd\") == 2, \"Overlapping logic check\" \nprint(f\"'stddstd': {count_occurance('stddstd')} occurrences\") # Output: 1? Wait.\n\n# Correction on manual trace for 'stddstd':\n# Index 0-2: std (Match) -> remaining string effectively starts after index 3 ('d') or we just count non-overlapping.\n# Python's .count() counts non-overlapping occurrences.\n# \"stddstd\" contains one at the start and one near the end? \n# s-t-d-d-s-t-d\n# Indices: 0,1,2 is 'std'. Index 3 is 'd'. Index 4,5,6 is 'std'.\n# So it should be 2. Let's re-verify Python behavior mentally.\n# Yes, \"stddstd\".count(\"std\") returns 2.\n\nprint(\"\\nAll assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/172:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "post_h2_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "post_h3_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "post_h4_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1525fbf3c3d01e47b0b5f6e5a96d2e073f42435ae3f9d0b408911bcaf3d6ce59",
+  "raw_source": "def count_occurance(text: str) -> int:\n    \"\"\"\n    Counts the number of occurrences of the substring 'std' in the given text.\n    \n    Args:\n        text (str): The input string to search within.\n        \n    Returns:\n        int: The number of times 'std' appears in the text.\n    \"\"\"\n    return text.count('std')\n\n# Test cases based on your requirement and additional edge cases\nassert count_occurance(\"letstdlenstdporstd\") == 3, \"Test case failed\"\nprint(f\"'letstdlenstdporstd': {count_occurance('letstdlenstdporstd')} occurrences\") # Output: 3\n\n# Additional test for no occurrence\nassert count_occurance(\"hello world\") == 0, \"No occurrence test failed\"\nprint(f\"'hello world': {count_occurance('hello world')} occurrences\") # Output: 0\n\n# Additional test for overlapping (though 'std' can't overlap with itself)\nassert count_occurance(\"stddstd\") == 2, \"Overlapping logic check\" \nprint(f\"'stddstd': {count_occurance('stddstd')} occurrences\") # Output: 1? Wait.\n\n# Correction on manual trace for 'stddstd':\n# Index 0-2: std (Match) -> remaining string effectively starts after index 3 ('d') or we just count non-overlapping.\n# Python's .count() counts non-overlapping occurrences.\n# \"stddstd\" contains one at the start and one near the end? \n# s-t-d-d-s-t-d\n# Indices: 0,1,2 is 'std'. Index 3 is 'd'. Index 4,5,6 is 'std'.\n# So it should be 2. Let's re-verify Python behavior mentally.\n# Yes, \"stddstd\".count(\"std\") returns 2.\n\nprint(\"\\nAll assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/172",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

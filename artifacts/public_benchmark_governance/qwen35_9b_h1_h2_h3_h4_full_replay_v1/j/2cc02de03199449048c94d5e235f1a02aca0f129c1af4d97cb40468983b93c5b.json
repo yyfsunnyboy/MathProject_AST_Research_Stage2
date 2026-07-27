@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2cc02de03199449048c94d5e235f1a02aca0f129c1af4d97cb40468983b93c5b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "toggle_string",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b5deb7879d63017ed03b5f27edb63d1b37e4ccf9836c3c103eda689a52f82b75",
+  "final_source": "def toggle_string(s):\n    \"\"\"\n    Toggles the case of all characters in the input string.\n    \n    Args:\n        s (str): The input string to process.\n        \n    Returns:\n        str: A new string with toggled character cases.\n    \"\"\"\n    # Using a list comprehension for efficiency and clarity\n    return ''.join(char.lower() if char.isupper() else char.upper() for char in s)\n\n# Test the function as requested\nif __name__ == \"__main__\":\n    assert toggle_string(\"Python\") == \"pYTHON\"\n    print(toggle_string(\"Python\"))  # Output: pYTHON\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/557:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "64adb509d879eaeee784095d87779a98aba227ea829bdb16db748ff994c66490",
+  "post_h2_sha256": "4f0d3d8ab89db181d803c08752445b25ee29b12c0046217f2e86e9447de97050",
+  "post_h3_sha256": "4f0d3d8ab89db181d803c08752445b25ee29b12c0046217f2e86e9447de97050",
+  "post_h4_sha256": "b5deb7879d63017ed03b5f27edb63d1b37e4ccf9836c3c103eda689a52f82b75",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "64adb509d879eaeee784095d87779a98aba227ea829bdb16db748ff994c66490",
+  "raw_source": "def toggle_string(s):\n    \"\"\"\n    Toggles the case of all characters in the input string.\n    \n    Args:\n        s (str): The input string to process.\n        \n    Returns:\n        str: A new string with toggled character cases.\n    \"\"\"\n    # Using a list comprehension for efficiency and clarity\n    return ''.join(char.lower() if char.isupper() else char.upper() for char in s)\n\n# Test the function as requested\nassert toggle_string(\"Python\") == \"pYTHON\"\nprint(toggle_string(\"Python\"))  # Output: pYTHON\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/557",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

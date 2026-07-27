@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "a3b757a6089e62fd46067dfaed1192f1e5c1c19f692a57fc7b36aa9316711640",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_Odd_Pair",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c46d14fe8239d71ff1a36fbfa7215887b3b3f9a93dc20c94ed9226a673e68be2",
+  "final_source": "def find_Odd_Pair(nums, n):\n    \"\"\"\n    Counts pairs (i, j) where i < j such that nums[i] ^ nums[j] is odd.\n    \n    Args:\n        nums (List[int]): The list of integers.\n        n (int): The length of the list (usually len(nums)).\n        \n    Returns:\n        int: Number of pairs with an odd XOR value.\n    \"\"\"\n    if not nums or n != len(nums):\n        return 0\n        \n    count_odd = sum(1 for x in nums if x % 2 != 0)\n    count_even = n - count_odd\n    \n    # Total valid pairs is the product of counts of odds and evens\n    return count_odd * count_even\n\n# Test cases based on your requirement\nif __name__ == \"__main__\":\n    assert find_Odd_Pair([5,4,7,2,1], 5) == 6\nprint(\"Test passed!\")\n\n# Additional manual verification:\n# List: [5 (odd), 4 (even), 7 (odd), 2 (even), 1 (odd)]\n# Odds: 3 ([5, 7, 1])\n# Evens: 2 ([4, 2])\n# Result should be 3 * 2 = 6.\n\nprint(f\"Calculated result for [5,4,7,2,1]: {find_Odd_Pair([5,4,7,2,1], 5)}\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/556:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4f5deb47cd1b6fb7684c8a0c74f431f9ed3d86766f044584a2ad8bb02efc7ce6",
+  "post_h2_sha256": "c46d14fe8239d71ff1a36fbfa7215887b3b3f9a93dc20c94ed9226a673e68be2",
+  "post_h3_sha256": "c46d14fe8239d71ff1a36fbfa7215887b3b3f9a93dc20c94ed9226a673e68be2",
+  "post_h4_sha256": "c46d14fe8239d71ff1a36fbfa7215887b3b3f9a93dc20c94ed9226a673e68be2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4f5deb47cd1b6fb7684c8a0c74f431f9ed3d86766f044584a2ad8bb02efc7ce6",
+  "raw_source": "def find_Odd_Pair(nums, n):\n    \"\"\"\n    Counts pairs (i, j) where i < j such that nums[i] ^ nums[j] is odd.\n    \n    Args:\n        nums (List[int]): The list of integers.\n        n (int): The length of the list (usually len(nums)).\n        \n    Returns:\n        int: Number of pairs with an odd XOR value.\n    \"\"\"\n    if not nums or n != len(nums):\n        return 0\n        \n    count_odd = sum(1 for x in nums if x % 2 != 0)\n    count_even = n - count_odd\n    \n    # Total valid pairs is the product of counts of odds and evens\n    return count_odd * count_even\n\n# Test cases based on your requirement\nassert find_Odd_Pair([5,4,7,2,1], 5) == 6\nprint(\"Test passed!\")\n\n# Additional manual verification:\n# List: [5 (odd), 4 (even), 7 (odd), 2 (even), 1 (odd)]\n# Odds: 3 ([5, 7, 1])\n# Evens: 2 ([4, 2])\n# Result should be 3 * 2 = 6.\n\nprint(f\"Calculated result for [5,4,7,2,1]: {find_Odd_Pair([5,4,7,2,1], 5)}\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/556",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

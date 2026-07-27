@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "301ae6ab1b3365052edb8f84a97db8f5f656552fa862580a14d3d6c22486bf74",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "snake_to_camel",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "2ce4f698d3ceab19eca7b0947defb9194e95369df2037e65e4975bc1aa0d5976",
+  "final_source": "def snake_to_camel(snake_str: str) -> str:\n    \"\"\"Convert a snake_case string to CamelCase.\"\"\"\n    if not snake_str:\n        return \"\"\n    \n    # Split by underscore, capitalize each part except the first one (which is also capitalized in this convention)\n    parts = snake_str.split('_')\n    camel_parts = [part.capitalize() for part in parts]\n    \n    return ''.join(camel_parts)\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert snake_to_camel('python_program') == 'PythonProgram'\n    print(snake_to_camel('hello_world_function'))  # Output: HelloWorldFunction\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/102:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c70e89d9abcf0c950614ff2fb2c97462d478de0370ca24dda74ace12e03b988f",
+  "post_h2_sha256": "048ec6e9c8b2aa2c23cb78238501c60a6ded31e80246ce0393ef88c94e9c085e",
+  "post_h3_sha256": "048ec6e9c8b2aa2c23cb78238501c60a6ded31e80246ce0393ef88c94e9c085e",
+  "post_h4_sha256": "2ce4f698d3ceab19eca7b0947defb9194e95369df2037e65e4975bc1aa0d5976",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c70e89d9abcf0c950614ff2fb2c97462d478de0370ca24dda74ace12e03b988f",
+  "raw_source": "def snake_to_camel(snake_str: str) -> str:\n    \"\"\"Convert a snake_case string to CamelCase.\"\"\"\n    if not snake_str:\n        return \"\"\n    \n    # Split by underscore, capitalize each part except the first one (which is also capitalized in this convention)\n    parts = snake_str.split('_')\n    camel_parts = [part.capitalize() for part in parts]\n    \n    return ''.join(camel_parts)\n\n# Example usage and assertion\nassert snake_to_camel('python_program') == 'PythonProgram'\nprint(snake_to_camel('hello_world_function'))  # Output: HelloWorldFunction\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/102",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

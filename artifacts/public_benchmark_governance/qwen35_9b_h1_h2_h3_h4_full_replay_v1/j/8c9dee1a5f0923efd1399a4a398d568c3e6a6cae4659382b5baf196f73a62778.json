@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "8c9dee1a5f0923efd1399a4a398d568c3e6a6cae4659382b5baf196f73a62778",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "any_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "final_source": "def any_int(x, y, z):\n    # Check if all numbers are integers (no decimal part)\n    if not isinstance(x, int) or not isinstance(y, int) or not isinstance(z, int):\n        return False\n    \n    # Check if one number equals the sum of the other two\n    return x == y + z or y == x + z or z == x + y\n\n# Examples:\nprint(any_int(5, 2, 7))   # True (5+2=7)\nprint(any_int(3, 2, 2))   # False\nprint(any_int(3, -2, 1))  # True (-2+1=-1? No. But 3 + (-2) = 1 → True)\nprint(any_int(3.6, -2.2, 2)) # False (not all integers)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/92:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "post_h2_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "post_h3_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "post_h4_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7fe89ef6874a78792a5898ec5c63bff96c37707268b6a4270f850b933cfbb203",
+  "raw_source": "def any_int(x, y, z):\n    # Check if all numbers are integers (no decimal part)\n    if not isinstance(x, int) or not isinstance(y, int) or not isinstance(z, int):\n        return False\n    \n    # Check if one number equals the sum of the other two\n    return x == y + z or y == x + z or z == x + y\n\n# Examples:\nprint(any_int(5, 2, 7))   # True (5+2=7)\nprint(any_int(3, 2, 2))   # False\nprint(any_int(3, -2, 1))  # True (-2+1=-1? No. But 3 + (-2) = 1 → True)\nprint(any_int(3.6, -2.2, 2)) # False (not all integers)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/92",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "93c2ee62fb4a59297e38386276e20516a9b7a0e5e1b9d00253f9059007c05e83",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "encode",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "final_source": "def encode(message):\n    vowels = 'aeiouAEIOU'\n    result = []\n    \n    for char in message:\n        if char.isalpha():\n            # Swap case\n            swapped_char = char.swapcase()\n            \n            # Check if the original character was a vowel (before swapping)\n            if char.lower() in vowels or char.upper() in 'AEIOU':\n                # Determine which alphabet to use based on current case of swapped_char\n                base_ord = ord('a') if swapped_char.islower() else ord('A')\n                \n                # Calculate new character 2 places ahead, wrapping around Z/A\n                offset = (ord(swapped_char) - base_ord + 2) % 26\n                new_char_code = base_ord + offset\n                \n                result.append(chr(new_char_code))\n            else:\n                result.append(swapped_char)\n        else:\n            # Non-letter characters are not expected per problem statement, \n            # but we keep them as is just in case.\n            result.append(char)\n    \n    return ''.join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/93:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "post_h2_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "post_h3_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "post_h4_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e5366e72ecff16653041ae5fb1005c5af4661f4026cd216996737ba843281e74",
+  "raw_source": "def encode(message):\n    vowels = 'aeiouAEIOU'\n    result = []\n    \n    for char in message:\n        if char.isalpha():\n            # Swap case\n            swapped_char = char.swapcase()\n            \n            # Check if the original character was a vowel (before swapping)\n            if char.lower() in vowels or char.upper() in 'AEIOU':\n                # Determine which alphabet to use based on current case of swapped_char\n                base_ord = ord('a') if swapped_char.islower() else ord('A')\n                \n                # Calculate new character 2 places ahead, wrapping around Z/A\n                offset = (ord(swapped_char) - base_ord + 2) % 26\n                new_char_code = base_ord + offset\n                \n                result.append(chr(new_char_code))\n            else:\n                result.append(swapped_char)\n        else:\n            # Non-letter characters are not expected per problem statement, \n            # but we keep them as is just in case.\n            result.append(char)\n    \n    return ''.join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/93",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7e81bd62420aed98184013427d80a6042730bafc59d75b79d6497eb485d1e434",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "histogram",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "final_source": "def histogram(test):\n    \"\"\"Given a string representing a space separated lowercase letters, return a dictionary\n    of the letter with the most repetition and containing the corresponding count.\n    If several letters have the same occurrence, return all of them.\n    \n    Example:\n    histogram('a b c') == {'a': 1, 'b': 1, 'c': 1}\n    histogram('a b b a') == {'a': 2, 'b': 2}\n    histogram('a b c a b') == {'a': 2, 'b': 2}\n    histogram('b b b b a') == {'b': 4}\n    histogram('') == {}\n\n    \"\"\"\n    if not test:\n        return {}\n\n    # Split by spaces and count occurrences of each letter\n    counts = {}\n    for ch in test.split():\n        counts[ch] = counts.get(ch, 0) + 1\n\n    # Find the maximum frequency\n    max_count = max(counts.values())\n\n    # Return all letters that have this maximum frequency\n    return {letter: count for letter, count in counts.items() if count == max_count}\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/111:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "post_h2_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "post_h3_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "post_h4_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8f58cca0c13b0aac8465ac9c69b530b6c06dc3afecac539faa6e891db90bb778",
+  "raw_source": "def histogram(test):\n    \"\"\"Given a string representing a space separated lowercase letters, return a dictionary\n    of the letter with the most repetition and containing the corresponding count.\n    If several letters have the same occurrence, return all of them.\n    \n    Example:\n    histogram('a b c') == {'a': 1, 'b': 1, 'c': 1}\n    histogram('a b b a') == {'a': 2, 'b': 2}\n    histogram('a b c a b') == {'a': 2, 'b': 2}\n    histogram('b b b b a') == {'b': 4}\n    histogram('') == {}\n\n    \"\"\"\n    if not test:\n        return {}\n\n    # Split by spaces and count occurrences of each letter\n    counts = {}\n    for ch in test.split():\n        counts[ch] = counts.get(ch, 0) + 1\n\n    # Find the maximum frequency\n    max_count = max(counts.values())\n\n    # Return all letters that have this maximum frequency\n    return {letter: count for letter, count in counts.items() if count == max_count}\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

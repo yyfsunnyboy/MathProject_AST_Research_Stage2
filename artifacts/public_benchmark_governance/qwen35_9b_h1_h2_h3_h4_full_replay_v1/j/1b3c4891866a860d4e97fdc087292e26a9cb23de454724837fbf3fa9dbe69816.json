@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1b3c4891866a860d4e97fdc087292e26a9cb23de454724837fbf3fa9dbe69816",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "multiply_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "final_source": "import math\n\ndef multiply_num(numbers):\n    \"\"\"\n    Multiplies all numbers in a list (or tuple) and divides by the length of the list.\n    \n    Args:\n        numbers (list or tuple): A collection of numeric values.\n        \n    Returns:\n        float: The result of (product of elements) / len(elements).\n    \"\"\"\n    if not numbers:  # Handle empty input gracefully, though problem implies non-empty\n        return 0\n    \n    product = 1\n    for num in numbers:\n        product *= num\n        \n    length = len(numbers)\n    \n    # Avoid division by zero if the list is somehow empty (though handled above)\n    if length == 0:\n        return float('inf') or 0 \n        \n    result = product / length\n    return result\n\n# Test case from your request\nassert math.isclose(multiply_num((8, 2, 3, -1, 7)), -67.2, rel_tol=0.001)\nprint(\"Test passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/98:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "post_h2_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "post_h3_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "post_h4_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bcd45fb8767786db4c0f5d1f4a7519ccfd5a8200a246c7726252630c56be3961",
+  "raw_source": "import math\n\ndef multiply_num(numbers):\n    \"\"\"\n    Multiplies all numbers in a list (or tuple) and divides by the length of the list.\n    \n    Args:\n        numbers (list or tuple): A collection of numeric values.\n        \n    Returns:\n        float: The result of (product of elements) / len(elements).\n    \"\"\"\n    if not numbers:  # Handle empty input gracefully, though problem implies non-empty\n        return 0\n    \n    product = 1\n    for num in numbers:\n        product *= num\n        \n    length = len(numbers)\n    \n    # Avoid division by zero if the list is somehow empty (though handled above)\n    if length == 0:\n        return float('inf') or 0 \n        \n    result = product / length\n    return result\n\n# Test case from your request\nassert math.isclose(multiply_num((8, 2, 3, -1, 7)), -67.2, rel_tol=0.001)\nprint(\"Test passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/98",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

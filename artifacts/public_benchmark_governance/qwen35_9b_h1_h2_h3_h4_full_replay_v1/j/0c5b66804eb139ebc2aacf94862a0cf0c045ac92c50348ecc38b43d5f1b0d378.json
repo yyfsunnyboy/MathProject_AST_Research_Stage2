@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0c5b66804eb139ebc2aacf94862a0cf0c045ac92c50348ecc38b43d5f1b0d378",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "129dc2d9e8e8b1bbaad58665aee1b93d143b2f406e4555e0a3a6d895984f4bab",
+  "final_source": "def split_odds(numbers):\n    \"\"\"Return a new list containing only the odd numbers from the input list.\"\"\"\n    return [num for num in numbers if num % 2 != 0]\n\n# Example usage and assertion:\nassert split_odds([1, 2, 3, 4, 5, 6]) == [1, 3, 5]\nprint(\"Assertion passed!\")\n\nSplit = split_odds\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/554:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "129dc2d9e8e8b1bbaad58665aee1b93d143b2f406e4555e0a3a6d895984f4bab",
+  "post_h2_sha256": "129dc2d9e8e8b1bbaad58665aee1b93d143b2f406e4555e0a3a6d895984f4bab",
+  "post_h3_sha256": "129dc2d9e8e8b1bbaad58665aee1b93d143b2f406e4555e0a3a6d895984f4bab",
+  "post_h4_sha256": "129dc2d9e8e8b1bbaad58665aee1b93d143b2f406e4555e0a3a6d895984f4bab",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c47cfabef07853aceb33a27173cc406c5383275aba89afe3d73c0a1407e745bb",
+  "raw_source": "def split_odds(numbers):\n    \"\"\"Return a new list containing only the odd numbers from the input list.\"\"\"\n    return [num for num in numbers if num % 2 != 0]\n\n# Example usage and assertion:\nassert split_odds([1, 2, 3, 4, 5, 6]) == [1, 3, 5]\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/554",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

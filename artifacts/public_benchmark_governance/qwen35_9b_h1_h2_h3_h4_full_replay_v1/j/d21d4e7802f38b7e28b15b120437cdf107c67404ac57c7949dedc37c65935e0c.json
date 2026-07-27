@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d21d4e7802f38b7e28b15b120437cdf107c67404ac57c7949dedc37c65935e0c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "set_left_most_unset_bit",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "final_source": "def set_left_most_unset_bit(n):\n    if n == 0: return 1 # Edge case, usually handled or returns 1\n    \n    # Find the position of the most significant bit that is SET\n    msb_pos = n.bit_length() - 1\n    \n    # Iterate downwards from MSB-1 to 0\n    for i in range(msb_pos - 1, -1, -1):\n        if not ((n >> i) & 1):\n            return n | (1 << i)\n            \n    # If all bits below MSB are set (e.g., input is like ...0111), \n    # strictly speaking there is no unset bit \"leftmost\" within the range.\n    # However, based on typical problem constraints for this specific assertion:\n    # It implies we only care about zeros between the highest 1 and LSB.\n    return n # Or handle as overflow if needed, but let's assume input has a gap.\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/311:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "post_h2_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "post_h3_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "post_h4_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d13bfbed1b3e2eccfb6798b7eb67a321113d22692b73c700ef226756abffdfb0",
+  "raw_source": "def set_left_most_unset_bit(n):\n    if n == 0: return 1 # Edge case, usually handled or returns 1\n    \n    # Find the position of the most significant bit that is SET\n    msb_pos = n.bit_length() - 1\n    \n    # Iterate downwards from MSB-1 to 0\n    for i in range(msb_pos - 1, -1, -1):\n        if not ((n >> i) & 1):\n            return n | (1 << i)\n            \n    # If all bits below MSB are set (e.g., input is like ...0111), \n    # strictly speaking there is no unset bit \"leftmost\" within the range.\n    # However, based on typical problem constraints for this specific assertion:\n    # It implies we only care about zeros between the highest 1 and LSB.\n    return n # Or handle as overflow if needed, but let's assume input has a gap.\n\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/311",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f74d789b3e932dedf5543f254d03e5d85f68e9c047bf216349583eec54668d32",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "expensive_items",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "final_source": "def expensive_items(dataset, n):\n    \"\"\"\n    Returns the list of the n most expensive items from the given dataset.\n    \n    Args:\n        dataset (list[dict]): A list of dictionaries containing item details with a 'price' key.\n        n (int): The number of top items to return.\n        \n    Returns:\n        list[dict]: A new list containing the n most expensive items, sorted by price descending.\n    \n    Raises:\n        ValueError: If n is negative or greater than the length of the dataset.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n        \n    # Sort the dataset in descending order based on 'price'\n    sorted_items = sorted(dataset, key=lambda x: x['price'], reverse=True)\n    \n    # Slice to get only the top n items. \n    # If n is larger than the list length, this returns the whole list safely.\n    return sorted_items[:n]\n\n# --- Test Cases based on your request and edge cases ---\n\n# 1. The specific example from your prompt\nassert expensive_items([{'name': 'Item-1', 'price': 101.1}, {'name': 'Item-2', 'price': 555.22}], 1) == [{'name': 'Item-2', 'price': 555.22}]\nprint(\"Test 1 passed: Basic example\")\n\n# 2. Requesting more items than available (should return all sorted)\nresult = expensive_items([{'name': 'A', 'price': 10}, {'name': 'B', 'price': 20}], 5)\nassert len(result) == 2 and result[0]['name'] == 'B'\nprint(\"Test 2 passed: n > length of dataset\")\n\n# 3. Requesting zero items (should return empty list)\nresult = expensive_items([{'name': 'A', 'price': 10}], 0)\nassert result == []\nprint(\"Test 3 passed: n = 0\")\n\n# 4. Handling ties in price (stable sort keeps original relative order, but values are equal anyway)\ndata_with_ties = [\n    {'name': 'Item-A', 'price': 100}, \n    {'name': 'Item-B', 'price': 50}, \n    {'name': 'Item-C', 'price': 100}\n]\nresult = expensive_items(data_with_ties, 2)\nassert result[0]['price'] == 100 and result[1]['price'] == 100\nprint(\"Test 4 passed: Handling price ties\")\n\n# 5. Empty dataset\nresult = expensive_items([], 3)\nassert result == []\nprint(\"Test 5 passed: Empty dataset\")\n\nprint(\"\\nAll tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/585:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "post_h2_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "post_h3_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "post_h4_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "338b8960af7c5003c382f02728b75f4cab2fd45fca677cdec78470eae495ddd0",
+  "raw_source": "def expensive_items(dataset, n):\n    \"\"\"\n    Returns the list of the n most expensive items from the given dataset.\n    \n    Args:\n        dataset (list[dict]): A list of dictionaries containing item details with a 'price' key.\n        n (int): The number of top items to return.\n        \n    Returns:\n        list[dict]: A new list containing the n most expensive items, sorted by price descending.\n    \n    Raises:\n        ValueError: If n is negative or greater than the length of the dataset.\n    \"\"\"\n    if not isinstance(n, int) or n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n        \n    # Sort the dataset in descending order based on 'price'\n    sorted_items = sorted(dataset, key=lambda x: x['price'], reverse=True)\n    \n    # Slice to get only the top n items. \n    # If n is larger than the list length, this returns the whole list safely.\n    return sorted_items[:n]\n\n# --- Test Cases based on your request and edge cases ---\n\n# 1. The specific example from your prompt\nassert expensive_items([{'name': 'Item-1', 'price': 101.1}, {'name': 'Item-2', 'price': 555.22}], 1) == [{'name': 'Item-2', 'price': 555.22}]\nprint(\"Test 1 passed: Basic example\")\n\n# 2. Requesting more items than available (should return all sorted)\nresult = expensive_items([{'name': 'A', 'price': 10}, {'name': 'B', 'price': 20}], 5)\nassert len(result) == 2 and result[0]['name'] == 'B'\nprint(\"Test 2 passed: n > length of dataset\")\n\n# 3. Requesting zero items (should return empty list)\nresult = expensive_items([{'name': 'A', 'price': 10}], 0)\nassert result == []\nprint(\"Test 3 passed: n = 0\")\n\n# 4. Handling ties in price (stable sort keeps original relative order, but values are equal anyway)\ndata_with_ties = [\n    {'name': 'Item-A', 'price': 100}, \n    {'name': 'Item-B', 'price': 50}, \n    {'name': 'Item-C', 'price': 100}\n]\nresult = expensive_items(data_with_ties, 2)\nassert result[0]['price'] == 100 and result[1]['price'] == 100\nprint(\"Test 4 passed: Handling price ties\")\n\n# 5. Empty dataset\nresult = expensive_items([], 3)\nassert result == []\nprint(\"Test 5 passed: Empty dataset\")\n\nprint(\"\\nAll tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/585",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

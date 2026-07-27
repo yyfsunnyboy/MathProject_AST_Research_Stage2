@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8c2db7bade9ae851fdfc9cf903cea8f632d502bb2e7265eef05cd7b45b4e8fde",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_even",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "final_source": "def extract_even(t):\n    if isinstance(t, tuple) and len(t) % 2 == 0:\n        return t\n    result = []\n    for item in t:\n        if isinstance(item, tuple):\n            new_item = extract_even(item)\n            if not isinstance(new_item, tuple) or len(new_item) % 2 != 0:\n                continue\n            else:\n                result.append(new_item)\n        elif item % 2 == 0:\n            result.append(item)\n    return tuple(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/580:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "post_h2_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "post_h3_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "post_h4_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "27b4534b9a7c949a56eaa750656315b40890738ac6049077c78e9df93b2181c1",
+  "raw_source": "def extract_even(t):\n    if isinstance(t, tuple) and len(t) % 2 == 0:\n        return t\n    result = []\n    for item in t:\n        if isinstance(item, tuple):\n            new_item = extract_even(item)\n            if not isinstance(new_item, tuple) or len(new_item) % 2 != 0:\n                continue\n            else:\n                result.append(new_item)\n        elif item % 2 == 0:\n            result.append(item)\n    return tuple(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/580",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

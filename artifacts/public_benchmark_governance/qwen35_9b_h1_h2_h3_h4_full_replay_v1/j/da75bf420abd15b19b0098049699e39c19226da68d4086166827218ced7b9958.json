@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "da75bf420abd15b19b0098049699e39c19226da68d4086166827218ced7b9958",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "list_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "01bebe7c0b122cc5fcc998a11ae1f29e6fc35546f4e75be21ac01eb60070860a",
+  "final_source": "def list_to_tuple(lst):\n    \"\"\"Convert a list to a tuple.\"\"\"\n    return tuple(lst)\n\n\n# Example usage and assertion:\nassert list_to_tuple([5, 10, 7, 4, 15, 3]) == (5, 10, 7, 4, 15, 3)\n\nprint(\"Assertion passed!\")\n\nlist_tuple = list_to_tuple\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/587:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "01bebe7c0b122cc5fcc998a11ae1f29e6fc35546f4e75be21ac01eb60070860a",
+  "post_h2_sha256": "01bebe7c0b122cc5fcc998a11ae1f29e6fc35546f4e75be21ac01eb60070860a",
+  "post_h3_sha256": "01bebe7c0b122cc5fcc998a11ae1f29e6fc35546f4e75be21ac01eb60070860a",
+  "post_h4_sha256": "01bebe7c0b122cc5fcc998a11ae1f29e6fc35546f4e75be21ac01eb60070860a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b887657b2168e4f87d6dd57ed222f5b64a7b2a80aebdb6203f95892a8648cc1c",
+  "raw_source": "def list_to_tuple(lst):\n    \"\"\"Convert a list to a tuple.\"\"\"\n    return tuple(lst)\n\n\n# Example usage and assertion:\nassert list_to_tuple([5, 10, 7, 4, 15, 3]) == (5, 10, 7, 4, 15, 3)\n\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/587",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

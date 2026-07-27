@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "8c39f158f475a79ea47309ea438e3f6ceb973258b75a89d027f56e0af9241ab2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_nth_element",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9cc3df1248898ba6a9e50c428432184befa25c02576ae5e85220c8088af7c39c",
+  "final_source": "def extract_nth_element(lst, n):\n    return [item[0] for item in lst if len(item) > n][n % len([item[0] for item in lst])] if lst else []\n\nif __name__ == \"__main__\":\n    assert extract_nth_element([('Greyson Fulton', 98, 99), ('Brady Kent', 97, 96), ('Wyatt Knott', 91, 94), ('Beau Turnbull', 94, 98)], 0) == ['Greyson Fulton', 'Brady Kent', 'Wyatt Knott', 'Beau Turnbull']",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/413:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "16910bf7b192a5dc1f5ccdc20ae2bc7c0199bcf329e82592065b81b62920b1d6",
+  "post_h2_sha256": "9cc3df1248898ba6a9e50c428432184befa25c02576ae5e85220c8088af7c39c",
+  "post_h3_sha256": "9cc3df1248898ba6a9e50c428432184befa25c02576ae5e85220c8088af7c39c",
+  "post_h4_sha256": "9cc3df1248898ba6a9e50c428432184befa25c02576ae5e85220c8088af7c39c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "16910bf7b192a5dc1f5ccdc20ae2bc7c0199bcf329e82592065b81b62920b1d6",
+  "raw_source": "def extract_nth_element(lst, n):\n    return [item[0] for item in lst if len(item) > n][n % len([item[0] for item in lst])] if lst else []\n\nassert extract_nth_element([('Greyson Fulton', 98, 99), ('Brady Kent', 97, 96), ('Wyatt Knott', 91, 94), ('Beau Turnbull', 94, 98)], 0) == ['Greyson Fulton', 'Brady Kent', 'Wyatt Knott', 'Beau Turnbull']",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/413",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

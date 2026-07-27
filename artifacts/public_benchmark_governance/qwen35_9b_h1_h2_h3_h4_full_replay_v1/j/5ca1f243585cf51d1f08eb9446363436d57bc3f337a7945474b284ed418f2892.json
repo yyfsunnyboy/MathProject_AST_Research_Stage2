@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5ca1f243585cf51d1f08eb9446363436d57bc3f337a7945474b284ed418f2892",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "get_max_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "final_source": "def get_max_sum(n):\n    # Dictionary to store computed values of f(i)\n    memo = {}\n\n    def solve(current_n):\n        # Base case: if n is small, the sum cannot exceed n itself \n        # because splitting reduces the numbers significantly (e.g., 1/2 + 1/3... < 1).\n        # However, strictly following the formula handles this naturally.\n        \n        # Check cache first\n        if current_n in memo:\n            return memo[current_n]\n\n        # Calculate the sum of recursive calls using integer division (//)\n        split_sum = solve(current_n // 2) + \\\n                     solve(current_n // 3) + \\\n                     solve(current_n // 4) + \\\n                     solve(current_n // 5)\n\n        # The result is the maximum between keeping 'current_n' or splitting it\n        res = max(current_n, split_sum)\n\n        # Store in cache and return\n        memo[current_n] = res\n        return res\n\n    return solve(n)\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    result = get_max_sum(60)\n    print(f\"get_max_sum(60) = {result}\")\n    \n    # The assertion check\n    assert get_max_sum(60) == 106, f\"Expected 106 but got {result}\"\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/392:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "post_h2_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "post_h3_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "post_h4_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6bb07eea9aa6a845d82d1d509d73131c4c376745d5c619cf0b2bf97e1d872af6",
+  "raw_source": "def get_max_sum(n):\n    # Dictionary to store computed values of f(i)\n    memo = {}\n\n    def solve(current_n):\n        # Base case: if n is small, the sum cannot exceed n itself \n        # because splitting reduces the numbers significantly (e.g., 1/2 + 1/3... < 1).\n        # However, strictly following the formula handles this naturally.\n        \n        # Check cache first\n        if current_n in memo:\n            return memo[current_n]\n\n        # Calculate the sum of recursive calls using integer division (//)\n        split_sum = solve(current_n // 2) + \\\n                     solve(current_n // 3) + \\\n                     solve(current_n // 4) + \\\n                     solve(current_n // 5)\n\n        # The result is the maximum between keeping 'current_n' or splitting it\n        res = max(current_n, split_sum)\n\n        # Store in cache and return\n        memo[current_n] = res\n        return res\n\n    return solve(n)\n\n# Verification based on your requirement\nif __name__ == \"__main__\":\n    result = get_max_sum(60)\n    print(f\"get_max_sum(60) = {result}\")\n    \n    # The assertion check\n    assert get_max_sum(60) == 106, f\"Expected 106 but got {result}\"\n    print(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/392",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

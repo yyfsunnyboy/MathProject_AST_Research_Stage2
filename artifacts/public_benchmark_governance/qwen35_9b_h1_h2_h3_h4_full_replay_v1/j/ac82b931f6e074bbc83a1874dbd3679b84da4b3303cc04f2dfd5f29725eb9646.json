@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ac82b931f6e074bbc83a1874dbd3679b84da4b3303cc04f2dfd5f29725eb9646",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "last_Digit",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fc1cc0684906a380b7203bf3deb143f97bf756a72add94a29212de447c9d762a",
+  "final_source": "def last_digit(n: int) -> int:\n    \"\"\"Return the last digit of an integer n.\"\"\"\n    return abs(n) % 10\n\n\n# Example usage and assertion\nassert last_digit(123) == 3\nassert last_digit(-456) == 6   # Handles negative numbers correctly\nprint(last_digit(123))  # Output: 3\n\nlast_Digit = last_digit\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/435:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fc1cc0684906a380b7203bf3deb143f97bf756a72add94a29212de447c9d762a",
+  "post_h2_sha256": "fc1cc0684906a380b7203bf3deb143f97bf756a72add94a29212de447c9d762a",
+  "post_h3_sha256": "fc1cc0684906a380b7203bf3deb143f97bf756a72add94a29212de447c9d762a",
+  "post_h4_sha256": "fc1cc0684906a380b7203bf3deb143f97bf756a72add94a29212de447c9d762a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "796e47d5bd378cc6cdea8295811d4955b0c0bde24a6491aad00f680958a29da1",
+  "raw_source": "def last_digit(n: int) -> int:\n    \"\"\"Return the last digit of an integer n.\"\"\"\n    return abs(n) % 10\n\n\n# Example usage and assertion\nassert last_digit(123) == 3\nassert last_digit(-456) == 6   # Handles negative numbers correctly\nprint(last_digit(123))  # Output: 3\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/435",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

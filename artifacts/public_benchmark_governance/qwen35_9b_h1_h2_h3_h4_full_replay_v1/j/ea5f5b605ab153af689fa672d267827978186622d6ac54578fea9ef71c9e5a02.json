@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ea5f5b605ab153af689fa672d267827978186622d6ac54578fea9ef71c9e5a02",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "maxAverageOfPath",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e55ce3e6c1f5037c0c4a3301620d7156fb9917f33f53d2719a58a0a971618ed2",
+  "final_source": "def max_average_of_path(matrix):\n    if not matrix or not matrix[0]:\n        return 0\n    \n    n = len(matrix)\n    \n    # The number of cells in any path from (0,0) to (n-1,n-1) moving only right/down is:\n    # Steps down: n - 1\n    # Steps right: n - 1\n    # Total cells visited = 1 + (n - 1) + (n - 1) = 2 * n - 1\n    path_length = 2 * n - 1\n    \n    # DP table to store max sum up to each cell\n    dp = [[0] * n for _ in range(n)]\n    \n    # Initialize starting point\n    dp[0][0] = matrix[0][0]\n    \n    # Fill first row (can only come from left)\n    current_sum = 0\n    for j in range(1, n):\n        current_sum += matrix[0][j]\n        dp[0][j] = current_sum\n        \n    # Fill first column (can only come from above)\n    current_sum = 0\n    for i in range(1, n):\n        current_sum += matrix[i][0]\n        dp[i][0] = current_sum\n        \n    # Fill the rest of the table\n    for i in range(1, n):\n        for j in range(1, n):\n            # Choose the path with maximum sum from top or left neighbor\n            max_prev = max(dp[i-1][j], dp[i][j-1])\n            dp[i][j] = max_prev + matrix[i][j]\n            \n    total_max_sum = dp[n-1][n-1]\n    \n    return total_max_sum / path_length\n\n# Test the function with the provided example\ntest_matrix = [[1, 2, 3], [6, 5, 4], [7, 3, 9]]\nresult = max_average_of_path(test_matrix)\n\nprint(f\"Calculated Average: {result}\")\nassert result == 5.2, f\"Expected 5.2 but got {result}\"\n\nmaxAverageOfPath = max_average_of_path\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/721:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e55ce3e6c1f5037c0c4a3301620d7156fb9917f33f53d2719a58a0a971618ed2",
+  "post_h2_sha256": "e55ce3e6c1f5037c0c4a3301620d7156fb9917f33f53d2719a58a0a971618ed2",
+  "post_h3_sha256": "e55ce3e6c1f5037c0c4a3301620d7156fb9917f33f53d2719a58a0a971618ed2",
+  "post_h4_sha256": "e55ce3e6c1f5037c0c4a3301620d7156fb9917f33f53d2719a58a0a971618ed2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e6d6257feb2927689ad0bc290a7e17e327a95c4135d969b7036fbe0a0cc60223",
+  "raw_source": "def max_average_of_path(matrix):\n    if not matrix or not matrix[0]:\n        return 0\n    \n    n = len(matrix)\n    \n    # The number of cells in any path from (0,0) to (n-1,n-1) moving only right/down is:\n    # Steps down: n - 1\n    # Steps right: n - 1\n    # Total cells visited = 1 + (n - 1) + (n - 1) = 2 * n - 1\n    path_length = 2 * n - 1\n    \n    # DP table to store max sum up to each cell\n    dp = [[0] * n for _ in range(n)]\n    \n    # Initialize starting point\n    dp[0][0] = matrix[0][0]\n    \n    # Fill first row (can only come from left)\n    current_sum = 0\n    for j in range(1, n):\n        current_sum += matrix[0][j]\n        dp[0][j] = current_sum\n        \n    # Fill first column (can only come from above)\n    current_sum = 0\n    for i in range(1, n):\n        current_sum += matrix[i][0]\n        dp[i][0] = current_sum\n        \n    # Fill the rest of the table\n    for i in range(1, n):\n        for j in range(1, n):\n            # Choose the path with maximum sum from top or left neighbor\n            max_prev = max(dp[i-1][j], dp[i][j-1])\n            dp[i][j] = max_prev + matrix[i][j]\n            \n    total_max_sum = dp[n-1][n-1]\n    \n    return total_max_sum / path_length\n\n# Test the function with the provided example\ntest_matrix = [[1, 2, 3], [6, 5, 4], [7, 3, 9]]\nresult = max_average_of_path(test_matrix)\n\nprint(f\"Calculated Average: {result}\")\nassert result == 5.2, f\"Expected 5.2 but got {result}\"\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/721",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

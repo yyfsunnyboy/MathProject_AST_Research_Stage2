@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7b8604300205112e60affe9ac873de23611fd2513e8e91ff4f55e3f9768c6cbf",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_char_long",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b6d6e803ac0df23cec141b823f38f3fc693492ecf2e3f1f2dc02479ebc66db54",
+  "final_source": "def find_words_at_least_4_chars(s):\n    \"\"\"\n    Finds all words in a string that are at least 4 characters long.\n    \n    Args:\n        s (str): The input string to search.\n        \n    Returns:\n        list[str]: A list of matching words.\n    \"\"\"\n    # Split the string by whitespace and filter based on length\n    return [word for word in s.split() if len(word) >= 4]\n\n# Test case from your request\nresult = find_words_at_least_4_chars('Please move back to stream')\nexpected_set = set(['Please', 'move', 'back', 'stream'])\n\nassert set(result) == expected_set, f\"Test failed! Got {set(result)}, Expected {expected_set}\"\n\nprint(f\"Result: {result}\")\n\nfind_char_long = find_words_at_least_4_chars\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/7:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b6d6e803ac0df23cec141b823f38f3fc693492ecf2e3f1f2dc02479ebc66db54",
+  "post_h2_sha256": "b6d6e803ac0df23cec141b823f38f3fc693492ecf2e3f1f2dc02479ebc66db54",
+  "post_h3_sha256": "b6d6e803ac0df23cec141b823f38f3fc693492ecf2e3f1f2dc02479ebc66db54",
+  "post_h4_sha256": "b6d6e803ac0df23cec141b823f38f3fc693492ecf2e3f1f2dc02479ebc66db54",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cfe0850fd9e940d2f159df649a89468fa274284172a24d1b8ae2e19a5e5f9d75",
+  "raw_source": "def find_words_at_least_4_chars(s):\n    \"\"\"\n    Finds all words in a string that are at least 4 characters long.\n    \n    Args:\n        s (str): The input string to search.\n        \n    Returns:\n        list[str]: A list of matching words.\n    \"\"\"\n    # Split the string by whitespace and filter based on length\n    return [word for word in s.split() if len(word) >= 4]\n\n# Test case from your request\nresult = find_words_at_least_4_chars('Please move back to stream')\nexpected_set = set(['Please', 'move', 'back', 'stream'])\n\nassert set(result) == expected_set, f\"Test failed! Got {set(result)}, Expected {expected_set}\"\n\nprint(f\"Result: {result}\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/7",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

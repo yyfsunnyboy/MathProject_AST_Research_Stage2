@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "c4061e2ee157805412d13b3af917828184fb11de10f25f2133eb51d09e61a829",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "parabola_directrix",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "final_source": "def parabola_directrix(a, b, c):\n    # The general form is y = ax^2 + bx + c\n    # Vertex x-coordinate: h = -b / (2a)\n    # k = a*h^2 + b*h + c\n    # Directrix equation: y = k - 1/(4a)\n    \n    if a == 0:\n        raise ValueError(\"Coefficient 'a' cannot be zero for a parabola.\")\n        \n    h = -b / (2 * a)\n    k = a * h**2 + b * h + c\n    \n    directrix_y = k - 1 / (4 * a)\n    \n    return directrix_y",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/430:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "post_h2_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "post_h3_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "post_h4_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1f3434f46993e98c264b7ba46b4cba070dce3e09a67e7418a083b2954c8245b1",
+  "raw_source": "def parabola_directrix(a, b, c):\n    # The general form is y = ax^2 + bx + c\n    # Vertex x-coordinate: h = -b / (2a)\n    # k = a*h^2 + b*h + c\n    # Directrix equation: y = k - 1/(4a)\n    \n    if a == 0:\n        raise ValueError(\"Coefficient 'a' cannot be zero for a parabola.\")\n        \n    h = -b / (2 * a)\n    k = a * h**2 + b * h + c\n    \n    directrix_y = k - 1 / (4 * a)\n    \n    return directrix_y",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/430",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

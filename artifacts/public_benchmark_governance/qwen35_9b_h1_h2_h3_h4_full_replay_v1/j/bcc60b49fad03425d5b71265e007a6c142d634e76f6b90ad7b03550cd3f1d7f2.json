@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "bcc60b49fad03425d5b71265e007a6c142d634e76f6b90ad7b03550cd3f1d7f2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "right_insertion",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3f7d72a246abd47771da8baa70d80ef030a68a61fba071b2fa6c6a1d4ac4bf73",
+  "final_source": "def right_insertion(arr, val):\n    \"\"\"\n    Locates the right insertion point for a specified value in sorted order.\n    \n    Args:\n        arr (List[int]): A list of integers sorted in ascending order.\n        val (int): The value to insert.\n        \n    Returns:\n        int: The index where 'val' should be inserted while maintaining \n             the sorted order. If duplicates exist, it returns an index after \n             all existing instances of 'val'.\n             \n    Examples:\n        >>> right_insertion([1, 2, 4, 5], 6)\n        4\n        >>> right_insertion([1, 3, 5], 3)\n        2\n        >>> right_insertion([], -10)\n        0\n    \"\"\"\n    \n    # Binary search implementation to find the insertion point\n    \n    left = 0\n    right = len(arr)\n\n    while left < right:\n        mid = (left + right) // 2\n        \n        if arr[mid] <= val:\n            # If current element is less than or equal to target, \n            # we need to look in the right half.\n            left = mid + 1\n        else:\n            # Current element is greater than target; insertion point must be on the left.\n            right = mid\n            \n    return left\n\n# Verification of the specific assertion provided\nif __name__ == \"__main__\":\n    assert right_insertion([1,2,4,5],6) == 4\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/786:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a371aa2179af1e36673355801a6e037a8d4af267aff86cf867799b2148d0aeac",
+  "post_h2_sha256": "adeefed6686038508e973ae7f76f47662e8c8382bf83f36cf33cf7d5a9bced6e",
+  "post_h3_sha256": "adeefed6686038508e973ae7f76f47662e8c8382bf83f36cf33cf7d5a9bced6e",
+  "post_h4_sha256": "3f7d72a246abd47771da8baa70d80ef030a68a61fba071b2fa6c6a1d4ac4bf73",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a371aa2179af1e36673355801a6e037a8d4af267aff86cf867799b2148d0aeac",
+  "raw_source": "def right_insertion(arr, val):\n    \"\"\"\n    Locates the right insertion point for a specified value in sorted order.\n    \n    Args:\n        arr (List[int]): A list of integers sorted in ascending order.\n        val (int): The value to insert.\n        \n    Returns:\n        int: The index where 'val' should be inserted while maintaining \n             the sorted order. If duplicates exist, it returns an index after \n             all existing instances of 'val'.\n             \n    Examples:\n        >>> right_insertion([1, 2, 4, 5], 6)\n        4\n        >>> right_insertion([1, 3, 5], 3)\n        2\n        >>> right_insertion([], -10)\n        0\n    \"\"\"\n    \n    # Binary search implementation to find the insertion point\n    \n    left = 0\n    right = len(arr)\n\n    while left < right:\n        mid = (left + right) // 2\n        \n        if arr[mid] <= val:\n            # If current element is less than or equal to target, \n            # we need to look in the right half.\n            left = mid + 1\n        else:\n            # Current element is greater than target; insertion point must be on the left.\n            right = mid\n            \n    return left\n\n# Verification of the specific assertion provided\nassert right_insertion([1,2,4,5],6) == 4\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/786",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

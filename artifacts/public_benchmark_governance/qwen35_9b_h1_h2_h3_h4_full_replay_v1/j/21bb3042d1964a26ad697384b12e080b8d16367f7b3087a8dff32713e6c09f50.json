@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "21bb3042d1964a26ad697384b12e080b8d16367f7b3087a8dff32713e6c09f50",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "odd_count",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "final_source": "def odd_count(lst):\n    \"\"\"Given a list of strings, where each string consists of only digits, return a list.\n    Each element i of the output should be \"the number of odd elements in the\n    string i of the input.\" where all the i's should be replaced by the number\n    of odd digits in the i'th string of the input.\n\n    >>> odd_count(['1234567'])\n    [\"the number of odd elements 4n the str4ng 4 of the 4nput.\"]\n    >>> odd_count(['3',\"11111111\"])\n    [\"the number of odd elements 1n the str1ng 1 of the 1nput.\",\n     \"the number of odd elements 8n the str8ng 8 of the 8nput.\"]\n    \"\"\"\n    result = []\n\n    for s in lst:\n        # Count how many digits are odd (1,3,5,7,9)\n        count_odd = sum(1 for ch in s if int(ch) % 2 == 1)\n\n        base_template = \"the number of odd elements {}n the str{}ng {} of the {}nput.\"\n        \n        # Replace each 'i' placeholder with the computed count (as a digit character)\n        output_str = base_template.format(count_odd, count_odd, count_odd, count_odd)\n        result.append(output_str)\n\n    return result\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/113:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "post_h2_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "post_h3_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "post_h4_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "57e03a9691c8ce877493e77466f301c173b9e79c7038cc72bb280b107d0b8479",
+  "raw_source": "def odd_count(lst):\n    \"\"\"Given a list of strings, where each string consists of only digits, return a list.\n    Each element i of the output should be \"the number of odd elements in the\n    string i of the input.\" where all the i's should be replaced by the number\n    of odd digits in the i'th string of the input.\n\n    >>> odd_count(['1234567'])\n    [\"the number of odd elements 4n the str4ng 4 of the 4nput.\"]\n    >>> odd_count(['3',\"11111111\"])\n    [\"the number of odd elements 1n the str1ng 1 of the 1nput.\",\n     \"the number of odd elements 8n the str8ng 8 of the 8nput.\"]\n    \"\"\"\n    result = []\n\n    for s in lst:\n        # Count how many digits are odd (1,3,5,7,9)\n        count_odd = sum(1 for ch in s if int(ch) % 2 == 1)\n\n        base_template = \"the number of odd elements {}n the str{}ng {} of the {}nput.\"\n        \n        # Replace each 'i' placeholder with the computed count (as a digit character)\n        output_str = base_template.format(count_odd, count_odd, count_odd, count_odd)\n        result.append(output_str)\n\n    return result\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/113",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

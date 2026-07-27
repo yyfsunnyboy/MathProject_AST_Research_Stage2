@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b76470010987d62382a762cd2dcf7838b8f8511419092047247ce025c9a85918",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_array",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "final_source": "def sort_array(array):\n    \"\"\"\n    Given an array of non-negative integers, return a copy of the given array after sorting.\n    \n    Sorting rule:\n      - If (array[0] + array[-1]) is odd → ascending order\n      - If (array[0] + array[-1]) is even  → descending order\n    \n    For arrays with fewer than 2 elements, the sum condition doesn't apply; \n    we simply return a sorted copy in ascending order.\n\n    Note:\n      * Don't change the given array.\n    \n    Examples:\n      sort_array([]) => []\n      sort_array([5]) => [5]\n      sort_array([2, 4, 3, 0, 1, 5]) => [0, 1, 2, 3, 4, 5]   # (2+5)=7 odd → ascending\n      sort_array([2, 4, 3, 0, 1, 5, 6]) => [6, 5, 4, 3, 2, 1, 0] # (2+6)=8 even → descending\n    \"\"\"\n    \n    if not array:\n        return []\n\n    # Work on a copy so the original is unchanged\n    result = list(array)\n\n    first_val = array[0]\n    last_val = array[-1]\n    total_sum = first_val + last_val\n\n    ascending = (total_sum % 2 == 1) or len(result) < 2\n    \n    if ascending:\n        return sorted(result, reverse=False)\n    else:\n        return sorted(result, reverse=True)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/88:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "post_h2_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "post_h3_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "post_h4_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e83f2c2c636f077249815791708ee196f6e91ccc6af0a89aa2b7b69cfb370e37",
+  "raw_source": "def sort_array(array):\n    \"\"\"\n    Given an array of non-negative integers, return a copy of the given array after sorting.\n    \n    Sorting rule:\n      - If (array[0] + array[-1]) is odd → ascending order\n      - If (array[0] + array[-1]) is even  → descending order\n    \n    For arrays with fewer than 2 elements, the sum condition doesn't apply; \n    we simply return a sorted copy in ascending order.\n\n    Note:\n      * Don't change the given array.\n    \n    Examples:\n      sort_array([]) => []\n      sort_array([5]) => [5]\n      sort_array([2, 4, 3, 0, 1, 5]) => [0, 1, 2, 3, 4, 5]   # (2+5)=7 odd → ascending\n      sort_array([2, 4, 3, 0, 1, 5, 6]) => [6, 5, 4, 3, 2, 1, 0] # (2+6)=8 even → descending\n    \"\"\"\n    \n    if not array:\n        return []\n\n    # Work on a copy so the original is unchanged\n    result = list(array)\n\n    first_val = array[0]\n    last_val = array[-1]\n    total_sum = first_val + last_val\n\n    ascending = (total_sum % 2 == 1) or len(result) < 2\n    \n    if ascending:\n        return sorted(result, reverse=False)\n    else:\n        return sorted(result, reverse=True)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/88",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "syntax_parse_failure",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5fb723e8a11be472b8da352a67b45f9014b4956a1d7eec12679489334b7f1e50",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "humaneval",
+  "entry_point": "prod_signs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "final_source": "def prod_signs(arr):\n    if not arr:\n        return None\n    \n    # Product of signs: \n    #   sign(x) = 1 if x > 0, -1 if x < 0, and we treat any 0 as making product 0.\n    has_zero = False\n    prod_signs_val = 1\n\n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        elif num > 0:\n            pass  # sign is +1, no change to product\n        else:  # num < 0\n            prod_signs_val *= -1\n\n    if has_zero or prod_signs_val == 0:\n        return 0\n    \n    sum_magnitudes = abs(num) for num in arr -> but we need a loop. Let's rewrite cleanly:\n\ndef prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    \n    if not arr:\n        return None\n    \n    has_zero = False\n    sign_product = 1\n\n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        elif num > 0:\n            pass  # contributes +1 to product of signs\n        else:  # num < 0\n            sign_product *= -1\n    \n    sum_magnitudes = sum(abs(num) for num in arr)\n\n    if has_zero or sign_product == 0:\n        return 0\n    \n    return sum_magnitudes * sign_product\n\n\n# Quick checks (optional, not part of function):\n# print(prod_signs([1, 2, 2, -4]))   # -> -9\n# print(prod_signs([0, 1]))         # -> 0\n# print(prod_signs([]))             # -> None\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/128:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "post_h2_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "post_h3_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "post_h4_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "e95b47dae302f968ae17ae586c70990d988f87f5ce6a8c12c10eee55e036aa58",
+  "raw_source": "def prod_signs(arr):\n    if not arr:\n        return None\n    \n    # Product of signs: \n    #   sign(x) = 1 if x > 0, -1 if x < 0, and we treat any 0 as making product 0.\n    has_zero = False\n    prod_signs_val = 1\n\n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        elif num > 0:\n            pass  # sign is +1, no change to product\n        else:  # num < 0\n            prod_signs_val *= -1\n\n    if has_zero or prod_signs_val == 0:\n        return 0\n    \n    sum_magnitudes = abs(num) for num in arr -> but we need a loop. Let's rewrite cleanly:\n\ndef prod_signs(arr):\n    \"\"\"\n    You are given an array arr of integers and you need to return\n    sum of magnitudes of integers multiplied by product of all signs\n    of each number in the array, represented by 1, -1 or 0.\n    Note: return None for empty arr.\n\n    Example:\n    >>> prod_signs([1, 2, 2, -4]) == -9\n    >>> prod_signs([0, 1]) == 0\n    >>> prod_signs([]) == None\n    \"\"\"\n    \n    if not arr:\n        return None\n    \n    has_zero = False\n    sign_product = 1\n\n    for num in arr:\n        if num == 0:\n            has_zero = True\n            break\n        elif num > 0:\n            pass  # contributes +1 to product of signs\n        else:  # num < 0\n            sign_product *= -1\n    \n    sum_magnitudes = sum(abs(num) for num in arr)\n\n    if has_zero or sign_product == 0:\n        return 0\n    \n    return sum_magnitudes * sign_product\n\n\n# Quick checks (optional, not part of function):\n# print(prod_signs([1, 2, 2, -4]))   # -> -9\n# print(prod_signs([0, 1]))         # -> 0\n# print(prod_signs([]))             # -> None\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/128",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "ea46eba5c8c5f35a4c3706638e1d5ff005c3b55a6092b7a9d5ac846028ec4942",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ce46121432d80b18d5f582148ab0d5f36bd38f4e245cf018c628652d3301cda6",
+  "final_source": "def check(n: int) -> bool:\n    \"\"\"\n    Check if n is equal to 2 * (reverse of n) - 1.\n    \n    That is, returns True if: n = 2 * reverse(n) - 1\n    \n    Examples:\n        For n = 70:\n            reverse(70) = 07 -> 7\n            2 * 7 - 1 = 13 != 70 => False\n    \"\"\"\n    if n < 0 or not isinstance(n, int):\n        return False\n    \n    # Reverse the number (treat as string to handle trailing zeros correctly)\n    reversed_n_str = str(n)[::-1]\n    \n    # Convert back to integer (this removes leading zeros automatically)\n    reversed_n = int(reversed_n_str)\n    \n    return n == 2 * reversed_n - 1\n\n\n# Test cases\nif __name__ == \"__main__\":\n    assert check(70) == False, \"Test case failed for input 70\"\n\n# Additional test cases you might want to verify:\nprint(check(70))   # Expected: False (as per your assertion)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/56:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d3b4176ee40df186e1ccabf1eccc983181bc4f3c75987ee550a6dd0dad74b641",
+  "post_h2_sha256": "ce46121432d80b18d5f582148ab0d5f36bd38f4e245cf018c628652d3301cda6",
+  "post_h3_sha256": "ce46121432d80b18d5f582148ab0d5f36bd38f4e245cf018c628652d3301cda6",
+  "post_h4_sha256": "ce46121432d80b18d5f582148ab0d5f36bd38f4e245cf018c628652d3301cda6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d3b4176ee40df186e1ccabf1eccc983181bc4f3c75987ee550a6dd0dad74b641",
+  "raw_source": "def check(n: int) -> bool:\n    \"\"\"\n    Check if n is equal to 2 * (reverse of n) - 1.\n    \n    That is, returns True if: n = 2 * reverse(n) - 1\n    \n    Examples:\n        For n = 70:\n            reverse(70) = 07 -> 7\n            2 * 7 - 1 = 13 != 70 => False\n    \"\"\"\n    if n < 0 or not isinstance(n, int):\n        return False\n    \n    # Reverse the number (treat as string to handle trailing zeros correctly)\n    reversed_n_str = str(n)[::-1]\n    \n    # Convert back to integer (this removes leading zeros automatically)\n    reversed_n = int(reversed_n_str)\n    \n    return n == 2 * reversed_n - 1\n\n\n# Test cases\nassert check(70) == False, \"Test case failed for input 70\"\n\n# Additional test cases you might want to verify:\nprint(check(70))   # Expected: False (as per your assertion)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/56",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

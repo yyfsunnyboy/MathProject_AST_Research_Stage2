@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5ed04b529f2809cc9ee2ec57a4e1f20e98cf20d6b82e9cbdc24fdf50f0861bf8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "even_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "final_source": "def even_position(lst):\n    \"\"\"\n    Checks whether every element at an even index (0, 2, 4...) \n    contains an even number.\n    \n    Note: In programming contexts involving lists, \"even position\" usually refers to indices divisible by 2 (0-based indexing).\n    Index 0 is the first item, Index 1 is the second, etc.\n    \n    Args:\n        lst (list): The list of integers to check.\n        \n    Returns:\n        bool: True if all elements at even indices are even numbers; False otherwise.\n    \"\"\"\n    # Iterate through the list with a step of 2 starting from index 0\n    for i in range(0, len(lst), 2):\n        if lst[i] % 2 != 0:\n            return False\n    return True\n\n# Test cases based on your requirement and additional edge cases\nassert even_position([3, 2, 1]) == False # Index 0 is 3 (odd) -> Returns False\nassert even_position([4, 5, 6]) == True  # Index 0 is 4 (even), Index 2 is 6 (even) -> Returns True\nassert even_position([]) == True         # Empty list has no violations -> Returns True\nassert even_position([1]) == False       # Only index 0 exists and it is odd -> Returns False\nassert even_position([2, 3, 4, 5]) == True # Index 0 (2), Index 2 (4) are even -> Returns True\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/790:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "post_h2_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "post_h3_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "post_h4_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bdb70a72d079200b0716e5ab5f196428c4ed425971657191d2f6676ea0509cf5",
+  "raw_source": "def even_position(lst):\n    \"\"\"\n    Checks whether every element at an even index (0, 2, 4...) \n    contains an even number.\n    \n    Note: In programming contexts involving lists, \"even position\" usually refers to indices divisible by 2 (0-based indexing).\n    Index 0 is the first item, Index 1 is the second, etc.\n    \n    Args:\n        lst (list): The list of integers to check.\n        \n    Returns:\n        bool: True if all elements at even indices are even numbers; False otherwise.\n    \"\"\"\n    # Iterate through the list with a step of 2 starting from index 0\n    for i in range(0, len(lst), 2):\n        if lst[i] % 2 != 0:\n            return False\n    return True\n\n# Test cases based on your requirement and additional edge cases\nassert even_position([3, 2, 1]) == False # Index 0 is 3 (odd) -> Returns False\nassert even_position([4, 5, 6]) == True  # Index 0 is 4 (even), Index 2 is 6 (even) -> Returns True\nassert even_position([]) == True         # Empty list has no violations -> Returns True\nassert even_position([1]) == False       # Only index 0 exists and it is odd -> Returns False\nassert even_position([2, 3, 4, 5]) == True # Index 0 (2), Index 2 (4) are even -> Returns True\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/790",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "24a5e67fb78ec02b8f70958c6b329594e599b2dfa2d84f514811e2ba20c2670b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "kth_element",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "final_source": "def kth_element(arr: list[int], k: int):\n    \"\"\"\n    Return the k-th element of arr using 1-based indexing.\n    \n    Examples:\n        kth_element([12, 3, 5, 7, 19], 2) -> 3\n        kth_element([10], 1)              -> 10\n    \n    Raises ValueError if k is out of bounds (<= 0 or > len(arr)).\n    \"\"\"\n    n = len(arr)\n    \n    # Validate k for 1-based indexing: must be between 1 and n inclusive\n    if not isinstance(k, int):\n        raise TypeError(\"k must be an integer.\")\n    if k <= 0 or k > n:\n        raise ValueError(f\"k={k} is out of bounds for array of length {n}.\")\n    \n    # Convert to 0-based index and return the element\n    return arr[k - 1]\n\n\n# Example assertions\nassert kth_element([12, 3, 5, 7, 19], 2) == 3\nassert kth_element([12, 3, 5, 7, 19], 1) == 12\nassert kth_element([12, 3, 5, 7, 19], 5) == 19\n\n# Test out-of-bounds behavior (optional; will raise an error if uncommented):\n# assert False, \"Should have raised ValueError\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/101:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "post_h2_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "post_h3_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "post_h4_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "850ad69373781140f989fb5f4316c3444d3107589e3fe5f2f5c6e81cd05e7d63",
+  "raw_source": "def kth_element(arr: list[int], k: int):\n    \"\"\"\n    Return the k-th element of arr using 1-based indexing.\n    \n    Examples:\n        kth_element([12, 3, 5, 7, 19], 2) -> 3\n        kth_element([10], 1)              -> 10\n    \n    Raises ValueError if k is out of bounds (<= 0 or > len(arr)).\n    \"\"\"\n    n = len(arr)\n    \n    # Validate k for 1-based indexing: must be between 1 and n inclusive\n    if not isinstance(k, int):\n        raise TypeError(\"k must be an integer.\")\n    if k <= 0 or k > n:\n        raise ValueError(f\"k={k} is out of bounds for array of length {n}.\")\n    \n    # Convert to 0-based index and return the element\n    return arr[k - 1]\n\n\n# Example assertions\nassert kth_element([12, 3, 5, 7, 19], 2) == 3\nassert kth_element([12, 3, 5, 7, 19], 1) == 12\nassert kth_element([12, 3, 5, 7, 19], 5) == 19\n\n# Test out-of-bounds behavior (optional; will raise an error if uncommented):\n# assert False, \"Should have raised ValueError\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/101",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

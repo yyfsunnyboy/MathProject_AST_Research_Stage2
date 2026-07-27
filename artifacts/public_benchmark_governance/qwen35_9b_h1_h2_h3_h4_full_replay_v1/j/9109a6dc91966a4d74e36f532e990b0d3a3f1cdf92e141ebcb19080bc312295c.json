@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "9109a6dc91966a4d74e36f532e990b0d3a3f1cdf92e141ebcb19080bc312295c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "below_threshold",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "final_source": "def below_threshold(l: list, t: int):\n    \"\"\"Return True if all numbers in the list l are below threshold t.\n    \n    >>> below_threshold([1, 2, 4, 10], 100)\n    True\n    >>> below_threshold([1, 20, 4, 10], 5)\n    False\n    \"\"\"\n    return all(x < t for x in l)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/52:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "post_h2_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "post_h3_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "post_h4_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "82d16bda9a6283ea6f1aba6ea2941a616ae4fe780b33330199a45e5762c38d55",
+  "raw_source": "def below_threshold(l: list, t: int):\n    \"\"\"Return True if all numbers in the list l are below threshold t.\n    \n    >>> below_threshold([1, 2, 4, 10], 100)\n    True\n    >>> below_threshold([1, 20, 4, 10], 5)\n    False\n    \"\"\"\n    return all(x < t for x in l)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/52",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

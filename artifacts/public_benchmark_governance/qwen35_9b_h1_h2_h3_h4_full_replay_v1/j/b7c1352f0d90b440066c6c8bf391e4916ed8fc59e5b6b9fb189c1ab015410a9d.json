@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b7c1352f0d90b440066c6c8bf391e4916ed8fc59e5b6b9fb189c1ab015410a9d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "comb_sort",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f6ec484ec1dac96694f1f9e0cdd6989014de92e93edabaf9a65fa9baa1060ba2",
+  "final_source": "def comb_sort(arr):\n    \"\"\"\n    Sorts a list of elements using the Comb Sort algorithm.\n    \n    Args:\n        arr (list): The unsorted list of comparable elements.\n        \n    Returns:\n        list: A new sorted list in ascending order.\n    \"\"\"\n    # Initialize gap to half the length of the array\n    gap = len(arr) // 2\n    \n    if gap == 0:\n        return arr[:]\n\n    shrink_factor = 1.3  # Commonly used factor for Comb Sort\n    is_sorted = False\n\n    while not is_sorted:\n        # If gap becomes smaller than 1, set it to 1\n        if gap <= 1:\n            gap = 1\n        \n        # Assume the list might be sorted in this pass\n        is_sorted = True\n\n        i = 0\n        # Compare elements separated by 'gap' distance\n        while i + gap < len(arr):\n            j = i + gap\n            \n            if arr[i] > arr[j]:\n                # Swap elements\n                arr[i], arr[j] = arr[j], arr[i]\n                is_sorted = False  # List is not sorted yet\n                \n            i += 1\n        \n        # Shrink the gap for the next iteration\n        gap = int(gap / shrink_factor)\n\n    return arr[:]\n\n\n# Test case from your request\nif __name__ == \"__main__\":\n    assert comb_sort([5, 15, 37, 25, 79]) == [5, 15, 25, 37, 79]\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/71:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "813f40278da8f53467fa2043af44db0a715f97c21805a61969b2e224d8e4537a",
+  "post_h2_sha256": "78f58a37a3364160cf7a8f0f0ca1a2ba0a239b0c3fba1915c854f86fa0ee1bce",
+  "post_h3_sha256": "78f58a37a3364160cf7a8f0f0ca1a2ba0a239b0c3fba1915c854f86fa0ee1bce",
+  "post_h4_sha256": "f6ec484ec1dac96694f1f9e0cdd6989014de92e93edabaf9a65fa9baa1060ba2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "813f40278da8f53467fa2043af44db0a715f97c21805a61969b2e224d8e4537a",
+  "raw_source": "def comb_sort(arr):\n    \"\"\"\n    Sorts a list of elements using the Comb Sort algorithm.\n    \n    Args:\n        arr (list): The unsorted list of comparable elements.\n        \n    Returns:\n        list: A new sorted list in ascending order.\n    \"\"\"\n    # Initialize gap to half the length of the array\n    gap = len(arr) // 2\n    \n    if gap == 0:\n        return arr[:]\n\n    shrink_factor = 1.3  # Commonly used factor for Comb Sort\n    is_sorted = False\n\n    while not is_sorted:\n        # If gap becomes smaller than 1, set it to 1\n        if gap <= 1:\n            gap = 1\n        \n        # Assume the list might be sorted in this pass\n        is_sorted = True\n\n        i = 0\n        # Compare elements separated by 'gap' distance\n        while i + gap < len(arr):\n            j = i + gap\n            \n            if arr[i] > arr[j]:\n                # Swap elements\n                arr[i], arr[j] = arr[j], arr[i]\n                is_sorted = False  # List is not sorted yet\n                \n            i += 1\n        \n        # Shrink the gap for the next iteration\n        gap = int(gap / shrink_factor)\n\n    return arr[:]\n\n\n# Test case from your request\nassert comb_sort([5, 15, 37, 25, 79]) == [5, 15, 25, 37, 79]\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/71",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

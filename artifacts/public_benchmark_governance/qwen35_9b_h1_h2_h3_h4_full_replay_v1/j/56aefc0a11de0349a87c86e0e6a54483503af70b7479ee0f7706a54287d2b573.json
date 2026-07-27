@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "56aefc0a11de0349a87c86e0e6a54483503af70b7479ee0f7706a54287d2b573",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "string_to_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "950d482d669eeaa6e9e62b97898b30406f055608da61ce5d60f6048e667a4843",
+  "final_source": "def string_to_tuple(s: str) -> tuple[str, ...]:\n    \"\"\"Convert a given string to a tuple of its characters.\"\"\"\n    return tuple(char for char in s)\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert string_to_tuple(\"python 3.0\") == ('p', 'y', 't', 'h', 'o', 'n', ' ', '3', '.', '0')\n\nprint(string_to_tuple(\"python 3.0\"))\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/310:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aefbcd779ad61c3b80fefa6a3a7e7b19700ca50b2178b7374de33e19ca4972e3",
+  "post_h2_sha256": "950d482d669eeaa6e9e62b97898b30406f055608da61ce5d60f6048e667a4843",
+  "post_h3_sha256": "950d482d669eeaa6e9e62b97898b30406f055608da61ce5d60f6048e667a4843",
+  "post_h4_sha256": "950d482d669eeaa6e9e62b97898b30406f055608da61ce5d60f6048e667a4843",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aefbcd779ad61c3b80fefa6a3a7e7b19700ca50b2178b7374de33e19ca4972e3",
+  "raw_source": "def string_to_tuple(s: str) -> tuple[str, ...]:\n    \"\"\"Convert a given string to a tuple of its characters.\"\"\"\n    return tuple(char for char in s)\n\n\n# Example usage and assertion\nassert string_to_tuple(\"python 3.0\") == ('p', 'y', 't', 'h', 'o', 'n', ' ', '3', '.', '0')\n\nprint(string_to_tuple(\"python 3.0\"))\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/310",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

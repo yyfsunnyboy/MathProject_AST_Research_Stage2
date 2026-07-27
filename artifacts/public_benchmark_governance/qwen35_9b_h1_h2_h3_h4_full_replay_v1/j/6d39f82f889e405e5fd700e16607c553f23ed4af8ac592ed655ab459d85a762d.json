@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "6d39f82f889e405e5fd700e16607c553f23ed4af8ac592ed655ab459d85a762d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "minPath",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "final_source": "def minPath(grid, k):\n    N = len(grid)\n    # Directions: up, down, left, right\n    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n    \n    best_path = None\n    \n    def dfs(r, c, current_len, path):\n        nonlocal best_path\n        \n        # If we have reached the required length k\n        if current_len == k:\n            if best_path is None or path < best_path:\n                best_path = list(path)\n            return\n\n        for dr, dc in directions:\n            nr, nc = r + dr, c + dc\n            \n            # Check boundaries\n            if 0 <= nr < N and 0 <= nc < N:\n                new_val = grid[nr][nc]\n                path.append(new_val)\n                \n                dfs(nr, nc, current_len + 1, path)\n                \n                path.pop()\n\n    # Try starting from every cell in the grid\n    for r in range(N):\n        for c in range(N):\n            start_val = grid[r][c]\n            dfs(r, c, 0, [start_val])\n    \n    return best_path",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/129:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "post_h2_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "post_h3_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "post_h4_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "06b2e1bfb4fd5f4e0b8fc369df451e4b7cfdfe76924dadd40dbcf0c556519517",
+  "raw_source": "def minPath(grid, k):\n    N = len(grid)\n    # Directions: up, down, left, right\n    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]\n    \n    best_path = None\n    \n    def dfs(r, c, current_len, path):\n        nonlocal best_path\n        \n        # If we have reached the required length k\n        if current_len == k:\n            if best_path is None or path < best_path:\n                best_path = list(path)\n            return\n\n        for dr, dc in directions:\n            nr, nc = r + dr, c + dc\n            \n            # Check boundaries\n            if 0 <= nr < N and 0 <= nc < N:\n                new_val = grid[nr][nc]\n                path.append(new_val)\n                \n                dfs(nr, nc, current_len + 1, path)\n                \n                path.pop()\n\n    # Try starting from every cell in the grid\n    for r in range(N):\n        for c in range(N):\n            start_val = grid[r][c]\n            dfs(r, c, 0, [start_val])\n    \n    return best_path",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/129",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

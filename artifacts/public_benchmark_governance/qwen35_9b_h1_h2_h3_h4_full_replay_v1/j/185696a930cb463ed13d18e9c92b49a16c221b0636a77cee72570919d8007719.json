@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "185696a930cb463ed13d18e9c92b49a16c221b0636a77cee72570919d8007719",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "solve",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "final_source": "def solve(N):\n    \"\"\"Given a positive integer N, return the total sum of its digits in binary.\n    \n    Example\n        For N = 1000, the sum of digits will be 1 the output should be \"1\".\n        For N = 150, the sum of digits will be 6 the output should be \"110\".\n        For N = 147, the sum of digits will be 12 the output should be \"1100\".\n    \n    Variables:\n        @N integer\n             Constraints: 0 ≤ N ≤ 10000.\n    Output:\n         a string of binary number\n    \"\"\"\n    # Compute the sum of decimal digits of N\n    digit_sum = sum(int(d) for d in str(N))\n    \n    # Convert that sum to its binary representation (without '0b' prefix)\n    return bin(digit_sum)[2:]\n\n\n# Example usage:\nprint(solve(1000))  # \"1\"\nprint(solve(150))   # \"110\"\nprint(solve(147))   # \"1100\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/84:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "post_h2_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "post_h3_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "post_h4_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "020fd30797f4ccaf3c2489257e3a46a10f883ae672b80ef345c46667a825e10d",
+  "raw_source": "def solve(N):\n    \"\"\"Given a positive integer N, return the total sum of its digits in binary.\n    \n    Example\n        For N = 1000, the sum of digits will be 1 the output should be \"1\".\n        For N = 150, the sum of digits will be 6 the output should be \"110\".\n        For N = 147, the sum of digits will be 12 the output should be \"1100\".\n    \n    Variables:\n        @N integer\n             Constraints: 0 ≤ N ≤ 10000.\n    Output:\n         a string of binary number\n    \"\"\"\n    # Compute the sum of decimal digits of N\n    digit_sum = sum(int(d) for d in str(N))\n    \n    # Convert that sum to its binary representation (without '0b' prefix)\n    return bin(digit_sum)[2:]\n\n\n# Example usage:\nprint(solve(1000))  # \"1\"\nprint(solve(150))   # \"110\"\nprint(solve(147))   # \"1100\"\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/84",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

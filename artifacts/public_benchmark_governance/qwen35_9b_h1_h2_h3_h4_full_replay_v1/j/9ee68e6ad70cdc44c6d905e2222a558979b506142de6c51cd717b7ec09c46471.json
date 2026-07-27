@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "9ee68e6ad70cdc44c6d905e2222a558979b506142de6c51cd717b7ec09c46471",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_kth",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "final_source": "def find_kth(arr1, arr2, k):\n    if len(arr1) == 0:\n        return arr2[k-1]\n    elif len(arr2) == 0:\n        return arr1[k-1]\n    \n    mid = k // 2\n    \n    val1 = arr1[mid - 1] if mid <= len(arr1) else float('inf')\n    val2 = arr2[mid - 1] if mid <= len(arr2) else float('inf')\n    \n    if val1 < val2:\n        return find_kth(arr1[mid:], arr2, k - mid)\n    elif val2 < val1:\n        return find_kth(arr1, arr2[mid:], k - mid)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/597:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "post_h2_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "post_h3_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "post_h4_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ff7b38ecdf053960c90d30b5549b246acbdccb560c6b1961a19eff090f1cfabe",
+  "raw_source": "def find_kth(arr1, arr2, k):\n    if len(arr1) == 0:\n        return arr2[k-1]\n    elif len(arr2) == 0:\n        return arr1[k-1]\n    \n    mid = k // 2\n    \n    val1 = arr1[mid - 1] if mid <= len(arr1) else float('inf')\n    val2 = arr2[mid - 1] if mid <= len(arr2) else float('inf')\n    \n    if val1 < val2:\n        return find_kth(arr1[mid:], arr2, k - mid)\n    elif val2 < val1:\n        return find_kth(arr1, arr2[mid:], k - mid)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/597",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "2e1de4ac1d5d50cf297b7e98b3b729edd4da6d3d111681f508af5117187f9df1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fix_spaces",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "final_source": "def fix_spaces(text):\n    if len(text) == 0:\n        return text\n    \n    result = []\n    i = 0\n    while i < len(text):\n        char = text[i]\n        \n        # Check for consecutive spaces starting at current position\n        space_count = 0\n        j = i\n        while j < len(text) and text[j] == ' ':\n            space_count += 1\n            j += 1\n        \n        if space_count > 2:\n            result.append('-')\n            # Skip all the spaces we just counted\n            i = j - 1 \n        elif char != ' ':\n            result.append(char)\n        else:\n            # Single or double space -> replace with underscore\n            result.append('_')\n        \n        if text[i] == ' ':\n            i += 1\n    \n    return ''.join(result)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/140:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "post_h2_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "post_h3_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "post_h4_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bc24328ec40c960d18818bfed3180caba3d417aecd53945daa971620a6767ed9",
+  "raw_source": "def fix_spaces(text):\n    if len(text) == 0:\n        return text\n    \n    result = []\n    i = 0\n    while i < len(text):\n        char = text[i]\n        \n        # Check for consecutive spaces starting at current position\n        space_count = 0\n        j = i\n        while j < len(text) and text[j] == ' ':\n            space_count += 1\n            j += 1\n        \n        if space_count > 2:\n            result.append('-')\n            # Skip all the spaces we just counted\n            i = j - 1 \n        elif char != ' ':\n            result.append(char)\n        else:\n            # Single or double space -> replace with underscore\n            result.append('_')\n        \n        if text[i] == ' ':\n            i += 1\n    \n    return ''.join(result)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/140",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6befa784faf295fc48a0af64c6889363af50b60db078d547410de03e6b856e18",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "number_of_substrings",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "final_source": "def number_of_substrings(s: str) -> int:\n    \"\"\"\n    Counts the number of non-empty substrings of a given string.\n    \n    Formula used: n * (n + 1) / 2, where n is the length of the string.\n    This accounts for all contiguous segments starting at any index i \n    and ending at any index j >= i.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        int: The count of non-empty substrings.\n    \"\"\"\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    # Using integer division // to ensure the result is an integer in Python\n    return (n * (n + 1)) // 2\n\n# Verification with provided assertion\nassert number_of_substrings(\"abc\") == 6, \"Test failed for 'abc'\"\nprint(f\"Number of substrings for 'abc': {number_of_substrings('abc')}\") # Output: 6\n\n# Additional test cases to ensure robustness\nassert number_of_substrings(\"\") == 0\nassert number_of_substrings(\"a\") == 1      # \"a\"\nassert number_of_substrings(\"ab\") == 3     # \"a\", \"b\", \"ab\"\nassert number_of_substrings(\"abcd\") == 10  # n=4 -> 4*5/2 = 10\n\nprint(\"All assertions passed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/238:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "post_h2_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "post_h3_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "post_h4_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "eee9bb7dbd3c2b6ab4730dff5fe3b050f0a81f3ec17434e261dffdd5add14d19",
+  "raw_source": "def number_of_substrings(s: str) -> int:\n    \"\"\"\n    Counts the number of non-empty substrings of a given string.\n    \n    Formula used: n * (n + 1) / 2, where n is the length of the string.\n    This accounts for all contiguous segments starting at any index i \n    and ending at any index j >= i.\n    \n    Args:\n        s (str): The input string.\n        \n    Returns:\n        int: The count of non-empty substrings.\n    \"\"\"\n    n = len(s)\n    if n == 0:\n        return 0\n    \n    # Using integer division // to ensure the result is an integer in Python\n    return (n * (n + 1)) // 2\n\n# Verification with provided assertion\nassert number_of_substrings(\"abc\") == 6, \"Test failed for 'abc'\"\nprint(f\"Number of substrings for 'abc': {number_of_substrings('abc')}\") # Output: 6\n\n# Additional test cases to ensure robustness\nassert number_of_substrings(\"\") == 0\nassert number_of_substrings(\"a\") == 1      # \"a\"\nassert number_of_substrings(\"ab\") == 3     # \"a\", \"b\", \"ab\"\nassert number_of_substrings(\"abcd\") == 10  # n=4 -> 4*5/2 = 10\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/238",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

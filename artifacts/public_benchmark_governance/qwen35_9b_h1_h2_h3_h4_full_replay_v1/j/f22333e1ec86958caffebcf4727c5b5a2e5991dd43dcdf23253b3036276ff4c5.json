@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "f22333e1ec86958caffebcf4727c5b5a2e5991dd43dcdf23253b3036276ff4c5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "select_words",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "final_source": "def is_consonant(char):\n    return char.isalpha() and char.lower() not in \"aeiou\"\n\ndef select_words(s, n):\n    if s == \"\" or len(s.strip()) == 0:\n        return []\n    \n    words = s.split()\n    result = []\n    \n    for word in words:\n        consonant_count = sum(1 for c in word if is_consonant(c))\n        if consonant_count == n:\n            result.append(word)\n            \n    return result\n\n# Examples:\nprint(select_words(\"Mary had a little lamb\", 4))   # [\"little\"]\nprint(select_words(\"Mary had a little lamb\", 3))   # [\"Mary\", \"lamb\"]\nprint(select_words(\"simple white space\", 2))       # []\nprint(select_words(\"Hello world\", 4))              # [\"world\"]\nprint(select_words(\"Uncle sam\", 3))                # [\"Uncle\"]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/117:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "post_h2_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "post_h3_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "post_h4_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b11078c723d80b83a457d7a0edac21afe15e0f32153139e0cdc7c1767825e7b2",
+  "raw_source": "def is_consonant(char):\n    return char.isalpha() and char.lower() not in \"aeiou\"\n\ndef select_words(s, n):\n    if s == \"\" or len(s.strip()) == 0:\n        return []\n    \n    words = s.split()\n    result = []\n    \n    for word in words:\n        consonant_count = sum(1 for c in word if is_consonant(c))\n        if consonant_count == n:\n            result.append(word)\n            \n    return result\n\n# Examples:\nprint(select_words(\"Mary had a little lamb\", 4))   # [\"little\"]\nprint(select_words(\"Mary had a little lamb\", 3))   # [\"Mary\", \"lamb\"]\nprint(select_words(\"simple white space\", 2))       # []\nprint(select_words(\"Hello world\", 4))              # [\"world\"]\nprint(select_words(\"Uncle sam\", 3))                # [\"Uncle\"]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/117",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "7925921725dc751bb23c4a6ba9344c318d89cb8c47dd67da9d843d1cb34d0f39",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "minimum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "887594ce3803e061e5a69346e0b135e95988348371e82069541bf4d5f375120f",
+  "final_source": "def minimum(a: int | float, b: int | float) -> int | float:\n    \"\"\"Return the smaller of two numbers.\"\"\"\n    return a if a < b else b\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert minimum(1, 2) == 1\n    print(minimum(5, 3))  # Output: 3\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/404:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5cc662de49420a82fc4dda3109be95dba2277f504768f6ea3c48456a8a0046b5",
+  "post_h2_sha256": "788ab2446c94b666ebffc41c26488838c2d2816b2861f23b3a2537abd63ec3e2",
+  "post_h3_sha256": "788ab2446c94b666ebffc41c26488838c2d2816b2861f23b3a2537abd63ec3e2",
+  "post_h4_sha256": "887594ce3803e061e5a69346e0b135e95988348371e82069541bf4d5f375120f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5cc662de49420a82fc4dda3109be95dba2277f504768f6ea3c48456a8a0046b5",
+  "raw_source": "def minimum(a: int | float, b: int | float) -> int | float:\n    \"\"\"Return the smaller of two numbers.\"\"\"\n    return a if a < b else b\n\n\n# Example usage and assertion\nassert minimum(1, 2) == 1\nprint(minimum(5, 3))  # Output: 3\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/404",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "ec5ffb7b8ce30b72feaf7117878a2b47a490f39b2b92ba22fef646da4ced201c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "solve",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "final_source": "def solve(s):\n    # Check if the string contains any letters (alphabetic characters)\n    has_letter = any(c.isalpha() for c in s)\n    \n    result_chars = []\n    \n    if not has_letter:\n        # If no letters, reverse the entire string\n        return s[::-1]\n    else:\n        # If there are letters, process each character:\n        # - Reverse case for letters\n        # - Keep non-letters unchanged\n        for c in s:\n            if c.isalpha():\n                result_chars.append(c.swapcase())\n            else:\n                result_chars.append(c)\n        \n        return ''.join(result_chars)\n\n\n# Examples:\nprint(solve(\"1234\"))      # Output: \"4321\"\nprint(solve(\"ab\"))        # Output: \"AB\"\nprint(solve(\"#a@C\"))      # Output: \"#A@c\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/161:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "post_h2_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "post_h3_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "post_h4_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "72251d397370dddf8f86ec06b95a4d83ef3d463669061c66435b5203750f4643",
+  "raw_source": "def solve(s):\n    # Check if the string contains any letters (alphabetic characters)\n    has_letter = any(c.isalpha() for c in s)\n    \n    result_chars = []\n    \n    if not has_letter:\n        # If no letters, reverse the entire string\n        return s[::-1]\n    else:\n        # If there are letters, process each character:\n        # - Reverse case for letters\n        # - Keep non-letters unchanged\n        for c in s:\n            if c.isalpha():\n                result_chars.append(c.swapcase())\n            else:\n                result_chars.append(c)\n        \n        return ''.join(result_chars)\n\n\n# Examples:\nprint(solve(\"1234\"))      # Output: \"4321\"\nprint(solve(\"ab\"))        # Output: \"AB\"\nprint(solve(\"#a@C\"))      # Output: \"#A@c\"\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/161",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

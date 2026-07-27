@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "69052cf2148bbcf226314822f1f79e253d85b884f0a2ca589935186db95bb754",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "triangle_area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a5e571cfb5332971e7055393558a85c7f4cafa34b0e917908c6db4606d779a88",
+  "final_source": "import math\n\ndef max_triangle_in_semicircle(radius):\n    \"\"\"\n    Find the area of the largest triangle that can be inscribed in a semicircle \n    with a given positive radius.\n    \n    The maximum-area triangle is formed by:\n      - One side as the diameter of the semicircle (length = 2r)\n      - The third vertex at the midpoint of the arc (forming an equilateral-like shape, but actually right-angled at that point? Actually, for max area in a semicircle with fixed base=diameter, height is maximized when the apex is at the top of the semicircle → forms two congruent right triangles. But wait: \n        In fact, among all triangles inscribed in a semicircle (with one side on diameter), the maximum area occurs when the triangle is formed by the diameter and the point where the height equals r? Actually no — if we take any chord as base not necessarily diameter...\n\n    However, known geometric result:\n      The largest triangle that can be inscribed in a semicircle has its vertices at:\n        - Both endpoints of the diameter\n        - And the midpoint of the arc (i.e., directly above center)\n\n      This gives an isosceles right triangle? Let's compute:\n\n      Coordinates: \n        A = (-r, 0), B = (r, 0), C = (0, r) → but wait, point on semicircle at angle θ=90° from negative x-axis? Actually standard position: center at origin, diameter along x-axis from -r to r. The highest point is (0,r).\n\n      Then triangle ABC with A=(-r,0), B=(r,0), C=(0,r):\n        Base AB = 2r\n        Height from C to AB = r\n        Area = (1/2)*base*height = (1/2)*(2r)*r = r²\n\n      Is this the maximum? Yes — because for any other point on the arc, height < r. And if we don't use diameter as base, can we get more? \n        Suppose we pick three points all on the curved part → impossible since semicircle boundary includes only half-circle; to form a triangle inside, at least two vertices must be on endpoints or one endpoint and others... Actually known theorem: maximum area triangle inscribed in a semicircle has its base as diameter.\n\n      So max area = r² for radius > 0.\n\n    Parameters\n    ----------\n    radius : float or int\n        Radius of the semicircle (must be positive)\n\n    Returns\n    -------\n    float or None\n        Area of largest inscribed triangle if radius is valid, else None\n\n    \"\"\"\n    \n    # Validate input\n    if not isinstance(radius, (int, float)):\n        return None\n    if radius <= 0:\n        return None\n    \n    area = radius ** 2\n    return area\n\n\n# Example usage and assertion check\nif __name__ == \"__main__\":\n    print(max_triangle_in_semicircle(5))   # Should be 25.0\n    assert max_triangle_in_semicircle(-1) is None, \"Negative radius should return None\"\n    assert abs(max_triangle_in_semicircle(3) - 9.0) < 1e-9, \"Area for r=3 should be 9\"\n\ntriangle_area = max_triangle_in_semicircle\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/626:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a5e571cfb5332971e7055393558a85c7f4cafa34b0e917908c6db4606d779a88",
+  "post_h2_sha256": "a5e571cfb5332971e7055393558a85c7f4cafa34b0e917908c6db4606d779a88",
+  "post_h3_sha256": "a5e571cfb5332971e7055393558a85c7f4cafa34b0e917908c6db4606d779a88",
+  "post_h4_sha256": "a5e571cfb5332971e7055393558a85c7f4cafa34b0e917908c6db4606d779a88",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3aaa9181361d99fa259d796ca4c754b16054bdf4f7bf608c649be0cd7c2c1c35",
+  "raw_source": "import math\n\ndef max_triangle_in_semicircle(radius):\n    \"\"\"\n    Find the area of the largest triangle that can be inscribed in a semicircle \n    with a given positive radius.\n    \n    The maximum-area triangle is formed by:\n      - One side as the diameter of the semicircle (length = 2r)\n      - The third vertex at the midpoint of the arc (forming an equilateral-like shape, but actually right-angled at that point? Actually, for max area in a semicircle with fixed base=diameter, height is maximized when the apex is at the top of the semicircle → forms two congruent right triangles. But wait: \n        In fact, among all triangles inscribed in a semicircle (with one side on diameter), the maximum area occurs when the triangle is formed by the diameter and the point where the height equals r? Actually no — if we take any chord as base not necessarily diameter...\n\n    However, known geometric result:\n      The largest triangle that can be inscribed in a semicircle has its vertices at:\n        - Both endpoints of the diameter\n        - And the midpoint of the arc (i.e., directly above center)\n\n      This gives an isosceles right triangle? Let's compute:\n\n      Coordinates: \n        A = (-r, 0), B = (r, 0), C = (0, r) → but wait, point on semicircle at angle θ=90° from negative x-axis? Actually standard position: center at origin, diameter along x-axis from -r to r. The highest point is (0,r).\n\n      Then triangle ABC with A=(-r,0), B=(r,0), C=(0,r):\n        Base AB = 2r\n        Height from C to AB = r\n        Area = (1/2)*base*height = (1/2)*(2r)*r = r²\n\n      Is this the maximum? Yes — because for any other point on the arc, height < r. And if we don't use diameter as base, can we get more? \n        Suppose we pick three points all on the curved part → impossible since semicircle boundary includes only half-circle; to form a triangle inside, at least two vertices must be on endpoints or one endpoint and others... Actually known theorem: maximum area triangle inscribed in a semicircle has its base as diameter.\n\n      So max area = r² for radius > 0.\n\n    Parameters\n    ----------\n    radius : float or int\n        Radius of the semicircle (must be positive)\n\n    Returns\n    -------\n    float or None\n        Area of largest inscribed triangle if radius is valid, else None\n\n    \"\"\"\n    \n    # Validate input\n    if not isinstance(radius, (int, float)):\n        return None\n    if radius <= 0:\n        return None\n    \n    area = radius ** 2\n    return area\n\n\n# Example usage and assertion check\nif __name__ == \"__main__\":\n    print(max_triangle_in_semicircle(5))   # Should be 25.0\n    assert max_triangle_in_semicircle(-1) is None, \"Negative radius should return None\"\n    assert abs(max_triangle_in_semicircle(3) - 9.0) < 1e-9, \"Area for r=3 should be 9\"\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/626",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

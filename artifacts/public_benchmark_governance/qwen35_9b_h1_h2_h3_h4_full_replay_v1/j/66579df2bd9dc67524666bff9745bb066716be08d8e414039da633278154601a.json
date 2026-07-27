@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "66579df2bd9dc67524666bff9745bb066716be08d8e414039da633278154601a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "dict_filter",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "final_source": "def dict_filter(data_dict: dict[int | str], n: int) -> dict[str, int]:\n    \"\"\"\n    Filters a dictionary to include only entries where the value is >= n.\n    \n    Args:\n        data_dict (dict): Dictionary with string keys and integer values.\n        n (int): Minimum threshold for filtering values.\n        \n    Returns:\n        dict: Filtered dictionary containing key-value pairs where value >= n.\n    \"\"\"\n    return {k: v for k, v in data_dict.items() if v >= n}\n\n\n# Example usage and assertion test\nif __name__ == \"__main__\":\n    result = dict_filter(\n        {'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, \n        170\n    )\n    \n    expected = {\n        'Cierra Vega': 175, \n        'Alden Cantrell': 180, \n        'Pierre Cox': 190\n    }\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/277:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "post_h2_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "post_h3_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "post_h4_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6c92954151034f7533d63d307b13fceb91d751d4d4f6fdaa535071c6196a55af",
+  "raw_source": "def dict_filter(data_dict: dict[int | str], n: int) -> dict[str, int]:\n    \"\"\"\n    Filters a dictionary to include only entries where the value is >= n.\n    \n    Args:\n        data_dict (dict): Dictionary with string keys and integer values.\n        n (int): Minimum threshold for filtering values.\n        \n    Returns:\n        dict: Filtered dictionary containing key-value pairs where value >= n.\n    \"\"\"\n    return {k: v for k, v in data_dict.items() if v >= n}\n\n\n# Example usage and assertion test\nif __name__ == \"__main__\":\n    result = dict_filter(\n        {'Cierra Vega': 175, 'Alden Cantrell': 180, 'Kierra Gentry': 165, 'Pierre Cox': 190}, \n        170\n    )\n    \n    expected = {\n        'Cierra Vega': 175, \n        'Alden Cantrell': 180, \n        'Pierre Cox': 190\n    }\n    \n    assert result == expected, f\"Expected {expected}, but got {result}\"\n    print(\"Test passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/277",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

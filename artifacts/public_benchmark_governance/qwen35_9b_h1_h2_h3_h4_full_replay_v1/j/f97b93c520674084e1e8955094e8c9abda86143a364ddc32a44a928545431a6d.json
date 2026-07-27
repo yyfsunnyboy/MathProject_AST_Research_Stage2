@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "entry_point_multiple",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f97b93c520674084e1e8955094e8c9abda86143a364ddc32a44a928545431a6d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "bell_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "final_source": "def bell_number(n):\n    if n == 0:\n        return 1\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    for i in range(1, n + 1):\n        row_sum = 0\n        for j in range(i):\n            row_sum += dp[j]\n        dp[i] = sum(dp[k] * binomial_coefficient(j, k) for k in range(i))\n\ndef bell_number(n):\n    if n == 0:\n        return 1\n    \n    def binom(n, k):\n        res = 1\n        for i in range(k):\n            res *= (n - i) // (i + 1)\n        return res\n    \n    dp = [0] * (n + 1)\n    dp[0] = 1\n    \n    for i in range(1, n + 1):\n        row_sum = sum(dp[j])\n        # Bell recurrence: B(n+1) = Sum_{k=0}^{n} C(n,k)*B(k)\n        # But we need to compute dp[i] using previous values.\n        # Standard recurrence: B(i) = Sum_{j=0}^{i-1} binom(i-1, j) * B(j)\n        \n        val = 0\n        for j in range(i):\n            val += binom(i - 1, j) * dp[j]\n        dp[i] = val\n        \n    return dp[n]\n\nassert bell_number(2)==2",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/67:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "post_h2_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "post_h3_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "post_h4_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cbd51e6044b91f5f83cdc98b3c097b65e65fc46108314e9312e7c7b802d0c9bf",
+  "raw_source": "def bell_number(n):\n    if n == 0:\n        return 1\n    dp = [0] * (n + 1)\n    dp[0] = 1\n    for i in range(1, n + 1):\n        row_sum = 0\n        for j in range(i):\n            row_sum += dp[j]\n        dp[i] = sum(dp[k] * binomial_coefficient(j, k) for k in range(i))\n\ndef bell_number(n):\n    if n == 0:\n        return 1\n    \n    def binom(n, k):\n        res = 1\n        for i in range(k):\n            res *= (n - i) // (i + 1)\n        return res\n    \n    dp = [0] * (n + 1)\n    dp[0] = 1\n    \n    for i in range(1, n + 1):\n        row_sum = sum(dp[j])\n        # Bell recurrence: B(n+1) = Sum_{k=0}^{n} C(n,k)*B(k)\n        # But we need to compute dp[i] using previous values.\n        # Standard recurrence: B(i) = Sum_{j=0}^{i-1} binom(i-1, j) * B(j)\n        \n        val = 0\n        for j in range(i):\n            val += binom(i - 1, j) * dp[j]\n        dp[i] = val\n        \n    return dp[n]\n\nassert bell_number(2)==2",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/67",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c4a7602458088f371f65df335ed1e08ca26dfbc6f8d3927c6ab8dfb56a964e58",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "add_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0b7a9c4431fa4962d37213185c5b0e1829941db8491daf9337113ca4aa05fa7e",
+  "final_source": "def add_lists(lst: list[int], tup: tuple[int, ...]) -> tuple[int, ...]:\n    \"\"\"Append the elements of lst to the end of tup and return a new tuple.\"\"\"\n    # Convert tuple to list for mutability (or just concatenate)\n    result = list(tup) + lst\n    return tuple(result)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    assert add_lists([5, 6, 7], (9, 10)) == (9, 10, 5, 6, 7)\n    print(add_lists([5, 6, 7], (9, 10)))  # Output: (9, 10, 5, 6, 7)\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/106:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bb30f4737e9bc2ca341856ea8fe84974595d226ba4f6ec580b13fc6dfacc9f5e",
+  "post_h2_sha256": "699bdb55fada708a8262556ddb0c0c61acd6647252c62ede6ad75bab608d5476",
+  "post_h3_sha256": "699bdb55fada708a8262556ddb0c0c61acd6647252c62ede6ad75bab608d5476",
+  "post_h4_sha256": "0b7a9c4431fa4962d37213185c5b0e1829941db8491daf9337113ca4aa05fa7e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bb30f4737e9bc2ca341856ea8fe84974595d226ba4f6ec580b13fc6dfacc9f5e",
+  "raw_source": "def add_lists(lst: list[int], tup: tuple[int, ...]) -> tuple[int, ...]:\n    \"\"\"Append the elements of lst to the end of tup and return a new tuple.\"\"\"\n    # Convert tuple to list for mutability (or just concatenate)\n    result = list(tup) + lst\n    return tuple(result)\n\n\n# Example usage:\nassert add_lists([5, 6, 7], (9, 10)) == (9, 10, 5, 6, 7)\n\nprint(add_lists([5, 6, 7], (9, 10)))  # Output: (9, 10, 5, 6, 7)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/106",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

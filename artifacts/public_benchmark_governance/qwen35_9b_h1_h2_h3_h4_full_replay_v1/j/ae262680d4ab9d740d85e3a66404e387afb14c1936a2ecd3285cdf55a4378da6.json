@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "ae262680d4ab9d740d85e3a66404e387afb14c1936a2ecd3285cdf55a4378da6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_samepair",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "final_source": "def count_samepair(list1, list2, list3):\n    \"\"\"\n    Counts the number of items that are identical in the same position \n    across three given lists.\n    \n    Args:\n        list1 (list): First input list.\n        list2 (list): Second input list.\n        list3 (list): Third input list.\n        \n    Returns:\n        int: The count of matching positions where all three elements are equal.\n    \"\"\"\n    # Ensure the lists have the same length to avoid index errors\n    if len(list1) != len(list2) or len(list1) != len(list3):\n        raise ValueError(\"All input lists must be of the same length.\")\n\n    count = 0\n    \n    for i in range(len(list1)):\n        # Check if elements at current position are identical across all three lists\n        if list1[i] == list2[i] and list2[i] == list3[i]:\n            count += 1\n            \n    return count\n\n# Test with the provided assertion\nresult = count_samepair([1,2,3,4,5,6,7,8], [2,2,3,1,2,6,7,9], [2,1,3,1,2,6,7,9])\nprint(f\"Count: {result}\")\n\n# Verify the assertion manually based on index analysis:\n# Index 0: 1 != 2 (Fail)\n# Index 1: 2 == 2 but 2 != 1 (Fail)\n# Index 2: 3 == 3 and 3 == 3 (Match!) -> Count = 1\n# Index 3: 4 != 1 (Fail)\n# Index 4: 5 != 2 (Fail)\n# Index 5: 6 == 6 and 6 == 6 (Match!) -> Count = 2\n# Index 6: 7 == 7 and 7 == 7 (Match!) -> Count = 3\n# Index 7: 8 != 9 (Fail)\n\nassert result == 3, f\"Expected 3 but got {result}\"\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/142:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "post_h2_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "post_h3_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "post_h4_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "21c481d0a829df9d14999374d6ee76d5a8c9a3640bd1b90fa3e2e1edd0a507ec",
+  "raw_source": "def count_samepair(list1, list2, list3):\n    \"\"\"\n    Counts the number of items that are identical in the same position \n    across three given lists.\n    \n    Args:\n        list1 (list): First input list.\n        list2 (list): Second input list.\n        list3 (list): Third input list.\n        \n    Returns:\n        int: The count of matching positions where all three elements are equal.\n    \"\"\"\n    # Ensure the lists have the same length to avoid index errors\n    if len(list1) != len(list2) or len(list1) != len(list3):\n        raise ValueError(\"All input lists must be of the same length.\")\n\n    count = 0\n    \n    for i in range(len(list1)):\n        # Check if elements at current position are identical across all three lists\n        if list1[i] == list2[i] and list2[i] == list3[i]:\n            count += 1\n            \n    return count\n\n# Test with the provided assertion\nresult = count_samepair([1,2,3,4,5,6,7,8], [2,2,3,1,2,6,7,9], [2,1,3,1,2,6,7,9])\nprint(f\"Count: {result}\")\n\n# Verify the assertion manually based on index analysis:\n# Index 0: 1 != 2 (Fail)\n# Index 1: 2 == 2 but 2 != 1 (Fail)\n# Index 2: 3 == 3 and 3 == 3 (Match!) -> Count = 1\n# Index 3: 4 != 1 (Fail)\n# Index 4: 5 != 2 (Fail)\n# Index 5: 6 == 6 and 6 == 6 (Match!) -> Count = 2\n# Index 6: 7 == 7 and 7 == 7 (Match!) -> Count = 3\n# Index 7: 8 != 9 (Fail)\n\nassert result == 3, f\"Expected 3 but got {result}\"\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/142",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

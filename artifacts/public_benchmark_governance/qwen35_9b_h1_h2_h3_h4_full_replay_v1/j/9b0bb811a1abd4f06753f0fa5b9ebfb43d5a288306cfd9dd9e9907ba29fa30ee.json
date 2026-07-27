@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9b0bb811a1abd4f06753f0fa5b9ebfb43d5a288306cfd9dd9e9907ba29fa30ee",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "centered_hexagonal_number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f7b227eb9c92b8a0e16bae266fd3f235e06e17f3c1a8138d687afb797a61ebc5",
+  "final_source": "def centered_hexagonal_number(n):\n    \"\"\"Return the nth centered hexagonal number.\"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"n must be an integer >= 1\")\n    return 3 * n * (n - 1) + 1\n\n# Test\nif __name__ == \"__main__\":\n    assert centered_hexagonal_number(10) == 271\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/86:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e1db548326028233398db2cca126b6d59e7c935bb1aab9bd3f2bbbcbfba4e977",
+  "post_h2_sha256": "f7b227eb9c92b8a0e16bae266fd3f235e06e17f3c1a8138d687afb797a61ebc5",
+  "post_h3_sha256": "f7b227eb9c92b8a0e16bae266fd3f235e06e17f3c1a8138d687afb797a61ebc5",
+  "post_h4_sha256": "f7b227eb9c92b8a0e16bae266fd3f235e06e17f3c1a8138d687afb797a61ebc5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e1db548326028233398db2cca126b6d59e7c935bb1aab9bd3f2bbbcbfba4e977",
+  "raw_source": "def centered_hexagonal_number(n):\n    \"\"\"Return the nth centered hexagonal number.\"\"\"\n    if not isinstance(n, int) or n < 1:\n        raise ValueError(\"n must be an integer >= 1\")\n    return 3 * n * (n - 1) + 1\n\n# Test\nassert centered_hexagonal_number(10) == 271\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/86",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

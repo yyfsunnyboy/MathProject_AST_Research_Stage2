@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_depends_on_external_state",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6c0e4622756c304a57c2d02e90dfdeb47fdd8067a372a828f0be819a395c97e5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "flatten_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "final_source": "def flatten_list(nested_list):\n    \"\"\"\n    Recursively flattens a nested list into a single-level list.\n    \n    Args:\n        nested_list (list): A potentially nested list containing integers or other sublists.\n        \n    Returns:\n        list: A flattened list with all elements at the top level.\n    \"\"\"\n    result = []\n    for item in nested_list:\n        if isinstance(item, list):\n            # If the item is a list, recursively flatten it and extend the result\n            result.extend(flatten_list(item))\n        else:\n            # Otherwise, append the element directly\n            result.append(item)\n    return result\n\n# Test case from your request\ntest_input = [0, 10, [20, 30], 40, 50, [60, 70, 80], [90, 100, 110, 120]]\nexpected_output = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]\n\nassert flatten_list(test_input) == expected_output\nprint(\"Test passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/297:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "post_h2_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "post_h3_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "post_h4_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "df9816b42f416a5b95dabdee293dac4b86226cf18c9f3efec93c60972d0284b5",
+  "raw_source": "def flatten_list(nested_list):\n    \"\"\"\n    Recursively flattens a nested list into a single-level list.\n    \n    Args:\n        nested_list (list): A potentially nested list containing integers or other sublists.\n        \n    Returns:\n        list: A flattened list with all elements at the top level.\n    \"\"\"\n    result = []\n    for item in nested_list:\n        if isinstance(item, list):\n            # If the item is a list, recursively flatten it and extend the result\n            result.extend(flatten_list(item))\n        else:\n            # Otherwise, append the element directly\n            result.append(item)\n    return result\n\n# Test case from your request\ntest_input = [0, 10, [20, 30], 40, 50, [60, 70, 80], [90, 100, 110, 120]]\nexpected_output = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120]\n\nassert flatten_list(test_input) == expected_output\nprint(\"Test passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/297",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

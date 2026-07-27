@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "87c6821946cf2240005a7911b36f0257b1567b30b5069ecc53fc8882664af683",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_min_diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "85eeb371ec67626b6237c88ca09a4d5773532576ae80eddda6345f930fd8c686",
+  "final_source": "def find_min_diff(arr: tuple[int, ...], k: int = None):\n    \"\"\"\n    Find the minimum difference between any two elements in a given array.\n    \n    Parameters:\n        arr (tuple or list): The input collection of numbers.\n        k (int, optional): If provided and non-zero, only consider pairs with index distance <= k.\n                           This is useful for sliding-window style constraints.\n                           \n    Returns:\n        int/float: Minimum absolute difference between any two distinct elements.\n                   Raises ValueError if fewer than 2 elements exist or all differences are invalid under constraint k.\n\n    Note: The example in the prompt uses a fixed second argument `6`, which suggests that \n          either it's unused, or there is an implicit rule like \"only compare pairs within distance 6\".\n          However, for the standard interpretation of “minimum difference between any two elements”,\n          we ignore index constraints unless explicitly required.\n\n    To match the given assertion: find_min_diff((1,5,3,19,18,25),6) == 1\n        We'll assume that when a second argument is passed, it may be ignored for this specific problem,\n        OR we implement optional window constraint if needed.\n\n    For simplicity and correctness with the example:\n      - If k is None or not provided → compute global min diff.\n      - If k is given but irrelevant to logic (as per typical interview variants), still return global min unless specified otherwise.\n    \n    However, since the problem statement doesn't define behavior for `k`, and the test case expects 1 regardless of `6`,\n    we will treat `k` as optional metadata that does NOT affect computation here — OR if intended to limit index distance,\n    we can implement both versions. But given only one assertion, let's stick to global min diff ignoring k for now.\n\n    If you need window-based logic later, I can extend this function accordingly.\n    \"\"\"\n    \n    # Convert input tuple/list to list internally (if needed)\n    nums = list(arr)\n    n = len(nums)\n    \n    if n < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n\n    # Sort the array to easily find adjacent differences\n    sorted_nums = sorted(nums)\n    \n    min_diff = float('inf')\n    \n    for i in range(n - 1):\n        diff = abs(sorted_nums[i+1] - sorted_nums[i])\n        if diff < min_diff:\n            min_diff = diff\n            \n        # Optional early exit if we hit zero difference (can't get smaller)\n        if min_diff == 0:\n            break\n\n    return min_diff\n\n\n# Test with the provided example\nif __name__ == \"__main__\":\n    assert find_min_diff((1,5,3,19,18,25),6) == 1\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/763:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bf7b445b0ce6bf5a0bb923ecce30b22c8ee5b926440119f71c1201d6d02a94cb",
+  "post_h2_sha256": "38ee8ed7dc55d2a400201a7013e8865ef4430384029ce0546703c5c2fb9c9852",
+  "post_h3_sha256": "38ee8ed7dc55d2a400201a7013e8865ef4430384029ce0546703c5c2fb9c9852",
+  "post_h4_sha256": "85eeb371ec67626b6237c88ca09a4d5773532576ae80eddda6345f930fd8c686",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bf7b445b0ce6bf5a0bb923ecce30b22c8ee5b926440119f71c1201d6d02a94cb",
+  "raw_source": "def find_min_diff(arr: tuple[int, ...], k: int = None):\n    \"\"\"\n    Find the minimum difference between any two elements in a given array.\n    \n    Parameters:\n        arr (tuple or list): The input collection of numbers.\n        k (int, optional): If provided and non-zero, only consider pairs with index distance <= k.\n                           This is useful for sliding-window style constraints.\n                           \n    Returns:\n        int/float: Minimum absolute difference between any two distinct elements.\n                   Raises ValueError if fewer than 2 elements exist or all differences are invalid under constraint k.\n\n    Note: The example in the prompt uses a fixed second argument `6`, which suggests that \n          either it's unused, or there is an implicit rule like \"only compare pairs within distance 6\".\n          However, for the standard interpretation of “minimum difference between any two elements”,\n          we ignore index constraints unless explicitly required.\n\n    To match the given assertion: find_min_diff((1,5,3,19,18,25),6) == 1\n        We'll assume that when a second argument is passed, it may be ignored for this specific problem,\n        OR we implement optional window constraint if needed.\n\n    For simplicity and correctness with the example:\n      - If k is None or not provided → compute global min diff.\n      - If k is given but irrelevant to logic (as per typical interview variants), still return global min unless specified otherwise.\n    \n    However, since the problem statement doesn't define behavior for `k`, and the test case expects 1 regardless of `6`,\n    we will treat `k` as optional metadata that does NOT affect computation here — OR if intended to limit index distance,\n    we can implement both versions. But given only one assertion, let's stick to global min diff ignoring k for now.\n\n    If you need window-based logic later, I can extend this function accordingly.\n    \"\"\"\n    \n    # Convert input tuple/list to list internally (if needed)\n    nums = list(arr)\n    n = len(nums)\n    \n    if n < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n\n    # Sort the array to easily find adjacent differences\n    sorted_nums = sorted(nums)\n    \n    min_diff = float('inf')\n    \n    for i in range(n - 1):\n        diff = abs(sorted_nums[i+1] - sorted_nums[i])\n        if diff < min_diff:\n            min_diff = diff\n            \n        # Optional early exit if we hit zero difference (can't get smaller)\n        if min_diff == 0:\n            break\n\n    return min_diff\n\n\n# Test with the provided example\nassert find_min_diff((1,5,3,19,18,25),6) == 1\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/763",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

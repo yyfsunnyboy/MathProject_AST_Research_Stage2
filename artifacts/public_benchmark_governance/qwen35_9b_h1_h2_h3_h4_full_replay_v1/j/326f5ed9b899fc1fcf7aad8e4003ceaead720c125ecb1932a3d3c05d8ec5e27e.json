@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "326f5ed9b899fc1fcf7aad8e4003ceaead720c125ecb1932a3d3c05d8ec5e27e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "concatenate_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "final_source": "def concatenate_tuple(tup):\n    \"\"\"\n    Concatenates each element of a tuple using '-' as the delimiter.\n    \n    Args:\n        tup (tuple): The input tuple containing elements of any type that can be converted to string.\n        \n    Returns:\n        str: A single string with all elements joined by '-'.\n    \"\"\"\n    # Convert every element in the tuple to a string and join them with '-'\n    return \"-\".join(str(item) for item in tup)\n\n# Test case from your request\nresult = concatenate_tuple((\"ID\", \"is\", 4, \"UTS\"))\nassert result == 'ID-is-4-UTS', f\"Expected 'ID-is-4-UTS' but got '{result}'\"\n\nprint(f\"Result: {result}\") # Output: Result: ID-is-4-UTS\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/421:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "post_h2_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "post_h3_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "post_h4_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "755d90c8bf5d64d08dbe5aea9ce1bee0d53eb0ecc30e96fe1e91781effa624e6",
+  "raw_source": "def concatenate_tuple(tup):\n    \"\"\"\n    Concatenates each element of a tuple using '-' as the delimiter.\n    \n    Args:\n        tup (tuple): The input tuple containing elements of any type that can be converted to string.\n        \n    Returns:\n        str: A single string with all elements joined by '-'.\n    \"\"\"\n    # Convert every element in the tuple to a string and join them with '-'\n    return \"-\".join(str(item) for item in tup)\n\n# Test case from your request\nresult = concatenate_tuple((\"ID\", \"is\", 4, \"UTS\"))\nassert result == 'ID-is-4-UTS', f\"Expected 'ID-is-4-UTS' but got '{result}'\"\n\nprint(f\"Result: {result}\") # Output: Result: ID-is-4-UTS\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/421",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

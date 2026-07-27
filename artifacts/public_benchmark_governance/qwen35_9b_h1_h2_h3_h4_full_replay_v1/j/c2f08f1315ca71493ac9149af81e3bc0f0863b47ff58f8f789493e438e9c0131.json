@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "c2f08f1315ca71493ac9149af81e3bc0f0863b47ff58f8f789493e438e9c0131",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "prod_signs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "final_source": "def prod_signs(arr):\n    if not arr:\n        return None\n    \n    product_of_signs = 1\n    sum_of_magnitudes = 0\n    \n    for num in arr:\n        sign = -1 if num < 0 else (1 if num > 0 else 0)\n        \n        if sign == 0:\n            return 0\n        \n        product_of_signs *= sign\n        sum_of_magnitudes += abs(num)\n    \n    return sum_of_magnitudes * product_of_signs",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/128:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "post_h2_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "post_h3_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "post_h4_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "30ef1ea6af758075381e50f2ea2137284594b4a87b98047b14eed7eebaf453d6",
+  "raw_source": "def prod_signs(arr):\n    if not arr:\n        return None\n    \n    product_of_signs = 1\n    sum_of_magnitudes = 0\n    \n    for num in arr:\n        sign = -1 if num < 0 else (1 if num > 0 else 0)\n        \n        if sign == 0:\n            return 0\n        \n        product_of_signs *= sign\n        sum_of_magnitudes += abs(num)\n    \n    return sum_of_magnitudes * product_of_signs",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/128",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

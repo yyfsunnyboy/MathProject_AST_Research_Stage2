@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "92f74471b08614c72f4137bc362f48d6762d8a19c8e8846b5aa32505ba79df25",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "skjkasdkd",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "final_source": "def skjkasdkd(lst):\n    def is_prime(n: int) -> bool:\n        if n < 2:\n            return False\n        if n == 2:\n            return True\n        if n % 2 == 0:\n            return False\n        i = 3\n        while i * i <= n:\n            if n % i == 0:\n                return False\n            i += 2\n        return True\n\n    def sum_digits(n: int) -> int:\n        s = str(abs(n))  # handle negative numbers just in case (though primes are positive here)\n        return sum(int(d) for d in s)\n\n    max_prime = None\n    for num in lst:\n        if is_prime(num):\n            if max_prime is None or num > max_prime:\n                max_prime = num\n\n    # If no prime was found, define behavior (based on examples, there's always at least one prime)\n    return sum_digits(max_prime) if max_prime else 0\n\n\n# Quick sanity checks with the provided examples:\nif __name__ == \"__main__\":\n    tests = [\n        ([0,3,2,1,3,5,7,4,5,5,5,2,181,32,4,32,3,2,32,324,4,3], 10),   # largest prime: 181 -> 1+8+1=10\n        ([1,0,1,8,2,4597,2,1,3,40,1,2,1,2,4,2,5,1], 25),               # largest prime: 4597 -> 4+5+9+7=25\n        ([1,3,1,32,5107,34,83278,109,163,23,2323,32,30,1,9,3], 13),   # largest prime: ? -> sum=13\n        ([0,724,32,71,99,32,6,0,5,91,83,0,5,6], 11),                   # largest prime: 83? or 71? check logic\n        ([0,81,12,3,1,21], 3),                                           # largest prime: 3 -> sum=3\n        ([0,8,1,2,1,7], 7),                                              # largest prime: 7 -> sum=7\n    ]\n\n    for i, (inp, expected) in enumerate(tests):\n        result = skjkasdkd(inp)\n        print(f\"Test {i+1}: input={inp}, got={result}, expected={expected}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/94:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "post_h2_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "post_h3_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "post_h4_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "cbfef404768658d144b3f56484e09ef816f43778de4f7683f4fb2a909661707c",
+  "raw_source": "def skjkasdkd(lst):\n    def is_prime(n: int) -> bool:\n        if n < 2:\n            return False\n        if n == 2:\n            return True\n        if n % 2 == 0:\n            return False\n        i = 3\n        while i * i <= n:\n            if n % i == 0:\n                return False\n            i += 2\n        return True\n\n    def sum_digits(n: int) -> int:\n        s = str(abs(n))  # handle negative numbers just in case (though primes are positive here)\n        return sum(int(d) for d in s)\n\n    max_prime = None\n    for num in lst:\n        if is_prime(num):\n            if max_prime is None or num > max_prime:\n                max_prime = num\n\n    # If no prime was found, define behavior (based on examples, there's always at least one prime)\n    return sum_digits(max_prime) if max_prime else 0\n\n\n# Quick sanity checks with the provided examples:\nif __name__ == \"__main__\":\n    tests = [\n        ([0,3,2,1,3,5,7,4,5,5,5,2,181,32,4,32,3,2,32,324,4,3], 10),   # largest prime: 181 -> 1+8+1=10\n        ([1,0,1,8,2,4597,2,1,3,40,1,2,1,2,4,2,5,1], 25),               # largest prime: 4597 -> 4+5+9+7=25\n        ([1,3,1,32,5107,34,83278,109,163,23,2323,32,30,1,9,3], 13),   # largest prime: ? -> sum=13\n        ([0,724,32,71,99,32,6,0,5,91,83,0,5,6], 11),                   # largest prime: 83? or 71? check logic\n        ([0,81,12,3,1,21], 3),                                           # largest prime: 3 -> sum=3\n        ([0,8,1,2,1,7], 7),                                              # largest prime: 7 -> sum=7\n    ]\n\n    for i, (inp, expected) in enumerate(tests):\n        result = skjkasdkd(inp)\n        print(f\"Test {i+1}: input={inp}, got={result}, expected={expected}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/94",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

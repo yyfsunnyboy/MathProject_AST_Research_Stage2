@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2e12651dfda208a0cac1d6753934a1a4e8b7b73270d23dc0b15cfd30e7cf5d49",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sum_average",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "final_source": "def sum_average(n):\n    \"\"\"\n    Calculates the sum and average of the first n natural numbers (1 to n).\n    \n    Args:\n        n (int): The number of terms. Must be a positive integer.\n        \n    Returns:\n        tuple: A tuple containing (sum, average).\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n    \n    # Sum formula for first n natural numbers: n * (n + 1) / 2\n    total_sum = n * (n + 1) // 2\n    \n    # Average calculation\n    average = total_sum / n if n > 0 else 0.0\n    \n    return total_sum, average\n\n# Test cases based on the requirement and additional edge case\nassert sum_average(10) == (55, 5.5), \"Test failed for n=10\"\nprint(f\"Sum of first 10: {sum_average(10)[0]}, Average: {sum_average(10)[1]}\")\n\n# Additional test cases to ensure robustness\nassert sum_average(1) == (1, 1.0), \"Test failed for n=1\"\nassert sum_average(5) == (15, 3.0), \"Test failed for n=5\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/599:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "post_h2_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "post_h3_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "post_h4_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "21f8a07f76f40dd0d6fa6415637eebab09b81a2f9b880d184321da6c4382634b",
+  "raw_source": "def sum_average(n):\n    \"\"\"\n    Calculates the sum and average of the first n natural numbers (1 to n).\n    \n    Args:\n        n (int): The number of terms. Must be a positive integer.\n        \n    Returns:\n        tuple: A tuple containing (sum, average).\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n    \n    # Sum formula for first n natural numbers: n * (n + 1) / 2\n    total_sum = n * (n + 1) // 2\n    \n    # Average calculation\n    average = total_sum / n if n > 0 else 0.0\n    \n    return total_sum, average\n\n# Test cases based on the requirement and additional edge case\nassert sum_average(10) == (55, 5.5), \"Test failed for n=10\"\nprint(f\"Sum of first 10: {sum_average(10)[0]}, Average: {sum_average(10)[1]}\")\n\n# Additional test cases to ensure robustness\nassert sum_average(1) == (1, 1.0), \"Test failed for n=1\"\nassert sum_average(5) == (15, 3.0), \"Test failed for n=5\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/599",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

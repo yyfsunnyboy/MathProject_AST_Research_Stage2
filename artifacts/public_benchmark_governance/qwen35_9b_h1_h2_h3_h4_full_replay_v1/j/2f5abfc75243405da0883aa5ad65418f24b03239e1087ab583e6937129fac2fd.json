@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "2f5abfc75243405da0883aa5ad65418f24b03239e1087ab583e6937129fac2fd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_simple_power",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "final_source": "def is_simple_power(x, n):\n    if x == 1:\n        return True\n    if n <= 0:\n        return False\n    power = 1\n    while power < x:\n        power *= n\n    return power == x",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/76:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "post_h2_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "post_h3_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "post_h4_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7887dd6a93099d3b5024fc08ca1b6c83ebb05c0c0980a90475199832dc4b0b13",
+  "raw_source": "def is_simple_power(x, n):\n    if x == 1:\n        return True\n    if n <= 0:\n        return False\n    power = 1\n    while power < x:\n        power *= n\n    return power == x",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/76",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "db60a91aeb4d981768067b4c4f057a050f9832e9573d5f1138213faf9606f74b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Max_Length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1ad90b04323616b62d4c28078c2aa3e8af264446c33ad94eeef8bd4cb720a5c2",
+  "final_source": "def Find_Max_Length(list_of_lists):\n    \"\"\"\n    Returns the maximum total number of elements in any sublist within a list of lists.\n    \n    Example:\n        [[1], [1,4], [5,6,7,8]] -> 4 (because [5,6,7,8] has length 4)\n    \"\"\"\n    if not list_of_lists:\n        return 0\n    \n    max_len = 0\n    for sublist in list_of_lists:\n        current_len = len(sublist)\n        if current_len > max_len:\n            max_len = current_len\n            \n    return max_len\n\n# Test the function with the provided example\nif __name__ == \"__main__\":\n    assert Find_Max_Length([[1],[1,4],[5,6,7,8]]) == 4\n    print(\"Test passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/562:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3305a5ea85438eec2ad4df10b0c1316f793e89959279424e13ade78a4b0b4b13",
+  "post_h2_sha256": "8c6c3453d48f862bb432747b51d2691d2a1ae2dcf155dc0c508a23c43fa8e182",
+  "post_h3_sha256": "8c6c3453d48f862bb432747b51d2691d2a1ae2dcf155dc0c508a23c43fa8e182",
+  "post_h4_sha256": "1ad90b04323616b62d4c28078c2aa3e8af264446c33ad94eeef8bd4cb720a5c2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3305a5ea85438eec2ad4df10b0c1316f793e89959279424e13ade78a4b0b4b13",
+  "raw_source": "def Find_Max_Length(list_of_lists):\n    \"\"\"\n    Returns the maximum total number of elements in any sublist within a list of lists.\n    \n    Example:\n        [[1], [1,4], [5,6,7,8]] -> 4 (because [5,6,7,8] has length 4)\n    \"\"\"\n    if not list_of_lists:\n        return 0\n    \n    max_len = 0\n    for sublist in list_of_lists:\n        current_len = len(sublist)\n        if current_len > max_len:\n            max_len = current_len\n            \n    return max_len\n\n# Test the function with the provided example\nassert Find_Max_Length([[1],[1,4],[5,6,7,8]]) == 4\nprint(\"Test passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/562",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

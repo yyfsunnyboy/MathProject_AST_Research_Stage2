@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "20e59bfa7bd4f62093ea72d52eef9968d94d806f7057475dabe33c30175c813f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_Abs_Diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "eb9a7fb057ff1b5bf49a342230db9ba0a407b0f9a6d91ea390be64d45f4ba59c",
+  "final_source": "def max_abs_diff(arr):\n    \"\"\"\n    Returns the maximum absolute difference between any two elements in the list `arr`.\n    \n    The largest possible difference is simply:\n        max(arr) - min(arr)\n    \n    This works because for any pair (a, b), |a - b| ≤ max(arr) - min(arr).\n    \"\"\"\n    if len(arr) < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n    \n    return max(arr) - min(arr)\n\n\n# Example usage and assertion from the prompt:\nif __name__ == \"__main__\":\n    assert max_abs_diff((2, 1, 5, 3)) == 4\n    print(\"Assertion passed!\")\n\nmax_Abs_Diff = max_abs_diff\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/145:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "eb9a7fb057ff1b5bf49a342230db9ba0a407b0f9a6d91ea390be64d45f4ba59c",
+  "post_h2_sha256": "eb9a7fb057ff1b5bf49a342230db9ba0a407b0f9a6d91ea390be64d45f4ba59c",
+  "post_h3_sha256": "eb9a7fb057ff1b5bf49a342230db9ba0a407b0f9a6d91ea390be64d45f4ba59c",
+  "post_h4_sha256": "eb9a7fb057ff1b5bf49a342230db9ba0a407b0f9a6d91ea390be64d45f4ba59c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9efea8d6821e5d30b943d6ad07e90e2bafb3804faa18c4b0a35129a8051fcbbf",
+  "raw_source": "def max_abs_diff(arr):\n    \"\"\"\n    Returns the maximum absolute difference between any two elements in the list `arr`.\n    \n    The largest possible difference is simply:\n        max(arr) - min(arr)\n    \n    This works because for any pair (a, b), |a - b| ≤ max(arr) - min(arr).\n    \"\"\"\n    if len(arr) < 2:\n        raise ValueError(\"Array must contain at least two elements.\")\n    \n    return max(arr) - min(arr)\n\n\n# Example usage and assertion from the prompt:\nif __name__ == \"__main__\":\n    assert max_abs_diff((2, 1, 5, 3)) == 4\n    print(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/145",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

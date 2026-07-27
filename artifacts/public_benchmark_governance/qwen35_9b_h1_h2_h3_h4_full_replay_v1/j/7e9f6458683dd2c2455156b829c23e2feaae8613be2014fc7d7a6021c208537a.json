@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "7e9f6458683dd2c2455156b829c23e2feaae8613be2014fc7d7a6021c208537a",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "count_upper",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "final_source": "def count_upper(s):\n    \"\"\"\n    Given a string s, count the number of uppercase vowels in even indices.\n    \n    For example:\n    count_upper('aBCdEf') returns 1\n    count_upper('abcdefg') returns 0\n    count_upper('dBBE') returns 0\n    \"\"\"\n    return sum(1 for i, c in enumerate(s) if i % 2 == 0 and c.isupper() and c.lower() in 'aeiou')",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/98:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "post_h2_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "post_h3_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "post_h4_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "562b2e4abd9867295f3fdb64aa865063a9ce33a1599990eabb57c0b439d62c48",
+  "raw_source": "def count_upper(s):\n    \"\"\"\n    Given a string s, count the number of uppercase vowels in even indices.\n    \n    For example:\n    count_upper('aBCdEf') returns 1\n    count_upper('abcdefg') returns 0\n    count_upper('dBBE') returns 0\n    \"\"\"\n    return sum(1 for i, c in enumerate(s) if i % 2 == 0 and c.isupper() and c.lower() in 'aeiou')",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/98",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

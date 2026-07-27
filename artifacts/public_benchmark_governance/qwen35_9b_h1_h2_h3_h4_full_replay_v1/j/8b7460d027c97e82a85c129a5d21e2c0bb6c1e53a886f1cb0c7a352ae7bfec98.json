@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_has_external_or_side_effectful_call",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "8b7460d027c97e82a85c129a5d21e2c0bb6c1e53a886f1cb0c7a352ae7bfec98",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "common_in_nested_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "final_source": "def common_in_nested_lists(nested_list):\n    if not nested_list or any(len(sub) == 0 for sub in nested_list):\n        return set()\n    \n    # Start with the first sublist as the initial candidate set\n    result = set(nested_list[0])\n    \n    # Intersect with each subsequent sublist\n    for i in range(1, len(nested_list)):\n        result &= set(nested_list[i])\n        \n    return result\n\n# Example usage and assertion:\nnested = [[12, 18, 23, 25, 45], [7, 12, 18, 24, 28], [1, 5, 8, 12, 15, 16, 18]]\nassert common_in_nested_lists(nested) == set([18, 12])\n\nprint(common_in_nested_lists(nested))  # Output: {18, 12} (order may vary in sets)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/111:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "post_h2_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "post_h3_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "post_h4_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "895a561ac53b4ccd36ae3bda054a0bd7f7d6aa383ec43bd7a8fd3f463d0ef8a8",
+  "raw_source": "def common_in_nested_lists(nested_list):\n    if not nested_list or any(len(sub) == 0 for sub in nested_list):\n        return set()\n    \n    # Start with the first sublist as the initial candidate set\n    result = set(nested_list[0])\n    \n    # Intersect with each subsequent sublist\n    for i in range(1, len(nested_list)):\n        result &= set(nested_list[i])\n        \n    return result\n\n# Example usage and assertion:\nnested = [[12, 18, 23, 25, 45], [7, 12, 18, 24, 28], [1, 5, 8, 12, 15, 16, 18]]\nassert common_in_nested_lists(nested) == set([18, 12])\n\nprint(common_in_nested_lists(nested))  # Output: {18, 12} (order may vary in sets)\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/111",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

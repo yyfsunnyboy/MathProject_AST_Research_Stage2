@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "4fa05aa2c16c05f99b2b3f4e6a0ee2ee12beaa035ce8813739a1dd562aa5ee21",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_max_triples",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "final_source": "def get_max_triples(n):\n    \"\"\"\n    You are given a positive integer n. You have to create an integer array a of length n.\n        For each i (1 ≤ i ≤ n), the value of a[i] = i * i - i + 1.\n        Return the number of triples (a[i], a[j], a[k]) of a where i < j < k, \n    and a[i] + a[j] + a[k] is a multiple of 3.\n\n    Example :\n        Input: n = 5\n        Output: 1\n        Explanation: \n        a = [1, 3, 7, 13, 21]\n        The only valid triple is (1, 7, 13).\n    \"\"\"\n    \n    if n < 3:\n        return 0\n    \n    # Generate the array 'a' based on the formula a[i] = i*i - i + 1 for i from 1 to n\n    # Note: The problem uses 1-based indexing for description, but Python is 0-based.\n    # We will generate values directly using the loop variable representing 1..n\n    \n    count_mod_3 = [0, 0, 0]  # To store counts of numbers with remainder 0, 1, 2 when divided by 3\n    \n    for i in range(1, n + 1):\n        val = i * i - i + 1\n        rem = val % 3\n        count_mod_3[rem] += 1\n        \n    c0 = count_mod_3[0]\n    c1 = count_mod_3[1]\n    c2 = count_mod_3[2]\n    \n    # Case 1: All three numbers have remainder 0 (0 + 0 + 0 = 0 mod 3)\n    ways1 = c0 * (c0 - 1) * (c0 - 2) // 6\n    \n    # Case 2: One number has remainder 0, one has remainder 1, one has remainder 2 (0+1+2=3=0 mod 3)\n    ways2 = c0 * c1 * c2\n    \n    return int(ways1 + ways2)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/147:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "post_h2_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "post_h3_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "post_h4_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9b916bbf6cc0798d1143f0d320e656845bb0ed3556b4665614f912c2a54ca506",
+  "raw_source": "def get_max_triples(n):\n    \"\"\"\n    You are given a positive integer n. You have to create an integer array a of length n.\n        For each i (1 ≤ i ≤ n), the value of a[i] = i * i - i + 1.\n        Return the number of triples (a[i], a[j], a[k]) of a where i < j < k, \n    and a[i] + a[j] + a[k] is a multiple of 3.\n\n    Example :\n        Input: n = 5\n        Output: 1\n        Explanation: \n        a = [1, 3, 7, 13, 21]\n        The only valid triple is (1, 7, 13).\n    \"\"\"\n    \n    if n < 3:\n        return 0\n    \n    # Generate the array 'a' based on the formula a[i] = i*i - i + 1 for i from 1 to n\n    # Note: The problem uses 1-based indexing for description, but Python is 0-based.\n    # We will generate values directly using the loop variable representing 1..n\n    \n    count_mod_3 = [0, 0, 0]  # To store counts of numbers with remainder 0, 1, 2 when divided by 3\n    \n    for i in range(1, n + 1):\n        val = i * i - i + 1\n        rem = val % 3\n        count_mod_3[rem] += 1\n        \n    c0 = count_mod_3[0]\n    c1 = count_mod_3[1]\n    c2 = count_mod_3[2]\n    \n    # Case 1: All three numbers have remainder 0 (0 + 0 + 0 = 0 mod 3)\n    ways1 = c0 * (c0 - 1) * (c0 - 2) // 6\n    \n    # Case 2: One number has remainder 0, one has remainder 1, one has remainder 2 (0+1+2=3=0 mod 3)\n    ways2 = c0 * c1 * c2\n    \n    return int(ways1 + ways2)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/147",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

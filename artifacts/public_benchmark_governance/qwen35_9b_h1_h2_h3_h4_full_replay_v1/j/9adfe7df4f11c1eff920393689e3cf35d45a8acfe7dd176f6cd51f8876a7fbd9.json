@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9adfe7df4f11c1eff920393689e3cf35d45a8acfe7dd176f6cd51f8876a7fbd9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "round_and_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "final_source": "def round_and_sum(numbers):\n    rounded_numbers = [round(num) for num in numbers]\n    total_sum = sum(rounded_numbers)\n    result = total_sum * len(numbers)\n    print(result)\n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/419:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "post_h2_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "post_h3_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "post_h4_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b6d8a12a3cfb3bcc733f29b889ffe0a68df40e4a6d95f88d87bbcde8d74624fd",
+  "raw_source": "def round_and_sum(numbers):\n    rounded_numbers = [round(num) for num in numbers]\n    total_sum = sum(rounded_numbers)\n    result = total_sum * len(numbers)\n    print(result)\n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/419",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

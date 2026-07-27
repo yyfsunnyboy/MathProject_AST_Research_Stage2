@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6cd0615a250683f22410023e59d0ac1f855c9e8c8f6128f5bc7796a5cdfb2a02",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "rescale_to_unit",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "final_source": "def rescale_to_unit(numbers: List[float]) -> List[float]:\n    min_val = min(numbers)\n    max_val = max(numbers)\n    range_val = max_val - min_val\n    return [(num - min_val) / range_val for num in numbers]",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/21:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "post_h2_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "post_h3_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "post_h4_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ef93dd672a5c99e4cd4ecb41c737403f4badcf2a913135210a2421a9db9618f2",
+  "raw_source": "def rescale_to_unit(numbers: List[float]) -> List[float]:\n    min_val = min(numbers)\n    max_val = max(numbers)\n    range_val = max_val - min_val\n    return [(num - min_val) / range_val for num in numbers]",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/21",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

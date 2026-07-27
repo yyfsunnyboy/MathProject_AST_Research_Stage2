@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    4
+  ],
+  "cell_identity": "6932ac7292acb1b2ff1cf9445230d070784181003d370c0914692e1e14e17060",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_sum_increasing_subseq",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "final_source": "def max_sum_increasing_subseq(nums, k_idx, i, j):\n    \"\"\"\n    Find the maximum sum of an increasing subsequence that:\n      1) Starts from some index <= i (prefix up to and including i),\n      2) Includes nums[k_idx] where k_idx > i.\n\n    The function assumes:\n      - nums is a list of integers.\n      - k_idx, i are valid indices with k_idx > i.\n    \n    Returns the maximum sum as an integer.\n    \"\"\"\n    n = len(nums)\n    if not (0 <= i < n and 0 <= k_idx < n):\n        raise IndexError(\"Indices out of bounds\")\n    if k_idx <= i:\n        return float('-inf')\n\n    # dp[x] will store the max increasing subsequence sum ending at index x, considering only elements up to that point.\n    # We'll compute DP for all indices from 0 to n-1 using standard LIS-sum logic.\n    \n    INF = float('inf')\n    NEG_INF = -INF\n    \n    dp = [NEG_INF] * n\n    prev_idx = [-1] * n\n\n    for idx in range(n):\n        best_prev_sum = NEG_INF\n        best_prev_val = None\n        \n        # Look back at all j < idx where nums[j] < nums[idx] and dp[j] is valid\n        for j in range(idx):\n            if dp[j] > NEG_INF and nums[j] < nums[idx]:\n                if dp[j] + nums[idx] > best_prev_sum:\n                    best_prev_sum = dp[j] + nums[idx]\n                    best_prev_val = idx\n        \n        # If no valid predecessor, start new subsequence with just current element\n        if best_prev_sum == NEG_INF:\n            dp[idx] = nums[idx]\n            prev_idx[idx] = -1\n        else:\n            dp[idx] = best_prev_sum\n            prev_idx[idx] = best_prev_val\n\n    # Now we need the max sum of an increasing subsequence that includes k_idx,\n    # and whose \"prefix part\" (before or at i) is valid.\n    \n    # We'll consider two cases for how nums[k_idx] connects:\n    # Case A: The increasing subsequence ending at some index p <= i, then jumps to k_idx directly? \n    # But the problem says \"increasing subsequence from prefix until ith index and also including a given kth element which is after i\".\n    # This implies that we must have an increasing chain up to or before i, then continue through k_idx.\n    # However, standard LIS doesn't allow skipping unless values are strictly increasing across the gap.\n    \n    # Interpretation: We want max sum of a subsequence S such that:\n    #   - All elements in S with index <= i form an increasing chain ending at some p <= i (or possibly multiple segments? No, must be one contiguous increasing sequence overall).\n    #   - The element nums[k_idx] is included and appears after all other selected elements.\n    #   - For any two consecutive chosen indices a < b in S: nums[a] < nums[b].\n    \n    # So we compute for each p <= i, the max sum of increasing subsequence ending at p (dp[p]).\n    # Then if dp[p] is valid and nums[p] < nums[k_idx], candidate = dp[p] + nums[k_idx].\n    # Also consider starting fresh before k_idx but still having some element from prefix? \n    # The phrase \"from prefix until ith index\" suggests we must pick at least one element <= i.\n    \n    max_total_sum = NEG_INF\n    \n    for p in range(i + 1):   # indices 0..i inclusive\n        if dp[p] > NEG_INF and nums[p] < nums[k_idx]:\n            total = dp[p] + nums[k_idx]\n            if total > max_total_sum:\n                max_total_sum = total\n    \n    return int(max_total_sum)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/306:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "post_h2_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "post_h3_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "post_h4_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0060e54727365c18fd20f3f55192d1445c3e32c11b4a898224d8a9dbeebf1d09",
+  "raw_source": "def max_sum_increasing_subseq(nums, k_idx, i, j):\n    \"\"\"\n    Find the maximum sum of an increasing subsequence that:\n      1) Starts from some index <= i (prefix up to and including i),\n      2) Includes nums[k_idx] where k_idx > i.\n\n    The function assumes:\n      - nums is a list of integers.\n      - k_idx, i are valid indices with k_idx > i.\n    \n    Returns the maximum sum as an integer.\n    \"\"\"\n    n = len(nums)\n    if not (0 <= i < n and 0 <= k_idx < n):\n        raise IndexError(\"Indices out of bounds\")\n    if k_idx <= i:\n        return float('-inf')\n\n    # dp[x] will store the max increasing subsequence sum ending at index x, considering only elements up to that point.\n    # We'll compute DP for all indices from 0 to n-1 using standard LIS-sum logic.\n    \n    INF = float('inf')\n    NEG_INF = -INF\n    \n    dp = [NEG_INF] * n\n    prev_idx = [-1] * n\n\n    for idx in range(n):\n        best_prev_sum = NEG_INF\n        best_prev_val = None\n        \n        # Look back at all j < idx where nums[j] < nums[idx] and dp[j] is valid\n        for j in range(idx):\n            if dp[j] > NEG_INF and nums[j] < nums[idx]:\n                if dp[j] + nums[idx] > best_prev_sum:\n                    best_prev_sum = dp[j] + nums[idx]\n                    best_prev_val = idx\n        \n        # If no valid predecessor, start new subsequence with just current element\n        if best_prev_sum == NEG_INF:\n            dp[idx] = nums[idx]\n            prev_idx[idx] = -1\n        else:\n            dp[idx] = best_prev_sum\n            prev_idx[idx] = best_prev_val\n\n    # Now we need the max sum of an increasing subsequence that includes k_idx,\n    # and whose \"prefix part\" (before or at i) is valid.\n    \n    # We'll consider two cases for how nums[k_idx] connects:\n    # Case A: The increasing subsequence ending at some index p <= i, then jumps to k_idx directly? \n    # But the problem says \"increasing subsequence from prefix until ith index and also including a given kth element which is after i\".\n    # This implies that we must have an increasing chain up to or before i, then continue through k_idx.\n    # However, standard LIS doesn't allow skipping unless values are strictly increasing across the gap.\n    \n    # Interpretation: We want max sum of a subsequence S such that:\n    #   - All elements in S with index <= i form an increasing chain ending at some p <= i (or possibly multiple segments? No, must be one contiguous increasing sequence overall).\n    #   - The element nums[k_idx] is included and appears after all other selected elements.\n    #   - For any two consecutive chosen indices a < b in S: nums[a] < nums[b].\n    \n    # So we compute for each p <= i, the max sum of increasing subsequence ending at p (dp[p]).\n    # Then if dp[p] is valid and nums[p] < nums[k_idx], candidate = dp[p] + nums[k_idx].\n    # Also consider starting fresh before k_idx but still having some element from prefix? \n    # The phrase \"from prefix until ith index\" suggests we must pick at least one element <= i.\n    \n    max_total_sum = NEG_INF\n    \n    for p in range(i + 1):   # indices 0..i inclusive\n        if dp[p] > NEG_INF and nums[p] < nums[k_idx]:\n            total = dp[p] + nums[k_idx]\n            if total > max_total_sum:\n                max_total_sum = total\n    \n    return int(max_total_sum)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/306",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "221e5d33782a47e5c12c41f44a7f7e609c560eba84f1e086dbdb1baf936b8571",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "round_and_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "25d541caab27f46426744dced8cf1ce1e3aaa81e19d2798ccd07c829af0d548c",
+  "final_source": "def round_and_sum(numbers):\n    # Round every number in the list to the nearest integer (default behavior of Python's round)\n    rounded_numbers = [round(num) for num in numbers]\n    \n    # Calculate the sum of the rounded numbers\n    total_sum = sum(rounded_numbers)\n    \n    # Multiply by the length of the original list\n    result = total_sum * len(numbers)\n    \n    return result\n\n# Test case verification\nif __name__ == \"__main__\":\n    assert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, -12.22, 14.20, -5.20, 17.50]) == 243\nprint(\"Test passed!\")\n\n# Optional: Print the result for verification\nresult = round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, -12.22, 14.20, -5.20, 17.50])\nprint(f\"Result: {result}\") \n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/419:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e487509be7292d5521b3a98d00bf7d76b9d20a603fae41141cdd868442f7354d",
+  "post_h2_sha256": "25d541caab27f46426744dced8cf1ce1e3aaa81e19d2798ccd07c829af0d548c",
+  "post_h3_sha256": "25d541caab27f46426744dced8cf1ce1e3aaa81e19d2798ccd07c829af0d548c",
+  "post_h4_sha256": "25d541caab27f46426744dced8cf1ce1e3aaa81e19d2798ccd07c829af0d548c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e487509be7292d5521b3a98d00bf7d76b9d20a603fae41141cdd868442f7354d",
+  "raw_source": "def round_and_sum(numbers):\n    # Round every number in the list to the nearest integer (default behavior of Python's round)\n    rounded_numbers = [round(num) for num in numbers]\n    \n    # Calculate the sum of the rounded numbers\n    total_sum = sum(rounded_numbers)\n    \n    # Multiply by the length of the original list\n    result = total_sum * len(numbers)\n    \n    return result\n\n# Test case verification\nassert round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, -12.22, 14.20, -5.20, 17.50]) == 243\nprint(\"Test passed!\")\n\n# Optional: Print the result for verification\nresult = round_and_sum([22.4, 4.0, -16.22, -9.10, 11.00, -12.22, 14.20, -5.20, 17.50])\nprint(f\"Result: {result}\") \n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/419",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

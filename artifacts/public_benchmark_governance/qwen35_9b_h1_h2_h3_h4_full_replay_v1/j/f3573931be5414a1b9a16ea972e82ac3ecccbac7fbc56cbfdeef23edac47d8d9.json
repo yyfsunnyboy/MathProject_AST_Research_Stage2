@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f3573931be5414a1b9a16ea972e82ac3ecccbac7fbc56cbfdeef23edac47d8d9",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_dissimilar",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8f4f3704f38d97193d72a2f54c144c47806d084b3645f729f6ad4d19276dddbb",
+  "final_source": "def find_dissimilar(tup1, tup2):\n    \"\"\"\n    Return all elements from both tuples that are not present in the other tuple.\n    \n    Example:\n        find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) -> (3, 6, 7, 10)\n    \"\"\"\n    set1 = set(tup1)\n    set2 = set(tup2)\n\n    # Elements only in tup1 or only in tup2\n    dissimilar_set = (set1 - set2) | (set2 - set1)\n\n    return tuple(sorted(dissimilar_set))\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/579:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "9e35b9573a752665e48e4d5165f014789d24f36898e62bc1da9d6857e9c9ceed",
+  "post_h2_sha256": "8f4f3704f38d97193d72a2f54c144c47806d084b3645f729f6ad4d19276dddbb",
+  "post_h3_sha256": "8f4f3704f38d97193d72a2f54c144c47806d084b3645f729f6ad4d19276dddbb",
+  "post_h4_sha256": "8f4f3704f38d97193d72a2f54c144c47806d084b3645f729f6ad4d19276dddbb",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "9e35b9573a752665e48e4d5165f014789d24f36898e62bc1da9d6857e9c9ceed",
+  "raw_source": "def find_dissimilar(tup1, tup2):\n    \"\"\"\n    Return all elements from both tuples that are not present in the other tuple.\n    \n    Example:\n        find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) -> (3, 6, 7, 10)\n    \"\"\"\n    set1 = set(tup1)\n    set2 = set(tup2)\n\n    # Elements only in tup1 or only in tup2\n    dissimilar_set = (set1 - set2) | (set2 - set1)\n\n    return tuple(sorted(dissimilar_set))\n\n\n# Example usage and assertion\nassert find_dissimilar((3, 4, 5, 6), (5, 7, 4, 10)) == (3, 6, 7, 10)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/579",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

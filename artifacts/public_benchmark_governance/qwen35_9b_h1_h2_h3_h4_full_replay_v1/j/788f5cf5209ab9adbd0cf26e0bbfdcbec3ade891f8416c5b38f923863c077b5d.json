@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "788f5cf5209ab9adbd0cf26e0bbfdcbec3ade891f8416c5b38f923863c077b5d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_sorted",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "final_source": "def is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst)):\n        if lst[i] < lst[i-1]:\n            return False\n        \n        # Check for duplicates more than once allowed (strictly ascending with at most one duplicate per value? \n        # Wait, re-read docstring: \"If list has more than 1 duplicate of the same number, return False.\"\n        # This means if a number appears >=3 times -> False. If it appears exactly twice -> True (as long as sorted).\n        \n    from collections import Counter\n    counts = Counter(lst)\n    \n    for count in counts.values():\n        if count > 2:\n            return False\n            \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/126:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "post_h2_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "post_h3_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "post_h4_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f8f1397165478c6331bfffca8448b0ea1c116922ff3766dc25765ff1f00b16a1",
+  "raw_source": "def is_sorted(lst):\n    if len(lst) <= 1:\n        return True\n    \n    for i in range(len(lst)):\n        if lst[i] < lst[i-1]:\n            return False\n        \n        # Check for duplicates more than once allowed (strictly ascending with at most one duplicate per value? \n        # Wait, re-read docstring: \"If list has more than 1 duplicate of the same number, return False.\"\n        # This means if a number appears >=3 times -> False. If it appears exactly twice -> True (as long as sorted).\n        \n    from collections import Counter\n    counts = Counter(lst)\n    \n    for count in counts.values():\n        if count > 2:\n            return False\n            \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/126",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

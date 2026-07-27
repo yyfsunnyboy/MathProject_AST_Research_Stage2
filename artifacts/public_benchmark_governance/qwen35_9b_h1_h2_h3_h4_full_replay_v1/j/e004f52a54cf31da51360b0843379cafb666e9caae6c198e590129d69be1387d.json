@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e004f52a54cf31da51360b0843379cafb666e9caae6c198e590129d69be1387d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "prime_num",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "13538da7cc6f0ebd41d530fb9e7e65041c9388459e088b7bf0976bf81ade9aa7",
+  "final_source": "def prime_num(n: int) -> bool:\n    \"\"\"Return True if n is a prime number, False otherwise.\"\"\"\n    # Handle small cases explicitly\n    if n <= 1:\n        return False\n    if n == 2 or n == 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n\n    # Check divisors up to sqrt(n), skipping multiples of 2 and 3\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n\n    return True\n\n\n# Example assertion\nif __name__ == \"__main__\":\n    assert prime_num(13) is True\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/605:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5c5302315c245d5caf9a0c3ee9cd2c754d4d52f048c09d7592131d0374219a27",
+  "post_h2_sha256": "13538da7cc6f0ebd41d530fb9e7e65041c9388459e088b7bf0976bf81ade9aa7",
+  "post_h3_sha256": "13538da7cc6f0ebd41d530fb9e7e65041c9388459e088b7bf0976bf81ade9aa7",
+  "post_h4_sha256": "13538da7cc6f0ebd41d530fb9e7e65041c9388459e088b7bf0976bf81ade9aa7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5c5302315c245d5caf9a0c3ee9cd2c754d4d52f048c09d7592131d0374219a27",
+  "raw_source": "def prime_num(n: int) -> bool:\n    \"\"\"Return True if n is a prime number, False otherwise.\"\"\"\n    # Handle small cases explicitly\n    if n <= 1:\n        return False\n    if n == 2 or n == 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n\n    # Check divisors up to sqrt(n), skipping multiples of 2 and 3\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n\n    return True\n\n\n# Example assertion\nassert prime_num(13) is True\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/605",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

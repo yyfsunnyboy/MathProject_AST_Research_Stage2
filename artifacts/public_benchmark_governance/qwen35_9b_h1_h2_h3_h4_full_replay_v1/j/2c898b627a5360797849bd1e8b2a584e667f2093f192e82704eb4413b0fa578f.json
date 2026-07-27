@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "entry_point_multiple",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "2c898b627a5360797849bd1e8b2a584e667f2093f192e82704eb4413b0fa578f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "new_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "final_source": "def new_tuple(words: str, items: list) -> tuple:\n    \"\"\"\n    Create a new tuple from the given string and list.\n    \n    The function splits the input string by spaces (or treats it as a single element if no space is intended),\n    then combines those parts with the provided list to form a final tuple.\n\n    However, based on the example:\n        assert new_tuple([\"WEB\", \"is\"], \"best\") == ('WEB', 'is', 'best')\n    \n    It appears the first argument should be a *list* of strings and the second a single string (or vice versa),\n    but the docstring says “given string and list”. Let's interpret it as:\n\n        - First arg can be either a str or a list.\n        - Second arg is whatever remains to complete the tuple.\n\n    To match the example exactly, we'll design it so that:\n        new_tuple([\"WEB\", \"is\"], \"best\") -> ('WEB', 'is', 'best')\n\n    If the first argument is already a list, use its elements directly and append the second string as one element.\n    If the first argument is a single string, split it into words (by space) and then add the second string.\n\n    This covers both interpretations while satisfying the given assertion.\n    \"\"\"\n\n    # Normalize inputs: ensure we have an iterable of strings for the first part\n    if isinstance(words, str):\n        parts = words.split()  # splits by whitespace into a list of substrings\n    else:\n        parts = words          # assume it's already a list/tuple/iterable\n\n    # Convert to tuple and append the second argument as a single element\n    result_tuple = (*parts, items) if isinstance(items, str) else (..., *items)  # not valid syntax; fix below\n\n    return tuple(parts + ([items] if isinstance(items, str) else list(items)))\n\n\n# Corrected implementation:\ndef new_tuple(words, item):\n    \"\"\"\n    Create a new tuple from the given string and/or list.\n\n    Examples:\n        >>> new_tuple([\"WEB\", \"is\"], \"best\")\n        ('WEB', 'is', 'best')\n        >>> new_tuple(\"hello world\", [\"foo\"])\n        ('hello', 'world', 'foo')\n        >>> new_tuple((\"a\",), (\"b\",))   # both already tuples/lists -> just concatenate\n        ('a', 'b')\n    \"\"\"\n\n    # Normalize first argument to a list of strings\n    if isinstance(words, str):\n        parts = words.split()\n    else:\n        try:\n            parts = list(words)  # works for tuple, set (if hashable), etc.\n        except TypeError:\n            raise TypeError(\"First argument must be either a string or an iterable of strings.\")\n\n    # Normalize second argument to a single-element list if it's a string\n    if isinstance(item, str):\n        rest = [item]\n    else:\n        try:\n            rest = list(item)  # assume non-string iterables are already sequences we want to include as-is\n        except TypeError:\n            raise TypeError(\"Second argument must be either a string or an iterable.\")\n\n    return tuple(parts + rest)\n\n\n# Test the required assertion\nassert new_tuple([\"WEB\", \"is\"], \"best\") == ('WEB', 'is', 'best')\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/788:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "post_h2_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "post_h3_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "post_h4_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "476e9db1182e3877f026307c865800021cf2b43c4b82a66b10e919c54a4df345",
+  "raw_source": "def new_tuple(words: str, items: list) -> tuple:\n    \"\"\"\n    Create a new tuple from the given string and list.\n    \n    The function splits the input string by spaces (or treats it as a single element if no space is intended),\n    then combines those parts with the provided list to form a final tuple.\n\n    However, based on the example:\n        assert new_tuple([\"WEB\", \"is\"], \"best\") == ('WEB', 'is', 'best')\n    \n    It appears the first argument should be a *list* of strings and the second a single string (or vice versa),\n    but the docstring says “given string and list”. Let's interpret it as:\n\n        - First arg can be either a str or a list.\n        - Second arg is whatever remains to complete the tuple.\n\n    To match the example exactly, we'll design it so that:\n        new_tuple([\"WEB\", \"is\"], \"best\") -> ('WEB', 'is', 'best')\n\n    If the first argument is already a list, use its elements directly and append the second string as one element.\n    If the first argument is a single string, split it into words (by space) and then add the second string.\n\n    This covers both interpretations while satisfying the given assertion.\n    \"\"\"\n\n    # Normalize inputs: ensure we have an iterable of strings for the first part\n    if isinstance(words, str):\n        parts = words.split()  # splits by whitespace into a list of substrings\n    else:\n        parts = words          # assume it's already a list/tuple/iterable\n\n    # Convert to tuple and append the second argument as a single element\n    result_tuple = (*parts, items) if isinstance(items, str) else (..., *items)  # not valid syntax; fix below\n\n    return tuple(parts + ([items] if isinstance(items, str) else list(items)))\n\n\n# Corrected implementation:\ndef new_tuple(words, item):\n    \"\"\"\n    Create a new tuple from the given string and/or list.\n\n    Examples:\n        >>> new_tuple([\"WEB\", \"is\"], \"best\")\n        ('WEB', 'is', 'best')\n        >>> new_tuple(\"hello world\", [\"foo\"])\n        ('hello', 'world', 'foo')\n        >>> new_tuple((\"a\",), (\"b\",))   # both already tuples/lists -> just concatenate\n        ('a', 'b')\n    \"\"\"\n\n    # Normalize first argument to a list of strings\n    if isinstance(words, str):\n        parts = words.split()\n    else:\n        try:\n            parts = list(words)  # works for tuple, set (if hashable), etc.\n        except TypeError:\n            raise TypeError(\"First argument must be either a string or an iterable of strings.\")\n\n    # Normalize second argument to a single-element list if it's a string\n    if isinstance(item, str):\n        rest = [item]\n    else:\n        try:\n            rest = list(item)  # assume non-string iterables are already sequences we want to include as-is\n        except TypeError:\n            raise TypeError(\"Second argument must be either a string or an iterable.\")\n\n    return tuple(parts + rest)\n\n\n# Test the required assertion\nassert new_tuple([\"WEB\", \"is\"], \"best\") == ('WEB', 'is', 'best')\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/788",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

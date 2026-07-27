@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "f461a8f10931e9ef5fc647bbbf5854c93be4b0f8ac38eb9c6c628e1d320fdcf8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_closest_vowel",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "final_source": "def get_closest_vowel(word):\n    # Define vowels (case sensitive check handled by set membership)\n    vowels = {'a', 'e', 'i', 'o', 'u'}\n    \n    length = len(word)\n    \n    # We need to find a vowel at index i such that:\n    # 1. word[i] is in vowels\n    # 2. word[i-1] is NOT in vowels (Consonant)\n    # 3. word[i+1] is NOT in vowels (Consonant)\n    \n    # The problem asks for the closest one \"from the right side\".\n    # This implies we should scan from the end of the string backwards \n    # and return the first match we find.\n    \n    # Start loop from length-2 down to 1 (since index 0 has no left neighbor, \n    # and index len-1 has no right neighbor)\n    for i in range(length - 2, 0, -1):\n        current_char = word[i]\n        \n        if current_char in vowels:\n            prev_char = word[i-1]\n            next_char = word[i+1]\n            \n            # Check if both neighbors are consonants (not vowels)\n            if prev_char not in vowels and next_char not in vowels:\n                return current_char\n                \n    # If no such vowel is found after checking all possibilities from the right\n    return \"\"\n\n# Test cases based on examples\nprint(get_closest_vowel(\"yogurt\"))   # Expected: \"u\" (o is between y,g? No, o is next to g. u is between g,r) -> Wait let's trace yogurt again.\n                                      # y(C), o(V), g(C). 'o' is surrounded by C and V(g)? No, left=y(C), right=g(C). \n                                      # So in \"yogurt\": \n                                      # Index 1: 'o'. Left='y'(C), Right='g'(C). Valid? Yes.\n                                      # Index 3: 'u'. Left='g'(C), Right='r'(C). Valid? Yes.\n                                      # Which one is returned? \"closest... from the right side\". \n                                      # Scanning from right (index 5 down to 0):\n                                      # i=4 ('t', C) -> skip\n                                      # i=3 ('u', V). Left='g'(C), Right='r'(C). Match! Return 'u'. Correct.\n\nprint(get_closest_vowel(\"FULL\"))     # Expected: \"U\"\n# F(C), U(V), L(C). \n# Scan from right (index 2 down to 0):\n# i=1 ('U'). Left=F, Right=L. Both consonants? Yes. Return 'U'. Correct.\n\nprint(get_closest_vowel(\"quick\"))    # Expected: \"\"\n# q(C), u(V), i(V), c(C), k(C)\n# Scan from right (index 3 down to 1):\n# i=3 ('c', C) -> skip\n# i=2 ('i', V). Left='u'(V), Right='c'(C). Left is vowel. Fail.\n# i=1 ('u', V). Left='q'(C), Right='i'(V). Right is vowel. Fail.\n# Return \"\". Correct.\n\nprint(get_closest_vowel(\"ab\"))       # Expected: \"\"\n# a(V) at 0, b(C) at 1. Loop range( -2 down to 1)? Length=2. Range(0, 0, -1) is empty? \n# length-2 = 0. range(0, 0, -1) -> Empty loop. Returns \"\". Correct.\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/118:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "post_h2_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "post_h3_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "post_h4_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0dd7f06cecfb020d9f62475f03bc526a2401af254460d4d1ba0948dfe964f2f1",
+  "raw_source": "def get_closest_vowel(word):\n    # Define vowels (case sensitive check handled by set membership)\n    vowels = {'a', 'e', 'i', 'o', 'u'}\n    \n    length = len(word)\n    \n    # We need to find a vowel at index i such that:\n    # 1. word[i] is in vowels\n    # 2. word[i-1] is NOT in vowels (Consonant)\n    # 3. word[i+1] is NOT in vowels (Consonant)\n    \n    # The problem asks for the closest one \"from the right side\".\n    # This implies we should scan from the end of the string backwards \n    # and return the first match we find.\n    \n    # Start loop from length-2 down to 1 (since index 0 has no left neighbor, \n    # and index len-1 has no right neighbor)\n    for i in range(length - 2, 0, -1):\n        current_char = word[i]\n        \n        if current_char in vowels:\n            prev_char = word[i-1]\n            next_char = word[i+1]\n            \n            # Check if both neighbors are consonants (not vowels)\n            if prev_char not in vowels and next_char not in vowels:\n                return current_char\n                \n    # If no such vowel is found after checking all possibilities from the right\n    return \"\"\n\n# Test cases based on examples\nprint(get_closest_vowel(\"yogurt\"))   # Expected: \"u\" (o is between y,g? No, o is next to g. u is between g,r) -> Wait let's trace yogurt again.\n                                      # y(C), o(V), g(C). 'o' is surrounded by C and V(g)? No, left=y(C), right=g(C). \n                                      # So in \"yogurt\": \n                                      # Index 1: 'o'. Left='y'(C), Right='g'(C). Valid? Yes.\n                                      # Index 3: 'u'. Left='g'(C), Right='r'(C). Valid? Yes.\n                                      # Which one is returned? \"closest... from the right side\". \n                                      # Scanning from right (index 5 down to 0):\n                                      # i=4 ('t', C) -> skip\n                                      # i=3 ('u', V). Left='g'(C), Right='r'(C). Match! Return 'u'. Correct.\n\nprint(get_closest_vowel(\"FULL\"))     # Expected: \"U\"\n# F(C), U(V), L(C). \n# Scan from right (index 2 down to 0):\n# i=1 ('U'). Left=F, Right=L. Both consonants? Yes. Return 'U'. Correct.\n\nprint(get_closest_vowel(\"quick\"))    # Expected: \"\"\n# q(C), u(V), i(V), c(C), k(C)\n# Scan from right (index 3 down to 1):\n# i=3 ('c', C) -> skip\n# i=2 ('i', V). Left='u'(V), Right='c'(C). Left is vowel. Fail.\n# i=1 ('u', V). Left='q'(C), Right='i'(V). Right is vowel. Fail.\n# Return \"\". Correct.\n\nprint(get_closest_vowel(\"ab\"))       # Expected: \"\"\n# a(V) at 0, b(C) at 1. Loop range( -2 down to 1)? Length=2. Range(0, 0, -1) is empty? \n# length-2 = 0. range(0, 0, -1) -> Empty loop. Returns \"\". Correct.\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/118",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

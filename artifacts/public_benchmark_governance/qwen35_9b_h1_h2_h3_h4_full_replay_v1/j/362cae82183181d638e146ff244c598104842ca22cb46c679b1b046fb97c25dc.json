@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "source_unparseable",
+    "H3": "syntax_error_not_empty_suite",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "362cae82183181d638e146ff244c598104842ca22cb46c679b1b046fb97c25dc",
+  "cumulative_parse_status": "unparseable",
+  "dataset": "humaneval",
+  "entry_point": "rounded_avg",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "final_source": "def rounded_avg(n: int, m: int) -> str | None:\n    if n > m:\n        return -1\n    \n    # Sum of integers from n to m = (n + m) * count / 2\n    count = m - n + 1\n    total_sum = (n + m) * count // 2  # integer division is safe here because sum is always integer for consecutive ints\n\n    avg = total_sum / count\n    \n    rounded_avg_val = round(avg)\n    \n    return f\"0b{bin(rounded_avg_val)[2:]}\"\n\n\n# Examples:\nprint(rounded_avg(1, 5))      # \"0b11\"   (avg=3 -> binary 11)\nprint(rounded_avg(7, 5))      # -1\nprint(rounded_avg(10, 20))    # \"0b1111\" (avg=15 -> binary 1111)\nprint(rounded_avg(20, 33))    # \"0b11010\"(avg=26.5->rounds to 27? Wait: let's check.)\n\n# Let's verify the last example manually:\nn, m = 20, 33\ncount = m - n + 1          # 14\ntotal_sum = (20+33)*14//2  # 53*7 = 371? Wait compute properly.\n\n# Actually sum from a to b inclusive: count*(a+b)/2\n# So total_sum = 14 * (20+33) / 2 = 14 * 53 / 2 = 7 * 53 = 371\navg = 371 / 14 ≈ 26.5 → round(26.5) in Python rounds to nearest even: 26 or 27? \n# In Python, round(26.5) -> 26 (banker's rounding). But example says \"0b11010\" which is 26 decimal.\n# So it matches banker’s rounding behavior of built-in round().\n\nprint(rounded_avg(20, 33))    # should print \"0b11010\" (which is 26 in binary)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/103:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "post_h2_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "post_h3_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "post_h4_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "raw_parse_status": "unparseable",
+  "raw_sha256": "798290e8cdea87947ddeb12573e8fa315e6d657b8532274be21df1c190e822ec",
+  "raw_source": "def rounded_avg(n: int, m: int) -> str | None:\n    if n > m:\n        return -1\n    \n    # Sum of integers from n to m = (n + m) * count / 2\n    count = m - n + 1\n    total_sum = (n + m) * count // 2  # integer division is safe here because sum is always integer for consecutive ints\n\n    avg = total_sum / count\n    \n    rounded_avg_val = round(avg)\n    \n    return f\"0b{bin(rounded_avg_val)[2:]}\"\n\n\n# Examples:\nprint(rounded_avg(1, 5))      # \"0b11\"   (avg=3 -> binary 11)\nprint(rounded_avg(7, 5))      # -1\nprint(rounded_avg(10, 20))    # \"0b1111\" (avg=15 -> binary 1111)\nprint(rounded_avg(20, 33))    # \"0b11010\"(avg=26.5->rounds to 27? Wait: let's check.)\n\n# Let's verify the last example manually:\nn, m = 20, 33\ncount = m - n + 1          # 14\ntotal_sum = (20+33)*14//2  # 53*7 = 371? Wait compute properly.\n\n# Actually sum from a to b inclusive: count*(a+b)/2\n# So total_sum = 14 * (20+33) / 2 = 14 * 53 / 2 = 7 * 53 = 371\navg = 371 / 14 ≈ 26.5 → round(26.5) in Python rounds to nearest even: 26 or 27? \n# In Python, round(26.5) -> 26 (banker's rounding). But example says \"0b11010\" which is 26 decimal.\n# So it matches banker’s rounding behavior of built-in round().\n\nprint(rounded_avg(20, 33))    # should print \"0b11010\" (which is 26 in binary)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/103",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

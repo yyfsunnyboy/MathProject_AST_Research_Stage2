@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "213506ae61a7a06f528f34199553ca4c747bedcb4629808c35ce4d299ea5d19b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "div_list",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "final_source": "def div_list(list_a, list_b):\n    \"\"\"\n    Divides two lists element-wise.\n    \n    Args:\n        list_a (list): The numerator list.\n        list_b (list): The denominator list.\n        \n    Returns:\n        list: A new list containing the results of division for each pair of elements.\n              Raises a ZeroDivisionError if any element in list_b is 0.\n    \"\"\"\n    # Check that lists are of equal length\n    if len(list_a) != len(list_b):\n        raise ValueError(\"Both input lists must have the same length.\")\n\n    result = []\n    \n    for i, (numerator, denominator) in enumerate(zip(list_a, list_b)):\n        if denominator == 0:\n            # Handle division by zero explicitly to provide a clear error message\n            raise ZeroDivisionError(f\"Cannot divide {list_a[i]} by {denominator} at index {i}.\")\n        \n        result.append(numerator / denominator)\n\n    return result\n\n\n# Test cases based on your requirement and edge case handling\nif __name__ == \"__main__\":\n    \n    # Original assertion from the prompt\n    assert div_list([4, 5, 6], [1, 2, 3]) == [4.0, 2.5, 2.0]\n    print(\"Test passed: Basic division\")\n\n    # Additional test cases for robustness\n    \n    # Test with floats in input\n    assert div_list([8.0, 9], [2, 1]) == [4.0, 9.0]\n    \n    # Test error handling (lists of different lengths)\n    try:\n        div_list([1, 2], [3])\n    except ValueError as e:\n        print(f\"Caught expected ValueError: {e}\")\n\n    # Test error handling (division by zero)\n    try:\n        div_list([4, 5], [0, 2])\n    except ZeroDivisionError as e:\n        print(f\"Caught expected ZeroDivisionError: {e}\")\n        \n    print(\"All tests completed.\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/618:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "post_h2_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "post_h3_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "post_h4_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "dbf8cb7e956946829d48a844d6309ecd057222c8713d063c757d2935e990e411",
+  "raw_source": "def div_list(list_a, list_b):\n    \"\"\"\n    Divides two lists element-wise.\n    \n    Args:\n        list_a (list): The numerator list.\n        list_b (list): The denominator list.\n        \n    Returns:\n        list: A new list containing the results of division for each pair of elements.\n              Raises a ZeroDivisionError if any element in list_b is 0.\n    \"\"\"\n    # Check that lists are of equal length\n    if len(list_a) != len(list_b):\n        raise ValueError(\"Both input lists must have the same length.\")\n\n    result = []\n    \n    for i, (numerator, denominator) in enumerate(zip(list_a, list_b)):\n        if denominator == 0:\n            # Handle division by zero explicitly to provide a clear error message\n            raise ZeroDivisionError(f\"Cannot divide {list_a[i]} by {denominator} at index {i}.\")\n        \n        result.append(numerator / denominator)\n\n    return result\n\n\n# Test cases based on your requirement and edge case handling\nif __name__ == \"__main__\":\n    \n    # Original assertion from the prompt\n    assert div_list([4, 5, 6], [1, 2, 3]) == [4.0, 2.5, 2.0]\n    print(\"Test passed: Basic division\")\n\n    # Additional test cases for robustness\n    \n    # Test with floats in input\n    assert div_list([8.0, 9], [2, 1]) == [4.0, 9.0]\n    \n    # Test error handling (lists of different lengths)\n    try:\n        div_list([1, 2], [3])\n    except ValueError as e:\n        print(f\"Caught expected ValueError: {e}\")\n\n    # Test error handling (division by zero)\n    try:\n        div_list([4, 5], [0, 2])\n    except ZeroDivisionError as e:\n        print(f\"Caught expected ZeroDivisionError: {e}\")\n        \n    print(\"All tests completed.\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/618",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "dad1defb346f47405bcdbe4261248d821ac0f7cc926a8721d47173f57c753ae3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Min_Length",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5704174601b67e24cbf9e0121a715e8924defadbf36d00862099c922a5744053",
+  "final_source": "def find_min_length(list_of_lists):\n    \"\"\"\n    Returns the length of the shortest inner list within a given list of lists.\n    \n    Args:\n        list_of_lists (list[list]): A non-empty list containing multiple sublists.\n        \n    Returns:\n        int: The minimum length among all sublists.\n        \n    Raises:\n        ValueError: If the input is empty or contains no valid inner lists.\n    \"\"\"\n    if not list_of_lists:\n        raise ValueError(\"Input must be a non-empty list of lists.\")\n    \n    return min(len(sublist) for sublist in list_of_lists)\n\n\n# Example usage and assertion test\nassert find_min_length([[1], [1, 2]]) == 1\nprint(\"Test passed!\")\n\n# Additional examples:\nprint(find_min_length([[5, 6, 7], [8]]))        # Output: 1\nprint(find_min_length([[], [], []]))            # Output: 0 (all empty lists)\n\nFind_Min_Length = find_min_length\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/95:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5704174601b67e24cbf9e0121a715e8924defadbf36d00862099c922a5744053",
+  "post_h2_sha256": "5704174601b67e24cbf9e0121a715e8924defadbf36d00862099c922a5744053",
+  "post_h3_sha256": "5704174601b67e24cbf9e0121a715e8924defadbf36d00862099c922a5744053",
+  "post_h4_sha256": "5704174601b67e24cbf9e0121a715e8924defadbf36d00862099c922a5744053",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a78ff01d962ab3fecfdd001cbc8636359ccf8713763062f929dbf1998d198d0e",
+  "raw_source": "def find_min_length(list_of_lists):\n    \"\"\"\n    Returns the length of the shortest inner list within a given list of lists.\n    \n    Args:\n        list_of_lists (list[list]): A non-empty list containing multiple sublists.\n        \n    Returns:\n        int: The minimum length among all sublists.\n        \n    Raises:\n        ValueError: If the input is empty or contains no valid inner lists.\n    \"\"\"\n    if not list_of_lists:\n        raise ValueError(\"Input must be a non-empty list of lists.\")\n    \n    return min(len(sublist) for sublist in list_of_lists)\n\n\n# Example usage and assertion test\nassert find_min_length([[1], [1, 2]]) == 1\nprint(\"Test passed!\")\n\n# Additional examples:\nprint(find_min_length([[5, 6, 7], [8]]))        # Output: 1\nprint(find_min_length([[], [], []]))            # Output: 0 (all empty lists)\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/95",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

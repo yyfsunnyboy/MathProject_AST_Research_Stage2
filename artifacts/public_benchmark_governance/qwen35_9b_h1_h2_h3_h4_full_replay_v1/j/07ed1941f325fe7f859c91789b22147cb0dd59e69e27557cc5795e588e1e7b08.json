@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "07ed1941f325fe7f859c91789b22147cb0dd59e69e27557cc5795e588e1e7b08",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "max_fill",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "final_source": "import math\n\ndef max_fill(grid, capacity):\n    \"\"\"\n    Calculates the minimum number of times buckets need to be lowered to empty all wells.\n    \n    Args:\n        grid (List[List[int]]): A 2D list where each row is a well and 1s represent water units.\n        capacity (int): The capacity of each bucket.\n        \n    Returns:\n        int: Total number of times buckets need to be lowered.\n    \"\"\"\n    total_dips = 0\n    \n    for well in grid:\n        # Count the amount of water in this well\n        water_units = sum(well)\n        \n        if water_units > 0:\n            # Calculate dips needed for this well (ceiling division)\n            dips_for_well = math.ceil(water_units / capacity)\n            total_dips += dips_for_well\n            \n    return total_dips\n\n# Example Test Cases\nif __name__ == \"__main__\":\n    print(max_fill([[0,0,1,0], [0,1,0,0], [1,1,1,1]], 1))   # Output: 6\n    print(max_fill([[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]], 2))  # Output: 5\n    print(max_fill([[0,0,0], [0,0,0]], 5))                   # Output: 0\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/115:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "post_h2_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "post_h3_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "post_h4_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "46d193e562d430d67822755469099fa727a2463bda563d9cdcdc533fc65eb0e5",
+  "raw_source": "import math\n\ndef max_fill(grid, capacity):\n    \"\"\"\n    Calculates the minimum number of times buckets need to be lowered to empty all wells.\n    \n    Args:\n        grid (List[List[int]]): A 2D list where each row is a well and 1s represent water units.\n        capacity (int): The capacity of each bucket.\n        \n    Returns:\n        int: Total number of times buckets need to be lowered.\n    \"\"\"\n    total_dips = 0\n    \n    for well in grid:\n        # Count the amount of water in this well\n        water_units = sum(well)\n        \n        if water_units > 0:\n            # Calculate dips needed for this well (ceiling division)\n            dips_for_well = math.ceil(water_units / capacity)\n            total_dips += dips_for_well\n            \n    return total_dips\n\n# Example Test Cases\nif __name__ == \"__main__\":\n    print(max_fill([[0,0,1,0], [0,1,0,0], [1,1,1,1]], 1))   # Output: 6\n    print(max_fill([[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]], 2))  # Output: 5\n    print(max_fill([[0,0,0], [0,0,0]], 5))                   # Output: 0\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/115",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

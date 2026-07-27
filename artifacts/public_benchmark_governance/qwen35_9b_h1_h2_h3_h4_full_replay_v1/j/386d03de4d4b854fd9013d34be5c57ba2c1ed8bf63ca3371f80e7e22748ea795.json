@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "386d03de4d4b854fd9013d34be5c57ba2c1ed8bf63ca3371f80e7e22748ea795",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Substrings",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "final_source": "def count_Substrings(s):\n    n = len(s)\n    total_count = 0\n    \n    for i in range(n):\n        current_sum = int(s[i])\n        if current_sum == (i + 1 - i): # Length of substring starting at i with length 1 is 1. Sum must equal length.\n            total_count += 1\n        \n        for j in range(i + 1, n):\n            digit_val = int(s[j])\n            current_length = j - i + 1\n            if (current_sum + digit_val) == current_length:\n                total_count += 1\n    \n    return total_count",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/61:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "post_h2_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "post_h3_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "post_h4_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "61c664979069b3b152bf2f0991f4a016fb104f369746434069152c7290bed10e",
+  "raw_source": "def count_Substrings(s):\n    n = len(s)\n    total_count = 0\n    \n    for i in range(n):\n        current_sum = int(s[i])\n        if current_sum == (i + 1 - i): # Length of substring starting at i with length 1 is 1. Sum must equal length.\n            total_count += 1\n        \n        for j in range(i + 1, n):\n            digit_val = int(s[j])\n            current_length = j - i + 1\n            if (current_sum + digit_val) == current_length:\n                total_count += 1\n    \n    return total_count",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/61",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

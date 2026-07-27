@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4433fb43a677cdeb9d6afcd7f1807429942d5d8766462a15ac66bc1dbaf5aa47",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_combinations",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "final_source": "def find_combinations(tuple_list):\n    \"\"\"\n    Finds all combinations of sums for unique pairs of tuples in the given list.\n    \n    Args:\n        tuple_list: A list of 2-element integer tuples.\n        \n    Returns:\n        A list containing the sum-tuples of every unique pair (i, j) where i < j.\n    \"\"\"\n    combinations = []\n    n = len(tuple_list)\n    \n    # Iterate through all pairs with distinct indices to avoid self-sums and duplicates\n    for i in range(n):\n        for j in range(i + 1, n):\n            sum_tuple = (tuple_list[i][0] + tuple_list[j][0], \n                          tuple_list[i][1] + tuple_list[j][1])\n            combinations.append(sum_tuple)\n            \n    return combinations\n\n# Test the function with the provided assertion\nresult = find_combinations([(2, 4), (6, 7), (5, 1), (6, 10)])\nexpected = [(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]\n\nprint(f\"Result: {result}\")\nprint(f\"Expected: {expected}\")\nassert result == expected, \"The function output does not match the expected result.\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/780:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "post_h2_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "post_h3_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "post_h4_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c4b3e3fd5cbf7b116bce5dc0a5a65d92ab0f6fa21bdc21953ee0c4b7a1e155a5",
+  "raw_source": "def find_combinations(tuple_list):\n    \"\"\"\n    Finds all combinations of sums for unique pairs of tuples in the given list.\n    \n    Args:\n        tuple_list: A list of 2-element integer tuples.\n        \n    Returns:\n        A list containing the sum-tuples of every unique pair (i, j) where i < j.\n    \"\"\"\n    combinations = []\n    n = len(tuple_list)\n    \n    # Iterate through all pairs with distinct indices to avoid self-sums and duplicates\n    for i in range(n):\n        for j in range(i + 1, n):\n            sum_tuple = (tuple_list[i][0] + tuple_list[j][0], \n                          tuple_list[i][1] + tuple_list[j][1])\n            combinations.append(sum_tuple)\n            \n    return combinations\n\n# Test the function with the provided assertion\nresult = find_combinations([(2, 4), (6, 7), (5, 1), (6, 10)])\nexpected = [(8, 11), (7, 5), (8, 14), (11, 8), (12, 17), (11, 11)]\n\nprint(f\"Result: {result}\")\nprint(f\"Expected: {expected}\")\nassert result == expected, \"The function output does not match the expected result.\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/780",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

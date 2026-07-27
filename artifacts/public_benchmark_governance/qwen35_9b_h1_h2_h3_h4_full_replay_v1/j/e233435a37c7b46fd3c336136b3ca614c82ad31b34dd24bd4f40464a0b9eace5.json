@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e233435a37c7b46fd3c336136b3ca614c82ad31b34dd24bd4f40464a0b9eace5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_reverse_pairs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "final_source": "from collections import Counter\n\ndef count_reverse_pairs(words):\n    \"\"\"\n    Counts the number of unique index pairs (i, j) such that i < j \n    and words[i] is the reverse of words[j].\n    \n    Args:\n        words (List[str]): A list of strings.\n        \n    Returns:\n        int: The total count of reverse string pairs.\n    \"\"\"\n    if not words:\n        return 0\n\n    # Dictionary to store frequency of reversed strings encountered so far\n    seen = Counter()\n    pair_count = 0\n    \n    for word in words:\n        rev_word = word[::-1]\n        \n        # If we have seen this reverse before, add the number of occurrences \n        # found previously to our total count.\n        if rev_word in seen:\n            pair_count += seen[rev_word]\n            \n        # Record that we've now encountered 'word' (which is a potential first half)\n        # for future matches where it acts as the reverse part.\n        seen[word] = seen.get(word, 0) + 1\n        \n    return pair_count\n\n# Test cases based on your requirement and additional edge cases\nif __name__ == \"__main__\":\n    \n    # Original test case from prompt: \n    # \"julia\" <-> \"ailuj\", \"best\" <-> \"tseb\". Total = 2.\n    assert count_reverse_pairs([\"julia\", \"best\", \"tseb\", \"for\", \"ailuj\"]) == 2\n    \n    # Additional Test Case 1: No pairs\n    result1 = count_reverse_pairs([\"hello\", \"world\"]) \n    print(f\"Test 1 (No pairs): {result1}\")\n    assert result1 == 0\n\n    # Additional Test Case 2: Multiple identical words forming multiple pairs\n    # [\"a\", \"b\", \"c\"] -> no reverse matches. Count = 0\n    # If input was [\"ab\", \"ba\", \"ba\"], \n    # i=0 (\"ab\"), seen={\"ab\":1} (wait, logic checks rev first)\n    # Let's trace: \n    # word=\"ab\" -> rev=\"ba\". seen has no \"ba\". Add \"ab\":1.\n    # word=\"ba\" -> rev=\"ab\". seen has \"ab\":1. count += 1. Add \"ba\":1.\n    # word=\"ba\" -> rev=\"ab\". seen has \"ab\":1. count += 1 (total 2). Add \"ba\":2.\n    result2 = count_reverse_pairs([\"ab\", \"ba\", \"ba\"]) \n    print(f\"Test 2 (Multiple pairs): {result2}\")\n    assert result2 == 2\n\n    # Additional Test Case 3: Palindromes don't form reverse pairs with themselves in this logic\n    # unless there are two distinct instances. e.g., [\"aba\", \"aba\"] \n    # word=\"aba\" -> rev=\"aba\". seen has no \"aba\". Add \"aba\":1.\n    # word=\"aba\" -> rev=\"aba\". seen has \"aba\":1. count += 1. Add \"aba\":2.\n    result3 = count_reverse_pairs([\"aba\", \"aba\"]) \n    print(f\"Test 3 (Palindromes): {result3}\")\n    assert result3 == 1\n\n    # Additional Test Case 4: Empty list\n    result4 = count_reverse_pairs([])\n    print(f\"Test 4 (Empty list): {result4}\")\n    assert result4 == 0\n    \n    print(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/757:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "post_h2_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "post_h3_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "post_h4_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "236f3295c62eef5699182d259c532aec9d96483bfabd7d925a63a33ccbfa232b",
+  "raw_source": "from collections import Counter\n\ndef count_reverse_pairs(words):\n    \"\"\"\n    Counts the number of unique index pairs (i, j) such that i < j \n    and words[i] is the reverse of words[j].\n    \n    Args:\n        words (List[str]): A list of strings.\n        \n    Returns:\n        int: The total count of reverse string pairs.\n    \"\"\"\n    if not words:\n        return 0\n\n    # Dictionary to store frequency of reversed strings encountered so far\n    seen = Counter()\n    pair_count = 0\n    \n    for word in words:\n        rev_word = word[::-1]\n        \n        # If we have seen this reverse before, add the number of occurrences \n        # found previously to our total count.\n        if rev_word in seen:\n            pair_count += seen[rev_word]\n            \n        # Record that we've now encountered 'word' (which is a potential first half)\n        # for future matches where it acts as the reverse part.\n        seen[word] = seen.get(word, 0) + 1\n        \n    return pair_count\n\n# Test cases based on your requirement and additional edge cases\nif __name__ == \"__main__\":\n    \n    # Original test case from prompt: \n    # \"julia\" <-> \"ailuj\", \"best\" <-> \"tseb\". Total = 2.\n    assert count_reverse_pairs([\"julia\", \"best\", \"tseb\", \"for\", \"ailuj\"]) == 2\n    \n    # Additional Test Case 1: No pairs\n    result1 = count_reverse_pairs([\"hello\", \"world\"]) \n    print(f\"Test 1 (No pairs): {result1}\")\n    assert result1 == 0\n\n    # Additional Test Case 2: Multiple identical words forming multiple pairs\n    # [\"a\", \"b\", \"c\"] -> no reverse matches. Count = 0\n    # If input was [\"ab\", \"ba\", \"ba\"], \n    # i=0 (\"ab\"), seen={\"ab\":1} (wait, logic checks rev first)\n    # Let's trace: \n    # word=\"ab\" -> rev=\"ba\". seen has no \"ba\". Add \"ab\":1.\n    # word=\"ba\" -> rev=\"ab\". seen has \"ab\":1. count += 1. Add \"ba\":1.\n    # word=\"ba\" -> rev=\"ab\". seen has \"ab\":1. count += 1 (total 2). Add \"ba\":2.\n    result2 = count_reverse_pairs([\"ab\", \"ba\", \"ba\"]) \n    print(f\"Test 2 (Multiple pairs): {result2}\")\n    assert result2 == 2\n\n    # Additional Test Case 3: Palindromes don't form reverse pairs with themselves in this logic\n    # unless there are two distinct instances. e.g., [\"aba\", \"aba\"] \n    # word=\"aba\" -> rev=\"aba\". seen has no \"aba\". Add \"aba\":1.\n    # word=\"aba\" -> rev=\"aba\". seen has \"aba\":1. count += 1. Add \"aba\":2.\n    result3 = count_reverse_pairs([\"aba\", \"aba\"]) \n    print(f\"Test 3 (Palindromes): {result3}\")\n    assert result3 == 1\n\n    # Additional Test Case 4: Empty list\n    result4 = count_reverse_pairs([])\n    print(f\"Test 4 (Empty list): {result4}\")\n    assert result4 == 0\n    \n    print(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/757",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

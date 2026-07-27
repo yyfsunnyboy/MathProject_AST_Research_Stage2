@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "fa7a70ce7da9de651f14ac4fec7e7a98b0f6591521165c8f0476673a109929f3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "valid_date",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "final_source": "def valid_date(date):\n    # Rule 1: The date string must not be empty\n    if not date or len(date.strip()) == 0:\n        return False\n    \n    # Check format (Rule 4) and split components\n    parts = date.split('-')\n    \n    # If the separator is not exactly '-', it's invalid based on Rule 4\n    if len(parts) != 3:\n        return False\n        \n    month_str, day_str, year_str = parts\n    \n    try:\n        month = int(month_str)\n        day = int(day_str)\n        year = int(year_str)\n        \n        # Check for leading zeros or non-numeric characters implicitly handled by split/int conversion? \n        # Actually, we need to ensure the string format matches exactly mm-dd-yyyy.\n        # For example '03/11/2000' would fail here because parts[1] is not a valid int if there's no '-', \n        # but wait: \"06/04/2020\" -> split('-') gives ['06', '/04', '/2020']? No.\n        # Let's re-evaluate the format check strictly.\n        \n    except ValueError:\n        return False\n\n    # Re-check strict formatting to ensure no slashes or other separators slipped through logic above if input was '15-01' (missing year) \n    # The split handles missing parts by creating fewer than 3 elements, caught earlier? \n    # Wait, if date is \"15-01\", len(parts)=2. Caught.\n    \n    # However, we must ensure the strings are valid integers first before converting to int logic above covers that via try/except.\n    # But what about '06/04/2020'? \n    # parts = ['06', '/04', '/2020'] -> len is 3. \n    # month_str='06' (ok), day_str='/04' (ValueError on int conversion). Caught by try/except.\n    \n    # Rule 3: Month validation\n    if not (1 <= month <= 12):\n        return False\n        \n    # Determine max days for the specific month based on rules provided in prompt\n    # Note: The prompt simplifies Feb to always allow up to 29, ignoring leap year logic explicitly mentioned \n    # (\"higher than 29\" implies limit is 29). Usually standard validation checks <=28 or (<=29 if leap), \n    # but the rule says \"not less than 1 or higher than 29\". This usually means max allowed input is 29.\n    \n    if month in [4, 6, 9, 11]:\n        max_days = 30\n    elif month == 2:\n        # Rule states limit is 29 for Feb. \n        # It does not explicitly ask to check leap years logic (e.g., rejecting '02-29' in non-leap year),\n        # but standard \"valid date\" usually implies checking actual calendar validity including leap years.\n        # However, looking at the specific text: \"higher than 29 for the month 2\". \n        # This phrasing suggests any day <= 29 is acceptable per this simplified rule set.\n        max_days = 29\n    else:\n        # Months 1,3,5,7,8,10,12\n        max_days = 31\n        \n    # Rule 2: Day validation (must be >= 1 and <= max_days)\n    if not (1 <= day <= max_days):\n        return False\n\n    return True\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/124:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "post_h2_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "post_h3_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "post_h4_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ea28c0f145461f30d5aa7623cf9e9dd9d8deefa334f7fd7c44371be4733d087d",
+  "raw_source": "def valid_date(date):\n    # Rule 1: The date string must not be empty\n    if not date or len(date.strip()) == 0:\n        return False\n    \n    # Check format (Rule 4) and split components\n    parts = date.split('-')\n    \n    # If the separator is not exactly '-', it's invalid based on Rule 4\n    if len(parts) != 3:\n        return False\n        \n    month_str, day_str, year_str = parts\n    \n    try:\n        month = int(month_str)\n        day = int(day_str)\n        year = int(year_str)\n        \n        # Check for leading zeros or non-numeric characters implicitly handled by split/int conversion? \n        # Actually, we need to ensure the string format matches exactly mm-dd-yyyy.\n        # For example '03/11/2000' would fail here because parts[1] is not a valid int if there's no '-', \n        # but wait: \"06/04/2020\" -> split('-') gives ['06', '/04', '/2020']? No.\n        # Let's re-evaluate the format check strictly.\n        \n    except ValueError:\n        return False\n\n    # Re-check strict formatting to ensure no slashes or other separators slipped through logic above if input was '15-01' (missing year) \n    # The split handles missing parts by creating fewer than 3 elements, caught earlier? \n    # Wait, if date is \"15-01\", len(parts)=2. Caught.\n    \n    # However, we must ensure the strings are valid integers first before converting to int logic above covers that via try/except.\n    # But what about '06/04/2020'? \n    # parts = ['06', '/04', '/2020'] -> len is 3. \n    # month_str='06' (ok), day_str='/04' (ValueError on int conversion). Caught by try/except.\n    \n    # Rule 3: Month validation\n    if not (1 <= month <= 12):\n        return False\n        \n    # Determine max days for the specific month based on rules provided in prompt\n    # Note: The prompt simplifies Feb to always allow up to 29, ignoring leap year logic explicitly mentioned \n    # (\"higher than 29\" implies limit is 29). Usually standard validation checks <=28 or (<=29 if leap), \n    # but the rule says \"not less than 1 or higher than 29\". This usually means max allowed input is 29.\n    \n    if month in [4, 6, 9, 11]:\n        max_days = 30\n    elif month == 2:\n        # Rule states limit is 29 for Feb. \n        # It does not explicitly ask to check leap years logic (e.g., rejecting '02-29' in non-leap year),\n        # but standard \"valid date\" usually implies checking actual calendar validity including leap years.\n        # However, looking at the specific text: \"higher than 29 for the month 2\". \n        # This phrasing suggests any day <= 29 is acceptable per this simplified rule set.\n        max_days = 29\n    else:\n        # Months 1,3,5,7,8,10,12\n        max_days = 31\n        \n    # Rule 2: Day validation (must be >= 1 and <= max_days)\n    if not (1 <= day <= max_days):\n        return False\n\n    return True\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/124",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

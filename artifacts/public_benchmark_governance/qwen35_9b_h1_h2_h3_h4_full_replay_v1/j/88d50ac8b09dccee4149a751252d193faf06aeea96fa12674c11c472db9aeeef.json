@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "88d50ac8b09dccee4149a751252d193faf06aeea96fa12674c11c472db9aeeef",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_divisors",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "final_source": "def count_divisors(n):\n    if n <= 0:\n        return False\n    count = 0\n    for i in range(1, int(n**0.5) + 1):\n        if n % i == 0:\n            if i * i == n:\n                count += 1\n            else:\n                count += 2\n    return count % 2 == 0",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/781:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "post_h2_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "post_h3_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "post_h4_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d8df5a571805205dfd395fc079f1c0d24c68993fc83d59c73d37c966c302bcbc",
+  "raw_source": "def count_divisors(n):\n    if n <= 0:\n        return False\n    count = 0\n    for i in range(1, int(n**0.5) + 1):\n        if n % i == 0:\n            if i * i == n:\n                count += 1\n            else:\n                count += 2\n    return count % 2 == 0",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/781",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

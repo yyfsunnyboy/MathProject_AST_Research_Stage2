@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "7163488ebc4699b31890620c2c59a6d1fa1bee3e4c97069cc07948a6552e943c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "interleave_lists",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "final_source": "def interleave_lists(list1, list2, list3):\n    \"\"\"\n    Interleaves three lists of equal length.\n    \n    Args:\n        list1 (list): First input list.\n        list2 (list): Second input list.\n        list3 (list): Third input list.\n        \n    Returns:\n        list: A new list with elements interleaved from all three inputs.\n    \"\"\"\n    result = []\n    \n    # Iterate through the indices of one of the lists\n    for i in range(len(list1)):\n        result.append(list1[i])\n        result.append(list2[i])\n        result.append(list3[i])\n        \n    return result\n\n# Example usage and assertion test:\nif __name__ == \"__main__\":\n    list_a = [1, 2, 3, 4, 5, 6, 7]\n    list_b = [10, 20, 30, 40, 50, 60, 70]\n    list_c = [100, 200, 300, 400, 500, 600, 700]\n\n    expected_output = [1, 10, 100, 2, 20, 200, 3, 30, 300, 4, 40, 400, \n                       5, 50, 500, 6, 60, 600, 7, 70, 700]\n    \n    actual_output = interleave_lists(list_a, list_b, list_c)\n\n    assert actual_output == expected_output, f\"Test failed! Expected {expected_output}, got {actual_output}\"\n    print(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/578:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "post_h2_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "post_h3_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "post_h4_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e8bad65dd682c4d8983e73b6a1e61a1a07d0cb8a00f92996fb6dd44955e69960",
+  "raw_source": "def interleave_lists(list1, list2, list3):\n    \"\"\"\n    Interleaves three lists of equal length.\n    \n    Args:\n        list1 (list): First input list.\n        list2 (list): Second input list.\n        list3 (list): Third input list.\n        \n    Returns:\n        list: A new list with elements interleaved from all three inputs.\n    \"\"\"\n    result = []\n    \n    # Iterate through the indices of one of the lists\n    for i in range(len(list1)):\n        result.append(list1[i])\n        result.append(list2[i])\n        result.append(list3[i])\n        \n    return result\n\n# Example usage and assertion test:\nif __name__ == \"__main__\":\n    list_a = [1, 2, 3, 4, 5, 6, 7]\n    list_b = [10, 20, 30, 40, 50, 60, 70]\n    list_c = [100, 200, 300, 400, 500, 600, 700]\n\n    expected_output = [1, 10, 100, 2, 20, 200, 3, 30, 300, 4, 40, 400, \n                       5, 50, 500, 6, 60, 600, 7, 70, 700]\n    \n    actual_output = interleave_lists(list_a, list_b, list_c)\n\n    assert actual_output == expected_output, f\"Test failed! Expected {expected_output}, got {actual_output}\"\n    print(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/578",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "ea58f9c6e64635a5ec7aab6f23dac6c61cd8fcfc8b7cdccfbb324b713e1d9034",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "replace_char",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "final_source": "def replace_char(s, old_char, new_char):\n    \"\"\"\n    Replaces all occurrences of 'old_char' with 'new_char' in string s.\n    \n    Args:\n        s (str): The original string.\n        old_char (str): The character to be replaced.\n        new_char (str): The replacement character.\n        \n    Returns:\n        str: A new string with replacements made.\n    \"\"\"\n    return s.replace(old_char, new_char)\n\n# Verification based on your requirement\nresult = replace_char(\"polygon\", 'y', 'l')\nassert result == \"pollgon\"  # This will pass without error\n\nprint(f\"Result: {result}\") \n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/474:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "post_h2_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "post_h3_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "post_h4_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fca7293865b772cfb8c80b58cc3a2364d5ba98a9f219113d17fb8ba37f1084ef",
+  "raw_source": "def replace_char(s, old_char, new_char):\n    \"\"\"\n    Replaces all occurrences of 'old_char' with 'new_char' in string s.\n    \n    Args:\n        s (str): The original string.\n        old_char (str): The character to be replaced.\n        new_char (str): The replacement character.\n        \n    Returns:\n        str: A new string with replacements made.\n    \"\"\"\n    return s.replace(old_char, new_char)\n\n# Verification based on your requirement\nresult = replace_char(\"polygon\", 'y', 'l')\nassert result == \"pollgon\"  # This will pass without error\n\nprint(f\"Result: {result}\") \n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/474",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

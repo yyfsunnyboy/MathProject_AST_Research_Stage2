@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "3efdcfb24641bbcf240142967893b99d4dac57bad291232ced421259586d8631",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "x_or_y",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "final_source": "def x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n    \n    def is_prime(num):\n        if num < 2:\n            return False\n        # Check divisibility from 2 up to the square root of num\n        limit = int(num ** 0.5) + 1\n        for i in range(2, limit):\n            if num % i == 0:\n                return False\n        return True\n\n    if is_prime(n):\n        return x\n    else:\n        return y\n\n# Test cases based on your examples and edge cases\nprint(x_or_y(7, 34, 12))   # Output: 34 (7 is prime)\nprint(x_or_y(15, 8, 5))    # Output: 5 (15 is not prime)\nprint(x_or_y(2, 90, -1))   # Output: 90 (2 is the smallest prime)\nprint(x_or_y(4, 10, 20))   # Output: 20 (4 is not prime)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/150:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "post_h2_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "post_h3_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "post_h4_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "b723e1a722fd56c537c5f2aabbf6fa91b9cb279fe8f88f018b6ec8070c571b40",
+  "raw_source": "def x_or_y(n, x, y):\n    \"\"\"A simple program which should return the value of x if n is \n    a prime number and should return the value of y otherwise.\n\n    Examples:\n    for x_or_y(7, 34, 12) == 34\n    for x_or_y(15, 8, 5) == 5\n    \n    \"\"\"\n    \n    def is_prime(num):\n        if num < 2:\n            return False\n        # Check divisibility from 2 up to the square root of num\n        limit = int(num ** 0.5) + 1\n        for i in range(2, limit):\n            if num % i == 0:\n                return False\n        return True\n\n    if is_prime(n):\n        return x\n    else:\n        return y\n\n# Test cases based on your examples and edge cases\nprint(x_or_y(7, 34, 12))   # Output: 34 (7 is prime)\nprint(x_or_y(15, 8, 5))    # Output: 5 (15 is not prime)\nprint(x_or_y(2, 90, -1))   # Output: 90 (2 is the smallest prime)\nprint(x_or_y(4, 10, 20))   # Output: 20 (4 is not prime)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/150",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

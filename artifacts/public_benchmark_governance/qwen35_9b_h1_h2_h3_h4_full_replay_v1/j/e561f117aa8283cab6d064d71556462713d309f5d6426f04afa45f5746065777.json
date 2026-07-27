@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e561f117aa8283cab6d064d71556462713d309f5d6426f04afa45f5746065777",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "second_smallest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9f105dd6e2aab82f3a1c57d07c0ad05bcc6c46b2db559315d91bfd75a22e9e3a",
+  "final_source": "def second_smallest(nums):\n    if len(set(nums)) < 2:\n        raise ValueError(\"List must contain at least two distinct numbers.\")\n    \n    # Sort and take first two unique values\n    sorted_nums = sorted(set(nums))\n    return sorted_nums[1]\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert second_smallest([1, 2, -8, -2, 0, -2]) == -2\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/755:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "dd1c8664a90af0f9620d0a1509d85b7b7b1b5f75eb893a59f574204b430da7e5",
+  "post_h2_sha256": "9f105dd6e2aab82f3a1c57d07c0ad05bcc6c46b2db559315d91bfd75a22e9e3a",
+  "post_h3_sha256": "9f105dd6e2aab82f3a1c57d07c0ad05bcc6c46b2db559315d91bfd75a22e9e3a",
+  "post_h4_sha256": "9f105dd6e2aab82f3a1c57d07c0ad05bcc6c46b2db559315d91bfd75a22e9e3a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "dd1c8664a90af0f9620d0a1509d85b7b7b1b5f75eb893a59f574204b430da7e5",
+  "raw_source": "def second_smallest(nums):\n    if len(set(nums)) < 2:\n        raise ValueError(\"List must contain at least two distinct numbers.\")\n    \n    # Sort and take first two unique values\n    sorted_nums = sorted(set(nums))\n    return sorted_nums[1]\n\n\n# Example usage and assertion\nassert second_smallest([1, 2, -8, -2, 0, -2]) == -2\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/755",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

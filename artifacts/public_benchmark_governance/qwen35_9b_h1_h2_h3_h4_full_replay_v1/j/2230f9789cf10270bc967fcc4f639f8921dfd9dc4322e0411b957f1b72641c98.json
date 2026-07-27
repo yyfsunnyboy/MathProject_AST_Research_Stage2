@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2230f9789cf10270bc967fcc4f639f8921dfd9dc4322e0411b957f1b72641c98",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "below_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "final_source": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account falls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    \n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n    balance = 0\n    \n    for op in operations:\n        balance += op\n        if balance < 0:\n            return True\n            \n    return False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/3:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "post_h2_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "post_h3_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "post_h4_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "04c287e5b9f59a2fc7b8427ea5c5a83f2b99e0fd34de9c488a12003c1583e894",
+  "raw_source": "from typing import List\n\n\ndef below_zero(operations: List[int]) -> bool:\n    \"\"\" You're given a list of deposit and withdrawal operations on a bank account that starts with\n    zero balance. Your task is to detect if at any point the balance of account falls below zero, and\n    at that point function should return True. Otherwise it should return False.\n    \n    >>> below_zero([1, 2, 3])\n    False\n    >>> below_zero([1, 2, -4, 5])\n    True\n    \"\"\"\n    balance = 0\n    \n    for op in operations:\n        balance += op\n        if balance < 0:\n            return True\n            \n    return False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/3",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

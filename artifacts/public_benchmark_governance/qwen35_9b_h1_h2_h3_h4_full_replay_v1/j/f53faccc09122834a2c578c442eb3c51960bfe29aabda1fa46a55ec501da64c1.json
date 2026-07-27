@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f53faccc09122834a2c578c442eb3c51960bfe29aabda1fa46a55ec501da64c1",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Split",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "287c646e1176835e59a0b92ff69c00327450c598f6c51f5f15b69fa20c2baa51",
+  "final_source": "def Split(numbers):\n    \"\"\"\n    Returns a list containing only the even numbers from the input list.\n    \n    Args:\n        numbers (list): A list of integers.\n        \n    Returns:\n        list: A list of even integers found in the input.\n    \"\"\"\n    return [num for num in numbers if num % 2 == 0]\n\n# Test case from your request\nif __name__ == \"__main__\":\n    assert Split([1, 2, 3, 4, 5]) == [2, 4], \"Test failed: Expected [2, 4]\"\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/629:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f43f69edab474ccb4aec048f66a6e11b2ef3a503564840a782a90a10a5978fc9",
+  "post_h2_sha256": "287c646e1176835e59a0b92ff69c00327450c598f6c51f5f15b69fa20c2baa51",
+  "post_h3_sha256": "287c646e1176835e59a0b92ff69c00327450c598f6c51f5f15b69fa20c2baa51",
+  "post_h4_sha256": "287c646e1176835e59a0b92ff69c00327450c598f6c51f5f15b69fa20c2baa51",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "f43f69edab474ccb4aec048f66a6e11b2ef3a503564840a782a90a10a5978fc9",
+  "raw_source": "def Split(numbers):\n    \"\"\"\n    Returns a list containing only the even numbers from the input list.\n    \n    Args:\n        numbers (list): A list of integers.\n        \n    Returns:\n        list: A list of even integers found in the input.\n    \"\"\"\n    return [num for num in numbers if num % 2 == 0]\n\n# Test case from your request\nassert Split([1, 2, 3, 4, 5]) == [2, 4], \"Test failed: Expected [2, 4]\"\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/629",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

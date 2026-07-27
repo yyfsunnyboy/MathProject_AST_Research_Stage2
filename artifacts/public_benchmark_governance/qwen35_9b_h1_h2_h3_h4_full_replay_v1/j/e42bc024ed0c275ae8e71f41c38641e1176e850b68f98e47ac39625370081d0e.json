@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "e42bc024ed0c275ae8e71f41c38641e1176e850b68f98e47ac39625370081d0e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "difference",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1407ba8fc97bf570421d21931e5187ab1f8754d9ac5d6c850e2540f01b8a3504",
+  "final_source": "def difference(n: int) -> int:\n    \"\"\"\n    Returns (sum of cubes of first n naturals) - (sum of first n naturals).\n    \n    Formulas used:\n      sum_{i=1}^n i = n*(n+1)//2\n      sum_{i=1}^n i^3 = [n*(n+1)//2]^2\n    \n    So difference(n) = (sum_i)^2 - sum_i.\n    \"\"\"\n    s = n * (n + 1) // 2          # sum of first n natural numbers\n    cubes_sum = s ** 2            # sum of their cubes\n    return cubes_sum - s\n\n\n# Example assertion:\nif __name__ == \"__main__\":\n    assert difference(3) == 30\n\nif __name__ == \"__main__\":\n    print(difference(3))  # Output: 30\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/555:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "561a7111dc956549ddb66ed74a45fd17cd6f46625956a4a45c405955cb42e534",
+  "post_h2_sha256": "1407ba8fc97bf570421d21931e5187ab1f8754d9ac5d6c850e2540f01b8a3504",
+  "post_h3_sha256": "1407ba8fc97bf570421d21931e5187ab1f8754d9ac5d6c850e2540f01b8a3504",
+  "post_h4_sha256": "1407ba8fc97bf570421d21931e5187ab1f8754d9ac5d6c850e2540f01b8a3504",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "561a7111dc956549ddb66ed74a45fd17cd6f46625956a4a45c405955cb42e534",
+  "raw_source": "def difference(n: int) -> int:\n    \"\"\"\n    Returns (sum of cubes of first n naturals) - (sum of first n naturals).\n    \n    Formulas used:\n      sum_{i=1}^n i = n*(n+1)//2\n      sum_{i=1}^n i^3 = [n*(n+1)//2]^2\n    \n    So difference(n) = (sum_i)^2 - sum_i.\n    \"\"\"\n    s = n * (n + 1) // 2          # sum of first n natural numbers\n    cubes_sum = s ** 2            # sum of their cubes\n    return cubes_sum - s\n\n\n# Example assertion:\nassert difference(3) == 30\n\nif __name__ == \"__main__\":\n    print(difference(3))  # Output: 30\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/555",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "9a4fb8f673172b075b64f5711b45326c0eecfb02465a8f21367416cedd9e77f2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "compare_one",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "final_source": "def compare_one(a, b):\n    def parse(val):\n        if isinstance(val, (int, float)):\n            return val, type(val)\n        s = str(val).replace(',', '.')\n        try:\n            num = float(s)\n            # Determine original format for string output\n            orig_type = None\n            if ',' in val and '.' not in val:\n                orig_type = 'comma_str'\n            elif '.' in val:\n                orig_type = 'dot_str'\n            else:\n                orig_type = 'int_str'\n            return num, orig_type\n        except ValueError:\n            # Should not happen based on problem description but handle safely\n            return None, None\n\n    parsed_a, type_a = parse(a)\n    parsed_b, type_b = parse(b)\n\n    if parsed_a is None or parsed_b is None:\n        return None\n\n    if parsed_a == parsed_b:\n        return None\n\n    # Return the larger value in its original representation\n    if parsed_a > parsed_b:\n        return a\n    else:\n        return b",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/137:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "post_h2_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "post_h3_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "post_h4_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4c4a97c692eb95e9e85b642d7b41dc4e6b4eedd2937982b5e18fc58b019d858a",
+  "raw_source": "def compare_one(a, b):\n    def parse(val):\n        if isinstance(val, (int, float)):\n            return val, type(val)\n        s = str(val).replace(',', '.')\n        try:\n            num = float(s)\n            # Determine original format for string output\n            orig_type = None\n            if ',' in val and '.' not in val:\n                orig_type = 'comma_str'\n            elif '.' in val:\n                orig_type = 'dot_str'\n            else:\n                orig_type = 'int_str'\n            return num, orig_type\n        except ValueError:\n            # Should not happen based on problem description but handle safely\n            return None, None\n\n    parsed_a, type_a = parse(a)\n    parsed_b, type_b = parse(b)\n\n    if parsed_a is None or parsed_b is None:\n        return None\n\n    if parsed_a == parsed_b:\n        return None\n\n    # Return the larger value in its original representation\n    if parsed_a > parsed_b:\n        return a\n    else:\n        return b",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/137",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

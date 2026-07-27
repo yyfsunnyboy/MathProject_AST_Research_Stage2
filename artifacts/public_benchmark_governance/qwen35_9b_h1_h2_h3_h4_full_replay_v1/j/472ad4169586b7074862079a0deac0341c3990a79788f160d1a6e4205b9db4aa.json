@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "472ad4169586b7074862079a0deac0341c3990a79788f160d1a6e4205b9db4aa",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sorted_list_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "final_source": "def sorted_list_sum(lst):\n    # Filter out strings with odd lengths\n    filtered = [word for word in lst if len(word) % 2 == 0]\n    \n    # Sort by length first, then alphabetically for ties\n    return sorted(filtered, key=lambda w: (len(w), w))\n\n\n# Example usage and assertions from the problem description:\nif __name__ == \"__main__\":\n    print(sorted_list_sum([\"aa\", \"a\", \"aaa\"]))  # Expected: [\"aa\"]\n    \n    print(sorted_list_sum([\"ab\", \"a\", \"aaa\", \"cd\"]))  # Expected: [\"ab\", \"cd\"]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/149:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "post_h2_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "post_h3_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "post_h4_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8ef83fc6bdb4341fa087c2b86a557d91dc0e94888f4cbf80a8123086495dd7cc",
+  "raw_source": "def sorted_list_sum(lst):\n    # Filter out strings with odd lengths\n    filtered = [word for word in lst if len(word) % 2 == 0]\n    \n    # Sort by length first, then alphabetically for ties\n    return sorted(filtered, key=lambda w: (len(w), w))\n\n\n# Example usage and assertions from the problem description:\nif __name__ == \"__main__\":\n    print(sorted_list_sum([\"aa\", \"a\", \"aaa\"]))  # Expected: [\"aa\"]\n    \n    print(sorted_list_sum([\"ab\", \"a\", \"aaa\", \"cd\"]))  # Expected: [\"ab\", \"cd\"]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/149",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

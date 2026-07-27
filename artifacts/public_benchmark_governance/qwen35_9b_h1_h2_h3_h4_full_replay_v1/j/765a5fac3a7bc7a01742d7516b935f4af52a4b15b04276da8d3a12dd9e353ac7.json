@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "adjacent_assert_not_in_public_prompt"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "765a5fac3a7bc7a01742d7516b935f4af52a4b15b04276da8d3a12dd9e353ac7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "number_ctr",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "13d378fd899cf554b549daa61547e723b98764fe1689ff87f1c7cc2dac81cf5a",
+  "final_source": "def number_ctr(s):\n    \"\"\"\n    Counts the number of digit characters (0-9) in the input string.\n    \n    Args:\n        s (str): The input string to analyze.\n        \n    Returns:\n        int: The count of digits found in the string.\n    \"\"\"\n    return sum(char.isdigit() for char in s)\n\n# Test cases including your specific assertion\nif __name__ == \"__main__\":\n    assert number_ctr('program2bedone') == 1, \"Test failed on 'program2bedone'\"\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/764:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d31b3aafd73354272321a6df8c71e1421c9cd62f0221bf4431013190f9612bec",
+  "post_h2_sha256": "13d378fd899cf554b549daa61547e723b98764fe1689ff87f1c7cc2dac81cf5a",
+  "post_h3_sha256": "13d378fd899cf554b549daa61547e723b98764fe1689ff87f1c7cc2dac81cf5a",
+  "post_h4_sha256": "13d378fd899cf554b549daa61547e723b98764fe1689ff87f1c7cc2dac81cf5a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d31b3aafd73354272321a6df8c71e1421c9cd62f0221bf4431013190f9612bec",
+  "raw_source": "def number_ctr(s):\n    \"\"\"\n    Counts the number of digit characters (0-9) in the input string.\n    \n    Args:\n        s (str): The input string to analyze.\n        \n    Returns:\n        int: The count of digits found in the string.\n    \"\"\"\n    return sum(char.isdigit() for char in s)\n\n# Test cases including your specific assertion\nassert number_ctr('program2bedone') == 1, \"Test failed on 'program2bedone'\"\nprint(\"All tests passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/764",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

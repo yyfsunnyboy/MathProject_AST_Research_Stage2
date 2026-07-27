@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "74a01888bf7afdb6cbec01b5405c7786eaef1608f2a80c31ee04ee13aedd3055",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "move_one_ball",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "final_source": "def move_one_ball(arr):\n    if len(arr) <= 1:\n        return True\n    \n    # Find the index where arr[i] > arr[i+1], which indicates a potential rotation point\n    for i in range(len(arr) - 1):\n        if arr[i] > arr[i + 1]:\n            break\n    else:\n        # If no such point is found, array is already sorted\n        return True\n    \n    pivot = i\n    \n    # Check if the rotated part from pivot to end is non-decreasing\n    for j in range(pivot + 1, len(arr)):\n        if arr[j] < arr[j - 1]:\n            return False\n            \n    # Check if the first element (after rotation) <= last element of original array\n    if arr[0] > arr[-1]:\n        return False\n        \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/109:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "post_h2_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "post_h3_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "post_h4_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "358ba57d01a0dc9561004e4c8bb9894c13261201007f0d0afd32ea203a557c94",
+  "raw_source": "def move_one_ball(arr):\n    if len(arr) <= 1:\n        return True\n    \n    # Find the index where arr[i] > arr[i+1], which indicates a potential rotation point\n    for i in range(len(arr) - 1):\n        if arr[i] > arr[i + 1]:\n            break\n    else:\n        # If no such point is found, array is already sorted\n        return True\n    \n    pivot = i\n    \n    # Check if the rotated part from pivot to end is non-decreasing\n    for j in range(pivot + 1, len(arr)):\n        if arr[j] < arr[j - 1]:\n            return False\n            \n    # Check if the first element (after rotation) <= last element of original array\n    if arr[0] > arr[-1]:\n        return False\n        \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/109",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

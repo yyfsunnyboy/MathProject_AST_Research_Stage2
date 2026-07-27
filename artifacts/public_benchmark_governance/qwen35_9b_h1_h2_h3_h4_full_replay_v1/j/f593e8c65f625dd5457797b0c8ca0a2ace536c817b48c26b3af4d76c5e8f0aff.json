@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "f593e8c65f625dd5457797b0c8ca0a2ace536c817b48c26b3af4d76c5e8f0aff",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "opposite_Signs",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8050e32141404a7774d447f5c7a46fd760cbd602c2bee0235e9ad3f61c0b0255",
+  "final_source": "def opposite_signs(a: int, b: int) -> bool:\n    \"\"\"\n    Check if two integers have opposite signs.\n    \n    Returns True if one is positive and the other is negative (or vice versa).\n    Note: 0 does not have a sign in this context; typically we consider \n    only non-zero values for \"opposite sign\" checks, but based on common \n    interpretation:\n      - If either number is 0, they cannot be of opposite signs.\n    \n    Examples:\n        opposite_signs(1, -2) -> True\n        opposite_signs(-5, 3) -> True\n        opposite_signs(4, 6)   -> False\n        opposite_signs(-7, -9) -> False\n        opposite_signs(0, 5)   -> False\n    \"\"\"\n    # A simple way: product is negative if and only if signs are opposite\n    return a * b < 0\n\n\n# Example assertions\nassert opposite_signs(1, -2) == True\nassert opposite_signs(-3, 4) == True\nassert opposite_signs(5, 6) == False\nassert opposite_signs(-7, -8) == False\nassert opposite_signs(0, 9) == False\n\nprint(\"All assertions passed.\")\n\nopposite_Signs = opposite_signs\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/58:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8050e32141404a7774d447f5c7a46fd760cbd602c2bee0235e9ad3f61c0b0255",
+  "post_h2_sha256": "8050e32141404a7774d447f5c7a46fd760cbd602c2bee0235e9ad3f61c0b0255",
+  "post_h3_sha256": "8050e32141404a7774d447f5c7a46fd760cbd602c2bee0235e9ad3f61c0b0255",
+  "post_h4_sha256": "8050e32141404a7774d447f5c7a46fd760cbd602c2bee0235e9ad3f61c0b0255",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "90229c0a43d33a1aaa9e51bd125c6103368694d2db2d7ca304abeba67aebcf05",
+  "raw_source": "def opposite_signs(a: int, b: int) -> bool:\n    \"\"\"\n    Check if two integers have opposite signs.\n    \n    Returns True if one is positive and the other is negative (or vice versa).\n    Note: 0 does not have a sign in this context; typically we consider \n    only non-zero values for \"opposite sign\" checks, but based on common \n    interpretation:\n      - If either number is 0, they cannot be of opposite signs.\n    \n    Examples:\n        opposite_signs(1, -2) -> True\n        opposite_signs(-5, 3) -> True\n        opposite_signs(4, 6)   -> False\n        opposite_signs(-7, -9) -> False\n        opposite_signs(0, 5)   -> False\n    \"\"\"\n    # A simple way: product is negative if and only if signs are opposite\n    return a * b < 0\n\n\n# Example assertions\nassert opposite_signs(1, -2) == True\nassert opposite_signs(-3, 4) == True\nassert opposite_signs(5, 6) == False\nassert opposite_signs(-7, -8) == False\nassert opposite_signs(0, 9) == False\n\nprint(\"All assertions passed.\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/58",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

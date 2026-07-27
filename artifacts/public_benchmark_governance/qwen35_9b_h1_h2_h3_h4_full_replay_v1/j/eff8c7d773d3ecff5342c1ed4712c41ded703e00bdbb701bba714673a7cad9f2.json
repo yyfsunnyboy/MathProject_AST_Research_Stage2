@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "eff8c7d773d3ecff5342c1ed4712c41ded703e00bdbb701bba714673a7cad9f2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "extract_rear",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "final_source": "def extract_rear(tuples):\n    \"\"\"\n    Extracts only the rear (last) index element of each string in the given tuple.\n    \n    Args:\n        tuples (tuple or list): A collection of strings.\n        \n    Returns:\n        list: A list containing the last character of each input string.\n    \"\"\"\n    return [string[-1] for string in tuples]\n\n# Test case from your request\nresult = extract_rear(('Mers', 'for', 'Vers'))\nassert result == ['s', 'r', 's']\n\nprint(f\"Result: {result}\")  # Output: Result: ['s', 'r', 's']\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/424:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "post_h2_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "post_h3_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "post_h4_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bc8869a310e397bba33951c3ecf807ac8e8fed9f59b7eec2d318ee7f961c52c6",
+  "raw_source": "def extract_rear(tuples):\n    \"\"\"\n    Extracts only the rear (last) index element of each string in the given tuple.\n    \n    Args:\n        tuples (tuple or list): A collection of strings.\n        \n    Returns:\n        list: A list containing the last character of each input string.\n    \"\"\"\n    return [string[-1] for string in tuples]\n\n# Test case from your request\nresult = extract_rear(('Mers', 'for', 'Vers'))\nassert result == ['s', 'r', 's']\n\nprint(f\"Result: {result}\")  # Output: Result: ['s', 'r', 's']\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/424",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

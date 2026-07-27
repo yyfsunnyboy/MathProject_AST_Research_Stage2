@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "2fd5b7ffa4caa96923e38467a9705af58919d57f1b86c5083d13cf42b8f13a6d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "triangle_area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "final_source": "import math\n\ndef triangle_area(a, b, c):\n    '''\n    Given the lengths of the three sides of a triangle. Return the area of\n    the triangle rounded to 2 decimal points if the three sides form a valid triangle. \n    Otherwise return -1\n    Three sides make a valid triangle when the sum of any two sides is greater \n    than the third side.\n    Example:\n    triangle_area(3, 4, 5) == 6.00\n    triangle_area(1, 2, 10) == -1\n    '''\n\n    if a + b <= c or a + c <= b or b + c <= a:\n        return -1\n    \n    s = (a + b + c) / 2\n    area = math.sqrt(s * (s - a) * (s - b) * (s - c))\n    \n    return round(area, 2)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/71:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "post_h2_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "post_h3_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "post_h4_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fd7289c4b6c75859846713c1bbff3e69287054dfd1bd2ed5da979e3ed458abbe",
+  "raw_source": "import math\n\ndef triangle_area(a, b, c):\n    '''\n    Given the lengths of the three sides of a triangle. Return the area of\n    the triangle rounded to 2 decimal points if the three sides form a valid triangle. \n    Otherwise return -1\n    Three sides make a valid triangle when the sum of any two sides is greater \n    than the third side.\n    Example:\n    triangle_area(3, 4, 5) == 6.00\n    triangle_area(1, 2, 10) == -1\n    '''\n\n    if a + b <= c or a + c <= b or b + c <= a:\n        return -1\n    \n    s = (a + b + c) / 2\n    area = math.sqrt(s * (s - a) * (s - b) * (s - c))\n    \n    return round(area, 2)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/71",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

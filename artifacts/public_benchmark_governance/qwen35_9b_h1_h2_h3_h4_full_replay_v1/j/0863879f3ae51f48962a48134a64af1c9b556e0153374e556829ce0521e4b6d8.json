@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0863879f3ae51f48962a48134a64af1c9b556e0153374e556829ce0521e4b6d8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "parse_music",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "final_source": "from typing import List\n\n\ndef parse_music(music_string: str) -> List[int]:\n    \"\"\" Input to this function is a string representing musical notes in a special ASCII format.\n    Your task is to parse this string and return list of integers corresponding to how many beats does each\n    not last.\n\n    Here is a legend:\n    'o' - whole note, lasts four beats\n    'o|' - half note, lasts two beats\n    '.|' - quater note, lasts one beat\n\n    >>> parse_music('o o| .| o| o| .| .| .| .| o o')\n    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\n    \"\"\"\n    \n    # Mapping from note symbol to number of beats\n    beat_map = {\n        'o': 4,      # whole note\n        'o|': 2,     # half note\n        '.|': 1      # quarter note\n    }\n\n    result: List[int] = []\n    \n    i = 0\n    while i < len(music_string):\n        if music_string[i:i+3] == 'o||' or music_string[i:i+2] in beat_map:\n            pass\n        \n        # Check for whole note \"o\" (but not followed by '|' as part of half note)\n        if i + 1 < len(music_string):\n            next_char = music_string[i+1]\n            \n            # If current char is 'o' and next is '|', it's a half note\n            if music_string[i:i+2] == 'o|':\n                result.append(beat_map['o|'])\n                i += 2\n                continue\n            \n            # If current char is '.' and next is '|', it's a quarter note\n            elif music_string[i:i+2] == '.|':\n                result.append(beat_map['.|'])\n                i += 2\n                continue\n                \n            # Otherwise, if we have 'o' followed by space or end of string -> whole note\n            else:\n                # Check if it's just \"o\" (whole note) – ensure next isn't '|' already handled above\n                result.append(beat_map['o'])\n                i += 1\n        else:\n            # Last character is 'o' without following char → whole note\n            result.append(beat_map['o'])\n            i += 1\n\n    return result\n\n\n# Simpler and more robust implementation using split (since notes are space-separated):\ndef parse_music_v2(music_string: str) -> List[int]:\n    beats = []\n    \n    for token in music_string.split():\n        if token == 'o':\n            beats.append(4)\n        elif token == 'o|':\n            beats.append(2)\n        elif token == '.|':\n            beats.append(1)\n            \n    return beats\n\n\n# The second version is cleaner and matches the expected behavior.\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/17:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "post_h2_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "post_h3_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "post_h4_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d8fdec9edf4263a571c1d39b8a5d357dfc7f53ec6232c65217252e25c9ab1e32",
+  "raw_source": "from typing import List\n\n\ndef parse_music(music_string: str) -> List[int]:\n    \"\"\" Input to this function is a string representing musical notes in a special ASCII format.\n    Your task is to parse this string and return list of integers corresponding to how many beats does each\n    not last.\n\n    Here is a legend:\n    'o' - whole note, lasts four beats\n    'o|' - half note, lasts two beats\n    '.|' - quater note, lasts one beat\n\n    >>> parse_music('o o| .| o| o| .| .| .| .| o o')\n    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]\n    \"\"\"\n    \n    # Mapping from note symbol to number of beats\n    beat_map = {\n        'o': 4,      # whole note\n        'o|': 2,     # half note\n        '.|': 1      # quarter note\n    }\n\n    result: List[int] = []\n    \n    i = 0\n    while i < len(music_string):\n        if music_string[i:i+3] == 'o||' or music_string[i:i+2] in beat_map:\n            pass\n        \n        # Check for whole note \"o\" (but not followed by '|' as part of half note)\n        if i + 1 < len(music_string):\n            next_char = music_string[i+1]\n            \n            # If current char is 'o' and next is '|', it's a half note\n            if music_string[i:i+2] == 'o|':\n                result.append(beat_map['o|'])\n                i += 2\n                continue\n            \n            # If current char is '.' and next is '|', it's a quarter note\n            elif music_string[i:i+2] == '.|':\n                result.append(beat_map['.|'])\n                i += 2\n                continue\n                \n            # Otherwise, if we have 'o' followed by space or end of string -> whole note\n            else:\n                # Check if it's just \"o\" (whole note) – ensure next isn't '|' already handled above\n                result.append(beat_map['o'])\n                i += 1\n        else:\n            # Last character is 'o' without following char → whole note\n            result.append(beat_map['o'])\n            i += 1\n\n    return result\n\n\n# Simpler and more robust implementation using split (since notes are space-separated):\ndef parse_music_v2(music_string: str) -> List[int]:\n    beats = []\n    \n    for token in music_string.split():\n        if token == 'o':\n            beats.append(4)\n        elif token == 'o|':\n            beats.append(2)\n        elif token == '.|':\n            beats.append(1)\n            \n    return beats\n\n\n# The second version is cleaner and matches the expected behavior.\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/17",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

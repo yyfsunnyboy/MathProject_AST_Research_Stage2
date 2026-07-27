@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "cfc027b1e1f8b3d03c3ecf28dd32ea212ba80c4f998dcfe4b91eb842574b7e8b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_even_pair",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fda96e31b018ec1cb7ac0a472c0efa8b67f2ea0a092011da3d462a8802cc1482",
+  "final_source": "def find_even_pair(nums):\n    \"\"\"\n    Counts the number of pairs of integers in a list that xor to an even number.\n    \n    Logic: \n    (A ^ B) % 2 == 0 if and only if A and B have the same parity.\n    Therefore, we count pairs of (Even, Even) + pairs of (Odd, Odd).\n    \n    Time Complexity: O(N)\n    Space Complexity: O(1)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for num in nums:\n        if num % 2 == 0:\n            even_count += 1\n        else:\n            odd_count += 1\n            \n    # Calculate combinations C(n, k) where n is count and k=2\n    pairs_even = (even_count * (even_count - 1)) // 2\n    pairs_odd = (odd_count * (odd_count - 1)) // 2\n    \n    return pairs_even + pairs_odd\n\n# Verification with the provided assertion\nif __name__ == \"__main__\":\n    assert find_even_pair([5, 4, 7, 2, 1]) == 4\nprint(\"Assertion passed!\")\n\n# Additional manual verification:\n# List: [5 (Odd), 4 (Even), 7 (Odd), 2 (Even), 1 (Odd)]\n# Evens: {4, 2} -> Count = 2. Pairs = 2*(1)/2 = 1 pair: (4, 2)\n# Odds: {5, 7, 1} -> Count = 3. Pairs = 3*(2)/2 = 3 pairs: (5,7), (5,1), (7,1)\n# Total = 1 + 3 = 4. Correct.\n\nprint(f\"Result for [5, 4, 7, 2, 1]: {find_even_pair([5, 4, 7, 2, 1])}\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/166:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e99f72d70e2c074e27cd1f8c65c65418e7cecfd29c6d6cb1c55cc52c6aea6f31",
+  "post_h2_sha256": "fda96e31b018ec1cb7ac0a472c0efa8b67f2ea0a092011da3d462a8802cc1482",
+  "post_h3_sha256": "fda96e31b018ec1cb7ac0a472c0efa8b67f2ea0a092011da3d462a8802cc1482",
+  "post_h4_sha256": "fda96e31b018ec1cb7ac0a472c0efa8b67f2ea0a092011da3d462a8802cc1482",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e99f72d70e2c074e27cd1f8c65c65418e7cecfd29c6d6cb1c55cc52c6aea6f31",
+  "raw_source": "def find_even_pair(nums):\n    \"\"\"\n    Counts the number of pairs of integers in a list that xor to an even number.\n    \n    Logic: \n    (A ^ B) % 2 == 0 if and only if A and B have the same parity.\n    Therefore, we count pairs of (Even, Even) + pairs of (Odd, Odd).\n    \n    Time Complexity: O(N)\n    Space Complexity: O(1)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for num in nums:\n        if num % 2 == 0:\n            even_count += 1\n        else:\n            odd_count += 1\n            \n    # Calculate combinations C(n, k) where n is count and k=2\n    pairs_even = (even_count * (even_count - 1)) // 2\n    pairs_odd = (odd_count * (odd_count - 1)) // 2\n    \n    return pairs_even + pairs_odd\n\n# Verification with the provided assertion\nassert find_even_pair([5, 4, 7, 2, 1]) == 4\nprint(\"Assertion passed!\")\n\n# Additional manual verification:\n# List: [5 (Odd), 4 (Even), 7 (Odd), 2 (Even), 1 (Odd)]\n# Evens: {4, 2} -> Count = 2. Pairs = 2*(1)/2 = 1 pair: (4, 2)\n# Odds: {5, 7, 1} -> Count = 3. Pairs = 3*(2)/2 = 3 pairs: (5,7), (5,1), (7,1)\n# Total = 1 + 3 = 4. Correct.\n\nprint(f\"Result for [5, 4, 7, 2, 1]: {find_even_pair([5, 4, 7, 2, 1])}\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/166",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

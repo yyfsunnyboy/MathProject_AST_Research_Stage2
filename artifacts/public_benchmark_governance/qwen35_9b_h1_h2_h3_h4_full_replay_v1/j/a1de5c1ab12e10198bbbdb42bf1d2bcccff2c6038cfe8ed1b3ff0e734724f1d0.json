@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a1de5c1ab12e10198bbbdb42bf1d2bcccff2c6038cfe8ed1b3ff0e734724f1d0",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "pairs_sum_to_zero",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "final_source": "def pairs_sum_to_zero(l):\n    \"\"\"\n    pairs_sum_to_zero takes a list of integers as an input.\n    it returns True if there are two distinct elements in the list that\n    sum to zero, and False otherwise.\n    \n    >>> pairs_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> pairs_sum_to_zero([1, 3, -2, 1])\n    False\n    >>> pairs_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])\n    True\n    >>> pairs_sum_to_zero([1])\n    False\n    \"\"\"\n    seen = set()\n    for x in l:\n        if -x in seen:\n            return True\n        seen.add(x)\n    return False\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/43:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "post_h2_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "post_h3_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "post_h4_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3244924327e59f92e2038a16f197605507752782c9de935f104e5d0b2d649eb2",
+  "raw_source": "def pairs_sum_to_zero(l):\n    \"\"\"\n    pairs_sum_to_zero takes a list of integers as an input.\n    it returns True if there are two distinct elements in the list that\n    sum to zero, and False otherwise.\n    \n    >>> pairs_sum_to_zero([1, 3, 5, 0])\n    False\n    >>> pairs_sum_to_zero([1, 3, -2, 1])\n    False\n    >>> pairs_sum_to_zero([1, 2, 3, 7])\n    False\n    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])\n    True\n    >>> pairs_sum_to_zero([1])\n    False\n    \"\"\"\n    seen = set()\n    for x in l:\n        if -x in seen:\n            return True\n        seen.add(x)\n    return False\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/43",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

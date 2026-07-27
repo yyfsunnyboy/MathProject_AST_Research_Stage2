@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "a6e7514f1bcb9a5202ee3be3fbec1a1b6ab3f9aca5bb855f59e1e4f7e316a3e8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "last",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "final_source": "def last(arr, x):\n    \"\"\"\n    Finds the index of the last occurrence of element x in a sorted array.\n    \n    Args:\n        arr (List[int]): A sorted list of integers.\n        x (int): The target integer to find.\n        \n    Returns:\n        int: The 0-based index of the last occurrence, or -1 if not found.\n    \"\"\"\n    left = 0\n    right = len(arr) - 1\n    result_index = -1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] == x:\n            # Found the element, but check for later occurrences to the right\n            result_index = mid\n            left = mid + 1\n        elif arr[mid] < x:\n            left = mid + 1\n        else:\n            right = mid - 1\n            \n    return result_index\n\n# Verification based on your requirement and edge cases\nprint(f\"last([1,2,3], 1) == {last([1, 2, 3], 1)}\") # Expected: 0\nassert last([1, 2, 3], 1) == 0\n\n# Additional test cases to ensure robustness\nassert last([1, 2, 2, 3, 4], 2) == 2   # Last '2' is at index 2\nassert last([5, 7, 7, 8, 9], 7) == 2   # Last '7' is at index 2\nassert last([10], 10) == 0              # Single element found\nassert last([10], 5) == -1              # Element not found\n\nprint(\"All assertions passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/793:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "post_h2_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "post_h3_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "post_h4_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e6fc2e6a25f5f504df571aba7bf8b6e1609e43f224a187c64788afc19a98c38c",
+  "raw_source": "def last(arr, x):\n    \"\"\"\n    Finds the index of the last occurrence of element x in a sorted array.\n    \n    Args:\n        arr (List[int]): A sorted list of integers.\n        x (int): The target integer to find.\n        \n    Returns:\n        int: The 0-based index of the last occurrence, or -1 if not found.\n    \"\"\"\n    left = 0\n    right = len(arr) - 1\n    result_index = -1\n    \n    while left <= right:\n        mid = (left + right) // 2\n        \n        if arr[mid] == x:\n            # Found the element, but check for later occurrences to the right\n            result_index = mid\n            left = mid + 1\n        elif arr[mid] < x:\n            left = mid + 1\n        else:\n            right = mid - 1\n            \n    return result_index\n\n# Verification based on your requirement and edge cases\nprint(f\"last([1,2,3], 1) == {last([1, 2, 3], 1)}\") # Expected: 0\nassert last([1, 2, 3], 1) == 0\n\n# Additional test cases to ensure robustness\nassert last([1, 2, 2, 3, 4], 2) == 2   # Last '2' is at index 2\nassert last([5, 7, 7, 8, 9], 7) == 2   # Last '7' is at index 2\nassert last([10], 10) == 0              # Single element found\nassert last([10], 5) == -1              # Element not found\n\nprint(\"All assertions passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/793",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

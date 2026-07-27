@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d3b231286bde503a128291503bff3e2f5463927ced34cc34a01272478a61122f",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "mean_absolute_deviation",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "final_source": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    \n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \n    Args:\n        numbers: A list of numerical values.\n        \n    Returns:\n        The Mean Absolute Deviation as a float.\n        \n    Raises:\n        ValueError: If the input list is empty or contains non-numeric types (though type hint suggests List[float]).\n    \"\"\"\n    \n    if not numbers:\n        raise ValueError(\"Input list cannot be empty.\")\n\n    # Calculate the mean of the dataset\n    n = len(numbers)\n    x_mean = sum(numbers) / n\n    \n    # Calculate the absolute difference for each element from the mean\n    deviations = [abs(x - x_mean) for x in numbers]\n    \n    # Return the average of these absolute differences\n    return sum(deviations) / n\n\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    data = [1.0, 2.0, 3.0, 4.0]\n    result = mean_absolute_deviation(data)\n    \n    # Manual check for the example above:\n    # Mean = (1+2+3+4)/4 = 2.5\n    # Diffs = |1-2.5| + |2-2.5| + |3-2.5| + |4-2.5| \n    #       = 1.5 + 0.5 + 0.5 + 1.5 = 4.0\n    # MAD = 4.0 / 4 = 1.0\n    \n    print(f\"Mean Absolute Deviation for {data}: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/4:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "post_h2_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "post_h3_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "post_h4_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "13e7e3dafe1a049e4fdf302663929f04fd5091e842196a5b19bacb1ec988edb0",
+  "raw_source": "from typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    \n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \n    Args:\n        numbers: A list of numerical values.\n        \n    Returns:\n        The Mean Absolute Deviation as a float.\n        \n    Raises:\n        ValueError: If the input list is empty or contains non-numeric types (though type hint suggests List[float]).\n    \"\"\"\n    \n    if not numbers:\n        raise ValueError(\"Input list cannot be empty.\")\n\n    # Calculate the mean of the dataset\n    n = len(numbers)\n    x_mean = sum(numbers) / n\n    \n    # Calculate the absolute difference for each element from the mean\n    deviations = [abs(x - x_mean) for x in numbers]\n    \n    # Return the average of these absolute differences\n    return sum(deviations) / n\n\n\n# Example usage and verification:\nif __name__ == \"__main__\":\n    data = [1.0, 2.0, 3.0, 4.0]\n    result = mean_absolute_deviation(data)\n    \n    # Manual check for the example above:\n    # Mean = (1+2+3+4)/4 = 2.5\n    # Diffs = |1-2.5| + |2-2.5| + |3-2.5| + |4-2.5| \n    #       = 1.5 + 0.5 + 0.5 + 1.5 = 4.0\n    # MAD = 4.0 / 4 = 1.0\n    \n    print(f\"Mean Absolute Deviation for {data}: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/4",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

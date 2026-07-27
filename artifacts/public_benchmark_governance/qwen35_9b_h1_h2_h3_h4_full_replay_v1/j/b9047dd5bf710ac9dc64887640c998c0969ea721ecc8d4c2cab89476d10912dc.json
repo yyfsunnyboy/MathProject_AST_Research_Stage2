@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "b9047dd5bf710ac9dc64887640c998c0969ea721ecc8d4c2cab89476d10912dc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "even_odd_palindrome",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "final_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n    \n    Args:\n        n (int): A positive integer between 1 and 10^3.\n        \n    Returns:\n        tuple: (count_even_palindromes, count_odd_palindromes)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        s_i = str(i)\n        if s_i == s_i[::-1]:  # Check if palindrome\n            if i % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)\n\n# Test cases based on the problem description\nprint(even_odd_palindrome(3))   # Expected Output: (1, 2)\nprint(even_odd_palindrome(12))  # Expected Output: (4, 6)\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/107:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "post_h2_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "post_h3_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "post_h4_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8ce79207dac84082139a470e744f1c5427833ba722bbf85a778f34478eca594c",
+  "raw_source": "def even_odd_palindrome(n):\n    \"\"\"\n    Given a positive integer n, return a tuple that has the number of even and odd\n    integer palindromes that fall within the range(1, n), inclusive.\n    \n    Args:\n        n (int): A positive integer between 1 and 10^3.\n        \n    Returns:\n        tuple: (count_even_palindromes, count_odd_palindromes)\n    \"\"\"\n    even_count = 0\n    odd_count = 0\n    \n    for i in range(1, n + 1):\n        s_i = str(i)\n        if s_i == s_i[::-1]:  # Check if palindrome\n            if i % 2 == 0:\n                even_count += 1\n            else:\n                odd_count += 1\n                \n    return (even_count, odd_count)\n\n# Test cases based on the problem description\nprint(even_odd_palindrome(3))   # Expected Output: (1, 2)\nprint(even_odd_palindrome(12))  # Expected Output: (4, 6)\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/107",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

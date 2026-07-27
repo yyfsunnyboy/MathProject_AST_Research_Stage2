@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "9cc4c87a9b7cb5c2459bc1bacd61f44d6ff24cef2f1d4c38e1ceb476647038fc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "square_Sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f2777abb2c035c71c700d2ca9f36e7014a62c81da58990061a72f3e2b943ba5f",
+  "final_source": "def square_Sum(n):\n    \"\"\"\n    Calculates the sum of squares of the first n even natural numbers.\n    \n    Formula used: 4 * (sum of squares from 1 to n)\n                = 4 * [n*(n+1)*(2*n+1)/6]\n                = [2*n*(n+1)*(2*n+1)] / 3\n    \n    Args:\n        n (int): The number of even natural numbers.\n        \n    Returns:\n        int: The sum of squares.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    # Using the derived mathematical formula for O(1) time complexity\n    return (2 * n * (n + 1) * (2 * n + 1)) // 3\n\n# Verification with the provided assertion\nif __name__ == \"__main__\":\n    assert square_Sum(2) == 20, \"Test failed!\" \nprint(f\"square_Sum(2) = {square_Sum(2)}\") # Output: 20\n\n# Additional test cases for clarity\nprint(f\"square_Sum(1) = {square_Sum(1)}\")   # Expected: 4 (since only 2^2 exists)\nprint(f\"square_Sum(3) = {square_Sum(3)}\")   # Expected: 56 (4 + 16 + 36)\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/287:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "12b5e335aba9d34e5a0d34f036ec39451eaaee1a160917e08becec46b7c170fa",
+  "post_h2_sha256": "f2777abb2c035c71c700d2ca9f36e7014a62c81da58990061a72f3e2b943ba5f",
+  "post_h3_sha256": "f2777abb2c035c71c700d2ca9f36e7014a62c81da58990061a72f3e2b943ba5f",
+  "post_h4_sha256": "f2777abb2c035c71c700d2ca9f36e7014a62c81da58990061a72f3e2b943ba5f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "12b5e335aba9d34e5a0d34f036ec39451eaaee1a160917e08becec46b7c170fa",
+  "raw_source": "def square_Sum(n):\n    \"\"\"\n    Calculates the sum of squares of the first n even natural numbers.\n    \n    Formula used: 4 * (sum of squares from 1 to n)\n                = 4 * [n*(n+1)*(2*n+1)/6]\n                = [2*n*(n+1)*(2*n+1)] / 3\n    \n    Args:\n        n (int): The number of even natural numbers.\n        \n    Returns:\n        int: The sum of squares.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer.\")\n    \n    # Using the derived mathematical formula for O(1) time complexity\n    return (2 * n * (n + 1) * (2 * n + 1)) // 3\n\n# Verification with the provided assertion\nassert square_Sum(2) == 20, \"Test failed!\" \nprint(f\"square_Sum(2) = {square_Sum(2)}\") # Output: 20\n\n# Additional test cases for clarity\nprint(f\"square_Sum(1) = {square_Sum(1)}\")   # Expected: 4 (since only 2^2 exists)\nprint(f\"square_Sum(3) = {square_Sum(3)}\")   # Expected: 56 (4 + 16 + 36)\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/287",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

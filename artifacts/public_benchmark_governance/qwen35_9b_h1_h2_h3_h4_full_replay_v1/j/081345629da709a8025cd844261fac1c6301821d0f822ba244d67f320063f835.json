@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "081345629da709a8025cd844261fac1c6301821d0f822ba244d67f320063f835",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "heap_queue_largest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "final_source": "import heapq\n\ndef heap_queue_largest(nums, n):\n    \"\"\"\n    Finds the n largest integers from a given list and returns them in descending order.\n    \n    Args:\n        nums (list[int]): The input list of numbers.\n        n (int): The number of largest elements to return.\n        \n    Returns:\n        list[int]: A list containing the n largest integers sorted in descending order.\n    \"\"\"\n    if not nums or n <= 0:\n        return []\n    \n    # If we need all elements, just sort and reverse (simplest case)\n    if n >= len(nums):\n        return sorted(nums, reverse=True)\n\n    # Use a min-heap of size n to store the largest n numbers found so far.\n    # The smallest element in this heap will be at index 0.\n    h = []\n    \n    for num in nums:\n        if len(h) < n:\n            heapq.heappush(h, num)\n        else:\n            # If current number is larger than the smallest of our top-n (h[0]), replace it\n            if num > h[0]:\n                heapq.heapreplace(h, num)\n    \n    # The heap contains the largest n numbers but in arbitrary order.\n    # We need to return them in descending order.\n    result = sorted(h, reverse=True)\n    return result\n\n# --- Verification with your assertion ---\nassert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]\n\n# Additional test cases for robustness\nassert heap_queue_largest([10, 20, 30, 40, 50], 2) == [50, 40]\nassert heap_queue_largest([], 3) == []\nassert heap_queue_largest([1, 2, 3], 5) == [3, 2, 1] # n > len(list), returns all sorted\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/4:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "post_h2_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "post_h3_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "post_h4_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fa78aa3694ce5dd7d2ecc6017cc966f7552182d64de735ce05d1ff8cbaa86292",
+  "raw_source": "import heapq\n\ndef heap_queue_largest(nums, n):\n    \"\"\"\n    Finds the n largest integers from a given list and returns them in descending order.\n    \n    Args:\n        nums (list[int]): The input list of numbers.\n        n (int): The number of largest elements to return.\n        \n    Returns:\n        list[int]: A list containing the n largest integers sorted in descending order.\n    \"\"\"\n    if not nums or n <= 0:\n        return []\n    \n    # If we need all elements, just sort and reverse (simplest case)\n    if n >= len(nums):\n        return sorted(nums, reverse=True)\n\n    # Use a min-heap of size n to store the largest n numbers found so far.\n    # The smallest element in this heap will be at index 0.\n    h = []\n    \n    for num in nums:\n        if len(h) < n:\n            heapq.heappush(h, num)\n        else:\n            # If current number is larger than the smallest of our top-n (h[0]), replace it\n            if num > h[0]:\n                heapq.heapreplace(h, num)\n    \n    # The heap contains the largest n numbers but in arbitrary order.\n    # We need to return them in descending order.\n    result = sorted(h, reverse=True)\n    return result\n\n# --- Verification with your assertion ---\nassert heap_queue_largest([25, 35, 22, 85, 14, 65, 75, 22, 58], 3) == [85, 75, 65]\n\n# Additional test cases for robustness\nassert heap_queue_largest([10, 20, 30, 40, 50], 2) == [50, 40]\nassert heap_queue_largest([], 3) == []\nassert heap_queue_largest([1, 2, 3], 5) == [3, 2, 1] # n > len(list), returns all sorted\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/4",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

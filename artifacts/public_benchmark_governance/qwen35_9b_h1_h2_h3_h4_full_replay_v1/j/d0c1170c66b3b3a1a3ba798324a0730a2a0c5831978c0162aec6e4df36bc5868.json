@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d0c1170c66b3b3a1a3ba798324a0730a2a0c5831978c0162aec6e4df36bc5868",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "even_Power_Sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "64b3993fd8179ee223b3e472ef7706779560d889951c5a1007edf92bff11586d",
+  "final_source": "def even_Power_Sum(n: int) -> int:\n    \"\"\"\n    Computes the sum of the first n even natural numbers each raised to the fifth power.\n    \n    The k-th even natural number is 2*k (for k = 1, 2, ..., n).\n    We compute: sum_{k=1}^{n} (2*k)^5\n    \n    Example:\n        For n = 2:\n          First two evens: 2 and 4.\n          Sum = 2^5 + 4^5 = 32 + 1024 = 1056.\n    \n    Parameters:\n        n (int): Number of first even natural numbers to consider. Must be >= 0.\n    \n    Returns:\n        int: The computed sum.\n    \n    Raises:\n        ValueError: If n is negative.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n\n    total = 0\n    for k in range(1, n + 1):\n        even_num = 2 * k\n        total += even_num ** 5\n    \n    return total\n\n\n# Example assertion test\nif __name__ == \"__main__\":\n    assert even_Power_Sum(2) == 1056\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/271:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6744a3b70f1dee4756a75404d9215ba0d8567c897862affcee2de68972ea0c5e",
+  "post_h2_sha256": "64b3993fd8179ee223b3e472ef7706779560d889951c5a1007edf92bff11586d",
+  "post_h3_sha256": "64b3993fd8179ee223b3e472ef7706779560d889951c5a1007edf92bff11586d",
+  "post_h4_sha256": "64b3993fd8179ee223b3e472ef7706779560d889951c5a1007edf92bff11586d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6744a3b70f1dee4756a75404d9215ba0d8567c897862affcee2de68972ea0c5e",
+  "raw_source": "def even_Power_Sum(n: int) -> int:\n    \"\"\"\n    Computes the sum of the first n even natural numbers each raised to the fifth power.\n    \n    The k-th even natural number is 2*k (for k = 1, 2, ..., n).\n    We compute: sum_{k=1}^{n} (2*k)^5\n    \n    Example:\n        For n = 2:\n          First two evens: 2 and 4.\n          Sum = 2^5 + 4^5 = 32 + 1024 = 1056.\n    \n    Parameters:\n        n (int): Number of first even natural numbers to consider. Must be >= 0.\n    \n    Returns:\n        int: The computed sum.\n    \n    Raises:\n        ValueError: If n is negative.\n    \"\"\"\n    if n < 0:\n        raise ValueError(\"n must be a non-negative integer.\")\n\n    total = 0\n    for k in range(1, n + 1):\n        even_num = 2 * k\n        total += even_num ** 5\n    \n    return total\n\n\n# Example assertion test\nassert even_Power_Sum(2) == 1056\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/271",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

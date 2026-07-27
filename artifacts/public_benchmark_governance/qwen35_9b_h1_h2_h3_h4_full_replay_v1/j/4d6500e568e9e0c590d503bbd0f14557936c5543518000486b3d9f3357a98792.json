@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "4d6500e568e9e0c590d503bbd0f14557936c5543518000486b3d9f3357a98792",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "big_diff",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "final_source": "def big_diff(nums):\n    \"\"\"\n    Returns the difference between the largest and smallest values in the list.\n    \n    Args:\n        nums (list of int/float): List of numbers\n        \n    Returns:\n        int or float: Difference between max and min\n    \n    Raises:\n        ValueError: If the input list is empty\n    \"\"\"\n    if not nums:  # Check for empty list\n        raise ValueError(\"Input list cannot be empty\")\n    \n    return max(nums) - min(nums)\n\n# Test cases\nassert big_diff([1,2,3,4]) == 3\nassert big_diff([-5, 0, 5]) == 10\nassert big_diff([7.5, 8.2, 6.9]) == 1.3\nprint(\"All tests passed!\")\n\n# Example usage:\nresult = big_diff([1, 2, 3, 4])\nprint(f\"Difference between largest and smallest value: {result}\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/588:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "post_h2_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "post_h3_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "post_h4_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1a225379a6f5171ac42a0f22215bd641d8b46e73ee3a67fa2710c820a1d9760d",
+  "raw_source": "def big_diff(nums):\n    \"\"\"\n    Returns the difference between the largest and smallest values in the list.\n    \n    Args:\n        nums (list of int/float): List of numbers\n        \n    Returns:\n        int or float: Difference between max and min\n    \n    Raises:\n        ValueError: If the input list is empty\n    \"\"\"\n    if not nums:  # Check for empty list\n        raise ValueError(\"Input list cannot be empty\")\n    \n    return max(nums) - min(nums)\n\n# Test cases\nassert big_diff([1,2,3,4]) == 3\nassert big_diff([-5, 0, 5]) == 10\nassert big_diff([7.5, 8.2, 6.9]) == 1.3\nprint(\"All tests passed!\")\n\n# Example usage:\nresult = big_diff([1, 2, 3, 4])\nprint(f\"Difference between largest and smallest value: {result}\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/588",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "842a836d68d1bfcd0001da6b285e821021f6db3c896845182cd0fb1f9dffa7bc",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "amicable_numbers_sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "final_source": "def amicable_numbers_sum(n):\n    def sum_divisors(num):\n        total = 1 if num > 1 else 0\n        for i in range(2, int(num**0.5) + 1):\n            if num % i == 0:\n                total += i + num // i\n        return total\n\n    amicable_pairs_sum = set()\n    for i in range(2, n + 1):\n        d_i = sum_divisors(i)\n        if d_i != i and sum_divisors(d_i) == i and d_i <= n:\n            pair_set = {i, d_i}\n            amicable_pairs_sum.update(pair_set)\n\n    return sum(amicable_pairs_sum)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/123:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "post_h2_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "post_h3_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "post_h4_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "17f64d05af656a218559ddc2fbeb730881a1821b98c55d0d7fae21caf49a1e4c",
+  "raw_source": "def amicable_numbers_sum(n):\n    def sum_divisors(num):\n        total = 1 if num > 1 else 0\n        for i in range(2, int(num**0.5) + 1):\n            if num % i == 0:\n                total += i + num // i\n        return total\n\n    amicable_pairs_sum = set()\n    for i in range(2, n + 1):\n        d_i = sum_divisors(i)\n        if d_i != i and sum_divisors(d_i) == i and d_i <= n:\n            pair_set = {i, d_i}\n            amicable_pairs_sum.update(pair_set)\n\n    return sum(amicable_pairs_sum)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/123",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

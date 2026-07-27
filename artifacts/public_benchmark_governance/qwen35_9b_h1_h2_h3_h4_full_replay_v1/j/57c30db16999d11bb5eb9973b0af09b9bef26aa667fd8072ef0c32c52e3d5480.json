@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "57c30db16999d11bb5eb9973b0af09b9bef26aa667fd8072ef0c32c52e3d5480",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "is_prime",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "final_source": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n    if n <= 1:\n        return False\n    if n == 2 or n == 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    \n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n        \n    return True",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/31:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "post_h2_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "post_h3_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "post_h4_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ece00c0c3899c718618d4b2d7d7e2ab2b59d10f6574c924fbe1aa469196db9d1",
+  "raw_source": "def is_prime(n):\n    \"\"\"Return true if a given number is prime, and false otherwise.\n    >>> is_prime(6)\n    False\n    >>> is_prime(101)\n    True\n    >>> is_prime(11)\n    True\n    >>> is_prime(13441)\n    True\n    >>> is_prime(61)\n    True\n    >>> is_prime(4)\n    False\n    >>> is_prime(1)\n    False\n    \"\"\"\n    if n <= 1:\n        return False\n    if n == 2 or n == 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    \n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n        \n    return True",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/31",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

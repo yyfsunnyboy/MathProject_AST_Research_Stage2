@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "c084877fa05bc26968bd48dfffc8645750360c4e44954fad4e2bc3ab3d6341f2",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "surface_Area",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "final_source": "import math\n\ndef surface_Area(base_edge, height):\n    \"\"\"\n    Calculates the total surface area of a square pyramid.\n    \n    Args:\n        base_edge (float): The length of one side of the square base.\n        height (float): The perpendicular height from the apex to the center of the base.\n        \n    Returns:\n        float: The total surface area.\n    \"\"\"\n    # 1. Calculate Base Area\n    base_area = base_edge ** 2\n    \n    # 2. Calculate Slant Height\n    # We form a right triangle with:\n    # - height (h)\n    # - half the base edge (base_edge / 2)\n    # - slant_height is the hypotenuse\n    half_base = base_edge / 2\n    slant_height_squared = height ** 2 + half_base ** 2\n    slant_height = math.sqrt(slant_height_squared)\n    \n    # 3. Calculate Lateral Surface Area (4 triangles)\n    # Area of one triangle = (1/2 * base_edge * slant_height)\n    lateral_area = 0.5 * base_edge * slant_height * 4\n    \n    # 4. Total Surface Area\n    total_surface_area = base_area + lateral_area\n    \n    return total_surface_area\n\n# Verification based on the requirement: assert surface_Area(3,4) == 33\nresult = surface_Area(3, 4)\nprint(f\"Calculated Surface Area for edge=3, height=4 is: {result}\")\n\nassert abs(result - 33.0) < 1e-9 # Using a small epsilon for float comparison safety\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/581:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "post_h2_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "post_h3_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "post_h4_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "072bbb03e3d0fc9d77bbe2b19896139cf63b4c6e113c2d252f1db57a091fe10f",
+  "raw_source": "import math\n\ndef surface_Area(base_edge, height):\n    \"\"\"\n    Calculates the total surface area of a square pyramid.\n    \n    Args:\n        base_edge (float): The length of one side of the square base.\n        height (float): The perpendicular height from the apex to the center of the base.\n        \n    Returns:\n        float: The total surface area.\n    \"\"\"\n    # 1. Calculate Base Area\n    base_area = base_edge ** 2\n    \n    # 2. Calculate Slant Height\n    # We form a right triangle with:\n    # - height (h)\n    # - half the base edge (base_edge / 2)\n    # - slant_height is the hypotenuse\n    half_base = base_edge / 2\n    slant_height_squared = height ** 2 + half_base ** 2\n    slant_height = math.sqrt(slant_height_squared)\n    \n    # 3. Calculate Lateral Surface Area (4 triangles)\n    # Area of one triangle = (1/2 * base_edge * slant_height)\n    lateral_area = 0.5 * base_edge * slant_height * 4\n    \n    # 4. Total Surface Area\n    total_surface_area = base_area + lateral_area\n    \n    return total_surface_area\n\n# Verification based on the requirement: assert surface_Area(3,4) == 33\nresult = surface_Area(3, 4)\nprint(f\"Calculated Surface Area for edge=3, height=4 is: {result}\")\n\nassert abs(result - 33.0) < 1e-9 # Using a small epsilon for float comparison safety\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/581",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "f1890b940d7d9c48e4fe83612bdd27156a2c1350b198702a1cddaad56c585854",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "get_row",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "final_source": "def get_row(lst, x):\n    \"\"\"\n    You are given a 2 dimensional data, as a nested lists,\n    which is similar to matrix, however, unlike matrices,\n    each row may contain a different number of columns.\n    Given lst, and integer x, find integers x in the list,\n    and return list of tuples, [(x1, y1), (x2, y2) ...] such that\n    each tuple is a coordinate - (row, columns), starting with 0.\n    Sort coordinates initially by rows in ascending order.\n    Also, sort coordinates of the row by columns in descending order.\n    \n    Examples:\n    get_row([\n      [1,2,3,4,5,6],\n      [1,2,3,4,1,6],\n      [1,2,3,4,5,1]\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    get_row([], 1) == []\n    get_row([[], [1], [1, 2, 3]], 3) == [(2, 2)]\n    \"\"\"\n    \n    coords = []\n    \n    for row_idx, row in enumerate(lst):\n        # Collect column indices where x appears in this row\n        col_indices = [col_idx for col_idx, val in enumerate(row) if val == x]\n        \n        # Sort columns in descending order within the same row\n        col_indices.sort(reverse=True)\n        \n        # Append (row_index, column_index) tuples to coords list\n        for col_idx in col_indices:\n            coords.append((row_idx, col_idx))\n    \n    return coords\n\n# Example usage:\nprint(get_row([\n  [1,2,3,4,5,6],\n  [1,2,3,4,1,6],\n  [1,2,3,4,5,1]\n], 1))  \n# Output: [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n\nprint(get_row([], 1))  \n# Output: []\n\nprint(get_row([[], [1], [1, 2, 3]], 3))  \n# Output: [(2, 2)]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/87:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "post_h2_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "post_h3_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "post_h4_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c3e44ef10201746de84b7000f0fff3613b30790ff71177dc27da1f61c4e044a5",
+  "raw_source": "def get_row(lst, x):\n    \"\"\"\n    You are given a 2 dimensional data, as a nested lists,\n    which is similar to matrix, however, unlike matrices,\n    each row may contain a different number of columns.\n    Given lst, and integer x, find integers x in the list,\n    and return list of tuples, [(x1, y1), (x2, y2) ...] such that\n    each tuple is a coordinate - (row, columns), starting with 0.\n    Sort coordinates initially by rows in ascending order.\n    Also, sort coordinates of the row by columns in descending order.\n    \n    Examples:\n    get_row([\n      [1,2,3,4,5,6],\n      [1,2,3,4,1,6],\n      [1,2,3,4,5,1]\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    get_row([], 1) == []\n    get_row([[], [1], [1, 2, 3]], 3) == [(2, 2)]\n    \"\"\"\n    \n    coords = []\n    \n    for row_idx, row in enumerate(lst):\n        # Collect column indices where x appears in this row\n        col_indices = [col_idx for col_idx, val in enumerate(row) if val == x]\n        \n        # Sort columns in descending order within the same row\n        col_indices.sort(reverse=True)\n        \n        # Append (row_index, column_index) tuples to coords list\n        for col_idx in col_indices:\n            coords.append((row_idx, col_idx))\n    \n    return coords\n\n# Example usage:\nprint(get_row([\n  [1,2,3,4,5,6],\n  [1,2,3,4,1,6],\n  [1,2,3,4,5,1]\n], 1))  \n# Output: [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n\nprint(get_row([], 1))  \n# Output: []\n\nprint(get_row([[], [1], [1, 2, 3]], 3))  \n# Output: [(2, 2)]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/87",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "70dc6a24445e9b078f6e5a913a2e6db12d68d48110674d4d46278440ad6e7e0b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "do_algebra",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "final_source": "def do_algebra(operator, operand):\n    \"\"\"\n    Given two lists operator and operand. The first list has basic algebra operations, \n    and the second is a list of integers. Build and evaluate the expression in order\n    with standard precedence rules and return the result.\n\n    Operators: +  -  *  //  **\n    \n    Example:\n        operator = ['+', '*', '-']\n        operand   = [2, 3, 4, 5]\n        Expression: 2 + 3 * 4 - 5 => (2) + (12) - 5 = 9\n    \"\"\"\n\n    # Build the expression as a list of tokens for evaluation with precedence.\n    # We'll use Python's eval-like behavior but manually to avoid unsafe eval().\n    \n    if len(operator) != len(operand) - 1:\n        raise ValueError(\"Length mismatch between operator and operand lists.\")\n\n    n = len(operand)\n    values = list(map(int, operand))\n    ops = [op for op in operator]\n\n    # We'll use two stacks approach to handle precedence manually.\n    # But since Python's eval respects precedence correctly if we construct a string safely,\n    # and the inputs are controlled (non-negative integers + basic operators), \n    # we can build an expression string and evaluate it with built-in functions only.\n\n    expr_parts = []\n    \n    for i in range(n):\n        expr_parts.append(str(values[i]))\n        if i < n - 1:\n            op_char = ops[i]\n            expr_parts.append(op_char)\n\n    # Construct the full expression string, e.g.: \"2 + 3 * 4 - 5\"\n    expr_str = \"\".join(expr_parts).replace(\" \", \"\")\n\n    # Safe evaluation using only allowed operators. \n    # Since inputs are trusted and limited to basic arithmetic, direct eval is acceptable here.\n    result = eval(expr_str)\n\n    return int(result if isinstance(result, float) else result)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    operator = ['+', '*', '-']\n    operand   = [2, 3, 4, 5]\n    print(do_algebra(operator, operand))  # Output: 9\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/160:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "post_h2_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "post_h3_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "post_h4_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "174d651e3c8b35e2c94846c1978f0beaa4310d9ebb066249e0277c8c306e291d",
+  "raw_source": "def do_algebra(operator, operand):\n    \"\"\"\n    Given two lists operator and operand. The first list has basic algebra operations, \n    and the second is a list of integers. Build and evaluate the expression in order\n    with standard precedence rules and return the result.\n\n    Operators: +  -  *  //  **\n    \n    Example:\n        operator = ['+', '*', '-']\n        operand   = [2, 3, 4, 5]\n        Expression: 2 + 3 * 4 - 5 => (2) + (12) - 5 = 9\n    \"\"\"\n\n    # Build the expression as a list of tokens for evaluation with precedence.\n    # We'll use Python's eval-like behavior but manually to avoid unsafe eval().\n    \n    if len(operator) != len(operand) - 1:\n        raise ValueError(\"Length mismatch between operator and operand lists.\")\n\n    n = len(operand)\n    values = list(map(int, operand))\n    ops = [op for op in operator]\n\n    # We'll use two stacks approach to handle precedence manually.\n    # But since Python's eval respects precedence correctly if we construct a string safely,\n    # and the inputs are controlled (non-negative integers + basic operators), \n    # we can build an expression string and evaluate it with built-in functions only.\n\n    expr_parts = []\n    \n    for i in range(n):\n        expr_parts.append(str(values[i]))\n        if i < n - 1:\n            op_char = ops[i]\n            expr_parts.append(op_char)\n\n    # Construct the full expression string, e.g.: \"2 + 3 * 4 - 5\"\n    expr_str = \"\".join(expr_parts).replace(\" \", \"\")\n\n    # Safe evaluation using only allowed operators. \n    # Since inputs are trusted and limited to basic arithmetic, direct eval is acceptable here.\n    result = eval(expr_str)\n\n    return int(result if isinstance(result, float) else result)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    operator = ['+', '*', '-']\n    operand   = [2, 3, 4, 5]\n    print(do_algebra(operator, operand))  # Output: 9\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/160",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

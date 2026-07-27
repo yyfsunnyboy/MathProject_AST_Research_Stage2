@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "298e958905d76458bb7bb2fcc6b8cfa59b10a4b723923c4cb5299b7cf9550df8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "next_smallest",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "final_source": "def next_smallest(lst):\n    \"\"\"\n    You are given a list of integers.\n    Write a function next_smallest() that returns the 2nd smallest element of the list.\n    Return None if there is no such element.\n    \n    next_smallest([1, 2, 3, 4, 5]) == 2\n    next_smallest([5, 1, 4, 3, 2]) == 2\n    next_smallest([]) == None\n    next_smallest([1, 1]) == None\n    \"\"\"\n    \n    # Need at least two distinct values to have a \"second smallest\"\n    if len(lst) < 2:\n        return None\n    \n    # Find the minimum value first\n    min_val = lst[0]\n    for x in lst[1:]:\n        if x < min_val:\n            min_val = x\n    \n    # Now find the second smallest (must be strictly greater than min)\n    second_min = float('inf')\n    found_second = False\n    \n    for x in lst:\n        if x > min_val and x < second_min:\n            second_min = x\n            found_second = True\n            \n    return second_min if found_second else None\n\n\n# Quick tests\nprint(next_smallest([1, 2, 3, 4, 5]))      # 2\nprint(next_smallest([5, 1, 4, 3, 2]))      # 2\nprint(next_smallest([]))                   # None\nprint(next_smallest([1, 1]))               # None\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/90:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "post_h2_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "post_h3_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "post_h4_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "1b48a59340772d0a50d402ec2637ceba8c0dcbde8961e29fcbdb409a3a2004a9",
+  "raw_source": "def next_smallest(lst):\n    \"\"\"\n    You are given a list of integers.\n    Write a function next_smallest() that returns the 2nd smallest element of the list.\n    Return None if there is no such element.\n    \n    next_smallest([1, 2, 3, 4, 5]) == 2\n    next_smallest([5, 1, 4, 3, 2]) == 2\n    next_smallest([]) == None\n    next_smallest([1, 1]) == None\n    \"\"\"\n    \n    # Need at least two distinct values to have a \"second smallest\"\n    if len(lst) < 2:\n        return None\n    \n    # Find the minimum value first\n    min_val = lst[0]\n    for x in lst[1:]:\n        if x < min_val:\n            min_val = x\n    \n    # Now find the second smallest (must be strictly greater than min)\n    second_min = float('inf')\n    found_second = False\n    \n    for x in lst:\n        if x > min_val and x < second_min:\n            second_min = x\n            found_second = True\n            \n    return second_min if found_second else None\n\n\n# Quick tests\nprint(next_smallest([1, 2, 3, 4, 5]))      # 2\nprint(next_smallest([5, 1, 4, 3, 2]))      # 2\nprint(next_smallest([]))                   # None\nprint(next_smallest([1, 1]))               # None\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/90",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

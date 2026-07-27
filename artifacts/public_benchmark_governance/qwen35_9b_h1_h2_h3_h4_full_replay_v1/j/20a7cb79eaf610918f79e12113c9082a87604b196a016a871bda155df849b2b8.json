@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "20a7cb79eaf610918f79e12113c9082a87604b196a016a871bda155df849b2b8",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_char_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "final_source": "def count_char_position(s: str) -> int:\n    \"\"\"\n    Counts characters that occur at the same 0-based index as their \n    alphabetical order (case insensitive).\n    \n    Example logic:\n    'a' is always valid because it's at index 0 and alphabetically first.\n    'b' must be at index 1 to count, etc.\n    \"\"\"\n    if not s:\n        return 0\n    \n    # Create a mapping of character -> alphabetical index (case insensitive)\n    # ord('a') is 97. We subtract 97 to get the 0-based alphabet index.\n    char_to_index = {chr(ord('a') + i): i for i in range(26)}\n    \n    count = 0\n    \n    for idx, char in enumerate(s.lower()):\n        # Check if the character is a letter and its position matches its alphabetical rank\n        if char in char_to_index:\n            alphabet_pos = char_to_index[char]\n            if idx == alphabet_pos:\n                count += 1\n                \n    return count\n\n# Test cases based on your requirement\nassert count_char_position(\"xbcefg\") == 2 # Explanation below\nprint(count_char_position(\"xbcefg\"))       # Output: 2\n\n# Additional tests for clarity\nassert count_char_position(\"\") == 0        # Empty string\nassert count_char_position(\"abcde\") == 5   # All match (a@0, b@1, c@2...)\nassert count_char_position(\"edcba\") == 0   # None match in reverse order\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/165:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "post_h2_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "post_h3_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "post_h4_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "07448875c0399b8294a8b6e7db28d8ce4706bfee6c9b140d13910074cee3a4a2",
+  "raw_source": "def count_char_position(s: str) -> int:\n    \"\"\"\n    Counts characters that occur at the same 0-based index as their \n    alphabetical order (case insensitive).\n    \n    Example logic:\n    'a' is always valid because it's at index 0 and alphabetically first.\n    'b' must be at index 1 to count, etc.\n    \"\"\"\n    if not s:\n        return 0\n    \n    # Create a mapping of character -> alphabetical index (case insensitive)\n    # ord('a') is 97. We subtract 97 to get the 0-based alphabet index.\n    char_to_index = {chr(ord('a') + i): i for i in range(26)}\n    \n    count = 0\n    \n    for idx, char in enumerate(s.lower()):\n        # Check if the character is a letter and its position matches its alphabetical rank\n        if char in char_to_index:\n            alphabet_pos = char_to_index[char]\n            if idx == alphabet_pos:\n                count += 1\n                \n    return count\n\n# Test cases based on your requirement\nassert count_char_position(\"xbcefg\") == 2 # Explanation below\nprint(count_char_position(\"xbcefg\"))       # Output: 2\n\n# Additional tests for clarity\nassert count_char_position(\"\") == 0        # Empty string\nassert count_char_position(\"abcde\") == 5   # All match (a@0, b@1, c@2...)\nassert count_char_position(\"edcba\") == 0   # None match in reverse order\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/165",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

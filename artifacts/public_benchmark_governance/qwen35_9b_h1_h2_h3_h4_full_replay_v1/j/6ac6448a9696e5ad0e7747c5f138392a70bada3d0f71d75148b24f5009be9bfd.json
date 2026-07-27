@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6ac6448a9696e5ad0e7747c5f138392a70bada3d0f71d75148b24f5009be9bfd",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "pair_wise",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ee74ac56235d2dcfc0209a5cce79591c86c0c8ec8431e093882fc18c9aa665c0",
+  "final_source": "def pair_wise(lst):\n    \"\"\"Return a list of all pairs of consecutive items in the given list.\"\"\"\n    return [(lst[i], lst[i + 1]) for i in range(len(lst) - 1)]\n\n\n# Example usage and assertion\nif __name__ == \"__main__\":\n    assert pair_wise([1, 1, 2, 3, 3, 4, 4, 5]) == [\n        (1, 1),\n        (1, 2),\n        (2, 3),\n        (3, 3),\n        (3, 4),\n        (4, 4),\n        (4, 5)\n    ]\n    print(pair_wise([1, 1, 2, 3, 3, 4, 4, 5]))\n\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/766:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "322472598d9b807088ebd8d4599a8bb39e9d2c7faa340b93281eee1bcdfc22e8",
+  "post_h2_sha256": "d06f188b942300e5d652d8d8b84886a50fde118730ebb1cc1dd399a5eae73f32",
+  "post_h3_sha256": "d06f188b942300e5d652d8d8b84886a50fde118730ebb1cc1dd399a5eae73f32",
+  "post_h4_sha256": "ee74ac56235d2dcfc0209a5cce79591c86c0c8ec8431e093882fc18c9aa665c0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "322472598d9b807088ebd8d4599a8bb39e9d2c7faa340b93281eee1bcdfc22e8",
+  "raw_source": "def pair_wise(lst):\n    \"\"\"Return a list of all pairs of consecutive items in the given list.\"\"\"\n    return [(lst[i], lst[i + 1]) for i in range(len(lst) - 1)]\n\n\n# Example usage and assertion\nassert pair_wise([1, 1, 2, 3, 3, 4, 4, 5]) == [\n    (1, 1),\n    (1, 2),\n    (2, 3),\n    (3, 3),\n    (3, 4),\n    (4, 4),\n    (4, 5)\n]\n\nprint(pair_wise([1, 1, 2, 3, 3, 4, 4, 5]))\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/766",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "77b1f281a60dc63292ff308d7a1134d07fd525802bc4f18be0e28c4d5d0faa54",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "circular_shift",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "final_source": "def circular_shift(x, shift):\n    s = str(abs(x))          # work with absolute value; sign not specified in examples\n    n = len(s)\n    \n    if shift > n:            # \"If shift > number of digits, return digits reversed.\"\n        return s[::-1]\n    \n    k = shift % n            # handle shifts larger than one full rotation (optional but safe)\n    rotated = s[-k:] + s[:-k]  # right circular shift by k positions\n    \n    if x < 0:                # preserve sign if original was negative\n        return \"-\" + rotated\n    return rotated\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/65:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "post_h2_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "post_h3_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "post_h4_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ed4e17528d835d22c846d239673edf6a9fb2cd48d2cc4f73400e0d3c12a9f0f8",
+  "raw_source": "def circular_shift(x, shift):\n    s = str(abs(x))          # work with absolute value; sign not specified in examples\n    n = len(s)\n    \n    if shift > n:            # \"If shift > number of digits, return digits reversed.\"\n        return s[::-1]\n    \n    k = shift % n            # handle shifts larger than one full rotation (optional but safe)\n    rotated = s[-k:] + s[:-k]  # right circular shift by k positions\n    \n    if x < 0:                # preserve sign if original was negative\n        return \"-\" + rotated\n    return rotated\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/65",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

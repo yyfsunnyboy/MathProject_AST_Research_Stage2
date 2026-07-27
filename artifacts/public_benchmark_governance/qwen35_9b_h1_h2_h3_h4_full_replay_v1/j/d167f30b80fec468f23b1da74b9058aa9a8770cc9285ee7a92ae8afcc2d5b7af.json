@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "generation_truncated",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d167f30b80fec468f23b1da74b9058aa9a8770cc9285ee7a92ae8afcc2d5b7af",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "find_adverb_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "final_source": "import re\n\ndef find_adverb_position(sentence):\n    # A small dictionary of common adverbs for demonstration purposes. \n    # In a production environment, this would be loaded from a larger file or API.\n    adverbs = {\n        \"clearly\", \"quickly\", \"slowly\", \"very\", \"quite\", \"often\", \n        \"never\", \"always\", \"sometimes\", \"probably\", \"perhaps\"\n    }\n\n    # Regex to find all sequences of alphabetic characters (words) and their start indices.\n    # \\w+ matches [a-zA-Z0-9_], but we want words. Let's use a pattern that captures \n    # the word itself while ignoring attached punctuation for matching, \n    # but keeping track of the original index in the string.\n    \n    # Pattern explanation: (\\S+) finds non-whitespace sequences (tokens).\n    # However, to handle \"clearly!!\", we want to capture the token and then clean it.\n    tokens = re.findall(r'\\b\\w+\\W*', sentence) \n    # This regex captures words followed by optional punctuation attached to them? \n    # Actually, simpler approach: find all matches of [a-zA-Z]+ starting at specific indices.\n    \n    pattern = r'([a-zA-Z]+)'\n    matches = list(re.finditer(pattern, sentence))\n\n    for match in matches:\n        start_idx = match.start()\n        word_text = match.group(1) # The clean adverb\n        \n        if word_text.lower() in {k.lower(): k for k in adverbs}.keys(): \n            # Wait, the set above is just strings. Let's fix logic below.\n            pass\n\n    # Refined Logic:\n    matches = re.finditer(r'[a-zA-Z]+', sentence)\n    \n    found_adverb = None\n    \n    for match in matches:\n        word = match.group()\n        \n        if word.lower() in adverbs:\n            start_pos = match.start()\n            end_pos = start_pos + len(word) # Exclusive stop index\n            \n            return (start_pos, end_pos, word)\n\n# Let's verify the assertion logic with \"clearly\"\n# sentence = \"clearly!! we can see the sky\"\n# Word: clearly. Length 7. Start 0. End exclusive should be 7.\n# Result: (0, 7, 'clearly') -> Matches the prompt exactly!\n\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/440:ab1:0",
+  "generation_truncated": true,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "post_h2_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "post_h3_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "post_h4_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "02b091037c0ef0eb734aeae25df80c52a4689dd272f0858ab3022d84fc8dc438",
+  "raw_source": "import re\n\ndef find_adverb_position(sentence):\n    # A small dictionary of common adverbs for demonstration purposes. \n    # In a production environment, this would be loaded from a larger file or API.\n    adverbs = {\n        \"clearly\", \"quickly\", \"slowly\", \"very\", \"quite\", \"often\", \n        \"never\", \"always\", \"sometimes\", \"probably\", \"perhaps\"\n    }\n\n    # Regex to find all sequences of alphabetic characters (words) and their start indices.\n    # \\w+ matches [a-zA-Z0-9_], but we want words. Let's use a pattern that captures \n    # the word itself while ignoring attached punctuation for matching, \n    # but keeping track of the original index in the string.\n    \n    # Pattern explanation: (\\S+) finds non-whitespace sequences (tokens).\n    # However, to handle \"clearly!!\", we want to capture the token and then clean it.\n    tokens = re.findall(r'\\b\\w+\\W*', sentence) \n    # This regex captures words followed by optional punctuation attached to them? \n    # Actually, simpler approach: find all matches of [a-zA-Z]+ starting at specific indices.\n    \n    pattern = r'([a-zA-Z]+)'\n    matches = list(re.finditer(pattern, sentence))\n\n    for match in matches:\n        start_idx = match.start()\n        word_text = match.group(1) # The clean adverb\n        \n        if word_text.lower() in {k.lower(): k for k in adverbs}.keys(): \n            # Wait, the set above is just strings. Let's fix logic below.\n            pass\n\n    # Refined Logic:\n    matches = re.finditer(r'[a-zA-Z]+', sentence)\n    \n    found_adverb = None\n    \n    for match in matches:\n        word = match.group()\n        \n        if word.lower() in adverbs:\n            start_pos = match.start()\n            end_pos = start_pos + len(word) # Exclusive stop index\n            \n            return (start_pos, end_pos, word)\n\n# Let's verify the assertion logic with \"clearly\"\n# sentence = \"clearly!! we can see the sky\"\n# Word: clearly. Length 7. Start 0. End exclusive should be 7.\n# Result: (0, 7, 'clearly') -> Matches the prompt exactly!\n\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/440",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "a796201f7030a4aba3b264a0819f9251ee851828621e3defbd948117240c17d3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Primes_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "final_source": "def is_prime(n: int) -> bool:\n    \"\"\"Check if n is a prime number.\"\"\"\n    if n < 2:\n        return False\n    if n in (2, 3):\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    \n    # Check for factors from 5 up to sqrt(n) with step 6\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n\ndef count_Primes_nums(limit: int) -> int:\n    \"\"\"Return the number of prime numbers less than limit.\"\"\"\n    # The problem says \"less than\", so we check up to limit - 1\n    if limit <= 2:\n        return 0\n    \n    count = 0\n    for num in range(2, limit):\n        if is_prime(num):\n            count += 1\n            \n    return count\n\n# Example test cases\nassert count_Primes_nums(5) == 2   # Primes less than 5: 2, 3 -> count = 2\nassert count_Primes_nums(0) == 0   # No primes < 0\nassert count_Primes_nums(1) == 0   # No primes < 1\nassert count_Primes_nums(2) == 0   # Primes less than 2: none (since we start at 2, but \"less than\" excludes it)\nassert count_Primes_nums(3) == 1   # Prime less than 3: only 2 -> count = 1\nassert count_Primes_nums(10) == 4  # Primes < 10: 2, 3, 5, 7 -> count = 4\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/256:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "post_h2_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "post_h3_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "post_h4_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "4b54e7ad2d91388f161540c2d9b2064f93d5ef75c5172d74566d2ac3317911b1",
+  "raw_source": "def is_prime(n: int) -> bool:\n    \"\"\"Check if n is a prime number.\"\"\"\n    if n < 2:\n        return False\n    if n in (2, 3):\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    \n    # Check for factors from 5 up to sqrt(n) with step 6\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n\ndef count_Primes_nums(limit: int) -> int:\n    \"\"\"Return the number of prime numbers less than limit.\"\"\"\n    # The problem says \"less than\", so we check up to limit - 1\n    if limit <= 2:\n        return 0\n    \n    count = 0\n    for num in range(2, limit):\n        if is_prime(num):\n            count += 1\n            \n    return count\n\n# Example test cases\nassert count_Primes_nums(5) == 2   # Primes less than 5: 2, 3 -> count = 2\nassert count_Primes_nums(0) == 0   # No primes < 0\nassert count_Primes_nums(1) == 0   # No primes < 1\nassert count_Primes_nums(2) == 0   # Primes less than 2: none (since we start at 2, but \"less than\" excludes it)\nassert count_Primes_nums(3) == 1   # Prime less than 3: only 2 -> count = 1\nassert count_Primes_nums(10) == 4  # Primes < 10: 2, 3, 5, 7 -> count = 4\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/256",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

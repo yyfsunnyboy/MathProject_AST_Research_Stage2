@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "54a32f03e8e41bf2591e30ab3937651207a0f57429d54af6d2b8082c610a74b5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "check_greater",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "06233a2b8d7e09de2078792e4729ef82315f2f9b737b721256516cbd523dc869",
+  "final_source": "def check_greater(arr, num):\n    \"\"\"\n    Returns True if `num` is greater than *all* elements of `arr`.\n    Otherwise returns False.\n    \n    Examples:\n        check_greater([1, 2, 3, 4, 5], 6) -> True\n        check_greater([1, 2, 3, 4, 5], 4) -> False (not greater than all elements)\n    \"\"\"\n    return num > max(arr) if arr else False\n\n# Test with the given assertion\nif __name__ == \"__main__\":\n    assert check_greater([1, 2, 3, 4, 5], 4) == False\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/433:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "857dcf87b4ef432fb6805e55ef0a2657659ffd9afa16e1644f50e4b9176b42e9",
+  "post_h2_sha256": "06233a2b8d7e09de2078792e4729ef82315f2f9b737b721256516cbd523dc869",
+  "post_h3_sha256": "06233a2b8d7e09de2078792e4729ef82315f2f9b737b721256516cbd523dc869",
+  "post_h4_sha256": "06233a2b8d7e09de2078792e4729ef82315f2f9b737b721256516cbd523dc869",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "857dcf87b4ef432fb6805e55ef0a2657659ffd9afa16e1644f50e4b9176b42e9",
+  "raw_source": "def check_greater(arr, num):\n    \"\"\"\n    Returns True if `num` is greater than *all* elements of `arr`.\n    Otherwise returns False.\n    \n    Examples:\n        check_greater([1, 2, 3, 4, 5], 6) -> True\n        check_greater([1, 2, 3, 4, 5], 4) -> False (not greater than all elements)\n    \"\"\"\n    return num > max(arr) if arr else False\n\n# Test with the given assertion\nassert check_greater([1, 2, 3, 4, 5], 4) == False\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/433",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

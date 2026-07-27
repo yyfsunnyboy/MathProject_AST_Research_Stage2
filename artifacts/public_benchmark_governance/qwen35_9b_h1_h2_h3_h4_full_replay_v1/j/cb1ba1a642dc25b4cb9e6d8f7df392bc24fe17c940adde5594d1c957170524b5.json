@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "cb1ba1a642dc25b4cb9e6d8f7df392bc24fe17c940adde5594d1c957170524b5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "digits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "final_source": "def digits(n):\n    \"\"\"Given a positive integer n, return the product of the odd digits.\n    Return 0 if all digits are even.\n    \n    Examples:\n        digits(1)   == 1\n        digits(4)   == 0\n        digits(235) == 1 * (product of odd digits only? No, it's product of odd digits present.)\n                     Actually for 235 -> odd digits are 3 and 5 => 3*5 = 15.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    prod = None  # Use None to indicate \"no odd digit seen yet\"\n    \n    for ch in str(n):\n        d = int(ch)\n        if d % 2 == 1:          # odd digit\n            if prod is None:\n                prod = d\n            else:\n                prod *= d\n    \n    return prod if prod is not None else 0\n\n\n# Quick tests\nprint(digits(1))   # 1\nprint(digits(4))   # 0\nprint(digits(235)) # 15\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/131:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "post_h2_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "post_h3_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "post_h4_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5cbc89e05f7761abfb0a1b10f7f9ef3a423e8d434ada874fe3b9f395b270c99d",
+  "raw_source": "def digits(n):\n    \"\"\"Given a positive integer n, return the product of the odd digits.\n    Return 0 if all digits are even.\n    \n    Examples:\n        digits(1)   == 1\n        digits(4)   == 0\n        digits(235) == 1 * (product of odd digits only? No, it's product of odd digits present.)\n                     Actually for 235 -> odd digits are 3 and 5 => 3*5 = 15.\n    \"\"\"\n    if n <= 0:\n        raise ValueError(\"n must be a positive integer\")\n\n    prod = None  # Use None to indicate \"no odd digit seen yet\"\n    \n    for ch in str(n):\n        d = int(ch)\n        if d % 2 == 1:          # odd digit\n            if prod is None:\n                prod = d\n            else:\n                prod *= d\n    \n    return prod if prod is not None else 0\n\n\n# Quick tests\nprint(digits(1))   # 1\nprint(digits(4))   # 0\nprint(digits(235)) # 15\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/131",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

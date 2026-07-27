@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "5327c6f8a786918c9c3fb08c7a5e8a3a805d6b501acae1d3b3c8fc5354a4c9de",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_Product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "final_source": "def max_Product(arr):\n    if len(arr) < 2:\n        return None\n    \n    # Sort the array in descending order\n    sorted_arr = sorted(arr, reverse=True)\n    \n    # The highest product is formed by the two largest numbers\n    pair = (sorted_arr[0], sorted_arr[1])\n    \n    return pair",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/415:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "post_h2_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "post_h3_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "post_h4_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "494c71044cfa4cd11e5b7a91a7676c095df2676b0454bd2d117e501fbca03d3e",
+  "raw_source": "def max_Product(arr):\n    if len(arr) < 2:\n        return None\n    \n    # Sort the array in descending order\n    sorted_arr = sorted(arr, reverse=True)\n    \n    # The highest product is formed by the two largest numbers\n    pair = (sorted_arr[0], sorted_arr[1])\n    \n    return pair",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/415",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

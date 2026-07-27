@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "3e966ea40d7a0ae5dc7f0b46f2793a3ac8330d356355ea66c385b92e1c2e37e3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "find_closest_elements",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "final_source": "from typing import List, Tuple\n\n\ndef find_closest_elements(numbers: List[float]) -> Tuple[float, float]:\n    \"\"\" From a supplied list of numbers (of length at least two) select and return two that are the closest to each\n    other and return them in order (smaller number, larger number).\n    \n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n    (2.0, 2.2)\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n    (2.0, 2.0)\n    \"\"\"\n    \n    if len(numbers) < 2:\n        raise ValueError(\"List must contain at least two numbers.\")\n\n    # Sort the list to easily check adjacent elements for minimum difference\n    sorted_numbers = sorted(numbers)\n    \n    min_diff = float('inf')\n    closest_pair = (sorted_numbers[0], sorted_numbers[1])\n    \n    # Iterate through adjacent pairs in the sorted list\n    for i in range(len(sorted_numbers) - 1):\n        current_num = sorted_numbers[i]\n        next_num = sorted_numbers[i + 1]\n        \n        diff = abs(next_num - current_num)\n        \n        if diff < min_diff:\n            min_diff = diff\n            closest_pair = (current_num, next_num)\n    \n    return closest_pair\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/20:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "post_h2_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "post_h3_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "post_h4_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c566e63538ada1e92664c9f219e48d3ee9b9a32e24e1e9c07fe175e5dda1b930",
+  "raw_source": "from typing import List, Tuple\n\n\ndef find_closest_elements(numbers: List[float]) -> Tuple[float, float]:\n    \"\"\" From a supplied list of numbers (of length at least two) select and return two that are the closest to each\n    other and return them in order (smaller number, larger number).\n    \n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])\n    (2.0, 2.2)\n    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])\n    (2.0, 2.0)\n    \"\"\"\n    \n    if len(numbers) < 2:\n        raise ValueError(\"List must contain at least two numbers.\")\n\n    # Sort the list to easily check adjacent elements for minimum difference\n    sorted_numbers = sorted(numbers)\n    \n    min_diff = float('inf')\n    closest_pair = (sorted_numbers[0], sorted_numbers[1])\n    \n    # Iterate through adjacent pairs in the sorted list\n    for i in range(len(sorted_numbers) - 1):\n        current_num = sorted_numbers[i]\n        next_num = sorted_numbers[i + 1]\n        \n        diff = abs(next_num - current_num)\n        \n        if diff < min_diff:\n            min_diff = diff\n            closest_pair = (current_num, next_num)\n    \n    return closest_pair\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/20",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

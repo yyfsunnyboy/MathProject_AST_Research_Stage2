@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "999f1e5e0e1a2ca7db818a5a088b065415cf3ec4d3d76dc5ced92c4659a59346",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_subarray_product",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "final_source": "def max_subarray_product(nums):\n    if not nums:\n        return 0\n    \n    max_prod = min_prod = result = nums[0]\n    \n    for i in range(1, len(nums)):\n        num = nums[i]\n        \n        # Calculate potential products before updating current values\n        temp_max = max(num, max_prod * num)\n        temp_min = min(num, min_prod * num)\n        \n        # Update current max and min product ending at this position\n        max_prod = temp_max\n        min_prod = temp_min\n        \n        # Update global result if needed\n        result = max(result, max_prod)\n    \n    return result",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/463:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "post_h2_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "post_h3_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "post_h4_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "49ff2b9107b9ce0557508d15fef5a1e0078a5a49bd99005efbbeff41f731fa17",
+  "raw_source": "def max_subarray_product(nums):\n    if not nums:\n        return 0\n    \n    max_prod = min_prod = result = nums[0]\n    \n    for i in range(1, len(nums)):\n        num = nums[i]\n        \n        # Calculate potential products before updating current values\n        temp_max = max(num, max_prod * num)\n        temp_min = min(num, min_prod * num)\n        \n        # Update current max and min product ending at this position\n        max_prod = temp_max\n        min_prod = temp_min\n        \n        # Update global result if needed\n        result = max(result, max_prod)\n    \n    return result",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/463",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

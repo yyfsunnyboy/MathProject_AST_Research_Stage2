@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "6a2cb331028c051442f885072c8949989cde3ef4ee28672ab2da38876ff52f4c",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "mean_absolute_deviation",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "final_source": "def mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n    n = len(numbers)\n    if n == 0:\n        return 0.0\n    \n    mean_val = sum(numbers) / n\n    total_deviation = sum(abs(x - mean_val) for x in numbers)\n    \n    return total_deviation / n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/4:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "post_h2_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "post_h3_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "post_h4_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a51479728870c356207d7a9a624af2d62cb012d5c84a6ae339d4a6fc0ebfab5a",
+  "raw_source": "def mean_absolute_deviation(numbers: List[float]) -> float:\n    \"\"\" For a given list of input numbers, calculate Mean Absolute Deviation\n    around the mean of this dataset.\n    Mean Absolute Deviation is the average absolute difference between each\n    element and a centerpoint (mean in this case):\n    MAD = average | x - x_mean |\n    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])\n    1.0\n    \"\"\"\n    n = len(numbers)\n    if n == 0:\n        return 0.0\n    \n    mean_val = sum(numbers) / n\n    total_deviation = sum(abs(x - mean_val) for x in numbers)\n    \n    return total_deviation / n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/4",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

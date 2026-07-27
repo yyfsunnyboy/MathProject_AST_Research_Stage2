@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "1eb0ed2d398d2dad4656ad7b4a641c7f5ca1abfad8615f756b95c8433e92c7a3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "add",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "final_source": "def add(lst):\n    \"\"\"Given a non-empty list of integers lst. Add the even elements that are at odd indices.\"\"\"\n    total = 0\n    # Indices in Python start at 0, so \"odd indices\" means 1, 3, 5, ...\n    for i in range(1, len(lst), 2):  # step by 2 starting from index 1\n        if lst[i] % 2 == 0:          # check if the element is even\n            total += lst[i]\n    return total\n\n# Examples:\nprint(add([4, 2, 6, 7]))   # indices: 0->4, 1->2(even), 2->6, 3->7 => sum = 2\nprint(add([1, 2, 3, 4]))   # index 1=2 (even) + index 3=4 (even) => sum = 6\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/85:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "post_h2_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "post_h3_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "post_h4_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8861221fe302f68f1b6eb636dfdf2d95b48679d2a360503816ef460e7f2b3f90",
+  "raw_source": "def add(lst):\n    \"\"\"Given a non-empty list of integers lst. Add the even elements that are at odd indices.\"\"\"\n    total = 0\n    # Indices in Python start at 0, so \"odd indices\" means 1, 3, 5, ...\n    for i in range(1, len(lst), 2):  # step by 2 starting from index 1\n        if lst[i] % 2 == 0:          # check if the element is even\n            total += lst[i]\n    return total\n\n# Examples:\nprint(add([4, 2, 6, 7]))   # indices: 0->4, 1->2(even), 2->6, 3->7 => sum = 2\nprint(add([1, 2, 3, 4]))   # index 1=2 (even) + index 3=4 (even) => sum = 6\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/85",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

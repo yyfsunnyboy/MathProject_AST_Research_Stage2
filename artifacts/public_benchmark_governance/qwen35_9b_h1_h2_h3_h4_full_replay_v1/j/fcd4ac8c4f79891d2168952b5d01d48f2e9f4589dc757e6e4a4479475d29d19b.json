@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "fcd4ac8c4f79891d2168952b5d01d48f2e9f4589dc757e6e4a4479475d29d19b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "add_tuple",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "final_source": "def add_tuple(lst, tpl):\n    return lst + list(tpl)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/750:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "post_h2_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "post_h3_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "post_h4_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6aa0d3c86dcfc481d6bbea3509d4d2e7e91b7405f2394b669396488375b898c8",
+  "raw_source": "def add_tuple(lst, tpl):\n    return lst + list(tpl)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/750",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

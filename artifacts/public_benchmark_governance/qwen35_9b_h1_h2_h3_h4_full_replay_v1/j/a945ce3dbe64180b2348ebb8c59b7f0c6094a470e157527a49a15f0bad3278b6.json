@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "a945ce3dbe64180b2348ebb8c59b7f0c6094a470e157527a49a15f0bad3278b6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "multiply_int",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "196f2646dbdfd158a98314f8ed147ed88ddf46f4a867e4f10ed326e592db6fd1",
+  "final_source": "def multiply_int(a: int, b: int) -> int:\n    \"\"\"Multiply two integers and return the result.\"\"\"\n    if not isinstance(a, int) or not isinstance(b, int):\n        raise TypeError(\"Both arguments must be integers.\")\n    \n    # Handle large numbers safely (Python handles arbitrarily large ints automatically)\n    return a * b\n\n# Example usage:\nif __name__ == \"__main__\":\n    assert multiply_int(10, 20) == 200\n    print(multiply_int(10, 20))  # Output: 200\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/127:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "757cf31622326f3a9c94ab24afe998f145db2356d3f1fe935f36bc12d55d5f8d",
+  "post_h2_sha256": "21d0b7922dd9cacdb2018dfea2e5d6c89e9f60dcba82179b4a82578f5ef0bebd",
+  "post_h3_sha256": "21d0b7922dd9cacdb2018dfea2e5d6c89e9f60dcba82179b4a82578f5ef0bebd",
+  "post_h4_sha256": "196f2646dbdfd158a98314f8ed147ed88ddf46f4a867e4f10ed326e592db6fd1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "757cf31622326f3a9c94ab24afe998f145db2356d3f1fe935f36bc12d55d5f8d",
+  "raw_source": "def multiply_int(a: int, b: int) -> int:\n    \"\"\"Multiply two integers and return the result.\"\"\"\n    if not isinstance(a, int) or not isinstance(b, int):\n        raise TypeError(\"Both arguments must be integers.\")\n    \n    # Handle large numbers safely (Python handles arbitrarily large ints automatically)\n    return a * b\n\n# Example usage:\nassert multiply_int(10, 20) == 200\nprint(multiply_int(10, 20))  # Output: 200\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/127",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "2acf520b2d0066ccd24a79e7cc70c75ebb0de204a921d7acc16e4576aae9aeca",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "decimal_to_binary",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "final_source": "def decimal_to_binary(n: int) -> str:\n    \"\"\"Convert a non-negative integer n to its binary representation (string, no leading zeros).\"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    \n    # Handle the special case of 0 explicitly\n    if n == 0:\n        return \"0\"\n\n    bits = []\n    while n > 0:\n        remainder = n % 2          # Get least significant bit (0 or 1)\n        bits.append(str(remainder))\n        n //= 2                    # Shift right by dividing by 2\n    \n    # The bits are collected in reverse order, so reverse them back\n    return \"\".join(reversed(bits))\n\n\n# Example usage and assertion:\nassert decimal_to_binary(8) == '1000'\nprint(decimal_to_binary(8))   # Output: 1000\n\n# Additional tests (optional):\nassert decimal_to_binary(0) == \"0\"\nassert decimal_to_binary(5) == \"101\"\nassert decimal_to_binary(256) == \"100000000\"\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/99:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "post_h2_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "post_h3_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "post_h4_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "45ec74bf315ecc5d52aa5817e490e2086f481a856a68ffdcb23bc9f8837be6a6",
+  "raw_source": "def decimal_to_binary(n: int) -> str:\n    \"\"\"Convert a non-negative integer n to its binary representation (string, no leading zeros).\"\"\"\n    if not isinstance(n, int):\n        raise TypeError(\"Input must be an integer.\")\n    \n    # Handle the special case of 0 explicitly\n    if n == 0:\n        return \"0\"\n\n    bits = []\n    while n > 0:\n        remainder = n % 2          # Get least significant bit (0 or 1)\n        bits.append(str(remainder))\n        n //= 2                    # Shift right by dividing by 2\n    \n    # The bits are collected in reverse order, so reverse them back\n    return \"\".join(reversed(bits))\n\n\n# Example usage and assertion:\nassert decimal_to_binary(8) == '1000'\nprint(decimal_to_binary(8))   # Output: 1000\n\n# Additional tests (optional):\nassert decimal_to_binary(0) == \"0\"\nassert decimal_to_binary(5) == \"101\"\nassert decimal_to_binary(256) == \"100000000\"\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/99",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

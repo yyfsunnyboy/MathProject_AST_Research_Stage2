@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "entry_point_multiple",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "59bb253ba87506cffa93c67521d6b995f182b8a322c4c3f8d233689663d06077",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_octagonal",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "final_source": "def is_octagonal(n):\n    if n <= 0:\n        return False\n    x = (1 + sqrt(8 * n - 1)) / 3\n    return int(x) == x and int(x) > 0\n\nimport math\n\ndef nth_octagonal_number(k):\n    \"\"\"Return the k-th octagonal number.\"\"\"\n    if k <= 0:\n        raise ValueError(\"k must be a positive integer\")\n    # Formula for n-th octagonal number: O_n = n(3n - 2)\n    return k * (3 * k - 2)\n\n# Verification example from the prompt note (though is_octagonal checks validity, not generation)\n# The assertion in the prompt seems to imply checking if a given number is octagonal or generating one.\n# However, standard interpretation: nth_octagonal_number(k) generates it.\n# Let's ensure we meet the specific assert provided which might be testing a helper function logic differently?\n# Re-reading: \"assert is_octagonal(5) == 65\" -> This implies 'is_octagonal' should actually return the number if valid, \n# OR there is a misunderstanding in the prompt's variable naming vs standard math.\n# Standard Math: 1st=1, 2nd=8, 3rd=21, 4th=40, 5th=65. So O_5 = 65.\n# The function name 'is_octagonal' usually returns a boolean, but the assert expects an integer (65).\n# Therefore, I must implement 'is_octagonal' to act as \"get octagonal number if n is valid\" or simply generate it?\n# Wait, strictly speaking: \n# If the prompt says `assert is_octagonal(5) == 65`, then `is_octagonal` MUST return the value for input 5.\n# This suggests renaming logic inside that specific function name to act as a generator for valid n, or perhaps the user meant 'octagonal_number'.\n# Given strict constraint: \"Preserve the given function name and signature exactly\".\n# So I must keep `def is_octagonal(n):` but make it return 65 when n=5.\n# This implies checking if n generates an octagonal number (which all positive integers do in sequence) \n# BUT usually 'is_' functions check property. \n# However, to satisfy the assert `assert is_octagonal(5) == 65`, I will implement it as a generator for valid inputs.\n\nimport math\nfrom typing import Union\n\ndef nth_octagonal_number(k: int) -> int:\n    \"\"\"Return the k-th octagonal number.\"\"\"\n    if not isinstance(k, int) or k <= 0:\n        raise ValueError(\"k must be a positive integer\")\n    return k * (3 * k - 2)\n\n# Re-evaluating the prompt's specific function name requirement vs standard naming.\n# The user provided snippet has `assert is_octagonal(5) == 65`. \n# If I define `is_octagonal` to just calculate O_n, it satisfies the assert for n=5.\n# But what if input is not an octagonal index? All positive integers are indices of octagonal numbers by definition (sequence).\n# So every integer k >= 1 maps to a unique octagonal number. \n# Thus `is_octagonal(n)` can simply be implemented as the generator logic for n>=1.\n\ndef is_octagonal(n):\n    if not isinstance(n, int) or n <= 0:\n        return None # Or raise error? Prompt implies valid input usually. Let's assume positive integer inputs based on assert.\n    return nth_octagonal_number(n)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/59:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "post_h2_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "post_h3_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "post_h4_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5f7cc425a13f3381c7f4ac4857599ce12d7933c65d12e6ce04f8706af999cf49",
+  "raw_source": "def is_octagonal(n):\n    if n <= 0:\n        return False\n    x = (1 + sqrt(8 * n - 1)) / 3\n    return int(x) == x and int(x) > 0\n\nimport math\n\ndef nth_octagonal_number(k):\n    \"\"\"Return the k-th octagonal number.\"\"\"\n    if k <= 0:\n        raise ValueError(\"k must be a positive integer\")\n    # Formula for n-th octagonal number: O_n = n(3n - 2)\n    return k * (3 * k - 2)\n\n# Verification example from the prompt note (though is_octagonal checks validity, not generation)\n# The assertion in the prompt seems to imply checking if a given number is octagonal or generating one.\n# However, standard interpretation: nth_octagonal_number(k) generates it.\n# Let's ensure we meet the specific assert provided which might be testing a helper function logic differently?\n# Re-reading: \"assert is_octagonal(5) == 65\" -> This implies 'is_octagonal' should actually return the number if valid, \n# OR there is a misunderstanding in the prompt's variable naming vs standard math.\n# Standard Math: 1st=1, 2nd=8, 3rd=21, 4th=40, 5th=65. So O_5 = 65.\n# The function name 'is_octagonal' usually returns a boolean, but the assert expects an integer (65).\n# Therefore, I must implement 'is_octagonal' to act as \"get octagonal number if n is valid\" or simply generate it?\n# Wait, strictly speaking: \n# If the prompt says `assert is_octagonal(5) == 65`, then `is_octagonal` MUST return the value for input 5.\n# This suggests renaming logic inside that specific function name to act as a generator for valid n, or perhaps the user meant 'octagonal_number'.\n# Given strict constraint: \"Preserve the given function name and signature exactly\".\n# So I must keep `def is_octagonal(n):` but make it return 65 when n=5.\n# This implies checking if n generates an octagonal number (which all positive integers do in sequence) \n# BUT usually 'is_' functions check property. \n# However, to satisfy the assert `assert is_octagonal(5) == 65`, I will implement it as a generator for valid inputs.\n\nimport math\nfrom typing import Union\n\ndef nth_octagonal_number(k: int) -> int:\n    \"\"\"Return the k-th octagonal number.\"\"\"\n    if not isinstance(k, int) or k <= 0:\n        raise ValueError(\"k must be a positive integer\")\n    return k * (3 * k - 2)\n\n# Re-evaluating the prompt's specific function name requirement vs standard naming.\n# The user provided snippet has `assert is_octagonal(5) == 65`. \n# If I define `is_octagonal` to just calculate O_n, it satisfies the assert for n=5.\n# But what if input is not an octagonal index? All positive integers are indices of octagonal numbers by definition (sequence).\n# So every integer k >= 1 maps to a unique octagonal number. \n# Thus `is_octagonal(n)` can simply be implemented as the generator logic for n>=1.\n\ndef is_octagonal(n):\n    if not isinstance(n, int) or n <= 0:\n        return None # Or raise error? Prompt implies valid input usually. Let's assume positive integer inputs based on assert.\n    return nth_octagonal_number(n)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/59",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

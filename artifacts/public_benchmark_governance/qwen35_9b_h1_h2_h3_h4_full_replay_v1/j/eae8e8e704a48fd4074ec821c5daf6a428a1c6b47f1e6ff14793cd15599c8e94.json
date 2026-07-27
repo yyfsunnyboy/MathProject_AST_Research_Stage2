@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "eae8e8e704a48fd4074ec821c5daf6a428a1c6b47f1e6ff14793cd15599c8e94",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "maxAverageOfPath",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "final_source": "def maxAverageOfPath(matrix):\n    n = len(matrix)\n    \n    # dp[i][j] will store the maximum total cost from (0, 0) to (i, j)\n    dp = [[float('-inf')] * n for _ in range(n)]\n    dp[0][0] = matrix[0][0]\n    \n    # Fill first row: can only come from left\n    for j in range(1, n):\n        dp[0][j] = dp[0][j-1] + matrix[0][j]\n        \n    # Fill first column: can only come from above\n    for i in range(1, n):\n        dp[i][0] = dp[i-1][0] + matrix[i][0]\n    \n    # Fill rest of the table\n    for i in range(1, n):\n        for j in range(1, n):\n            dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + matrix[i][j]\n            \n    # The maximum total cost to reach bottom-right is at dp[n-1][n-1]\n    max_total_cost = dp[n-1][n-1]\n    \n    # Number of cells in any path from top-left to bottom-right in an N*N grid:\n    # We start at (0,0) and end at (N-1,N-1). \n    # Each step is either right or down. Total steps = 2*(N-1), so total cells visited = 2*(N-1)+1 = 2N - 1\n    num_cells = 2 * n - 1\n    \n    return max_total_cost / num_cells",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/721:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "post_h2_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "post_h3_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "post_h4_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "83e3098c1225091bcd1eb6e589ef5aa1fa8b322fc7571c7a08354ba78c1a3a8c",
+  "raw_source": "def maxAverageOfPath(matrix):\n    n = len(matrix)\n    \n    # dp[i][j] will store the maximum total cost from (0, 0) to (i, j)\n    dp = [[float('-inf')] * n for _ in range(n)]\n    dp[0][0] = matrix[0][0]\n    \n    # Fill first row: can only come from left\n    for j in range(1, n):\n        dp[0][j] = dp[0][j-1] + matrix[0][j]\n        \n    # Fill first column: can only come from above\n    for i in range(1, n):\n        dp[i][0] = dp[i-1][0] + matrix[i][0]\n    \n    # Fill rest of the table\n    for i in range(1, n):\n        for j in range(1, n):\n            dp[i][j] = max(dp[i-1][j], dp[i][j-1]) + matrix[i][j]\n            \n    # The maximum total cost to reach bottom-right is at dp[n-1][n-1]\n    max_total_cost = dp[n-1][n-1]\n    \n    # Number of cells in any path from top-left to bottom-right in an N*N grid:\n    # We start at (0,0) and end at (N-1,N-1). \n    # Each step is either right or down. Total steps = 2*(N-1), so total cells visited = 2*(N-1)+1 = 2N - 1\n    num_cells = 2 * n - 1\n    \n    return max_total_cost / num_cells",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/721",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

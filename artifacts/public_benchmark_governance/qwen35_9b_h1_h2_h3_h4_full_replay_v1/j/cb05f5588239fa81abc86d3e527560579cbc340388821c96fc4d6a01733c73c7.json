@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "cb05f5588239fa81abc86d3e527560579cbc340388821c96fc4d6a01733c73c7",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "is_woodall",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "9a9e40679cbb566aaf357960754aecfae2c9f350c58fffb46528824ef6d8985d",
+  "final_source": "def is_woodall(n: int) -> bool:\n    \"\"\"Return True if n is of the form 2**k - 1 for some integer k >= 0.\"\"\"\n    if n < 0:\n        return False\n    # Check if n+1 is a power of two\n    m = n + 1\n    return (m & (m - 1)) == 0 and m > 0\n\n# Example usage:\nif __name__ == \"__main__\":\n    assert not is_woodall(383)   # standard definition says this should be False\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/20:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "e246bc0e3b08f05dc1736143ba51a6704a6019bf80a1f09de2410d2e636a8eff",
+  "post_h2_sha256": "9a9e40679cbb566aaf357960754aecfae2c9f350c58fffb46528824ef6d8985d",
+  "post_h3_sha256": "9a9e40679cbb566aaf357960754aecfae2c9f350c58fffb46528824ef6d8985d",
+  "post_h4_sha256": "9a9e40679cbb566aaf357960754aecfae2c9f350c58fffb46528824ef6d8985d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "e246bc0e3b08f05dc1736143ba51a6704a6019bf80a1f09de2410d2e636a8eff",
+  "raw_source": "def is_woodall(n: int) -> bool:\n    \"\"\"Return True if n is of the form 2**k - 1 for some integer k >= 0.\"\"\"\n    if n < 0:\n        return False\n    # Check if n+1 is a power of two\n    m = n + 1\n    return (m & (m - 1)) == 0 and m > 0\n\n# Example usage:\nassert not is_woodall(383)   # standard definition says this should be False\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/20",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

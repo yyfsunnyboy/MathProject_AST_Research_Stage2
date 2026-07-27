@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f53df22b021af40ce30b9c5a0e6920b14e8e5cc76a3327735ce89a1990226556",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fibfib",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "final_source": "def fibfib(n: int):\n    \"\"\"The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n    fibfib(0) == 0\n    fibfib(1) == 0\n    fibfib(2) == 1\n    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n    Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n    \n    >>> fibfib(0)\n    0\n    >>> fibfib(1)\n    0\n    >>> fibfib(2)\n    1\n    >>> fibfib(5)\n    4\n    >>> fibfib(8)\n    24\n    \"\"\"\n    \n    # Handle base cases explicitly for n < 3\n    if n == 0:\n        return 0\n    if n == 1 or n == 2:\n        return 0\n    \n    # Initialize the first three values based on definition\n    a, b, c = 0, 0, 1  # Represents fibfib(0), fibfib(1), fibfib(2)\n    \n    # Iterate from 3 up to n\n    for _ in range(3, n + 1):\n        next_val = a + b + c\n        # Shift the window: \n        # new 'a' becomes old 'b', etc.\n        a, b, c = b, c, next_val\n        \n    return c\n\n# Quick verification tests\nif __name__ == \"__main__\":\n    print(fibfib(0))  # Expected: 0\n    print(fibfib(1))  # Expected: 0\n    print(fibfib(2))  # Expected: 1\n    print(fibfib(5))  # Expected: 4\n    print(fibfib(8))  # Expected: 24\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/63:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "post_h2_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "post_h3_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "post_h4_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "0243e7089db86ad76c45dd2bb31d89c81308b9d1bbf0a5bd2edcf41be6333d22",
+  "raw_source": "def fibfib(n: int):\n    \"\"\"The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:\n    fibfib(0) == 0\n    fibfib(1) == 0\n    fibfib(2) == 1\n    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).\n    Please write a function to efficiently compute the n-th element of the fibfib number sequence.\n    \n    >>> fibfib(0)\n    0\n    >>> fibfib(1)\n    0\n    >>> fibfib(2)\n    1\n    >>> fibfib(5)\n    4\n    >>> fibfib(8)\n    24\n    \"\"\"\n    \n    # Handle base cases explicitly for n < 3\n    if n == 0:\n        return 0\n    if n == 1 or n == 2:\n        return 0\n    \n    # Initialize the first three values based on definition\n    a, b, c = 0, 0, 1  # Represents fibfib(0), fibfib(1), fibfib(2)\n    \n    # Iterate from 3 up to n\n    for _ in range(3, n + 1):\n        next_val = a + b + c\n        # Shift the window: \n        # new 'a' becomes old 'b', etc.\n        a, b, c = b, c, next_val\n        \n    return c\n\n# Quick verification tests\nif __name__ == \"__main__\":\n    print(fibfib(0))  # Expected: 0\n    print(fibfib(1))  # Expected: 0\n    print(fibfib(2))  # Expected: 1\n    print(fibfib(5))  # Expected: 4\n    print(fibfib(8))  # Expected: 24\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/63",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

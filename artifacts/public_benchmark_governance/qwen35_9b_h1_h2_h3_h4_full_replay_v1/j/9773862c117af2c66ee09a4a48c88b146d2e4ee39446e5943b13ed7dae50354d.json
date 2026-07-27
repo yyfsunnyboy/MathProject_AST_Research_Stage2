@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "9773862c117af2c66ee09a4a48c88b146d2e4ee39446e5943b13ed7dae50354d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "decode_cyclic",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "final_source": "def decode_cyclic(s: str):\n    \"\"\"\n    takes as input string encoded with encode_cyclic function. Returns decoded string.\n    \"\"\"\n    # split string to groups of three characters (same logic as encoding)\n    n = len(s)\n    num_groups = (n + 2) // 3\n    groups = [s[(3 * i):min((3 * i + 3), n)] for i in range(num_groups)]\n\n    # reverse the cyclic shift: move last character to front back to original order\n    decoded_groups = [(group[0] + group[1:]) if len(group) == 3 else group for group in groups]\n\n    return \"\".join(decoded_groups)",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/38:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "post_h2_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "post_h3_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "post_h4_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "68eabc7c70a73de2767dfc807c3a7a221c1cdf1d6d3e5ac6985f51b2940589d1",
+  "raw_source": "def decode_cyclic(s: str):\n    \"\"\"\n    takes as input string encoded with encode_cyclic function. Returns decoded string.\n    \"\"\"\n    # split string to groups of three characters (same logic as encoding)\n    n = len(s)\n    num_groups = (n + 2) // 3\n    groups = [s[(3 * i):min((3 * i + 3), n)] for i in range(num_groups)]\n\n    # reverse the cyclic shift: move last character to front back to original order\n    decoded_groups = [(group[0] + group[1:]) if len(group) == 3 else group for group in groups]\n\n    return \"\".join(decoded_groups)",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/38",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

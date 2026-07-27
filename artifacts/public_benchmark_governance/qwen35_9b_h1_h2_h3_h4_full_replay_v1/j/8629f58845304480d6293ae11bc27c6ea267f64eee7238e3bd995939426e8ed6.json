@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "8629f58845304480d6293ae11bc27c6ea267f64eee7238e3bd995939426e8ed6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "occurance_substring",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "final_source": "def occurance_substring(text: str, substring: str):\n    \"\"\"\n    Find the occurrence and position of a substring within a string.\n    \n    Returns a tuple (substring, start_index, end_index) if found.\n    If not found or text is None/empty in an invalid way, returns None.\n    \n    Note: The example assertion expects ('python', 0, 6), meaning it wants \n    the substring itself and its [start, end] indices (end exclusive).\n    \"\"\"\n    if not isinstance(text, str) or not isinstance(substring, str):\n        return None\n    \n    # Find first occurrence\n    idx = text.find(substring)\n    \n    if idx == -1:\n        return None\n    \n    start = idx\n    end = idx + len(substring)\n    \n    return (substring, start, end)\n\n\n# Test with the provided assertion\nresult = occurance_substring('python programming, python language', 'python')\nassert result == ('python', 0, 6), f\"Expected ('python', 0, 6), got {result}\"\n\nprint(\"Test passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/773:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "post_h2_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "post_h3_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "post_h4_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "38aa62dde398a105ff0cbd116f7688aec02ed034faa035c02909999a33e9bf6d",
+  "raw_source": "def occurance_substring(text: str, substring: str):\n    \"\"\"\n    Find the occurrence and position of a substring within a string.\n    \n    Returns a tuple (substring, start_index, end_index) if found.\n    If not found or text is None/empty in an invalid way, returns None.\n    \n    Note: The example assertion expects ('python', 0, 6), meaning it wants \n    the substring itself and its [start, end] indices (end exclusive).\n    \"\"\"\n    if not isinstance(text, str) or not isinstance(substring, str):\n        return None\n    \n    # Find first occurrence\n    idx = text.find(substring)\n    \n    if idx == -1:\n        return None\n    \n    start = idx\n    end = idx + len(substring)\n    \n    return (substring, start, end)\n\n\n# Test with the provided assertion\nresult = occurance_substring('python programming, python language', 'python')\nassert result == ('python', 0, 6), f\"Expected ('python', 0, 6), got {result}\"\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/773",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

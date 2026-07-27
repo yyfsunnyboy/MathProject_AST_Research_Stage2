@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "6761b7cc719f60290cde0fa469ff0b9b583a12738472e2dc477a2ee9717fba63",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "min_of_three",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "final_source": "def min_of_three(a, b, c):\n    \"\"\"Returns the smallest value among a, b, and c.\"\"\"\n    return min(a, b, c)\n\n# Verification tests\nassert min_of_three(10, 20, 0) == 0\nassert min_of_three(-5, -2, -8) == -8\nassert min_of_three(3.5, 7.2, 3.5) == 3.5\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/227:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "post_h2_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "post_h3_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "post_h4_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "8dbb190b3d6bf04cfa877d9c8bc30177ebed28e862d7baf7e8f2b184ed1e426e",
+  "raw_source": "def min_of_three(a, b, c):\n    \"\"\"Returns the smallest value among a, b, and c.\"\"\"\n    return min(a, b, c)\n\n# Verification tests\nassert min_of_three(10, 20, 0) == 0\nassert min_of_three(-5, -2, -8) == -8\nassert min_of_three(3.5, 7.2, 3.5) == 3.5\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/227",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

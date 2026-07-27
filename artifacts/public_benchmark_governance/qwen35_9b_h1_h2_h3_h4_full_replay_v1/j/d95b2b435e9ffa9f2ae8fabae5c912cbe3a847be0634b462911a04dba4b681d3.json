@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d95b2b435e9ffa9f2ae8fabae5c912cbe3a847be0634b462911a04dba4b681d3",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "largest_subset",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "1cd0ad04e5cd4b13874139353740994a915220492d4f2019a6b9812ee2c1b64f",
+  "final_source": "def largest_subset(nums):\n    if not nums:\n        return 0\n    \n    # Sort the list first (optional but helps with logic)\n    nums.sort()\n    \n    n = len(nums)\n    dp = [1] * n\n    \n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[j] % nums[i] == 0:\n                # If we can extend the subset ending at i with element j\n                # We need to check if there's a larger chain before i that ends with something divisible by nums[i]\n                # Actually, standard approach for \"every pair divisible\" is tricky.\n                # Let's re-evaluate the problem: every PAIR must be divisible.\n                # This implies all numbers in the subset must share a common divisor > 1? \n                # No, it means for any two elements x, y in subset, x % y == 0 or y % x == 0.\n                # This structure forms a chain where each element divides the next (after sorting).\n                \n                dp[j] = max(dp[j], dp[i] + 1)\n    \n    return max(dp)\n\n# Test case provided in prompt logic check: [1, 3, 6, 13, 17, 18] -> expected 4? \n# Let's trace manually for the test case to ensure correctness before finalizing.\n# Sorted: [1, 3, 6, 13, 17, 18]\n# If we pick {1, 3, 6, ?} -> 1 divides everything. But 3 and 6 ok, 6 and ? \n# Wait, if subset is {1, 3, 6, ...}, pairs: (1,3)ok, (1,6)ok, (3,6)ok.\n# What about 18? 1 divides 18, 3 divides 18, but 6 does not divide 18? Yes it does (18/6=3). \n# So {1, 3, 6, 18} -> all pairs divisible? \n# Pairs: (1,x) always ok. (3,6)=ok, (3,18)=ok, (6,18)=ok. Size 4.\n# Can we get more? Maybe {1, ...}? No other numbers divide each other well except multiples of small primes.\n# The logic holds: sort and DP where dp[i] = max chain ending at i such that prev divides curr.\n\nif __name__ == \"__main__\":\n    assert largest_subset([1, 3, 6, 13, 17, 18]) == 4",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/620:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "a22c5d1e77c8d6b66eac0dec734df6a3663eec9f7681f32698f20458769406bf",
+  "post_h2_sha256": "1cd0ad04e5cd4b13874139353740994a915220492d4f2019a6b9812ee2c1b64f",
+  "post_h3_sha256": "1cd0ad04e5cd4b13874139353740994a915220492d4f2019a6b9812ee2c1b64f",
+  "post_h4_sha256": "1cd0ad04e5cd4b13874139353740994a915220492d4f2019a6b9812ee2c1b64f",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "a22c5d1e77c8d6b66eac0dec734df6a3663eec9f7681f32698f20458769406bf",
+  "raw_source": "def largest_subset(nums):\n    if not nums:\n        return 0\n    \n    # Sort the list first (optional but helps with logic)\n    nums.sort()\n    \n    n = len(nums)\n    dp = [1] * n\n    \n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[j] % nums[i] == 0:\n                # If we can extend the subset ending at i with element j\n                # We need to check if there's a larger chain before i that ends with something divisible by nums[i]\n                # Actually, standard approach for \"every pair divisible\" is tricky.\n                # Let's re-evaluate the problem: every PAIR must be divisible.\n                # This implies all numbers in the subset must share a common divisor > 1? \n                # No, it means for any two elements x, y in subset, x % y == 0 or y % x == 0.\n                # This structure forms a chain where each element divides the next (after sorting).\n                \n                dp[j] = max(dp[j], dp[i] + 1)\n    \n    return max(dp)\n\n# Test case provided in prompt logic check: [1, 3, 6, 13, 17, 18] -> expected 4? \n# Let's trace manually for the test case to ensure correctness before finalizing.\n# Sorted: [1, 3, 6, 13, 17, 18]\n# If we pick {1, 3, 6, ?} -> 1 divides everything. But 3 and 6 ok, 6 and ? \n# Wait, if subset is {1, 3, 6, ...}, pairs: (1,3)ok, (1,6)ok, (3,6)ok.\n# What about 18? 1 divides 18, 3 divides 18, but 6 does not divide 18? Yes it does (18/6=3). \n# So {1, 3, 6, 18} -> all pairs divisible? \n# Pairs: (1,x) always ok. (3,6)=ok, (3,18)=ok, (6,18)=ok. Size 4.\n# Can we get more? Maybe {1, ...}? No other numbers divide each other well except multiples of small primes.\n# The logic holds: sort and DP where dp[i] = max chain ending at i such that prev divides curr.\n\nassert largest_subset([1, 3, 6, 13, 17, 18]) == 4",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/620",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7a8f2b6f5e92afdb11556b326f0eedba1e14c7ed86e07337a9b01b9c6b11690e",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "sort_numbers",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "final_source": "from typing import List\n\n\ndef sort_numbers(numbers: str) -> str:\n    \"\"\" Input is a space-delimited string of numberals from 'zero' to 'nine'.\n    Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\n    Return the string with numbers sorted from smallest to largest.\n\n    >>> sort_numbers('three one five')\n    'one three five'\n    \"\"\"\n    \n    word_to_num = {\n        \"zero\": 0,\n        \"one\": 1,\n        \"two\": 2,\n        \"three\": 3,\n        \"four\": 4,\n        \"five\": 5,\n        \"six\": 6,\n        \"seven\": 7,\n        \"eight\": 8,\n        \"nine\": 9,\n    }\n\n    # Split input into list of words (preserving order for now)\n    tokens = numbers.split()\n\n    if not tokens:\n        return \"\"\n\n    # Sort by numeric value using the mapping\n    sorted_words = sorted(tokens, key=lambda w: word_to_num[w])\n\n    return \" \".join(sorted_words)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(sort_numbers(\"three one five\"))      # 'one three five'\n    print(sort_numbers(\"nine zero eight two\"))  # 'zero two eight nine'\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/19:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "post_h2_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "post_h3_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "post_h4_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3d8f851b91cb01cbb6ae74ce13508a9e56a1873ed58c38b04f1251f8d232281c",
+  "raw_source": "from typing import List\n\n\ndef sort_numbers(numbers: str) -> str:\n    \"\"\" Input is a space-delimited string of numberals from 'zero' to 'nine'.\n    Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.\n    Return the string with numbers sorted from smallest to largest.\n\n    >>> sort_numbers('three one five')\n    'one three five'\n    \"\"\"\n    \n    word_to_num = {\n        \"zero\": 0,\n        \"one\": 1,\n        \"two\": 2,\n        \"three\": 3,\n        \"four\": 4,\n        \"five\": 5,\n        \"six\": 6,\n        \"seven\": 7,\n        \"eight\": 8,\n        \"nine\": 9,\n    }\n\n    # Split input into list of words (preserving order for now)\n    tokens = numbers.split()\n\n    if not tokens:\n        return \"\"\n\n    # Sort by numeric value using the mapping\n    sorted_words = sorted(tokens, key=lambda w: word_to_num[w])\n\n    return \" \".join(sorted_words)\n\n\n# Example usage:\nif __name__ == \"__main__\":\n    print(sort_numbers(\"three one five\"))      # 'one three five'\n    print(sort_numbers(\"nine zero eight two\"))  # 'zero two eight nine'\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/19",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

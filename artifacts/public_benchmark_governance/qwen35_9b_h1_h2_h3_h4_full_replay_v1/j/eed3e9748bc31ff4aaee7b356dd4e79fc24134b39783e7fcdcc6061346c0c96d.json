@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "eed3e9748bc31ff4aaee7b356dd4e79fc24134b39783e7fcdcc6061346c0c96d",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "int_to_mini_roman",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "final_source": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n    \n    roman_map = [\n        (1000, \"m\"),\n        (900, \"cm\"),\n        (500, \"d\"),\n        (400, \"cd\"),\n        (100, \"c\"),\n        (90, \"xc\"),\n        (50, \"l\"),\n        (40, \"xl\"),\n        (10, \"x\"),\n        (9, \"ix\"),\n        (5, \"v\"),\n        (4, \"iv\"),\n        (1, \"i\")\n    ]\n\n    result = []\n    \n    for value, symbol in roman_map:\n        while number >= value:\n            number -= value\n            result.append(symbol)\n            \n    return \"\".join(result).lower()",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/156:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "post_h2_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "post_h3_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "post_h4_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "62112a245725780b41a81391f3e839a69e197692dc3bc8e4d14f71964438c847",
+  "raw_source": "def int_to_mini_roman(number):\n    \"\"\"\n    Given a positive integer, obtain its roman numeral equivalent as a string,\n    and return it in lowercase.\n    Restrictions: 1 <= num <= 1000\n\n    Examples:\n    >>> int_to_mini_roman(19) == 'xix'\n    >>> int_to_mini_roman(152) == 'clii'\n    >>> int_to_mini_roman(426) == 'cdxxvi'\n    \"\"\"\n    \n    roman_map = [\n        (1000, \"m\"),\n        (900, \"cm\"),\n        (500, \"d\"),\n        (400, \"cd\"),\n        (100, \"c\"),\n        (90, \"xc\"),\n        (50, \"l\"),\n        (40, \"xl\"),\n        (10, \"x\"),\n        (9, \"ix\"),\n        (5, \"v\"),\n        (4, \"iv\"),\n        (1, \"i\")\n    ]\n\n    result = []\n    \n    for value, symbol in roman_map:\n        while number >= value:\n            number -= value\n            result.append(symbol)\n            \n    return \"\".join(result).lower()",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/156",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

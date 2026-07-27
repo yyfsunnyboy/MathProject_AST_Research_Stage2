@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "b7164e8ab191b1b651e68ea3ab1dfe150399bd4248156b3220121e4967eda030",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "max_aggregate",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "final_source": "def max_aggregate(tuples):\n    from collections import defaultdict\n    \n    aggregates = defaultdict(int)\n    \n    for name, score in tuples:\n        aggregates[name] += score\n        \n    return max(aggregates.items(), key=lambda x: x[1])",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/299:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "post_h2_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "post_h3_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "post_h4_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "99f7bb0642d2c9b9ffa6b9035000986227a2b13e49325ac5688583994a30697d",
+  "raw_source": "def max_aggregate(tuples):\n    from collections import defaultdict\n    \n    aggregates = defaultdict(int)\n    \n    for name, score in tuples:\n        aggregates[name] += score\n        \n    return max(aggregates.items(), key=lambda x: x[1])",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/299",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

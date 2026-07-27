@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "e2e37bdb9d551625f2434d72e0f966d9bd4ef40b8b60556aba1a16e473647f46",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "compare",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "final_source": "def compare(game, guess):\n    \"\"\"I think we all remember that feeling when the result of some long-awaited\n    event is finally known. The feelings and thoughts you have at that moment are\n    definitely worth noting down and comparing.\n    Your task is to determine if a person correctly guessed the results of a number of matches.\n    You are given two arrays of scores and guesses of equal length, where each index shows a match. \n    Return an array of the same length denoting how far off each guess was. If they have guessed correctly,\n    the value is 0, and if not, the value is the absolute difference between the guess and the score.\n    \n    example:\n\n    compare([1,2,3,4,5,1],[1,2,3,4,2,-2]) -> [0,0,0,0,3,3]\n    compare([0,5,0,0,0,4],[4,1,1,0,0,-2]) -> [4,4,1,0,0,6]\n    \"\"\"\n    \n    return [abs(g - s) for g, s in zip(guess, game)]\n\n# Example usage:\n# print(compare([1,2,3,4,5,1], [1,2,3,4,2,-2]))  # Output: [0, 0, 0, 0, 3, 3]\n# print(compare([0,5,0,0,0,4], [4,1,1,0,0,-2]))  # Output: [4, 4, 1, 0, 0, 6]\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/152:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "post_h2_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "post_h3_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "post_h4_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "aa0c62329b898ffe69f94c47875200036f273749300bf51fa6af58cad009ef5c",
+  "raw_source": "def compare(game, guess):\n    \"\"\"I think we all remember that feeling when the result of some long-awaited\n    event is finally known. The feelings and thoughts you have at that moment are\n    definitely worth noting down and comparing.\n    Your task is to determine if a person correctly guessed the results of a number of matches.\n    You are given two arrays of scores and guesses of equal length, where each index shows a match. \n    Return an array of the same length denoting how far off each guess was. If they have guessed correctly,\n    the value is 0, and if not, the value is the absolute difference between the guess and the score.\n    \n    example:\n\n    compare([1,2,3,4,5,1],[1,2,3,4,2,-2]) -> [0,0,0,0,3,3]\n    compare([0,5,0,0,0,4],[4,1,1,0,0,-2]) -> [4,4,1,0,0,6]\n    \"\"\"\n    \n    return [abs(g - s) for g, s in zip(guess, game)]\n\n# Example usage:\n# print(compare([1,2,3,4,5,1], [1,2,3,4,2,-2]))  # Output: [0, 0, 0, 0, 3, 3]\n# print(compare([0,5,0,0,0,4], [4,1,1,0,0,-2]))  # Output: [4, 4, 1, 0, 0, 6]\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/152",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

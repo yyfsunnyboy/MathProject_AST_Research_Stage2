@@ -1,0 +1,21 @@
+{
+  "dataset": "all",
+  "duplicate": 0,
+  "evalplus_executed": false,
+  "executed_cells": 1084,
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "fixed_order": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "missing": 0,
+  "model_calls": 0,
+  "model_tag": "qwen3.5:9b",
+  "output_directory": "C:/Projects/MathProject_AST_Research_Stage2/artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1",
+  "planned_pairs": 1084,
+  "raw_generations": 1084,
+  "skipped_resume_cells": 0,
+  "status": "cumulative_replay_execution_completed"
+}

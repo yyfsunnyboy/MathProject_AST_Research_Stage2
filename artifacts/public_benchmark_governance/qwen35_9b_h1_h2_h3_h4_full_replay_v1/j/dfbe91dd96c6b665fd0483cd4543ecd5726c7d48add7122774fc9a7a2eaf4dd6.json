@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "dfbe91dd96c6b665fd0483cd4543ecd5726c7d48add7122774fc9a7a2eaf4dd6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "bell_Number",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "final_source": "def bell_Number(n):\n    if n == 0:\n        return 1\n    \n    # Initialize Bell triangle (first row)\n    bell = [[0] * (n + 2) for _ in range(n + 2)]\n    \n    # First element of the first row is always 1\n    bell[0][1] = 1\n    \n    # Build the Bell triangle\n    for i in range(1, n + 1):\n        # The first element of each new row is the last element of the previous row\n        if i < len(bell) - 1:\n            bell[i][i+1] = bell[i-1][-1]\n        \n        # Fill the rest of the current row using values from the left and above-left neighbors\n        for j in range(i + 2, n + 3):\n            if i < len(bell) - 1:\n                bell[i][j] = bell[i-1][j-1] + bell[i][j-1]\n    \n    # The nth Bell number is the last element of the (n-1)-th row in our triangle structure\n    return bell[n-1][-2] if n > 0 else 1",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/608:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "post_h2_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "post_h3_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "post_h4_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "fab29da630ea531b3f276a9576535b14da3c30bcaee98ef6692b169c957cc1c7",
+  "raw_source": "def bell_Number(n):\n    if n == 0:\n        return 1\n    \n    # Initialize Bell triangle (first row)\n    bell = [[0] * (n + 2) for _ in range(n + 2)]\n    \n    # First element of the first row is always 1\n    bell[0][1] = 1\n    \n    # Build the Bell triangle\n    for i in range(1, n + 1):\n        # The first element of each new row is the last element of the previous row\n        if i < len(bell) - 1:\n            bell[i][i+1] = bell[i-1][-1]\n        \n        # Fill the rest of the current row using values from the left and above-left neighbors\n        for j in range(i + 2, n + 3):\n            if i < len(bell) - 1:\n                bell[i][j] = bell[i-1][j-1] + bell[i][j-1]\n    \n    # The nth Bell number is the last element of the (n-1)-th row in our triangle structure\n    return bell[n-1][-2] if n > 0 else 1",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/608",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

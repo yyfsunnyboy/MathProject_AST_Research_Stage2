@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "f67bdc2466468a75bc078b85fc29ca9590191fa67649a4043bb2f194def5c5c5",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "Find_Max",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "final_source": "def Find_Max(lst):\n    \"\"\"\n    Finds and returns the sub-list from 'lst' that has the maximum length.\n    \n    Args:\n        lst (list of lists): A list containing multiple lists as its elements.\n        \n    Returns:\n        The longest sub-list found in 'lst'.\n        \n    Raises:\n        ValueError: If the input list is empty or contains no valid lists to compare against a default start value logic that fails. \n                    However, for this specific problem type, we assume at least one element exists.\n    \"\"\"\n    \n    # Handle edge case where the main list might be empty\n    if not lst:\n        return []\n\n    max_list = None\n    \n    for item in lst:\n        # We only consider items that are actually lists (to avoid errors with mixed types)\n        if isinstance(item, list):\n            if max_list is None or len(item) > len(max_list):\n                max_list = item\n                \n    return max_list\n\n# --- Test Cases based on your request and additional scenarios ---\n\n# 1. Original Assertion Case\nresult_1 = Find_Max([['A'], ['A', 'B'], ['A', 'B', 'C']])\nassert result_1 == ['A', 'B', 'C'], f\"Test failed: {result_1}\"\nprint(f\"✓ Test passed for original case. Result: {result_1}\")\n\n# 2. Case with multiple lists of the same maximum length (returns the first one found)\nresult_2 = Find_Max([['X', 'Y'], ['P', 'Q']]) \nassert result_2 == ['X', 'Y'], f\"Test failed: {result_2}\"\nprint(f\"✓ Test passed for equal lengths. Result: {result_2}\")\n\n# 3. Case with single element list inside\nresult_3 = Find_Max([['Single']])\nassert result_3 == ['Single'], f\"Test failed: {result_3}\"\nprint(f\"✓ Test passed for single item case. Result: {result_3}\")\n\n# 4. Empty lists mixed in (length is still determined by count of elements)\nresult_4 = Find_Max([[], [], ['A', 'B']]) \nassert result_4 == ['A', 'B'], f\"Test failed: {result_4}\"\nprint(f\"✓ Test passed with empty sub-lists. Result: {result_4}\")\n\n# 5. Empty main list (Edge case handling)\ntry:\n    # Depending on strictness, you might want to handle this differently, \n    # but logically if there are no items, returning an empty list is safe.\n    result_5 = Find_Max([])\n    assert result_5 == [], f\"Test failed for empty input: {result_5}\"\n    print(f\"✓ Test passed for empty main list. Result: {result_5}\")\nexcept Exception as e:\n    print(f\"Error handling empty list: {e}\")\n\nprint(\"\\nAll tests completed successfully!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/418:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "post_h2_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "post_h3_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "post_h4_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "3f54315e1982ca4fecbc3aa74cc407d50c5767502165d63c56cd5126e6084b40",
+  "raw_source": "def Find_Max(lst):\n    \"\"\"\n    Finds and returns the sub-list from 'lst' that has the maximum length.\n    \n    Args:\n        lst (list of lists): A list containing multiple lists as its elements.\n        \n    Returns:\n        The longest sub-list found in 'lst'.\n        \n    Raises:\n        ValueError: If the input list is empty or contains no valid lists to compare against a default start value logic that fails. \n                    However, for this specific problem type, we assume at least one element exists.\n    \"\"\"\n    \n    # Handle edge case where the main list might be empty\n    if not lst:\n        return []\n\n    max_list = None\n    \n    for item in lst:\n        # We only consider items that are actually lists (to avoid errors with mixed types)\n        if isinstance(item, list):\n            if max_list is None or len(item) > len(max_list):\n                max_list = item\n                \n    return max_list\n\n# --- Test Cases based on your request and additional scenarios ---\n\n# 1. Original Assertion Case\nresult_1 = Find_Max([['A'], ['A', 'B'], ['A', 'B', 'C']])\nassert result_1 == ['A', 'B', 'C'], f\"Test failed: {result_1}\"\nprint(f\"✓ Test passed for original case. Result: {result_1}\")\n\n# 2. Case with multiple lists of the same maximum length (returns the first one found)\nresult_2 = Find_Max([['X', 'Y'], ['P', 'Q']]) \nassert result_2 == ['X', 'Y'], f\"Test failed: {result_2}\"\nprint(f\"✓ Test passed for equal lengths. Result: {result_2}\")\n\n# 3. Case with single element list inside\nresult_3 = Find_Max([['Single']])\nassert result_3 == ['Single'], f\"Test failed: {result_3}\"\nprint(f\"✓ Test passed for single item case. Result: {result_3}\")\n\n# 4. Empty lists mixed in (length is still determined by count of elements)\nresult_4 = Find_Max([[], [], ['A', 'B']]) \nassert result_4 == ['A', 'B'], f\"Test failed: {result_4}\"\nprint(f\"✓ Test passed with empty sub-lists. Result: {result_4}\")\n\n# 5. Empty main list (Edge case handling)\ntry:\n    # Depending on strictness, you might want to handle this differently, \n    # but logically if there are no items, returning an empty list is safe.\n    result_5 = Find_Max([])\n    assert result_5 == [], f\"Test failed for empty input: {result_5}\"\n    print(f\"✓ Test passed for empty main list. Result: {result_5}\")\nexcept Exception as e:\n    print(f\"Error handling empty list: {e}\")\n\nprint(\"\\nAll tests completed successfully!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/418",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

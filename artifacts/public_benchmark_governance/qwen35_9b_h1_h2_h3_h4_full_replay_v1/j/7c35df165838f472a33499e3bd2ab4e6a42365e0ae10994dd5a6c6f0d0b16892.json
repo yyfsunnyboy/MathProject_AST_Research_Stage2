@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "7c35df165838f472a33499e3bd2ab4e6a42365e0ae10994dd5a6c6f0d0b16892",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sort_counter",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "final_source": "def sort_counter(d):\n    \"\"\"\n    Sorts a dictionary by value (ascending) and returns a list of (key, value) tuples.\n    \n    Args:\n        d (dict): The input dictionary to be sorted.\n        \n    Returns:\n        List[Tuple[str, int]]: A list of key-value pairs sorted by the values.\n    \"\"\"\n    return sorted(d.items(), key=lambda item: item[1])\n\n# Example usage and assertion test\nresult = sort_counter({'Math': 81, 'Physics': 83, 'Chemistry': 87})\nassert result == [('Chemistry', 87), ('Physics', 83), ('Math', 81)]\n\nprint(\"Test passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/475:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "post_h2_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "post_h3_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "post_h4_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "ad3f501938210b7767eb60153595c0188f671d1790201a10d7f890304cd5fea9",
+  "raw_source": "def sort_counter(d):\n    \"\"\"\n    Sorts a dictionary by value (ascending) and returns a list of (key, value) tuples.\n    \n    Args:\n        d (dict): The input dictionary to be sorted.\n        \n    Returns:\n        List[Tuple[str, int]]: A list of key-value pairs sorted by the values.\n    \"\"\"\n    return sorted(d.items(), key=lambda item: item[1])\n\n# Example usage and assertion test\nresult = sort_counter({'Math': 81, 'Physics': 83, 'Chemistry': 87})\nassert result == [('Chemistry', 87), ('Physics', 83), ('Math', 81)]\n\nprint(\"Test passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/475",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

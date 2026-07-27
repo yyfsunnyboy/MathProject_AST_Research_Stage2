@@ -1,0 +1,44 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "1aa23c59501ce4532b722c013d2a74432f1837bb5e47f3d61476767a47c2baad",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "median",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "final_source": "def median(l: list):\n    \"\"\"Return median of elements in the list l.\n    >>> median([3, 1, 2, 4, 5])\n    3\n    >>> median([-10, 4, 6, 1000, 10, 20])\n    15.0\n    \"\"\"\n    sorted_l = sorted(l)\n    n = len(sorted_l)\n    mid = n // 2\n    if n % 2 == 1:\n        return float(sorted_l[mid])\n    else:\n        return (sorted_l[mid - 1] + sorted_l[mid]) / 2",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/47:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "post_h2_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "post_h3_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "post_h4_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6d8fb468a1af698292546cb92f97349a495c3bb2aced4bd6c1fb71a6bc36af4e",
+  "raw_source": "def median(l: list):\n    \"\"\"Return median of elements in the list l.\n    >>> median([3, 1, 2, 4, 5])\n    3\n    >>> median([-10, 4, 6, 1000, 10, 20])\n    15.0\n    \"\"\"\n    sorted_l = sorted(l)\n    n = len(sorted_l)\n    mid = n // 2\n    if n % 2 == 1:\n        return float(sorted_l[mid])\n    else:\n        return (sorted_l[mid - 1] + sorted_l[mid]) / 2",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/47",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab2g"
+}

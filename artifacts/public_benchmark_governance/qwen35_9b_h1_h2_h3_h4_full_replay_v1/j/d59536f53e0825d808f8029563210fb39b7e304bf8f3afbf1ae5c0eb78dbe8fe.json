@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "d59536f53e0825d808f8029563210fb39b7e304bf8f3afbf1ae5c0eb78dbe8fe",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "square_nums",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "a4cb5f7a6c62694c7fdf3bb6f2db842c8fb729d126798dbf10241504b964df4c",
+  "final_source": "def square_nums(nums):\n    \"\"\"Returns a new list with the squares of each element in nums.\"\"\"\n    return [x ** 2 for x in nums]\n\n# Test case from your example\nif __name__ == \"__main__\":\n    assert square_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nprint(\"Assertion passed!\")\n\n# Example usage:\nresult = square_nums([1, 2, 3, 4])\nprint(result)  # Output: [1, 4, 9, 16]\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/8:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "c1aa83aad909fc2ac1a2634ba7e7db82f2f2a46a8132c901cb4b51c8e0bde55a",
+  "post_h2_sha256": "a4cb5f7a6c62694c7fdf3bb6f2db842c8fb729d126798dbf10241504b964df4c",
+  "post_h3_sha256": "a4cb5f7a6c62694c7fdf3bb6f2db842c8fb729d126798dbf10241504b964df4c",
+  "post_h4_sha256": "a4cb5f7a6c62694c7fdf3bb6f2db842c8fb729d126798dbf10241504b964df4c",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "c1aa83aad909fc2ac1a2634ba7e7db82f2f2a46a8132c901cb4b51c8e0bde55a",
+  "raw_source": "def square_nums(nums):\n    \"\"\"Returns a new list with the squares of each element in nums.\"\"\"\n    return [x ** 2 for x in nums]\n\n# Test case from your example\nassert square_nums([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) == [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nprint(\"Assertion passed!\")\n\n# Example usage:\nresult = square_nums([1, 2, 3, 4])\nprint(result)  # Output: [1, 4, 9, 16]\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/8",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

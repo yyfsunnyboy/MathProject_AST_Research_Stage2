@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "no_h2_input_top_level_print"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "0ff06ac3f84e42e485c24386d09430e3c8a10b745f5fc157ad5e3811218eef51",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "toggle_middle_bits",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "dd4a2e43cdd4b0aac821fda52deda51aaca3583a10dd899271c80f19ea6bd2e0",
+  "final_source": "def toggle_middle_bits(n):\n    if n < 3:\n        return n\n    \n    # Find the number of bits required to represent n\n    num_bits = n.bit_length()\n    \n    # Create a mask that has all ones except for the first and last bit\n    # First, create a mask with all ones (e.g., 11...1)\n    full_mask = (1 << num_bits) - 1\n    \n    # Remove the most significant bit (first bit) -> shift right by 1 then left back? \n    # Actually, let's think differently.\n    # We want to keep MSB and LSB as they are, and flip everything in between.\n    \n    # Mask for bits we want to toggle: all ones except first and last position\n    # Example: if num_bits = 4 (bits at positions 3,2,1,0)\n    # We want to toggle positions 2 and 1. Keep 3 and 0.\n    # So mask should have 0s at pos 3 and 0, and 1s elsewhere.\n    \n    # Create a mask with all ones: (1 << num_bits) - 1\n    full_ones = (1 << num_bits) - 1\n    \n    # Remove the MSB (bit at position num_bits-1): subtract (1 << (num_bits-1))\n    msb_val = 1 << (num_bits - 1)\n    \n    # Remove the LSB (bit at position 0): subtract 1\n    lsb_val = 1\n    \n    # The mask for toggling is: full_ones ^ msb_val ^ lsb_val \n    # But simpler: we want to zero out MSB and LSB in a full ones mask.\n    toggle_mask = full_ones & ~(msb_val | lsb_val)\n    \n    return n ^ toggle_mask\n\nif __name__ == \"__main__\":\n    assert toggle_middle_bits(9) == 15",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/735:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "44e02fe626dcfe9b4e731b1d75377bb3ef5df3750aaec4815b03c9f309d6de4e",
+  "post_h2_sha256": "dd4a2e43cdd4b0aac821fda52deda51aaca3583a10dd899271c80f19ea6bd2e0",
+  "post_h3_sha256": "dd4a2e43cdd4b0aac821fda52deda51aaca3583a10dd899271c80f19ea6bd2e0",
+  "post_h4_sha256": "dd4a2e43cdd4b0aac821fda52deda51aaca3583a10dd899271c80f19ea6bd2e0",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "44e02fe626dcfe9b4e731b1d75377bb3ef5df3750aaec4815b03c9f309d6de4e",
+  "raw_source": "def toggle_middle_bits(n):\n    if n < 3:\n        return n\n    \n    # Find the number of bits required to represent n\n    num_bits = n.bit_length()\n    \n    # Create a mask that has all ones except for the first and last bit\n    # First, create a mask with all ones (e.g., 11...1)\n    full_mask = (1 << num_bits) - 1\n    \n    # Remove the most significant bit (first bit) -> shift right by 1 then left back? \n    # Actually, let's think differently.\n    # We want to keep MSB and LSB as they are, and flip everything in between.\n    \n    # Mask for bits we want to toggle: all ones except first and last position\n    # Example: if num_bits = 4 (bits at positions 3,2,1,0)\n    # We want to toggle positions 2 and 1. Keep 3 and 0.\n    # So mask should have 0s at pos 3 and 0, and 1s elsewhere.\n    \n    # Create a mask with all ones: (1 << num_bits) - 1\n    full_ones = (1 << num_bits) - 1\n    \n    # Remove the MSB (bit at position num_bits-1): subtract (1 << (num_bits-1))\n    msb_val = 1 << (num_bits - 1)\n    \n    # Remove the LSB (bit at position 0): subtract 1\n    lsb_val = 1\n    \n    # The mask for toggling is: full_ones ^ msb_val ^ lsb_val \n    # But simpler: we want to zero out MSB and LSB in a full ones mask.\n    toggle_mask = full_ones & ~(msb_val | lsb_val)\n    \n    return n ^ toggle_mask\n\nassert toggle_middle_bits(9) == 15",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/735",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab2g"
+}

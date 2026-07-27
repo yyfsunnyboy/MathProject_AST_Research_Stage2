@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "module_assert_count_not_one",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "09f0ef978693228777ed5c25f439352ebd23db77b482d2a0d01713732b04fd27",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "all_unique",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "final_source": "def all_unique(lst):\n    \"\"\"\n    Check if all elements in the given list are unique.\n    \n    Args:\n        lst (list): The list to check.\n        \n    Returns:\n        bool: True if all elements are unique, False otherwise.\n    \"\"\"\n    return len(lst) == len(set(lst))\n\n# Example usage and assertion tests\nassert all_unique([1, 2, 3]) == True\nassert all_unique([1, 2, 2]) == False\nassert all_unique([]) == True          # Empty list is considered unique by definition\nassert all_unique(['a', 'b', 'c']) == True\n\nprint(\"All tests passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/281:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "post_h2_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "post_h3_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "post_h4_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "bc43eaf9358179d1ad9153a1f932af0f3019615239a7645a90f4b0a79f6d5aa4",
+  "raw_source": "def all_unique(lst):\n    \"\"\"\n    Check if all elements in the given list are unique.\n    \n    Args:\n        lst (list): The list to check.\n        \n    Returns:\n        bool: True if all elements are unique, False otherwise.\n    \"\"\"\n    return len(lst) == len(set(lst))\n\n# Example usage and assertion tests\nassert all_unique([1, 2, 3]) == True\nassert all_unique([1, 2, 2]) == False\nassert all_unique([]) == True          # Empty list is considered unique by definition\nassert all_unique(['a', 'b', 'c']) == True\n\nprint(\"All tests passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/281",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

@@ -1,0 +1,46 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "assert_not_direct_entrypoint_selftest",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    3
+  ],
+  "cell_identity": "6b15d08e0916f9f9be65df6c1630b03a3b7ef6122c1b5df67f43bf83d0f09d05",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "merge_dictionaries_three",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "final_source": "def merge_dictionaries_three(d1, d2, d3):\n    \"\"\"\n    Merges three dictionaries into a single dictionary.\n    If keys overlap, values are updated in order: d1 -> d2 -> d3.\n    \n    Args:\n        d1 (dict): First dictionary\n        d2 (dict): Second dictionary\n        d3 (dict): Third dictionary\n        \n    Returns:\n        dict: Merged dictionary with all unique keys from the inputs.\n    \"\"\"\n    # Start with an empty result dictionary or copy of the first one\n    merged = {}\n    \n    # Update sequentially to handle overlaps correctly based on order\n    for d in [d1, d2, d3]:\n        merged.update(d)\n        \n    return merged\n\n# Test case from your request\nresult = merge_dictionaries_three(\n    { \"R\": \"Red\", \"B\": \"Black\", \"P\": \"Pink\" }, \n    { \"G\": \"Green\", \"W\": \"White\" }, \n    { \"O\": \"Orange\", \"W\": \"White\", \"B\": \"Black\" }\n)\n\nexpected = {'B': 'Black', 'R': 'Red', 'P': 'Pink', 'G': 'Green', 'W': 'White', 'O': 'Orange'}\n\nassert result == expected, f\"Test failed! Got {result}, Expected {expected}\"\nprint(\"Assertion passed!\")\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:Mbpp/87:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "post_h2_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "post_h3_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "post_h4_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6883d3c2ff7155128c9523d3b3e0101041303b3c730c59018c34bcd7b606219e",
+  "raw_source": "def merge_dictionaries_three(d1, d2, d3):\n    \"\"\"\n    Merges three dictionaries into a single dictionary.\n    If keys overlap, values are updated in order: d1 -> d2 -> d3.\n    \n    Args:\n        d1 (dict): First dictionary\n        d2 (dict): Second dictionary\n        d3 (dict): Third dictionary\n        \n    Returns:\n        dict: Merged dictionary with all unique keys from the inputs.\n    \"\"\"\n    # Start with an empty result dictionary or copy of the first one\n    merged = {}\n    \n    # Update sequentially to handle overlaps correctly based on order\n    for d in [d1, d2, d3]:\n        merged.update(d)\n        \n    return merged\n\n# Test case from your request\nresult = merge_dictionaries_three(\n    { \"R\": \"Red\", \"B\": \"Black\", \"P\": \"Pink\" }, \n    { \"G\": \"Green\", \"W\": \"White\" }, \n    { \"O\": \"Orange\", \"W\": \"White\", \"B\": \"Black\" }\n)\n\nexpected = {'B': 'Black', 'R': 'Red', 'P': 'Pink', 'G': 'Green', 'W': 'White', 'O': 'Orange'}\n\nassert result == expected, f\"Test failed! Got {result}, Expected {expected}\"\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/87",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}

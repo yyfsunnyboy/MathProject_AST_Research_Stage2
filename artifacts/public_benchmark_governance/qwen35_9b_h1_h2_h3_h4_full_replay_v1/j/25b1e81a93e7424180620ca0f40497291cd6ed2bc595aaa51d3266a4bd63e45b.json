@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "h2_input_top_level_print_count_not_one"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "25b1e81a93e7424180620ca0f40497291cd6ed2bc595aaa51d3266a4bd63e45b",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "perimeter_pentagon",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "415ce3a435979e67978d758d92d5636ca70d494707891175e949723eb1039387",
+  "final_source": "def perimeter_pentagon(side_length: float) -> float:\n    \"\"\"\n    Calculate the perimeter of a regular pentagon given the side length.\n    \n    A regular pentagon has five equal sides, so its perimeter is simply 5 times the side length.\n    \n    Parameters:\n        side_length (float): The length of one side of the pentagon.\n        \n    Returns:\n        float: The total perimeter of the pentagon.\n    \"\"\"\n    return 5 * side_length\n\n\n# Example usage and assertion test\nif __name__ == \"__main__\":\n    assert perimeter_pentagon(5) == 25\nprint(\"Test passed!\")\n\n# Additional example\nside = 10\nperimeter = perimeter_pentagon(side)\nprint(f\"The perimeter of a regular pentagon with side length {side} is: {perimeter}\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/171:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "7add3ea87da588b4406a777d887b3a4db7fb1cde4802de1a7ae9049d4fa92dd2",
+  "post_h2_sha256": "415ce3a435979e67978d758d92d5636ca70d494707891175e949723eb1039387",
+  "post_h3_sha256": "415ce3a435979e67978d758d92d5636ca70d494707891175e949723eb1039387",
+  "post_h4_sha256": "415ce3a435979e67978d758d92d5636ca70d494707891175e949723eb1039387",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "7add3ea87da588b4406a777d887b3a4db7fb1cde4802de1a7ae9049d4fa92dd2",
+  "raw_source": "def perimeter_pentagon(side_length: float) -> float:\n    \"\"\"\n    Calculate the perimeter of a regular pentagon given the side length.\n    \n    A regular pentagon has five equal sides, so its perimeter is simply 5 times the side length.\n    \n    Parameters:\n        side_length (float): The length of one side of the pentagon.\n        \n    Returns:\n        float: The total perimeter of the pentagon.\n    \"\"\"\n    return 5 * side_length\n\n\n# Example usage and assertion test\nassert perimeter_pentagon(5) == 25\nprint(\"Test passed!\")\n\n# Additional example\nside = 10\nperimeter = perimeter_pentagon(side)\nprint(f\"The perimeter of a regular pentagon with side length {side} is: {perimeter}\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/171",
+  "transform_class": "H2_ONLY",
+  "treatment": "ab1"
+}

@@ -1,0 +1,50 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "017e1fad044d8d6224f8f13c9834191dfec39ef529d9253b0a078b6d41afe169",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "sum",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "515711c217f7f94d278839371fc62c1e9579d246fe852da3d6d49c0693538bf4",
+  "final_source": "def sum_common_divisors(a, b):\n    def get_divisors(n):\n        divs = []\n        for i in range(1, int(n**0.5) + 1):\n            if n % i == 0:\n                divs.append(i)\n                if i != n // i:\n                    divs.append(n // i)\n        return sorted(divs)\n\n    divs_a = get_divisors(a)\n    divs_b = get_divisors(b)\n    \n    common = set(divs_a).intersection(set(divs_b))\n    return sum(common)\n\nsum = sum_common_divisors\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/126:ab2g:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "515711c217f7f94d278839371fc62c1e9579d246fe852da3d6d49c0693538bf4",
+  "post_h2_sha256": "515711c217f7f94d278839371fc62c1e9579d246fe852da3d6d49c0693538bf4",
+  "post_h3_sha256": "515711c217f7f94d278839371fc62c1e9579d246fe852da3d6d49c0693538bf4",
+  "post_h4_sha256": "515711c217f7f94d278839371fc62c1e9579d246fe852da3d6d49c0693538bf4",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "d1b802f495a5fbde3ca4a5e070e2760510de7f70cef119fc6a80923089b39a1d",
+  "raw_source": "def sum_common_divisors(a, b):\n    def get_divisors(n):\n        divs = []\n        for i in range(1, int(n**0.5) + 1):\n            if n % i == 0:\n                divs.append(i)\n                if i != n // i:\n                    divs.append(n // i)\n        return sorted(divs)\n\n    divs_a = get_divisors(a)\n    divs_b = get_divisors(b)\n    \n    common = set(divs_a).intersection(set(divs_b))\n    return sum(common)",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/126",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab2g"
+}

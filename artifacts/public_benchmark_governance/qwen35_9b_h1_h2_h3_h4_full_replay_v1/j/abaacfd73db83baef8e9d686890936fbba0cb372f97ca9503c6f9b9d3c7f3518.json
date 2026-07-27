@@ -1,0 +1,51 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "unique_undecorated_sync_function_arity_compatible_alias_appended",
+    "H2": "entry_point_missing",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [
+    2
+  ],
+  "cell_identity": "abaacfd73db83baef8e9d686890936fbba0cb372f97ca9503c6f9b9d3c7f3518",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "count_Occurrence",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "f671ca6a5804518902e93e3d6e2abd026bc96aba7b08cfaa0e2219e9e58df340",
+  "final_source": "def count_occurrence(data_tuple, target_list):\n    \"\"\"\n    Counts the total occurrence of all elements in 'target_list' \n    found inside 'data_tuple'.\n    \n    Args:\n        data_tuple (tuple or list): The collection to search within.\n        target_list (list): List of items whose occurrences need to be counted.\n        \n    Returns:\n        int: Total count of specified elements.\n    \"\"\"\n    total_count = 0\n    \n    # Iterate over each item in the target list\n    for item in target_list:\n        # Count how many times 'item' appears in data_tuple and add to total\n        total_count += data_tuple.count(item)\n        \n    return total_count\n\n# --- Test Cases based on your requirement ---\n\n# Requirement from prompt\nassert count_occurrence(('a', 'a', 'c', 'b', 'd'), ['a', 'b']) == 3 \nprint(\"Test 1 Passed: Count is correct (2 'a's + 1 'b' = 3)\")\n\n# Additional Test Case: Element not in tuple\nassert count_occurrence(('x', 'y', 'z'), ['w', 'v']) == 0\nprint(\"Test 2 Passed: Returns 0 for missing elements\")\n\n# Additional Test Case: Duplicate items in target list (e.g., counting 'a' twice)\nresult = count_occurrence(('a', 'b', 'c'), ['a', 'a']) \nassert result == 1 # Even though we asked to check 'a' twice, it only exists once in the tuple.\nprint(\"Test 3 Passed: Handles duplicates in target list correctly\")\n\n# Additional Test Case: All elements present multiple times\nresult = count_occurrence(('p', 'q', 'r', 'p'), ['p', 'q']) \nassert result == 3 # Two 'p's and one 'q'\nprint(\"Test 4 Passed: Multiple occurrences handled correctly\")\n\nprint(\"\\nAll tests passed successfully!\")\n\ncount_Occurrence = count_occurrence\n",
+  "first_effective_rule": "entrypoint_alias_unique_arity_compatible_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/446:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H1"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "f671ca6a5804518902e93e3d6e2abd026bc96aba7b08cfaa0e2219e9e58df340",
+  "post_h2_sha256": "f671ca6a5804518902e93e3d6e2abd026bc96aba7b08cfaa0e2219e9e58df340",
+  "post_h3_sha256": "f671ca6a5804518902e93e3d6e2abd026bc96aba7b08cfaa0e2219e9e58df340",
+  "post_h4_sha256": "f671ca6a5804518902e93e3d6e2abd026bc96aba7b08cfaa0e2219e9e58df340",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "6a26f76d4ce045266c9307fd605473a3a81a646b1d0076318ecd381507963dac",
+  "raw_source": "def count_occurrence(data_tuple, target_list):\n    \"\"\"\n    Counts the total occurrence of all elements in 'target_list' \n    found inside 'data_tuple'.\n    \n    Args:\n        data_tuple (tuple or list): The collection to search within.\n        target_list (list): List of items whose occurrences need to be counted.\n        \n    Returns:\n        int: Total count of specified elements.\n    \"\"\"\n    total_count = 0\n    \n    # Iterate over each item in the target list\n    for item in target_list:\n        # Count how many times 'item' appears in data_tuple and add to total\n        total_count += data_tuple.count(item)\n        \n    return total_count\n\n# --- Test Cases based on your requirement ---\n\n# Requirement from prompt\nassert count_occurrence(('a', 'a', 'c', 'b', 'd'), ['a', 'b']) == 3 \nprint(\"Test 1 Passed: Count is correct (2 'a's + 1 'b' = 3)\")\n\n# Additional Test Case: Element not in tuple\nassert count_occurrence(('x', 'y', 'z'), ['w', 'v']) == 0\nprint(\"Test 2 Passed: Returns 0 for missing elements\")\n\n# Additional Test Case: Duplicate items in target list (e.g., counting 'a' twice)\nresult = count_occurrence(('a', 'b', 'c'), ['a', 'a']) \nassert result == 1 # Even though we asked to check 'a' twice, it only exists once in the tuple.\nprint(\"Test 3 Passed: Handles duplicates in target list correctly\")\n\n# Additional Test Case: All elements present multiple times\nresult = count_occurrence(('p', 'q', 'r', 'p'), ['p', 'q']) \nassert result == 3 # Two 'p's and one 'q'\nprint(\"Test 4 Passed: Multiple occurrences handled correctly\")\n\nprint(\"\\nAll tests passed successfully!\")\n",
+  "rules_applied": [
+    "entrypoint_alias_unique_arity_compatible_v0"
+  ],
+  "rules_triggered": [
+    "entrypoint_alias_unique_arity_compatible_v0",
+    "module_assert_entrypoint_selftest_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/446",
+  "transform_class": "H1_ONLY",
+  "treatment": "ab1"
+}

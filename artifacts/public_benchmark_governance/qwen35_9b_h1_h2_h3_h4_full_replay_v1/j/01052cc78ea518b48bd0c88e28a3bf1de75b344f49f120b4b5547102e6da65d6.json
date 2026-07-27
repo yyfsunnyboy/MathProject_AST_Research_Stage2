@@ -1,0 +1,53 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "expected_entry_point_present",
+    "H2": "transformed_module_assert_quarantined",
+    "H3": "no_syntax_error",
+    "H4": "transformed_demo_print_merged_into_h2_guard"
+  },
+  "arity_contract": [
+    1
+  ],
+  "cell_identity": "01052cc78ea518b48bd0c88e28a3bf1de75b344f49f120b4b5547102e6da65d6",
+  "cumulative_parse_status": "parseable",
+  "dataset": "mbpp",
+  "entry_point": "odd_position",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "3e84cf323dc330ac692a9d05c2bbac90245816c2d76b806c7c3ffdf2942a1323",
+  "final_source": "def odd_position(lst):\n    \"\"\"\n    Checks whether every element at an odd index (1st, 3rd, etc. in 0-based indexing) \n    contains an odd number.\n    \n    Note: In standard programming contexts involving \"odd positions\", we usually refer to \n    indices that are themselves odd numbers (i.e., index 1, 3, 5...). \n    \n    If the requirement meant \"elements at even indices\" or a different definition of position,\n    this function would need adjustment. Based on the assertion provided:\n    \n        lst = [2, 1, 4, 3, 6, 7, 6, 3]\n        Indices:   0  1  2  3  4  5  6  7\n        \n        Odd indices are: 1 (value 1), 3 (value 3), 5 (value 7), 7 (value 3).\n        All these values (1, 3, 7, 3) are odd numbers. Hence returns True.\n\n    :param lst: List of integers\n    :return: Boolean indicating if all elements at odd indices are odd numbers\n    \"\"\"\n    \n    # Iterate through the list with index and value\n    for i in range(len(lst)):\n        # Check only odd indices (1, 3, 5...)\n        if i % 2 != 0: \n            # If an element is found at an odd index that is NOT odd itself\n            if lst[i] % 2 == 0:\n                return False\n                \n    return True\n\n# Test the function with the provided assertion\nif __name__ == \"__main__\":\n    assert odd_position([2,1,4,3,6,7,6,3]) == True\n    print(\"Assertion passed!\")\n",
+  "first_effective_rule": "module_assert_entrypoint_selftest_quarantine_v0",
+  "generation_id": "qwen3.5:9b:Mbpp/775:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [
+    "H2",
+    "H4"
+  ],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "68f9566395eae0ccd22b60b250bfc527efe67908ea366cf4e3e49877aeee7567",
+  "post_h2_sha256": "b87cafeb697015958c2c7904f1875f51f4659e63136fbb1920924ee9fb34ea51",
+  "post_h3_sha256": "b87cafeb697015958c2c7904f1875f51f4659e63136fbb1920924ee9fb34ea51",
+  "post_h4_sha256": "3e84cf323dc330ac692a9d05c2bbac90245816c2d76b806c7c3ffdf2942a1323",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "68f9566395eae0ccd22b60b250bfc527efe67908ea366cf4e3e49877aeee7567",
+  "raw_source": "def odd_position(lst):\n    \"\"\"\n    Checks whether every element at an odd index (1st, 3rd, etc. in 0-based indexing) \n    contains an odd number.\n    \n    Note: In standard programming contexts involving \"odd positions\", we usually refer to \n    indices that are themselves odd numbers (i.e., index 1, 3, 5...). \n    \n    If the requirement meant \"elements at even indices\" or a different definition of position,\n    this function would need adjustment. Based on the assertion provided:\n    \n        lst = [2, 1, 4, 3, 6, 7, 6, 3]\n        Indices:   0  1  2  3  4  5  6  7\n        \n        Odd indices are: 1 (value 1), 3 (value 3), 5 (value 7), 7 (value 3).\n        All these values (1, 3, 7, 3) are odd numbers. Hence returns True.\n\n    :param lst: List of integers\n    :return: Boolean indicating if all elements at odd indices are odd numbers\n    \"\"\"\n    \n    # Iterate through the list with index and value\n    for i in range(len(lst)):\n        # Check only odd indices (1, 3, 5...)\n        if i % 2 != 0: \n            # If an element is found at an odd index that is NOT odd itself\n            if lst[i] % 2 == 0:\n                return False\n                \n    return True\n\n# Test the function with the provided assertion\nassert odd_position([2,1,4,3,6,7,6,3]) == True\nprint(\"Assertion passed!\")\n",
+  "rules_applied": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "rules_triggered": [
+    "module_assert_entrypoint_selftest_quarantine_v0",
+    "top_level_demo_print_quarantine_v0"
+  ],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "Mbpp/775",
+  "transform_class": "H2_AND_H4",
+  "treatment": "ab1"
+}

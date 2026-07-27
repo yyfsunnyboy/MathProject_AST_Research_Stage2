@@ -1,0 +1,42 @@
+{
+  "abstention_reason_by_layer": {
+    "H1": "missing_or_invalid_arity_evidence",
+    "H2": "no_module_level_assert",
+    "H3": "no_syntax_error",
+    "H4": "h2_did_not_transform_no_provenance"
+  },
+  "arity_contract": [],
+  "cell_identity": "95abf1e04b23b104242f2029a89a82b30d1f7bb74c7bd2e29e04360d3f6814ec",
+  "cumulative_parse_status": "parseable",
+  "dataset": "humaneval",
+  "entry_point": "fruit_distribution",
+  "experiment_label": "cumulative_H1_H4_candidate_replay",
+  "extraction_status": "extracted",
+  "final_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "final_source": "def fruit_distribution(s, n):\n    \"\"\"\n    Given a string describing apples and oranges in a basket, \n    and an integer total number of fruits (apples + oranges + mangoes),\n    return the number of mango fruits.\n    \n    Examples:\n        fruit_distribution(\"5 apples and 6 oranges\", 19) -> 8\n        fruit_distribution(\"0 apples and 1 oranges\",3)   -> 2\n        fruit_distribution(\"2 apples and 3 oranges\", 100)-> 95\n        fruit_distribution(\"100 apples and 1 oranges\",120)-> 19\n    \"\"\"\n    \n    # Extract the number of apples\n    apple_part = s.split()[0]          # e.g. \"5\" from \"5 apples...\"\n    apples = int(apple_part)\n    \n    # Find the part after \"and\" to get oranges count\n    and_index = s.find(\" and \")\n    orange_part = s[and_index + 4:]     # skip \" and \"\n    oranges = int(orange_part.split()[0])\n    \n    return n - apples - oranges\n\n\n# Quick tests:\nprint(fruit_distribution(\"5 apples and 6 oranges\", 19))      # 8\nprint(fruit_distribution(\"0 apples and 1 oranges\", 3))       # 2\nprint(fruit_distribution(\"2 apples and 3 oranges\", 100))     # 95\nprint(fruit_distribution(\"100 apples and 1 oranges\", 120))   # 19\n",
+  "first_effective_rule": null,
+  "generation_id": "qwen3.5:9b:HumanEval/67:ab1:0",
+  "generation_truncated": false,
+  "layers_changed": [],
+  "layers_invoked": [
+    "H1",
+    "H2",
+    "H3",
+    "H4"
+  ],
+  "model_tag": "qwen3.5:9b",
+  "persisted_complete": true,
+  "post_h1_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "post_h2_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "post_h3_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "post_h4_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "raw_parse_status": "parseable",
+  "raw_sha256": "5d8590fe19899c52191a7802f7ecf85a01eb354a5de198b45d457cfc9d0b4592",
+  "raw_source": "def fruit_distribution(s, n):\n    \"\"\"\n    Given a string describing apples and oranges in a basket, \n    and an integer total number of fruits (apples + oranges + mangoes),\n    return the number of mango fruits.\n    \n    Examples:\n        fruit_distribution(\"5 apples and 6 oranges\", 19) -> 8\n        fruit_distribution(\"0 apples and 1 oranges\",3)   -> 2\n        fruit_distribution(\"2 apples and 3 oranges\", 100)-> 95\n        fruit_distribution(\"100 apples and 1 oranges\",120)-> 19\n    \"\"\"\n    \n    # Extract the number of apples\n    apple_part = s.split()[0]          # e.g. \"5\" from \"5 apples...\"\n    apples = int(apple_part)\n    \n    # Find the part after \"and\" to get oranges count\n    and_index = s.find(\" and \")\n    orange_part = s[and_index + 4:]     # skip \" and \"\n    oranges = int(orange_part.split()[0])\n    \n    return n - apples - oranges\n\n\n# Quick tests:\nprint(fruit_distribution(\"5 apples and 6 oranges\", 19))      # 8\nprint(fruit_distribution(\"0 apples and 1 oranges\", 3))       # 2\nprint(fruit_distribution(\"2 apples and 3 oranges\", 100))     # 95\nprint(fruit_distribution(\"100 apples and 1 oranges\", 120))   # 19\n",
+  "rules_applied": [],
+  "rules_triggered": [],
+  "runner_identity": "public_benchmark_h1_h2_h3_h4_replay_v1",
+  "task_id": "HumanEval/67",
+  "transform_class": "UNCHANGED",
+  "treatment": "ab1"
+}
