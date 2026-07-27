@@ -64,7 +64,7 @@ MODEL_SPECS = {
     },
     "qwen3.5:9b": {
         "model_key": "qwen35_9b",
-        "expected_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+        "expected_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
         "run_dirs": {
             "humaneval": pathlib.Path("runs/he_qwen35_9b"),
             "mbpp": pathlib.Path("runs/mb_qwen35_9b"),

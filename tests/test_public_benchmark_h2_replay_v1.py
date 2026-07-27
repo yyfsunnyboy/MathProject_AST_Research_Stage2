@@ -65,16 +65,40 @@ def test_9b_dry_run_audit_statistics() -> None:
     assert inv["mbpp_tasks"] == 378
     assert inv["conditions_count"] == 4
     assert inv["total_planned_itt_states"] == 2168
-    assert inv["readiness_status"] == "NOT_READY"
-    assert inv["present_raw_generations"] == 0
-    assert inv["missing_raw_generations"] == 1084
-    assert inv["breakdown"]["humaneval"]["missing_raw"] == 328
-    assert inv["breakdown"]["mbpp"]["missing_raw"] == 756
+    assert inv["readiness_status"] == "READY"
+    assert inv["present_raw_generations"] == 1084
+    assert inv["missing_raw_generations"] == 0
+    assert inv["breakdown"]["humaneval"]["present_raw"] == 328
+    assert inv["breakdown"]["mbpp"]["present_raw"] == 756
+    assert inv["breakdown"]["humaneval"]["missing_raw"] == 0
+    assert inv["breakdown"]["mbpp"]["missing_raw"] == 0
 
 
-def test_missing_raw_generations_fail_closed() -> None:
+def test_9b_expected_digest_matches_ollama_actual_and_differs_from_4b() -> None:
+    nine_b_digest = runner.MODEL_SPECS["qwen3.5:9b"]["expected_digest"]
+    four_b_digest = runner.MODEL_SPECS["qwen3.5:4b"]["expected_digest"]
+    assert nine_b_digest == "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7"
+    assert four_b_digest == "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
+    assert nine_b_digest != four_b_digest
+
+
+def test_9b_wrong_digest_spec_still_fails_closed(monkeypatch) -> None:
+    monkeypatch.setitem(
+        runner.MODEL_SPECS["qwen3.5:9b"],
+        "expected_digest",
+        "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    )
+    with pytest.raises(runner.BenchmarkRunnerError, match="digest drift"):
+        runner.audit_inventory("qwen3.5:9b", "all", repo_root=REPO)
+
+
+def test_missing_raw_generations_fail_closed(monkeypatch, tmp_path: pathlib.Path) -> None:
+    empty_dir = tmp_path / "empty_runs"
+    empty_dir.mkdir()
+    monkeypatch.setitem(runner.MODEL_SPECS["qwen3:0.6b"]["run_dirs"], "humaneval", empty_dir)
+    monkeypatch.setitem(runner.MODEL_SPECS["qwen3:0.6b"]["run_dirs"], "mbpp", empty_dir)
     with pytest.raises(runner.BenchmarkRunnerError):
-        runner.run_replay_execution(model="qwen3.5:9b", dataset="all", repo_root=REPO)
+        runner.run_replay_execution(model="qwen3:0.6b", dataset="all", repo_root=REPO)
 
 
 def test_validation20_isolation_guarantee() -> None:
