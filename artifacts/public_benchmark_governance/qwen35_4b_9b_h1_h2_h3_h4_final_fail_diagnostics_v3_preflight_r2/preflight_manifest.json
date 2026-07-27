@@ -1,0 +1,94 @@
+{
+  "analysis_id": "qwen35_4b_9b_h1_h2_h3_h4_final_fail_diagnostics_v3_preflight_r2",
+  "classification_evidence": {
+    "entrypoint_callability_signature_failure": "real EvalPlus task entry point missing/non-callable/signature mismatch before tests",
+    "other_unclassifiable": "no mutually-exclusive structured evidence",
+    "parse_failure": "sandbox worker AST SyntaxError",
+    "pass": "actual EvalPlus base and plus PASS",
+    "runtime_exception": "sandbox worker or EvalPlus structured exception class during actual test execution",
+    "test_assertion_wrong_answer": "actual EvalPlus base/plus test completed with explicit assertion/fail outcome after a callable invocation",
+    "timeout": "per-cell parent timeout or EvalPlus timeout status"
+  },
+  "cohort_audit": {
+    "combined": {
+      "duplicates": 0,
+      "missing": 0,
+      "selected": 130,
+      "transition_counts": {
+        "blocker_removed_but_incorrect": 12,
+        "modified_but_still_failed": 118
+      }
+    },
+    "models": {
+      "qwen3.5:4b": {
+        "ablation_counts": {
+          "Ab1": 55,
+          "Ab2g": 23
+        },
+        "layer_counts": {
+          "H1": 10,
+          "H2": 40,
+          "H2|H4": 26,
+          "H3": 2
+        },
+        "selected": 78,
+        "transition_counts": {
+          "blocker_removed_but_incorrect": 3,
+          "modified_but_still_failed": 75
+        },
+        "v2_journal_count": 1084
+      },
+      "qwen3.5:9b": {
+        "ablation_counts": {
+          "Ab1": 40,
+          "Ab2g": 12
+        },
+        "layer_counts": {
+          "H1": 17,
+          "H2": 26,
+          "H2|H4": 9
+        },
+        "selected": 52,
+        "transition_counts": {
+          "blocker_removed_but_incorrect": 9,
+          "modified_but_still_failed": 43
+        },
+        "v2_journal_count": 1084
+      }
+    },
+    "selection": "layers_changed_nonempty AND cumulative_final_pass_false"
+  },
+  "created_at_utc": "2026-07-27T14:30:56.584266+00:00",
+  "evidence_label": "development_candidate_not_frozen",
+  "execution_contract": {
+    "candidate_sources_written_to_output": false,
+    "formal_artifacts_modified": false,
+    "no_self_designed_entrypoint_inputs": true,
+    "per_cell": "raw and final are separate OS-sandboxed invocations",
+    "requires_explicit_execute_flag": true,
+    "tests": "actual EvalPlus 0.3.1 HumanEval+/MBPP+ base and plus tests via public check_correctness"
+  },
+  "mode": "preflight_only_no_candidate_parse_import_or_execution",
+  "sandbox": {
+    "actual_platform": "Windows",
+    "bubblewrap": "unavailable",
+    "cgroup_v2_controllers": "unavailable",
+    "limitations": [
+      "This runner intentionally refuses execution when these Linux primitives are unavailable; Windows alone is not an equivalent security boundary.",
+      "The host must permit unprivileged bubblewrap user namespaces and systemd transient cgroups; preflight checks presence, execution validates command success.",
+      "Kernel vulnerabilities and a malicious host administrator are outside this sandbox threat model."
+    ],
+    "policy": {
+      "cpu_memory_pids": "systemd-run transient cgroup: CPUQuota, MemoryMax, TasksMax",
+      "network": "bubblewrap --unshare-net",
+      "privileges": "bubblewrap user namespace, --cap-drop ALL, --new-session, then setpriv --no-new-privs",
+      "root_filesystem": "bubblewrap --ro-bind / /",
+      "timeout": "parent subprocess timeout per raw/final cell",
+      "writable_storage": "only sandbox /tmp tmpfs and per-cell /work tmpfs"
+    },
+    "ready_for_candidate_execution": false,
+    "required_platform": "Linux",
+    "setpriv": "unavailable",
+    "systemd_run": "unavailable"
+  }
+}
