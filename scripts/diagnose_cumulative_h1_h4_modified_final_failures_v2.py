@@ -52,6 +52,11 @@ OUTCOME_CATEGORIES = (
     "other_unclassifiable",
 )
 
+# Work directory must live under a path that already exists after the writable
+# /tmp tmpfs is mounted. Creating /work on the read-only host root fails with
+# "bwrap: Can't mkdir /work: Read-only file system".
+SANDBOX_WORK_DIR = "/tmp/stage2-work"
+
 # Written into a read-only file and run only inside the future OS sandbox.
 # It deliberately uses the actual EvalPlus 0.3.1 task and ground-truth APIs;
 # there are no synthetic arguments or hand-written assertions here.
@@ -224,10 +229,17 @@ def sandbox_preflight() -> dict[str, Any]:
         "policy": {
             "network": "bubblewrap --unshare-net",
             "root_filesystem": "bubblewrap --ro-bind / /",
-            "writable_storage": "only sandbox /tmp tmpfs and per-cell /work tmpfs",
-            "cpu_memory_pids": "systemd-run transient cgroup: CPUQuota, MemoryMax, TasksMax",
+            "writable_storage": (
+                "only sandbox /tmp tmpfs and per-cell "
+                f"{SANDBOX_WORK_DIR} tmpfs (never mkdir on the read-only host root)"
+            ),
+            "cpu_memory_pids": (
+                "systemd-run transient cgroup: CPUQuota=100%, MemoryMax=512M, "
+                "MemorySwapMax=0, TasksMax=64"
+            ),
             "privileges": "bubblewrap user namespace, --cap-drop ALL, --new-session, then setpriv --no-new-privs",
             "timeout": "parent subprocess timeout per raw/final cell",
+            "sandbox_work_dir": SANDBOX_WORK_DIR,
         },
         "limitations": [
             "This runner intentionally refuses execution when these Linux primitives are unavailable; Windows alone is not an equivalent security boundary.",
@@ -238,16 +250,38 @@ def sandbox_preflight() -> dict[str, Any]:
 
 
 def build_bubblewrap_command(*, python_executable: str, worker_path: str, request_path: str) -> list[str]:
-    """Build the future per-cell OS-sandbox command; does not execute it."""
+    """Build the future per-cell OS-sandbox command; does not execute it.
+
+    Mount order is intentional: bind the host root read-only, replace ``/tmp``
+    with a writable tmpfs, then create the per-cell work tmpfs under that
+    already-writable ``/tmp``. Never ask bwrap to ``mkdir /work`` on the
+    read-only root.
+    """
+    work = SANDBOX_WORK_DIR
+    worker_in_sandbox = f"{work}/worker.py"
+    request_in_sandbox = f"{work}/request.json"
     return [
         "systemd-run", "--user", "--scope", "--quiet",
-        "-p", "CPUQuota=100%", "-p", "MemoryMax=512M", "-p", "TasksMax=64",
+        "-p", "CPUQuota=100%",
+        "-p", "MemoryMax=512M",
+        "-p", "MemorySwapMax=0",
+        "-p", "TasksMax=64",
         "bwrap", "--die-with-parent", "--new-session", "--unshare-all", "--cap-drop", "ALL",
-        "--ro-bind", "/", "/", "--tmpfs", "/tmp", "--tmpfs", "/work", "--proc", "/proc",
-        "--dev", "/dev", "--chdir", "/work", "--clearenv", "--setenv", "PATH", "/usr/bin:/bin",
-        "--setenv", "HOME", "/work", "--setenv", "TMPDIR", "/tmp", "--setenv", "PYTHONNOUSERSITE", "1",
-        "--ro-bind", worker_path, "/work/worker.py", "--ro-bind", request_path, "/work/request.json",
-        "setpriv", "--no-new-privs", "--", python_executable, "-I", "/work/worker.py", "/work/request.json",
+        "--ro-bind", "/", "/",
+        "--tmpfs", "/tmp",
+        "--tmpfs", work,
+        "--proc", "/proc",
+        "--dev", "/dev",
+        "--chdir", work,
+        "--clearenv",
+        "--setenv", "PATH", "/usr/bin:/bin",
+        "--setenv", "HOME", work,
+        "--setenv", "TMPDIR", "/tmp",
+        "--setenv", "PYTHONNOUSERSITE", "1",
+        "--ro-bind", worker_path, worker_in_sandbox,
+        "--ro-bind", request_path, request_in_sandbox,
+        "setpriv", "--no-new-privs", "--",
+        python_executable, "-I", worker_in_sandbox, request_in_sandbox,
     ]
 
 
