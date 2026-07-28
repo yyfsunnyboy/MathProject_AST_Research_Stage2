@@ -1,0 +1,14 @@
+{
+  "classification_counts": {
+    "diagnostic_infrastructure_failure": 87,
+    "executable_and_base_plus_pass": 0,
+    "executable_base_pass_plus_fail": 0,
+    "executable_but_base_fail": 0,
+    "import_or_runtime_failure": 7,
+    "missing_entry_point": 0,
+    "parse_or_compile_failure": 0,
+    "sandbox_failure": 0,
+    "timeout": 0
+  },
+  "total": 94
+}

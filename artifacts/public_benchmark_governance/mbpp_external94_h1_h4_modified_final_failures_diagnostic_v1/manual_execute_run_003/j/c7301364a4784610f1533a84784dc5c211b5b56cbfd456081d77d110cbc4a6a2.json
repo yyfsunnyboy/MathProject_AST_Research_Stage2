@@ -1,0 +1,23 @@
+{
+  "base_status": "not_reached",
+  "cell_identity": "525dc27ae4ef62b99d4fc6f5bbbca89fb64a12310a0bbfc639402d7f57bb6418",
+  "compile_status": "pass",
+  "condition": "Ab1",
+  "entry_point_status": "callable",
+  "exception_class": "URLError",
+  "exception_summary": "candidate_frame=unavailable",
+  "final_execution_classification": "diagnostic_infrastructure_failure",
+  "model": "qwen3.5:9b",
+  "parse_status": "pass",
+  "plus_status": "not_reached",
+  "runtime_status": "pass",
+  "sandbox_completed": true,
+  "sandbox_started": true,
+  "source_field": "final_source",
+  "source_journal_path": "artifacts/public_benchmark_governance/qwen35_9b_h1_h2_h3_h4_full_replay_v1/j/525dc27ae4ef62b99d4fc6f5bbbca89fb64a12310a0bbfc639402d7f57bb6418.json",
+  "source_row_key": "qwen3.5:9b|525dc27ae4ef62b99d4fc6f5bbbca89fb64a12310a0bbfc639402d7f57bb6418",
+  "source_sha256": "59cd36c9e17e2092cb043fb369f5c2f5e07cec61247b74ec4ce3d0e1463e5ad9",
+  "task_id": "Mbpp/558",
+  "terminal": true,
+  "timeout": false
+}
